@@ -365,7 +365,7 @@ public abstract class SuggestionsPopupWindow
         positionX = Math.max(-mContentView.getPaddingLeft(), positionX);
 
         // Vertical clipping: if part of the menu or its bottom margin would fall off the bottom of
-        // the screen, shift it up to keep it on-screen.
+        // the screen, shift it up to keep it on-screen, without drawing above mParentView.
         positionY =
                 Math.min(
                         positionY,
@@ -373,6 +373,7 @@ public abstract class SuggestionsPopupWindow
                                 - height
                                 - mContentView.getPaddingTop()
                                 - mPopupVerticalMargin);
+        positionY = Math.max(positionY, positionInWindow[1] - mContentView.getPaddingTop());
 
         mPopupWindow.showAtLocation(mParentView, Gravity.NO_GRAVITY, positionX, positionY);
     }

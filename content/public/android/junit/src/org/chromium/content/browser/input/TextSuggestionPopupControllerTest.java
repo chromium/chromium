@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.view.ViewGroup;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -23,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -40,15 +42,18 @@ public class TextSuggestionPopupControllerTest {
 
     @Mock private WebContentsImpl mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private ViewAndroidDelegate mViewDelegate;
+    @Mock private RenderCoordinatesImpl mRenderCoordinates;
+    @Mock private ViewGroup mContainerView;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
 
+        ViewAndroidDelegate viewDelegate = ViewAndroidDelegate.createBasicDelegate(mContainerView);
         when(mWebContents.getContext()).thenReturn(mContext);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
-        when(mWebContents.getViewAndroidDelegate()).thenReturn(mViewDelegate);
+        when(mWebContents.getViewAndroidDelegate()).thenReturn(viewDelegate);
+        when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
 
         when(mWebContents.getOrSetUserData(any(), any()))
                 .thenAnswer(
@@ -58,6 +63,19 @@ public class TextSuggestionPopupControllerTest {
                         });
 
         mController = new TextSuggestionPopupController(mWebContents);
+    }
+
+    @Test
+    public void testCalculateYOffset() {
+        when(mRenderCoordinates.getContentOffsetYPix()).thenReturn(50.0f);
+        when(mContainerView.getHeight()).thenReturn(1000);
+
+        assertEquals(200.0, mController.calculateYOffset(150.0), 0.001);
+        assertEquals(50.0, mController.calculateYOffset(-100.0), 0.001);
+        assertEquals(50.0, mController.calculateYOffset(Double.NEGATIVE_INFINITY), 0.001);
+        assertEquals(50.0, mController.calculateYOffset(Double.NaN), 0.001);
+        assertEquals(1000.0, mController.calculateYOffset(2000.0), 0.001);
+        assertEquals(1000.0, mController.calculateYOffset(Double.POSITIVE_INFINITY), 0.001);
     }
 
     @Test
