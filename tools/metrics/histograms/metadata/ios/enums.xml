@@ -124,6 +124,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h:FullscreenModeTransitionTrigger) -->
 
+<!-- LINT.IfChange(GeminiAppSwitcherAccountStatus) -->
+
+<enum name="GeminiAppSwitcherAccountStatus">
+  <int value="0" label="Matching"/>
+  <int value="1" label="Mismatched"/>
+  <int value="2" label="External App Only Signed In"/>
+  <int value="3" label="Client App Only Signed In"/>
+  <int value="4" label="Both Signed Out"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:GeminiAppSwitcherAccountStatus) -->
+
 <!-- LINT.IfChange(GeminiViewState) -->
 
 <enum name="GeminiViewState">

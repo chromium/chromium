@@ -774,4 +774,22 @@ void RecordBlockQuerySubmissionWhileLoading(bool block_submission);
 // invocation while page context is loading.
 void RecordShowPageLoadingSnackbarOnOpeningInvocation(bool show_snackbar);
 
+// Enum representing the account alignment status when entering via the App
+// Switcher AI Summarization intent.
+// LINT.IfChange(GeminiAppSwitcherAccountStatus)
+enum class GeminiAppSwitcherAccountStatus {
+  kMatching = 0,
+  kMismatched = 1,
+  kExternalAppOnlySignedIn = 2,
+  kClientAppOnlySignedIn = 3,
+  kBothSignedOut = 4,
+  kMaxValue = kBothSignedOut,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:GeminiAppSwitcherAccountStatus)
+
+// Records the account alignment status of a user entering via the App Switcher
+// AI Summarization intent.
+void RecordGeminiAppSwitcherAccountStatus(
+    GeminiAppSwitcherAccountStatus status);
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_GEMINI_METRICS_H_

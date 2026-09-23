@@ -552,3 +552,39 @@ TEST_F(GeminiMetricsTest, TestRecordGeminiLivePromptSent) {
   EXPECT_EQ(2,
             user_action_tester_.GetActionCount("MobileGeminiLivePromptSent"));
 }
+// Tests that RecordGeminiAppSwitcherAccountStatus records to the correct
+// histogram.
+TEST_F(GeminiMetricsTest, TestRecordGeminiAppSwitcherAccountStatus) {
+  RecordGeminiAppSwitcherAccountStatus(
+      GeminiAppSwitcherAccountStatus::kMatching);
+  histogram_tester_.ExpectBucketCount(
+      "IOS.Gemini.AISummarization.AccountStatus",
+      GeminiAppSwitcherAccountStatus::kMatching, 1);
+
+  RecordGeminiAppSwitcherAccountStatus(
+      GeminiAppSwitcherAccountStatus::kMismatched);
+  histogram_tester_.ExpectBucketCount(
+      "IOS.Gemini.AISummarization.AccountStatus",
+      GeminiAppSwitcherAccountStatus::kMismatched, 1);
+
+  RecordGeminiAppSwitcherAccountStatus(
+      GeminiAppSwitcherAccountStatus::kExternalAppOnlySignedIn);
+  histogram_tester_.ExpectBucketCount(
+      "IOS.Gemini.AISummarization.AccountStatus",
+      GeminiAppSwitcherAccountStatus::kExternalAppOnlySignedIn, 1);
+
+  RecordGeminiAppSwitcherAccountStatus(
+      GeminiAppSwitcherAccountStatus::kClientAppOnlySignedIn);
+  histogram_tester_.ExpectBucketCount(
+      "IOS.Gemini.AISummarization.AccountStatus",
+      GeminiAppSwitcherAccountStatus::kClientAppOnlySignedIn, 1);
+
+  RecordGeminiAppSwitcherAccountStatus(
+      GeminiAppSwitcherAccountStatus::kBothSignedOut);
+  histogram_tester_.ExpectBucketCount(
+      "IOS.Gemini.AISummarization.AccountStatus",
+      GeminiAppSwitcherAccountStatus::kBothSignedOut, 1);
+
+  histogram_tester_.ExpectTotalCount("IOS.Gemini.AISummarization.AccountStatus",
+                                     5);
+}
