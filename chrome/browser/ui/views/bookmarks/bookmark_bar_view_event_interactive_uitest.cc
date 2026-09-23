@@ -72,6 +72,7 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/compositor/compositor.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -79,6 +80,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -331,11 +333,28 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override {
+    if (!MenuIsShowing()) {
+      return;
+    }
+    if (event->type() == ui::EventType::kKeyPressed) {
+      suppress_mouse_moves_ = true;
+    }
     // Drop character events (e.g., WM_CHAR on Windows) while a menu is open
     // to prevent unwanted type-ahead/mnemonic item activations via
     // MenuController::SelectByChar() during automated tests.
-    if (event->is_char() && MenuIsShowing()) {
+    if (event->is_char()) {
       event->StopPropagation();
+    }
+  }
+
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    if (event->type() == ui::EventType::kMouseMoved) {
+      if (suppress_mouse_moves_ && MenuIsShowing()) {
+        event->StopPropagation();
+      }
+    } else if (event->type() == ui::EventType::kMousePressed ||
+               event->type() == ui::EventType::kMouseReleased) {
+      suppress_mouse_moves_ = false;
     }
   }
 
@@ -444,6 +463,9 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
 
  protected:
   std::unique_ptr<views::View> CreateContentsView() override {
+    auto container = std::make_unique<views::View>();
+    container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
     auto* factory = UIControllerFactory::From(browser_.get());
     auto controller = factory->CreateBookmarkBarController();
     auto bb_view = std::make_unique<BookmarkBarView>(
@@ -451,8 +473,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
     // Real bookmark bars get a BookmarkBarViewBackground. Set an opaque
     // background here just to avoid triggering subpixel rendering issues.
     bb_view->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
-    bb_view_ = bb_view.get();
-    return bb_view;
+    bb_view_ = container->AddChildView(std::move(bb_view));
+    return container;
   }
 
   gfx::Size GetPreferredSizeForContents() const override {
@@ -472,6 +494,11 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
       bb_view_->SetBounds(0, 0, size.width(), size.height());
       bb_view_->DeprecatedLayoutImmediately();
     } while (bb_view_->bookmark_buttons_[6].first->GetVisible());
+    // Give the top-level test window enough height so that window managers with
+    // random initial placement (such as Weston) never place the bookmark bar
+    // near the bottom edge of the screen where popup menus would be clipped or
+    // flipped.
+    size.set_height(500);
     return size;
   }
 
@@ -503,28 +530,42 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
   // comments in implementation details) that not everyone should need to worry
   // about.
   void OpenMenuByClick(views::View* view, base::OnceClosure callback) {
+    suppress_mouse_moves_ = false;
     ui_test_utils::MoveMouseToCenterAndClick(
         view, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
         // On Windows, opening a new top-level menu can produce a new mouse move
         // event (to the same screen coordinates). Leaving this event in the
-        // queue can cause test failures. So once we're called back and the menu
-        // is showing, post another task to the "real" `callback` to give the
-        // message loop a chance to process this if necessary. This is harmless
-        // on other platforms, so we don't #if it.
-        base::BindOnce(&BookmarkBarViewEventTestBase::RunTestMethod,
-                       base::Unretained(this),
-                       base::BindLambdaForTesting([&, callback = std::move(
-                                                          callback)]() mutable {
-                         ASSERT_TRUE(MenuIsShowing());
-                         // `callback` must be delayed by at least one tick of
-                         // the system timer to avoid the chance of posting it
-                         // before checking the OS event queue. In principle
-                         // this could vary but in practice it's always 15.625
-                         // ms (1/64 sec). Round to 20 Just Because.
-                         base::SingleThreadTaskRunner::GetCurrentDefault()
-                             ->PostDelayedTask(FROM_HERE, std::move(callback),
-                                               base::Milliseconds(20));
-                       })));
+        // queue can cause test failures. And on Wayland, the menu popup
+        // surface must be committed and mapped by the compositor before it can
+        // receive hit-tested mouse events. Wait for the menu widget's next
+        // frame presentation and then post `callback` after a short delay.
+        base::BindOnce(
+            &BookmarkBarViewEventTestBase::RunTestMethod,
+            base::Unretained(this),
+            base::BindLambdaForTesting([&, callback =
+                                               std::move(callback)]() mutable {
+              ASSERT_TRUE(MenuIsShowing());
+              views::Widget* menu_widget =
+                  bb_view_->GetMenu()->GetSubmenu()->GetWidget();
+              ASSERT_NE(nullptr, menu_widget);
+              menu_widget->GetCompositor()
+                  ->RequestSuccessfulPresentationTimeForNextFrame(
+                      base::BindOnce(
+                          [](base::OnceClosure callback,
+                             const viz::FrameTimingDetails& details) {
+                            // `callback` must be delayed by at least one tick
+                            // of the system timer to avoid the chance of
+                            // posting it before checking the OS event queue. In
+                            // principle this could vary but in practice it's
+                            // always 15.625 ms (1/64 sec). Round to 20 Just
+                            // Because.
+                            base::SingleThreadTaskRunner::GetCurrentDefault()
+                                ->PostDelayedTask(FROM_HERE,
+                                                  std::move(callback),
+                                                  base::Milliseconds(20));
+                          },
+                          std::move(callback)));
+            })));
   }
 
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
@@ -572,6 +613,12 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase,
   std::unique_ptr<ChromeContentBrowserClient> browser_content_client_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<BrowserWindowInterface> browser_;
+  // When true, `OnMouseEvent()` drops `kMouseMoved` events while a menu is
+  // showing. Set on `kKeyPressed` while a menu is open (and reset by
+  // `OpenMenuByClick()` or mouse press/release) so delayed synthetic Windows
+  // `WM_MOUSEMOVE` events at the clicked bookmark bar button do not reset
+  // keyboard-selected submenu items via `MenuController::OnMouseMoved()`.
+  bool suppress_mouse_moves_ = false;
 #if !BUILDFLAG(IS_MAC)
   bool is_pre_target_handler_registered_ = false;
 #endif
@@ -1210,13 +1257,9 @@ class BookmarkBarViewTest10 : public BookmarkBarViewEventTestBase {
 
  private:
   void Step2() {
-    // Move the mouse over the first item in the submenu so that any queued
-    // Windows WM_MOUSEMOVE events are flushed before keyboard navigation.
-    views::MenuItemView* first_item =
-        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(0);
-    gfx::Point center = ui_test_utils::GetCenterInScreenCoordinates(first_item);
-    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
-        center.x(), center.y(),
+    // Send a down event, which should select the first item.
+    ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
+        window()->GetNativeWindow(), ui::VKEY_DOWN, false, false, false, false,
         CreateEventTask(this, &BookmarkBarViewTest10::Step3)));
   }
 
@@ -1299,7 +1342,7 @@ class BookmarkBarViewTest10 : public BookmarkBarViewEventTestBase {
   }
 };
 
-VIEW_TEST(BookmarkBarViewTest10, DISABLED_KeyEvents)
+VIEW_TEST(BookmarkBarViewTest10, KeyEvents)
 
 // Make sure the menu closes with the following sequence: show menu, show
 // context menu, close context menu (via escape), then click else where. This
@@ -2043,20 +2086,16 @@ class BookmarkBarViewTest23 : public BookmarkBarViewEventTestBase {
 
  private:
   void Step2() {
-    // Move the mouse over the first item in the submenu so that any queued
-    // Windows WM_MOUSEMOVE events are flushed before keyboard navigation.
-    views::MenuItemView* first_item =
-        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(0);
-    gfx::Point center = ui_test_utils::GetCenterInScreenCoordinates(first_item);
-    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
-        center.x(), center.y(),
+    // Navigate down to highlight the first menu item.
+    ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
+        window()->GetNativeWindow(), ui::VKEY_DOWN, false, false, false, false,
         CreateEventTask(this, &BookmarkBarViewTest23::Step3)));
   }
 
   void Step3() {
     ASSERT_TRUE(MenuIsShowing());
 
-    // Navigate down to highlight the second menu item.
+    // Navigate down to highlight the second menu item (the first bookmark).
     ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
         window()->GetNativeWindow(), ui::VKEY_DOWN, false, false, false, false,
         CreateEventTask(this, &BookmarkBarViewTest23::Step4)));
@@ -2116,13 +2155,9 @@ class BookmarkBarViewTest24 : public BookmarkBarViewEventTestBase {
 
  private:
   void Step2() {
-    // Move the mouse over the first item in the submenu so that any queued
-    // Windows WM_MOUSEMOVE events are flushed before keyboard navigation.
-    views::MenuItemView* first_item =
-        bb_view_->GetMenu()->GetSubmenu()->GetMenuItemAt(0);
-    gfx::Point center = ui_test_utils::GetCenterInScreenCoordinates(first_item);
-    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
-        center.x(), center.y(),
+    // Navigate down to highlight the first menu item.
+    ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
+        window()->GetNativeWindow(), ui::VKEY_DOWN, false, false, false, false,
         CreateEventTask(this, &BookmarkBarViewTest24::Step3)));
   }
 
@@ -2169,7 +2204,7 @@ class BookmarkBarViewTest24 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-VIEW_TEST(BookmarkBarViewTest24, DISABLED_ContextMenusKeyboardEscape)
+VIEW_TEST(BookmarkBarViewTest24, ContextMenusKeyboardEscape)
 
 #if BUILDFLAG(IS_WIN)
 // Tests that pressing the key KEYCODE closes the menu.
