@@ -25,6 +25,16 @@ function getContextualEntrypointButton(searchbox: OmniboxPopupSearchboxElement):
       popupEntrypoint, 'omnibox-popup-contextual-entrypoint-button');
 }
 
+function getLensSearchIcon(searchbox: OmniboxPopupSearchboxElement):
+    (HTMLElement&{hasVirtualFocus: boolean})|null {
+  const popupEntrypoint = $$(searchbox, 'omnibox-popup-contextual-entrypoint');
+  if (!popupEntrypoint) {
+    return null;
+  }
+  return $$<HTMLElement&{hasVirtualFocus: boolean}>(
+      popupEntrypoint, '#lensSearchIcon');
+}
+
 function createDefaultOmniboxInputState(overrides?: Partial<OmniboxInputState>):
     OmniboxInputState {
   return {
@@ -3006,6 +3016,43 @@ suite('OmniboxPopupSearchboxTest', function() {
        assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
      });
 
+ test('EnterKeyWithVirtualFocusOnLensSearchIconOpensLensSearch', async () => {
+   document.body.innerHTML = window.trustedTypes!.emptyHTML;
+   loadTimeData.overrideValues({
+     realboxVirtualFocusNavigation: true,
+     hideClassicContextButton: false,
+     contextualMenuUsePecApi: false,
+     searchboxLayoutMode: 'TallBottomContext',
+     composeboxShowChip: false,
+     composeboxShowLensIcon: true,
+   });
+   const localSearchbox = document.createElement('omnibox-popup-searchbox');
+   localSearchbox.dropdownIsVisible = true;
+   localSearchbox.virtualFocusEnabled = true;
+   document.body.appendChild(localSearchbox);
+   await microtasksFinished();
+
+   testProxy.initVisibilityPrefs();
+   testProxy.page.updateAimPopupEligibility(true);
+   testProxy.page.updateLensSearchEligibility(true);
+   await microtasksFinished();
+
+   assertTrue(localSearchbox.showLensSearchIcon);
+   localSearchbox.setSelection({
+     line: -1,
+     state: SelectionLineState.kFocusedButtonLensSearch,
+     actionIndex: 0,
+   });
+   await microtasksFinished();
+
+   await localSearchbox.handleKeyNavigation(
+       new KeyboardEvent('keydown', {key: 'Enter', cancelable: true}));
+   await microtasksFinished();
+
+   assertEquals(1, testProxy.handler.getCallCount('openLensSearch'));
+   assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+ });
+
  test('stepCyclesSelection always returns false', () => {
    const selection = {
      line: 0,
@@ -3176,6 +3223,90 @@ suite('OmniboxPopupSearchboxTest', function() {
        assertFalse(localSearchbox.isContextEntrypointVirtualFocused());
        assertFalse(entrypointButton.hasVirtualFocus);
      });
+
+ test('ShiftTabAndTabWithVirtualFocusCyclesThroughLensSearchIcon', async () => {
+   document.body.innerHTML = window.trustedTypes!.emptyHTML;
+   loadTimeData.overrideValues({
+     realboxVirtualFocusNavigation: true,
+     hideClassicContextButton: false,
+     contextualMenuUsePecApi: false,
+     searchboxLayoutMode: 'TallBottomContext',
+     composeboxShowChip: false,
+     composeboxShowLensIcon: true,
+   });
+   const localSearchbox = document.createElement('omnibox-popup-searchbox');
+   localSearchbox.dropdownIsVisible = true;
+   localSearchbox.virtualFocusEnabled = true;
+   document.body.appendChild(localSearchbox);
+   await microtasksFinished();
+
+   testProxy.initVisibilityPrefs();
+   testProxy.page.updateAimPopupEligibility(true);
+   testProxy.page.updateLensSearchEligibility(true);
+   await microtasksFinished();
+
+   localSearchbox.activeQueryId = 0;
+   localSearchbox.onAutocompleteResultChanged(
+       createAutocompleteResultForTesting({
+         queryId: 0,
+         input: 'test',
+         matches: [createSearchMatchForTesting({
+           allowedToBeDefaultMatch: true,
+           contents: 'match 1',
+         })],
+       }));
+   await microtasksFinished();
+
+   assertTrue(localSearchbox.showContextEntrypoint);
+   assertTrue(localSearchbox.showLensSearchIcon);
+   const entrypointButton = getContextualEntrypointButton(localSearchbox);
+   const lensSearchIcon = getLensSearchIcon(localSearchbox);
+   assertTrue(!!entrypointButton);
+   assertTrue(!!lensSearchIcon);
+
+   localSearchbox.setSelection({
+     line: 0,
+     state: SelectionLineState.kNormal,
+     actionIndex: 0,
+   });
+   await microtasksFinished();
+
+   const pressTab = async (shiftKey: boolean) => {
+     await localSearchbox.handleKeyNavigation(new KeyboardEvent(
+         'keydown', {key: 'Tab', shiftKey, cancelable: true, bubbles: true}));
+     await microtasksFinished();
+   };
+
+   // 1st Shift-Tab: cycles backward from match 0 to lens search icon.
+   await pressTab(/*shiftKey=*/ true);
+   assertEquals(
+       SelectionLineState.kFocusedButtonLensSearch,
+       localSearchbox.selection.state);
+   assertTrue(lensSearchIcon.hasVirtualFocus);
+   assertFalse(entrypointButton.hasVirtualFocus);
+
+   // 2nd Shift-Tab: moves backward from lens search icon to contextual entrypoint.
+   await pressTab(/*shiftKey=*/ true);
+   assertEquals(
+       SelectionLineState.kFocusedButtonContextEntrypoint,
+       localSearchbox.selection.state);
+   assertFalse(lensSearchIcon.hasVirtualFocus);
+   assertTrue(entrypointButton.hasVirtualFocus);
+
+   // Forward Tab: moves forward from contextual entrypoint to lens search icon.
+   await pressTab(/*shiftKey=*/ false);
+   assertEquals(
+       SelectionLineState.kFocusedButtonLensSearch,
+       localSearchbox.selection.state);
+   assertTrue(lensSearchIcon.hasVirtualFocus);
+   assertFalse(entrypointButton.hasVirtualFocus);
+
+   // 2nd Forward Tab: wraps forward from lens search icon to match 0.
+   await pressTab(/*shiftKey=*/ false);
+   assertEquals(0, localSearchbox.selection.line);
+   assertEquals(SelectionLineState.kNormal, localSearchbox.selection.state);
+   assertFalse(lensSearchIcon.hasVirtualFocus);
+ });
 
  test('TabKeyFromInputFocusesAimButtonWhenVisible', async () => {
    searchbox.dropdownIsVisible = false;

@@ -8,8 +8,10 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import {getInstance as getA11yAnnouncer} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './composebox_lens_search.css.js';
 import {getHtml} from './composebox_lens_search.html.js';
@@ -35,10 +37,26 @@ export class ComposeboxLensSearchElement extends I18nMixinLit
         attribute: 'is-icon',
         reflect: true,
       },
+      hasVirtualFocus: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   accessor isIcon: boolean = false;
+  accessor hasVirtualFocus: boolean = false;
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('hasVirtualFocus') && this.hasVirtualFocus) {
+      const message = this.i18n('lensSearchHint');
+      if (message) {
+        getA11yAnnouncer(this).announce(message);
+      }
+    }
+  }
 
   protected onLensSearchClick_(e: Event) {
     e.stopPropagation();

@@ -6,6 +6,7 @@ import '//resources/cr_components/composebox/composebox_lens_search.js';
 import '//resources/cr_components/composebox/current_tab_chip.js';
 import './omnibox_popup_contextual_entrypoint_button.js';
 
+import type {ComposeboxLensSearchElement} from '//resources/cr_components/composebox/composebox_lens_search.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -101,6 +102,10 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
     return this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_();
   }
 
+  get showLensSearchIcon(): boolean {
+    return this.showContextEntrypoint_ && this.isLensIconShown_;
+  }
+
   constructor() {
     super();
     this.searchboxBrowserProxy_ = SearchboxBrowserProxy.getInstance();
@@ -194,9 +199,16 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
       |null {
     if (this.showContextEntrypoint) {
       return this.shadowRoot
-                 ?.querySelector<OmniboxPopupContextualEntrypointButtonElement>(
-                     '#context') ??
-          null;
+          .querySelector<OmniboxPopupContextualEntrypointButtonElement>(
+              '#context');
+    }
+    return null;
+  }
+
+  getLensSearchIconElement(): ComposeboxLensSearchElement|null {
+    if (this.showLensSearchIcon) {
+      return this.shadowRoot.querySelector<ComposeboxLensSearchElement>(
+          '#lensSearchIcon');
     }
     return null;
   }

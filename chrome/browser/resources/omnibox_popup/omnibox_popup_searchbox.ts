@@ -7,6 +7,7 @@ import '//resources/cr_components/searchbox/searchbox_input.js';
 import '//resources/cr_components/searchbox/searchbox_compose_button.js';
 import './omnibox_popup_contextual_entrypoint.js';
 
+import type {ComposeboxLensSearchElement} from '//resources/cr_components/composebox/composebox_lens_search.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {ComposeClickEventDetail, SearchboxComposeButtonElement} from '//resources/cr_components/searchbox/searchbox_compose_button.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
@@ -276,12 +277,21 @@ export class OmniboxPopupSearchboxElement extends
     icon: '',
   };
 
+  private getContextualEntrypoint_():
+      OmniboxPopupContextualEntrypointElement|null {
+    return this.shadowRoot.querySelector<
+        OmniboxPopupContextualEntrypointElement>(
+        'omnibox-popup-contextual-entrypoint');
+  }
+
   override get showContextEntrypoint(): boolean {
-    return this.shadowRoot
-               ?.querySelector<OmniboxPopupContextualEntrypointElement>(
-                   'omnibox-popup-contextual-entrypoint')
-               ?.showContextEntrypoint ??
-        false;
+    const entrypoint = this.getContextualEntrypoint_();
+    return entrypoint ? entrypoint.showContextEntrypoint : false;
+  }
+
+  get showLensSearchIcon(): boolean {
+    const entrypoint = this.getContextualEntrypoint_();
+    return entrypoint ? entrypoint.showLensSearchIcon : false;
   }
 
   private eventTracker_ = new EventTracker();
@@ -465,13 +475,20 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
-  getContextualEntrypointButton(): OmniboxPopupContextualEntrypointButtonElement
-      |null {
-    return this.shadowRoot
-               ?.querySelector<OmniboxPopupContextualEntrypointElement>(
-                   'omnibox-popup-contextual-entrypoint')
-               ?.getContextEntrypointElement() ??
-        null;
+  getContextualEntrypointButton():
+      OmniboxPopupContextualEntrypointButtonElement|null {
+    const entrypoint = this.getContextualEntrypoint_();
+    return entrypoint ? entrypoint.getContextEntrypointElement() : null;
+  }
+
+  getLensSearchIconElement(): ComposeboxLensSearchElement|null {
+    const entrypoint = this.getContextualEntrypoint_();
+    return entrypoint ? entrypoint.getLensSearchIconElement() : null;
+  }
+
+  isLensSearchVirtualFocused(): boolean {
+    return this.showLensSearchIcon &&
+        this.selection.state === SelectionLineState.kFocusedButtonLensSearch;
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -495,6 +512,11 @@ export class OmniboxPopupSearchboxElement extends
         const entrypoint = this.getContextualEntrypointButton();
         if (entrypoint) {
           entrypoint.hasVirtualFocus = this.isContextEntrypointVirtualFocused();
+        }
+
+        const lensIcon = this.getLensSearchIconElement();
+        if (lensIcon) {
+          lensIcon.hasVirtualFocus = this.isLensSearchVirtualFocused();
         }
       } else {
         // Synchronize selection changes driven by WebUI back to C++. This
@@ -565,6 +587,31 @@ export class OmniboxPopupSearchboxElement extends
 
   override openContextMenu(): void {
     this.getContextualEntrypointButton()?.showContextMenu();
+  }
+
+  override handleVirtualFocusEnter(e: KeyboardEvent): boolean {
+    if (this.isLensSearchVirtualFocused()) {
+      e.preventDefault();
+      this.pageHandler().openLensSearch();
+      return true;
+    }
+    return super.handleVirtualFocusEnter(e);
+  }
+
+  override getAvailableSelections(result: AutocompleteResult|null):
+      OmniboxPopupSelection[] {
+    const available = super.getAvailableSelections(result);
+    if (!result || available.length === 0) {
+      return available;
+    }
+    if (this.showLensSearchIcon) {
+      available.push({
+        line: -1,
+        state: SelectionLineState.kFocusedButtonLensSearch,
+        actionIndex: 0,
+      });
+    }
+    return available;
   }
 
   override stepCyclesSelection(
@@ -660,6 +707,7 @@ export class OmniboxPopupSearchboxElement extends
 
   isInputEmpty(): boolean {
     // If this is called before first render, the input element will not exist.
+    // TODO (crbug.com/565444900): Remove `?` from `shadowRoot` in this file.
     if (!this.shadowRoot?.querySelector('#input') || !this.$.input ||
         !this.$.input.lastInput()) {
       return true;
