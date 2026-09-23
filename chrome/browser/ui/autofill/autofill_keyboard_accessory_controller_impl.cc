@@ -532,7 +532,8 @@ void AutofillKeyboardAccessoryControllerImpl::OnSuggestionsChanged() {
 
 void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
     int index,
-    AutofillMetrics::SuggestionAcceptedMethod accept_method) {
+    AutofillMetrics::SuggestionAcceptedMethod accept_method,
+    bool was_obscured) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/40058217).
   if ((!barrier_for_accepting_ || !barrier_for_accepting_->value()) &&
@@ -1164,8 +1165,10 @@ bool AutofillKeyboardAccessoryControllerImpl::HandleKeyPressEvent(
           (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers &
            ~blink::WebInputEvent::kShiftKey);
       if (!has_non_shift_modifier && selected_index) {
+        // TODO(crbug.com/561395976): Pass `was_obscured` from Java.
         AcceptSuggestion(*selected_index,
-                         AutofillMetrics::SuggestionAcceptedMethod::kKeyboard);
+                         AutofillMetrics::SuggestionAcceptedMethod::kKeyboard,
+                         /*was_obscured=*/false);
       }
       return false;
     }
@@ -1173,8 +1176,10 @@ bool AutofillKeyboardAccessoryControllerImpl::HandleKeyPressEvent(
       const bool has_modifier =
           event.GetModifiers() & blink::WebInputEvent::kKeyModifiers;
       if (!has_modifier && selected_index) {
+        // TODO(crbug.com/561395976): Pass `was_obscured` from Java.
         AcceptSuggestion(*selected_index,
-                         AutofillMetrics::SuggestionAcceptedMethod::kKeyboard);
+                         AutofillMetrics::SuggestionAcceptedMethod::kKeyboard,
+                         /*was_obscured=*/false);
         return true;
       }
       return false;

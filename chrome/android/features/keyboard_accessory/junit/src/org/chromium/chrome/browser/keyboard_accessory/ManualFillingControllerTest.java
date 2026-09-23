@@ -242,7 +242,7 @@ public class ManualFillingControllerTest {
          * @param actionType The type for the provided generation action.
          */
         void provideAction(@AccessoryAction int actionType) {
-            provideActions(new Action[] {new Action(actionType, () -> {})});
+            provideActions(new Action[] {new Action(actionType, wasObscured -> {})});
         }
 
         /**

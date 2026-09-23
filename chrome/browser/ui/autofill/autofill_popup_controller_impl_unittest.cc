@@ -166,16 +166,19 @@ TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionRespectsTimeout) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   client().suggestion_controller(manager()).OnPopupPainted();
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
   task_environment()->FastForwardBy(base::Milliseconds(100));
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
   task_environment()->FastForwardBy(base::Milliseconds(400));
 
   // Only now suggestions should be accepted.
   check.Call();
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
 }
 
 // Tests that the time threshold for accepting suggestions only starts counting
@@ -195,17 +198,20 @@ TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionRespectsWaitsForPaint) {
   // the popup has been painted.
   task_environment()->FastForwardBy(base::Seconds(2));
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
 
   client().suggestion_controller(manager()).OnPopupPainted();
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
   task_environment()->FastForwardBy(base::Milliseconds(500));
 
   // Only now suggestions should be accepted.
   check.Call();
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
 }
 
 // Tests that reshowing the suggestions resets the accept threshold.
@@ -224,10 +230,12 @@ TEST_F(AutofillPopupControllerImplTest,
   client().suggestion_controller(manager()).OnPopupPainted();
   // Calls before the threshold are ignored.
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
   task_environment()->FastForwardBy(base::Milliseconds(100));
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
   task_environment()->FastForwardBy(base::Milliseconds(400));
 
   // Show the suggestions again (simulating, e.g., a click somewhere slightly
@@ -237,16 +245,19 @@ TEST_F(AutofillPopupControllerImplTest,
   // The threshold timer does not start until the popup is painted.
   task_environment()->FastForwardBy(base::Seconds(2));
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
   client().suggestion_controller(manager()).OnPopupPainted();
 
   // After waiting again, suggestions become acceptable.
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
   task_environment()->FastForwardBy(base::Milliseconds(500));
   check.Call();
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
 }
 
 TEST_F(AutofillPopupControllerImplTest, SubPopupIsCreatedWithViewFromParent) {
@@ -303,7 +314,8 @@ TEST_F(AutofillPopupControllerImplTest,
 
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   sub_controller->AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.PopupInteraction.PopupLevel.1.Address",
@@ -389,7 +401,8 @@ TEST_F(AutofillPopupControllerImplTest,
   client().suggestion_controller(manager()).OnPopupPainted();
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.PopupInteraction.PopupLevel.0.Address",
@@ -526,7 +539,8 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
 
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   sub_controller->AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
 }
 
 // Tests that unacceptable suggestions cannot be accepted.
@@ -540,7 +554,8 @@ TEST_F(AutofillPopupControllerImplTest, DoesNotAcceptUnacceptableSuggestions) {
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
 }
 
 // Tests that unselectable suggestions cannot be selected.
@@ -609,7 +624,8 @@ TEST_P(AutofillPopupControllerImplTestWithTriggerSource,
   task_environment()->FastForwardBy(base::Milliseconds(150));
 
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1189,7 +1205,8 @@ TEST_F(AutofillPopupControllerImplTest,
   controller.SetFilter(AutofillPopupController::StringFilter(u"main_text"),
                        AutofillPopupController::FilterSource::kInputChanged);
   controller.AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
 }
 
 TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {

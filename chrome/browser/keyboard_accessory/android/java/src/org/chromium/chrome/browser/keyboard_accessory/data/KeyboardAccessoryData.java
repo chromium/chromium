@@ -138,25 +138,27 @@ public class KeyboardAccessoryData {
      * example hereof is the "Generate Password" action.
      */
     public static final class Action {
-        private final Runnable mActionCallback;
+        // The boolean parameter indicates if the application window was fully or partially
+        // obscured when the action was triggered by a click event.
+        private final Callback<Boolean> mActionCallback;
         private final @Nullable Runnable mLongPressCallback;
         private final @Nullable Callback<Boolean> mHoverCallback;
         private final @AccessoryAction int mType;
 
-        public Action(@AccessoryAction int type, Runnable actionCallback) {
+        public Action(@AccessoryAction int type, Callback<Boolean> actionCallback) {
             this(type, actionCallback, /* longPressCallback= */ null);
         }
 
         public Action(
                 @AccessoryAction int type,
-                Runnable actionCallback,
+                Callback<Boolean> actionCallback,
                 @Nullable Runnable longPressCallback) {
             this(type, actionCallback, longPressCallback, /* hoverCallback= */ null);
         }
 
         public Action(
                 @AccessoryAction int type,
-                Runnable actionCallback,
+                Callback<Boolean> actionCallback,
                 @Nullable Runnable longPressCallback,
                 @Nullable Callback<Boolean> hoverCallback) {
             mActionCallback = actionCallback;
@@ -165,7 +167,7 @@ public class KeyboardAccessoryData {
             mType = type;
         }
 
-        public Runnable getCallback() {
+        public Callback<Boolean> getCallback() {
             return mActionCallback;
         }
 

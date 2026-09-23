@@ -53,11 +53,15 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   // Accepts the suggestion at `index`. The suggestion is only accepted if the
   // UI has been shown for at least `kIgnoreEarlyClicksOnSuggestionsDuration` to
   // allow ruling out accidental UI interactions (crbug.com/40058217).
+  // `was_obscured` indicates if the application window was fully or partially
+  // obscured when the click event happened. This is only populated on Android
+  // at the moment.
   static constexpr base::TimeDelta kIgnoreEarlyClicksOnSuggestionsDuration =
       base::Milliseconds(500);
   virtual void AcceptSuggestion(
       int index,
-      AutofillMetrics::SuggestionAcceptedMethod accept_method) = 0;
+      AutofillMetrics::SuggestionAcceptedMethod accept_method,
+      bool was_obscured) = 0;
 
   // Selects the suggestion with `index`. For fillable items, this will trigger
   // preview. For other items, it does not do anything.

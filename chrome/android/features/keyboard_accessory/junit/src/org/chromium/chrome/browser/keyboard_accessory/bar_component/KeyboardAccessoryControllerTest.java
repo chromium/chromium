@@ -325,8 +325,8 @@ public class KeyboardAccessoryControllerTest {
                         .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
                         .setFeatureForIph("")
                         .build();
-        Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, () -> {});
-        Action credManAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, () -> {});
+        Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, wasObscured -> {});
+        Action credManAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, wasObscured -> {});
         mCoordinator.setSuggestions(List.of(suggestion1, suggestion2), mMockAutofillDelegate);
         generationProvider.notifyObservers(new Action[] {generationAction});
         credManProvider.notifyObservers(new Action[] {credManAction});
@@ -362,7 +362,7 @@ public class KeyboardAccessoryControllerTest {
                         .setSubLabel("passkey")
                         .setSuggestionType(SuggestionType.WEBAUTHN_CREDENTIAL)
                         .build();
-        Action credManAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, () -> {});
+        Action credManAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, wasObscured -> {});
         mCoordinator.setSuggestions(List.of(suggestion), mMockAutofillDelegate);
         credManProvider.notifyObservers(new Action[] {credManAction});
 
@@ -384,7 +384,7 @@ public class KeyboardAccessoryControllerTest {
         AutofillSuggestion.Builder builder = new AutofillSuggestion.Builder().setSubLabel("");
         AutofillSuggestion suggestion1 = builder.setLabel("kayseri").build();
         AutofillSuggestion suggestion2 = builder.setLabel("spor").build();
-        Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, () -> {});
+        Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, wasObscured -> {});
         mCoordinator.setSuggestions(List.of(suggestion1, suggestion2), mMockAutofillDelegate);
         generationProvider.notifyObservers(new Action[] {generationAction});
 
@@ -412,7 +412,7 @@ public class KeyboardAccessoryControllerTest {
                         .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
                         .setFeatureForIph("")
                         .build();
-        Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, () -> {});
+        Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, wasObscured -> {});
         mCoordinator.setSuggestions(List.of(suggestion, suggestion), mMockAutofillDelegate);
         generationProvider.notifyObservers(new Action[] {generationAction});
         List<ActionBarItem> barItems = flattenItemGroups();
@@ -479,9 +479,13 @@ public class KeyboardAccessoryControllerTest {
         assertTrue(getAutofillItemAt(1).isEnabled());
 
         // Simulate a click on the first suggestion.
-        getAutofillItemAt(0).getAction().getCallback().run();
+        getAutofillItemAt(0).getAction().getCallback().onResult(false);
 
-        verify(mMockAutofillDelegate).suggestionAccepted(0, true);
+        verify(mMockAutofillDelegate)
+                .suggestionAccepted(
+                        /* listIndex= */ 0,
+                        /* showLoadingOnAcceptance= */ true,
+                        /* wasObscured= */ false);
 
         assertFalse(getAutofillItemAt(0).isEnabled());
         assertTrue(getAutofillItemAt(0).isLoading());
@@ -502,10 +506,14 @@ public class KeyboardAccessoryControllerTest {
         mCoordinator.setSuggestions(List.of(suggestion), mMockAutofillDelegate);
 
         List<ActionBarItem> barItems = flattenItemGroups();
-        barItems.get(0).getAction().getCallback().run();
+        barItems.get(0).getAction().getCallback().onResult(false);
 
         // Verify that suggestionAccepted was called with originalIndex 5 instead of loop index 0.
-        verify(mMockAutofillDelegate).suggestionAccepted(5, false);
+        verify(mMockAutofillDelegate)
+                .suggestionAccepted(
+                        /* listIndex= */ 5,
+                        /* showLoadingOnAcceptance= */ false,
+                        /* wasObscured= */ false);
     }
 
     @Test
@@ -703,9 +711,13 @@ public class KeyboardAccessoryControllerTest {
         assertTrue(barItems.get(1).isEnabled());
 
         // Simulate a click on the first suggestion, which does not require loading.
-        barItems.get(0).getAction().getCallback().run();
+        barItems.get(0).getAction().getCallback().onResult(false);
 
-        verify(mMockAutofillDelegate).suggestionAccepted(0, false);
+        verify(mMockAutofillDelegate)
+                .suggestionAccepted(
+                        /* listIndex= */ 0,
+                        /* showLoadingOnAcceptance= */ false,
+                        /* wasObscured= */ false);
 
         // The suggestions should remain enalbled because no loading UI is shown.
         barItems = flattenItemGroups();
@@ -731,7 +743,7 @@ public class KeyboardAccessoryControllerTest {
 
         List<ActionBarItem> barItems = flattenItemGroups();
         // Simulate a click on the first suggestion.
-        barItems.get(0).getAction().getCallback().run();
+        barItems.get(0).getAction().getCallback().onResult(false);
 
         assertFalse(sheetOpener.isEnabled());
     }
@@ -1043,7 +1055,7 @@ public class KeyboardAccessoryControllerTest {
                         .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
                         .setFeatureForIph("")
                         .build();
-        Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, () -> {});
+        Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, wasObscured -> {});
 
         mCoordinator.setSuggestions(List.of(suggestion), mMockAutofillDelegate);
         generationProvider.notifyObservers(new Action[] {generationAction});
@@ -1106,7 +1118,7 @@ public class KeyboardAccessoryControllerTest {
         // Add the generate password action, which is displayed first in the list of suggestions.
         // Verify that no suggestion group is created, because suggestion group is created only from
         // the suggestions in the beginning of the list.
-        final Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, () -> {});
+        final Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, wasObscured -> {});
         generationProvider.notifyObservers(new Action[] {generationAction});
         assertThat(mModel.get(BAR_ITEMS).size(), is(6));
         assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(ActionBarItem.class));
@@ -1275,7 +1287,7 @@ public class KeyboardAccessoryControllerTest {
 
         // The suggestions should not be grouped again after the list of suggestions was updated
         // with a newly available item.
-        final Action credmanAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, () -> {});
+        final Action credmanAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, wasObscured -> {});
         credmanActionProvider.notifyObservers(new Action[] {credmanAction});
         // The suggestions should not be grouped because the style was set to undocked.
         assertThat(mModel.get(BAR_ITEMS).size(), is(4));

@@ -371,7 +371,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
         .DisableThreshold(true);
     suggestion_controller->AcceptSuggestion(
         it - suggestions.begin(),
-        autofill::AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+        autofill::AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+        /*was_obscured=*/false);
     std::string result;
     ASSERT_TRUE(message_queue.WaitForMessage(&result));
     EXPECT_EQ(result, "\"webauthn: OK\"");

@@ -537,7 +537,8 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
 
 void AutofillPopupControllerImpl::AcceptSuggestion(
     int index,
-    AutofillMetrics::SuggestionAcceptedMethod accept_method) {
+    AutofillMetrics::SuggestionAcceptedMethod accept_method,
+    bool was_obscured) {
   CHECK_LT(base::checked_cast<size_t>(index), GetSuggestions().size());
 
   // Ignore clicks immediately after the popup was shown. This is to prevent

@@ -279,7 +279,8 @@ TEST_F(AtMemorySuggestionControllerTest, AcceptSuggestion) {
           _, _));
 
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
 }
 
 // Tests that AtMemoryBottomSheetBridge methods correctly route to the

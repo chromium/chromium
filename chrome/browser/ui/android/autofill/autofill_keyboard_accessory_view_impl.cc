@@ -288,7 +288,8 @@ void AutofillKeyboardAccessoryViewImpl::ShowAutofillAiSuggestionDetails(
       env, java_object_, title, body, confirm_button_text, primary_button_text);
 }
 
-void AutofillKeyboardAccessoryViewImpl::SuggestionAccepted(int32_t list_index) {
+void AutofillKeyboardAccessoryViewImpl::SuggestionAccepted(int32_t list_index,
+                                                           bool was_obscured) {
   if (controller_) {
     if (list_index >= 0 && list_index < controller_->GetLineCount()) {
       const Suggestion& suggestion = controller_->GetSuggestionAt(list_index);
@@ -307,7 +308,8 @@ void AutofillKeyboardAccessoryViewImpl::SuggestionAccepted(int32_t list_index) {
       }
     }
     controller_->AcceptSuggestion(
-        list_index, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+        list_index, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+        was_obscured);
   }
 }
 

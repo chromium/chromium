@@ -54,9 +54,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   // AutofillSuggestionController:
   void OnSuggestionsChanged() override;
-  void AcceptSuggestion(
-      int index,
-      AutofillMetrics::SuggestionAcceptedMethod accept_method) override;
+  void AcceptSuggestion(int index,
+                        AutofillMetrics::SuggestionAcceptedMethod accept_method,
+                        bool was_obscured) override;
   bool RemoveSuggestion(int list_index) override;
   int GetLineCount() const override;
   const std::vector<Suggestion>& GetSuggestions() const override;

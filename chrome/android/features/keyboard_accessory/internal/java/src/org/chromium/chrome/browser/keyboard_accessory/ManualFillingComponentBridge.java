@@ -434,7 +434,8 @@ class ManualFillingComponentBridge {
     }
 
     private Action[] createSingleAction(@AccessoryAction int actionType) {
-        return new Action[] {new Action(actionType, () -> onActionSelected(actionType))};
+        // TODO: crbug.com/561395976 - Pass the `wasObscured` flag further.
+        return new Action[] {new Action(actionType, wasObscured -> onActionSelected(actionType))};
     }
 
     private Provider<Action[]> getOrCreateActionProvider(@AccessoryAction int actionType) {

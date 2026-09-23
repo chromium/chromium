@@ -171,16 +171,19 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
   task_environment()->FastForwardBy(base::Milliseconds(100));
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
   task_environment()->FastForwardBy(base::Milliseconds(400));
 
   // Only now suggestions should be accepted.
   check.Call();
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
 }
 
 // Tests that reshowing the suggestions resets the accept threshold.
@@ -199,10 +202,12 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
             FillingProduct::kAddress);
   // Calls before the threshold are ignored.
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
   task_environment()->FastForwardBy(base::Milliseconds(100));
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
   task_environment()->FastForwardBy(base::Milliseconds(400));
 
   // Show the suggestions again (simulating, e.g., a click somewhere slightly
@@ -211,13 +216,15 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   EXPECT_EQ(client().suggestion_controller(manager()).GetMainFillingProduct(),
             FillingProduct::kAddress);
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
 
   // After waiting again, suggestions become acceptable.
   task_environment()->FastForwardBy(base::Milliseconds(500));
   check.Call();
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
 }
 
 // Tests that calling `Show()` on the controller shows the view.
@@ -790,7 +797,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
             SuggestionHidingReason::kAcceptSuggestion);
       });
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -807,7 +815,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   // This should not call manual_filling_controller->Hide().
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -828,7 +837,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   // This should call manual_filling_controller->Hide().
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -861,7 +871,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
   client().suggestion_controller(manager()).AcceptSuggestion(
-      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
 }
 
 // Tests that the `KeyboardAccessoryController` moves "clear form" suggestions
@@ -929,10 +940,10 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, SelectInvalidSuggestion) {
   // The following should not crash:
   client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0,  // Non-acceptable type.
-      AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      AutofillMetrics::SuggestionAcceptedMethod::kTap, /*was_obscured=*/false);
   client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/1,  // Out of bounds!
-      AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      AutofillMetrics::SuggestionAcceptedMethod::kTap, /*was_obscured=*/false);
 }
 
 // Tests that the profile deletion metric is recorded as true (accepted) when
@@ -1104,7 +1115,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   task_environment()->FastForwardBy(
       AutofillSuggestionController::kIgnoreEarlyClicksOnSuggestionsDuration);
   client().suggestion_controller(manager()).AcceptSuggestion(
-      0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
+      0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -1194,7 +1206,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   task_environment()->FastForwardBy(
       AutofillSuggestionController::kIgnoreEarlyClicksOnSuggestionsDuration);
   client().suggestion_controller(manager()).AcceptSuggestion(
-      0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -1265,7 +1278,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   task_environment()->FastForwardBy(
       AutofillSuggestionController::kIgnoreEarlyClicksOnSuggestionsDuration);
   client().suggestion_controller(manager()).AcceptSuggestion(
-      0, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+      0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
 
   histogram_tester.ExpectTotalCount(
       "Autofill.KeyboardAccessoryInteraction.WithMouse", 0);

@@ -676,7 +676,8 @@ public class ManualFillingTestHelper {
                         generationActionProvider.notifyObservers(
                                 new KeyboardAccessoryData.Action[] {
                                     new KeyboardAccessoryData.Action(
-                                            AccessoryAction.GENERATE_PASSWORD_AUTOMATIC, () -> {})
+                                            AccessoryAction.GENERATE_PASSWORD_AUTOMATIC,
+                                            wasObscured -> {})
                                 }));
     }
 

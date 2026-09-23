@@ -503,7 +503,9 @@ bool PopupRowView::IsSelectable() const {
 bool PopupRowView::Accept(
     AutofillMetrics::SuggestionAcceptedMethod method) const {
   if (controller_ && IsViewVisibleEnough()) {
-    controller_->AcceptSuggestion(line_number_, method);
+    // The Desktop popup doesn't track if the application window is obscured at
+    // the moment.
+    controller_->AcceptSuggestion(line_number_, method, /*was_obscured=*/false);
     return true;
   }
   return false;

@@ -81,7 +81,10 @@ void AtMemorySuggestionController::OnSuggestionsChanged() {
 
 void AtMemorySuggestionController::AcceptSuggestion(
     int index,
-    AutofillMetrics::SuggestionAcceptedMethod accept_method) {
+    AutofillMetrics::SuggestionAcceptedMethod accept_method,
+    bool was_obscured) {
+  // TODO(crbug.com/561395976): Use the `was_obscured` parameter to run
+  // additional authentication.
   if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
     return;
   }
@@ -240,7 +243,9 @@ void AtMemorySuggestionController::OnQueryTextChanged(
 }
 
 void AtMemorySuggestionController::OnSuggestionAccepted(int position) {
-  AcceptSuggestion(position, AutofillMetrics::SuggestionAcceptedMethod::kTap);
+  // TODO(crbug.com/561395976): Pass the `was_obscured` flag from Java.
+  AcceptSuggestion(position, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+                   /*was_obscured=*/false);
 }
 
 void AtMemorySuggestionController::OnSuggestionDismissed(int position) {

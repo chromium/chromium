@@ -57,7 +57,7 @@ class AutofillKeyboardAccessoryViewImpl : public AutofillKeyboardAccessoryView {
   // --------------------------------------------------------------------------
 
   // Called when an autofill item was accepted.
-  void SuggestionAccepted(int32_t list_index);
+  void SuggestionAccepted(int32_t list_index, bool was_obscured);
 
   // Called when an autofill item's selection state changes.
   void SuggestionSelectionStateChanged(int32_t list_index, bool is_selected);

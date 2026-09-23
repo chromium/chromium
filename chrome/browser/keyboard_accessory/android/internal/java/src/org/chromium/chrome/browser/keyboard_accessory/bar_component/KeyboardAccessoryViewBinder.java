@@ -68,6 +68,7 @@ import org.chromium.ui.widget.RectProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Observes {@link KeyboardAccessoryProperties} changes (like a newly available tab) and modifies
@@ -83,6 +84,8 @@ class KeyboardAccessoryViewBinder {
             UiConfiguration uiConfiguration,
             ViewGroup parent,
             @BarItem.Type int viewType) {
+        Supplier<Boolean> wasClickedWhenObscuredSupplier =
+                keyboardAccessory::wasClickedWhenObscured;
         switch (viewType) {
             case BarItem.Type.SUGGESTION:
             case BarItem.Type.LOYALTY_CARD_SUGGESTION:
@@ -97,9 +100,9 @@ class KeyboardAccessoryViewBinder {
                 return new SheetOpenerViewHolder(parent, keyboardAccessory);
             case BarItem.Type.ACTION_BUTTON:
             case BarItem.Type.DISMISS_CHIP:
-                return new BarItemTextViewHolder(parent, viewType);
+                return new BarItemTextViewHolder(parent, viewType, wasClickedWhenObscuredSupplier);
             case BarItem.Type.ACTION_CHIP:
-                return new BarItemActionChipViewHolder(parent);
+                return new BarItemActionChipViewHolder(parent, wasClickedWhenObscuredSupplier);
             case BarItem.Type.GROUP:
                 return new BarItemGroupViewHolder(keyboardAccessory, uiConfiguration, parent);
             default:
@@ -123,13 +126,20 @@ class KeyboardAccessoryViewBinder {
     abstract static class BarItemViewHolder<T extends BarItem, V extends View>
             extends RecyclerView.ViewHolder {
         private static final float LARGE_FONT_THRESHOLD = 1.3f;
+        protected final Supplier<Boolean> mWasClickedWhenObscuredSupplier;
 
-        BarItemViewHolder(ViewGroup parent, @LayoutRes int layout) {
-            this(LayoutInflater.from(parent.getContext()).inflate(layout, parent, false));
+        BarItemViewHolder(
+                ViewGroup parent,
+                @LayoutRes int layout,
+                Supplier<Boolean> wasClickedWhenObscuredSupplier) {
+            this(
+                    LayoutInflater.from(parent.getContext()).inflate(layout, parent, false),
+                    wasClickedWhenObscuredSupplier);
         }
 
-        BarItemViewHolder(View barItem) {
+        BarItemViewHolder(View barItem, Supplier<Boolean> wasClickedWhenObscuredSupplier) {
             super(barItem);
+            mWasClickedWhenObscuredSupplier = wasClickedWhenObscuredSupplier;
         }
 
         @SuppressWarnings("unchecked")
@@ -171,7 +181,9 @@ class KeyboardAccessoryViewBinder {
                 KeyboardAccessoryView keyboardAccessory,
                 UiConfiguration uiConfiguration,
                 ViewGroup parent) {
-            super(new KeyboardAccessoryChipGroup(parent.getContext()));
+            super(
+                    new KeyboardAccessoryChipGroup(parent.getContext()),
+                    keyboardAccessory::wasClickedWhenObscured);
             mKeyboardAccessory = keyboardAccessory;
             mUiConfiguration = uiConfiguration;
             mParent = parent;
@@ -258,7 +270,8 @@ class KeyboardAccessoryViewBinder {
                             parent.getContext(),
                             null,
                             0,
-                            selectStyleForSuggestion(parent.getContext(), barItemType)));
+                            selectStyleForSuggestion(parent.getContext(), barItemType)),
+                    keyboardAccessory::wasClickedWhenObscured);
             itemView.setMinimumHeight(
                     parent.getContext()
                             .getResources()
@@ -333,7 +346,7 @@ class KeyboardAccessoryViewBinder {
             chipView.setOnClickListener(
                     view -> {
                         item.maybeEmitEventForIph(mKeyboardAccessory.getFeatureEngagementTracker());
-                        action.getCallback().run();
+                        action.getCallback().onResult(mWasClickedWhenObscuredSupplier.get());
                     });
             @Nullable Runnable longPressCallback = action.getLongPressCallback();
             if (longPressCallback != null) {
@@ -436,11 +449,15 @@ class KeyboardAccessoryViewBinder {
     static class BarItemTextViewHolder extends BarItemViewHolder<ActionBarItem, TextView> {
         private final @BarItem.Type int mBarItemType;
 
-        BarItemTextViewHolder(ViewGroup parent, @BarItem.Type int barItemType) {
+        BarItemTextViewHolder(
+                ViewGroup parent,
+                @BarItem.Type int barItemType,
+                Supplier<Boolean> wasClickedWhenObscuredSupplier) {
             super(
                     new ButtonCompat(
                             parent.getContext(),
-                            selectStyleForSuggestion(parent.getContext(), barItemType)));
+                            selectStyleForSuggestion(parent.getContext(), barItemType)),
+                    wasClickedWhenObscuredSupplier);
             mBarItemType = barItemType;
         }
 
@@ -452,7 +469,8 @@ class KeyboardAccessoryViewBinder {
             textView.setEnabled(barItem.isEnabled());
             textView.setAlpha(
                     barItem.isEnabled() ? COMPLETE_OPACITY_ALPHA : GRAYED_OUT_OPACITY_ALPHA);
-            textView.setOnClickListener(view -> action.getCallback().run());
+            textView.setOnClickListener(
+                    view -> action.getCallback().onResult(mWasClickedWhenObscuredSupplier.get()));
             // Margins can be either set in XML layouts or programmatically, they can't be part of
             // the KeyboardAccessory* styles.
             applyMargins(textView);
@@ -493,8 +511,11 @@ class KeyboardAccessoryViewBinder {
     }
 
     static class BarItemActionChipViewHolder extends BarItemViewHolder<ActionBarItem, ChipView> {
-        BarItemActionChipViewHolder(ViewGroup parent) {
-            super(new ChipView(parent.getContext(), null, 0, selectStyle(parent.getContext())));
+        BarItemActionChipViewHolder(
+                ViewGroup parent, Supplier<Boolean> wasClickedWhenObscuredSupplier) {
+            super(
+                    new ChipView(parent.getContext(), null, 0, selectStyle(parent.getContext())),
+                    wasClickedWhenObscuredSupplier);
         }
 
         @Override
@@ -504,7 +525,10 @@ class KeyboardAccessoryViewBinder {
             chipView.setAlpha(item.isEnabled() ? COMPLETE_OPACITY_ALPHA : GRAYED_OUT_OPACITY_ALPHA);
             @Nullable Action action = item.getAction();
             if (action != null) {
-                chipView.setOnClickListener(view -> action.getCallback().run());
+                chipView.setOnClickListener(
+                        view ->
+                                action.getCallback()
+                                        .onResult(mWasClickedWhenObscuredSupplier.get()));
             }
         }
 
@@ -521,7 +545,10 @@ class KeyboardAccessoryViewBinder {
         private final KeyboardAccessoryView mKeyboardAccessory;
 
         SheetOpenerViewHolder(ViewGroup parent, KeyboardAccessoryView keyboardAccessory) {
-            super(parent, R.layout.keyboard_accessory_buttons);
+            super(
+                    parent,
+                    R.layout.keyboard_accessory_buttons,
+                    keyboardAccessory::wasClickedWhenObscured);
             mKeyboardAccessory = keyboardAccessory;
 
             KeyboardAccessoryButtonGroupView view = (KeyboardAccessoryButtonGroupView) itemView;

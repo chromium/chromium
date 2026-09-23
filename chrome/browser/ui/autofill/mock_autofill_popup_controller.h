@@ -61,7 +61,7 @@ class MockAutofillPopupController : public AutofillPopupController {
   MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
   MOCK_METHOD(void,
               AcceptSuggestion,
-              (int, AutofillMetrics::SuggestionAcceptedMethod),
+              (int, AutofillMetrics::SuggestionAcceptedMethod, bool),
               (override));
   const std::vector<Suggestion>& GetSuggestions() const override {
     return suggestions_;

@@ -431,13 +431,14 @@ class KeyboardAccessoryMediator
             AutofillDelegate delegate, int pos, AutofillSuggestion suggestion) {
         return new Action(
                 AccessoryAction.AUTOFILL_SUGGESTION,
-                () -> {
+                wasObscured -> {
                     ManualFillingMetricsRecorder.recordActionSelected(
                             AccessoryAction.AUTOFILL_SUGGESTION);
                     if (suggestion.showLoadingOnAcceptance()) {
                         showLoadingUIOnSuggestion(suggestion);
                     }
-                    delegate.suggestionAccepted(pos, suggestion.showLoadingOnAcceptance());
+                    delegate.suggestionAccepted(
+                            pos, suggestion.showLoadingOnAcceptance(), wasObscured);
                 },
                 () -> {
                     if (maybeShowAutofillAiSuggestionDetails(delegate, pos, suggestion)) {

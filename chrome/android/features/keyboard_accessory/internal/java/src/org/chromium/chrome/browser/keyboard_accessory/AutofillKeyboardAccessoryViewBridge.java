@@ -55,11 +55,13 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
 
     @Override
     public void suggestionAccepted(int listIndex) {
-        suggestionAccepted(listIndex, false);
+        suggestionAccepted(
+                listIndex, /* showLoadingOnAcceptance= */ false, /* wasObscured= */ false);
     }
 
     @Override
-    public void suggestionAccepted(int listIndex, boolean showLoadingOnAcceptance) {
+    public void suggestionAccepted(
+            int listIndex, boolean showLoadingOnAcceptance, boolean wasObscured) {
         if (mManualFillingComponent != null) {
             if (showLoadingOnAcceptance) {
                 mManualFillingComponent.setWaitingForFetch(true);
@@ -70,7 +72,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
         }
         if (mNativeAutofillKeyboardAccessory == 0) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
-                .suggestionAccepted(mNativeAutofillKeyboardAccessory, listIndex);
+                .suggestionAccepted(mNativeAutofillKeyboardAccessory, listIndex, wasObscured);
     }
 
     @Override
@@ -311,7 +313,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     interface Natives {
         void viewDismissed(long nativeAutofillKeyboardAccessoryViewImpl);
 
-        void suggestionAccepted(long nativeAutofillKeyboardAccessoryViewImpl, int listIndex);
+        void suggestionAccepted(
+                long nativeAutofillKeyboardAccessoryViewImpl, int listIndex, boolean wasObscured);
 
         void suggestionSelectionStateChanged(
                 long nativeAutofillKeyboardAccessoryViewImpl, int listIndex, boolean isSelected);

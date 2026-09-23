@@ -291,7 +291,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     // KeyboardAccessoryViewBinder.create() returns a raw BarItemViewHolder.
     @SuppressWarnings("unchecked")
     private ChipView createChipViewFromSuggestion(AutofillSuggestion suggestion, boolean enabled) {
-        Action action = new Action(AUTOFILL_SUGGESTION, () -> {});
+        Action action = new Action(AUTOFILL_SUGGESTION, wasObscured -> {});
         BarItemViewHolder<AutofillBarItem, ChipView> viewHolder =
                 KeyboardAccessoryViewBinder.create(
                         mKeyboardAccessoryView,
@@ -311,7 +311,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     // KeyboardAccessoryViewBinder.create() returns a raw BarItemViewHolder.
     @SuppressWarnings("unchecked")
     private ChipView createCredmanEntry() {
-        Action credmanAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, () -> {});
+        Action credmanAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, wasObscured -> {});
         BarItemViewHolder<BarItem, ChipView> viewHolder =
                 KeyboardAccessoryViewBinder.create(
                         mKeyboardAccessoryView,
@@ -331,7 +331,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     // KeyboardAccessoryViewBinder.create() returns a raw BarItemViewHolder.
     @SuppressWarnings("unchecked")
     private View createGeneratePassword() {
-        Action generatePasswordAction = new Action(GENERATE_PASSWORD_AUTOMATIC, () -> {});
+        Action generatePasswordAction = new Action(GENERATE_PASSWORD_AUTOMATIC, wasObscured -> {});
         // TODO: crbug.com/385172647 - Use generics parameters once 2 line chips are rolled out.
         BarItemViewHolder viewHolder =
                 KeyboardAccessoryViewBinder.create(

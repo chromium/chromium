@@ -27,8 +27,10 @@ public interface AutofillDelegate {
      *
      * @param listIndex The index of the accepted Autofill suggestion.
      * @param showLoadingOnAcceptance True if the suggestion shows a loading UI on acceptance.
+     * @param wasObscured True if the view was obscured when clicked.
      */
-    default void suggestionAccepted(int listIndex, boolean showLoadingOnAcceptance) {
+    default void suggestionAccepted(
+            int listIndex, boolean showLoadingOnAcceptance, boolean wasObscured) {
         suggestionAccepted(listIndex);
     }
 
