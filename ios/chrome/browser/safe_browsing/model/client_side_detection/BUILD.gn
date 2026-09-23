@@ -15,6 +15,8 @@ source_set("client_side_detection") {
   sources = [
     "client_side_detection_host_ios.h",
     "client_side_detection_host_ios.mm",
+    "client_side_detection_intelligent_scan_delegate_factory.h",
+    "client_side_detection_intelligent_scan_delegate_factory.mm",
     "client_side_detection_intelligent_scan_delegate_ios.h",
     "client_side_detection_intelligent_scan_delegate_ios.mm",
     "client_side_detection_java_script_feature.h",
@@ -75,6 +77,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "client_side_detection_host_ios_unittest.mm",
+    "client_side_detection_intelligent_scan_delegate_factory_unittest.mm",
     "client_side_detection_intelligent_scan_delegate_ios_unittest.mm",
     "client_side_detection_java_script_feature_unittest.mm",
     "client_side_detection_service_factory_unittest.mm",
@@ -87,6 +90,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/history/core/browser",
     "//components/optimization_guide/core",
+    "//components/optimization_guide/core:features",
     "//components/optimization_guide/core:model_execution",
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/core:test_support",

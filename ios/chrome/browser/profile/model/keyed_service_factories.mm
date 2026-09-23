@@ -163,6 +163,7 @@
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_intelligent_scan_delegate_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/hash_realtime_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/ohttp_key_service_factory.h"
@@ -335,6 +336,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ChildAccountServiceFactory::GetInstance();
   ChromeAccountManagerServiceFactory::GetInstance();
   ChromePasswordProtectionServiceFactory::GetInstance();
+  ClientSideDetectionIntelligentScanDelegateFactory::GetInstance();
   ClientSideDetectionServiceFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();
   ContentNotificationServiceFactory::GetInstance();
