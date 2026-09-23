@@ -106,6 +106,9 @@ TEST_F(IndigoCueTargetTest, BasicProperties) {
       nullptr));
   EXPECT_EQ(cue_target_->GetSurface(),
             optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED);
+  EXPECT_TRUE(cue_target_->OverridesUcbScoring());
+  EXPECT_TRUE(cue_target_->DowngradesToQuietOnDismiss());
+  EXPECT_TRUE(cue_target_->IsPersistent());
 }
 
 TEST_F(IndigoCueTargetTest, OnAnchoredMessageClickedInvokesAnchoredMessage) {

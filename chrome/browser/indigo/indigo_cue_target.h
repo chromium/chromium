@@ -40,6 +40,7 @@ class IndigoCueTarget : public contextual_cueing::CueTarget {
   // contextual_cueing::CueTarget:
   contextual_cueing::CueTargetType GetType() const override;
   bool RequiresModelExecution() const override;
+  bool IsPersistent() const override;
   bool IsEligible() const override;
   void CheckEligibility(base::WeakPtr<content::WebContents> web_contents,
                         contextual_cueing::CueIntrusiveness intrusiveness,
