@@ -318,9 +318,11 @@ interface PageHandler {
   ClearTabGroupChatHistory() => ();
 
   // Sends a request to Gemini with the user command and selected memory bank
-  // entry IDs.
+  // entry IDs. If `save_to_history` is true, the turn is saved to the memory
+  // bank chat history.
   AskGeminiWithContext(
-      string user_command, array<int64> memory_bank_entry_ids)
+      string user_command, array<int64> memory_bank_entry_ids,
+      bool save_to_history)
       => (ChatMessage response);
 
   // Returns stored memory bank chat history.

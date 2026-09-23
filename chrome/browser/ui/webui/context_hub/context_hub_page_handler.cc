@@ -564,6 +564,7 @@ void ContextHubPageHandler::ClearTabGroupChatHistory(
 void ContextHubPageHandler::AskGeminiWithContext(
     const std::string& user_command,
     const std::vector<int64_t>& memory_bank_entry_ids,
+    bool save_to_history,
     AskGeminiWithContextCallback callback) {
   context_hub::ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(profile_);
@@ -576,7 +577,7 @@ void ContextHubPageHandler::AskGeminiWithContext(
   }
 
   service->ExecuteMemoryBankChat(
-      memory_bank_entry_ids, user_command,
+      memory_bank_entry_ids, user_command, save_to_history,
       base::BindOnce(
           [](AskGeminiWithContextCallback callback,
              std::optional<std::string> response_text) {

@@ -285,9 +285,11 @@ class ContextHubService : public KeyedService,
   using MemoryBankChatCallback =
       base::OnceCallback<void(std::optional<std::string> response)>;
   // Executes a memory bank chat request for the specified memory bank entry
-  // IDs.
+  // IDs. If `save_to_history` is true, the request and response are saved to
+  // memory bank chat history.
   void ExecuteMemoryBankChat(base::span<const int64_t> entry_ids,
                              const std::string& user_command,
+                             bool save_to_history,
                              MemoryBankChatCallback callback);
 
   using SmartSearchCallback = base::OnceCallback<void(
@@ -351,6 +353,7 @@ class ContextHubService : public KeyedService,
 
   // Callback invoked when memory bank entries are fetched for a chat request.
   void OnMemoryBankEntriesFetched(const std::string& user_command,
+                                  bool save_to_history,
                                   MemoryBankChatCallback callback,
                                   std::vector<MemoryBankEntry> entries);
 
@@ -423,6 +426,7 @@ class ContextHubService : public KeyedService,
 
   // Handles the result of the model execution from `ExecuteMemoryBankChat`.
   void HandleMemoryBankChatModelExecutionResult(
+      bool save_to_history,
       MemoryBankChatCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);

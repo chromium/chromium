@@ -446,7 +446,7 @@ export class MemoryBanksElement extends CrLitElement {
     try {
       const {response} =
           await browserProxyFactory.getInstance().handler.askGeminiWithContext(
-              action, memoryBankEntryIds);
+              action, memoryBankEntryIds, /*save_to_history=*/ false);
       this.geminiResponse_ = response ? response.content : '';
     } catch (err) {
       console.error('Failed to ask Gemini:', err);

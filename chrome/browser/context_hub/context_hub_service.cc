@@ -1221,6 +1221,7 @@ void ContextHubService::GenerateTabGroups(std::vector<TabData> tabs,
 void ContextHubService::ExecuteMemoryBankChat(
     base::span<const int64_t> entry_ids,
     const std::string& user_command,
+    bool save_to_history,
     MemoryBankChatCallback callback) {
   std::string_view trimmed_command =
       base::TrimWhitespaceASCII(user_command, base::TRIM_ALL);
@@ -1233,11 +1234,12 @@ void ContextHubService::ExecuteMemoryBankChat(
       entry_ids,
       base::BindOnce(&ContextHubService::OnMemoryBankEntriesFetched,
                      weak_factory_.GetWeakPtr(), std::string(trimmed_command),
-                     std::move(callback)));
+                     save_to_history, std::move(callback)));
 }
 
 void ContextHubService::OnMemoryBankEntriesFetched(
     const std::string& user_command,
+    bool save_to_history,
     MemoryBankChatCallback callback,
     std::vector<MemoryBankEntry> entries) {
   optimization_guide::proto::ContextHubRequest request;
@@ -1249,23 +1251,28 @@ void ContextHubService::OnMemoryBankEntriesFetched(
         ToMemoryBankEntryProto(entry);
   }
 
-  for (const auto& turn : GetMemoryBankChatHistory()) {
-    *request.add_chat_history() = turn;
+  if (save_to_history) {
+    for (const auto& turn : GetMemoryBankChatHistory()) {
+      *request.add_chat_history() = turn;
+    }
   }
 
   request.set_user_command(user_command);
-  AddMemoryBankChatHistoryTurn(
-      optimization_guide::proto::ChatHistoryTurn::ROLE_USER, user_command);
+  if (save_to_history) {
+    AddMemoryBankChatHistoryTurn(
+        optimization_guide::proto::ChatHistoryTurn::ROLE_USER, user_command);
+  }
 
   optimization_guide_remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
       optimization_guide::ModelExecutionOptions(),
       base::BindOnce(
           &ContextHubService::HandleMemoryBankChatModelExecutionResult,
-          weak_factory_.GetWeakPtr(), std::move(callback)));
+          weak_factory_.GetWeakPtr(), save_to_history, std::move(callback)));
 }
 
 void ContextHubService::HandleMemoryBankChatModelExecutionResult(
+    bool save_to_history,
     MemoryBankChatCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
@@ -1281,7 +1288,7 @@ void ContextHubService::HandleMemoryBankChatModelExecutionResult(
 
   std::string text_response =
       response->memory_bank_chat_response().text_response();
-  if (!text_response.empty()) {
+  if (save_to_history && !text_response.empty()) {
     AddMemoryBankChatHistoryTurn(
         optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT,
         text_response);

@@ -1812,14 +1812,20 @@ TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_Success) {
             nullptr);
       });
 
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
   base::test::TestFuture<browser::context_hub::mojom::ChatMessagePtr> future;
   handler_->AskGeminiWithContext("Summarize memories", {1, 2},
+                                 /*save_to_history=*/true,
                                  future.GetCallback());
 
   browser::context_hub::mojom::ChatMessagePtr response = future.Take();
   ASSERT_TRUE(response);
   EXPECT_EQ(response->role, browser::context_hub::mojom::ChatRole::kAssistant);
   EXPECT_EQ(response->content, "Gemini response for prompt.");
+  EXPECT_EQ(service->GetMemoryBankChatHistory().size(), 2u);
 }
 
 TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_WithSelectedEntries) {
@@ -1886,12 +1892,14 @@ TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_WithSelectedEntries) {
   base::test::TestFuture<browser::context_hub::mojom::ChatMessagePtr>
       ask_future;
   handler_->AskGeminiWithContext("Summarize", {entry_id},
+                                 /*save_to_history=*/false,
                                  ask_future.GetCallback());
 
   browser::context_hub::mojom::ChatMessagePtr response = ask_future.Take();
   ASSERT_TRUE(response);
   EXPECT_EQ(response->role, browser::context_hub::mojom::ChatRole::kAssistant);
   EXPECT_EQ(response->content, "Summary of Test Page.");
+  EXPECT_TRUE(service->GetMemoryBankChatHistory().empty());
 }
 
 TEST_F(ContextHubPageHandlerTest, ClearTodoFeedbacks) {

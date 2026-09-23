@@ -534,7 +534,7 @@ export class MemoryBankChatElement extends CrLitElement {
     try {
       const {response} =
           await browserProxyFactory.getInstance().handler.askGeminiWithContext(
-              command, attachedEntryIds);
+              command, attachedEntryIds, /*save_to_history=*/ true);
 
       const assistantContent =
           response?.content.trim() || 'No response from Gemini.';
