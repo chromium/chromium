@@ -290,11 +290,26 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Passkeys.IOSMigration" enum="PasskeysMigrationStatus"
     expires_after="2027-02-07">
+  <owner>rgod@google.com</owner>
   <owner>sugoi@chromium.org</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
     Records if passkeys migrated from the CPE were either created, updated or
     invalid during Chrome's passkey migration process.
+  </summary>
+</histogram>
+
+<histogram name="Passkeys.IOSMigration.SignalAction"
+    enum="PasskeysSignalMigrationAction" expires_after="2027-02-15">
+  <owner>rgod@google.com</owner>
+  <owner>sugoi@chromium.org</owner>
+  <summary>
+    Records WebAuthn Signal API actions applied to passkeys during Chrome's
+    passkey migration process.
+
+    Recorded once per signal action performed on each passkey. Multiple actions
+    can be performed on the same passkey during migration (e.g. username update
+    and hidden status change).
   </summary>
 </histogram>
 

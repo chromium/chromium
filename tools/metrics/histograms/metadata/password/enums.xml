@@ -720,11 +720,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/password_manager/core/browser/ode/on_device_encryption_data_type_specific_metrics_reporter.h:OnDeviceEncryptionStateHistogramBucket) -->
 
+<!-- LINT.IfChange(PasskeysMigrationStatus) -->
+
 <enum name="PasskeysMigrationStatus">
   <int value="0" label="Passkey created"/>
   <int value="1" label="Passkey updated"/>
   <int value="2" label="Invalid passkey"/>
 </enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/credential_provider/model/credential_provider_migrator.h:PasskeysMigrationStatus) -->
+
+<!-- LINT.IfChange(PasskeysSignalMigrationAction) -->
+
+<enum name="PasskeysSignalMigrationAction">
+  <int value="0" label="Passkey hidden"/>
+  <int value="1" label="Passkey restored"/>
+  <int value="2" label="Passkey details updated"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/credential_provider/model/credential_provider_migrator.h:PasskeysSignalMigrationAction) -->
 
 <enum name="PasswordAddLoginSyncError">
   <int value="0" label="None"/>

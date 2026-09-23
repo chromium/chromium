@@ -25,8 +25,19 @@ using password_manager::PasswordStoreInterface;
 NSErrorDomain const kCredentialProviderMigratorErrorDomain =
     @"kCredentialProviderMigratorErrorDomain";
 
-// Name of the passkey migration related histogram.
-static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
+namespace {
+
+// Logs the passkey migration status to UMA.
+void LogPasskeyMigrationStatus(PasskeysMigrationStatus status) {
+  base::UmaHistogramEnumeration("Passkeys.IOSMigration", status);
+}
+
+// Logs the passkey signal action to UMA.
+void LogPasskeySignalMigrationAction(PasskeysSignalMigrationAction action) {
+  base::UmaHistogramEnumeration("Passkeys.IOSMigration.SignalAction", action);
+}
+
+}  // namespace
 
 @interface CredentialProviderMigrator () <PasskeyModelObserverDelegate> {
   // Passkey store.
@@ -134,14 +145,17 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
         }
 
         if (credential_specifics->hidden() != credential.hidden) {
-          // TODO(crbug.com/432260316): Log metrics.
-          // TODO(crbug.com/432260316): Add PasskeyChangeQuotaTracker.
+          // TODO(crbug.com/564349705): Add PasskeyChangeQuotaTracker.
           if (credential.hidden) {
             _passkeyStore->HidePasskey(
                 credentialId, base::Time::FromMillisecondsSinceUnixEpoch(
                                   credential.hiddenTime));
+            LogPasskeySignalMigrationAction(
+                PasskeysSignalMigrationAction::kPasskeyHidden);
           } else {
             _passkeyStore->UnhidePasskey(credentialId);
+            LogPasskeySignalMigrationAction(
+                PasskeysSignalMigrationAction::kPasskeyRestored);
           }
         }
 
@@ -152,6 +166,8 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
               {.user_name = username,
                .user_display_name = credential_specifics->user_display_name()},
               /*updated_by_user=*/false);
+          LogPasskeySignalMigrationAction(
+              PasskeysSignalMigrationAction::kPasskeyDetailsUpdated);
         }
 
         if (credential_specifics->last_used_time_windows_epoch_micros() <
@@ -159,19 +175,16 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
           _passkeyStore->UpdatePasskeyTimestamp(
               credentialId, base::Time::FromDeltaSinceWindowsEpoch(
                                 base::Microseconds(credential.lastUsedTime)));
-          base::UmaHistogramEnumeration(
-              kPasskeysIOSMigration, PasskeysMigrationStatus::kPasskeyUpdated);
+          LogPasskeyMigrationStatus(PasskeysMigrationStatus::kPasskeyUpdated);
         }
       } else {
         sync_pb::WebauthnCredentialSpecifics passkey =
             PasskeyFromCredential(credential);
         if (webauthn::passkey_model_utils::IsGpmPasskeyValid(passkey)) {
           _passkeyStore->CreatePasskey(passkey);
-          base::UmaHistogramEnumeration(
-              kPasskeysIOSMigration, PasskeysMigrationStatus::kPasskeyCreated);
+          LogPasskeyMigrationStatus(PasskeysMigrationStatus::kPasskeyCreated);
         } else {
-          base::UmaHistogramEnumeration(
-              kPasskeysIOSMigration, PasskeysMigrationStatus::kInvalidPasskey);
+          LogPasskeyMigrationStatus(PasskeysMigrationStatus::kInvalidPasskey);
         }
       }
     } else {

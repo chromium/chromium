@@ -334,6 +334,10 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesHidden) {
               passkeyStore:&test_passkey_model_];
   ASSERT_TRUE(migrator);
 
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration.SignalAction",
+      PasskeysSignalMigrationAction::kPasskeyHidden, 0);
+
   // Start initial migration.
   base::test::TestFuture<BOOL, NSError*> future;
   auto* future_ptr = &future;
@@ -398,6 +402,79 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesHidden) {
   EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_TRUE(passkeys[0].hidden());
   EXPECT_EQ(passkeys[0].hidden_time(), kJan1st2024);
+
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration.SignalAction",
+      PasskeysSignalMigrationAction::kPasskeyHidden, 1);
+}
+
+// Tests that migrating a non-hidden credential restores an existing hidden
+// passkey in the model.
+TEST_F(CredentialProviderMigratorTest, PasskeyMigrationRestoresHiddenPasskey) {
+  ArchivableCredential* credential =
+      TestPasskeyCredential(@"rpId", kMatchingGaia);
+  credential.hidden = YES;
+  sync_pb::WebauthnCredentialSpecifics passkey =
+      PasskeyFromCredential(credential);
+  test_passkey_model_.AddNewPasskeyForTesting(std::move(passkey));
+
+  // Verify the passkey is initially hidden.
+  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude);
+  ASSERT_THAT(passkeys, SizeIs(1));
+  ASSERT_TRUE(passkeys[0].hidden());
+
+  // Add the credential to the store with `hidden: NO`.
+  UserDefaultsCredentialStore* store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  credential.hidden = NO;
+  [store addCredential:credential];
+  [store saveDataWithCompletion:^(NSError* error) {
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+  }];
+  EXPECT_EQ(store.credentials.count, 1u);
+
+  // Create the migrator.
+  CredentialProviderMigrator* migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+                      gaia:kMatchingGaia
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+  ASSERT_TRUE(migrator);
+
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration.SignalAction",
+      PasskeysSignalMigrationAction::kPasskeyRestored, 0);
+
+  // Start migration.
+  base::test::TestFuture<BOOL, NSError*> future;
+  auto* future_ptr = &future;
+  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
+    future_ptr->SetValue(success, error);
+  }];
+  auto [migration_success, migration_error] = future.Take();
+  EXPECT_TRUE(migration_success);
+  EXPECT_TRUE(migration_error == nil)
+      << SysNSStringToUTF8([migration_error localizedDescription]);
+
+  // Verify temporal store is empty.
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  EXPECT_EQ(store.credentials.count, 0u);
+
+  // Verify passkey is restored (not hidden).
+  passkeys =
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude);
+  EXPECT_THAT(passkeys, SizeIs(1));
+  EXPECT_FALSE(passkeys[0].hidden());
+
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration.SignalAction",
+      PasskeysSignalMigrationAction::kPasskeyRestored, 1);
 }
 
 TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesUsername) {
@@ -421,6 +498,11 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesUsername) {
              passwordStore:mock_store_
               passkeyStore:&test_passkey_model_];
   ASSERT_TRUE(migrator);
+
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration.SignalAction",
+      PasskeysSignalMigrationAction::kPasskeyDetailsUpdated, 0);
+
   base::test::TestFuture<BOOL, NSError*> future;
   auto* future_ptr = &future;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
@@ -485,6 +567,10 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesUsername) {
   EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_EQ(passkeys[0].user_name(), "newUsername");
   EXPECT_EQ(passkeys[0].user_display_name(), "userDisplayName");
+
+  histogram_tester_.ExpectBucketCount(
+      "Passkeys.IOSMigration.SignalAction",
+      PasskeysSignalMigrationAction::kPasskeyDetailsUpdated, 1);
 }
 
 // Tests that credentials with a mismatching GAIA ID are ignored.
