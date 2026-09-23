@@ -3143,18 +3143,9 @@ bool LayoutBox::HasLeftOverflow() const {
   }
 }
 
-void LayoutBox::SetScrollableOverflowFromLayoutResults() {
+PhysicalRect LayoutBox::ComputeScrollableOverflowFromFragments(
+    const PhysicalFragmentList& fragments) const {
   NOT_DESTROYED();
-  ClearSelfNeedsScrollableOverflowRecalc();
-  ClearChildNeedsScrollableOverflowRecalc();
-  if (overflow_) {
-    overflow_->scrollable_overflow.reset();
-  }
-
-  if (IsLayoutReplaced()) {
-    return;
-  }
-
   const WritingMode writing_mode = StyleRef().GetWritingMode();
   std::optional<PhysicalRect> scrollable_overflow;
   LayoutUnit consumed_block_size;
@@ -3162,10 +3153,7 @@ void LayoutBox::SetScrollableOverflowFromLayoutResults() {
 
   // Iterate over all the fragments and unite their individual
   // scrollable-overflow to determine the final scrollable-overflow.
-  for (const auto& layout_result : layout_results_) {
-    const auto& fragment =
-        To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
-
+  for (const auto& fragment : fragments) {
     // In order to correctly unite the overflow, we need to shift an individual
     // fragment's scrollable-overflow by previously consumed block-size so far.
     PhysicalOffset offset_adjust;
@@ -3205,29 +3193,49 @@ void LayoutBox::SetScrollableOverflowFromLayoutResults() {
       // The legacy engine doesn't understand our concept of repeated
       // fragments. Stop now. The overflow rectangle will represent the
       // fragment(s) generated under the first repeated root.
-      if (break_token->IsRepeated())
+      if (break_token->IsRepeated()) {
         break;
+      }
       consumed_block_size = break_token->ConsumedBlockSize();
     }
   }
 
   if (!scrollable_overflow) {
-    return;
+    return PhysicalRect();
   }
 
   if (IsFlippedBlocksWritingMode(writing_mode)) {
     scrollable_overflow->offset.left += fragment_width_sum;
   }
 
-  if (scrollable_overflow->IsEmpty() ||
-      PhysicalPaddingBoxRect().Contains(*scrollable_overflow)) {
+  return *scrollable_overflow;
+}
+
+void LayoutBox::SetScrollableOverflowFromLayoutResults() {
+  NOT_DESTROYED();
+  ClearSelfNeedsScrollableOverflowRecalc();
+  ClearChildNeedsScrollableOverflowRecalc();
+  if (overflow_) {
+    overflow_->scrollable_overflow.reset();
+  }
+
+  if (IsLayoutReplaced()) {
+    return;
+  }
+
+  const PhysicalRect scrollable_overflow =
+      ComputeScrollableOverflowFromFragments(PhysicalFragments());
+
+  if (scrollable_overflow.IsEmpty() ||
+      PhysicalPaddingBoxRect().Contains(scrollable_overflow)) {
     return;
   }
 
   DCHECK(!ScrollableOverflowIsSet());
-  if (!overflow_)
+  if (!overflow_) {
     overflow_ = MakeGarbageCollected<BoxOverflowModel>();
-  overflow_->scrollable_overflow.emplace(*scrollable_overflow);
+  }
+  overflow_->scrollable_overflow.emplace(scrollable_overflow);
 }
 
 RecalcScrollableOverflowResult LayoutBox::RecalcScrollableOverflow() {
@@ -3905,6 +3913,7 @@ void LayoutBox::MutableForPainting::SavePreviousPhysicalFragments() {
 }
 
 void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
+  DCHECK(!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
   if (!GetLayoutBox().overflow_)
     GetLayoutBox().overflow_ = MakeGarbageCollected<BoxOverflowModel>();
   auto& previous_overflow = GetLayoutBox().overflow_->previous_overflow_data;
@@ -3912,6 +3921,22 @@ void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
     previous_overflow.emplace();
   previous_overflow->previous_scrollable_overflow_rect =
       GetLayoutBox().ScrollableOverflowRect();
+  previous_overflow->previous_visual_overflow_rect =
+      GetLayoutBox().VisualOverflowRect();
+  previous_overflow->previous_self_visual_overflow_rect =
+      GetLayoutBox().SelfVisualOverflowRect();
+}
+
+void LayoutBox::MutableForPainting::SavePreviousVisualOverflowData() {
+  DCHECK(RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
+  if (!GetLayoutBox().overflow_) {
+    GetLayoutBox().overflow_ = MakeGarbageCollected<BoxOverflowModel>();
+  }
+  std::optional<BoxOverflowModel::PreviousOverflowData>& previous_overflow =
+      GetLayoutBox().overflow_->previous_overflow_data;
+  if (!previous_overflow) {
+    previous_overflow.emplace();
+  }
   previous_overflow->previous_visual_overflow_rect =
       GetLayoutBox().VisualOverflowRect();
   previous_overflow->previous_self_visual_overflow_rect =

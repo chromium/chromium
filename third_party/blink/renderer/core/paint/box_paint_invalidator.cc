@@ -294,11 +294,22 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
                 root_box->StitchedSize())) {
           return BackgroundInvalidationType::kFull;
         }
-        if (BackgroundGeometryDependsOnScrollableOverflowRect() &&
-            ShouldFullyInvalidateBackgroundOnScrollableOverflowChange(
-                root_box->PreviousScrollableOverflowRect(),
-                root_box->ScrollableOverflowRect())) {
-          return BackgroundInvalidationType::kFull;
+        if (BackgroundGeometryDependsOnScrollableOverflowRect()) {
+          if (RuntimeEnabledFeatures::
+                  PrePaintBoxInvalidatorUsesFragmentsEnabled()) {
+            if (root_box->HavePhysicalFragmentsChanged() &&
+                ShouldFullyInvalidateBackgroundOnScrollableOverflowChange(
+                    root_box->ScrollableOverflowFromFragments(),
+                    root_box->PreviousScrollableOverflowFromFragments())) {
+              return BackgroundInvalidationType::kFull;
+            }
+          } else {
+            if (ShouldFullyInvalidateBackgroundOnScrollableOverflowChange(
+                    root_box->PreviousScrollableOverflowRect(),
+                    root_box->ScrollableOverflowRect())) {
+              return BackgroundInvalidationType::kFull;
+            }
+          }
         }
         // It also uses the root element's content box in case the background
         // comes from the root element and positioned in content box.
@@ -359,6 +370,30 @@ BoxPaintInvalidator::ComputeBackgroundInvalidation(
     return BackgroundInvalidationType::kNone;
   }
 
+  if (RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled()) {
+    if (!box_.HavePhysicalFragmentsChanged()) {
+      return BackgroundInvalidationType::kNone;
+    }
+
+    const PhysicalRect old_scrollable_overflow =
+        box_.PreviousScrollableOverflowFromFragments();
+    const PhysicalRect new_scrollable_overflow =
+        box_.ScrollableOverflowFromFragments();
+    if (ShouldFullyInvalidateBackgroundOnScrollableOverflowChange(
+            old_scrollable_overflow, new_scrollable_overflow)) {
+      return BackgroundInvalidationType::kFull;
+    }
+
+    if (new_scrollable_overflow != old_scrollable_overflow) {
+      // Do incremental invalidation if possible.
+      if (old_scrollable_overflow.offset == new_scrollable_overflow.offset) {
+        return BackgroundInvalidationType::kIncremental;
+      }
+      return BackgroundInvalidationType::kFull;
+    }
+    return BackgroundInvalidationType::kNone;
+  }
+
   const auto& old_scrollable_overflow = box_.PreviousScrollableOverflowRect();
   auto new_scrollable_overflow = box_.ScrollableOverflowRect();
   if (ShouldFullyInvalidateBackgroundOnScrollableOverflowChange(
@@ -409,10 +444,20 @@ void BoxPaintInvalidator::InvalidateBackground() {
   }
 
   if (background_invalidation_type == BackgroundInvalidationType::kNone &&
-      box_.ScrollsOverflow() &&
-      box_.PreviousScrollableOverflowRect() != box_.ScrollableOverflowRect()) {
+      box_.ScrollsOverflow()) {
     // We need to re-record the hit test data for scrolling contents.
-    context_.painting_layer->SetNeedsRepaint();
+    if (RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled()) {
+      if (box_.HavePhysicalFragmentsChanged() &&
+          box_.PreviousScrollableOverflowFromFragments() !=
+              box_.ScrollableOverflowFromFragments()) {
+        context_.painting_layer->SetNeedsRepaint();
+      }
+    } else {
+      if (box_.PreviousScrollableOverflowRect() !=
+          box_.ScrollableOverflowRect()) {
+        context_.painting_layer->SetNeedsRepaint();
+      }
+    }
   }
 }
 
@@ -548,10 +593,19 @@ void BoxPaintInvalidator::SavePreviousBoxGeometriesIfNeeded() {
   // TODO(crbug.com/1205708): Audit this.
   InkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
 #endif
-  if (NeedsToSavePreviousOverflowData())
-    mutable_box.SavePreviousOverflowData();
-  else
-    mutable_box.ClearPreviousOverflowData();
+  if (RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled()) {
+    if (box_.HasVisualOverflow()) {
+      mutable_box.SavePreviousVisualOverflowData();
+    } else {
+      mutable_box.ClearPreviousVisualOverflowData();
+    }
+  } else {
+    if (NeedsToSavePreviousOverflowData()) {
+      mutable_box.SavePreviousOverflowData();
+    } else {
+      mutable_box.ClearPreviousOverflowData();
+    }
+  }
 
   if (NeedsToSavePreviousContentBoxRect())
     mutable_box.SavePreviousContentBoxRect();

@@ -361,6 +361,19 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Sets the scrollable-overflow from the current set of layout-results.
   void SetScrollableOverflowFromLayoutResults();
 
+  class PhysicalFragmentList;
+  PhysicalRect ComputeScrollableOverflowFromFragments(
+      const PhysicalFragmentList& fragments) const;
+
+  PhysicalRect ScrollableOverflowFromFragments() const {
+    NOT_DESTROYED();
+    return ComputeScrollableOverflowFromFragments(PhysicalFragments());
+  }
+  PhysicalRect PreviousScrollableOverflowFromFragments() const {
+    NOT_DESTROYED();
+    return ComputeScrollableOverflowFromFragments(PreviousPhysicalFragments());
+  }
+
   void AddSelfVisualOverflow(const PhysicalRect& r);
   void AddContentsVisualOverflow(const PhysicalRect& r);
   void UpdateHasSubpixelVisualEffectOutsets(const PhysicalBoxStrut&);
@@ -921,9 +934,21 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     void ClearPreviousSize() { GetLayoutBox().previous_size_ = PhysicalSize(); }
     void SavePreviousOverflowData();
     void ClearPreviousOverflowData() {
+      DCHECK(!RuntimeEnabledFeatures::
+                 PrePaintBoxInvalidatorUsesFragmentsEnabled());
       DCHECK(!GetLayoutBox().HasVisualOverflow());
       DCHECK(!GetLayoutBox().HasScrollableOverflow());
       GetLayoutBox().overflow_ = nullptr;
+    }
+    void SavePreviousVisualOverflowData();
+    void ClearPreviousVisualOverflowData() {
+      DCHECK(!GetLayoutBox().HasVisualOverflow());
+      if (Member<BoxOverflowModel>& overflow = GetLayoutBox().overflow_) {
+        overflow->previous_overflow_data.reset();
+        if (!overflow->scrollable_overflow) {
+          overflow = nullptr;
+        }
+      }
     }
     void SavePreviousContentBoxRect() {
       auto& rare_data = GetLayoutBox().EnsureRareData();
@@ -987,6 +1012,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   PhysicalRect PreviousScrollableOverflowRect() const {
     NOT_DESTROYED();
+    DCHECK(
+        !RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
     return overflow_ && overflow_->previous_overflow_data
                ? overflow_->previous_overflow_data
                      ->previous_scrollable_overflow_rect
