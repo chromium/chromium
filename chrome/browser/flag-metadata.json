@@ -4007,7 +4007,7 @@
   {
     "name": "enable-http-headers-injection",
     "owners": [ "antoli@google.com", "cbe-cep-eng@google.com" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 160
   },
   {
     "name": "enable-iframe-for-pix",
