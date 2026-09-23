@@ -28,6 +28,10 @@ class MediaTiming : public GarbageCollectedMixin {
   // for animated media.)
   virtual bool IsSufficientContentLoadedForPaint() const = 0;
 
+  // True if the resource is CORS-same-origin (i.e. its response is not
+  // opaque and does not taint the origin).
+  virtual bool IsCorsSameOrigin() const = 0;
+
   // Returns the number of bytes of data used to represent the image (or to
   // represent enough of the content that it can be displayed on screen.) This
   // is used to approximate the entropy of the image so that very-low-entropy

@@ -29,6 +29,8 @@ namespace blink {
 
 BASE_FEATURE(kSoftNavigationTraceEvents, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLcpEntropyGatedOnCors, base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 constexpr const char kTraceCategories[] = "loading,rail,devtools.timeline";
@@ -653,6 +655,13 @@ bool LargestContentfulPaintCalculator::IsEligibleForLcp(
 
   if (record.GetEffectiveVisualSizeResult().is_viewport_covered) {
     return false;
+  }
+
+  // Only apply the minimum entropy check to CORS-same-origin resources to
+  // prevent cross-origin size leaks (crbug.com/502288792).
+  if (base::FeatureList::IsEnabled(kLcpEntropyGatedOnCors) &&
+      !record.IsCorsSameOrigin()) {
+    return true;
   }
 
   // The first video frame often fails to meet the entropy check, e.g. due to

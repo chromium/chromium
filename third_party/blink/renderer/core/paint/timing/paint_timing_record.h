@@ -210,12 +210,15 @@ class CORE_EXPORT ImageRecord final : public PaintTimingRecord {
     return effective_visual_size_result_;
   }
 
+  bool IsCorsSameOrigin() const { return is_cors_same_origin_; }
+
  private:
   const WeakMember<const MediaTiming> media_timing_;
   const MediaRecordIdHash hash_;
   base::TimeTicks load_time_;
   base::TimeTicks first_animated_frame_time_;
   bool is_sufficiently_loaded_for_reporting_ = false;
+  const bool is_cors_same_origin_;
   const EffectiveVisualSizeResult effective_visual_size_result_;
 };
 

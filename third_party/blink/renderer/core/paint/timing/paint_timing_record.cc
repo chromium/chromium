@@ -72,6 +72,8 @@ ImageRecord::ImageRecord(
     : PaintTimingRecord(node, frame_visual_rect, root_visual_rect),
       media_timing_(new_media_timing),
       hash_(hash),
+      is_cors_same_origin_(new_media_timing &&
+                           new_media_timing->IsCorsSameOrigin()),
       effective_visual_size_result_(effective_visual_size_result) {
   CHECK_GT(EffectiveVisualSize(), 0u);
 }

@@ -1479,6 +1479,7 @@ class FakeAnimatedImageTiming final
 
   // Ensure the image has enough entropy to be considered for LCP.
   uint64_t ContentSizeForEntropy() const override { return 100000; }
+  bool IsCorsSameOrigin() const override { return true; }
 
   void Trace(Visitor*) const override {}
 

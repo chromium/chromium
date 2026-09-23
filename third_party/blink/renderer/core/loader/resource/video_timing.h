@@ -43,6 +43,11 @@ class VideoTiming final : public GarbageCollected<VideoTiming>,
     return first_frame_time_;
   }
 
+  void SetIsCorsSameOrigin(bool is_cors_same_origin) {
+    is_cors_same_origin_ = is_cors_same_origin;
+  }
+  bool IsCorsSameOrigin() const override { return is_cors_same_origin_; }
+
   uint64_t ContentSizeForEntropy() const override {
     // We don't do anything clever here to try to isolate the encoded size of
     // just the first frame; if we're calling this, then at least enough data
@@ -77,6 +82,7 @@ class VideoTiming final : public GarbageCollected<VideoTiming>,
  private:
   KURL url_;
   bool is_loaded_ = false;
+  bool is_cors_same_origin_ = false;
   base::TimeTicks first_frame_time_;
   size_t content_size_ = 0;
 };

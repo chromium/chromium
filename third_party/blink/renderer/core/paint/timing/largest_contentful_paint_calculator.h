@@ -30,6 +30,10 @@ class PaintTimingDetector;
 // Kill switch for Soft Nav/LCP trace events.
 BASE_DECLARE_FEATURE(kSoftNavigationTraceEvents);
 
+// Kill switch for filtering entropy check on CORS. When enabled, the entropy
+// check only applies to images that are CORS-same-origin.
+CORE_EXPORT BASE_DECLARE_FEATURE(kLcpEntropyGatedOnCors);
+
 // `LargestContentfulPaintCalculator` is responsible for tracking the largest
 // image and the largest text paints and notifying its `Delegate` whenever a new
 // PerformanceEntry entry should be dispatched, as well as maintaintaining the
@@ -143,10 +147,11 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   void MaybeFlushCandidates();
 
   // Returns true iff the `ImageRecord` is an eligible LCP candidate, which is
-  // true as long as the the image is not covering the viewport and the minimum
-  // entropy requirement has been met. `ImageRecord` is required to have a
-  // non-zero size. Note that this differs from `ShouldTrackForPaintTiming()`
-  // which also takes into account the size of the current LCP candidate.
+  // true as long as the image is not covering the viewport and, if the image
+  // is CORS-same-origin, the minimum entropy requirement has been met.
+  // `ImageRecord` is required to have a non-zero size. Note that this differs
+  // from `ShouldTrackForPaintTiming()` which also takes into account the size
+  // of the current LCP candidate.
   bool IsEligibleForLcp(const ImageRecord&) const;
 
   // Returns true iff the `TextRecord` is an eligible LCP candidate, which is
