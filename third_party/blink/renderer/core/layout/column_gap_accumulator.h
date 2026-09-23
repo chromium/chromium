@@ -64,7 +64,7 @@ class CORE_EXPORT ColumnGapAccumulator {
   GapGeometry* gap_geometry_ = nullptr;
   std::optional<LogicalOffset> first_column_offset_;
   wtf_size_t max_columns_in_row_ = 0;
-  std::optional<Vector<wtf_size_t>> columns_per_row_;
+  Vector<wtf_size_t> columns_per_row_;
 };
 
 }  // namespace blink
