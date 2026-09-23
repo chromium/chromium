@@ -31,6 +31,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -373,6 +374,23 @@ class ContentAnalysisDialogCancelPendingScanBrowserTest
 
  private:
   base::HistogramTester histograms_;
+};
+
+// Same flow as above, but with the non-blocking cancellation path enabled. In
+// that mode ContentAnalysisDelegate::Cancel() signals the FileOpeningJob
+// straight away instead of leaving teardown to join it on the UI thread.
+class ContentAnalysisDialogNonBlockingCancelBrowserTest
+    : public ContentAnalysisDialogCancelPendingScanBrowserTest {
+ public:
+  ContentAnalysisDialogNonBlockingCancelBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {enterprise_connectors::kEnableCancelUploadOnContentAnalysis,
+         enterprise_connectors::kNonBlockingFileOpeningJobCancel},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the behavior of the dialog in the following ways:
@@ -723,6 +741,53 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
              ContentAnalysisDelegate::Result& result) {
             for (bool paths_result : result.paths_results)
               ASSERT_FALSE(paths_result);
+            *called = true;
+          },
+          &called),
+      DeepScanAccessPoint::UPLOAD);
+  run_loop.Run();
+  EXPECT_TRUE(called);
+
+  ValidateMetrics();
+}
+
+// Cancelling with kNonBlockingFileOpeningJobCancel enabled must reach
+// FilesRequestHandler::StopFileWork() and still produce the same user visible
+// outcome: the dialog closes, the content is rejected, and the cancellation
+// metrics are recorded.
+IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogNonBlockingCancelBrowserTest,
+                       Test) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(), FILE_ATTACHED, kBlockingScansForDlp);
+  SetStatusCallbackResponse(
+      safe_browsing::SimpleContentAnalysisResponseForTesting(
+          /*dlp_success=*/true, /*malware_success=*/std::nullopt,
+          /*has_custom_rule_message=*/false));
+
+  test::FakeContentAnalysisDelegate::SetResponseDelay(kSmallDelay);
+  SetUpUnresponsiveDelegate();
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  ContentAnalysisDelegate::Data data;
+  CreateFilesForTest({"foo.doc", "bar.doc", "baz.doc"},
+                     {"random", "file", "contents"}, &data);
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->GetProfile(), GURL(kTestUrl), &data,
+      enterprise_connectors::AnalysisConnector::FILE_ATTACHED));
+
+  ContentAnalysisDelegate::CreateForWebContents(
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
+      base::BindOnce(
+          [](bool* called, const ContentAnalysisDelegate::Data& data,
+             ContentAnalysisDelegate::Result& result) {
+            for (bool paths_result : result.paths_results) {
+              ASSERT_FALSE(paths_result);
+            }
             *called = true;
           },
           &called),

@@ -111,6 +111,11 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
     // files that have not been reported yet.
     virtual void MaybeCancelAndReport() = 0;
 
+    // Immediately stops any in-progress file opening and hashing, without
+    // waiting for the work to stop and without reporting anything. Called when
+    // the user actively cancels a scan, so it must not block the UI thread.
+    virtual void StopFileWork() = 0;
+
     // Marks the file at the given index as reported.
     virtual void MarkFileAsReported(size_t index) = 0;
   };
@@ -136,6 +141,10 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
   // This should only call the delegate_->ReportWarningBypass.
   void ReportWarningBypass(
       std::optional<std::u16string> user_justification) override;
+
+  // Forwards to `delegate_` to immediately stop in-progress file opening and
+  // hashing. Non-blocking; see Delegate::StopFileWork().
+  void StopFileWork();
 
   base::WeakPtr<FilesRequestHandlerBase> GetWeakPtr();
 

@@ -115,9 +115,17 @@ std::string ComputeHashBlocking(
   bool cancel_enabled = base::FeatureList::IsEnabled(
       enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
 
-  // Check for cancellation periodically to reduce overhead of atomic
-  // operations.
-  constexpr size_t kCancelCheckIntervalBytes = 100 * 1024 * 1024;  // 100 MB
+  // Poll for cancellation once before every chunk read. The previous interval
+  // (100 MB) was larger than the max content analysis upload size
+  // (`BinaryUploadService::kMaxUploadSizeBytes` /
+  // `kMaxContentAnalysisFileSizeMB`), so the check below never ran for
+  // realistic files and an in-progress hash could not be preempted at all.
+  // Checking once per chunk bounds cancellation latency to a single
+  // outstanding read, which matters on platforms where an individual read can
+  // block for a long time (AV/EDR filter drivers, network shares, cloud
+  // placeholder files that must be hydrated on read). A relaxed atomic load is
+  // negligible next to reading and SHA-256 hashing a whole chunk.
+  constexpr size_t kCancelCheckIntervalBytes = kReadFileChunkSize;
   size_t next_cancel_check_bytes = kCancelCheckIntervalBytes;
 
   // Always check once at the very beginning.

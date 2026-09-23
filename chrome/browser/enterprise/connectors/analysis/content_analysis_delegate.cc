@@ -266,6 +266,18 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
                        upload_service->AsWeakPtr(), std::move(cancel)));
   }
 
+  // Cancelling the network requests above does not stop the files that are
+  // still being opened and hashed in the background. Without this, that work
+  // only stops once `files_request_handler_` is destroyed, which happens on
+  // the UI thread and blocks it inside base::JobHandle::Cancel() until the
+  // in-progress reads finish. Signalling here instead lets those workers
+  // unwind on their own before teardown reaches them.
+  if (files_request_handler_ &&
+      base::FeatureList::IsEnabled(
+          enterprise_connectors::kNonBlockingFileOpeningJobCancel)) {
+    files_request_handler_->StopFileWork();
+  }
+
   // Make sure to reject everything.
   FillAllResultsWith(false);
   RunCallback();

@@ -91,6 +91,14 @@ FilesRequestHandlerBase::~FilesRequestHandlerBase() {
   delegate_->MaybeCancelAndReport();
 }
 
+void FilesRequestHandlerBase::StopFileWork() {
+  if (!delegate_) {
+    return;
+  }
+
+  delegate_->StopFileWork();
+}
+
 void FilesRequestHandlerBase::ReportCanceledFile(size_t index) {
   if (!base::FeatureList::IsEnabled(
           enterprise_connectors::kEnableCancelUploadOnContentAnalysis)) {

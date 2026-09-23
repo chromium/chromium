@@ -198,6 +198,15 @@ void FilesRequestHandler::MaybeCancelAndReport() {
                      handler_->content_analysis_info()->referrer_chain()));
 }
 
+void FilesRequestHandler::StopFileWork() {
+  // Unlike MaybeCancelAndReport(), this is reached directly from the user's
+  // cancel action rather than from teardown, so it must return promptly. The
+  // job is only signalled; nothing waits for the workers to stop.
+  if (file_opening_job_) {
+    file_opening_job_->SignalCancelled();
+  }
+}
+
 void FilesRequestHandler::ReportWarningBypass(
     std::optional<std::u16string> user_justification,
     const ContentAnalysisInfoBase& info,

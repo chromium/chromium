@@ -107,6 +107,7 @@ class FilesRequestHandler : public FilesRequestHandlerBase::Delegate {
   std::string GetDestination() override;
   void SetHandler(FilesRequestHandlerBase* handler) override;
   void MaybeCancelAndReport() override;
+  void StopFileWork() override;
   void MarkFileAsReported(size_t index) override;
 
  private:

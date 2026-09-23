@@ -160,6 +160,19 @@ TEST_F(FilesRequestHandlerIOSTest, UploadDataImpl_NoPath) {
   EXPECT_EQ(result.final_result, FinalContentAnalysisResult::SUCCESS);
 }
 
+// Tests that StopFileWork is a safe no-op: iOS only scans one file at a time,
+// so there is no FileOpeningJob to signal.
+TEST_F(FilesRequestHandlerIOSTest, StopFileWorkIsNoOp) {
+  base::test::TestFuture<RequestHandlerResult> future;
+  auto delegate = std::make_unique<FilesRequestHandlerIOS>(
+      connectors_service_, reporting_router_, base::FilePath(),
+      future.GetCallback());
+
+  delegate->StopFileWork();
+
+  EXPECT_FALSE(future.IsReady());
+}
+
 // Tests that UploadDataImpl returns false and calls the callback when the
 // connector is disabled, allowing the operation to proceed without scanning.
 TEST_F(FilesRequestHandlerIOSTest, UploadDataImpl_ConnectorDisabled) {

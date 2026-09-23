@@ -79,6 +79,7 @@ class MockFilesRequestHandlerBaseDelegate
               (FilesRequestHandlerBase * handler),
               (override));
   MOCK_METHOD(void, MaybeCancelAndReport, (), (override));
+  MOCK_METHOD(void, StopFileWork, (), (override));
   MOCK_METHOD(void, MarkFileAsReported, (size_t index), (override));
 };
 
@@ -164,6 +165,30 @@ TEST_F(FilesRequestHandlerBaseTest, UploadDataImpl) {
                                   DeepScanAccessPoint::UPLOAD,
                                   std::move(delegate_ptr));
   EXPECT_TRUE(handler.UploadData());
+}
+
+// Tests that StopFileWork is forwarded to the delegate.
+TEST_F(FilesRequestHandlerBaseTest, StopFileWorkForwardsToDelegate) {
+  auto delegate_ptr = std::make_unique<MockFilesRequestHandlerBaseDelegate>();
+  auto* delegate = delegate_ptr.get();
+
+  EXPECT_CALL(*delegate, SetHandler(testing::_)).Times(1);
+  EXPECT_CALL(*delegate, StopFileWork()).Times(1);
+
+  FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
+                                  url_, "content_transfer_method",
+                                  DeepScanAccessPoint::UPLOAD,
+                                  std::move(delegate_ptr));
+  handler.StopFileWork();
+}
+
+// Tests that StopFileWork is a no-op when there is no delegate.
+TEST_F(FilesRequestHandlerBaseTest, StopFileWorkWithoutDelegate) {
+  FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
+                                  url_, "content_transfer_method",
+                                  DeepScanAccessPoint::UPLOAD,
+                                  /*delegate=*/nullptr);
+  handler.StopFileWork();
 }
 
 // Tests that OnGotFileInfo correctly initiates a deep scan upload on success.

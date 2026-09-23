@@ -14,7 +14,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -117,6 +119,32 @@ class FileOpeningJobTest : public testing::Test {
     }
 
     return tasks;
+  }
+
+  // Waits for all file work to finish and for its replies to be delivered.
+  void DrainFileWork() {
+    // This is the barrier. The job is a ThreadPool task source, so the flush
+    // blocks until that task source completes, meaning every
+    // ProcessNextTask() (and so every OpenFile()) has returned, on whichever
+    // worker thread it ran. base::test::RunUntil() cannot be used instead: it
+    // only re-checks its condition when this thread goes idle, and a worker
+    // finishing wakes nothing here.
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+
+    // The flush blocks this thread, so the replies those workers posted back
+    // are still sitting in this thread's queue. Run them. This part waits for
+    // nothing; the workers are already done by now.
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // ~FileOpeningJob() is what emits the cancellation metrics, so tests must
+  // destroy the job before asserting on them.
+  void DestroyJob(scoped_refptr<FileOpeningJob> job) {
+    DrainFileWork();
+    ASSERT_TRUE(job->HasOneRef()) << "job outlived its requests";
   }
 
  protected:
@@ -260,12 +288,207 @@ TEST_F(FileOpeningJobTest, CancelsWithoutHashOnDestroy) {
 
   request_data_cb_run_loop.Run();
 
-  // Destroy all references to the job.
+  // Destroy all references to the job. This must happen immediately, while
+  // the hash is still pending, so no message loop may be run here.
   request->set_file_opening_job(nullptr);
   job.reset();
 
   on_got_hash_run_loop.Run();
   EXPECT_EQ(computed_hash, "");
 }
+
+TEST_F(FileOpeningJobTest, CancelMetricsRecordedForDrainedJob) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+  base::HistogramTester histogram_tester;
+
+  base::RunLoop run_loop;
+  quit_closure_ = run_loop.QuitClosure();
+  quit_file_count_ = 5;
+
+  auto tasks = CreateFilesAndTasks(5);
+  auto job = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
+
+  // Let all the file work finish before cancelling.
+  run_loop.Run();
+  DrainFileWork();
+
+  job->Cancel();
+  DestroyJob(std::move(job));
+
+  // Drained, so it must be classified as idle.
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.FileOpeningJob.CancelledWhileInFlight", 0, 1);
+  histogram_tester.ExpectTotalCount("Enterprise.FileOpeningJob.CancelDuration",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.FileOpeningJob.CancelBlockingDuration", 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.FileOpeningJob.CancelBlockingDuration.InFlight", 0);
+}
+
+TEST_F(FileOpeningJobTest, CancelMetricsRecordedWithFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+  base::HistogramTester histogram_tester;
+
+  base::RunLoop run_loop;
+  quit_closure_ = run_loop.QuitClosure();
+  quit_file_count_ = 5;
+
+  auto tasks = CreateFilesAndTasks(5);
+  auto job = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
+
+  run_loop.Run();
+  DrainFileWork();
+
+  job->Cancel();
+  DestroyJob(std::move(job));
+
+  // Both arms must report over the same population, so only sample presence
+  // matters here, not the classification.
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.FileOpeningJob.CancelledWhileInFlight", 1);
+  histogram_tester.ExpectTotalCount("Enterprise.FileOpeningJob.CancelDuration",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.FileOpeningJob.CancelBlockingDuration", 1);
+}
+
+TEST_F(FileOpeningJobTest, NoCancelMetricsWithoutCancellation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+  base::HistogramTester histogram_tester;
+
+  base::RunLoop run_loop;
+  quit_closure_ = run_loop.QuitClosure();
+  quit_file_count_ = 5;
+
+  auto tasks = CreateFilesAndTasks(5);
+  auto job = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
+
+  run_loop.Run();
+  DrainFileWork();
+
+  // Never cancelled, so nothing is recorded, not even on destruction.
+  DestroyJob(std::move(job));
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.FileOpeningJob.CancelledWhileInFlight", 0);
+  histogram_tester.ExpectTotalCount("Enterprise.FileOpeningJob.CancelDuration",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.FileOpeningJob.CancelBlockingDuration", 0);
+}
+
+TEST_F(FileOpeningJobTest, SignalCancelledStopsRemainingFiles) {
+  is_cancelled_test_ = true;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+
+  auto tasks = CreateFilesAndTasks(50);
+  auto job = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
+
+  // The non-blocking signal alone must be enough to stop the rest of the
+  // batch; no JobHandle::Cancel() is involved.
+  job->SignalCancelled();
+
+  base::RunLoop run_loop;
+  base::ThreadPool::PostTaskAndReply(FROM_HERE,
+                                     {base::TaskPriority::BEST_EFFORT},
+                                     base::DoNothing(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_LT(on_got_file_data_count_, 50);
+}
+
+TEST_F(FileOpeningJobTest, SignalCancelledRecordsCancelIntent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+  base::HistogramTester histogram_tester;
+
+  base::RunLoop run_loop;
+  quit_closure_ = run_loop.QuitClosure();
+  quit_file_count_ = 5;
+
+  auto tasks = CreateFilesAndTasks(5);
+  auto job = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
+
+  run_loop.Run();
+  DrainFileWork();
+
+  // Signalling alone must produce the same metrics as Cancel().
+  job->SignalCancelled();
+  DestroyJob(std::move(job));
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.FileOpeningJob.CancelledWhileInFlight", 1);
+  histogram_tester.ExpectTotalCount("Enterprise.FileOpeningJob.CancelDuration",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.FileOpeningJob.CancelBlockingDuration", 1);
+}
+
+TEST_F(FileOpeningJobTest, SignalCancelledRecordsMetricsWithFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+  base::HistogramTester histogram_tester;
+
+  base::RunLoop run_loop;
+  quit_closure_ = run_loop.QuitClosure();
+  quit_file_count_ = 5;
+
+  auto tasks = CreateFilesAndTasks(5);
+  auto job = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
+
+  run_loop.Run();
+  DrainFileWork();
+
+  job->SignalCancelled();
+  DestroyJob(std::move(job));
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.FileOpeningJob.CancelledWhileInFlight", 1);
+  histogram_tester.ExpectTotalCount("Enterprise.FileOpeningJob.CancelDuration",
+                                    1);
+}
+
+TEST_F(FileOpeningJobTest, SignalCancelledThenCancelRecordsOnce) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+  base::HistogramTester histogram_tester;
+
+  base::RunLoop run_loop;
+  quit_closure_ = run_loop.QuitClosure();
+  quit_file_count_ = 5;
+
+  auto tasks = CreateFilesAndTasks(5);
+  auto job = base::MakeRefCounted<FileOpeningJob>(std::move(tasks));
+
+  run_loop.Run();
+  DrainFileWork();
+
+  // Real sequence: user's click signals, then teardown calls Cancel() twice.
+  // Only one sample of each metric may be emitted.
+  job->SignalCancelled();
+  job->Cancel();
+  job->Cancel();
+  DestroyJob(std::move(job));
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.FileOpeningJob.CancelledWhileInFlight", 1);
+  histogram_tester.ExpectTotalCount("Enterprise.FileOpeningJob.CancelDuration",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.FileOpeningJob.CancelBlockingDuration", 1);
+}
+
 
 }  // namespace safe_browsing
