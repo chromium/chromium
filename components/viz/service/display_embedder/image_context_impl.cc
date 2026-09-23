@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -33,10 +32,6 @@
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 
 namespace {
-
-// TODO(crbug.com/524822746): Killswitch for extra validation, remove after M152
-// stable.
-BASE_FEATURE(kValidatePromiseImageFormat, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -417,10 +412,9 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
       return false;
     }
 
-    if ((representation->format() != format() ||
-         representation->format().PrefersExternalSampler() !=
-             format().PrefersExternalSampler()) &&
-        base::FeatureList::IsEnabled(kValidatePromiseImageFormat)) {
+    if (representation->format() != format() ||
+        representation->format().PrefersExternalSampler() !=
+            format().PrefersExternalSampler()) {
       DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                      "format does not match TransferableResource format: "
                   << representation->format().ToString() << " vs "
