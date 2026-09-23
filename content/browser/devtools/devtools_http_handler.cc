@@ -708,6 +708,14 @@ void DevToolsHttpHandler::OnJsonRequest(
       return;
     }
 
+    DevToolsManager* manager = DevToolsManager::GetInstance();
+    if (manager->delegate() &&
+        !manager->delegate()->AllowInspectingTarget(agent_host.get())) {
+      SendJson(connection_id, net::HTTP_FORBIDDEN, std::nullopt,
+               "Target is not inspectable");
+      return;
+    }
+
     if (command == "activate") {
       if (agent_host->Activate()) {
         SendJson(connection_id, net::HTTP_OK, std::nullopt, "Target activated");
@@ -888,6 +896,13 @@ void DevToolsHttpHandler::OnWebSocketRequest(
       DevToolsAgentHost::GetForId(target_id);
   if (!agent) {
     Send500(connection_id, "No such target id: " + target_id);
+    return;
+  }
+
+  DevToolsManager* manager = DevToolsManager::GetInstance();
+  if (manager->delegate() &&
+      !manager->delegate()->AllowInspectingTarget(agent.get())) {
+    Send403(connection_id, "Target is not inspectable");
     return;
   }
 

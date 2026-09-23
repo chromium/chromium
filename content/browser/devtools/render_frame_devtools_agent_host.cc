@@ -606,12 +606,6 @@ void RenderFrameDevToolsAgentHost::DidFinishNavigation(
 
 void RenderFrameDevToolsAgentHost::UpdateFrameHost(
     RenderFrameHostImpl* frame_host) {
-  if (frame_host == frame_host_) {
-    if (frame_host && !render_frame_alive_)
-      UpdateFrameAlive();
-    return;
-  }
-
   if (frame_host && !ShouldCreateDevToolsForHost(frame_host)) {
     DestroyOnRenderFrameGone();
     // |this| may be deleted at this point.
@@ -628,6 +622,12 @@ void RenderFrameDevToolsAgentHost::UpdateFrameHost(
   if (!restricted_sessions.empty()) {
     protect = this;
     ForceDetachRestrictedSessions(restricted_sessions);
+  }
+
+  if (frame_host == frame_host_) {
+    if (frame_host && !render_frame_alive_)
+      UpdateFrameAlive();
+    return;
   }
 
   RenderFrameHostImpl* old_host = frame_host_;

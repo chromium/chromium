@@ -451,4 +451,10 @@ WebContentsDevToolsAgentHost::RevalidateSessionAccess() {
   return retain_this;
 }
 
+void WebContentsDevToolsAgentHost::DidFinishNavigation(
+    NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame() && navigation_handle->HasCommitted()) {
+    std::ignore = RevalidateSessionAccess();
+  }
+}
 }  // namespace content
