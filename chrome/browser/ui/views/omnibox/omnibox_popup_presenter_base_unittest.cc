@@ -74,6 +74,7 @@ class DummyOmniboxPopupPresenterDelegate
     return nullptr;
   }
   views::View* GetLocationBarFocusRestoreView() override { return nullptr; }
+  bool is_full_webui_omnibox() const override { return false; }
 };
 
 class OmniboxPopupPresenterBaseTest : public views::ViewsTestBase {

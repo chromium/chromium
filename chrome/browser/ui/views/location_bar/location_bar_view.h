@@ -267,6 +267,7 @@ class LocationBarView
   OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const override;
   OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const override;
   views::View* GetLocationBarFocusRestoreView() override;
+  bool is_full_webui_omnibox() const override;
 
   static bool IsVirtualKeyboardVisible(views::Widget* widget);
 
@@ -604,6 +605,14 @@ class LocationBarView
   // Whether we're in popup mode (i.e. location bar is situated within a popup
   // window). This value also controls whether the location bar is read-only.
   const bool is_popup_mode_;
+
+  // Whether this location bar hosts a Full WebUI Omnibox. Determined at
+  // construction from the window type and the feature state, and fixed for the
+  // lifetime of the location bar.
+  // NOTE: This says nothing about whether the WebUI omnibox is ready to handle
+  // input; the WebUI popup handler connects asynchronously. Use
+  // `IsFullWebUiOmniboxReady()` for that.
+  const bool is_full_webui_omnibox_;
 
   bool is_initialized_ = false;
 

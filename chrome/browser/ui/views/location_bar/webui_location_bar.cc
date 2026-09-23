@@ -1035,6 +1035,10 @@ views::View* WebUILocationBar::GetLocationBarFocusRestoreView() {
   return toolbar_delegate_ ? toolbar_delegate_->GetInternalWebView() : nullptr;
 }
 
+bool WebUILocationBar::is_full_webui_omnibox() const {
+  return using_full_popup_;
+}
+
 bool WebUILocationBar::ShouldChipOverrideLocationIcon() {
   return permission_dashboard_->GetIndicatorChip()->GetVisible() ||
          permission_dashboard_->GetRequestChip()->GetVisible();

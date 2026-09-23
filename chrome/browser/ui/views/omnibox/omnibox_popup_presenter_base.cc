@@ -413,7 +413,7 @@ void OmniboxPopupPresenterBase::SetWebUIContent(
 }
 
 bool OmniboxPopupPresenterBase::ShouldDestroyWidgetOnHide() const {
-  return omnibox::IsWebUIOmniboxFullPopupEnabled() &&
+  return delegate().is_full_webui_omnibox() &&
          base::FeatureList::IsEnabled(
              omnibox::kOmniboxFullWebUIDestroyWidgetOnHide);
 }

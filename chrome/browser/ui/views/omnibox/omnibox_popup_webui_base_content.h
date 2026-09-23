@@ -113,6 +113,8 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // painting the popup's background, rounded corners and drop shadow.
   bool ShouldDrawShadowInWebUI() const;
 
+  bool is_full_webui_omnibox() const;
+
   bool IsShown() { return is_shown_; }
   void set_is_shown(bool is_shown) { is_shown_ = is_shown; }
 

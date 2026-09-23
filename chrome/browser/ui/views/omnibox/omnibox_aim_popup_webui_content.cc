@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -94,8 +93,7 @@ void OmniboxAimPopupWebUIContent::SaveInputToBackgroundTab(
 
 void OmniboxAimPopupWebUIContent::ApplyInputAndCleanup(
     const std::string& input) {
-  const bool is_full_webui =
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
+  const bool is_full_webui = is_full_webui_omnibox();
   if (is_full_webui) {
     controller()->edit_model()->Revert();
   } else {
@@ -126,7 +124,7 @@ std::string_view OmniboxAimPopupWebUIContent::GetMetricPrefix() const {
 }
 
 void OmniboxAimPopupWebUIContent::UpdateLocationBarFocusForScreenReader() {
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+  if (is_full_webui_omnibox()) {
     // `ApplyInputAndCleanup()` unconditionally hands focus back to the omnibox
     // after applying the draft text. Focusing early here would transition the
     // popup state to `kFull` before the draft is set on the `OmniboxEditModel`.
@@ -149,7 +147,7 @@ void OmniboxAimPopupWebUIContent::UpdateLocationBarFocusForScreenReader() {
 bool OmniboxAimPopupWebUIContent::EscClosesUI() const {
   // The WebUI handles ESC so the close routes through `RequestClose()` and
   // carries the draft text with it.
-  return !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
+  return !is_full_webui_omnibox();
 }
 
 void OmniboxAimPopupWebUIContent::CloseUI() {
@@ -161,7 +159,7 @@ void OmniboxAimPopupWebUIContent::CloseUI() {
 
   set_is_shown(false);
 
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+  if (is_full_webui_omnibox()) {
     std::string draft;
     if (auto* handler = popup_aim_handler()) {
       draft = handler->cached_draft_text();

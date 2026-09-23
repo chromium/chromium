@@ -168,6 +168,7 @@ class WebUILocationBar : public LocationBar,
   OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const override;
   OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const override;
   views::View* GetLocationBarFocusRestoreView() override;
+  bool is_full_webui_omnibox() const override;
 
   void SetSuppressionThresholdForTesting(base::TimeDelta threshold);
 

@@ -269,7 +269,7 @@ void OmniboxPopupWebUIBaseContent::ShowUI() {
   //
   // Pre-populating the height directly from `GetViewBounds()` immediately
   // restores the cached height to `views::WebView` and the presenter on show.
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+  if (is_full_webui_omnibox()) {
     if (auto* web_contents = GetWrappedWebContents()) {
       if (auto* rwhv = web_contents->GetRenderWidgetHostView()) {
         gfx::Size view_size = rwhv->GetViewBounds().size();
@@ -360,7 +360,7 @@ bool OmniboxPopupWebUIBaseContent::HandleKeyboardEvent(
     if (EscClosesUI()) {
       return controller_->edit_model()->OnEscapeKeyPressed();
     }
-    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+    if (is_full_webui_omnibox()) {
       return true;
     }
   }
@@ -370,8 +370,7 @@ bool OmniboxPopupWebUIBaseContent::HandleKeyboardEvent(
   // keyboard events (excluding Escape, which is handled above and must not
   // trigger `IDC_STOP`) directly to the parent `BrowserView` so browser-level
   // accelerators (e.g., Ctrl+N, Ctrl+T, Ctrl+W) are executed.
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
-      popup_presenter_ &&
+  if (is_full_webui_omnibox() && popup_presenter_ &&
       (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown ||
        event.GetType() == input::NativeWebKeyboardEvent::Type::kKeyDown)) {
     views::Widget* location_bar_widget =
@@ -686,6 +685,11 @@ bool OmniboxPopupWebUIBaseContent::ShouldSizeWebViewToPreferredHeight() const {
 
 bool OmniboxPopupWebUIBaseContent::ShouldDrawShadowInWebUI() const {
   return popup_presenter_ && popup_presenter_->ShouldDrawShadowInWebUI();
+}
+
+bool OmniboxPopupWebUIBaseContent::is_full_webui_omnibox() const {
+  return popup_presenter_ &&
+         popup_presenter_->delegate().is_full_webui_omnibox();
 }
 
 BEGIN_METADATA(OmniboxPopupWebUIBaseContent)

@@ -23,6 +23,9 @@ class OmniboxPopupPresenterDelegate {
   // This returns the view that will be given focus when the focus is given
   // back to the location bar.
   virtual views::View* GetLocationBarFocusRestoreView() = 0;
+
+  // Returns true if the host location bar has Full WebUI Omnibox enabled.
+  virtual bool is_full_webui_omnibox() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_DELEGATE_H_

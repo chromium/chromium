@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_tab_selection_listener.h"
 
-#include "base/feature_list.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 
@@ -31,8 +29,7 @@ void OmniboxPopupTabSelectionListener::OnTabStripModelChanged(
   // (OmniboxPopupViewFullWebUI::OnTabChanged) via LocationBarView::Update.
   // We return early here to prevent this listener from automatically closing
   // the UI.
-  if (selection.new_contents &&
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+  if (selection.new_contents && host_ && host_->is_full_webui_omnibox()) {
     return;
   }
 
