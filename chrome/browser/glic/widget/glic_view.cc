@@ -30,6 +30,7 @@
 #include "ui/color/color_variant.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/draggable_region.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/background.h"
 #include "ui/views/event_monitor.h"
@@ -122,13 +123,7 @@ void GlicView::SetWebContents(content::WebContents* new_web_contents) {
 void GlicView::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions,
     content::WebContents* contents) {
-  SkRegion sk_region;
-  for (const auto& region : regions) {
-    sk_region.op(
-        SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
-                          region->bounds.right(), region->bounds.bottom()),
-        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
-  }
+  SkRegion sk_region = gfx::DraggableRegionsToSkRegion(regions);
 
   // `GlicView::DraggableRegionsChanged()` is called when draggable regions for
   // either the main-webcontents or guest-webcontents are changed.

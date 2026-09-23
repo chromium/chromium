@@ -70,6 +70,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/draggable_region.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/resize_utils.h"
@@ -973,16 +974,7 @@ void AppBrowserController::DraggableRegionsChanged(
     return;
   }
 
-  SkRegion sk_region;
-  for (const blink::mojom::DraggableRegionPtr& region : regions) {
-    sk_region.op(
-        SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
-                          region->bounds.x() + region->bounds.width(),
-                          region->bounds.y() + region->bounds.height()),
-        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
-  }
-
-  draggable_region_ = sk_region;
+  draggable_region_ = gfx::DraggableRegionsToSkRegion(regions);
 
   if (on_draggable_region_set_for_testing_) {
     std::move(on_draggable_region_set_for_testing_).Run();

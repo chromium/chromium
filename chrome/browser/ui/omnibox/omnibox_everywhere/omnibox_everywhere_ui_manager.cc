@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
@@ -68,6 +70,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -174,26 +177,19 @@ class OmniboxEverywhereFileSelectListener : public content::FileSelectListener {
 
 SkRegion ComputeDraggableRegion(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
+  // Non-draggable rects take precedence regardless of DOM order. Build each
+  // set with SkRegion::setRects(); one SkRegion::op() per rect is quadratic.
+  std::vector<SkIRect> draggable_rects;
+  std::vector<SkIRect> non_draggable_rects;
+  for (const blink::mojom::DraggableRegionPtr& region : regions) {
+    (region->draggable ? draggable_rects : non_draggable_rects)
+        .push_back(gfx::RectToSkIRect(region->bounds));
+  }
   SkRegion draggable_region;
-  // First, union all draggable background areas.
-  for (const blink::mojom::DraggableRegionPtr& region : regions) {
-    if (region->draggable) {
-      draggable_region.op(
-          SkIRect::MakeXYWH(region->bounds.x(), region->bounds.y(),
-                            region->bounds.width(), region->bounds.height()),
-          SkRegion::kUnion_Op);
-    }
-  }
-  // Next, subtract non-draggable regions so they take precedence over DOM
-  // order.
-  for (const blink::mojom::DraggableRegionPtr& region : regions) {
-    if (!region->draggable) {
-      draggable_region.op(
-          SkIRect::MakeXYWH(region->bounds.x(), region->bounds.y(),
-                            region->bounds.width(), region->bounds.height()),
-          SkRegion::kDifference_Op);
-    }
-  }
+  draggable_region.setRects(draggable_rects);
+  SkRegion non_draggable_region;
+  non_draggable_region.setRects(non_draggable_rects);
+  draggable_region.op(non_draggable_region, SkRegion::kDifference_Op);
   return draggable_region;
 }
 

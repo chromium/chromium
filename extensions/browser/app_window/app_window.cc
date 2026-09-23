@@ -56,6 +56,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/draggable_region.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -1106,14 +1107,7 @@ AppWindow::CreateParams AppWindow::LoadDefaults(CreateParams params) const {
 // static
 SkRegion* AppWindow::RawDraggableRegionsToSkRegion(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
-  SkRegion* sk_region = new SkRegion;
-  for (const auto& region : regions) {
-    sk_region->op(
-        SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
-                          region->bounds.right(), region->bounds.bottom()),
-        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
-  }
-  return sk_region;
+  return new SkRegion(gfx::DraggableRegionsToSkRegion(regions));
 }
 
 }  // namespace extensions

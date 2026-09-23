@@ -8,10 +8,10 @@
 
 #include "build/build_config.h"
 #include "components/input/native_web_keyboard_event.h"
-#include "third_party/skia/include/core/SkRect.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/gfx/draggable_region.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -67,18 +67,6 @@ class WebUIBubbleView : public views::WebView {
     return true;
   }
 };
-
-SkRegion ComputeDraggableRegion(
-    const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
-  SkRegion draggable_region;
-  for (const blink::mojom::DraggableRegionPtr& region : regions) {
-    draggable_region.op(
-        SkIRect::MakeXYWH(region->bounds.x(), region->bounds.y(),
-                          region->bounds.width(), region->bounds.height()),
-        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
-  }
-  return draggable_region;
-}
 
 BEGIN_METADATA(WebUIBubbleView)
 END_METADATA
@@ -231,7 +219,7 @@ bool WebUIBubbleDialogView::HandleKeyboardEvent(
 void WebUIBubbleDialogView::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions,
     content::WebContents* contents) {
-  draggable_region_ = ComputeDraggableRegion(regions);
+  draggable_region_ = gfx::DraggableRegionsToSkRegion(regions);
 }
 
 web_modal::WebContentsModalDialogHost*

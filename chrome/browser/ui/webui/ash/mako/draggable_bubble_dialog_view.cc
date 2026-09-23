@@ -10,6 +10,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/draggable_region.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -31,15 +32,7 @@ DraggableBubbleDialogView::~DraggableBubbleDialogView() = default;
 void DraggableBubbleDialogView::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions,
     content::WebContents* contents) {
-  SkRegion sk_region;
-  for (const blink::mojom::DraggableRegionPtr& region : regions) {
-    sk_region.op(
-        SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
-                          region->bounds.x() + region->bounds.width(),
-                          region->bounds.y() + region->bounds.height()),
-        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
-  }
-  draggable_region_ = sk_region;
+  draggable_region_ = gfx::DraggableRegionsToSkRegion(regions);
 }
 
 const std::optional<SkRegion> DraggableBubbleDialogView::GetDraggableRegion() {

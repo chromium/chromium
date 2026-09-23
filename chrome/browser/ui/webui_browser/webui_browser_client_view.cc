@@ -16,6 +16,7 @@
 #include "ui/base/interaction/element_events.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/draggable_region.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 WebUIBrowserClientView::WebUIBrowserClientView(
@@ -71,14 +72,7 @@ void WebUIBrowserClientView::OnLocationIconMoved(ui::TrackedElement* element) {
 
 void WebUIBrowserClientView::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions) {
-  SkRegion draggable_region;
-  for (const blink::mojom::DraggableRegionPtr& region : regions) {
-    draggable_region.op(
-        SkIRect::MakeXYWH(region->bounds.x(), region->bounds.y(),
-                          region->bounds.width(), region->bounds.height()),
-        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
-  }
-  draggable_region_.swap(draggable_region);
+  draggable_region_ = gfx::DraggableRegionsToSkRegion(regions);
 }
 
 BEGIN_METADATA(WebUIBrowserClientView)
