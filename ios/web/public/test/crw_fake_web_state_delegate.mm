@@ -12,6 +12,8 @@
   std::unique_ptr<web::WebState::OpenURLParams> _openURLParams;
   // Backs up the property with the same name.
   BOOL _javaScriptDialogPresenterRequested;
+  // Backs up the property with the same name.
+  GURL _lastRequestedGeolocationOrigin;
 }
 
 @synthesize webState = _webState;
@@ -23,6 +25,8 @@
 @synthesize cutAllowedRequested = _cutAllowedRequested;
 @synthesize didFinishClipboardReadRequested = _didFinishClipboardReadRequested;
 @synthesize permissionsRequestHandled = _permissionsRequestHandled;
+@synthesize geolocationRequestHandled = _geolocationRequestHandled;
+@synthesize lastRequestedGeolocationOrigin = _lastRequestedGeolocationOrigin;
 @synthesize httpAuthenticationRequested = _httpAuthenticationRequested;
 @synthesize clientCertAuthenticationRequested =
     _clientCertAuthenticationRequested;
@@ -95,6 +99,15 @@
       decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler {
   _webState = webState;
   _permissionsRequestHandled = YES;
+  decisionHandler(web::PermissionDecisionGrant);
+}
+
+- (void)webState:(web::WebState*)webState
+    requestGeolocation:(const GURL&)origin
+       decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler {
+  _webState = webState;
+  _geolocationRequestHandled = YES;
+  _lastRequestedGeolocationOrigin = origin;
   decisionHandler(web::PermissionDecisionGrant);
 }
 

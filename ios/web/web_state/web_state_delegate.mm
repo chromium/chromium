@@ -71,6 +71,13 @@ void WebStateDelegate::HandlePermissionsDecisionRequest(
   handler(PermissionDecisionShowDefaultPrompt);
 }
 
+void WebStateDelegate::RequestGeolocationPermission(
+    WebState* source,
+    const GURL& origin,
+    WebStatePermissionDecisionHandler handler) {
+  handler(PermissionDecisionShowDefaultPrompt);
+}
+
 void WebStateDelegate::OnAuthRequired(WebState* source,
                                       NSURLProtectionSpace* protection_space,
                                       NSURLCredential* proposed_credential,

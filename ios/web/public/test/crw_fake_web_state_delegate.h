@@ -37,6 +37,11 @@
 @property(nonatomic, readonly) BOOL javaScriptDialogPresenterRequested;
 // Whether `webState:handlePermissions:decisionHandler` has been called or not.
 @property(nonatomic, readonly) BOOL permissionsRequestHandled;
+// Whether `webState:requestGeolocation:decisionHandler:` has been called or
+// not.
+@property(nonatomic, readonly) BOOL geolocationRequestHandled;
+// Last origin requested via `webState:requestGeolocation:decisionHandler:`.
+@property(nonatomic, readonly) const GURL& lastRequestedGeolocationOrigin;
 // Whether `webState:didRequestHTTPAuthForProtectionSpace:...` has been called
 // or not.
 @property(nonatomic, readonly) BOOL httpAuthenticationRequested;

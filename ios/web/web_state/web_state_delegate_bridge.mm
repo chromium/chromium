@@ -130,6 +130,20 @@ void WebStateDelegateBridge::HandlePermissionsDecisionRequest(
   }
 }
 
+void WebStateDelegateBridge::RequestGeolocationPermission(
+    WebState* source,
+    const GURL& origin,
+    WebStatePermissionDecisionHandler handler) {
+  if ([delegate_ respondsToSelector:
+                     @selector(webState:requestGeolocation:decisionHandler:)]) {
+    [delegate_ webState:source
+        requestGeolocation:origin
+           decisionHandler:handler];
+  } else {
+    handler(PermissionDecisionShowDefaultPrompt);
+  }
+}
+
 void WebStateDelegateBridge::OnAuthRequired(
     WebState* source,
     NSURLProtectionSpace* protection_space,

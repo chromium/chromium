@@ -95,6 +95,19 @@ class WebStateDelegate {
       NSArray<NSNumber*>* permissions,
       WebStatePermissionDecisionHandler handler);
 
+  // Called when a web resource from `origin` requests the user's permission to
+  // access geolocation.
+  //
+  // This delegate method is only invoked on iOS 27 and later, where WebKit
+  // provides native geolocation permission delegation via WKUIDelegate.
+  //
+  // The delegate should use the `handler` function to answer the request to
+  // grant, deny geolocation permission, or show the default prompt.
+  virtual void RequestGeolocationPermission(
+      WebState* source,
+      const GURL& origin,
+      WebStatePermissionDecisionHandler handler);
+
   // Called when a request receives an authentication challenge specified by
   // `protection_space`, and is unable to respond using cached credentials.
   // Also called for proxy authentication challenges (HTTP 407) when

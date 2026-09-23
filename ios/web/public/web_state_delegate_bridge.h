@@ -74,6 +74,15 @@
     handlePermissions:(NSArray<NSNumber*>*)permissions
       decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler;
 
+// Called when geolocation permission is requested and to acquire the decision
+// handler needed to process the user's decision to grant, deny geolocation
+// permission or show the default prompt that asks for permission.
+// Available on iOS 27 and later when backed by native WKUIDelegate geolocation
+// support.
+- (void)webState:(web::WebState*)webState
+    requestGeolocation:(const GURL&)origin
+       decisionHandler:(web::WebStatePermissionDecisionHandler)decisionHandler;
+
 // Called when a request receives an authentication challenge specified by
 // `protectionSpace`, and is unable to respond using cached credentials.
 // Also called for proxy authentication challenges (HTTP 407) when
@@ -178,6 +187,10 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
   void HandlePermissionsDecisionRequest(
       WebState* source,
       NSArray<NSNumber*>* permissions,
+      WebStatePermissionDecisionHandler handler) override;
+  void RequestGeolocationPermission(
+      WebState* source,
+      const GURL& origin,
       WebStatePermissionDecisionHandler handler) override;
   void OnAuthRequired(WebState* source,
                       NSURLProtectionSpace* protection_space,
