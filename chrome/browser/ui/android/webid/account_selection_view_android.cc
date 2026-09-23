@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/android/webid/jni_headers/IdentityCredentialTokenError_jni.h"
 #include "chrome/browser/ui/android/webid/jni_headers/IdentityProviderData_jni.h"
 #include "chrome/browser/ui/android/webid/jni_headers/IdentityProviderMetadata_jni.h"
+#include "chrome/browser/ui/android/webid/jni_headers/NativeAppRequestOptions_jni.h"
 #include "chrome/browser/ui/android/webid/jni_headers/RelyingPartyData_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
@@ -172,16 +173,16 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
     JNIEnv* env,
-    content::IdentityProviderData* idp_data,
+    const content::IdentityProviderData& idp_data,
     blink::mojom::RpMode rp_mode) {
   return Java_IdentityProviderData_Constructor(
-      env, idp_data->idp_for_display,
-      ConvertToJavaIdentityProviderMetadata(env, idp_data->idp_metadata,
+      env, idp_data.idp_for_display,
+      ConvertToJavaIdentityProviderMetadata(env, idp_data.idp_metadata,
                                             rp_mode),
-      ConvertToJavaClientIdMetadata(env, idp_data->client_metadata),
-      static_cast<int32_t>(idp_data->rp_context),
-      ConvertFieldsToJavaArray(env, idp_data->disclosure_fields),
-      idp_data->has_login_status_mismatch);
+      ConvertToJavaClientIdMetadata(env, idp_data.client_metadata),
+      static_cast<int32_t>(idp_data.rp_context),
+      ConvertFieldsToJavaArray(env, idp_data.disclosure_fields),
+      idp_data.has_login_status_mismatch);
 }
 
 base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>>
@@ -192,8 +193,8 @@ ConvertToJavaIdentityProviderDataMap(
   base::flat_map<IdentityProviderDataPtr, ScopedJavaLocalRef<jobject>> map;
 
   for (const auto& identity_provider : identity_providers) {
-    map[identity_provider] = ConvertToJavaIdentityProviderData(
-        env, identity_provider.get(), rp_mode);
+    map[identity_provider] =
+        ConvertToJavaIdentityProviderData(env, *identity_provider, rp_mode);
   }
   return map;
 }
@@ -385,7 +386,7 @@ bool AccountSelectionViewAndroid::ShowVerifyingDialog(
   JNIEnv* env = AttachCurrentThread();
 
   ScopedJavaLocalRef<jobject> idp_obj =
-      ConvertToJavaIdentityProviderData(env, idp_data.get(), rp_mode);
+      ConvertToJavaIdentityProviderData(env, *idp_data, rp_mode);
 
   float device_scale_factor = delegate_->GetWebContents()
                                   ->GetPrimaryMainFrame()
@@ -398,6 +399,27 @@ bool AccountSelectionViewAndroid::ShowVerifyingDialog(
   return Java_AccountSelectionBridge_showVerifyingDialog(
       env, java_object_internal_, ConvertToJavaRelyingPartyData(env, rp_data),
       account_obj, sign_in_mode == Account::SignInMode::kAuto);
+}
+
+bool AccountSelectionViewAndroid::ShowNativeAppUi(
+    const content::NativeAppRequestOptions& request_options) {
+  if (!MaybeCreateJavaObject(blink::mojom::RpMode::kActive)) {
+    return false;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  return Java_AccountSelectionBridge_showNativeAppUi(
+      env, java_object_internal_,
+      ConvertToJavaNativeAppRequestOptions(env, request_options));
+}
+
+ScopedJavaLocalRef<jobject>
+AccountSelectionViewAndroid::ConvertToJavaNativeAppRequestOptions(
+    JNIEnv* env,
+    const content::NativeAppRequestOptions& request_options) {
+  return Java_NativeAppRequestOptions_Constructor(
+      env, request_options.config_url, request_options.rp_origin.Serialize(),
+      request_options.assertion_params, request_options.login_hint,
+      request_options.domain_hint);
 }
 
 std::string AccountSelectionViewAndroid::GetTitle() const {
@@ -509,6 +531,12 @@ void AccountSelectionViewAndroid::OnNativeAppResult(JNIEnv* env,
   delegate_->OnNativeAppResult(token);
 }
 
+void AccountSelectionViewAndroid::OnNativeAppError(JNIEnv* env,
+                                                   const std::string& code,
+                                                   const GURL& url) {
+  delegate_->OnNativeAppError(content::IdentityCredentialTokenError{code, url});
+}
+
 void AccountSelectionViewAndroid::OnNativeAppLoginFinished(JNIEnv* env) {
   delegate_->OnNativeAppLoginFinished();
 }
@@ -573,4 +601,5 @@ DEFINE_JNI(ClientIdMetadata)
 DEFINE_JNI(IdentityCredentialTokenError)
 DEFINE_JNI(IdentityProviderData)
 DEFINE_JNI(IdentityProviderMetadata)
+DEFINE_JNI(NativeAppRequestOptions)
 DEFINE_JNI(RelyingPartyData)

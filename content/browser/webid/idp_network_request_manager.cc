@@ -30,6 +30,7 @@
 #include "content/browser/webid/mappers.h"
 #include "content/browser/webid/metrics.h"
 #include "content/browser/webid/network_request_manager.h"
+#include "content/browser/webid/url_computations.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -47,7 +48,6 @@
 #include "net/base/load_flags.h"
 #include "net/base/network_isolation_partition.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
@@ -485,31 +485,6 @@ void OnAccountsRequestParsed(
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
                           std::move(response));
-}
-
-std::pair<GURL, std::optional<ErrorUrlType>> GetErrorUrlAndType(
-    const std::string* url,
-    const GURL& idp_url) {
-  if (!url || url->empty()) {
-    return std::make_pair(GURL(), std::nullopt);
-  }
-
-  GURL error_url = idp_url.Resolve(*url);
-  if (!error_url.is_valid()) {
-    return std::make_pair(GURL(), std::nullopt);
-  }
-
-  url::Origin error_origin = url::Origin::Create(error_url);
-  url::Origin idp_origin = url::Origin::Create(idp_url);
-  if (error_origin == idp_origin) {
-    return std::make_pair(error_url, ErrorUrlType::kSameOrigin);
-  }
-
-  if (!net::SchemefulSite::IsSameSite(error_origin, idp_origin)) {
-    return std::make_pair(GURL(), ErrorUrlType::kCrossSite);
-  }
-
-  return std::make_pair(error_url, ErrorUrlType::kCrossOriginSameSite);
 }
 
 ErrorDialogType GetErrorDialogType(const std::string& code, const GURL& url) {

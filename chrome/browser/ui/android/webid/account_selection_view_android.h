@@ -53,6 +53,8 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
                            const IdentityRequestAccountPtr& account,
                            Account::SignInMode sign_in_mode,
                            blink::mojom::RpMode rp_mode) override;
+  bool ShowNativeAppUi(
+      const content::NativeAppRequestOptions& request_options) override;
 
   std::string GetTitle() const override;
   std::optional<std::string> GetSubtitle() const override;
@@ -77,9 +79,15 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   void OnMoreDetails(JNIEnv* env);
   void OnAccountsDisplayed(JNIEnv* env);
   void OnNativeAppResult(JNIEnv* env, const std::string& token);
+  void OnNativeAppError(JNIEnv* env, const std::string& code, const GURL& url);
   void OnNativeAppLoginFinished(JNIEnv* env);
 
  private:
+  base::android::ScopedJavaLocalRef<jobject>
+  ConvertToJavaNativeAppRequestOptions(
+      JNIEnv* env,
+      const content::NativeAppRequestOptions& request_options);
+
   // Returns either true if the java counterpart of this bridge is initialized
   // successfully or false if the creation failed.
   bool MaybeCreateJavaObject(std::optional<blink::mojom::RpMode> rp_mode);

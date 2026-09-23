@@ -2188,7 +2188,24 @@ void Request::OnNativeAppUiResult(
   if (result.type ==
       IdentityRequestDialogController::NativeAppResult::Type::kError) {
     if (result.error) {
-      token_error_ = result.error;
+      // A native identity provider application is no more trusted than an IdP
+      // HTTP response, so its error URL gets the exact same treatment: it is
+      // resolved against the config URL and cross-site URLs are dropped rather
+      // than being surfaced to the RP. Unlike the HTTP response, the URL here
+      // arrives already parsed, so a relative or unparsable value shows up as
+      // an invalid GURL with an empty spec and is discarded below.
+      const std::string error_url_spec = result.error->url.spec();
+      auto [error_url, error_url_type] =
+          webid::GetErrorUrlAndType(&error_url_spec, idp_config_url);
+      token_error_ = TokenError{result.error->code, error_url};
+
+      if (error_url_type && *error_url_type == ErrorUrlType::kCrossSite) {
+        CompleteRequestWithError(
+            FederatedRequestResult::kIdTokenCrossSiteIdpErrorResponse,
+            TokenStatus::kIdTokenCrossSiteIdpErrorResponse,
+            /*should_delay_callback=*/false);
+        return;
+      }
     }
     CompleteRequestWithError(FederatedRequestResult::kIdTokenIdpErrorResponse,
                              TokenStatus::kIdTokenIdpErrorResponse,
@@ -2531,7 +2548,27 @@ void Request::MaybeShowNativeAppUi(
       /*has_login_status_mismatch=*/false);
   idp_data_for_display_ = {info->data};
 
-  RelyingPartyData rp_data = CreateRpData(/*client_metadata_received=*/false);
+  // Build the parameters destined for the IdP with the very same helper that
+  // builds the id_assertion_endpoint POST body. A native application stands in
+  // for that endpoint, so it must see an identical parameter set, and routing
+  // both through one function means new request parameters reach native
+  // applications automatically instead of having to be copied here by hand.
+  //
+  // `account_id` and `disclosure_shown_for` are intentionally empty: the
+  // application runs its own account chooser and disclosure UI, so the browser
+  // has neither a selected account nor a record of what was disclosed at the
+  // time the request is handed off.
+  std::string assertion_params = webid::ComputeUrlEncodedTokenPostData(
+      render_frame_host(), info->provider->config->client_id,
+      info->provider->nonce, /*account_id=*/std::string(),
+      /*is_auto_reauthn=*/false, GetRpMode(), info->provider->fields,
+      /*disclosure_shown_for=*/{},
+      info->provider->params_json.value_or(std::string()),
+      info->provider->config->type);
+
+  NativeAppRequestOptions request_options(
+      idp_config_url, GetEmbeddingOrigin(), assertion_params,
+      info->provider->login_hint, info->provider->domain_hint);
 
   auto dismiss_callback = base::BindOnce(&Request::OnDialogDismissed,
                                          weak_ptr_factory_.GetWeakPtr());
@@ -2539,7 +2576,7 @@ void Request::MaybeShowNativeAppUi(
       base::BindOnce(&Request::OnNativeAppUiResult,
                      weak_ptr_factory_.GetWeakPtr(), idp_config_url);
 
-  if (!GetDialogController()->ShowNativeAppUi(rp_data, *info->data,
+  if (!GetDialogController()->ShowNativeAppUi(request_options,
                                               std::move(dismiss_callback),
                                               std::move(result_callback))) {
     CompleteRequestWithError(FederatedRequestResult::kError,

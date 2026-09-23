@@ -421,6 +421,32 @@ bool IdentityDialogController::ShowVerifyingDialog(
   return false;
 }
 
+bool IdentityDialogController::ShowNativeAppUi(
+    const content::NativeAppRequestOptions& request_options,
+    DismissCallback dismiss_callback,
+    NativeAppResultCallback native_result_callback) {
+  // The native app UI is an active mode surface, so it is subject to the same
+  // restriction as ShowAccountsDialog(): when an actor is driving the tab we
+  // must not hand control to a third party application on the user's behalf.
+  if (!ShouldShowFedCmUi()) {
+    return false;
+  }
+
+  on_dismiss_ = std::move(dismiss_callback);
+  on_native_result_ = std::move(native_result_callback);
+
+  if (!TrySetAccountView()) {
+    NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);
+    return false;
+  }
+
+  if (account_view_->ShowNativeAppUi(request_options)) {
+    DidInvokeShowUi();
+    return true;
+  }
+  return false;
+}
+
 void IdentityDialogController::OnLoginToIdP(const GURL& idp_config_url,
                                             const GURL& idp_login_url) {
   CHECK(on_login_);
@@ -445,6 +471,18 @@ void IdentityDialogController::OnNativeAppResult(const std::string& token) {
             content::IdentityRequestDialogController::NativeAppResult::Type::
                 kToken,
             token});
+  }
+}
+
+void IdentityDialogController::OnNativeAppError(
+    const content::IdentityCredentialTokenError& error) {
+  on_dismiss_.Reset();
+  if (on_native_result_) {
+    std::move(on_native_result_)
+        .Run(content::IdentityRequestDialogController::NativeAppResult{
+            content::IdentityRequestDialogController::NativeAppResult::Type::
+                kError,
+            "", error});
   }
 }
 
@@ -486,6 +524,7 @@ void IdentityDialogController::OnAccountSelected(
 }
 
 void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
+  on_native_result_.Reset();
   // |OnDismiss| can be called after |OnAccountSelected| which sets the callback
   // to null.
   if (!on_dismiss_) {
