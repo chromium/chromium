@@ -56,7 +56,6 @@ class AppDiscoveryServiceTest : public testing::Test {
  protected:
   Profile* profile() { return &profile_; }
   TestFetcher* test_fetcher() { return test_fetcher_.get(); }
-  base::CallbackListSubscription subscription_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -123,32 +122,6 @@ TEST_F(AppDiscoveryServiceTest, GetArcAppsFromFetcher) {
         EXPECT_EQ(play_extras->GetContainsAds(), false);
         EXPECT_EQ(play_extras->GetOptimizedForChrome(), false);
       }));
-}
-
-TEST_F(AppDiscoveryServiceTest, RegisterForUpdates) {
-  auto* app_discovery_service =
-      AppDiscoveryServiceFactory::GetForProfile(profile());
-  EXPECT_TRUE(app_discovery_service);
-
-  std::vector<Result> fake_results;
-  fake_results.emplace_back(AppSource::kTestSource, kTestIconId, kTestAppTitle,
-                            nullptr);
-
-  bool update_verified = false;
-  subscription_ = app_discovery_service->RegisterForAppUpdates(
-      ResultType::kTestType,
-      base::BindLambdaForTesting(
-          [this, &update_verified](const std::vector<Result>& results) {
-            EXPECT_EQ(results.size(), 1u);
-            CheckResult(results[0], AppSource::kTestSource, kTestIconId,
-                        kTestAppTitle);
-            EXPECT_FALSE(results[0].GetSourceExtras());
-            update_verified = true;
-          }));
-
-  EXPECT_FALSE(update_verified);
-  test_fetcher()->SetResults(std::move(fake_results));
-  EXPECT_TRUE(update_verified);
 }
 
 }  // namespace apps

@@ -8,10 +8,6 @@
 
 namespace apps {
 
-GameExtras* SourceExtras::AsGameExtras() {
-  return nullptr;
-}
-
 PlayExtras* SourceExtras::AsPlayExtras() {
   return nullptr;
 }

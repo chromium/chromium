@@ -7,26 +7,19 @@
 
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
-
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
 
 namespace apps {
 
 enum class ResultType {
   kTestType,
   kRecommendedArcApps,
-  kGameSearchCatalog,
 };
 
 enum class AppSource {
   kTestSource,
   kPlay,
-  kGames,
 };
 
 // These values persist to logs. Entries should not be renumbered and numeric
@@ -41,15 +34,6 @@ enum class DiscoveryError {
 using ResultCallback =
     base::OnceCallback<void(const std::vector<Result>& results,
                             DiscoveryError error)>;
-
-using RepeatingResultCallback =
-    base::RepeatingCallback<void(const std::vector<Result>& results)>;
-
-using ResultCallbackList =
-    base::RepeatingCallbackList<void(const std::vector<Result>& results)>;
-
-using GetIconCallback =
-    base::OnceCallback<void(const gfx::ImageSkia& image, DiscoveryError error)>;
 
 }  // namespace apps
 

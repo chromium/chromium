@@ -11,7 +11,6 @@
 namespace apps {
 
 enum class AppSource;
-class GameExtras;
 class PlayExtras;
 
 // Can be overridden by Sources that have unique fields.
@@ -26,7 +25,6 @@ class SourceExtras {
   virtual std::unique_ptr<SourceExtras> Clone() = 0;
 
   // Safe downcasts:
-  virtual GameExtras* AsGameExtras();
   virtual PlayExtras* AsPlayExtras();
 };
 

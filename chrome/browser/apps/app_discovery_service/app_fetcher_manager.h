@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 
@@ -21,11 +20,6 @@ class AppFetcher {
   virtual ~AppFetcher() = default;
 
   virtual void GetApps(ResultCallback callback) = 0;
-  virtual base::CallbackListSubscription RegisterForAppUpdates(
-      RepeatingResultCallback callback);
-  virtual void GetIcon(const std::string& icon_id,
-                       int32_t size_hint_in_dip,
-                       GetIconCallback callback);
 };
 
 // Backend for app fetching requests.
@@ -37,13 +31,6 @@ class AppFetcherManager {
   ~AppFetcherManager();
 
   void GetApps(ResultType result_type, ResultCallback callback);
-  base::CallbackListSubscription RegisterForAppUpdates(
-      ResultType result_type,
-      RepeatingResultCallback callback);
-  void GetIcon(const std::string& icon_id,
-               int32_t size_hint_in_dip,
-               ResultType result_type,
-               GetIconCallback callback);
 
   static void SetOverrideFetcherForTesting(AppFetcher* fetcher);
 

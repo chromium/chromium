@@ -13,8 +13,6 @@ source_set("app_discovery_service") {
     "app_discovery_util.h",
     "app_fetcher_manager.cc",
     "app_fetcher_manager.h",
-    "game_extras.cc",
-    "game_extras.h",
     "play_extras.cc",
     "play_extras.h",
     "recommended_arc_app_fetcher.cc",

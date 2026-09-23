@@ -7,24 +7,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/notreached.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_app_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace apps {
-
-base::CallbackListSubscription AppFetcher::RegisterForAppUpdates(
-    RepeatingResultCallback callback) {
-  NOTREACHED();
-}
-
-void AppFetcher::GetIcon(const std::string& icon_id,
-                         int32_t size_hint_in_dip,
-                         GetIconCallback callback) {
-  NOTREACHED();
-}
 
 // static
 AppFetcher* AppFetcherManager::g_test_fetcher_ = nullptr;
@@ -47,36 +34,6 @@ void AppFetcherManager::GetApps(ResultType result_type,
       DCHECK(recommended_arc_app_fetcher_);
       recommended_arc_app_fetcher_->GetApps(std::move(callback));
       return;
-    case ResultType::kGameSearchCatalog:
-      NOTREACHED();
-  }
-}
-
-base::CallbackListSubscription AppFetcherManager::RegisterForAppUpdates(
-    ResultType result_type,
-    RepeatingResultCallback callback) {
-  switch (result_type) {
-    case ResultType::kRecommendedArcApps:
-      NOTREACHED();
-    case ResultType::kTestType:
-      DCHECK(g_test_fetcher_);
-      return g_test_fetcher_->RegisterForAppUpdates(std::move(callback));
-    case ResultType::kGameSearchCatalog:
-      NOTREACHED();
-  }
-}
-
-void AppFetcherManager::GetIcon(const std::string& icon_id,
-                                int32_t size_hint_in_dip,
-                                ResultType result_type,
-                                GetIconCallback callback) {
-  switch (result_type) {
-    case ResultType::kRecommendedArcApps:
-      NOTREACHED();
-    case ResultType::kTestType:
-      NOTREACHED();
-    case ResultType::kGameSearchCatalog:
-      NOTREACHED();
   }
 }
 
