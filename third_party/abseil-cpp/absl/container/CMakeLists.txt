@@ -89,6 +89,25 @@ absl_cc_test(
     GTest::gmock_main
 )
 
+absl_cc_test(
+  NAME
+    btree_instantiate_test
+  SRCS
+    "btree_instantiate_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::btree
+    absl::btree_test_common
+    absl::cord
+    absl::core_headers
+    absl::flags
+    absl::raw_logging_internal
+    GTest::gmock_main
+)
+
 # Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME

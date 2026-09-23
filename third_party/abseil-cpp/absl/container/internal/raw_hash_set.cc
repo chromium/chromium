@@ -102,20 +102,12 @@ bool ShouldRehashForBugDetection(size_t capacity) {
              .offset() < RehashProbabilityConstant();
 }
 
-// Find a non-deterministic hash for single group table.
-// Last two bits are used to find a position for a newly inserted element after
-// resize.
-// This function basically using H2 last bits to save on shift operation.
-size_t SingleGroupTableH1(size_t hash, PerTableSeed seed) {
-  return hash ^ seed.seed();
-}
-
 // Returns the offset of the new element after resize from capacity 1 to 3.
-size_t Resize1To3NewOffset(size_t hash, PerTableSeed seed) {
+size_t Resize1To3NewOffset(size_t hash) {
   // After resize from capacity 1 to 3, we always have exactly the slot with
   // index 1 occupied, so we need to insert either at index 0 or index 2.
   static_assert(SooSlotIndex() == 1);
-  return SingleGroupTableH1(hash, seed) & 2;
+  return hash & 2;
 }
 
 // Returns the address of the ith slot in slots where each slot occupies
@@ -1720,7 +1712,7 @@ void* Grow1To3AndPrepareInsert(CommonFields& common,
   h2_t new_h2 = H2(new_hash);
   size_t orig_hash =
       policy.hash_slot(policy.hash_fn(common), old_slots, common.seed().seed());
-  size_t offset = Resize1To3NewOffset(new_hash, common.seed());
+  size_t offset = Resize1To3NewOffset(new_hash);
   InitializeThreeElementsControlBytes(H2(orig_hash), new_h2, offset, new_ctrl);
 
   void* old_element_target = NextSlot(new_slots, slot_size);
@@ -1786,8 +1778,7 @@ void* GrowToNextCapacityAndPrepareInsert(
                                            new_capacity);
     // We put the new element either at the beginning or at the end of the
     // table with approximately equal probability.
-    offset =
-        SingleGroupTableH1(new_hash, common.seed()) & 1 ? 0 : new_capacity - 1;
+    offset = new_hash & 1 ? 0 : new_capacity - 1;
 
     ABSL_SWISSTABLE_ASSERT(IsEmpty(new_ctrl[offset]));
     SetCtrlInSingleGroupTable(common, offset, new_h2, policy.slot_size);
@@ -2142,7 +2133,7 @@ void* GrowSooTableToNextCapacityAndPrepareInsert(
       policy.hash_fn(common), common.soo_data(), common.seed().seed()));
   const size_t new_hash = get_hash(common.seed().seed());
 
-  const size_t offset = Resize1To3NewOffset(new_hash, common.seed());
+  const size_t offset = Resize1To3NewOffset(new_hash);
   InitializeThreeElementsControlBytes(soo_slot_h2, H2(new_hash), offset,
                                       new_ctrl);
 

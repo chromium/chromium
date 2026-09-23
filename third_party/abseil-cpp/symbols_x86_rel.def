@@ -1,5 +1,4 @@
 EXPORTS
-    ?$TSS0@?1??CrcAndCopy@CrcMemcpy@crc_internal@absl@@SA?AVcrc32c_t@4@PIAXPIBXIV54@_N@Z@4HA
     ??$?0$$V$0A@@?$NoDestructor@V?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@@absl@@QAE@XZ
     ??$?0V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@$0A@@Cord@absl@@QAE@$$QAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ??$?6C@LogMessage@log_internal@absl@@QAEAAV012@ABC@Z
@@ -664,6 +663,7 @@ EXPORTS
     ?ExitOnDFatal@log_internal@absl@@YA_NXZ
     ?ExpectedChecksum@Cord@absl@@QBE?AV?$optional@I@__Cr@std@@XZ
     ?Extend@CRC32@crc_internal@absl@@UBEXPAIPBXI@Z
+    ?ExtendAndCopy@CRC@crc_internal@absl@@UBEXPAIPIAXPIBXI@Z
     ?ExtendByZeroes@CRC32@crc_internal@absl@@UBEXPAII@Z
     ?ExtendByZeroesImpl@CRC32@crc_internal@absl@@CAXPAIIQBI1@Z
     ?ExtendCrc32cByZeroes@absl@@YA?AVcrc32c_t@1@V21@I@Z
@@ -1398,7 +1398,6 @@ EXPORTS
     ?day_difference@impl@detail@cctz@time_internal@absl@@YA_J_JCC0CC@Z
     ?description@time_zone@cctz@time_internal@absl@@QBE?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?effective_impl@time_zone@cctz@time_internal@absl@@ABEABVImpl@1234@XZ
-    ?engines@?1??CrcAndCopy@CrcMemcpy@crc_internal@absl@@SA?AVcrc32c_t@4@PIAXPIBXIV54@_N@Z@4UArchSpecificEngines@234@B
     ?fixed_time_zone@cctz@time_internal@absl@@YA?AVtime_zone@123@ABV?$duration@_JV?$ratio@$00$00@__Cr@std@@@chrono@__Cr@std@@@Z
     ?format@detail@cctz@time_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@ABV567@ABV?$time_point@Vsystem_clock@chrono@__Cr@std@@V?$duration@_JV?$ratio@$00$00@__Cr@std@@@234@@chrono@67@ABV?$duration@_JV?$ratio@$00$0DINHOKEMGIAAA@@__Cr@std@@@967@ABVtime_zone@234@@Z
     ?from_chars@absl@@YA?AUfrom_chars_result@1@PBD0AAMW4chars_format@1@@Z

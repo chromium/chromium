@@ -25,6 +25,7 @@
 #include <initializer_list>
 #include <ios>
 #include <limits>
+#include <map>
 #include <memory>
 #include <optional>
 #include <ostream>
@@ -50,6 +51,7 @@
 #include "absl/numeric/bits.h"
 #include "absl/strings/cord.h"
 #include "absl/strings/cord_test_helpers.h"
+#include "absl/strings/escaping.h"
 #include "absl/strings/string_view.h"
 
 #ifdef ABSL_INTERNAL_STD_FILESYSTEM_PATH_HASH_AVAILABLE
@@ -1267,23 +1269,27 @@ TEST(PrecombineLengthMix, ShortStringCollision) {
 #if defined(__ANDROID__) && defined(__arm__)
   GTEST_SKIP() << "Fails on 32-bit Android due to layout changes.";
 #endif
-  std::string s1 = "00";
-  std::string s2 = "000";
   constexpr char kMinChar = 0;
-  constexpr char kMaxChar = 32;
-  for (s1[0] = kMinChar; s1[0] < kMaxChar; ++s1[0]) {
-    for (s1[1] = kMinChar; s1[1] < kMaxChar; ++s1[1]) {
-      for (s2[0] = kMinChar; s2[0] < kMaxChar; ++s2[0]) {
-        for (s2[1] = kMinChar; s2[1] < kMaxChar; ++s2[1]) {
-          for (s2[2] = kMinChar; s2[2] < kMaxChar; ++s2[2]) {
-            ASSERT_NE(absl::HashOf(s1), absl::HashOf(s2))
-                << "s1[0]: " << static_cast<int>(s1[0])
-                << "; s1[1]: " << static_cast<int>(s1[1])
-                << "; s2[0]: " << static_cast<int>(s2[0])
-                << "; s2[1]: " << static_cast<int>(s2[1])
-                << "; s2[2]: " << static_cast<int>(s2[2]);
-          }
-        }
+  constexpr char kMaxChar = sizeof(size_t) * 4;
+  // We use standard map to avoid the second dependency on the same hash.
+  std::map<size_t, std::string> hashes;
+  {
+    std::string s1 = "00";
+    for (s1[0] = kMinChar; s1[0] < kMaxChar; ++s1[0]) {
+      for (s1[1] = kMinChar; s1[1] < kMaxChar; ++s1[1]) {
+        auto [it, inserted] = hashes.insert({absl::HashOf(s1), s1});
+        ASSERT_TRUE(inserted) << "Collision found for " << absl::CEscape(s1)
+                              << " and " << absl::CEscape(it->second);
+      }
+    }
+  }
+  std::string s2 = "000";
+  for (s2[0] = kMinChar; s2[0] < kMaxChar; ++s2[0]) {
+    for (s2[1] = kMinChar; s2[1] < kMaxChar; ++s2[1]) {
+      for (s2[2] = kMinChar; s2[2] < kMaxChar; ++s2[2]) {
+        auto [it, inserted] = hashes.insert({absl::HashOf(s2), s2});
+        ASSERT_TRUE(inserted) << "Collision found for " << absl::CEscape(s2)
+                              << " and " << absl::CEscape(it->second);
       }
     }
   }

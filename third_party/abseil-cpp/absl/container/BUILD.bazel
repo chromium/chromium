@@ -1279,7 +1279,6 @@ cc_test(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
-        "//absl/flags:flag",
         "//absl/hash:hash_testing",
         "//absl/memory",
         "//absl/random",
@@ -1287,6 +1286,33 @@ cc_test(
         "//absl/strings:cord",
         "//absl/strings:string_view",
         "//absl/types:compare",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "btree_instantiate_test",
+    size = "large",
+    srcs = [
+        "btree_instantiate_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    shard_count = 10,
+    tags = [
+        "no_test:os:ios",
+        "no_test_ios",
+        "no_test_wasm",
+    ],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":btree",
+        ":btree_test_common",
+        "//absl/base:config",
+        "//absl/base:raw_logging_internal",
+        "//absl/flags:flag",
+        "//absl/strings:cord",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],

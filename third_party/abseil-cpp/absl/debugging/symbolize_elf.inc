@@ -774,6 +774,25 @@ static ABSL_ATTRIBUTE_NOINLINE FindSymbolResult FindSymbol(
     return SYMBOL_NOT_FOUND;
   }
 
+  // In the ELF specification, sh_entsize is a generic section header field that
+  // holds the entry size in bytes for sections containing fixed-size entries.
+  // For symbol tables (SHT_SYMTAB and SHT_DYNSYM), the ELF specification
+  // mandates that each entry is an ElfW(Sym), so sh_entsize should always equal
+  // sizeof(ElfW(Sym)).
+  //
+  // However, because sh_entsize is read directly from the untrusted object
+  // file, a crafted or corrupt file can specify an unexpected value:
+  // 1. Setting sh_entsize to 0 would cause a division-by-zero (SIGFPE) in the
+  //    num_symbols calculation below.
+  // 2. Setting sh_entsize to a value other than sizeof(ElfW(Sym)) would
+  //    desynchronize our fixed-size ElfW(Sym) buffer reads from the per-entry
+  //    stride in the file.
+  // Reject such malformed tables, mirroring the e_shentsize check we apply to
+  // section headers.
+  if (symtab->sh_entsize != sizeof(ElfW(Sym))) {
+    return SYMBOL_NOT_FOUND;
+  }
+
   // Read multiple symbols at once to save read() calls.
   ElfW(Sym) *buf = reinterpret_cast<ElfW(Sym) *>(tmp_buf);
   const size_t buf_entries = tmp_buf_size / sizeof(buf[0]);
