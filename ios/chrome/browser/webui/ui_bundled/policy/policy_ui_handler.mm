@@ -447,6 +447,12 @@ base::DictValue PolicyUIHandler::GetPolicyNames() const {
   return names;
 }
 
+base::flat_map<std::string, policy::mojom::PolicyGroupNamesPtr>
+PolicyUIHandler::GetPolicyNamesMojo() const {
+  // TODO(crbug.com/40897784): Implement.
+  return {};
+}
+
 base::DictValue PolicyUIHandler::GetPolicyValues() const {
   base::ListValue policy_ids;
   policy_ids.Append(policy::kChromePoliciesId);
@@ -464,6 +470,12 @@ base::DictValue PolicyUIHandler::GetPolicyValues() const {
   return dict;
 }
 
+policy::mojom::PolicyGroupsResponsePtr PolicyUIHandler::GetPolicyValuesMojo()
+    const {
+  // TODO(crbug.com/40897784): Implement.
+  return policy::mojom::PolicyGroupsResponse::New();
+}
+
 void PolicyUIHandler::HandleListenPoliciesUpdates(const base::ListValue& args) {
   OnRefreshPoliciesDone();
 }
@@ -478,11 +490,12 @@ void PolicyUIHandler::HandleReloadPolicies(const base::ListValue& args) {
 
 void PolicyUIHandler::SendPolicies() {
   if (IsMojoEnabled()) {
-    return;
+    client_->PoliciesUpdated(GetPolicyNamesMojo(), GetPolicyValuesMojo());
+  } else {
+    base::DictValue names = GetPolicyNames();
+    base::DictValue values = GetPolicyValues();
+    web_ui()->FireWebUIListener("policies-updated", names, values);
   }
-  base::DictValue names = GetPolicyNames();
-  base::DictValue values = GetPolicyValues();
-  web_ui()->FireWebUIListener("policies-updated", names, values);
 }
 
 void PolicyUIHandler::SendSchema() {

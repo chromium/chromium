@@ -153,6 +153,14 @@ struct PolicyGroupsResponse {
   map<string, PolicyGroup> policy_groups;
 };
 
+struct PolicyGroupNames {
+  // Name of this policy group/namespace.
+  string name;
+
+  // List of policy names belonging to this policy group.
+  array<string> policy_names;
+};
+
 // Messages sent from the renderer WebUI TS to the browser process C++.
 interface PolicyPageHandler {
   // Test function to verify the mojo interface works.
@@ -213,6 +221,12 @@ interface PolicyPageClient {
   // name to its metadata.
   // See `policy::PolicyStatusProvider` for more details.
   StatusUpdated(map<string, Status> status);
+
+  // Notifies the UI about policies update. `policy_names` maps string id of the
+  // policy group to a corresponding PolicyGroupNames object.
+  // See `policy::PolicyValueProvider` for more details.
+  PoliciesUpdated(map<string, PolicyGroupNames> policy_names,
+                  PolicyGroupsResponse policy_values);
 };
 
 // The factory interface used to bootstrap the connection between the

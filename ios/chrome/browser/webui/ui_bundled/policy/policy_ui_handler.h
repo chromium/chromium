@@ -97,10 +97,17 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
 
   // Returns a dictionary containing the policies supported by Chrome.
   base::DictValue GetPolicyNames() const;
+  // TODO(crbug.com/40897784): Delete the non-mojo version once the migration is
+  // complete.
+  base::flat_map<std::string, policy::mojom::PolicyGroupNamesPtr>
+  GetPolicyNamesMojo() const;
 
   // Returns a dictionary containing the current values of the policies
   // supported by Chrome and list of the policy IDs.
   base::DictValue GetPolicyValues() const;
+  // TODO(crbug.com/40897784): Delete the non-mojo version once the migration is
+  // complete.
+  policy::mojom::PolicyGroupsResponsePtr GetPolicyValuesMojo() const;
 
   // Called to handle the "listenPoliciesUpdates" WebUI message.
   void HandleListenPoliciesUpdates(const base::ListValue& args);

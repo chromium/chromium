@@ -28,14 +28,10 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {GetPoliciesReason} from './policy.mojom-webui.js';
-import type {PolicyGroupsResponse, Status} from './policy.mojom-webui.js';
+import type {PolicyGroupNames, PolicyGroupsResponse, Status} from './policy.mojom-webui.js';
 import {getCss} from './policy_app.css.js';
 import {getHtml} from './policy_app.html.js';
 import type {PolicyTableModel} from './policy_table.js';
-
-export interface PolicyNamesResponse {
-  [id: string]: {name: string, policyNames: NonNullable<string[]>};
-}
 
 export class PolicyAppElement extends CrLitElement {
   static get is() {
@@ -121,13 +117,16 @@ export class PolicyAppElement extends CrLitElement {
         loadTimeData.valueExists('hideUploadReportButton') &&
         loadTimeData.getBoolean('hideUploadReportButton');
 
-    sendWithPromise<void>('listenPoliciesUpdates');
     BrowserProxy.listenForStatusUpdated(
         (status: Record<string, Status>) => this.status_ = status);
+    // TODO(crbug.com/40897784): Once all policy providers implement the mojo
+    // version use BrowserProxy to listen for policies updated event.
     addWebUiListener(
         'policies-updated',
-        (names: PolicyNamesResponse, groups: PolicyGroupsResponse) =>
+        (names: Record<string, PolicyGroupNames>,
+         groups: PolicyGroupsResponse) =>
             this.onPoliciesReceived_(names, groups));
+    sendWithPromise<void>('listenPoliciesUpdates');
   }
 
   override disconnectedCallback() {
@@ -151,7 +150,7 @@ export class PolicyAppElement extends CrLitElement {
   // </if>
 
   private onPoliciesReceived_(
-      policyNames: PolicyNamesResponse,
+      policyNames: Record<string, PolicyGroupNames>,
       policyGroupsResponse: PolicyGroupsResponse) {
     const policyGroups = policyGroupsResponse.policyGroups;
     const policyIds: string[] = policyGroupsResponse.policyIdsPresentationOrder;

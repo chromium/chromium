@@ -524,20 +524,21 @@ void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void PolicyUIHandler::SendPolicies() {
-  if (!IsJavascriptAllowed()) {
-    return;
-  }
   if (IsMojoMigrationEnabled()) {
-    // TODO(crbug.com/40897784): Remove once SendPolicies is supported in the
-    // mojo version.
-    return;
+    client_->PoliciesUpdated(
+        policy_value_and_status_aggregator_->GetAggregatedPolicyNamesMojo(),
+        policy_value_and_status_aggregator_->GetAggregatedPolicyValuesMojo());
+  } else {
+    if (!IsJavascriptAllowed()) {
+      return;
+    }
+    FireWebUIListener(
+        "policies-updated",
+        base::Value(
+            policy_value_and_status_aggregator_->GetAggregatedPolicyNames()),
+        base::Value(
+            policy_value_and_status_aggregator_->GetAggregatedPolicyValues()));
   }
-  FireWebUIListener(
-      "policies-updated",
-      base::Value(
-          policy_value_and_status_aggregator_->GetAggregatedPolicyNames()),
-      base::Value(
-          policy_value_and_status_aggregator_->GetAggregatedPolicyValues()));
 }
 
 void PolicyUIHandler::SendStatus() {

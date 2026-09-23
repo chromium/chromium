@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/observer_list.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 
 namespace policy {
 
@@ -17,8 +18,9 @@ PolicyValueProvider::~PolicyValueProvider() = default;
 void PolicyValueProvider::Refresh() {}
 
 void PolicyValueProvider::NotifyValueChange() {
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnPolicyValueChanged();
+  }
 }
 
 void PolicyValueProvider::AddObserver(Observer* observer) {
@@ -27,6 +29,16 @@ void PolicyValueProvider::AddObserver(Observer* observer) {
 
 void PolicyValueProvider::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+base::flat_map<std::string, policy::mojom::PolicyGroupPtr>
+PolicyValueProvider::GetValuesMojo() const {
+  return {};
+}
+
+base::flat_map<std::string, policy::mojom::PolicyGroupNamesPtr>
+PolicyValueProvider::GetNamesMojo() const {
+  return {};
 }
 
 }  // namespace policy
