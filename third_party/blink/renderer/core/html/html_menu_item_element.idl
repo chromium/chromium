@@ -9,7 +9,7 @@
     [HTMLConstructor] constructor();
     [CEReactions, Reflect] attribute boolean disabled;
     // This is used to track live checked-ness.
-    [CEReactions] attribute boolean checked;
+    [CEReactions, ImplementedAs=checkedForBinding] attribute boolean checked;
     // This is used to track only *default* checked-ness. It reflects a content
     // attribute with the same name; the `defaultchecked` content attribute
     // exists so that JavaScript is not required to set the initial checkedness

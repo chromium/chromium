@@ -84,7 +84,7 @@ void HTMLMenuItemElement::ParseAttribute(
     //
     // Keep this logic in sync with the logic at the bottom of `InsertedInto()`.
     if (!is_default_checkedness_overridden_) {
-      setChecked(!params.new_value.IsNull());
+      setChecked(!params.new_value.IsNull(), CheckedBehavior::kNoEvents);
       // Re-unset this flag, since `SetChecked()` set it to true by default.
       is_default_checkedness_overridden_ = false;
     }
@@ -196,7 +196,8 @@ bool HTMLMenuItemElement::IsValidInterestInvoker(Element& target) const {
   return !FastHasAttribute(html_names::kDisabledAttr);
 }
 
-bool HTMLMenuItemElement::setChecked(bool checked) {
+bool HTMLMenuItemElement::setChecked(bool checked,
+                                     CheckedBehavior event_behavior) {
   bool checkable = IsCheckable();
   is_checked_ = checked && checkable;
   PseudoStateChanged(CSSSelector::kPseudoChecked);
@@ -209,6 +210,11 @@ bool HTMLMenuItemElement::setChecked(bool checked) {
   DCHECK(!GetInvokedSubmenu());
 
   is_default_checkedness_overridden_ = true;
+
+  if (event_behavior == CheckedBehavior::kFireEvents) {
+    EnqueueEvent(*Event::Create(event_type_names::kChecked),
+                 TaskType::kUserInteraction);
+  }
 
   // Only update the exclusivity of all other menu items rooted under the same
   // fieldset *if* `this` is becoming checked under a fieldset that enforces
@@ -231,12 +237,17 @@ bool HTMLMenuItemElement::setChecked(bool checked) {
   }
 }
 
+void HTMLMenuItemElement::setCheckedForBinding(bool checked) {
+  setChecked(checked, CheckedBehavior::kNoEvents);
+}
+
 void HTMLMenuItemElement::ActivateMenuItem(
     ActivationKeyboardEventType activation_type) {
   // A menu item's checkability and ability to invoke a command are
   // exclusive. If the item is checkable, that takes precedence, and the sub-
   // menu invoker will NOT be respected.
-  bool close_containing_menulist = setChecked(!checked());
+  bool close_containing_menulist =
+      setChecked(!checked(), CheckedBehavior::kFireEvents);
 
   // If this menu item isn't a submenu invoker, or it's a checkable menu item
   // that wants us to close after changing, then close the containing menu.
@@ -755,7 +766,7 @@ Node::InsertionNotificationRequest HTMLMenuItemElement::InsertedInto(
   if (!is_default_checkedness_overridden_) {
     const bool default_checked =
         FastHasAttribute(html_names::kDefaultcheckedAttr);
-    setChecked(default_checked);
+    setChecked(default_checked, CheckedBehavior::kNoEvents);
     // Re-unset this flag, since `SetChecked()` set it to true by default.
     is_default_checkedness_overridden_ = false;
   }

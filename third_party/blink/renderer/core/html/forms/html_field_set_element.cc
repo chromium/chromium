@@ -282,7 +282,8 @@ void HTMLFieldSetElement::UpdateMenuItemCheckableExclusivity(
   for (HTMLMenuItemElement& menu_item :
        Traversal<HTMLMenuItemElement>::DescendantsOf(*this)) {
     if (&menu_item != checked_menu_item) {
-      menu_item.setChecked(false);
+      menu_item.setChecked(false,
+                           HTMLMenuItemElement::CheckedBehavior::kNoEvents);
     }
   }
 }

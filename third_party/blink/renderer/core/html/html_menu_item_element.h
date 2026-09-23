@@ -19,6 +19,11 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum class CheckedBehavior {
+    kFireEvents,
+    kNoEvents,
+  };
+
   explicit HTMLMenuItemElement(Document&);
   ~HTMLMenuItemElement() override;
   ElementType GetElementType() const final {
@@ -33,10 +38,12 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   bool IsCheckable() const { return CheckableState() != Checkable::None; }
 
   bool checked() const;
+  bool checkedForBinding() const { return checked(); }
+  void setCheckedForBinding(bool checked);
   // This only sets `this` to checked if `IsCheckable()` is true. The return
   // value is true if this is a checkable menu item *and* a containing menu list
   // should be closed after changing the checked state.
-  bool setChecked(bool);
+  bool setChecked(bool checked, CheckedBehavior event_behavior);
   bool ShouldAppearChecked() const;
 
   HTMLMenuOwnerElement* OwningMenuElement() const {

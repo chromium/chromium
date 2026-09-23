@@ -57,6 +57,7 @@
     "capturedmousechange",
     "capturehandlechange",
     "change",
+    "checked",
     "characterboundsupdate",
     "characteristicvaluechanged",
     "chargingchange",
