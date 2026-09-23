@@ -135,7 +135,7 @@
     </message>
     <if expr="not is_android">
       <message name="IDS_BOOKMARK_BAR_SUBMENU_LABEL" desc="Label for the bookmarks bar submenu">
-        Bookmarks bar
+        Show bookmark bar
       </message>
       <message name="IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE" desc="Menu item to always hide the bookmark bar">
         Always hide
@@ -211,7 +211,7 @@
     </message>
     <if expr="not is_android">
       <message name="IDS_BOOKMARK_BAR_SUBMENU_LABEL" desc="In Title Case: Label for the bookmarks bar submenu">
-        Bookmarks Bar
+        Show Bookmark Bar
       </message>
       <message name="IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE" desc="In Title Case: Menu item to always hide the bookmark bar">
         Always Hide

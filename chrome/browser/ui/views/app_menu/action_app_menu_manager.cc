@@ -759,7 +759,11 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
               const bool is_tablet_mode = false;
 #endif
           if (!is_tablet_mode) {
-            sub.AddAction(kActionTabSearch);
+            sub.AddAction(kActionTabSearch,
+                          {.icon_override = ui::ImageModel::FromVectorIcon(
+                               features::IsRoundedIconsEnabled()
+                                   ? kManageSearchIcon
+                                   : kTabSearchTabStripOldIcon)});
           }
 
           sub.AddAction(kActionNameWindow);
