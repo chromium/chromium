@@ -181,6 +181,7 @@ ScriptPromise<IDLUndefined> PipeToEngine::Start(
   DCHECK(!exception_state.HadException());
 
   // 11. Set source.[[disturbed]] to true.
+  readable->is_disturbed_ = true;
 
   // 12. Let shuttingDown be false.
   DCHECK(!is_shutting_down_);
