@@ -64,7 +64,14 @@ template("tiered_dex_assembly") {
     ]
     outputs = _partition_outputs
     args = _partition_args
-    deps = [ _build_config_target ]
+
+    # Does not actually need the input javac .jar files to exist, but listed
+    # here because individual shards need this as a transitive dep for clean
+    # builds. Subsequent builds rely on depfiles to capture per-shard inputs.
+    deps = [
+      _build_config_target,
+      _java_target_name,
+    ]
   }
 
   _partition_dex_deps = [ ":$_partition_target_name" ]
@@ -100,10 +107,8 @@ template("tiered_dex_assembly") {
           "@FileArg(${_rebased_partition_build_config}:all_dex_files)"
       enable_desugar = false
 
-      deps = [
-        ":$_partition_target_name",
-        _java_target_name,
-      ]
+      # Rely on the depsfile to map each shard to input .jars.
+      deps = [ ":$_partition_target_name" ]
     }
   }
 
