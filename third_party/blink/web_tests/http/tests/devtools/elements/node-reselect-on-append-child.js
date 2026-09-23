@@ -29,8 +29,12 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
   function onNodeSelected() {
     ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, onSelectionChangedEvent);
-    TestRunner.addSniffer(ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype, 'updateChildren', onNodeAppended);
+        ElementsModule.DOMTreeWidget.ElementsTreeOutline.Events
+            .SelectedNodeChanged,
+        onSelectionChangedEvent);
+    TestRunner.addSniffer(
+        ElementsModule.DOMTreeWidget.ElementsTreeOutline.prototype,
+        'updateChildren', onNodeAppended);
     TestRunner.evaluateInPage('appendNewNode()');
   }
 

@@ -25,7 +25,9 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
     `);
 
   ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-      ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
+      ElementsModule.DOMTreeWidget.ElementsTreeOutline.Events
+          .SelectedNodeChanged,
+      selectedNodeChanged);
 
   var tests = [
     ['shadow', 'inspect(host.shadowRoot.firstChild.firstChild.firstChild)'],

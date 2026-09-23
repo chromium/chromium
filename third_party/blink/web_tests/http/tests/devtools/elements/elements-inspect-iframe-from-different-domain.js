@@ -55,14 +55,14 @@ import {TestRunner} from 'test_runner';
         const node = event.data.node;
         if (node && predicate(node)) {
           treeOutline.removeEventListener(
-              ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events
+              ElementsModule.DOMTreeWidget.ElementsTreeOutline.Events
                   .SelectedNodeChanged,
               listener);
           resolve(node);
         }
       }
       treeOutline.addEventListener(
-          ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events
+          ElementsModule.DOMTreeWidget.ElementsTreeOutline.Events
               .SelectedNodeChanged,
           listener);
     });

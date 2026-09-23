@@ -26,7 +26,8 @@ import * as Main from 'devtools/entrypoints/main/main.js';
     `);
 
   ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-      Elements.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
+      Elements.DOMTreeWidget.ElementsTreeOutline.Events.SelectedNodeChanged,
+      selectedNodeChanged);
 
   var nodeChangesRemaining = 2;
   function selectedNodeChanged(event) {

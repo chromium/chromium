@@ -56,7 +56,7 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
   dumpElementsTree();
 
   const updatePromise = TestRunner.addSnifferPromise(
-      ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype,
+      ElementsModule.DOMTreeWidget.ElementsTreeOutline.prototype,
       'updateModifiedNodes');
   TestRunner.evaluateInPage('insertNode()');
   await updatePromise;

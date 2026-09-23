@@ -128,7 +128,9 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
   }
 
   function waitForModifiedNodesUpdate(title, next) {
-    TestRunner.addSniffer(ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype, 'updateModifiedNodes', callback);
+    TestRunner.addSniffer(
+        ElementsModule.DOMTreeWidget.ElementsTreeOutline.prototype,
+        'updateModifiedNodes', callback);
 
     function callback() {
       expandAndDumpShadowHostNode('========= ' + title + ' ========', next);

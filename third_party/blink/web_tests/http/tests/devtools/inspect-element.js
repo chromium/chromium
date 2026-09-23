@@ -16,7 +16,9 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
   await TestRunner.addIframe('resources/inspect-element-iframe.html');
 
   ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-      ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged, this);
+      ElementsModule.DOMTreeWidget.ElementsTreeOutline.Events
+          .SelectedNodeChanged,
+      selectedNodeChanged, this);
   function selectedNodeChanged(event) {
     var node = event.data.node;
     if (!node)

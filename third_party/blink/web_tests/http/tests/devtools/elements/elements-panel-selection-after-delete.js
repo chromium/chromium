@@ -74,13 +74,17 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
   }
 
   function removeElementAsUser(element, callback) {
-    TestRunner.addSniffer(ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype, 'updateModifiedNodes', callback);
+    TestRunner.addSniffer(
+        ElementsModule.DOMTreeWidget.ElementsTreeOutline.prototype,
+        'updateModifiedNodes', callback);
     element.remove();
   }
 
   function removeElementExternally(element, callback) {
     var node = element.node();
-    TestRunner.addSniffer(ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype, 'updateChildren', callback);
+    TestRunner.addSniffer(
+        ElementsModule.DOMTreeWidget.ElementsTreeOutline.prototype,
+        'updateChildren', callback);
     node.removeNode();
   }
 

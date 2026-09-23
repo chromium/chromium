@@ -33,11 +33,15 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
             includeCommandLineAPI: true
           }, false, false);
 
-          UIModule.Context.Context.instance().addFlavorChangeListener(SDK.DOMModel.DOMNode, (event) => {
-            const treeOutline = ElementsModule.ElementsTreeOutline.ElementsTreeOutline.forDOMModel(event.data.domModel());
-            TestRunner.addResult(`Selected node has text: ${treeOutline.selectedDOMNode().children()[0].nodeName()}`);
-            TestRunner.completeTest();
-          });
+          UIModule.Context.Context.instance().addFlavorChangeListener(
+              SDK.DOMModel.DOMNode, (event) => {
+                const treeOutline =
+                    ElementsModule.DOMTreeWidget.ElementsTreeOutline
+                        .forDOMModel(event.data.domModel());
+                TestRunner.addResult(`Selected node has text: ${
+                    treeOutline.selectedDOMNode().children()[0].nodeName()}`);
+                TestRunner.completeTest();
+              });
         }
       });
     },

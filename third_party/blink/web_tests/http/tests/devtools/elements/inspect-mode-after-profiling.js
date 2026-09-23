@@ -31,13 +31,17 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
   function clickAtInspected() {
     ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, dumpAndFinish);
+        ElementsModule.DOMTreeWidget.ElementsTreeOutline.Events
+            .SelectedNodeChanged,
+        dumpAndFinish);
     TestRunner.evaluateInPage('click()');
   }
 
   function dumpAndFinish() {
     ElementsTestRunner.firstElementsTreeOutline().removeEventListener(
-        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, dumpAndFinish);
+        ElementsModule.DOMTreeWidget.ElementsTreeOutline.Events
+            .SelectedNodeChanged,
+        dumpAndFinish);
     var selectedElement = ElementsTestRunner.firstElementsTreeOutline().selectedTreeElement;
     TestRunner.addResult('Node selected: ' + selectedElement.node().getAttribute('id'));
     TestRunner.completeTest();

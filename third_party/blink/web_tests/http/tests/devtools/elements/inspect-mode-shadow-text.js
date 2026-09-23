@@ -36,13 +36,17 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
   function step2() {
     ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, step3);
+        ElementsModule.DOMTreeWidget.ElementsTreeOutline.Events
+            .SelectedNodeChanged,
+        step3);
     TestRunner.evaluateInPage('click()');
   }
 
   function step3() {
     ElementsTestRunner.firstElementsTreeOutline().removeEventListener(
-        ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, step3);
+        ElementsModule.DOMTreeWidget.ElementsTreeOutline.Events
+            .SelectedNodeChanged,
+        step3);
     var selectedElement = ElementsTestRunner.firstElementsTreeOutline().selectedTreeElement;
     TestRunner.addResult('Node selected: ' + selectedElement.node().getAttribute('id'));
     TestRunner.completeTest();

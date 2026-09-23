@@ -28,7 +28,9 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
   var childObject = await TestRunner.evaluateInPageRemoteObject('whitespaceChild()');
 
   ElementsTestRunner.firstElementsTreeOutline().addEventListener(
-      ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events.SelectedNodeChanged, selectedNodeChanged);
+      ElementsModule.DOMTreeWidget.ElementsTreeOutline.Events
+          .SelectedNodeChanged,
+      selectedNodeChanged);
   Common.Revealer.reveal(childObject);
 
   function selectedNodeChanged(event) {
