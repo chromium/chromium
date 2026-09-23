@@ -56,6 +56,7 @@ export interface SettingsUiElement {
     container: HTMLElement,
     drawer: CrDrawerElement,
     drawerTemplate: DomIf,
+    left: HTMLElement,
     leftMenu: SettingsMenuElement,
     main: SettingsMainElement,
     scrollableShadow: HTMLElement,
@@ -99,6 +100,11 @@ export class SettingsUiElement extends SettingsUiElementBase {
         type: String,
         value: '',
       },
+
+      isSettingsRefresh2026_: {
+        type: Boolean,
+        value: () => loadTimeData.getString('settingsRefresh2026') !== '',
+      },
     };
   }
 
@@ -106,6 +112,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
   declare private toolbarSpinnerActive_: boolean;
   declare private narrow_: boolean;
   declare private lastSearchQuery_: string;
+  declare private isSettingsRefresh2026_: boolean;
 
   private activeTimer_: ActiveTimer|null = null;
 
@@ -291,7 +298,22 @@ export class SettingsUiElement extends SettingsUiElementBase {
     });
   }
 
+  private getLeftMenuHidden_(): boolean {
+    return this.narrow_ && !this.isSettingsRefresh2026_;
+  }
+
+  private getLeftMenuCollapsed_(): boolean {
+    return this.narrow_ && this.isSettingsRefresh2026_;
+  }
+
   private onNarrowChanged_() {
+    // In SettingsRefresh2026, the left menu collapses instead of hiding and
+    // the drawer menu is not used, so focus does not need to move to the
+    // toolbar drawer button.
+    if (this.isSettingsRefresh2026_) {
+      return;
+    }
+
     if (this.$.drawer.open && !this.narrow_) {
       this.$.drawer.close();
     }

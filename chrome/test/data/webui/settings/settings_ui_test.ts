@@ -9,7 +9,7 @@ import type {CrDrawerElement, CrToolbarElement, CrToolbarSearchFieldElement, Set
 import {CrSettingsPrefs, loadTimeData, MAX_QUERY_LENGTH, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished, isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for the Settings layout. */
@@ -166,7 +166,7 @@ suite('WebuiRefresh2026', () => {
   const WEBUI_REFRESH_ATTR = 'webui-refresh-2026';
   let ui: SettingsUiElement;
 
-  function createSettingsUI() {
+  function createSettingsUi() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ui = document.createElement('settings-ui');
     document.body.appendChild(ui);
@@ -175,7 +175,7 @@ suite('WebuiRefresh2026', () => {
 
   test('Enabled', async () => {
     loadTimeData.overrideValues({webuiRefresh2026: WEBUI_REFRESH_ATTR});
-    createSettingsUI();
+    createSettingsUi();
     await flushTasks();
 
     assertNotEquals(null, document.body.querySelector(COLORS_CSS_SELECTOR));
@@ -183,9 +183,67 @@ suite('WebuiRefresh2026', () => {
 
   test('Disabled', async () => {
     loadTimeData.overrideValues({webuiRefresh2026: ''});
-    createSettingsUI();
+    createSettingsUi();
     await flushTasks();
 
     assertEquals(null, document.body.querySelector(COLORS_CSS_SELECTOR));
+  });
+});
+
+suite('SettingsRefresh2026', () => {
+  let ui: SettingsUiElement;
+
+  function createSettingsUi() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    ui = document.createElement('settings-ui');
+    document.body.appendChild(ui);
+    flush();
+  }
+
+  test('NavMenuCollapseEnabled', async () => {
+    loadTimeData.overrideValues({settingsRefresh2026: 'settings-refresh-2026'});
+    createSettingsUi();
+
+    ui.$.toolbar.narrow = false;
+    await microtasksFinished();
+
+    // In non-narrow mode, the left nav menu is neither hidden nor collapsed.
+    assertFalse(ui.$.left.hasAttribute('hidden'));
+    assertFalse(ui.$.left.hasAttribute('collapsed'));
+    assertTrue(isVisible(ui.$.left));
+    assertFalse(ui.$.leftMenu.collapsed);
+    assertFalse(ui.$.leftMenu.hasAttribute('collapsed'));
+    assertTrue(isVisible(ui.$.leftMenu));
+    assertFalse(ui.$.toolbar.showMenu);
+
+    ui.$.toolbar.narrow = true;
+    await microtasksFinished();
+
+    // The left nav menu should be collapsed but not hidden when
+    // settings refresh is enabled.
+    assertFalse(ui.$.left.hasAttribute('hidden'));
+    assertTrue(ui.$.left.hasAttribute('collapsed'));
+    assertTrue(isVisible(ui.$.left));
+    assertTrue(ui.$.leftMenu.collapsed);
+    assertTrue(ui.$.leftMenu.hasAttribute('collapsed'));
+    assertTrue(isVisible(ui.$.leftMenu));
+    assertFalse(ui.$.toolbar.showMenu);
+  });
+
+  test('NavMenuCollapseDisabled', async () => {
+    loadTimeData.overrideValues({settingsRefresh2026: ''});
+    createSettingsUi();
+
+    // When not in settings refresh and in narrow mode, the left nav
+    // menu should be hidden but not collapsed.
+    ui.$.toolbar.narrow = true;
+    await microtasksFinished();
+    assertTrue(ui.$.left.hasAttribute('hidden'));
+    assertFalse(ui.$.left.hasAttribute('collapsed'));
+    assertFalse(isVisible(ui.$.left));
+    assertFalse(ui.$.leftMenu.collapsed);
+    assertFalse(ui.$.leftMenu.hasAttribute('collapsed'));
+    assertFalse(isVisible(ui.$.leftMenu));
+    assertTrue(ui.$.toolbar.showMenu);
   });
 });

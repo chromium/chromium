@@ -534,6 +534,11 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, WebuiRefresh2026) {
   RunTest("settings/settings_ui_test.js", "runMochaSuite('WebuiRefresh2026')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsRefresh2026) {
+  RunTest("settings/settings_ui_test.js",
+          "runMochaSuite('SettingsRefresh2026')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ActiveTimer) {
   RunTest("settings/active_timer_test.js", "mocha.run()");
 }

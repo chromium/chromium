@@ -47,6 +47,10 @@
         min-width: fit-content;
       }
 
+      :host-context([settings-refresh-2026]) #menu {
+        min-width: initial;
+      }
+
       #extensionsLink > .cr-icon {
         height: var(--cr-icon-size);
         margin-inline-end: 14px;  /* 16px - 2px from margin for outline. */
@@ -69,8 +73,15 @@
           border-bottom: var(--cr-separator-line);  /* override */
         }
       }
-    </style>
 
+      .menu-label {
+        pointer-events: none;
+      }
+
+      :host-context([settings-refresh-2026]):host([collapsed])  .menu-label {
+       display: none;
+      }
+    </style>
     <div role="navigation">
       <cr-menu-selector id="menu" selectable="a:not(#extensionsLink)"
           attr-for-selected="href" on-iron-activate="onSelectorActivate_"
@@ -84,7 +95,7 @@
 <if expr="_google_chrome">
           <cr-icon icon="settings-internal:google-g"></cr-icon>
 </if>
-          $i18n{peoplePageTitle}
+          <span class="menu-label">$i18n{peoplePageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="autofill" href="/autofill"
@@ -92,40 +103,40 @@
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility_.yourSavedInfo]]">
           <cr-icon icon="settings:password-manager"></cr-icon>
-          $i18n{autofillPageTitle}
+          <span class="menu-label">$i18n{autofillPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="privacy" href="/privacy"
             hidden="[[!pageVisibility_.privacy]]"
             class="cr-nav-menu-item">
           <cr-icon icon="settings:security"></cr-icon>
-          $i18n{privacyPageTitle}
+          <span class="menu-label">$i18n{privacyPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="performance" href="/performance"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility_.performance]]">
           <cr-icon icon="settings:speed"></cr-icon>
-          $i18n{performancePageTitle}
+          <span class="menu-label">$i18n{performancePageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="ai" href="/ai"
             hidden="[[!showAiPageMenuItem_(showAiPage_, pageVisibility_.ai)]]"
             class="cr-nav-menu-item">
           <cr-icon icon="settings20:button-magic"></cr-icon>
-          $i18n{aiPageTitle}
+          <span class="menu-label">$i18n{aiPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="appearance" href="/appearance"
             hidden="[[!pageVisibility_.appearance]]"
             class="cr-nav-menu-item">
           <cr-icon icon="settings:palette"></cr-icon>
-          $i18n{appearancePageTitle}
+          <span class="menu-label">$i18n{appearancePageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="search" href="/search" class="cr-nav-menu-item">
           <cr-icon icon="settings:search"></cr-icon>
-          $i18n{searchPageTitle}
+          <span class="menu-label">$i18n{searchPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
 <if expr="not is_chromeos">
@@ -133,7 +144,7 @@
           href="/defaultBrowser"
           hidden="[[!pageVisibility_.defaultBrowser]]">
           <cr-icon icon="settings:web-asset"></cr-icon>
-          $i18n{defaultBrowser}
+          <span class="menu-label">$i18n{defaultBrowser}</span>
           <cr-ripple></cr-ripple>
         </a>
 </if>
@@ -141,7 +152,7 @@
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility_.onStartup]]">
           <cr-icon icon="settings:power-settings-new"></cr-icon>
-          $i18n{onStartup}
+          <span class="menu-label">$i18n{onStartup}</span>
           <cr-ripple></cr-ripple>
         </a>
         <div class="menu-separator"></div>
@@ -149,35 +160,35 @@
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility_.languages]]">
           <cr-icon icon="settings:translate"></cr-icon>
-          $i18n{languagesPageTitle}
+          <span class="menu-label">$i18n{languagesPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="downloads" href="/downloads"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility_.downloads]]">
           <cr-icon icon="settings:download"></cr-icon>
-          $i18n{downloadsPageTitle}
+          <span class="menu-label">$i18n{downloadsPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="accessibility" href="/accessibility"
             class="cr-nav-menu-item"
             hidden="[[!pageVisibility_.a11y]]">
           <cr-icon icon="settings:accessibility"></cr-icon>
-          $i18n{a11yPageTitle}
+          <span class="menu-label">$i18n{a11yPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
 <if expr="not is_chromeos">
         <a role="menuitem" id="system" href="/system" class="cr-nav-menu-item"
             hidden="[[!pageVisibility_.system]]">
           <cr-icon icon="settings:build"></cr-icon>
-          $i18n{systemPageTitle}
+          <span class="menu-label">$i18n{systemPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
 </if>
         <a role="menuitem" id="reset" href="/reset"
             hidden="[[!pageVisibility_.reset]]" class="cr-nav-menu-item">
           <cr-icon icon="settings:restart-alt"></cr-icon>
-          $i18n{resetPageTitle}
+          <span class="menu-label">$i18n{resetPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
         <div hidden="[[hideBottomMenuSeparator_(pageVisibility_)]]"
@@ -188,14 +199,14 @@
             on-click="onExtensionsLinkClick_"
             title="$i18n{extensionsLinkTooltip}">
           <cr-icon icon="settings:chrome-extension"></cr-icon>
-          <span>$i18n{extensionsPageTitle}</span>
+          <span class="menu-label">$i18n{extensionsPageTitle}</span>
           <div class="cr-icon icon-external"></div>
           <cr-ripple></cr-ripple>
         </a>
         <a role="menuitem" id="about-menu" href="/help"
             class="cr-nav-menu-item">
           <cr-icon icon="cr:chrome-product"></cr-icon>
-          $i18n{aboutPageTitle}
+          <span class="menu-label">$i18n{aboutPageTitle}</span>
           <cr-ripple></cr-ripple>
         </a>
       </cr-menu-selector>
