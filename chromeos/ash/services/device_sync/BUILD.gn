@@ -132,10 +132,6 @@ static_library("device_sync") {
     "software_feature_manager_impl.h",
     "switches.cc",
     "switches.h",
-    "sync_scheduler.cc",
-    "sync_scheduler.h",
-    "sync_scheduler_impl.cc",
-    "sync_scheduler_impl.h",
     "synced_bluetooth_address_tracker.h",
     "synced_bluetooth_address_tracker_impl.cc",
     "synced_bluetooth_address_tracker_impl.h",
@@ -233,8 +229,6 @@ static_library("test_support") {
     "fake_synced_bluetooth_address_tracker.h",
     "mock_cryptauth_client.cc",
     "mock_cryptauth_client.h",
-    "mock_sync_scheduler.cc",
-    "mock_sync_scheduler.h",
   ]
 
   public_deps = [ ":device_sync" ]
@@ -296,7 +290,6 @@ source_set("unit_tests") {
     "remote_device_provider_impl_unittest.cc",
     "remote_device_v2_loader_impl_unittest.cc",
     "software_feature_manager_impl_unittest.cc",
-    "sync_scheduler_impl_unittest.cc",
     "synced_bluetooth_address_tracker_impl_unittest.cc",
   ]
 
