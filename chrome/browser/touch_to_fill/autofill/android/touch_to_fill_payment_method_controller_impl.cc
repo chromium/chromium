@@ -19,6 +19,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/payments/android_bnpl_ui_delegate.h"
 #include "components/autofill/content/browser/content_autofill_client.h"

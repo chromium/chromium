@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
-#include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "components/autofill/android/touch_to_fill_keyboard_suppressor.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
