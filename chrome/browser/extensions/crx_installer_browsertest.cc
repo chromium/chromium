@@ -20,6 +20,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -673,8 +674,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, Blocklist) {
-  scoped_refptr<FakeSafeBrowsingDatabaseManager> blocklist_db(
-      new FakeSafeBrowsingDatabaseManager(true));
+  auto blocklist_db =
+      base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(true);
   ScopedDatabaseManagerForTest scoped_blocklist_db(blocklist_db);
 
   const extensions::ExtensionId extension_id =

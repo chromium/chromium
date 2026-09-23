@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -445,7 +446,7 @@ class ChromePasswordProtectionServiceTest
     std::vector<MatchingReusedCredential> credentials;
     credentials.emplace_back("somedomain.com", GURL("https://somedomain.com/"),
                              u"user");
-    request_ = new PasswordProtectionRequestContent(
+    request_ = base::MakeRefCounted<PasswordProtectionRequestContent>(
         /*web_contents=*/web_contents(),
         /*main_frame_url=*/GURL(kPhishingURL),
         /*password_form_action=*/GURL(),

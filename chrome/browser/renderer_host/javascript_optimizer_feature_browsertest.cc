@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -869,7 +870,7 @@ class JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase
     // Test UI manager and test database manager should be set before
     // the browser is started but after threads are created.
     factory_.SetTestDatabaseManager(
-        new safe_browsing::FakeSafeBrowsingDatabaseManager(
+        base::MakeRefCounted<safe_browsing::FakeSafeBrowsingDatabaseManager>(
             content::GetUIThreadTaskRunner({})));
     safe_browsing::SafeBrowsingService::RegisterFactory(&factory_);
   }

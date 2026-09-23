@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -237,8 +238,8 @@ AwBrowserProcess::GetSafeBrowsingDBManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!safe_browsing_db_manager_) {
-    safe_browsing_db_manager_ =
-        new safe_browsing::RemoteSafeBrowsingDatabaseManager();
+    safe_browsing_db_manager_ = base::MakeRefCounted<
+        safe_browsing::RemoteSafeBrowsingDatabaseManager>();
   }
 
   if (!safe_browsing_db_manager_started_) {

@@ -4,6 +4,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -39,8 +40,9 @@ class SuspiciousSiteBrowserTest : public AndroidBrowserTest {
       content::BrowserMainParts* browser_main_parts) override {
     AndroidBrowserTest::CreatedBrowserMainParts(browser_main_parts);
     factory_.SetTestUIManager(new TestSafeBrowsingUIManager());
-    factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({})));
+    factory_.SetTestDatabaseManager(
+        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(
+            content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
   }
 

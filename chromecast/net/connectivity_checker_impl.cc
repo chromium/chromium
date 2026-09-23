@@ -10,7 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/net/net_switches.h"
 #include "chromecast/net/time_sync_tracker.h"
@@ -69,9 +71,10 @@ scoped_refptr<ConnectivityCheckerImpl> ConnectivityCheckerImpl::Create(
     TimeSyncTracker* time_sync_tracker) {
   DCHECK(task_runner);
 
-  auto connectivity_checker = base::WrapRefCounted(new ConnectivityCheckerImpl(
-      task_runner, network_connection_tracker, disconnected_probe_period,
-      connected_probe_period, time_sync_tracker));
+  auto connectivity_checker = base::MakeRefCounted<ConnectivityCheckerImpl>(
+      base::PassKey<ConnectivityCheckerImpl>(), task_runner,
+      network_connection_tracker, disconnected_probe_period,
+      connected_probe_period, time_sync_tracker);
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&ConnectivityCheckerImpl::Initialize, connectivity_checker,
@@ -80,6 +83,7 @@ scoped_refptr<ConnectivityCheckerImpl> ConnectivityCheckerImpl::Create(
 }
 
 ConnectivityCheckerImpl::ConnectivityCheckerImpl(
+    base::PassKey<ConnectivityCheckerImpl>,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     network::NetworkConnectionTracker* network_connection_tracker,
     base::TimeDelta disconnected_probe_period,

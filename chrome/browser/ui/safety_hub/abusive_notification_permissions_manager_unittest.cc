@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -107,7 +108,8 @@ class MockRevokedPermissionsOSNotificationDisplayManager
 class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
  public:
   void SetUp() override {
-    mock_database_manager_ = new MockSafeBrowsingDatabaseManager();
+    mock_database_manager_ =
+        base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
     TestingProfile::Builder builder;
     builder.AddTestingFactory(
         RevokedPermissionsOSNotificationDisplayManagerFactory::GetInstance(),

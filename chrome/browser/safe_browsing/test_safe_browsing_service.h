@@ -95,7 +95,7 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   bool CanCreateDownloadProtectionService() override;
 #endif
   bool CanCreateIncidentReportingService() override;
-  SafeBrowsingDatabaseManager* CreateDatabaseManager() override;
+  scoped_refptr<SafeBrowsingDatabaseManager> CreateDatabaseManager() override;
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   DownloadProtectionService* CreateDownloadProtectionService() override;
 #endif
@@ -134,7 +134,7 @@ class TestSafeBrowsingServiceFactory : public SafeBrowsingServiceFactory {
   // SafeBrowsingService::Initialize() is called.
   void SetTestUIManager(TestSafeBrowsingUIManager* ui_manager);
   void SetTestDatabaseManager(
-      TestSafeBrowsingDatabaseManager* database_manager);
+      scoped_refptr<TestSafeBrowsingDatabaseManager> database_manager);
 
   // Be default, the TestSafeBrowsingService creates an instance of the
   // TestSafeBrowsingDatabaseManager. This function can be used to override that

@@ -5,6 +5,7 @@
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
@@ -55,7 +56,8 @@ class AutoPictureInPictureSafeBrowsingCheckerClientTest
   void SetUp() override {
     testing::Test::SetUp();
 
-    mock_database_manager_ = new MockSafeBrowsingDatabaseManager();
+    mock_database_manager_ =
+        base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
 
     safe_browsing_check_client_ =
         std::make_unique<AutoPictureInPictureSafeBrowsingCheckerClient>(

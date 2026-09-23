@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -25,6 +26,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/devtools/device/usb/usb_device_manager_helper.h"
 #include "chrome/browser/devtools/device/usb/usb_device_provider.h"
 #include "content/public/browser/browser_thread.h"
@@ -497,9 +499,11 @@ void AndroidDeviceManager::Device::HttpUpgrade(const std::string& socket_name,
 }
 
 AndroidDeviceManager::Device::Device(
+    base::PassKey<AndroidDeviceManager>,
     scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
     scoped_refptr<DeviceProvider> provider,
-    const std::string& serial, const DeviceInfo::ConnectedState connected_state)
+    const std::string& serial,
+    const DeviceInfo::ConnectedState connected_state)
     : RefCountedDeleteOnSequence<Device>(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       task_runner_(device_task_runner),
@@ -612,8 +616,10 @@ void AndroidDeviceManager::UpdateDevices(
     scoped_refptr<Device> device;
     if (found == devices_.end() || !found->second ||
         found->second->provider_.get() != it->provider.get()) {
-      device =
-          new Device(handler_thread_->message_loop(), it->provider, it->serial, it->connected_state);
+      device = base::MakeRefCounted<Device>(
+          base::PassKey<AndroidDeviceManager>(),
+          handler_thread_->message_loop(), it->provider, it->serial,
+          it->connected_state);
     } else {
       device = found->second.get();
       device->connected_state_ = it->connected_state;

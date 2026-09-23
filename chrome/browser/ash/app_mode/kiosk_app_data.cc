@@ -492,8 +492,8 @@ void KioskAppData::LoadFromCrx() {
     return;
   }
 
-  scoped_refptr<CrxLoader> crx_loader(
-      new CrxLoader(weak_factory_.GetWeakPtr(), crx_file_));
+  auto crx_loader =
+      base::MakeRefCounted<CrxLoader>(weak_factory_.GetWeakPtr(), crx_file_);
   crx_loader->Start();
 }
 

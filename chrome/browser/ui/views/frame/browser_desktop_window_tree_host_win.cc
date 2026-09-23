@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process_handle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -282,7 +283,8 @@ void BrowserDesktopWindowTreeHostWin::ShowCustomSystemMenu(
 void BrowserDesktopWindowTreeHostWin::Init(
     const views::Widget::InitParams& params) {
   DesktopWindowTreeHostWin::Init(params);
-  virtual_desktop_helper_ = new VirtualDesktopHelper(params.workspace);
+  virtual_desktop_helper_ =
+      base::MakeRefCounted<VirtualDesktopHelper>(params.workspace);
   virtual_desktop_helper_->Init(GetHWND());
 }
 

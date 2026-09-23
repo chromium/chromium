@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
@@ -126,6 +127,11 @@ class AndroidDeviceManager {
 
   class Device final : public base::RefCountedDeleteOnSequence<Device> {
    public:
+    Device(base::PassKey<AndroidDeviceManager>,
+           scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
+           scoped_refptr<DeviceProvider> provider,
+           const std::string& serial,
+           const DeviceInfo::ConnectedState connected_state);
     Device(const Device&) = delete;
     Device& operator=(const Device&) = delete;
 
@@ -155,10 +161,6 @@ class AndroidDeviceManager {
     friend class AndroidDeviceManager;
     friend class AndroidWebSocket;
 
-    Device(scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
-           scoped_refptr<DeviceProvider> provider,
-           const std::string& serial,
-           const DeviceInfo::ConnectedState connected_state);
     ~Device();
 
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

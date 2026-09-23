@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -169,14 +170,15 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil(
   profile_ = profile_builder.Build();
 
   scoped_refptr<WebDatabaseService> web_database_service =
-      new WebDatabaseService(profile_->GetPath().AppendASCII("webdata"),
-                             base::SingleThreadTaskRunner::GetCurrentDefault(),
-                             base::SingleThreadTaskRunner::GetCurrentDefault());
+      base::MakeRefCounted<WebDatabaseService>(
+          profile_->GetPath().AppendASCII("webdata"),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::SingleThreadTaskRunner::GetCurrentDefault());
   web_database_service->AddTable(
       std::unique_ptr<WebDatabaseTable>(new KeywordTable()));
   web_database_service->LoadDatabase(g_browser_process->os_crypt_async());
 
-  web_data_service_ = new KeywordWebDataService(
+  web_data_service_ = base::MakeRefCounted<KeywordWebDataService>(
       web_database_service.get(),
       base::SingleThreadTaskRunner::GetCurrentDefault());
   web_data_service_->Init(base::NullCallback());

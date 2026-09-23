@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -49,8 +50,9 @@ class SuspiciousSiteDesktopBrowserTest : public InProcessBrowserTest {
       content::BrowserMainParts* browser_main_parts) override {
     InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
     factory_.SetTestUIManager(new TestSafeBrowsingUIManager());
-    factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({})));
+    factory_.SetTestDatabaseManager(
+        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(
+            content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
   }
 

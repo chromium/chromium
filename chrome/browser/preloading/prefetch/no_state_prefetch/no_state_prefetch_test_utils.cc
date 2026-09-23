@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
@@ -488,7 +489,7 @@ void PrerenderInProcessBrowserTest::CreatedBrowserMainParts(
   InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing_factory_->SetTestDatabaseManager(
-      new safe_browsing::FakeSafeBrowsingDatabaseManager(
+      base::MakeRefCounted<safe_browsing::FakeSafeBrowsingDatabaseManager>(
           content::GetUIThreadTaskRunner({})));
   safe_browsing::SafeBrowsingService::RegisterFactory(
       safe_browsing_factory_.get());

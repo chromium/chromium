@@ -58,9 +58,11 @@ class ServicesDelegate {
 #endif
     virtual bool CanCreateIncidentReportingService() = 0;
 
+    virtual scoped_refptr<SafeBrowsingDatabaseManager>
+    CreateDatabaseManager() = 0;
+
     // Caller takes ownership of the returned object. Cannot use std::unique_ptr
     // because services may not be implemented for some build configs.
-    virtual SafeBrowsingDatabaseManager* CreateDatabaseManager() = 0;
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
     virtual DownloadProtectionService* CreateDownloadProtectionService() = 0;
 #endif

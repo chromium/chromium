@@ -8,6 +8,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -121,7 +122,8 @@ class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
                                                          ui_manager_);
 
     } else {
-      database_manager_ = new MockSafeBrowsingDatabaseManager();
+      database_manager_ =
+          base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
       // Create service.
       notification_telemetry_service_ =
           std::make_unique<NotificationTelemetryService>(

@@ -25,6 +25,7 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/one_shot_event.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -3792,8 +3793,8 @@ TEST_F(ExtensionServiceTest, NoUnsetBlocklistInPrefs) {
 #if defined(ENABLE_BLOCKLIST_TESTS)
 // Tests trying to install a blocklisted extension.
 TEST_F(ExtensionServiceTest, BlocklistedExtensionWillNotInstall) {
-  scoped_refptr<FakeSafeBrowsingDatabaseManager> blocklist_db(
-      new FakeSafeBrowsingDatabaseManager(true));
+  auto blocklist_db =
+      base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(true);
   ScopedDatabaseManagerForTest scoped_blocklist_db(blocklist_db);
 
   InitializeEmptyExtensionService();

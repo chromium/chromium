@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -70,8 +71,9 @@ class NotificationContentDetectionBrowserTestBase
     // Test UI manager and test database manager should be set before
     // the browser is started but after threads are created.
     factory_.SetTestUIManager(new TestSafeBrowsingUIManager());
-    factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({})));
+    factory_.SetTestDatabaseManager(
+        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(
+            content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
   }
 

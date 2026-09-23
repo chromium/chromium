@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -496,7 +497,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
     // Inject service classes.
     csd_service_ = std::make_unique<NiceMock<MockClientSideDetectionService>>();
-    database_manager_ = new NiceMock<MockSafeBrowsingDatabaseManager>();
+    database_manager_ =
+        base::MakeRefCounted<NiceMock<MockSafeBrowsingDatabaseManager>>();
     ui_manager_ = new NiceMock<MockSafeBrowsingUIManager>();
 
     identity_test_env_.MakePrimaryAccountAvailable(

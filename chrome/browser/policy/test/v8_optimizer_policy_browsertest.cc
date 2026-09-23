@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -236,7 +237,7 @@ class V8OptimizerPolicyTest_UseSiteFamiliarity : public V8OptimizerPolicyTest {
     // Test UI manager and test database manager should be set before
     // the browser is started but after threads are created.
     factory_.SetTestDatabaseManager(
-        new safe_browsing::FakeSafeBrowsingDatabaseManager(
+        base::MakeRefCounted<safe_browsing::FakeSafeBrowsingDatabaseManager>(
             content::GetUIThreadTaskRunner({})));
     safe_browsing::SafeBrowsingService::RegisterFactory(&factory_);
   }

@@ -24,6 +24,7 @@
 #include "base/i18n/test/scoped_icu_locale.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -410,8 +411,9 @@ class SafeBrowsingBlockingPageBrowserTest
     raw_blocking_page_factory_ = blocking_page_factory.get();
     factory_.SetTestUIManager(
         new FakeSafeBrowsingUIManager(std::move(blocking_page_factory)));
-    factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({})));
+    factory_.SetTestDatabaseManager(
+        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(
+            content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
     ThreatDetails::RegisterFactory(&details_factory_);
   }
@@ -2138,8 +2140,9 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
     // the browser is started but after threads are created.
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
-    factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({})));
+    factory_.SetTestDatabaseManager(
+        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(
+            content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
     ThreatDetails::RegisterFactory(&details_factory_);
   }
@@ -2790,8 +2793,9 @@ class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
     // the browser is started but after threads are created.
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
-    factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({})));
+    factory_.SetTestDatabaseManager(
+        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(
+            content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
     ThreatDetails::RegisterFactory(&details_factory_);
   }
@@ -2940,8 +2944,9 @@ class SafeBrowsingBlockingPageAsyncChecksTestBase
     // the browser is started but after threads are created.
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
-    factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({})));
+    factory_.SetTestDatabaseManager(
+        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(
+            content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
   }
 
@@ -4039,8 +4044,9 @@ class SafeBrowsingBlockingPageHashRealTimeCheckTest
     // the browser is started but after threads are created.
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
         std::make_unique<TestSafeBrowsingBlockingPageFactory>()));
-    factory_.SetTestDatabaseManager(new FakeSafeBrowsingDatabaseManager(
-        content::GetUIThreadTaskRunner({})));
+    factory_.SetTestDatabaseManager(
+        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(
+            content::GetUIThreadTaskRunner({})));
     SafeBrowsingService::RegisterFactory(&factory_);
   }
 

@@ -13,7 +13,9 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/broker_host.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/channel.h"
@@ -258,9 +260,9 @@ scoped_refptr<NodeChannel> NodeChannel::Create(
     Channel::HandlePolicy channel_handle_policy,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     const ProcessErrorCallback& process_error_callback) {
-  return new NodeChannel(delegate, std::move(connection_params),
-                         channel_handle_policy, io_task_runner,
-                         process_error_callback);
+  return base::MakeRefCounted<NodeChannel>(
+      base::PassKey<NodeChannel>(), delegate, std::move(connection_params),
+      channel_handle_policy, io_task_runner, process_error_callback);
 }
 
 // static
@@ -544,6 +546,7 @@ void NodeChannel::EventMessageFromRelay(const ports::NodeName& source,
 #endif  // BUILDFLAG(IS_WIN)
 
 NodeChannel::NodeChannel(
+    base::PassKey<NodeChannel>,
     Delegate* delegate,
     ConnectionParams connection_params,
     Channel::HandlePolicy channel_handle_policy,

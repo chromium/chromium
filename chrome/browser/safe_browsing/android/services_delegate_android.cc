@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_delegate_android.h"
@@ -61,7 +62,7 @@ ServicesDelegateAndroid::database_manager() const {
 void ServicesDelegateAndroid::Initialize() {
   if (!database_manager_set_for_tests_) {
     database_manager_ =
-        base::WrapRefCounted(new RemoteSafeBrowsingDatabaseManager());
+        base::MakeRefCounted<RemoteSafeBrowsingDatabaseManager>();
   }
 
   download_service_.reset(

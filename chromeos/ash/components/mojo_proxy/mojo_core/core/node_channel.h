@@ -11,12 +11,12 @@
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/channel.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/core/connection_params.h"
@@ -95,6 +95,12 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT NodeChannel
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       const ProcessErrorCallback& process_error_callback);
 
+  NodeChannel(base::PassKey<NodeChannel>,
+              Delegate* delegate,
+              ConnectionParams connection_params,
+              Channel::HandlePolicy channel_handle_policy,
+              scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+              const ProcessErrorCallback& process_error_callback);
   NodeChannel(const NodeChannel&) = delete;
   NodeChannel& operator=(const NodeChannel&) = delete;
 
@@ -189,11 +195,6 @@ class MOJO_LEGACY_SYSTEM_IMPL_EXPORT NodeChannel
   using PendingRelayMessageQueue =
       base::queue<std::pair<ports::NodeName, Channel::MessagePtr>>;
 
-  NodeChannel(Delegate* delegate,
-              ConnectionParams connection_params,
-              Channel::HandlePolicy channel_handle_policy,
-              scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-              const ProcessErrorCallback& process_error_callback);
   ~NodeChannel() override;
 
   // Creates a BrokerHost to satisfy a |BindBrokerHost()| request from the other

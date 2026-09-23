@@ -322,7 +322,8 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
     services_delegate_ = ServicesDelegate::CreateForTest(this, this);
     CloudBinaryUploadServiceFactory::GetInstance()->SetTestingFactory(
         profile, base::BindRepeating(&CreateTestBinaryUploadService));
-    mock_database_manager_ = new NiceMock<MockSafeBrowsingDatabaseManager>();
+    mock_database_manager_ =
+        base::MakeRefCounted<NiceMock<MockSafeBrowsingDatabaseManager>>();
   }
   FakeSafeBrowsingService(const FakeSafeBrowsingService&) = delete;
   FakeSafeBrowsingService& operator=(const FakeSafeBrowsingService&) = delete;
@@ -400,8 +401,9 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
 #endif
   }
 
-  safe_browsing::SafeBrowsingDatabaseManager* CreateDatabaseManager() override {
-    return mock_database_manager_.get();
+  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+  CreateDatabaseManager() override {
+    return mock_database_manager_;
   }
 
   IncidentReportingService* CreateIncidentReportingService() override {

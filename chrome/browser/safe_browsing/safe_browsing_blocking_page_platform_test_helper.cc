@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -407,7 +408,8 @@ void SafeBrowsingBlockingPageRealTimeUrlCheckTest::CreatedBrowserMainParts(
   factory_.SetTestUIManager(
       new FakeSafeBrowsingUIManager(std::move(blocking_page_factory)));
   factory_.SetTestDatabaseManager(
-      new FakeSafeBrowsingDatabaseManager(content::GetUIThreadTaskRunner({})));
+      base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(
+          content::GetUIThreadTaskRunner({})));
   SafeBrowsingService::RegisterFactory(&factory_);
 }
 

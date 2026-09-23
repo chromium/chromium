@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
@@ -132,10 +133,11 @@ bool TestSafeBrowsingService::CanCreateIncidentReportingService() {
   return true;
 }
 
-SafeBrowsingDatabaseManager* TestSafeBrowsingService::CreateDatabaseManager() {
+scoped_refptr<SafeBrowsingDatabaseManager>
+TestSafeBrowsingService::CreateDatabaseManager() {
   DCHECK(!use_sb_local_db_manager_);
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  return new TestSafeBrowsingDatabaseManager(
+  return base::MakeRefCounted<TestSafeBrowsingDatabaseManager>(
       content::GetUIThreadTaskRunner({}));
 #else
   NOTIMPLEMENTED();
@@ -202,8 +204,8 @@ void TestSafeBrowsingServiceFactory::SetTestUIManager(
 }
 
 void TestSafeBrowsingServiceFactory::SetTestDatabaseManager(
-    TestSafeBrowsingDatabaseManager* database_manager) {
-  test_database_manager_ = database_manager;
+    scoped_refptr<TestSafeBrowsingDatabaseManager> database_manager) {
+  test_database_manager_ = std::move(database_manager);
 }
 void TestSafeBrowsingServiceFactory::UseSBLocalDatabaseManager() {
   use_sb_local_db_manager_ = true;
