@@ -48,32 +48,40 @@ struct Document {
   // e.g. "/storage/emulated/0/DCIM/kitten.jpg".
   // This value is available in limited DocumentsProviders only. If the
   // provider does not expose real VFS paths, this field is always set to null.
-  [MinVersion=5] string? android_file_system_path;
+  [MinVersion=5]
+  string? android_file_system_path;
 
   // Flag indicating that a document is deletable.
-  [MinVersion=12] bool supports_delete;
+  [MinVersion=12]
+  bool supports_delete;
 
   // Flag indicating that a document can be renamed.
-  [MinVersion=12] bool supports_rename;
+  [MinVersion=12]
+  bool supports_rename;
 
   // Flag indicating that a document supports writing.
-  [MinVersion=12] bool supports_write;
+  [MinVersion=12]
+  bool supports_write;
 
   // Flag indicating that a document is a directory that supports creation of
   // new files within it.
-  [MinVersion=12] bool dir_supports_create;
+  [MinVersion=12]
+  bool dir_supports_create;
 
   // Flag indicating that a document can be copied to another location within
   // the same document provider.
-  [MinVersion=12] bool supports_copy;
+  [MinVersion=12]
+  bool supports_copy;
 
   // Flag indicating that a document can be moved to another location within
   // the same document provider.
-  [MinVersion=12] bool supports_move;
+  [MinVersion=12]
+  bool supports_move;
 
   // Flag indicating that a document has a thumbnail available that can be
   // fetched with OpenThumbnail.
-  [MinVersion=15] bool supports_thumbnail;
+  [MinVersion=15]
+  bool supports_thumbnail;
 };
 
 // Represents a root in Android DocumentsProvider.
@@ -100,10 +108,12 @@ struct Root {
 
   // Flag indicating that at least one directory under this root supports
   // creating contents.
-  [MinVersion=12] bool supports_create;
+  [MinVersion=12]
+  bool supports_create;
 
   // Mime types supported by this root.
-  [MinVersion=12] array<string>? mime_types;
+  [MinVersion=12]
+  array<string>? mime_types;
 };
 
 // Describes the type of a change made to a document.
@@ -140,7 +150,8 @@ struct OpenUrlsRequest {
   // Optional string extras. These are the key-value pairs stored in android
   // intents to carry additional data. See:
   // https://developer.android.com/reference/android/content/Intent#putExtra(java.lang.String,%20java.lang.String)
-  [MinVersion=17] map<string, string>? extras;
+  [MinVersion=17]
+  map<string, string>? extras;
 };
 
 // Supported action types for SelectFilesRequest.
@@ -150,12 +161,13 @@ struct OpenUrlsRequest {
 // ArcDocumentsUI.
 [Extensible]
 enum SelectFilesActionType {
-  GET_CONTENT,        // Intent.ACTION_GET_CONTENT
-  OPEN_DOCUMENT,      // Intent.ACTION_OPEN_DOCUMENT
-  OPEN_DOCUMENT_TREE, // Intent.ACTION_OPEN_DOCUMENT_TREE
-  CREATE_DOCUMENT,    // Intent.ACTION_CREATE_DOCUMENT
+  GET_CONTENT,  // Intent.ACTION_GET_CONTENT
+  OPEN_DOCUMENT,  // Intent.ACTION_OPEN_DOCUMENT
+  OPEN_DOCUMENT_TREE,  // Intent.ACTION_OPEN_DOCUMENT_TREE
+  CREATE_DOCUMENT,  // Intent.ACTION_CREATE_DOCUMENT
   // ArcDocumentsUI's intent action to open files indexed in Android's
   // MediaStore with a customized file selector.
+
   [MinVersion=22] OPEN_MEDIA_STORE_FILES,
 };
 
@@ -209,7 +221,8 @@ struct DocumentPath {
   array<string> path;
 
   // Root ID where the path resides.
-  [MinVersion=24] string? root_id;
+  [MinVersion=24]
+  string? root_id;
 };
 
 // Result for SelectFilesRequest.
@@ -240,10 +253,10 @@ struct FileSelectorEvent {
 // Types of UI events for FileSelectorEvent.
 [Extensible]
 enum FileSelectorEventType {
-  CLICK_OK,         // Clicks OK button.
+  CLICK_OK,  // Clicks OK button.
   CLICK_DIRECTORY,  // Clicks a directory in the left pane.
-  CLICK_FILE,       // Clicks a file in the right pane.
-  CLICK_CANCEL,     // Clicks Cancel button.
+  CLICK_FILE,  // Clicks a file in the right pane.
+  CLICK_CANCEL,  // Clicks Cancel button.
 };
 
 // Request for GetFileSelectorElements.
@@ -311,7 +324,8 @@ struct MediaStoreDownloadMetadata {
 // Representation of an entry in a MediaStore collection.
 [Extensible]
 union MediaStoreMetadata {
-  [Default] uint8 unknown; // Actual value is ignored and is just a placeholder.
+  [Default]
+  uint8 unknown;  // Actual value is ignored and is just a placeholder.
   MediaStoreDownloadMetadata download;
 };
 
@@ -319,75 +333,86 @@ union MediaStoreMetadata {
 interface FileSystemHost {
   // Returns the name of the file specified by the URL.
   // When an error occurs, returns null value.
-  [MinVersion=6] GetFileName@1(string url) => (string? name);
+  [MinVersion=6]
+  GetFileName@1(string url) => (string? name);
 
   // Returns the size of the file specified by the URL.
   // If the file does not exist or the size is unknown (e.g. directories and
   // streams), -1 is returned.
-  [MinVersion=6] GetFileSize@2(string url) => (int64 size);
+  [MinVersion=6]
+  GetFileSize@2(string url) => (int64 size);
 
   // Returns the last modified timestamp of the file specified by the URL.
-  [MinVersion=20] GetLastModified@11(url.mojom.Url url)
+  [MinVersion=20]
+  GetLastModified@11(url.mojom.Url url)
       => (mojo_base.mojom.Time? last_modified);
 
   // Returns the MIME type of the file specified by the URL.
   // When an error occurs, returns null value.
-  [MinVersion=6] GetFileType@3(string url) => (string? mime_type);
+  [MinVersion=6]
+  GetFileType@3(string url) => (string? mime_type);
 
   // Called when a watched document was changed.
   // |type| describes the type of change made to the document.
-  [MinVersion=3] OnDocumentChanged@0(int64 watcher_id, ChangeType type);
+  [MinVersion=3]
+  OnDocumentChanged@0(int64 watcher_id, ChangeType type);
 
   // Called when the list of available roots or their metadata are changed.
-  [MinVersion=10] OnRootsChanged@6();
+  [MinVersion=10]
+  OnRootsChanged@6();
 
   // Returns a unique ID to represent the file specified by the URL.
   // The FD needs to be created by the caller itself.
-  [MinVersion=16] GetVirtualFileId@9(string url) => (string? id);
+  [MinVersion=16]
+  GetVirtualFileId@9(string url) => (string? id);
 
   // Releases the ID generated by GetVirtualFileId() when it is no longer
   // used.
-  [MinVersion=16] HandleIdReleased@10(string id) => (bool success);
+  [MinVersion=16]
+  HandleIdReleased@10(string id) => (bool success);
 
   // Returns an FD for reading the file specified by the URL.
-  [MinVersion=6] OpenFileToRead@4(string url) => (handle? fd);
+  [MinVersion=6]
+  OpenFileToRead@4(string url) => (handle? fd);
 
   // Asks the user to select files using ChromeOS file selector.
-  [MinVersion=9] SelectFiles@5(SelectFilesRequest request) =>
-      (SelectFilesResult result);
+  [MinVersion=9]
+  SelectFiles@5(SelectFilesRequest request) => (SelectFilesResult result);
 
   // Dispatches a UI event to the ChromeOS file selector previously opened by
   // SelectFiles@5. This exists for running Android UI tests (CTS) on ChromeOS
   // file selector, and thus it is only allowed under test conditions.
-  [MinVersion=11] OnFileSelectorEvent@7(FileSelectorEvent event) => ();
+  [MinVersion=11]
+  OnFileSelectorEvent@7(FileSelectorEvent event) => ();
 
   // Returns UI elements shown on the ChromeOS file selector previously opened
   // by SelectFiles@5. This exists for running Android UI tests (CTS) on
   // ChromeOS file selector, and thus it is only allowed under test conditions.
-  [MinVersion=11] GetFileSelectorElements@8(
-      GetFileSelectorElementsRequest request) =>
-      (FileSelectorElements elements);
+  [MinVersion=11]
+  GetFileSelectorElements@8(GetFileSelectorElementsRequest request)
+      => (FileSelectorElements elements);
 
   // Invoked when the specified |uri| has been added to a MediaStore collection
   // with the given |metadata|.
-  [MinVersion=23] OnMediaStoreUriAdded@12(
-      url.mojom.Url uri, MediaStoreMetadata metadata);
+  [MinVersion=23]
+  OnMediaStoreUriAdded@12(url.mojom.Url uri, MediaStoreMetadata metadata);
 
   // Creates a Fusebox Moniker associated with the given content URI, shares the
   // Moniker's path with the guest via seneschal, and returns the Moniker. A
   // null value is returned on failure. On success, the caller is responsible
   // for releasing the Moniker by calling DestroyMoniker() after they have
   // finished using it.
-  [MinVersion=25] CreateMoniker@13(url.mojom.Url content_uri, bool read_only) =>
-      (mojo_base.mojom.Token? moniker);
+  [MinVersion=25]
+  CreateMoniker@13(url.mojom.Url content_uri, bool read_only)
+      => (mojo_base.mojom.Token? moniker);
 
   // Destroys the given Fusebox Moniker and resources accosiated with it.
   // Returns true when the Moniker and the resources have been successfully
   // released. Otherwise false is returned, which indicates that the given
   // Moniker has already been destroyed via DestroyMoniker(), or it is not the
   // one created by ArcFileSystemBridge.
-  [MinVersion=25] DestroyMoniker@14(mojo_base.mojom.Token moniker) =>
-      (bool success);
+  [MinVersion=25]
+  DestroyMoniker@14(mojo_base.mojom.Token moniker) => (bool success);
 };
 
 // The browser process is using this interface in ArcFileSystemOperationRunner,
@@ -404,7 +429,8 @@ interface FileSystemInstance {
   //   It is the origin part of a content:// URI used to access the Documents
   //   Provider via Content Resolver protocol.
   //   Example: "com.android.providers.media.documents"
-  // - A documents provider may provide one or more roots. Each root is identified
+  // - A documents provider may provide one or more roots. Each root is
+  // identified
   //   by a root ID.
   // - A document ID is an opaque string that specifies a particular document
   //   in a documents provider. Its format varies by providers. Roots also have
@@ -429,102 +455,109 @@ interface FileSystemInstance {
   //
   // Watchers are not persistent. When the Mojo connection is lost, all
   // watchers are cleared. Also, after reconnecting, watcher IDs can be reused.
-  [MinVersion=3] AddWatcher@6(string authority, string document_id) =>
-      (int64 watcher_id);
+  [MinVersion=3]
+  AddWatcher@6(string authority, string document_id) => (int64 watcher_id);
 
   // Queries child documents of the directory specified by |authority| and
   // |parent_document_id| in Documents Provider.
   // If such a directory does not exist, null is returned.
-  [MinVersion=2] GetChildDocuments@4(string authority,
-                                     string parent_document_id) =>
-      (array<Document>? documents);
+  [MinVersion=2]
+  GetChildDocuments@4(string authority, string parent_document_id)
+      => (array<Document>? documents);
 
   // Queries the document specified by |authority| and |document_id| in
   // Documents Provider.
   // If such a document does not exist, null is returned.
-  [MinVersion=2] GetDocument@3(string authority, string document_id) =>
-      (Document? document);
+  [MinVersion=2]
+  GetDocument@3(string authority, string document_id) => (Document? document);
 
   // Asks the ContentResolver for the size of the file specified by the URL.
   // If the file does not exist or the size is unknown (e.g. directories and
   // streams), -1 is returned.
-  [MinVersion=1] GetFileSize@1(string url) => (int64 size);
+  [MinVersion=1]
+  GetFileSize@1(string url) => (int64 size);
 
   // Asks the ContentResolver to get the MIME type of the file specified by the
   // URL. When an error occurs, returns null value.
-  [MinVersion=4] GetMimeType@8(string url) => (string? mime_type);
+  [MinVersion=4]
+  GetMimeType@8(string url) => (string? mime_type);
 
   // Queries recent documents of a root specified by |authority| and |root_id|.
   // If the root exists and it supports recent document queries, a (possibly
   // empty) list of documents is returned. Otherwise, null is returned.
-  [MinVersion=5] GetRecentDocuments@9(string authority, string root_id) =>
-      (array<Document>? documents);
+  [MinVersion=5]
+  GetRecentDocuments@9(string authority, string root_id)
+      => (array<Document>? documents);
 
   // Obtains cached roots from all Documents Providers.
   // If there is no root in ARC, an empty array is returned.
   // If an error is found during GetRoots() method processing in ARC, null
   // value is returned.
-  [MinVersion=10] GetRoots@12() => (array<Root>? roots);
+  [MinVersion=10]
+  GetRoots@12() => (array<Root>? roots);
 
   // Queries available roots to find the one matching |root_id| and |authority|.
   // Obtains the root's available bytes and capacity bytes for |root_size|.
   // Returns null if there is no root that matches the input parameters.
-  [MinVersion=18] GetRootSize@22(string authority, string root_id) =>
-      (RootSize? root_size);
+  [MinVersion=18]
+  GetRootSize@22(string authority, string root_id) => (RootSize? root_size);
 
   // Deletes the given document.
-  [MinVersion=12] DeleteDocument@13(string authority, string document_id) =>
-      (bool success);
+  [MinVersion=12]
+  DeleteDocument@13(string authority, string document_id) => (bool success);
 
   // Changes the display name of an existing document.
-  [MinVersion=12] RenameDocument@14(string authority,
-                                    string document_id,
-                                    string display_name) =>
-                                        (Document? document);
+  [MinVersion=12]
+  RenameDocument@14(
+      string authority, string document_id, string display_name)
+      => (Document? document);
 
   // Creates a new document with given MIME type and display name.
-  [MinVersion=12] CreateDocument@15(string authority,
-                                    string parent_document_id,
-                                    string mime_type,
-                                    string display_name) =>
-                                        (Document? document);
+  [MinVersion=12]
+  CreateDocument@15(string authority,
+                    string parent_document_id,
+                    string mime_type,
+                    string display_name) => (Document? document);
 
   // Copies the given document.
-  [MinVersion=12] CopyDocument@16(string authority,
-                                  string source_document_id,
-                                  string target_parent_document_id) =>
-                                      (Document? document);
+  [MinVersion=12]
+  CopyDocument@16(string authority,
+                  string source_document_id,
+                  string target_parent_document_id) => (Document? document);
 
   // Moves the given document under a new parent.
-  [MinVersion=12] MoveDocument@17(string authority,
-                                  string source_document_id,
-                                  string source_parent_document_id,
-                                  string target_parent_document_id) =>
-                                      (Document? document);
+  [MinVersion=12]
+  MoveDocument@17(string authority,
+                  string source_document_id,
+                  string source_parent_document_id,
+                  string target_parent_document_id) => (Document? document);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=7] Init@10(pending_remote<FileSystemHost> host_remote) => ();
+  [MinVersion=7]
+  Init@10(pending_remote<FileSystemHost> host_remote) => ();
 
   // Asks the ContentResolver to get a FD to read the thumbnail of a
   // DocumentsProvider file specified by the URL. The thumbnail should be close
   // in size (width and height) but not necessarily the same as |size_hint|.
-  [MinVersion=15] OpenThumbnail@21(string url, Size size_hint) => (handle? fd);
+  [MinVersion=15]
+  OpenThumbnail@21(string url, Size size_hint) => (handle? fd);
 
   // Closes the ParcelFileDescriptor corresponding to the url_id. An error
   // message can be sent to the ContentProvider as needed.
-  [MinVersion=21] CloseFileSession@24(string url_id, string error_message);
+  [MinVersion=21]
+  CloseFileSession@24(string url_id, string error_message);
 
   // Asks the ContentResolver to get a FD to write to the file specified by the
   // URL. FileSession is returned with a unique ID corresponding to the open
   // session so the file can be closed properly after remote write operation.
-  [MinVersion=21] OpenFileSessionToWrite@25(url.mojom.Url url) =>
-      (FileSession? file_session);
+  [MinVersion=21]
+  OpenFileSessionToWrite@25(url.mojom.Url url) => (FileSession? file_session);
 
   // Asks the ContentResolver to get a FD to read the file specified by the
   // URL. FileSession is returned with a unique ID corresponding to the open
   // session so the file can be closed properly after remote read operation.
-  [MinVersion=21] OpenFileSessionToRead@26(url.mojom.Url url) =>
-      (FileSession? file_session);
+  [MinVersion=21]
+  OpenFileSessionToRead@26(url.mojom.Url url) => (FileSession? file_session);
 
   // Uninstalls a document watcher.
   //
@@ -533,7 +566,8 @@ interface FileSystemInstance {
   // this method is called and before this method returns is undefined.
   //
   // It fails if the specified watcher does not exist.
-  [MinVersion=3] RemoveWatcher@7(int64 watcher_id) => (bool success);
+  [MinVersion=3]
+  RemoveWatcher@7(int64 watcher_id) => (bool success);
 
   // Requests MediaProvider to scan specified files.
   // When the specified file does not exist, the corresponding entry in
@@ -546,11 +580,13 @@ interface FileSystemInstance {
   RequestMediaScan@0(array<string> paths);
 
   // Reloads and refreshes entries in MediaStore under |directory_path|.
-  [MinVersion=14] ReindexDirectory@19(string directory_path);
+  [MinVersion=14]
+  ReindexDirectory@19(string directory_path);
 
   // Searches for the removed files/directories under the given
   // |directory_paths| (non-recursively) in MediaStore and removes them.
-  [MinVersion=14] RequestFileRemovalScan@20(array<string> directory_paths);
+  [MinVersion=14]
+  RequestFileRemovalScan@20(array<string> directory_paths);
 
   // Opens URLs by sending an intent to the specified activity with a specific
   // launch window info.
@@ -558,6 +594,7 @@ interface FileSystemInstance {
   // Since this grants read/write URL permissions to the activity, callers must
   // ensure that the user is correctly aware of the URLs and the activity they
   // are passing.
-  [MinVersion=19] OpenUrlsWithPermissionAndWindowInfo@23(
+  [MinVersion=19]
+  OpenUrlsWithPermissionAndWindowInfo@23(
       OpenUrlsRequest request, WindowInfo window_info) => ();
 };

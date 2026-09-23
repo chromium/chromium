@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Next MinVersion: 1
-
 module arc.mojom;
 
 // Next Method ID: 3
@@ -16,8 +15,8 @@ interface AppfuseHost {
   Unmount@1(uint32 uid, int32 mount_id) => (bool success);
 
   // Opens a file under the specified appfuse file system.
-  OpenFile@2(uint32 uid, int32 mount_id, int32 file_id, int32 flags) =>
-      (handle? fd);
+  OpenFile@2(uint32 uid, int32 mount_id, int32 file_id, int32 flags)
+      => (handle? fd);
 };
 
 // Next Method ID: 1
