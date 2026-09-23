@@ -42,6 +42,16 @@ namespace {
 
 constexpr char kTestVoiceId[] = "msf00006";
 
+class TestDistillerPage : public dom_distiller::test::MockDistillerPage {
+ public:
+  TestDistillerPage() = default;
+  ~TestDistillerPage() override = default;
+
+  int GetMinContentLength() const {
+    return GetMinimumAllowableDistilledContentLength();
+  }
+};
+
 class MockDelegate : public ReadAloudService::Delegate {
  public:
   MockDelegate() = default;
@@ -356,6 +366,35 @@ TEST_F(ReadAloudServiceTest, DistillNullWebContents) {
   // Should be a completely safe no-op.
   service()->Initialize(nullptr);
   EXPECT_EQ(GetViewerHandle(), nullptr);
+}
+
+TEST_F(ReadAloudServiceTest,
+       DistillPageSetsMinimumAllowableContentLengthToZero) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+
+  int captured_min_length = -1;
+
+  EXPECT_CALL(*mock_distiller_service(),
+              CreateDefaultDistillerPageWithHandle(testing::_))
+      .WillOnce(testing::Return(
+          testing::ByMove(std::make_unique<TestDistillerPage>())));
+
+  EXPECT_CALL(*mock_distiller_service(),
+              ViewUrlIgnoreCache(service(), testing::_,
+                                 GURL("https://www.example.com/article")))
+      .WillOnce([&](dom_distiller::ViewRequestDelegate* delegate,
+                    std::unique_ptr<dom_distiller::DistillerPage> page,
+                    const GURL& url) {
+        if (page) {
+          captured_min_length = static_cast<TestDistillerPage*>(page.get())
+                                    ->GetMinContentLength();
+        }
+        return std::make_unique<dom_distiller::ViewerHandle>(base::DoNothing());
+      });
+
+  service()->Initialize(web_contents());
+
+  EXPECT_EQ(captured_min_length, 0);
 }
 
 TEST_F(ReadAloudServiceTest, DistillPageAndArticleReady) {

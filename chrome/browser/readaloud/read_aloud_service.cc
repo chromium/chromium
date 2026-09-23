@@ -20,6 +20,7 @@
 #include "chrome/browser/readaloud/read_aloud_playback_session.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
+#include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/url_formatter/elide_url.h"
@@ -233,12 +234,16 @@ void ReadAloudService::DistillPage(content::WebContents* web_contents) {
 
   distillation_start_time_ = base::TimeTicks::Now();
 
-  viewer_handle_ = service->ViewUrlIgnoreCache(
-      this,
+  std::unique_ptr<dom_distiller::DistillerPage> distiller_page =
       service->CreateDefaultDistillerPageWithHandle(
           std::make_unique<dom_distiller::SourcePageHandleWebContents>(
-              web_contents, /*owned=*/false)),
-      web_contents->GetLastCommittedURL());
+              web_contents, /*owned=*/false));
+  if (distiller_page) {
+    distiller_page->SetMinimumAllowableDistilledContentLength(0);
+  }
+
+  viewer_handle_ = service->ViewUrlIgnoreCache(
+      this, std::move(distiller_page), web_contents->GetLastCommittedURL());
 }
 
 void ReadAloudService::OnArticleReady(
