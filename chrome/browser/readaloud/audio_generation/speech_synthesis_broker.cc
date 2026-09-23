@@ -67,11 +67,13 @@ std::string_view SpeechSynthesisBroker::language_code() const {
 
 optimization_guide::proto::ReadAloudSynthesizeRequest
 SpeechSynthesisBroker::BuildSynthesizeRequest(
-    std::u16string_view text_chunk) const {
+    std::u16string_view text_chunk,
+    std::string_view voice_id_override) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   optimization_guide::proto::ReadAloudSynthesizeRequest request;
   request.set_text_chunk(base::UTF16ToUTF8(text_chunk));
-  request.set_voice_id(voice_id_);
+  request.set_voice_id(voice_id_override.empty() ? voice_id_
+                                                 : std::string(voice_id_override));
   request.set_language_code(std::string(language_tag_.tag_string()));
   return request;
 }
@@ -79,6 +81,7 @@ SpeechSynthesisBroker::BuildSynthesizeRequest(
 void SpeechSynthesisBroker::SynthesizeSpeech(
     OptimizationGuideKeyedService* opt_guide_service,
     std::u16string_view text_chunk,
+    std::string_view voice_id_override,
     SynthesizeSpeechCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!opt_guide_service || text_chunk.empty()) {
@@ -87,7 +90,7 @@ void SpeechSynthesisBroker::SynthesizeSpeech(
   }
 
   optimization_guide::proto::ReadAloudSynthesizeRequest request =
-      BuildSynthesizeRequest(text_chunk);
+      BuildSynthesizeRequest(text_chunk, voice_id_override);
 
   opt_guide_service->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kReadAloudSynthesize,
@@ -95,6 +98,14 @@ void SpeechSynthesisBroker::SynthesizeSpeech(
       /*options=*/{},
       base::BindOnce(&SpeechSynthesisBroker::OnModelExecutionResult,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void SpeechSynthesisBroker::SynthesizeSpeech(
+    OptimizationGuideKeyedService* opt_guide_service,
+    std::u16string_view text_chunk,
+    SynthesizeSpeechCallback callback) {
+  SynthesizeSpeech(opt_guide_service, text_chunk, /*voice_id_override=*/{},
+                   std::move(callback));
 }
 
 void SpeechSynthesisBroker::OnModelExecutionResult(

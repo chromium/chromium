@@ -6,7 +6,9 @@
 
 #include <string_view>
 
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -146,10 +148,8 @@ TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechModelExecutionSuccess) {
           [&](mojo_base::BigBuffer response_bytes, bool success) {
             callback_called = true;
             EXPECT_TRUE(success);
-            std::string_view result_bytes(
-                reinterpret_cast<const char*>(response_bytes.data()),
-                response_bytes.size());
-            EXPECT_EQ(result_bytes, "fake_serialized_proto_bytes_12345");
+            EXPECT_EQ(base::as_string_view(response_bytes),
+                      "fake_serialized_proto_bytes_12345");
           }));
   EXPECT_TRUE(callback_called);
 }
@@ -189,6 +189,107 @@ TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechModelExecutionFailure) {
             EXPECT_EQ(response_bytes.size(), 0u);
           }));
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(SpeechSynthesisBrokerTest, BuildSynthesizeRequestWithVoiceOverride) {
+  optimization_guide::proto::ReadAloudSynthesizeRequest req1 =
+      broker_.BuildSynthesizeRequest(
+          u"Speaker 1 chunk", SpeechSynthesisBroker::kOverviewVoiceSpeaker1);
+  EXPECT_EQ(req1.voice_id(), "msf00006");
+
+  optimization_guide::proto::ReadAloudSynthesizeRequest req2 =
+      broker_.BuildSynthesizeRequest(
+          u"Speaker 2 chunk", SpeechSynthesisBroker::kOverviewVoiceSpeaker2);
+  EXPECT_EQ(req2.voice_id(), "msm00013");
+}
+
+TEST_F(SpeechSynthesisBrokerTest, DialogueVoiceConstantsOppositeSex) {
+  EXPECT_STRNE(SpeechSynthesisBroker::kOverviewVoiceSpeaker1,
+               SpeechSynthesisBroker::kOverviewVoiceSpeaker2);
+  EXPECT_THAT(SpeechSynthesisBroker::kOverviewVoiceSpeaker1,
+              testing::StartsWith("msf"));
+  EXPECT_THAT(SpeechSynthesisBroker::kOverviewVoiceSpeaker2,
+              testing::StartsWith("msm"));
+}
+
+TEST_F(SpeechSynthesisBrokerTest,
+       SynthesizeSpeechWithVoiceOverrideForwardsToExecuteModel) {
+  testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+
+  optimization_guide::proto::Any any;
+  any.set_value("audio_bytes_speaker2");
+
+  EXPECT_CALL(
+      mock_opt_guide,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kReadAloudSynthesize,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&any](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            const auto& synthesize_request =
+                static_cast<const optimization_guide::proto::
+                                ReadAloudSynthesizeRequest&>(request_metadata);
+            EXPECT_EQ(synthesize_request.voice_id(),
+                      SpeechSynthesisBroker::kOverviewVoiceSpeaker2);
+            EXPECT_EQ(synthesize_request.text_chunk(),
+                      "Speaker 2 dialogue line");
+
+            optimization_guide::OptimizationGuideModelExecutionResult result(
+                any, /*execution_info=*/nullptr);
+            std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
+          });
+
+  base::test::TestFuture<mojo_base::BigBuffer, bool> future;
+  broker_.SynthesizeSpeech(&mock_opt_guide, u"Speaker 2 dialogue line",
+                           SpeechSynthesisBroker::kOverviewVoiceSpeaker2,
+                           future.GetCallback());
+  auto [response_bytes, success] = future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_EQ(base::as_string_view(response_bytes), "audio_bytes_speaker2");
+}
+
+TEST_F(SpeechSynthesisBrokerTest,
+       SynthesizeSpeechEmptyVoiceOverrideUsesConfiguredVoice) {
+  testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+  broker_.SetVoice("custom-voice-id");
+
+  optimization_guide::proto::Any any;
+  any.set_value("audio_bytes_custom");
+
+  EXPECT_CALL(
+      mock_opt_guide,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kReadAloudSynthesize,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&any](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            const auto& synthesize_request =
+                static_cast<const optimization_guide::proto::
+                                ReadAloudSynthesizeRequest&>(request_metadata);
+            EXPECT_EQ(synthesize_request.voice_id(), "custom-voice-id");
+            EXPECT_EQ(synthesize_request.text_chunk(), "Custom voice chunk");
+
+            optimization_guide::OptimizationGuideModelExecutionResult result(
+                any, /*execution_info=*/nullptr);
+            std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
+          });
+
+  base::test::TestFuture<mojo_base::BigBuffer, bool> future;
+  broker_.SynthesizeSpeech(&mock_opt_guide, u"Custom voice chunk",
+                           /*voice_id_override=*/"", future.GetCallback());
+  auto [response_bytes, success] = future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_EQ(base::as_string_view(response_bytes), "audio_bytes_custom");
 }
 
 }  // namespace readaloud
