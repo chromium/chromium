@@ -56,7 +56,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -319,7 +318,6 @@ public class MultiWindowUtilsUnitTest {
 
     @Test
     @Config(sdk = 37)
-    @DisabledTest(message = "crbug.com/440643534: Enable when SDK support is available.")
     public void testGetExtraPreferNewFromIntent_UpdatedDefaultValue() {
         // EXTRA_PREFER_NEW is not present, conditions for preferNew are met.
         Intent intent = new Intent();
