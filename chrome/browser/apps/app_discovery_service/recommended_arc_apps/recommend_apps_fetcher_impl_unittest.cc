@@ -255,6 +255,9 @@ class RecommendAppsFetcherImplTest : public testing::Test {
     recommend_apps_fetcher_.reset();
     cros_display_config_.reset();
     display::Screen::SetScreenInstance(nullptr);
+    // SetUp() marks the test screen internal; clear it again so later tests in
+    // this process do not see a stale internal display.
+    display::SetInternalDisplayIds({});
     device_data_manager_test_api_.SetKeyboardDevices({});
     device_data_manager_test_api_.SetTouchscreenDevices({});
   }

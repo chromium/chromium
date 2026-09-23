@@ -245,7 +245,7 @@ void AshTestBase::TearDown() {
   event_generator_.reset();
   // Some tests set an internal display id,
   // reset it here, so other tests will continue in a clean environment.
-  display::SetInternalDisplayIds({display::kInvalidDisplayId});
+  display::SetInternalDisplayIds({});
 
   // Tests can add devices, so reset the lists for future tests.
   ui::DeviceDataManager::GetInstance()->ResetDeviceListsForTest();
