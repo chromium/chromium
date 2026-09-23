@@ -147,6 +147,10 @@ mojom("mojom") {
     enabled_features += [ "enable_cdm_provision_fetcher" ]
   }
 
+  if (enable_cdm_storage_id) {
+    enabled_features += [ "enable_cdm_storage_id" ]
+  }
+
   shared_typemaps = [
     {
       types = [

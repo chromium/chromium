@@ -48,14 +48,15 @@ interface CdmDocumentService {
           string signed_data_signature,
           string platform_key_certificate);
 
-  // Requests a particular version of the device's Storage Id (or latest
-  // available version if 0 is specified). This returns the requested
-  // |storage_id|, which may be empty if it is not supported by the platform.
-  GetStorageId(uint32 version) => (uint32 version, array<uint8> storage_id);
-
   // Returns true if Verified Access is enabled in settings, false otherwise.
   [EnableIf=is_chromeos]
   IsVerifiedAccessEnabled() => (bool enabled);
+
+  // Requests a particular version of the device's Storage Id (or latest
+  // available version if 0 is specified). This returns the requested
+  // |storage_id|, which may be empty if it is not supported by the platform.
+  [EnableIf=enable_cdm_storage_id]
+  GetStorageId(uint32 version) => (uint32 version, array<uint8> storage_id);
 
   // Gets the Media FoundationCDM data for the origin associated with the CDM.
   // - `media_foundation_cdm_data`: The CDM data for the origin associated with

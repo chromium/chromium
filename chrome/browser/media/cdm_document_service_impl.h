@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/document_service.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/mojom/cdm_document_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -42,11 +43,11 @@ class CdmDocumentServiceImpl final
   void ChallengePlatform(const std::string& service_id,
                          const std::string& challenge,
                          ChallengePlatformCallback callback) final;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  void GetStorageId(uint32_t version, GetStorageIdCallback callback) final;
-#if BUILDFLAG(IS_CHROMEOS)
   void IsVerifiedAccessEnabled(IsVerifiedAccessEnabledCallback callback) final;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
+  void GetStorageId(uint32_t version, GetStorageIdCallback callback) final;
+#endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)
 #if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(
       GetMediaFoundationCdmDataCallback callback) final;
@@ -86,8 +87,10 @@ class CdmDocumentServiceImpl final
                             const std::string& platform_key_certificate);
 #endif
 
+#if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
   void OnStorageIdResponse(GetStorageIdCallback callback,
                            const std::vector<uint8_t>& storage_id);
+#endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)
 
 #if BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<ash::attestation::PlatformVerificationFlow>

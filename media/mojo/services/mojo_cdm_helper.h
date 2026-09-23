@@ -52,7 +52,9 @@ class MEDIA_MOJO_EXPORT MojoCdmHelper final : public CdmAuxiliaryHelper,
                          const std::string& challenge,
                          ChallengePlatformCB callback) final;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
   void GetStorageId(uint32_t version, StorageIdCB callback) final;
+#endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)
 #if BUILDFLAG(IS_WIN)
   void GetMediaFoundationCdmData(GetMediaFoundationCdmDataCB callback) final;
   void OnCdmEvent(CdmEvent event, HRESULT hresult) final;

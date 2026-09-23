@@ -310,45 +310,7 @@ void CdmDocumentServiceImpl::OnPlatformChallenged(
   std::move(callback).Run(true, signed_data, signature,
                           platform_key_certificate);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-void CdmDocumentServiceImpl::GetStorageId(uint32_t version,
-                                          GetStorageIdCallback callback) {
-  DVLOG(2) << __func__ << " version: " << version;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // TODO(crbug.com/40499115). This should be commented out at the mojom
-  // level so that it's only available if Storage Id is available.
-
-#if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
-  // Check that the request is for a supported version.
-  if (version == kCurrentStorageIdVersion ||
-      version == kRequestLatestStorageIdVersion) {
-    ComputeStorageId(
-        GetStorageIdSaltFromProfile(&render_frame_host()), origin(),
-        base::BindOnce(&CdmDocumentServiceImpl::OnStorageIdResponse,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-    return;
-  }
-#endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)
-
-  // Version not supported, so no Storage Id to return.
-  DVLOG(2) << __func__ << " not supported";
-  std::move(callback).Run(version, std::vector<uint8_t>());
-}
-
-#if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
-void CdmDocumentServiceImpl::OnStorageIdResponse(
-    GetStorageIdCallback callback,
-    const std::vector<uint8_t>& storage_id) {
-  DVLOG(2) << __func__ << " version: " << kCurrentStorageIdVersion
-           << ", size: " << storage_id.size();
-
-  std::move(callback).Run(kCurrentStorageIdVersion, storage_id);
-}
-#endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)
-
-#if BUILDFLAG(IS_CHROMEOS)
 void CdmDocumentServiceImpl::IsVerifiedAccessEnabled(
     IsVerifiedAccessEnabledCallback callback) {
   // If we are in guest/incognito mode, then verified access is effectively
@@ -366,6 +328,37 @@ void CdmDocumentServiceImpl::IsVerifiedAccessEnabled(
   std::move(callback).Run(enabled_for_device);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
+void CdmDocumentServiceImpl::GetStorageId(uint32_t version,
+                                          GetStorageIdCallback callback) {
+  DVLOG(2) << __func__ << " version: " << version;
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Check that the request is for a supported version.
+  if (version == kCurrentStorageIdVersion ||
+      version == kRequestLatestStorageIdVersion) {
+    ComputeStorageId(
+        GetStorageIdSaltFromProfile(&render_frame_host()), origin(),
+        base::BindOnce(&CdmDocumentServiceImpl::OnStorageIdResponse,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  // Version not supported, so no Storage Id to return.
+  DVLOG(2) << __func__ << " not supported";
+  std::move(callback).Run(version, std::vector<uint8_t>());
+}
+
+void CdmDocumentServiceImpl::OnStorageIdResponse(
+    GetStorageIdCallback callback,
+    const std::vector<uint8_t>& storage_id) {
+  DVLOG(2) << __func__ << " version: " << kCurrentStorageIdVersion
+           << ", size: " << storage_id.size();
+
+  std::move(callback).Run(kCurrentStorageIdVersion, storage_id);
+}
+#endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)
 
 #if BUILDFLAG(IS_WIN)
 void CdmDocumentServiceImpl::GetMediaFoundationCdmData(
