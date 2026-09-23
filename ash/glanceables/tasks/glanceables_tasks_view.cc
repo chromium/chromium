@@ -416,7 +416,7 @@ void GlanceablesTasksView::ScheduleUpdateTasks(ListShownContext context) {
   }
 
   SetIsLoading(true);
-  combobox_view()->GetViewAccessibility().SetDescription(u"");
+  combobox_view()->GetViewAccessibility().RemoveDescription();
 
   const auto* const active_task_list = GetActiveTaskList();
   tasks_combobox_model_->SaveLastSelectedTaskList(active_task_list->id);

@@ -322,7 +322,7 @@ void GlanceablesClassroomStudentView::SelectedAssignmentListChanged(
   CancelUpdates();
 
   progress_bar()->UpdateProgressBarVisibility(/*visible=*/true);
-  combobox_view()->GetViewAccessibility().SetDescription(u"");
+  combobox_view()->GetViewAccessibility().RemoveDescription();
 
   auto callback =
       base::BindOnce(&GlanceablesClassroomStudentView::OnGetAssignments,

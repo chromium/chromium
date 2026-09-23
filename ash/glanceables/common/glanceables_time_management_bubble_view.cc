@@ -418,7 +418,7 @@ void GlanceablesTimeManagementBubbleView::CreateComboBoxView() {
   combobox_view_->SetVisible(is_expanded_);
 
   // Assign a default value for tooltip and accessible text.
-  combobox_view_->GetViewAccessibility().SetDescription(u"");
+  combobox_view_->GetViewAccessibility().RemoveDescription();
   combobox_view_->SetSelectionChangedCallback(base::BindRepeating(
       &GlanceablesTimeManagementBubbleView::SelectedListChanged,
       base::Unretained(this)));
