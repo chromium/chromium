@@ -159,3 +159,9 @@ crbug.com/564394196 GeminiContainerTestCase/testOpenAppsActivityFromToolbar [ Pa
 crbug.com/564394196 GeminiCopresenceTestCase/testOpenSettingsFromToolbar [ Pass Failure ]
 crbug.com/564394196 GeminiDynamicSettingsTestCase/testLoadDynamicSettings [ Pass Failure ]
 
+# Picture-in-picture issues on iPad
+# Gardening suppression 2026-09-23
+crbug.com/497637049 [ iPad Device ] PictureInPictureTestCase/testDefaultBrowserStartPipAndDismiss [ Pass Failure ]
+crbug.com/497637049 [ iPad Device ] PictureInPictureTestCase/testDefaultBrowserStartPipAndRestoreFullscreen [ Pass Failure ]
+crbug.com/497637049 [ iPad Device ] PictureInPictureTestCase/testDefaultBrowserStartPipAndRestoreViaReturnToApp [ Pass Failure ]
+
