@@ -1609,29 +1609,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       personal_context::PersonalContextNonEligibilityReason::kEligible, 2);
 }
 
-// Tests that `PrefetchContext` populates the `client_id` field of
-// `ContextMemoryAmbientAutofillRequest` using the cache GUID retrieved from
-// `DeviceInfoSyncService`.
-TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
-       PrefetchContext_PopulatesClientIdFromCacheGuid) {
-  EXPECT_CALL(
-      mock_personal_context_service(),
-      FetchContext(
-          personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
-          MatchContextFetchRequestWithClientId(
-              std::vector<personal_context::proto::EntityType>{
-                  AutofillEntityTypeToPersonalContextEntityType(kOrderType)},
-              /*expected_presence=*/false,
-              /*expected_client_id=*/
-              fake_device_info_sync_service()
-                  .GetLocalDeviceInfoProvider()
-                  ->GetLocalDeviceInfo()
-                  ->guid()),
-          _, _));
-
-  access_manager().PrefetchContext({kOrderType});
-}
-
 // Tests that `PrefetchContext` populates an empty `client_id` when local device
 // info is unavailable.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
@@ -1855,6 +1832,29 @@ class AutofillAiPersonalContextAccessManagerImplSpiiCacheTest
   base::test::ScopedFeatureList feature_list_{
       features::kAutofillAmbientAutofillSpiiCache};
 };
+
+// Tests that `PrefetchContext` populates the `client_id` field of
+// `ContextMemoryAmbientAutofillRequest` using the cache GUID retrieved from
+// `DeviceInfoSyncService`.
+TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
+       PrefetchContext_PopulatesClientIdFromCacheGuid) {
+  EXPECT_CALL(
+      mock_personal_context_service(),
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
+          MatchContextFetchRequestWithClientId(
+              std::vector<personal_context::proto::EntityType>{
+                  AutofillEntityTypeToPersonalContextEntityType(kOrderType)},
+              /*expected_presence=*/false,
+              /*expected_client_id=*/
+              fake_device_info_sync_service()
+                  .GetLocalDeviceInfoProvider()
+                  ->GetLocalDeviceInfo()
+                  ->guid()),
+          _, _));
+
+  access_manager().PrefetchContext({kOrderType});
+}
 
 // Tests that when `kAutofillAmbientAutofillSpiiCache` is enabled, prefetching
 // SPII types sends a single request that does not ask for SPII presence, and
