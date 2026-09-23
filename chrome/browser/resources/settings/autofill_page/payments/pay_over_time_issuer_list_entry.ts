@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../../i18n_setup.js';
 import '../../settings_shared.css.js';
 import '../autofill_shared.css.js';
+import './screen_reader_only.css.js';
 
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

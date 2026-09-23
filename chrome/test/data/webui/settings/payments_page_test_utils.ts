@@ -151,7 +151,7 @@ export function getCardRowShadowRoot(paymentsList: HTMLElement): ShadowRoot {
   const row =
       paymentsList.shadowRoot!.querySelector('settings-credit-card-list-entry');
   assertTrue(!!row);
-  return row.shadowRoot!;
+  return row.shadowRoot;
 }
 
 type PaymentEntryElement =

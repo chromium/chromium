@@ -8,23 +8,26 @@
  */
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../../settings_shared.css.js';
-import '../autofill_shared.css.js';
-import './screen_reader_only.css.js';
 
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {CardBenefitsUserAction, MetricsBrowserProxyImpl} from '../../metrics_browser_proxy.js';
 
-import {getTemplate} from './credit_card_list_entry.html.js';
+import {getCss} from './credit_card_list_entry.css.js';
+import {getHtml} from './credit_card_list_entry.html.js';
 
+/**
+ * This function returns a string that can be used in a srcset to scale
+ * the provided `url` based on the user's screen resolution.
+ */
+function getScaledSrcSet(url: string): string {
+  return `${url} 1x, ${url}@2x 2x`;
+}
 
-
-const SettingsCreditCardListEntryElementBase = I18nMixin(PolymerElement);
+const SettingsCreditCardListEntryElementBase = I18nMixinLit(CrLitElement);
 
 export class SettingsCreditCardListEntryElement extends
     SettingsCreditCardListEntryElementBase {
@@ -32,69 +35,65 @@ export class SettingsCreditCardListEntryElement extends
     return 'settings-credit-card-list-entry';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /** A saved credit card. */
-      creditCard: Object,
+      creditCard: {type: Object},
 
-      autofillEnableWalletBrandingEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('autofillEnableWalletBranding');
-        },
-        readOnly: true,
-      },
+      autofillEnableWalletBrandingEnabled_: {type: Boolean},
 
-      autofillEnableGradientGoogleLogosEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
-        },
-        readOnly: true,
-      },
+      autofillEnableGradientGoogleLogosEnabled_: {type: Boolean},
     };
   }
 
-  declare creditCard: chrome.autofillPrivate.CreditCardEntry;
+  accessor creditCard: chrome.autofillPrivate.CreditCardEntry = {
+    expirationMonth: '01',
+    expirationYear: '2099',
+    imageSrc: '',
+    metadata: {
+      isLocal: false,
+      isVirtualCardEnrolled: false,
+      isVirtualCardEnrollmentEligible: false,
+      summaryLabel: '',
+    },
+  };
 
-  declare private autofillEnableWalletBrandingEnabled_: boolean;
+  protected accessor autofillEnableWalletBrandingEnabled_: boolean =
+      loadTimeData.getBoolean('autofillEnableWalletBranding');
 
-  declare private autofillEnableGradientGoogleLogosEnabled_: boolean;
+  protected accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
+      loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
 
   get dotsMenu(): HTMLElement|null {
-    return this.shadowRoot!.getElementById('creditCardMenu');
+    return this.shadowRoot.getElementById('creditCardMenu');
   }
 
   /**
    * Opens the credit card action menu.
    */
-  private onDotsMenuClick_() {
-    this.dispatchEvent(new CustomEvent('dots-card-menu-click', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        creditCard: this.creditCard,
-        anchorElement: this.shadowRoot!.querySelector('#creditCardMenu'),
-      },
-    }));
+  protected onDotsMenuClick_() {
+    this.fire('dots-card-menu-click', {
+      creditCard: this.creditCard,
+      anchorElement: this.shadowRoot.querySelector('#creditCardMenu'),
+    });
   }
 
-  private onRemoteEditClick_() {
-    this.dispatchEvent(new CustomEvent('remote-card-menu-click', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        creditCard: this.creditCard,
-        anchorElement: this.shadowRoot!.querySelector('#creditCardMenu'),
-      },
-    }));
+  protected onRemoteEditClick_() {
+    this.fire('remote-card-menu-click', {
+      creditCard: this.creditCard,
+      anchorElement: this.shadowRoot.querySelector('#creditCardMenu'),
+    });
   }
 
-  private onSummarySublabelTermsLinkClick_() {
+  protected onSummarySublabelTermsLinkClick_() {
     // Log the metric for user clicking on the card benefits terms hyperlink.
     MetricsBrowserProxyImpl.getInstance().recordAction(
         CardBenefitsUserAction.CARD_BENEFITS_TERMS_LINK_CLICKED);
@@ -120,7 +119,7 @@ export class SettingsCreditCardListEntryElement extends
    *     digits or name. If a card has CVC saved, there will be additional
    *     description to notify of the same.
    */
-  private moreActionsTitle_(): string {
+  protected moreActionsTitle_(): string {
     const cardDescription = this.creditCard.nickname ||
         this.getCardNumberDescription_(this.creditCard) ||
         this.creditCard.name!;
@@ -133,7 +132,7 @@ export class SettingsCreditCardListEntryElement extends
   /**
    * The card has a product description or a nickname.
    */
-  private hasCardIdentifier_(): boolean {
+  protected hasCardIdentifier_(): boolean {
     return (this.creditCard.metadata!.summarySublabel || '').length > 0;
   }
 
@@ -141,16 +140,16 @@ export class SettingsCreditCardListEntryElement extends
    * The 3-dot menu should be shown if the card is not a masked server card or
    * if the card is eligible for virtual card enrollment.
    */
-  private showDots_(): boolean {
+  protected showDots_(): boolean {
     return this.creditCard.metadata!.isLocal ||
         this.isVirtualCardEnrollmentEligible_();
   }
 
-  private shouldShowOutlinkWithWalletBranding_(): boolean {
+  protected shouldShowOutlinkWithWalletBranding_(): boolean {
     return !this.showDots_() && this.autofillEnableWalletBrandingEnabled_;
   }
 
-  private shouldShowOutlinkWithoutWalletBranding_(): boolean {
+  protected shouldShowOutlinkWithoutWalletBranding_(): boolean {
     return !this.showDots_() && !this.autofillEnableWalletBrandingEnabled_;
   }
 
@@ -162,11 +161,11 @@ export class SettingsCreditCardListEntryElement extends
     return this.creditCard.metadata!.isVirtualCardEnrolled!;
   }
 
-  private getCardIdentifierAriaLabel_(): string {
+  protected getCardIdentifierAriaLabel_(): string {
     return this.creditCard.metadata!.summaryLabel || '';
   }
 
-  private getSummaryAriaLabel_(): string {
+  protected getSummaryAriaLabel_(): string {
     const cardNumberDescription =
         this.getCardNumberDescription_(this.creditCard);
     if (cardNumberDescription) {
@@ -180,7 +179,7 @@ export class SettingsCreditCardListEntryElement extends
    * Amex ending in 0001". If no card description is available, then the
    * default text such as "See terms here" is returned.
    */
-  private getBenefitsTermsAriaLabel_(): string {
+  protected getBenefitsTermsAriaLabel_(): string {
     const cardNumberDescription =
         this.getCardNumberDescription_(this.creditCard);
     if (cardNumberDescription) {
@@ -197,12 +196,10 @@ export class SettingsCreditCardListEntryElement extends
         this.creditCard.expirationYear.substring(2);
   }
 
-
-
   /**
    * Returns expiration date.
    */
-  private getExpirationlabel_(): string {
+  protected getExpirationlabel_(): string {
     return ' · ' + this.getCardExpiryDate_();
   }
 
@@ -215,7 +212,7 @@ export class SettingsCreditCardListEntryElement extends
    *   Virtual card turned on
    *   Virtual card turned on | CVC saved
    */
-  private getSummarySublabel_(): string {
+  protected getSummarySublabel_(): string {
     const separator = ' | ';
     let summarySublabel =
         this.isVirtualCardEnrolled_() ? this.i18n('virtualCardTurnedOn') : '';
@@ -228,12 +225,12 @@ export class SettingsCreditCardListEntryElement extends
     return summarySublabel;
   }
 
-  private hasSummaryAndBenefitSublabel_(): boolean {
+  protected hasSummaryAndBenefitSublabel_(): boolean {
     return this.getSummarySublabel_().length > 0 &&
         this.isCardBenefitsProductUrlAvailable_();
   }
 
-  private getSummaryAriaSublabel_(): string {
+  protected getSummaryAriaSublabel_(): string {
     const expirationDate =
         this.i18n('creditCardExpDateA11yLabeled', this.getCardExpiryDate_());
     const sublabel = this.getSummarySublabel_().replace('|', ',');
@@ -249,7 +246,7 @@ export class SettingsCreditCardListEntryElement extends
         this.isVirtualCardEnrollmentEligible_();
   }
 
-  private shouldShowPaymentsIndicator_(): boolean {
+  protected shouldShowPaymentsIndicator_(): boolean {
     return !this.creditCard.metadata!.isLocal;
   }
 
@@ -258,11 +255,11 @@ export class SettingsCreditCardListEntryElement extends
         !!this.creditCard.cvc;
   }
 
-  private isCardBenefitsProductUrlAvailable_(): boolean {
+  protected isCardBenefitsProductUrlAvailable_(): boolean {
     return !!this.creditCard.productTermsUrl;
   }
 
-  private getCardBenefitsProductUrl_(): string {
+  protected getCardBenefitsProductUrl_(): string {
     return this.creditCard.productTermsUrl || '';
   }
 
@@ -272,34 +269,35 @@ export class SettingsCreditCardListEntryElement extends
    * user's screen resolution, otherwise it will return the unmodified
    * `imageSrc`.
    */
-  private getCardImage_(imageSrc: string): string {
-    return imageSrc.startsWith('chrome://theme') ?
-        this.getScaledSrcSet_(imageSrc) :
-        imageSrc;
+  protected getCardImage_(): string {
+    if (!this.creditCard.imageSrc) {
+      return '';
+    }
+    return this.creditCard.imageSrc.startsWith('chrome://theme') ?
+        getScaledSrcSet(this.creditCard.imageSrc) :
+        this.creditCard.imageSrc;
   }
 
-  /**
-   * This function returns a string that can be used in a srcset to scale
-   * the provided `url` based on the user's screen resolution.
-   */
-  private getScaledSrcSet_(url: string): string {
-    return `${url} 1x, ${url}@2x 2x`;
-  }
-
-  private getGooglePayLightModeLogoSrcSet_(
-      isGradientGoogleLogosEnabled: boolean): string {
-    const logoId = isGradientGoogleLogosEnabled ?
+  protected getGooglePayLightModeLogoSrcSet_(): string {
+    const logoId = this.autofillEnableGradientGoogleLogosEnabled_ ?
         'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_SMALL' :
         'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_SMALL';
-    return this.getScaledSrcSet_(logoId);
+    return getScaledSrcSet(logoId);
   }
 
-  private getGooglePayDarkModeLogoSrcSet_(
-      isGradientGoogleLogosEnabled: boolean): string {
-    const logoId = isGradientGoogleLogosEnabled ?
+  protected getGooglePayDarkModeLogoSrcSet_(): string {
+    const logoId = this.autofillEnableGradientGoogleLogosEnabled_ ?
         'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_DARK_SMALL' :
         'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL';
-    return this.getScaledSrcSet_(logoId);
+    return getScaledSrcSet(logoId);
+  }
+}
+
+export type CreditCardListEntryElement = SettingsCreditCardListEntryElement;
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-credit-card-list-entry': SettingsCreditCardListEntryElement;
   }
 }
 

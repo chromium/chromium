@@ -168,7 +168,7 @@ suite('PaymentsPageCreditCardEditDialogTest', function() {
     // Simulate clicking three-dots menu button for the first card in the list.
     const rowShadowRoot =
         page.$.paymentsList.shadowRoot!
-            .querySelector('settings-credit-card-list-entry')!.shadowRoot!;
+            .querySelector('settings-credit-card-list-entry')!.shadowRoot;
     assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     const menuButton =
         rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
@@ -199,9 +199,9 @@ suite('PaymentsPageCreditCardEditDialogTest', function() {
     const firstEntry = page.$.paymentsList.shadowRoot!.querySelector(
         'settings-iban-list-entry');
     assertTrue(!!firstEntry);
-    assertFalse(!!firstEntry.shadowRoot!.querySelector('#remoteIbanLink'));
+    assertFalse(!!firstEntry.shadowRoot.querySelector('#remoteIbanLink'));
     const menuButton =
-        firstEntry.shadowRoot!.querySelector<HTMLElement>('#ibanMenu');
+        firstEntry.shadowRoot.querySelector<HTMLElement>('#ibanMenu');
     assertTrue(!!menuButton);
 
     menuButton.click();

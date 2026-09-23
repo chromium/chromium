@@ -1,93 +1,58 @@
-    <style include="settings-shared autofill-shared screen-reader-only">
-      .expiration-column,
-      .misc-column {
-        align-items: center;
-        display: flex;
-      }
-
-      .misc-column {
-        justify-content: flex-end;
-      }
-
-      .list-item {
-        margin-bottom: 8px;
-        margin-top: 8px;
-      }
-
-      .sub-label {
-        color: var(--cr-secondary-text-color);
-      }
-
-      #paymentsIcon {
-        vertical-align: middle;
-      }
-
-      #cardImage {
-        margin-inline-end: 16px;
-        vertical-align: middle;
-      }
-    </style>
     <div class="list-item" role="row">
       <div class="type-column" role="cell">
-        <img id="cardImage" srcset="[[getCardImage_(creditCard.imageSrc)]]" alt="">
+        <img id="cardImage" srcset="${this.getCardImage_()}" alt="">
         <div class="summary-column screen-reader-only-host-node">
           <div class="screen-reader-only">
-            [[getCardIdentifierAriaLabel_(creditCard)]],
-            [[getSummaryAriaLabel_(creditCard)]],
-            [[getSummaryAriaSublabel_(creditCard)]]
+            ${this.getCardIdentifierAriaLabel_()},
+            ${this.getSummaryAriaLabel_()},
+            ${this.getSummaryAriaSublabel_()}
           </div>
           <div>
             <span id="label" class="ellipses" aria-hidden="true">
-              [[creditCard.metadata.summaryLabel]]
+              ${this.creditCard.metadata?.summaryLabel || ''}
             </span>
-            <template is="dom-if" if="[[hasCardIdentifier_(creditCard)]]">
+            ${this.hasCardIdentifier_() ? html`
               <div class="sub-label" aria-hidden="true">
                 <span id="summaryLabel_1">
-                  [[creditCard.metadata.summarySublabel]]
+                  ${this.creditCard.metadata?.summarySublabel || ''}
                 </span>
                 <span id="summaryLabel_2">
-                  [[getExpirationlabel_(creditCard)]]
+                  ${this.getExpirationlabel_()}
                 </span>
               </div>
-            </template>
-            <template is="dom-if" if="[[!hasCardIdentifier_(creditCard)]]">
+            ` : html`
               <span id="expirationLabel" class="sub-label" aria-hidden="true">
-                [[getExpirationlabel_(creditCard)]]
+                ${this.getExpirationlabel_()}
               </span>
-            </template>
+            `}
           </div>
           <div id="summarySublabel" class="sub-label">
             <!-- aria-hidden is true because the screen-reader-only section
                  above handles this content via getSummaryAriaSublabel_. -->
-            <span aria-hidden="true">[[getSummarySublabel_(creditCard)]]</span>
-            <template is="dom-if"
-                if="[[hasSummaryAndBenefitSublabel_(creditCard)]]">
-              |
-            </template>
-            <template is="dom-if" if="[[isCardBenefitsProductUrlAvailable_(creditCard)]]">
+            <span aria-hidden="true">${this.getSummarySublabel_()}</span>
+            ${this.hasSummaryAndBenefitSublabel_() ? html`|` : ''}
+            ${this.isCardBenefitsProductUrlAvailable_() ? html`
               <a id="summaryTermsLink"
-                aria-label="[[getBenefitsTermsAriaLabel_(creditCard)]]"
+                aria-label="${this.getBenefitsTermsAriaLabel_()}"
                 aria-description="$i18n{opensInNewTab}"
-                on-click="onSummarySublabelTermsLinkClick_"
-                href="[[getCardBenefitsProductUrl_(creditCard)]]"
+                @click="${this.onSummarySublabelTermsLinkClick_}"
+                href="${this.getCardBenefitsProductUrl_()}"
                 target="_blank">$i18n{benefitsTermsTagForCreditCardListEntry}</a>
-            </template>
+            ` : ''}
           </div>
         </div>
       </div>
       <div class="expiration-column">
         <div role="cell" class="misc-column">
           <div id="paymentsIndicator"
-              hidden$="[[!shouldShowPaymentsIndicator_(creditCard.metadata)]]">
+              ?hidden="${!this.shouldShowPaymentsIndicator_()}">
             <if expr="_google_chrome">
               <picture id="paymentsIcon">
                 <source
-                    srcset="[[getGooglePayDarkModeLogoSrcSet_(
-                        autofillEnableGradientGoogleLogosEnabled_)]]"
+                    srcset="${this.getGooglePayDarkModeLogoSrcSet_()}"
                     media="(prefers-color-scheme: dark)">
                 <img alt=""
-                    srcset="[[getGooglePayLightModeLogoSrcSet_(
-                        autofillEnableGradientGoogleLogosEnabled_)]]">
+                    srcset="${this.getGooglePayLightModeLogoSrcSet_()}">
               </picture>
             </if>
             <if expr="not _google_chrome">
@@ -96,26 +61,24 @@
               </span>
             </if>
           </div>
-          <template is="dom-if" if="[[showDots_(creditCard.metadata)]]">
+          ${this.showDots_() ? html`
             <cr-icon-button class="icon-more-vert" id="creditCardMenu"
-                title="[[moreActionsTitle_(creditCard)]]"
-                on-click="onDotsMenuClick_">
+                title="${this.moreActionsTitle_()}"
+                @click="${this.onDotsMenuClick_}">
             </cr-icon-button>
-          </template>
-          <template is="dom-if"
-              if="[[shouldShowOutlinkWithWalletBranding_(creditCard.metadata)]]">
+          ` : ''}
+          ${this.shouldShowOutlinkWithWalletBranding_() ? html`
             <cr-icon-button class="icon-external" id="remoteCreditCardLink"
                 title="$i18n{remotePaymentMethodsWalletLinkLabel}" role="link"
-                on-click="onRemoteEditClick_"
+                @click="${this.onRemoteEditClick_}"
                 aria-description="$i18n{opensInNewTab}"></cr-icon-button>
-          </template>
-          <template is="dom-if"
-              if="[[shouldShowOutlinkWithoutWalletBranding_(creditCard.metadata)]]">
+          ` : ''}
+          ${this.shouldShowOutlinkWithoutWalletBranding_() ? html`
             <cr-icon-button class="icon-external" id="remoteCreditCardLink"
                 title="$i18n{remotePaymentMethodsLinkLabel}" role="link"
-                on-click="onRemoteEditClick_"
+                @click="${this.onRemoteEditClick_}"
                 aria-description="$i18n{opensInNewTab}"></cr-icon-button>
-          </template>
+          ` : ''}
         </div>
       </div>
     </div>
