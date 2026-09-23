@@ -1276,15 +1276,27 @@ inline LayoutStateToolbarPassKey PassKey() {
   CGFloat topMax = [self expandedPrimaryToolbarHeight];
   CGFloat topInset = topMin + (topMax - topMin) * agent->top_progress();
   agent->AddObscuredInset(UIRectEdgeTop, topInset);
-  [_topToolbarViewController updateForFullscreenProgress:agent->top_progress()];
+  if (!agent->is_animating()) {
+    [_topToolbarViewController
+        updateForFullscreenProgress:agent->top_progress()];
+  }
 
   CGFloat bottomMin = [self collapsedSecondaryToolbarHeight];
   CGFloat bottomMax = [self expandedSecondaryToolbarHeight];
   CGFloat bottomInset =
       bottomMin + (bottomMax - bottomMin) * agent->bottom_progress();
   agent->AddObscuredInset(UIRectEdgeBottom, bottomInset);
+  if (!agent->is_animating()) {
+    [_bottomToolbarViewController
+        updateForFullscreenProgress:agent->bottom_progress()];
+  }
+}
+
+- (void)fullscreenDidUpdateInterpolatedProgress:(FullscreenBrowserAgent*)agent {
+  [_topToolbarViewController
+      updateForFullscreenProgress:agent->interpolated_progress()];
   [_bottomToolbarViewController
-      updateForFullscreenProgress:agent->bottom_progress()];
+      updateForFullscreenProgress:agent->interpolated_progress()];
 }
 
 #pragma mark - BrowserLayoutStateObserver
