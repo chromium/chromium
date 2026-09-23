@@ -16003,6 +16003,25 @@
             ]
         }
     ],
+    "RicherImageSuggestions": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "DirectNavigationInRealboxOmnibox_20260923",
+                    "enable_features": [
+                        "ComposeboxRichImageSuggestionsOmnibox",
+                        "ComposeboxRichImageSuggestionsRealbox"
+                    ]
+                }
+            ]
+        }
+    ],
     "RoundedWindows": [
         {
             "platforms": [
