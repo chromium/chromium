@@ -810,6 +810,59 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, OnSpeakWithAudioStreamAudioOptions) {
       "tts_engine/on_speak_with_audio_stream_using_audio_options"))
       << message_;
 }
+
+IN_PROC_BROWSER_TEST_P(TtsApiTest, OnSpeakWithAudioStreamUnauthorizedCaller) {
+  TtsExtensionEngine* engine = TtsExtensionEngine::GetInstance();
+  ASSERT_TRUE(engine);
+
+  engine->DisableBuiltInTTSEngineForTesting();
+  TtsEngineExtensionObserverChromeOS* engine_observer =
+      TtsEngineExtensionObserverChromeOSFactory::GetForProfile(profile());
+  mojo::Remote<chromeos::tts::mojom::TtsService>* tts_service_remote =
+      engine_observer->tts_service_for_testing();
+  chromeos::tts::TtsService tts_service(
+      tts_service_remote->BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(mock_platform_impl_, IsSpeaking()).Times(AnyNumber());
+  EXPECT_CALL(mock_platform_impl_, StopSpeaking()).WillRepeatedly(Return(true));
+
+  // When no utterance is speaking, IsCurrentUtteranceEngine should return false
+  // for any caller.
+  EXPECT_FALSE(engine->IsCurrentUtteranceEngine("unauthorized_extension_id"));
+
+  std::unique_ptr<content::TtsUtterance> utterance =
+      content::TtsUtterance::Create(profile());
+  utterance->SetEngineId("legitimate_engine");
+  utterance->SetVoiceName("Zach");
+  utterance->SetText("Testing audio stream authorization");
+  int utterance_id = utterance->GetId();
+
+  content::VoiceData voice;
+  voice.engine_id = "legitimate_engine";
+  voice.name = "Zach";
+  voice.events.insert(content::TTS_EVENT_END);
+  engine->Speak(utterance.get(), voice);
+
+  // Verify that an unauthorized extension ID is rejected as the speaking
+  // utterance engine, while the authorized extension is accepted.
+  EXPECT_FALSE(engine->IsCurrentUtteranceEngine("unauthorized_extension_id"));
+  EXPECT_TRUE(engine->IsCurrentUtteranceEngine("legitimate_engine"));
+
+  // Mismatched utterance ID should be dropped safely in SendAudioBuffer.
+  std::vector<float> audio_buffer(512, 0.0f);
+  engine->SendAudioBuffer(/*utterance_id=*/utterance_id + 1, audio_buffer,
+                          /*char_index=*/0, /*is_last_buffer=*/false);
+
+  // Sending audio buffer from the active utterance should succeed.
+  engine->SendAudioBuffer(utterance_id, audio_buffer,
+                          /*char_index=*/0, /*is_last_buffer=*/true);
+
+  engine->set_current_utterance_engine("");
+  EXPECT_FALSE(engine->IsCurrentUtteranceEngine("legitimate_engine"));
+  EXPECT_FALSE(engine->IsCurrentUtteranceEngine("unauthorized_extension_id"));
+
+  utterance->ClearBrowserContext();
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_P(TtsApiTest, SendTtsEventUnauthorizedCaller) {

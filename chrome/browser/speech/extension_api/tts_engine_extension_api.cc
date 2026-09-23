@@ -724,6 +724,12 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
   std::optional<bool> is_last_buffer =
       audio->FindBool(tts_extension_api_constants::kIsLastBufferKey);
   EXTENSION_FUNCTION_VALIDATE(is_last_buffer);
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  if (!TtsExtensionEngine::GetInstance()->IsCurrentUtteranceEngine(
+          extension_id())) {
+    return RespondNow(Error(constants::kErrorExtensionIdMismatch));
+  }
 
   TtsExtensionEngine::GetInstance()->SendAudioBuffer(
       utterance_id, audio_buffer, char_index, *is_last_buffer);

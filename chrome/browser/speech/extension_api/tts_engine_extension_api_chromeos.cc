@@ -30,9 +30,12 @@ void TtsExtensionEngineChromeOS::SendAudioBuffer(
     const std::vector<float>& audio_buffer,
     int char_index,
     bool is_last_buffer) {
-  if (utterance_id != current_utterance_id_)
+  // Drop in-flight buffers from canceled or superseded utterances.
+  if (utterance_id != current_utterance_id_) {
     return;
+  }
 
+  CHECK(playback_tts_stream_);
   playback_tts_stream_->SendAudioBuffer(audio_buffer, char_index,
                                         is_last_buffer);
 }
