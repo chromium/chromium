@@ -84,6 +84,13 @@ void ClientFrameSinkVideoCapturer::SetAutoThrottlingEnabled(bool enabled) {
   capturer_remote_->SetAutoThrottlingEnabled(enabled);
 }
 
+void ClientFrameSinkVideoCapturer::SetIsSecure(bool is_secure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  is_secure_ = is_secure;
+  capturer_remote_->SetIsSecure(is_secure);
+}
+
 void ClientFrameSinkVideoCapturer::ChangeTarget(
     const std::optional<VideoCaptureTarget>& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -225,8 +232,12 @@ void ClientFrameSinkVideoCapturer::EstablishConnection() {
         resolution_constraints_->min_size, resolution_constraints_->max_size,
         resolution_constraints_->use_fixed_aspect_ratio);
   }
-  if (auto_throttling_enabled_)
+  if (auto_throttling_enabled_) {
     capturer_remote_->SetAutoThrottlingEnabled(*auto_throttling_enabled_);
+  }
+  if (is_secure_.has_value()) {
+    capturer_remote_->SetIsSecure(*is_secure_);
+  }
   if (target_) {
     capturer_remote_->ChangeTarget(target_.value(), sub_capture_version_);
   }

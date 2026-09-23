@@ -62,6 +62,11 @@ struct StructTraits<viz::mojom::CopyOutputRequestDataView,
     return request->blit_request_;
   }
 
+  static bool is_secure(
+      const std::unique_ptr<viz::CopyOutputRequest>& request) {
+    return request->is_secure();
+  }
+
   static mojo::PendingRemote<viz::mojom::CopyOutputResultSender> result_sender(
       const std::unique_ptr<viz::CopyOutputRequest>& request);
 

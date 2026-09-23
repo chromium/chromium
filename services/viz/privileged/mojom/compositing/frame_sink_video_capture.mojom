@@ -176,6 +176,13 @@ interface FrameSinkVideoCapturer {
   SetAnimationFpsLockIn(bool enabled,
                         float majority_damaged_pixel_min_ratio);
 
+  // Sets whether the capture is secure.
+  // A capture is considered secure if the captured content is not easily
+  // accessible to JavaScript or users, and cannot be trivially shared or
+  // streamed out of the device. Used for capture prevention, e.g. for protected
+  // content or by enterprise policy.
+  SetIsSecure(bool secure);
+
   // Targets a different compositor frame sink. This may be called anytime,
   // before or after Start().
   //

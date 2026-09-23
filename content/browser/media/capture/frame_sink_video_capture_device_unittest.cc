@@ -107,6 +107,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
                     const gfx::Size& max_size,
                     bool use_fixed_aspect_ratio));
   MOCK_METHOD1(SetAutoThrottlingEnabled, void(bool));
+  MOCK_METHOD1(SetIsSecure, void(bool));
   void ChangeTarget(const std::optional<viz::VideoCaptureTarget>& target,
                     uint32_t sub_capture_version) final {
     DCHECK_NOT_ON_DEVICE_THREAD();

@@ -93,6 +93,9 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   void ChangeTarget(const std::optional<VideoCaptureTarget>& target);
   void ChangeTarget(const std::optional<VideoCaptureTarget>& target,
                     uint32_t sub_capture_target_version);
+
+  void SetIsSecure(bool is_secure);
+
   void Stop();
   void RequestRefreshFrame();
   void InvalidateBuffers();
@@ -160,6 +163,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   std::optional<base::TimeDelta> min_size_change_period_;
   std::optional<ResolutionConstraints> resolution_constraints_;
   std::optional<bool> auto_throttling_enabled_;
+  std::optional<bool> is_secure_;
   std::optional<VideoCaptureTarget> target_;
   std::optional<bool> animated_content_sampler_enabled_;
   std::optional<float> majority_damaged_pixel_min_ratio_;

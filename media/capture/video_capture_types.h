@@ -377,6 +377,13 @@ struct CAPTURE_EXPORT VideoCaptureParams {
 
   // The request type of the capture source.
   CaptureSourceRequestType request_type = CaptureSourceRequestType::kUnknown;
+
+  // Whether this video capture is secure.
+  // A capture is considered secure if the captured content is not easily
+  // accessible to JavaScript or users, and cannot be trivially shared or
+  // streamed out of the device. Used for capture prevention, e.g. for protected
+  // content or by enterprise policy.
+  bool is_secure = false;
 };
 
 CAPTURE_EXPORT std::ostream& operator<<(

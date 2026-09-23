@@ -196,6 +196,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
   MOCK_METHOD(void, SetMinSizeChangePeriod, (base::TimeDelta min_period));
 
   MOCK_METHOD(void, SetAutoThrottlingEnabled, (bool enabled));
+  MOCK_METHOD(void, SetIsSecure, (bool is_secure));
 
   MOCK_METHOD(void,
               SetAnimationFpsLockIn,

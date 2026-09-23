@@ -145,6 +145,13 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   bool has_blit_request() const { return blit_request_.has_value(); }
   const BlitRequest& blit_request() const { return *blit_request_; }
 
+  // A capture is considered secure if the captured content is not easily
+  // accessible to JavaScript or users, and cannot be trivially shared or
+  // streamed out of the device. Used for capture prevention, e.g. for protected
+  // content or by enterprise policy.
+  void set_is_secure(bool is_secure) { is_secure_ = is_secure; }
+  bool is_secure() const { return is_secure_; }
+
   // Sends the result from executing this request. Called by the internal
   // implementation, usually a DirectRenderer.
   void SendResult(std::unique_ptr<CopyOutputResult> result);
@@ -180,6 +187,8 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   std::optional<gfx::Rect> result_selection_;
 
   std::optional<BlitRequest> blit_request_;
+
+  bool is_secure_ = false;
 };
 
 }  // namespace viz

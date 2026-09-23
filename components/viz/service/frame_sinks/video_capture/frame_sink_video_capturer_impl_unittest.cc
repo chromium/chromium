@@ -480,6 +480,7 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
     auto expected_content_rect = gfx::Rect(
         size_set_.ExpectedContentRect(request->result_format()).size());
     EXPECT_EQ(expected_content_rect, request->result_selection());
+    last_copy_request_is_secure_ = request->is_secure();
 
     std::unique_ptr<CopyOutputResult> result;
     switch (request->result_destination()) {
@@ -578,6 +579,9 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
   }
 
   int number_clients_capturing() const { return number_clients_capturing_; }
+  bool last_copy_request_is_secure() const {
+    return last_copy_request_is_secure_;
+  }
 
  private:
   // Number of clients that have started capturing.
@@ -596,6 +600,7 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
   gfx::Rect crop_bounds_;
   gfx::Rect capture_bounds_;
   std::vector<base::OnceClosure> results_;
+  bool last_copy_request_is_secure_ = false;
 };
 
 class InstrumentedVideoCaptureOracle : public media::VideoCaptureOracle {
@@ -2003,6 +2008,44 @@ TEST_P(FrameSinkVideoCapturerTest, ClientCaptureStartsAndStops) {
   // Stop capturing. frame_sink_ should now have no client capturing.
   StopCapture();
   EXPECT_EQ(frame_sink_.number_clients_capturing(), 0);
+}
+
+TEST_P(FrameSinkVideoCapturerTest, SetIsSecure) {
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kVideoCaptureTarget))
+      .WillRepeatedly(Return(&frame_sink_));
+
+  capturer_->ChangeTarget(kVideoCaptureTarget,
+                          /*sub_capture_target_version=*/0);
+
+  NiceMock<MockConsumer> consumer;
+  StartCapture(&consumer);
+
+  // An immediate refresh frame occurs on start. By default, it is not secure.
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  EXPECT_FALSE(frame_sink_.last_copy_request_is_secure());
+  frame_sink_.SendCopyOutputResult(0);
+  consumer.SendDoneNotification(0);
+
+  // Marking capturer secure should mark subsequent copy requests secure.
+  capturer_->SetIsSecure(true);
+  AdvanceClockToNextVsync();
+  NotifyFrameDamaged(gfx::Rect(size_set().source_size));
+  ASSERT_EQ(2, frame_sink_.num_copy_results());
+  EXPECT_TRUE(frame_sink_.last_copy_request_is_secure());
+  frame_sink_.SendCopyOutputResult(1);
+  consumer.SendDoneNotification(1);
+
+  // Marking capturer insecure should revert subsequent copy requests back to
+  // insecure.
+  capturer_->SetIsSecure(false);
+  AdvanceClockToNextVsync();
+  NotifyFrameDamaged(gfx::Rect(size_set().source_size));
+  ASSERT_EQ(3, frame_sink_.num_copy_results());
+  EXPECT_FALSE(frame_sink_.last_copy_request_is_secure());
+  frame_sink_.SendCopyOutputResult(2);
+  consumer.SendDoneNotification(2);
+
+  StopCapture();
 }
 
 TEST_P(FrameSinkVideoCapturerTest, ChangeTargetIncreasesCaptureVersion) {

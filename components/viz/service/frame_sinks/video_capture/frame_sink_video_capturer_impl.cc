@@ -412,6 +412,10 @@ void FrameSinkVideoCapturerImpl::SetAutoThrottlingEnabled(bool enabled) {
   oracle_->SetAutoThrottlingEnabled(enabled);
 }
 
+void FrameSinkVideoCapturerImpl::SetIsSecure(bool is_secure) {
+  is_secure_ = is_secure;
+}
+
 void FrameSinkVideoCapturerImpl::ChangeTarget(
     const std::optional<VideoCaptureTarget>& target,
     uint32_t sub_capture_version) {
@@ -1208,6 +1212,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
                      capture_weak_factory_.GetWeakPtr(),
                      std::move(frame_capture)));
 
+  request->set_is_secure(is_secure_);
   request->set_result_task_runner(
       base::SequencedTaskRunner::GetCurrentDefault());
   request->set_source(copy_request_source_);

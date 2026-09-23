@@ -236,6 +236,7 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
       kResultFormat, kResultDestination,
       base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
                      weak_factory_.GetMutableWeakPtr(), shared_pass_index));
+  request->set_is_secure(true);
   request->set_result_task_runner(
       base::SingleThreadTaskRunner::GetCurrentDefault());
   scoped_refptr<gpu::ClientSharedImage> shared_image;

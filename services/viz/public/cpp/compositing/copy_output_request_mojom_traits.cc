@@ -160,6 +160,8 @@ StructTraits<viz::mojom::CopyOutputRequestDataView,
     return base::unexpected(DeserializationError());
   }
 
+  request->set_is_secure(data.is_secure());
+
   *out_p = std::move(request);
 
   return base::ok();

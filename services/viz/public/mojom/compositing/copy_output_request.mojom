@@ -24,6 +24,8 @@ struct CopyOutputRequest {
 
   BlitRequest? blit_request;
 
+  bool is_secure;
+
   pending_remote<CopyOutputResultSender> result_sender;
 };
 

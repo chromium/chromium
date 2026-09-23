@@ -73,4 +73,9 @@ TEST(VideoCaptureTypesTest, SuggestsConstraints) {
       params.SuggestConstraints());
 }
 
+TEST(VideoCaptureTypesTest, VideoCaptureParams) {
+  VideoCaptureParams params;
+  EXPECT_FALSE(params.is_secure);
+}
+
 }  // namespace media

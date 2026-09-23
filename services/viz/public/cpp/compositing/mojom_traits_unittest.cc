@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
@@ -399,6 +400,8 @@ TEST_F(CompositingStructTraitsTest, CopyOutputRequest_BitmapRequest) {
   EXPECT_TRUE(output->has_result_selection());
   EXPECT_EQ(result_rect, output->result_selection());
 
+  EXPECT_FALSE(output->is_secure());
+
   SkBitmap bitmap;
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(
       result_rect.width(), result_rect.height(), SkColorSpace::MakeSRGB()));
@@ -407,6 +410,18 @@ TEST_F(CompositingStructTraitsTest, CopyOutputRequest_BitmapRequest) {
   // If the CopyOutputRequest callback is called, this ends. Otherwise, the test
   // will time out and fail.
   run_loop.Run();
+}
+
+TEST_F(CompositingStructTraitsTest, CopyOutputRequest_SecureRequest) {
+  auto input = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory, base::DoNothing());
+  input->set_is_secure(true);
+  EXPECT_TRUE(input->is_secure());
+
+  std::unique_ptr<CopyOutputRequest> output;
+  mojo::test::SerializeAndDeserialize<mojom::CopyOutputRequest>(input, output);
+  EXPECT_TRUE(output->is_secure());
 }
 
 TEST_F(CompositingStructTraitsTest, CopyOutputRequest_MessagePipeBroken) {

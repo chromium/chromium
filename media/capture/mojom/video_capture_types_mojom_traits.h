@@ -205,6 +205,10 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     return params.request_type;
   }
 
+  static bool is_secure(const media::VideoCaptureParams& params) {
+    return params.is_secure;
+  }
+
   static bool Read(media::mojom::VideoCaptureParamsDataView data,
                    media::VideoCaptureParams* out);
 };
