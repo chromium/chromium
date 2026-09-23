@@ -272,8 +272,8 @@ content::WebContents* WebAppLaunchProcess::Run() {
   // In the case of prevent-close, we do not navigate but instead focus the
   // existing window.
   bool app_wants_focus_existing_without_navigation =
-     GetLaunchHandler().NeverNavigateExistingClients() ||
-     registrar_->IsPreventCloseEnabled(params_->app_id);
+      GetLaunchHandler().NeverNavigateExistingClients() ||
+      registrar_->IsPreventCloseEnabled(params_->app_id);
   if (!open_in_new_window && app_wants_focus_existing_without_navigation) {
     auto* tab_helper = WebAppTabHelper::FromWebContents(existing_tab);
     if (tab_helper->pending_launch_app_id() == params_->app_id) {
@@ -313,7 +313,15 @@ content::WebContents* WebAppLaunchProcess::Run() {
           : NavigateParams(browser, url_to_navigate,
                            ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   nav_params.disposition = navigation_disposition;
-  nav_params.initiator_origin = params_->initiator_origin;
+  // Only overwrite the initiator origin when the launch actually carries one.
+  // `NavigateParamsForShareTarget()` attributes share target navigations to the
+  // app itself, and share launches have no `initiator_origin`; assigning it
+  // unconditionally would reset that back to std::nullopt, which makes the
+  // navigation look like a user-typed URL to the network stack. See
+  // crbug.com/40061291.
+  if (params_->initiator_origin.has_value()) {
+    nav_params.initiator_origin = params_->initiator_origin;
+  }
   if (params_->initiator_origin.has_value() ||
       !params_->referrer_url.is_empty()) {
     nav_params.referrer = content::Referrer::SanitizeForRequest(

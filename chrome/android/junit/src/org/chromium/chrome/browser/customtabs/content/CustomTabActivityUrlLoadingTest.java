@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.clearInvocations;
@@ -179,6 +180,42 @@ public class CustomTabActivityUrlLoadingTest {
 
         verify(env.tabFromFactory, times(1)).loadUrl(any()); // Check that only one call was made.
         verify(env.tabFromFactory).loadUrl(argThat(params -> OTHER_URL.equals(params.getUrl())));
+    }
+
+    /**
+     * The sender of an intent can't be trusted, so an unattributed navigation must be made from an
+     * opaque origin rather than inheriting same-site cookies.
+     */
+    @Test
+    public void navigatesFromOpaqueOrigin_IfNoInitiatorOriginSpecified() {
+        Origin opaqueOrigin = mock(Origin.class);
+        Origin.setOpaqueOriginFactoryForTesting(() -> opaqueOrigin);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        LoadUrlParams params = new LoadUrlParams(OTHER_URL);
+        mNavigationController.navigate(params, new Intent());
+
+        assertEquals(opaqueOrigin, params.getInitiatorOrigin());
+    }
+
+    /**
+     * Regression test for crbug.com/40061291: callers that have verified the real initiator (e.g.
+     * TWA share targets, whose action is verified to be in the app's scope) set it themselves, and
+     * it must survive so that SameSite cookies are evaluated against it.
+     */
+    @Test
+    public void keepsInitiatorOrigin_IfSpecifiedByCaller() {
+        Origin.setOpaqueOriginFactoryForTesting(() -> mock(Origin.class));
+        Origin appOrigin = mock(Origin.class);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        LoadUrlParams params = new LoadUrlParams(OTHER_URL);
+        params.setInitiatorOrigin(appOrigin);
+        mNavigationController.navigate(params, new Intent());
+
+        assertEquals(appOrigin, params.getInitiatorOrigin());
     }
 
     private CustomTabIntentDataProvider createDataProviderForNewIntent() {

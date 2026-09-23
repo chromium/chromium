@@ -42,12 +42,14 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -354,6 +356,34 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, GetLink) {
   // Gatherer web app's service worker detects omitted value.
   EXPECT_EQ("N/A", ReadTextContent(web_contents, "author"));
   EXPECT_EQ(shared_link, ReadTextContent(web_contents, "link"));
+}
+
+// Regression test for crbug.com/40061291: the navigation to a share target has
+// to be attributed to the app being shared to. The action is verified to be in
+// the app's scope but may redirect anywhere, so an unattributed navigation --
+// which the network stack treats like a user-typed URL -- would let the app
+// make the browser send SameSite=Strict/Lax cookies to an arbitrary cross-site
+// URL.
+IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest,
+                       ShareTargetNavigationIsAttributedToApp) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url =
+      embedded_test_server()->GetURL("/web_share_target/poster.html");
+  const webapps::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
+
+  content::TestNavigationObserver navigation_observer(share_target_url());
+  navigation_observer.StartWatchingNewWebContents();
+
+  apps::IntentPtr intent = apps_util::MakeShareIntent(
+      /*text=*/"https://example.org/a",
+      /*title=*/"Hyperlink");
+
+  LaunchAppWithIntent(app_id, std::move(intent), share_target_url());
+  navigation_observer.Wait();
+
+  EXPECT_EQ(url::Origin::Create(share_target_url()),
+            navigation_observer.last_initiator_origin());
 }
 
 }  // namespace web_app

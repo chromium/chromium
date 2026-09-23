@@ -252,8 +252,13 @@ public class CustomTabActivityNavigationController
                         assertNonNull(mIntentDataProvider.getIntent()), transition));
 
         // The sender of an intent can't be trusted, so we navigate from an opaque Origin to
-        // avoid sending same-site cookies.
-        params.setInitiatorOrigin(Origin.createOpaqueOrigin());
+        // avoid sending same-site cookies. Callers that have verified who really initiated the
+        // navigation (e.g. TWA share targets, whose action URL is verified to be within the
+        // app's scope) set the initiator themselves; don't clobber that. See
+        // crbug.com/40061291.
+        if (params.getInitiatorOrigin() == null) {
+            params.setInitiatorOrigin(Origin.createOpaqueOrigin());
+        }
 
         // Notifies PreloadingImpl that a navigation to CCT is happening. This is used to calculate
         // the recall of CCT prefetch's attempt. Please see
