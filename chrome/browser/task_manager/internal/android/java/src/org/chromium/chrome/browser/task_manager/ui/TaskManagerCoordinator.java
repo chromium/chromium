@@ -301,13 +301,15 @@ class TaskManagerCoordinator {
             textView.setText(getColumnTextResourceId(columnKey));
 
             // TOOD(crbug.com/380158700): Descriptive message for a11y.
-            if (descriptor != null && descriptor.key == columnKey) {
+            boolean isSorted = descriptor != null && descriptor.key == columnKey;
+            if (isSorted) {
                 if (descriptor.ascending) {
                     textView.append(" ▲");
                 } else {
                     textView.append(" ▼");
                 }
             }
+            textView.setSelected(isSorted);
         }
     }
 
