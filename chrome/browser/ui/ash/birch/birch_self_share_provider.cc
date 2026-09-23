@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -33,9 +32,12 @@ bool IsEntryExpired(base::Time shared_time) {
 
 }  // namespace
 
-BirchSelfShareProvider::BirchSelfShareProvider(Profile* profile)
-    : profile_(profile),
-      sync_service_(SendTabToSelfSyncServiceFactory::GetForProfile(profile)) {}
+BirchSelfShareProvider::BirchSelfShareProvider(
+    Profile* profile,
+    send_tab_to_self::SendTabToSelfSyncService* sync_service)
+    : profile_(profile), sync_service_(sync_service) {
+  CHECK(sync_service_);
+}
 
 BirchSelfShareProvider::~BirchSelfShareProvider() = default;
 

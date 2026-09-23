@@ -21,7 +21,10 @@ namespace ash {
 // Fetched tabs are sent to 'BirchModel' to be stored.
 class ASH_EXPORT BirchSelfShareProvider : public BirchDataProvider {
  public:
-  explicit BirchSelfShareProvider(Profile* profile);
+  // `sync_service` must be non-null and must outlive `this`.
+  BirchSelfShareProvider(
+      Profile* profile,
+      send_tab_to_self::SendTabToSelfSyncService* sync_service);
   BirchSelfShareProvider(const BirchSelfShareProvider&) = delete;
   BirchSelfShareProvider& operator=(const BirchSelfShareProvider&) = delete;
   ~BirchSelfShareProvider() override;

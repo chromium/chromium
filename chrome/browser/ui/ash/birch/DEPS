@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/ash/release_notes",
   "+chrome/browser/ash/video_conference",
   "+chrome/browser/profiles",
-  "+chrome/browser/sync",
   "+chrome/browser/ui/ash/holding_space",
   "+chrome/browser/ui/ash/main_extra_parts",
   "+chrome/grit",
@@ -26,12 +25,18 @@ include_rules = [
 
 specific_include_rules = {
   # The ProfileKeyedServiceFactory resolves the signin::IdentityManager,
-  # history::HistoryService and favicon::FaviconService that the birch classes
-  # now take by constructor.
+  # history::HistoryService, favicon::FaviconService and
+  # SendTabToSelfSyncService that the birch classes take by constructor.
   "birch_keyed_service_factory\\.cc": [
     "+chrome/browser/favicon/favicon_service_factory.h",
     "+chrome/browser/history/history_service_factory.h",
     "+chrome/browser/signin/identity_manager_factory.h",
+    "+chrome/browser/sync",
+  ],
+
+  # BirchRecentTabsProvider still resolves the sync services itself.
+  "birch_recent_tabs_provider\\.cc": [
+    "+chrome/browser/sync",
   ],
   ".*test\\.cc": [
     "+chrome/browser/apps/platform_apps/app_browsertest_util.h",
@@ -41,6 +46,7 @@ specific_include_rules = {
     "+chrome/browser/history/history_service_factory.h",
     "+chrome/browser/prefs",
     "+chrome/browser/signin/identity_manager_factory.h",
+    "+chrome/browser/sync",
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+gmock/gmock.h",
   ],

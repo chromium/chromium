@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
@@ -49,6 +50,7 @@ BirchKeyedServiceFactory::BirchKeyedServiceFactory()
   // Indirect dependencies via BirchLastActiveProvider and
   // BirchMostVisitedProvider.
   DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
 }
 
@@ -67,7 +69,8 @@ BirchKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       FaviconServiceFactory::GetForProfile(profile,
-                                           ServiceAccessType::EXPLICIT_ACCESS));
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace ash

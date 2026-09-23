@@ -25,6 +25,10 @@ namespace history {
 class HistoryService;
 }  // namespace history
 
+namespace send_tab_to_self {
+class SendTabToSelfSyncService;
+}  // namespace send_tab_to_self
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -52,7 +56,9 @@ class BirchKeyedService : public KeyedService,
   BirchKeyedService(Profile* profile,
                     signin::IdentityManager* identity_manager,
                     history::HistoryService* history_service,
-                    favicon::FaviconService* favicon_service);
+                    favicon::FaviconService* favicon_service,
+                    send_tab_to_self::SendTabToSelfSyncService*
+                        send_tab_to_self_sync_service);
   BirchKeyedService(const BirchKeyedService&) = delete;
   BirchKeyedService& operator=(const BirchKeyedService&) = delete;
   ~BirchKeyedService() override;
