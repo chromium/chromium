@@ -104,9 +104,10 @@ public interface TabGroupObserver {
      * This method is called after a tab within a group is moved out of the group.
      *
      * @param movedTab The tab which has been moved.
-     * @param prevFilterIndex The index of the group where {@code moveTab} was before ungrouping.
+     * @param oldTabGroupId The tab group ID of the group where {@code movedTab} was before
+     *     ungrouping.
      */
-    default void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {}
+    default void didMoveTabOutOfGroup(Tab movedTab, Token oldTabGroupId) {}
 
     /**
      * This method is called after a group is created and an undo group snackbar should be shown.

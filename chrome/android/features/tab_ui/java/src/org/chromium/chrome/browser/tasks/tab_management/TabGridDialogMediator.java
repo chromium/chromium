@@ -524,8 +524,8 @@ public class TabGridDialogMediator
                     }
 
                     @Override
-                    public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
-                        if (!isVisible()) return;
+                    public void didMoveTabOutOfGroup(Tab movedTab, Token oldTabGroupId) {
+                        if (!isVisible() || !currentTabGroupIdMatches(oldTabGroupId)) return;
                         updateDialog();
                     }
 

@@ -819,7 +819,8 @@ public class TabListMediatorUnitTest {
         PropertyModel model = mModelList.get(0).model;
         model.set(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER, mTabGroupColorViewProvider);
 
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, POSITION1);
+        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, TAB_GROUP_ID);
 
         assertNull(model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
         verify(mTabGroupColorViewProvider).destroy();
@@ -1623,14 +1624,13 @@ public class TabListMediatorUnitTest {
         // 1. tab3 moves from tabGroupId2 into TAB_GROUP_ID.
         createTabGroup(List.of(mTab1, mTab2, tab3), TAB_GROUP_ID);
         createTabGroup(List.of(tab4), tabGroupId2);
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(3);
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, 1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, tabGroupId2);
         mTabGroupObserverCaptor.getValue().didMergeTabToGroup(tab3, /* isDestinationTab= */ false);
 
         // 2. tab4 moves from tabGroupId2 into TAB_GROUP_ID, dissolving tabGroupId2.
         createTabGroup(List.of(mTab1, mTab2, tab3, tab4), TAB_GROUP_ID);
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(4);
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab4, 0);
+        when(mTabModel.getTabsInGroup(tabGroupId2)).thenReturn(List.of());
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab4, tabGroupId2);
         mTabGroupObserverCaptor.getValue().didMergeTabToGroup(tab4, /* isDestinationTab= */ false);
         mTabGroupObserverCaptor
                 .getValue()
@@ -2205,18 +2205,19 @@ public class TabListMediatorUnitTest {
         mockRepresentativeTabs(mTab1, mTab2);
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
         mTabModelObserverCaptor.getValue().didMoveTab(mTab2, POSITION2, POSITION1);
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, POSITION1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, TAB_GROUP_ID);
 
         // Group now only has mTab1, but in TabModel it's already ungrouped.
         when(mTab1.getTabGroupId()).thenReturn(null);
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(0);
         when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(Tab.INVALID_TAB_ID);
 
         // Move the remaining representative tab.
         mTabModelObserverCaptor.getValue().didMoveTab(mTab1, POSITION2, POSITION1);
 
         // Call didMoveTabOutOfGroup for the last tab.
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab1, POSITION1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
 
         // Verify model list now contains two standalone tabs.
         assertEquals(2, mModelList.size());
@@ -2248,8 +2249,9 @@ public class TabListMediatorUnitTest {
         mockTabIndexes(mTab1, mTab2);
         mockRepresentativeTabs(mTab1, mTab2);
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
         mTabModelObserverCaptor.getValue().didMoveTab(mTab2, POSITION2, POSITION1);
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, POSITION1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, TAB_GROUP_ID);
 
         // Card for mTab2 is added, group card for TAB_GROUP_ID remains.
         assertEquals(2, mModelList.size());
@@ -2258,11 +2260,12 @@ public class TabListMediatorUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(null);
         when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(false);
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(0);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
         when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
 
         // Move the remaining representative tab and notify didMoveTabOutOfGroup.
         mTabModelObserverCaptor.getValue().didMoveTab(mTab1, POSITION2, POSITION1);
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab1, POSITION1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
 
         // didRemoveTabGroup removes the TAB_GROUP card.
         mTabGroupObserverCaptor
@@ -2763,7 +2766,7 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getGroupLastShownTabId(newGroupId)).thenReturn(TAB2_ID);
         mockRepresentativeTabs(mTab1, mTab2);
 
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, POSITION1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, TAB_GROUP_ID);
 
         assertEquals(2, mModelList.size());
         // Verify that mTab2's new card was created as a Tab Group Header card!
@@ -2782,7 +2785,7 @@ public class TabListMediatorUnitTest {
         // Assume undo grouping mTab2 with mTab1.
         mockRepresentativeTabs(mTab1, mTab2, tab3);
 
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, POSITION1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, TAB_GROUP_ID);
 
         assertThat(mModelList.size(), equalTo(3));
         assertThat(mMediator.getIndexFromTabId(TAB1_ID), equalTo(0));
@@ -2802,7 +2805,7 @@ public class TabListMediatorUnitTest {
         mockRepresentativeTabs(mTab1, mTab2, tab3);
         when(mTabModel.isTabInTabGroup(tab3)).thenReturn(false);
 
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, POSITION1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, TAB_GROUP_ID);
 
         assertThat(mModelList.size(), equalTo(3));
         assertThat(mMediator.getIndexFromTabId(TAB1_ID), equalTo(0));
@@ -2822,7 +2825,7 @@ public class TabListMediatorUnitTest {
         mockRepresentativeTabs(mTab1, mTab2, tab3);
         when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(false);
 
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab1, POSITION2);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
 
         assertThat(mModelList.size(), equalTo(3));
         assertThat(mMediator.getIndexFromTabId(TAB1_ID), equalTo(0));
@@ -2860,14 +2863,16 @@ public class TabListMediatorUnitTest {
         when(mTabModel.isTabInTabGroup(tab3)).thenReturn(false);
         when(mTabModel.isTabInTabGroup(tab4)).thenReturn(true);
         when(mTabModel.getRelatedTabList(TAB3_ID)).thenReturn(relatedTabs);
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, POSITION1);
+        Token groupId1 = new Token(1L, 1L);
+        when(mTabModel.getGroupLastShownTabId(groupId1)).thenReturn(TAB1_ID);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, groupId1);
         assertThat(mModelList.size(), equalTo(2));
         assertThat(mModelList.indexFromTabId(TAB1_ID), equalTo(0));
         assertThat(mModelList.indexFromTabId(TAB2_ID), equalTo(-1));
         assertThat(mModelList.indexFromTabId(TAB3_ID), equalTo(1));
         assertThat(mModelList.indexFromTabId(TAB4_ID), equalTo(-1));
 
-        // Undo tab 4
+        // Undo tab 4.
         relatedTabs = List.of(tab3, tab4);
         when(mTabModel.representativeIndexOf(tab4)).thenReturn(POSITION2);
         when(mTabModel.indexOf(tab3)).thenReturn(2);
@@ -2880,7 +2885,7 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getRelatedTabList(TAB4_ID)).thenReturn(relatedTabs);
         when(tab4.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab4, POSITION1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab4, groupId1);
         assertThat(mModelList.size(), equalTo(2));
 
         mTabGroupObserverCaptor.getValue().didMergeTabToGroup(tab4, /* isDestinationTab= */ false);
@@ -2921,14 +2926,13 @@ public class TabListMediatorUnitTest {
         when(mTabModel.indexOf(mTab2)).thenReturn(1);
         when(mTabModel.indexOf(tab4)).thenReturn(2);
         when(mTabModel.indexOf(tab3)).thenReturn(3);
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, POSITION1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, groupId1);
         mTabGroupObserverCaptor.getValue().didMergeTabToGroup(tab3, /* isDestinationTab= */ true);
         assertThat(mModelList.size(), equalTo(2));
         assertThat(mModelList.indexFromTabGroupId(groupId1), equalTo(0));
         assertThat(mModelList.indexFromTabGroupId(TAB_GROUP_ID), equalTo(1));
 
-        // Undo tab 4
+        // Undo tab 4.
         createTabGroup(List.of(mTab1, mTab2), groupId1);
         createTabGroup(List.of(tab3, tab4), TAB_GROUP_ID);
         when(mTabModel.representativeIndexOf(tab4)).thenReturn(POSITION2);
@@ -2936,8 +2940,7 @@ public class TabListMediatorUnitTest {
         when(mTabModel.indexOf(tab4)).thenReturn(3);
         when(mTabModel.getTabAt(2)).thenReturn(tab3);
         when(mTabModel.getTabAt(3)).thenReturn(tab4);
-        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(2);
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab4, POSITION1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab4, groupId1);
         assertThat(mModelList.size(), equalTo(2));
 
         mTabGroupObserverCaptor.getValue().didMergeTabToGroup(tab4, /* isDestinationTab= */ false);
@@ -4708,6 +4711,7 @@ public class TabListMediatorUnitTest {
         assertEquals(2, mModelList.size());
 
         when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
         when(mTab1.isClosing()).thenReturn(true);
 
         mTabModelObserverCaptor.getValue().didRemoveTabForClosure(tab3);
@@ -5222,7 +5226,7 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
         mockTabIndexes(mTab2, mTab1);
 
-        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, /* prevFilterIndex= */ 1);
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, TAB_GROUP_ID);
 
         // UI after move out: [0] Tab 2 (pinned), [1] Group Header, [2] Tab 1.
         assertEquals(3, mModelList.size());

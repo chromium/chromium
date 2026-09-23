@@ -279,7 +279,7 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+                public void didMoveTabOutOfGroup(Tab movedTab, Token oldTabGroupId) {
                     updateGroupTextAndSharedState(mSourceTabGroupId);
                     Token groupIdToHide = mGroupIdToHideSupplier.get();
                     // TODO(crbug.com/430514194): There is a strong possibility this is never true

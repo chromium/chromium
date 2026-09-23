@@ -79,7 +79,7 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+    public void didMoveTabOutOfGroup(Tab movedTab, Token oldTabGroupId) {
         int curTabListModelIndex = getIndexFromTabId(movedTab.getId());
         if (!mModelList.isValidIndex(curTabListModelIndex)) return;
 

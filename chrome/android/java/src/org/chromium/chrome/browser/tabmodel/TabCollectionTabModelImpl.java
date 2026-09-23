@@ -2722,13 +2722,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
      * tab in the group.
      */
     private boolean wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(Tab tab, Token oldTabGroupId) {
-        int prevFilterIndex = representativeIndexOf(getLastShownTabForGroup(oldTabGroupId));
-        boolean isLastTabInGroup = prevFilterIndex == TabList.INVALID_TAB_INDEX;
-        if (isLastTabInGroup) {
-            prevFilterIndex = representativeIndexOf(tab);
-        }
+        boolean isLastTabInGroup = !tabGroupExists(oldTabGroupId);
         for (TabGroupObserver observer : mTabGroupObservers) {
-            observer.didMoveTabOutOfGroup(tab, prevFilterIndex);
+            observer.didMoveTabOutOfGroup(tab, oldTabGroupId);
         }
         return isLastTabInGroup;
     }

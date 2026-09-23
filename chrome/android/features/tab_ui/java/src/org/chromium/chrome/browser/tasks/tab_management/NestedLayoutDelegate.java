@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.isOnlyArchivedMsg;
 
 import android.content.Context;
@@ -251,14 +250,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
-        // TODO(crbug.com/517544602): Pass previous tabGroupId in didMoveTabOutOfGroup instead of
-        // prevFilterIndex to avoid getRepresentativeTabAt.
-        TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        Tab previousGroupTab = tabModel.getRepresentativeTabAt(prevFilterIndex);
-        assumeNonNull(previousGroupTab);
-
-        Token oldTabGroupId = previousGroupTab.getTabGroupId();
+    public void didMoveTabOutOfGroup(Tab movedTab, Token oldTabGroupId) {
         if (!isRemovingTabGroup(oldTabGroupId)) {
             mMediator.updateTabGroupHeaderId(oldTabGroupId);
         }
@@ -353,10 +345,6 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         int srcIndex = getIndexFromTabId(tab.getId());
 
         Token newTabGroupId = tab.getTabGroupId();
-        if (oldTabGroupId == null && srcIndex != TabModel.INVALID_TAB_INDEX) {
-            oldTabGroupId = mModelList.get(srcIndex).model.get(TabProperties.TAB_GROUP_ID);
-        }
-
         int desIndex = getInsertionIndexOfTab(tab);
 
         if (srcIndex == TabModel.INVALID_TAB_INDEX && desIndex != TabModel.INVALID_TAB_INDEX) {

@@ -340,7 +340,7 @@ public class TabGroupUiMediator implements BackPressHandler {
         mTabGroupObserver =
                 new TabGroupObserver() {
                     @Override
-                    public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+                    public void didMoveTabOutOfGroup(Tab movedTab, Token oldTabGroupId) {
                         resetTabStrip();
                     }
 

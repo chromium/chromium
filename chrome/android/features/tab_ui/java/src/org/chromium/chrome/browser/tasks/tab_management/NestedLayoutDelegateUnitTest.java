@@ -565,16 +565,14 @@ public class NestedLayoutDelegateUnitTest {
         setupTabsInModel(mTab1, mTab3);
         addGroupHeaderToModelList(TAB1_ID);
         addTabToModelList(TAB1_ID, TAB_GROUP_ID);
-        PropertyModel tab1Model = addTabToModelList(TAB3_ID, TAB_GROUP_ID);
+        PropertyModel tab3Model = addTabToModelList(TAB3_ID, TAB_GROUP_ID);
 
-        when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
 
-        mDelegate.didMoveTabOutOfGroup(mTab3, 1);
+        mDelegate.didMoveTabOutOfGroup(mTab3, TAB_GROUP_ID);
 
         verify(mMediator).updateTabGroupHeaderId(TAB_GROUP_ID);
-        verify(mMediator).clearTabGroupProperties(tab1Model);
+        verify(mMediator).clearTabGroupProperties(tab3Model);
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
 
         assertModelListTabIds(TAB1_ID, TAB1_ID, TAB3_ID);
@@ -585,12 +583,10 @@ public class NestedLayoutDelegateUnitTest {
         setupTabsInModel(mTab1, mTab3);
         addGroupHeaderToModelList(TAB1_ID);
 
-        when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
 
-        mDelegate.didMoveTabOutOfGroup(mTab3, 1);
+        mDelegate.didMoveTabOutOfGroup(mTab3, TAB_GROUP_ID);
 
         verify(mMediator).addTabInfoToModelForTab(mTab3, 1);
     }
@@ -602,11 +598,9 @@ public class NestedLayoutDelegateUnitTest {
         PropertyModel tab1Model = addTabToModelList(TAB1_ID, TAB_GROUP_ID);
         addTabToModelList(TAB3_ID, TAB_GROUP_ID);
 
-        when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab3);
         when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab3));
 
-        mDelegate.didMoveTabOutOfGroup(mTab1, 1);
+        mDelegate.didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
 
         verify(mMediator).updateTabGroupHeaderId(TAB_GROUP_ID);
         verify(mMediator).clearTabGroupProperties(tab1Model);
@@ -622,14 +616,12 @@ public class NestedLayoutDelegateUnitTest {
         addTabToModelList(TAB1_ID, TAB_GROUP_ID);
         PropertyModel tab3Model = addTabToModelList(TAB3_ID, TAB_GROUP_ID);
 
-        when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
 
         // When group removal is active, updateTabGroupHeaderId and updateTabGroupTitle should be
         // suppressed.
         mDelegate.willRemoveTabGroup(TAB_GROUP_ID);
-        mDelegate.didMoveTabOutOfGroup(mTab3, 1);
+        mDelegate.didMoveTabOutOfGroup(mTab3, TAB_GROUP_ID);
 
         verify(mMediator, never()).updateTabGroupHeaderId(any());
         verify(mMediator).clearTabGroupProperties(tab3Model);
@@ -645,12 +637,9 @@ public class NestedLayoutDelegateUnitTest {
         addGroupHeaderToModelList(TAB1_ID);
         PropertyModel tab1Model = addTabToModelList(TAB1_ID, TAB_GROUP_ID);
 
-        when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab1);
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
+        mDelegate.didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
 
-        mDelegate.didMoveTabOutOfGroup(mTab1, 1);
-
-        verify(mMediator).updateTabGroupHeaderId(null);
+        verify(mMediator).updateTabGroupHeaderId(TAB_GROUP_ID);
         verify(mMediator).clearTabGroupProperties(tab1Model);
     }
 

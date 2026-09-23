@@ -937,7 +937,7 @@ public class TabGroupUiMediatorUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab3));
         doReturn(tabs).when(mTabModel).getRelatedTabList(TAB3_ID);
         doReturn(false).when(mTabModel).isTabInTabGroup(mTab3);
-        mTabGroupObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, 1);
+        mTabGroupObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, TAB2_GROUP_ID);
 
         verifyResetStrip(false, null);
     }
@@ -950,7 +950,7 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(tabs).when(mTabModel).getRelatedTabList(TAB3_ID);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab3);
         doReturn(new Token(1L, TAB3_ROOT_ID)).when(mTab3).getTabGroupId();
-        mTabGroupObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, 1);
+        mTabGroupObserverArgumentCaptor.getValue().didMoveTabOutOfGroup(mTab3, TAB2_GROUP_ID);
 
         verifyResetStrip(true, tabs);
     }

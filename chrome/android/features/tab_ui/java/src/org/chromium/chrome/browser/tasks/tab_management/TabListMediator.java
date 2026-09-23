@@ -2536,8 +2536,7 @@ public class TabListMediator implements TabListNotificationHandler {
      * representative tab was moved or closed, this updates the header to point to another valid tab
      * currently in the group to prevent ID hijacking.
      */
-    void updateTabGroupHeaderId(@Nullable Token tabGroupId) {
-        if (tabGroupId == null) return;
+    void updateTabGroupHeaderId(Token tabGroupId) {
         int headerIndex = mModelList.indexFromTabGroupId(tabGroupId);
         if (headerIndex == TabModel.INVALID_TAB_INDEX) return;
 
