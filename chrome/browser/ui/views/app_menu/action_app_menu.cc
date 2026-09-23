@@ -405,13 +405,16 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   const auto item_height =
       action_item->GetProperty(AppMenuActionItem::kItemHeightKey);
 
-  const int vertical_padding =
-      (provider->GetDistanceMetric(
-           item_height == AppMenuActionItem::ItemHeight::kExpanded
-               ? DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT
-               : DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT) -
-       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE)) /
-      2;
+  const int target_item_height = provider->GetDistanceMetric(
+      item_height == AppMenuActionItem::ItemHeight::kExpanded
+          ? DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT
+          : DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT);
+
+  const int content_height =
+      std::max(provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE),
+               menu_item->GetIconPreferredSize().height());
+
+  const int vertical_padding = (target_item_height - content_height) / 2;
 
   menu_item->set_vertical_margin(vertical_padding);
 
