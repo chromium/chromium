@@ -60,10 +60,11 @@ suite('KeywordModeManagerTest', () => {
     assertEquals(1, modelChangedCount);
     assertTrue(manager.isInKeywordMode);
     assertEquals('google.com', manager.activeKeyword);
-    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel?.type);
-    assertEquals('google.com', manager.inputKeywordModel?.keyword);
-    assertEquals('Search Google', manager.inputKeywordModel?.displayText);
-    assertEquals('Search Google', manager.inputKeywordModel?.placeholder);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel.type);
+    assertEquals('google.com', manager.inputKeywordModel.keyword);
+    assertEquals('Search Google', manager.inputKeywordModel.displayText);
+    assertEquals('Search Google', manager.inputKeywordModel.placeholder);
 
     manager.exit();
     assertEquals(2, modelChangedCount);
@@ -74,7 +75,8 @@ suite('KeywordModeManagerTest', () => {
     // Default placeholder is empty string.
     manager.enter('google.com', 'Search Google', KeywordModeEntryMethod.TAB);
     assertEquals(3, modelChangedCount);
-    assertEquals('', manager.inputKeywordModel?.placeholder);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals('', manager.inputKeywordModel.placeholder);
     manager.exit();
     assertEquals(4, modelChangedCount);
   });
@@ -90,9 +92,10 @@ suite('KeywordModeManagerTest', () => {
     manager.enter('@gemini', 'Gemini', KeywordModeEntryMethod.TAB);
     assertTrue(manager.isInKeywordMode);
     assertEquals('@gemini', manager.activeKeyword);
+    assertTrue(!!manager.inputKeywordModel);
     assertEquals(
         '//resources/cr_components/searchbox/icons/spark.svg',
-        manager.inputKeywordModel?.iconPath);
+        manager.inputKeywordModel.iconPath);
   });
 
   test('acceptInputTrigger for space at end', () => {
@@ -189,8 +192,9 @@ suite('KeywordModeManagerTest', () => {
     assertTrue(manager.acceptInputTrigger('@history ', 9, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('@history', manager.activeKeyword);
-    assertEquals('@history', manager.inputKeywordModel?.displayText);
-    assertEquals('Search history', manager.inputKeywordModel?.placeholder);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals('@history', manager.inputKeywordModel.displayText);
+    assertEquals('Search history', manager.inputKeywordModel.placeholder);
     assertEquals(KeywordModeEntryMethod.SPACE_AT_END, manager.entryMethod);
     manager.exit();
 
@@ -232,7 +236,8 @@ suite('KeywordModeManagerTest', () => {
     assertTrue(manager.acceptInputTrigger('google.com ', 11, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('google.com', manager.activeKeyword);
-    assertEquals('Search Google', manager.inputKeywordModel?.displayText);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals('Search Google', manager.inputKeywordModel.displayText);
     assertEquals(KeywordModeEntryMethod.SPACE_AT_END, manager.entryMethod);
     manager.exit();
 
@@ -335,8 +340,9 @@ suite('KeywordModeManagerTest', () => {
     assertTrue(manager.acceptInputTrigger('google.com query', 11, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('google.com', manager.activeKeyword);
-    assertEquals('Search Google', manager.inputKeywordModel?.displayText);
-    assertEquals('Search Google', manager.inputKeywordModel?.placeholder);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals('Search Google', manager.inputKeywordModel.displayText);
+    assertEquals('Search Google', manager.inputKeywordModel.placeholder);
     manager.exit();
 
     // InputEvent also works.
@@ -348,7 +354,8 @@ suite('KeywordModeManagerTest', () => {
     assertTrue(manager.acceptInputTrigger('@history query', 9, spaceEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('@history', manager.activeKeyword);
-    assertEquals('@history', manager.inputKeywordModel?.displayText);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals('@history', manager.inputKeywordModel.displayText);
     manager.exit();
 
     // Space was not typed (e.g. backspace) -> false.
@@ -471,7 +478,8 @@ suite('KeywordModeManagerTest', () => {
     assertTrue(manager.acceptInputTrigger('?', 1, questionMarkEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('?', manager.activeKeyword);
-    assertEquals('', manager.inputKeywordModel?.displayText);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals('', manager.inputKeywordModel.displayText);
   });
 
   test('handleBackspace not in keyword mode', () => {
@@ -523,8 +531,9 @@ suite('KeywordModeManagerTest', () => {
           selectionEnd: 0,
         }));
         assertFalse(manager.isInKeywordMode);
-        assertEquals('youtube.com', lastKeywordCleared?.restoredText);
-        assertEquals(11, lastKeywordCleared?.cursorPosition);
+        assertTrue(!!lastKeywordCleared);
+        assertEquals('youtube.com', lastKeywordCleared.restoredText);
+        assertEquals(11, lastKeywordCleared.cursorPosition);
       });
 
   test(
@@ -546,8 +555,9 @@ suite('KeywordModeManagerTest', () => {
           selectionEnd: 0,
         }));
         assertFalse(manager.isInKeywordMode);
-        assertEquals('youtube.com ', lastKeywordCleared?.restoredText);
-        assertEquals(12, lastKeywordCleared?.cursorPosition);
+        assertTrue(!!lastKeywordCleared);
+        assertEquals('youtube.com ', lastKeywordCleared.restoredText);
+        assertEquals(12, lastKeywordCleared.cursorPosition);
       });
 
   test(
@@ -573,8 +583,9 @@ suite('KeywordModeManagerTest', () => {
           selectionEnd: 0,
         }));
         assertFalse(manager.isInKeywordMode);
-        assertEquals('youtube.com query', lastKeywordCleared?.restoredText);
-        assertEquals(12, lastKeywordCleared?.cursorPosition);
+        assertTrue(!!lastKeywordCleared);
+        assertEquals('youtube.com query', lastKeywordCleared.restoredText);
+        assertEquals(12, lastKeywordCleared.cursorPosition);
       });
 
   test(
@@ -590,8 +601,9 @@ suite('KeywordModeManagerTest', () => {
           selectionEnd: 0,
         }));
         assertFalse(manager.isInKeywordMode);
-        assertEquals('youtube.com q', lastKeywordCleared?.restoredText);
-        assertEquals(12, lastKeywordCleared?.cursorPosition);
+        assertTrue(!!lastKeywordCleared);
+        assertEquals('youtube.com q', lastKeywordCleared.restoredText);
+        assertEquals(12, lastKeywordCleared.cursorPosition);
       });
 
   test(
@@ -606,8 +618,9 @@ suite('KeywordModeManagerTest', () => {
           selectionEnd: 0,
         }));
         assertFalse(manager.isInKeywordMode);
-        assertEquals('?f', lastKeywordCleared?.restoredText);
-        assertEquals(1, lastKeywordCleared?.cursorPosition);
+        assertTrue(!!lastKeywordCleared);
+        assertEquals('?f', lastKeywordCleared.restoredText);
+        assertEquals(1, lastKeywordCleared.cursorPosition);
 
         // Immediate backspace: '?<backspace>' -> restore '?'
         assertTrue(manager.acceptInputTrigger('?', 1, questionMarkEvent));
@@ -617,8 +630,9 @@ suite('KeywordModeManagerTest', () => {
           selectionEnd: 0,
         }));
         assertFalse(manager.isInKeywordMode);
-        assertEquals('?', lastKeywordCleared?.restoredText);
-        assertEquals(1, lastKeywordCleared?.cursorPosition);
+        assertTrue(!!lastKeywordCleared);
+        assertEquals('?', lastKeywordCleared.restoredText);
+        assertEquals(1, lastKeywordCleared.cursorPosition);
       });
 
   test(
@@ -634,8 +648,9 @@ suite('KeywordModeManagerTest', () => {
           selectionEnd: 0,
         }));
         assertFalse(manager.isInKeywordMode);
-        assertEquals('', lastKeywordCleared?.restoredText);
-        assertEquals(0, lastKeywordCleared?.cursorPosition);
+        assertTrue(!!lastKeywordCleared);
+        assertEquals('', lastKeywordCleared.restoredText);
+        assertEquals(0, lastKeywordCleared.cursorPosition);
 
         // After typing: '<ctrl+K>abc<left arrow * 3><backspace>' -> restore
         // 'abc'
@@ -648,8 +663,9 @@ suite('KeywordModeManagerTest', () => {
           selectionEnd: 0,
         }));
         assertFalse(manager.isInKeywordMode);
-        assertEquals('abc', lastKeywordCleared?.restoredText);
-        assertEquals(0, lastKeywordCleared?.cursorPosition);
+        assertTrue(!!lastKeywordCleared);
+        assertEquals('abc', lastKeywordCleared.restoredText);
+        assertEquals(0, lastKeywordCleared.cursorPosition);
       });
 
   test('handleBackspace click entry restores keyword with space', () => {
@@ -669,8 +685,9 @@ suite('KeywordModeManagerTest', () => {
       selectionEnd: 0,
     }));
     assertFalse(manager.isInKeywordMode);
-    assertEquals('youtube.com ', lastKeywordCleared?.restoredText);
-    assertEquals(12, lastKeywordCleared?.cursorPosition);
+    assertTrue(!!lastKeywordCleared);
+    assertEquals('youtube.com ', lastKeywordCleared.restoredText);
+    assertEquals(12, lastKeywordCleared.cursorPosition);
 
     // After typing restores keyword with space + typed text.
     manager.handleKeywordClick(match);
@@ -680,8 +697,9 @@ suite('KeywordModeManagerTest', () => {
       selectionEnd: 0,
     }));
     assertFalse(manager.isInKeywordMode);
-    assertEquals('youtube.com query', lastKeywordCleared?.restoredText);
-    assertEquals(12, lastKeywordCleared?.cursorPosition);
+    assertTrue(!!lastKeywordCleared);
+    assertEquals('youtube.com query', lastKeywordCleared.restoredText);
+    assertEquals(12, lastKeywordCleared.cursorPosition);
   });
 
   test('handleKeywordClick', () => {
@@ -702,8 +720,9 @@ suite('KeywordModeManagerTest', () => {
     manager.handleKeywordClick(matchWithKeyword);
     assertTrue(manager.isInKeywordMode);
     assertEquals('youtube.com', manager.activeKeyword);
+    assertTrue(!!manager.inputKeywordModel);
     assertEquals(
-        'Search YouTube videos', manager.inputKeywordModel?.placeholder);
+        'Search YouTube videos', manager.inputKeywordModel.placeholder);
     assertEquals(1, keywordEnteredCount);
   });
 
@@ -747,8 +766,9 @@ suite('KeywordModeManagerTest', () => {
     assertTrue(manager.acceptTab(matchWithKeyword, /*matchIndex=*/ 0));
     assertTrue(manager.isInKeywordMode);
     assertEquals('youtube.com', manager.activeKeyword);
+    assertTrue(!!manager.inputKeywordModel);
     assertEquals(
-        'Search YouTube videos', manager.inputKeywordModel?.placeholder);
+        'Search YouTube videos', manager.inputKeywordModel.placeholder);
     assertEquals(1, keywordEnteredCount);
   });
 
@@ -810,31 +830,36 @@ suite('KeywordModeManagerTest', () => {
       placeholder: '',
     }];
 
-    manager.onSelectedMatchChanged(matchWithKeyword);
-    assertTrue(manager.inputKeywordModel !== null);
-    assertEquals(KeywordType.kChip, manager.inputKeywordModel?.type);
-    assertEquals('youtube.com', manager.inputKeywordModel?.keyword);
-    assertEquals('Search YouTube', manager.inputKeywordModel?.displayText);
+    manager.onSelectedMatchChanged(
+        matchWithKeyword,
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0});
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals(KeywordType.kChip, manager.inputKeywordModel.type);
+    assertEquals('youtube.com', manager.inputKeywordModel.keyword);
+    assertEquals('Search YouTube', manager.inputKeywordModel.displayText);
     assertEquals(
         '//resources/cr_components/searchbox/icons/youtube.svg',
-        manager.inputKeywordModel?.iconPath);
+        manager.inputKeywordModel.iconPath);
     assertEquals(
-        'Search YouTube videos', manager.inputKeywordModel?.placeholder);
+        'Search YouTube videos', manager.inputKeywordModel.placeholder);
 
     // Match without keyword model -> resets keyword model to null.
     const matchWithoutKeyword = createSearchMatchForTesting({
       keywordModel: undefined,
     });
-    manager.onSelectedMatchChanged(matchWithoutKeyword);
+    manager.onSelectedMatchChanged(
+        matchWithoutKeyword,
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0});
     assertEquals(null, manager.inputKeywordModel);
 
     // In keyword mode with null match (e.g. results clearing) -> preserves
     // keyword model.
     manager.enter('youtube.com', 'Search YouTube', KeywordModeEntryMethod.TAB);
-    manager.onSelectedMatchChanged(null);
-    assertTrue(manager.inputKeywordModel !== null);
-    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel?.type);
-    assertEquals('youtube.com', manager.inputKeywordModel?.keyword);
+    manager.onSelectedMatchChanged(
+        null, {line: -1, state: SelectionLineState.kNormal, actionIndex: 0});
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel.type);
+    assertEquals('youtube.com', manager.inputKeywordModel.keyword);
 
     // Instant keyword match -> enters keyword mode immediately.
     const instantMatchBookmarks = createSearchMatchForTesting({
@@ -844,11 +869,14 @@ suite('KeywordModeManagerTest', () => {
         chipHint: 'Bookmarks',
       }),
     });
-    manager.onSelectedMatchChanged(instantMatchBookmarks);
+    manager.onSelectedMatchChanged(
+        instantMatchBookmarks,
+        {line: 0, state: SelectionLineState.kKeywordMode, actionIndex: 0});
     assertTrue(manager.isInKeywordMode);
-    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel?.type);
-    assertEquals('@bookmarks', manager.inputKeywordModel?.keyword);
-    assertEquals('Bookmarks', manager.inputKeywordModel?.displayText);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel.type);
+    assertEquals('@bookmarks', manager.inputKeywordModel.keyword);
+    assertEquals('Bookmarks', manager.inputKeywordModel.displayText);
 
     // Selecting another instant keyword match -> updates keyword mode.
     const instantMatchHistory = createSearchMatchForTesting({
@@ -858,14 +886,19 @@ suite('KeywordModeManagerTest', () => {
         chipHint: 'History',
       }),
     });
-    manager.onSelectedMatchChanged(instantMatchHistory);
+    manager.onSelectedMatchChanged(
+        instantMatchHistory,
+        {line: 0, state: SelectionLineState.kKeywordMode, actionIndex: 0});
     assertTrue(manager.isInKeywordMode);
-    assertEquals('@history', manager.inputKeywordModel?.keyword);
-    assertEquals('History', manager.inputKeywordModel?.displayText);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals('@history', manager.inputKeywordModel.keyword);
+    assertEquals('History', manager.inputKeywordModel.displayText);
 
     // Navigating away to a match without keyword model -> exits keyword
     // mode.
-    manager.onSelectedMatchChanged(matchWithoutKeyword);
+    manager.onSelectedMatchChanged(
+        matchWithoutKeyword,
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0});
     assertFalse(manager.isInKeywordMode);
     assertEquals(null, manager.inputKeywordModel);
 
@@ -874,9 +907,10 @@ suite('KeywordModeManagerTest', () => {
         matchWithKeyword,
         {line: 0, state: SelectionLineState.kKeywordMode, actionIndex: 0});
     assertTrue(manager.isInKeywordMode);
-    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel?.type);
-    assertEquals('youtube.com', manager.inputKeywordModel?.keyword);
-    assertEquals('Search YouTube', manager.inputKeywordModel?.displayText);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel.type);
+    assertEquals('youtube.com', manager.inputKeywordModel.keyword);
+    assertEquals('Search YouTube', manager.inputKeywordModel.displayText);
 
     // Match with keyword chip differing only in case when already in
     // keyword mode
@@ -911,7 +945,41 @@ suite('KeywordModeManagerTest', () => {
       actionIndex: 0,
     });
     assertFalse(manager.isInKeywordMode);
-    assertEquals(KeywordType.kChip, manager.inputKeywordModel?.type);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals(KeywordType.kChip, manager.inputKeywordModel.type);
+
+    // Navigating away from keyword match to non-keyword match and back to
+    // kInKeyword match -> exits and re-enters keyword mode.
+    const inKeywordMatch = createSearchMatchForTesting({
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kInKeyword,
+        keyword: 'youtube.com',
+        chipHint: 'Search YouTube',
+      }),
+    });
+    manager.onSelectedMatchChanged(
+        inKeywordMatch,
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0});
+    assertTrue(manager.isInKeywordMode);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel.type);
+    assertEquals('youtube.com', manager.inputKeywordModel.keyword);
+    assertEquals('Search YouTube', manager.inputKeywordModel.displayText);
+
+    manager.onSelectedMatchChanged(
+        matchWithoutKeyword,
+        {line: 1, state: SelectionLineState.kNormal, actionIndex: 0});
+    assertFalse(manager.isInKeywordMode);
+    assertEquals(null, manager.inputKeywordModel);
+
+    manager.onSelectedMatchChanged(
+        inKeywordMatch,
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0});
+    assertTrue(manager.isInKeywordMode);
+    assertTrue(!!manager.inputKeywordModel);
+    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel.type);
+    assertEquals('youtube.com', manager.inputKeywordModel.keyword);
+    assertEquals('Search YouTube', manager.inputKeywordModel.displayText);
   });
 
   test('formatMatchFillIntoEdit in keyword mode', () => {

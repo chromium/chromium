@@ -394,21 +394,30 @@ export class KeywordModeManager {
    */
   onSelectedMatchChanged(
       selectedMatch: AutocompleteMatch|null,
-      selection?: OmniboxPopupSelection): void {
+      selection: OmniboxPopupSelection): void {
+    // The case when the searchbox is closed, clobbered, or has no results.
     if (!selectedMatch) {
+      // If we're in keyword mode, don't leave. Otherwise, e.g. if we've
+      // selected a match with a chip but not selected the chip yet, then clear
+      // the hint state.
       if (!this.isInKeywordMode) {
-        this.inputKeywordModel = null;
+        this.exit();
       }
       return;
     }
-    const isKeywordChipSelected =
-        selection?.state === SelectionLineState.kKeywordMode ||
-        selectedMatch.keywordModel?.type === KeywordType.kInstant;
 
-    if (isKeywordChipSelected && selectedMatch.keywordModel) {
-      if (!this.isInKeywordMode ||
-          this.activeKeyword.toLowerCase() !==
-              selectedMatch.keywordModel.keyword.toLowerCase()) {
+    // When a non-keyword match is focused, input should not be in keyword mode.
+    if (!selectedMatch.keywordModel) {
+      this.exit();
+      return;
+    }
+
+    // When either a chip, an instant keyword, or in-keyword match are focused,
+    // input should be in keyword mode.
+    if (selection.state === SelectionLineState.kKeywordMode ||
+        selectedMatch.keywordModel.type === KeywordType.kInKeyword) {
+      if (this.activeKeyword.toLowerCase() !==
+          selectedMatch.keywordModel.keyword.toLowerCase()) {
         this.enter(
             selectedMatch.keywordModel.keyword,
             selectedMatch.keywordModel.chipHint, KeywordModeEntryMethod.TAB,
@@ -416,18 +425,13 @@ export class KeywordModeManager {
       }
       return;
     }
-    if (selectedMatch.keywordModel?.type === KeywordType.kInKeyword) {
-      return;
-    }
-    if (this.isInKeywordMode) {
-      this.exit();
-    }
-    if (!selectedMatch.keywordModel) {
-      this.inputKeywordModel = null;
-      return;
-    }
+
+    // When a match with a chip is focused, but the chip is not, the input
+    // should be in keyword hint mode.
+    assert(selectedMatch.keywordModel.type === KeywordType.kChip);
+    this.entryMethod_ = KeywordModeEntryMethod.NONE;
     this.inputKeywordModel = {
-      type: selectedMatch.keywordModel.type,
+      type: KeywordType.kChip,
       keyword: selectedMatch.keywordModel.keyword,
       displayText: selectedMatch.keywordModel.chipHint,
       iconPath: this.availableKeywordModels_
