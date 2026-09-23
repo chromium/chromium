@@ -232,6 +232,16 @@ BASE_EXPORT bool CopyDirectory(const FilePath& from_path,
                                const FilePath& to_path,
                                bool recursive);
 
+#if BUILDFLAG(IS_POSIX)
+// Same as `CopyDirectory()` above, except returns false when symlinks and
+// non-regular files are encountered. Directory traversal is performed using
+// file descriptors with `O_NOFOLLOW` to prevent TOCTOU symlink traversal
+// attacks.
+BASE_EXPORT bool CopyDirectoryNoFollow(const FilePath& from_path,
+                                       const FilePath& to_path,
+                                       bool recursive);
+#endif  // BUILDFLAG(IS_POSIX)
+
 // Returns true if the given path exists on the local filesystem,
 // false otherwise.
 BASE_EXPORT bool PathExists(const FilePath& path);

@@ -143,10 +143,187 @@ bool AdvanceEnumeratorWithStat(FileEnumerator* traversal,
   return true;
 }
 
-bool DoCopyDirectory(const FilePath& from_path,
-                     const FilePath& to_path,
-                     bool recursive) {
-  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+struct CloseDir {
+  void operator()(DIR* const p) const {
+    if (IGNORE_EINTR(closedir(p)) < 0) {
+      PLOG(ERROR) << "Cannot close dir";
+    }
+  }
+};
+
+mode_t GetCopyDirMode(const stat_wrapper_t& src_stat) {
+  return static_cast<mode_t>((src_stat.st_mode & 01777) | S_IRUSR | S_IXUSR |
+                             S_IWUSR);
+}
+
+mode_t GetCopyFileMode(const stat_wrapper_t& src_stat) {
+  // Each platform has different default file opening modes for CopyFile which
+  // we want to replicate here. On OS X, we use copyfile(3) which takes the
+  // source file's permissions into account. On the other platforms, we just
+  // use the base::File constructor. On Chrome OS, base::File uses a different
+  // set of permissions than it does on other POSIX platforms.
+#if BUILDFLAG(IS_APPLE)
+  return static_cast<mode_t>(0600 | (src_stat.st_mode & 0177));
+#elif BUILDFLAG(IS_CHROMEOS)
+  return 0644;
+#else
+  return 0600;
+#endif
+}
+
+#if BUILDFLAG(IS_POSIX)
+// Opens a directory with `O_DIRECTORY | O_NOFOLLOW` so that if `path` itself is
+// a symlink, the open fails.
+ScopedFD OpenDirectoryNoFollow(const FilePath& path) {
+  return ScopedFD(HANDLE_EINTR(open(
+      path.value().c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)));
+}
+
+ScopedFD OpenSubdirectoryNoFollow(int parent_fd, const char* name) {
+  return ScopedFD(HANDLE_EINTR(openat(
+      parent_fd, name, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)));
+}
+
+ScopedFD CreateOrOpenSubdirectoryNoFollow(int parent_fd,
+                                          const char* name,
+                                          const stat_wrapper_t& src_stat) {
+  if (mkdirat(parent_fd, name, GetCopyDirMode(src_stat)) != 0 &&
+      errno != EEXIST) {
+    return ScopedFD();
+  }
+  return OpenSubdirectoryNoFollow(parent_fd, name);
+}
+
+bool CopyFileNoFollow(int src_dir_fd,
+                      int dst_dir_fd,
+                      const char* src_name,
+                      const char* dst_name) {
+  ScopedFD src_fd(HANDLE_EINTR(openat(
+      src_dir_fd, src_name, O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)));
+  stat_wrapper_t src_stat;
+  if (!src_fd.is_valid() || File::Fstat(src_fd.get(), &src_stat) != 0 ||
+      !S_ISREG(src_stat.st_mode)) {
+    return false;
+  }
+
+  constexpr int kOpenFlags =
+      O_WRONLY | O_CREAT | O_TRUNC | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC;
+
+  ScopedFD dst_fd(HANDLE_EINTR(
+      openat(dst_dir_fd, dst_name, kOpenFlags, GetCopyFileMode(src_stat))));
+  stat_wrapper_t dst_stat;
+  if (!dst_fd.is_valid() || File::Fstat(dst_fd.get(), &dst_stat) != 0 ||
+      !S_ISREG(dst_stat.st_mode)) {
+    return false;
+  }
+
+  File src_file(std::move(src_fd));
+  File dst_file(std::move(dst_fd));
+  return CopyFileContents(src_file, dst_file);
+}
+
+// State for a single active directory level in `CopyDirectoryFdNoFollow`'s
+// iterative traversal stack. Holding open file descriptors for the active path
+// allows child lookups and creations (`openat`, `fstatat`, `mkdirat`) to be
+// anchored directly to verified directory inodes without re-resolving path
+// strings.
+struct DirStackFrame {
+  std::unique_ptr<DIR, CloseDir> src_dir_stream;
+  int src_dir_fd;
+  ScopedFD dst_dir;
+};
+
+std::optional<DirStackFrame> CreateDirStackFrame(ScopedFD src_dir,
+                                                 ScopedFD dst_dir) {
+  if (!src_dir.is_valid() || !dst_dir.is_valid()) {
+    return std::nullopt;
+  }
+  const int src_fd = src_dir.get();
+  std::unique_ptr<DIR, CloseDir> stream(fdopendir(src_dir.release()));
+  if (!stream) {
+    IGNORE_EINTR(close(src_fd));
+    return std::nullopt;
+  }
+  return DirStackFrame{std::move(stream), src_fd, std::move(dst_dir)};
+}
+
+bool CopyDirectoryFdNoFollow(ScopedFD src_dir,
+                             ScopedFD dst_dir,
+                             bool recursive) {
+  std::vector<DirStackFrame> stack;
+  auto root_frame = CreateDirStackFrame(std::move(src_dir), std::move(dst_dir));
+  if (!root_frame.has_value()) {
+    return false;
+  }
+  stack.push_back(std::move(root_frame.value()));
+
+  while (!stack.empty()) {
+    DirStackFrame& current = stack.back();
+    errno = 0;
+    const dirent* const entry = readdir(current.src_dir_stream.get());
+    if (!entry) {
+      if (errno != 0) {
+        return false;
+      }
+      stack.pop_back();
+      continue;
+    }
+
+    std::string_view name(entry->d_name);
+    if (name == "." || name == "..") {
+      continue;
+    }
+
+    stat_wrapper_t entry_stat;
+    if (HANDLE_EINTR(fstatat(current.src_dir_fd, entry->d_name, &entry_stat,
+                             AT_SYMLINK_NOFOLLOW)) != 0) {
+      return false;
+    }
+
+    if (S_ISDIR(entry_stat.st_mode)) {
+      if (!recursive) {
+        continue;
+      }
+      // Limit directory recursion depth to avoid file descriptor exhaustion.
+      constexpr size_t kMaxCopyDirectoryDepth = 64;
+      if (stack.size() >= kMaxCopyDirectoryDepth) {
+        DLOG(ERROR)
+            << "CopyDirectoryNoFollow() exceeded maximum directory depth.";
+        return false;
+      }
+      ScopedFD sub_src =
+          OpenSubdirectoryNoFollow(current.src_dir_fd, entry->d_name);
+      if (!sub_src.is_valid()) {
+        return false;
+      }
+      ScopedFD sub_dst = CreateOrOpenSubdirectoryNoFollow(
+          current.dst_dir.get(), entry->d_name, entry_stat);
+      if (!sub_dst.is_valid()) {
+        return false;
+      }
+      auto sub_frame =
+          CreateDirStackFrame(std::move(sub_src), std::move(sub_dst));
+      if (!sub_frame.has_value()) {
+        return false;
+      }
+      stack.push_back(std::move(sub_frame.value()));
+    } else if (S_ISREG(entry_stat.st_mode)) {
+      if (!CopyFileNoFollow(current.src_dir_fd, current.dst_dir.get(),
+                            entry->d_name, entry->d_name)) {
+        return false;
+      }
+    } else {
+      // Reject any non-regular entries (symlinks, named pipes, sockets, etc.).
+      return false;
+    }
+  }
+
+  return true;
+}
+#endif  // BUILDFLAG(IS_POSIX)
+
+bool ValidateCopyDirectoryPaths(const FilePath& from_path,
+                                const FilePath& to_path) {
   // Some old callers of CopyDirectory want it to support wildcards.
   // After some discussion, we decided to fix those callers.
   // Break loudly here if anyone tries to do this.
@@ -157,7 +334,7 @@ bool DoCopyDirectory(const FilePath& from_path,
     return false;
   }
 
-  // This function does not properly handle destinations within the source
+  // This function does not properly handle destinations within the source.
   FilePath real_to_path = to_path;
   if (PathExists(real_to_path)) {
     real_to_path = MakeAbsoluteFilePath(real_to_path);
@@ -173,6 +350,106 @@ bool DoCopyDirectory(const FilePath& from_path,
     return false;
   }
   if (real_to_path == real_from_path || real_from_path.IsParent(real_to_path)) {
+    return false;
+  }
+  return true;
+}
+
+#if BUILDFLAG(IS_POSIX)
+bool DoCopyDirectoryNoFollow(const FilePath& from_path,
+                             const FilePath& to_path,
+                             bool recursive) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  if (!ValidateCopyDirectoryPaths(from_path, to_path)) {
+    return false;
+  }
+
+  FilePath stripped_from = from_path.StripTrailingSeparators();
+  FilePath stripped_to = to_path.StripTrailingSeparators();
+
+  stat_wrapper_t from_stat;
+  if (HANDLE_EINTR(fstatat(AT_FDCWD, stripped_from.value().c_str(), &from_stat,
+                           AT_SYMLINK_NOFOLLOW)) != 0) {
+    DPLOG(ERROR) << "CopyDirectoryNoFollow() couldn't stat source path: "
+                 << stripped_from.value();
+    return false;
+  }
+
+  if (S_ISREG(from_stat.st_mode)) {
+    ScopedFD parent_src_fd = OpenDirectoryNoFollow(stripped_from.DirName());
+    if (!parent_src_fd.is_valid()) {
+      return false;
+    }
+    stat_wrapper_t to_stat;
+    if (HANDLE_EINTR(fstatat(AT_FDCWD, stripped_to.value().c_str(), &to_stat,
+                             AT_SYMLINK_NOFOLLOW)) == 0 &&
+        S_ISDIR(to_stat.st_mode)) {
+      ScopedFD dst_dir_fd = OpenDirectoryNoFollow(stripped_to);
+      if (!dst_dir_fd.is_valid()) {
+        return false;
+      }
+      return CopyFileNoFollow(parent_src_fd.get(), dst_dir_fd.get(),
+                              stripped_from.BaseName().value().c_str(),
+                              stripped_from.BaseName().value().c_str());
+    }
+    ScopedFD parent_dst_fd = OpenDirectoryNoFollow(stripped_to.DirName());
+    if (!parent_dst_fd.is_valid()) {
+      return false;
+    }
+    return CopyFileNoFollow(parent_src_fd.get(), parent_dst_fd.get(),
+                            stripped_from.BaseName().value().c_str(),
+                            stripped_to.BaseName().value().c_str());
+  }
+
+  if (!S_ISDIR(from_stat.st_mode)) {
+    return false;
+  }
+
+  ScopedFD src_dir_fd = OpenDirectoryNoFollow(stripped_from);
+  if (!src_dir_fd.is_valid()) {
+    return false;
+  }
+
+  ScopedFD parent_dst_fd = OpenDirectoryNoFollow(stripped_to.DirName());
+  if (!parent_dst_fd.is_valid()) {
+    return false;
+  }
+
+  const std::string to_base = stripped_to.BaseName().value();
+  stat_wrapper_t to_stat;
+  const bool to_exists =
+      HANDLE_EINTR(fstatat(parent_dst_fd.get(), to_base.c_str(), &to_stat,
+                           AT_SYMLINK_NOFOLLOW)) == 0;
+  if (to_exists && !S_ISDIR(to_stat.st_mode)) {
+    return false;
+  }
+
+  ScopedFD dst_dir_fd = CreateOrOpenSubdirectoryNoFollow(
+      parent_dst_fd.get(), to_base.c_str(), from_stat);
+  if (!dst_dir_fd.is_valid()) {
+    return false;
+  }
+
+  if (to_exists && recursive) {
+    // If the destination already existed and is a directory, then the
+    // top level of source needs to be copied under it.
+    dst_dir_fd = CreateOrOpenSubdirectoryNoFollow(
+        dst_dir_fd.get(), stripped_from.BaseName().value().c_str(), from_stat);
+    if (!dst_dir_fd.is_valid()) {
+      return false;
+    }
+  }
+
+  return CopyDirectoryFdNoFollow(std::move(src_dir_fd), std::move(dst_dir_fd),
+                                 recursive);
+}
+#endif  // BUILDFLAG(IS_POSIX)
+
+bool DoCopyDirectory(const FilePath& from_path,
+                     const FilePath& to_path,
+                     bool recursive) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  if (!ValidateCopyDirectoryPaths(from_path, to_path)) {
     return false;
   }
 
@@ -213,8 +490,7 @@ bool DoCopyDirectory(const FilePath& from_path,
     }
 
     if (S_ISDIR(from_stat.st_mode)) {
-      mode_t mode = (from_stat.st_mode & 01777) | S_IRUSR | S_IXUSR | S_IWUSR;
-      if (mkdir(target_path.value().c_str(), mode) == 0) {
+      if (mkdir(target_path.value().c_str(), GetCopyDirMode(from_stat)) == 0) {
         continue;
       }
       if (errno == EEXIST) {
@@ -252,19 +528,8 @@ bool DoCopyDirectory(const FilePath& from_path,
     }
 
     int open_flags = O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK;
-    // Each platform has different default file opening modes for CopyFile which
-    // we want to replicate here. On OS X, we use copyfile(3) which takes the
-    // source file's permissions into account. On the other platforms, we just
-    // use the base::File constructor. On Chrome OS, base::File uses a different
-    // set of permissions than it does on other POSIX platforms.
-#if BUILDFLAG(IS_APPLE)
-    mode_t mode = 0600 | (stat_at_use.st_mode & 0177);
-#elif BUILDFLAG(IS_CHROMEOS)
-    mode_t mode = 0644;
-#else
-    mode_t mode = 0600;
-#endif
-    File outfile(open(target_path.value().c_str(), open_flags, mode));
+    File outfile(open(target_path.value().c_str(), open_flags,
+                      GetCopyFileMode(stat_at_use)));
     if (!outfile.IsValid()) {
       DPLOG(ERROR) << "CopyDirectory() couldn't create file: "
                    << target_path.value();
@@ -279,14 +544,6 @@ bool DoCopyDirectory(const FilePath& from_path,
 
   return true;
 }
-
-struct CloseDir {
-  void operator()(DIR* const p) const {
-    if (IGNORE_EINTR(closedir(p)) < 0) {
-      PLOG(ERROR) << "Cannot close dir";
-    }
-  }
-};
 
 // Deletes the file or removes the directory specified by `path` and `at_fd`. If
 // `path` is absolute, then `at_fd` is simply ignored. If `path` is relative,
@@ -533,6 +790,14 @@ bool CopyDirectory(const FilePath& from_path,
                    bool recursive) {
   return DoCopyDirectory(from_path, to_path, recursive);
 }
+
+#if BUILDFLAG(IS_POSIX)
+bool CopyDirectoryNoFollow(const FilePath& from_path,
+                           const FilePath& to_path,
+                           bool recursive) {
+  return DoCopyDirectoryNoFollow(from_path, to_path, recursive);
+}
+#endif  // BUILDFLAG(IS_POSIX)
 
 bool CreatePipe(ScopedFD* read_fd, ScopedFD* write_fd, bool non_blocking) {
   int fds[2];

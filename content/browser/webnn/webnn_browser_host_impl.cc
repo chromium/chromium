@@ -354,9 +354,11 @@ void WebNNBrowserHostImpl::CopyCompiledModel(
             base::FilePath compiler_protected_dir = base::MakeAbsoluteFilePath(
                 temp_dir.AppendASCII("webnn_compiler_protected"));
             base::FilePath abs_src_path = base::MakeAbsoluteFilePath(src_path);
+            base::FilePath src_scoped_dir = abs_src_path.DirName();
             if (abs_src_path.empty() || compiler_protected_dir.empty() ||
                 abs_src_path.ReferencesParent() ||
-                !compiler_protected_dir.IsParent(abs_src_path)) {
+                abs_src_path.BaseName().value() != "model.mlmodelc" ||
+                src_scoped_dir.DirName() != compiler_protected_dir) {
               LOG(ERROR)
                   << "[WebNN] Security validation failed: compiled model path "
                   << src_path << " is not within default temp directory.";
@@ -376,12 +378,32 @@ void WebNNBrowserHostImpl::CopyCompiledModel(
               return std::nullopt;
             }
             base::FilePath dest_parent_dir = gpu_model_dir.GetPath();
+            // Copy from `src_scoped_dir` (a direct child of
+            // `compiler_protected_dir`) rather than `abs_src_path` directly so
+            // that `CopyDirectoryNoFollow` checks `src_scoped_dir` itself with
+            // `O_NOFOLLOW` and traverses into `model.mlmodelc` via
+            // `openat(..., O_NOFOLLOW)`, preventing TOCTOU symlink swaps on
+            // `src_scoped_dir`.
+            if (!base::CopyDirectoryNoFollow(src_scoped_dir, dest_parent_dir,
+                                             /*recursive=*/true)) {
+              LOG(ERROR) << "[WebNN] Failed to copy compiled model from "
+                         << src_scoped_dir << " to " << dest_parent_dir;
+              return std::nullopt;
+            }
+            // Because `dest_parent_dir` already exists, `CopyDirectoryNoFollow`
+            // copies `src_scoped_dir` as a subdirectory inside
+            // `dest_parent_dir`. Move `model.mlmodelc` up one level so
+            // `gpu_model_path->DirName()` is `dest_parent_dir` as expected by
+            // the GPU process.
+            base::FilePath copied_scoped_dir =
+                dest_parent_dir.Append(src_scoped_dir.BaseName());
             base::FilePath gpu_model_path =
                 dest_parent_dir.AppendASCII("model.mlmodelc");
-            if (!base::CopyDirectory(src_path, gpu_model_path,
-                                     /*recursive=*/true)) {
-              LOG(ERROR) << "[WebNN] Failed to copy compiled model from "
-                         << src_path << " to " << gpu_model_path;
+            if (!base::Move(copied_scoped_dir.AppendASCII("model.mlmodelc"),
+                            gpu_model_path) ||
+                !base::DeletePathRecursively(copied_scoped_dir)) {
+              LOG(ERROR) << "[WebNN] Failed to move compiled model to "
+                         << gpu_model_path;
               return std::nullopt;
             }
             // Take ownership of the temp directory so it is not

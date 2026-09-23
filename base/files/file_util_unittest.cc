@@ -5403,6 +5403,110 @@ TEST_F(FileUtilTest, IsReservedNameOnWindows) {
   }
 }
 
+#if BUILDFLAG(IS_POSIX)
+
+TEST_F(FileUtilTest, CopyDirectoryNoFollowSuccess) {
+  FilePath dir_name_from =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_From_Subdir"));
+  ASSERT_TRUE(CreateDirectory(dir_name_from));
+
+  FilePath file_name_from =
+      dir_name_from.Append(FILE_PATH_LITERAL("Copy_Test_File.txt"));
+  CreateTextFile(file_name_from, L"Gooooooooooooooooooooogle");
+
+  FilePath subdir_name_from = dir_name_from.Append(FILE_PATH_LITERAL("Subdir"));
+  ASSERT_TRUE(CreateDirectory(subdir_name_from));
+  FilePath subfile_name_from =
+      subdir_name_from.Append(FILE_PATH_LITERAL("Sub_File.txt"));
+  CreateTextFile(subfile_name_from, L"Subdir content");
+
+  FilePath dir_name_to =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_To_Subdir"));
+
+  EXPECT_TRUE(
+      CopyDirectoryNoFollow(dir_name_from, dir_name_to, /*recursive=*/true));
+
+  EXPECT_TRUE(
+      PathExists(dir_name_to.Append(FILE_PATH_LITERAL("Copy_Test_File.txt"))));
+  EXPECT_TRUE(PathExists(dir_name_to.Append(FILE_PATH_LITERAL("Subdir"))
+                             .Append(FILE_PATH_LITERAL("Sub_File.txt"))));
+
+  // Copy a directory into an already-existing destination directory,
+  // which copies `dir_name_from` as a subdirectory.
+  FilePath dir_name_to_existing =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_To_Existing_Dir"));
+  ASSERT_TRUE(CreateDirectory(dir_name_to_existing));
+  EXPECT_TRUE(CopyDirectoryNoFollow(dir_name_from, dir_name_to_existing,
+                                    /*recursive=*/true));
+  EXPECT_TRUE(PathExists(
+      dir_name_to_existing.Append(FILE_PATH_LITERAL("Copy_From_Subdir"))
+          .Append(FILE_PATH_LITERAL("Copy_Test_File.txt"))));
+
+  // Copy a single regular file into an existing directory.
+  FilePath existing_dir_to =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_File_To_Dir"));
+  ASSERT_TRUE(CreateDirectory(existing_dir_to));
+  EXPECT_TRUE(CopyDirectoryNoFollow(file_name_from, existing_dir_to,
+                                    /*recursive=*/true));
+  EXPECT_TRUE(PathExists(
+      existing_dir_to.Append(FILE_PATH_LITERAL("Copy_Test_File.txt"))));
+
+  // Copy a single regular file to a new destination file path.
+  FilePath file_name_to =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copied_Single_File.txt"));
+  EXPECT_TRUE(
+      CopyDirectoryNoFollow(file_name_from, file_name_to, /*recursive=*/true));
+  EXPECT_TRUE(PathExists(file_name_to));
+}
+
+TEST_F(FileUtilTest, CopyDirectoryNoFollowRejectsSymlinksAndFifos) {
+  FilePath dir_name_from =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_From_Subdir"));
+  ASSERT_TRUE(CreateDirectory(dir_name_from));
+
+  FilePath file_name_from =
+      dir_name_from.Append(FILE_PATH_LITERAL("Copy_Test_File.txt"));
+  CreateTextFile(file_name_from, L"Gooooooooooooooooooooogle");
+
+  // 1. Reject symlink as source root.
+  FilePath symlink_root =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Symlink_Root"));
+  ASSERT_TRUE(CreateSymbolicLink(dir_name_from, symlink_root));
+  FilePath dir_name_to1 =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_To_1"));
+  EXPECT_FALSE(
+      CopyDirectoryNoFollow(symlink_root, dir_name_to1, /*recursive=*/true));
+
+  // 2. Reject symlink as destination root.
+  FilePath real_dst = temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Real_Dst"));
+  ASSERT_TRUE(CreateDirectory(real_dst));
+  FilePath symlink_dst =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Symlink_Dst"));
+  ASSERT_TRUE(CreateSymbolicLink(real_dst, symlink_dst));
+  EXPECT_FALSE(
+      CopyDirectoryNoFollow(dir_name_from, symlink_dst, /*recursive=*/true));
+
+  // 3. Reject symlink inside source directory.
+  FilePath symlink_inside =
+      dir_name_from.Append(FILE_PATH_LITERAL("Symlink_Inside"));
+  ASSERT_TRUE(CreateSymbolicLink(file_name_from, symlink_inside));
+  FilePath dir_name_to3 =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_To_3"));
+  EXPECT_FALSE(
+      CopyDirectoryNoFollow(dir_name_from, dir_name_to3, /*recursive=*/true));
+  ASSERT_TRUE(DeleteFile(symlink_inside));
+
+  // 4. Reject non-regular file (FIFO) inside source directory.
+  FilePath fifo_inside = dir_name_from.Append(FILE_PATH_LITERAL("Fifo"));
+  ASSERT_EQ(0, mkfifo(fifo_inside.value().c_str(), 0644));
+  FilePath dir_name_to4 =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Copy_To_4"));
+  EXPECT_FALSE(
+      CopyDirectoryNoFollow(dir_name_from, dir_name_to4, /*recursive=*/true));
+}
+
+#endif  // BUILDFLAG(IS_POSIX)
+
 }  // namespace
 
 }  // namespace base
