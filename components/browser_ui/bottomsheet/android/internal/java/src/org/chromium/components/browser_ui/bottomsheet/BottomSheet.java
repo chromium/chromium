@@ -1479,6 +1479,7 @@ class BottomSheet extends BottomSheetView
         boolean isLargeFormFactorUiEnabled = isLargeFormFactorUiEnabled();
         if (isFullHeightResizeContent()) {
             mMediator.setContainerHeight(getResizingContentContainerHeight());
+            setContentContainerPaddingBottom(0);
         } else {
             int targetHeight;
             if (isLargeFormFactorUiEnabled) {

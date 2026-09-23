@@ -450,6 +450,38 @@ public class BottomSheetUnitTest {
     }
 
     @Test
+    public void testSetSheetOffsetFromBottom_ResizeContent_ClearsPaddingBottom() {
+        BottomSheet.setSmallScreenForTesting(false);
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 24);
+        // Trigger layout while content is not yet RESIZE_CONTENT so the non-resizing branch sets
+        // bottom padding from the viewport/edge-to-edge inset.
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT - 1);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        assertEquals(24, contentContainer.getPaddingBottom());
+
+        doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
+        doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
+        doReturn(HeightMode.DEFAULT).when(mSheetContent).getPeekHeight();
+        setupBottomSheetStrings(
+                R.string.bottom_sheet_accessibility_description,
+                R.string.bottom_sheet_accessibility_description);
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        mBottomSheet.showContent(mSheetContent);
+
+        mBottomSheet.getVisibleViewportRectForTesting().set(0, 0, 1080, 1920);
+        mBottomSheet.setSheetOffsetFromBottom(150.0f, BottomSheetController.StateChangeReason.NONE);
+
+        assertEquals(150, contentContainer.getLayoutParams().height);
+        assertEquals(
+                "Padding bottom must be cleared in RESIZE_CONTENT mode so content is not clipped"
+                        + " past the HALF state.",
+                0,
+                contentContainer.getPaddingBottom());
+    }
+
+    @Test
     public void testOnSheetContentChanged_ResizeContentRestore() {
         BottomSheet.setSmallScreenForTesting(false);
 
