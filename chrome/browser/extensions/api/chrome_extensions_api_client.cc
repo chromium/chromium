@@ -144,7 +144,10 @@ bool ChromeExtensionsAPIClient::ShouldHideResponseHeader(
     const std::string& header_name) const {
   // Gaia may send a OAUth2 authorization code in the Dice response header,
   // which could allow an extension to generate a refresh token for the account.
-  return url.host() == GaiaUrls::GetInstance()->gaia_url().host() &&
+  // Trailing dots are ignored on both hosts, as in URLPattern::MatchesHost().
+  return base::TrimString(url.host(), ".", base::TRIM_TRAILING) ==
+             base::TrimString(GaiaUrls::GetInstance()->gaia_url().host(), ".",
+                              base::TRIM_TRAILING) &&
          base::CompareCaseInsensitiveASCII(header_name,
                                            signin::kDiceResponseHeader) == 0;
 }

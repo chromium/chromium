@@ -2591,6 +2591,26 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
                                             "self.controlResponseHeaderCount"));
 
+  // Navigate to the Gaia URL with a trailing dot in the hostname.
+  test_webcontents_observer.Clear();
+  url = embedded_test_server()->GetURL("gaia.com.", "/extensions/dice.html");
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
+
+  // Check that the Dice header was not changed by the extension.
+  EXPECT_TRUE(test_webcontents_observer.did_finish_navigation_called());
+  EXPECT_EQ(kHeaderValueFromServer,
+            test_webcontents_observer.dice_header_value());
+  EXPECT_EQ(kHeaderValueFromExtension,
+            test_webcontents_observer.new_header_value());
+  EXPECT_EQ(kHeaderValueFromExtension,
+            test_webcontents_observer.control_header_value());
+
+  // Check that the Dice header cannot be read by the extension.
+  EXPECT_EQ(0, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.diceResponseHeaderCount"));
+  EXPECT_EQ(2, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.controlResponseHeaderCount"));
+
   // Navigate to a non-Gaia URL intercepted by the extension.
   test_webcontents_observer.Clear();
   url = embedded_test_server()->GetURL("example.com", "/extensions/dice.html");
@@ -2608,7 +2628,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   // Check that the Dice header can be read by the extension.
   EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
                                             "self.diceResponseHeaderCount"));
-  EXPECT_EQ(2, GetCountFromBackgroundScript(extension, profile(),
+  EXPECT_EQ(3, GetCountFromBackgroundScript(extension, profile(),
                                             "self.controlResponseHeaderCount"));
 }
 
