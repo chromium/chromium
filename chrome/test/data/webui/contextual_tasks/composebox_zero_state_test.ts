@@ -891,10 +891,16 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     const token1 = {high: 0n, low: 1n} as unknown as UnguessableToken;
     const token2 = {high: 0n, low: 2n} as unknown as UnguessableToken;
-    innerComposebox.addFileContextForTesting(
-        {type: 'image/png', uuid: token1} as ComposeboxFile);
-    innerComposebox.addFileContextForTesting(
-        {type: 'application/pdf', uuid: token2} as ComposeboxFile);
+    innerComposebox.addFileContextForTesting({
+      type: 'image/png',
+      uuid: token1,
+      status: ContextUploadStatus.kUploadSuccessful,
+    } as ComposeboxFile);
+    innerComposebox.addFileContextForTesting({
+      type: 'application/pdf',
+      uuid: token2,
+      status: ContextUploadStatus.kUploadSuccessful,
+    } as ComposeboxFile);
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
@@ -908,8 +914,11 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     const innerComposebox = contextualComposebox.$.composebox;
 
     const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
-    innerComposebox.addFileContextForTesting(
-        {type: 'tab', uuid: token} as ComposeboxFile);
+    innerComposebox.addFileContextForTesting({
+      type: 'tab',
+      uuid: token,
+      status: ContextUploadStatus.kUploadSuccessful,
+    } as ComposeboxFile);
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
@@ -923,8 +932,11 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     const innerComposebox = contextualComposebox.$.composebox;
 
     const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
-    innerComposebox.addFileContextForTesting(
-        {type: 'image/png', uuid: token} as ComposeboxFile);
+    innerComposebox.addFileContextForTesting({
+      type: 'image/png',
+      uuid: token,
+      status: ContextUploadStatus.kUploadSuccessful,
+    } as ComposeboxFile);
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
@@ -938,8 +950,11 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     const innerComposebox = contextualComposebox.$.composebox;
 
     const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
-    innerComposebox.addFileContextForTesting(
-        {type: 'application/pdf', uuid: token} as ComposeboxFile);
+    innerComposebox.addFileContextForTesting({
+      type: 'application/pdf',
+      uuid: token,
+      status: ContextUploadStatus.kUploadSuccessful,
+    } as ComposeboxFile);
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
@@ -953,8 +968,11 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     const innerComposebox = contextualComposebox.$.composebox;
 
     const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
-    innerComposebox.addFileContextForTesting(
-        {type: 'unknown/type', uuid: token} as ComposeboxFile);
+    innerComposebox.addFileContextForTesting({
+      type: 'unknown/type',
+      uuid: token,
+      status: ContextUploadStatus.kUploadSuccessful,
+    } as ComposeboxFile);
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
@@ -973,8 +991,11 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     // Add an image file.
     const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
-    innerComposebox.addFileContextForTesting(
-        {type: 'image/png', uuid: token} as ComposeboxFile);
+    innerComposebox.addFileContextForTesting({
+      type: 'image/png',
+      uuid: token,
+      status: ContextUploadStatus.kUploadSuccessful,
+    } as ComposeboxFile);
 
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;

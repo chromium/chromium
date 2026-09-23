@@ -463,10 +463,6 @@ search-animated-glow {
   padding-top: 14px;
 }
 
-:host(:not([file-uploads-complete])) .upload-button {
-  cursor: not-allowed;
-}
-
 :host([upload-button-disabled]) .upload-button {
   color: var(--color-composebox-upload-button-disabled);
 }

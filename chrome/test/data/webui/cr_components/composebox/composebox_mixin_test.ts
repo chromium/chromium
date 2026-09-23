@@ -946,10 +946,12 @@ suite('ComposeboxMixinTest', () => {
         const regularFile = ({
                               name: 'image.png',
                               type: 'image/png',
+                              status: ContextUploadStatus.kUploadSuccessful,
                             } as Partial<ComposeboxFile>) as ComposeboxFile;
         const tabFile = ({
                           name: 'Google',
                           url: 'http://google.com',
+                          status: ContextUploadStatus.kUploadSuccessful,
                         } as Partial<ComposeboxFile>) as ComposeboxFile;
         freshComposebox.attachedContext = new Map([
           ['uuid-1' as unknown as UnguessableToken, regularFile],
@@ -976,10 +978,12 @@ suite('ComposeboxMixinTest', () => {
     const regularFile = ({
                           name: 'image.png',
                           type: 'image/png',
+                          status: ContextUploadStatus.kUploadSuccessful,
                         } as Partial<ComposeboxFile>) as ComposeboxFile;
     const tabFile = ({
                       name: 'Google',
                       url: 'http://google.com',
+                      status: ContextUploadStatus.kUploadSuccessful,
                     } as Partial<ComposeboxFile>) as ComposeboxFile;
     freshComposebox.attachedContext = new Map([
       ['uuid-1' as unknown as UnguessableToken, regularFile],

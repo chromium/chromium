@@ -451,12 +451,12 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     await composebox.$.carousel.updateComplete;
 
     assertEquals(
-        0, composebox.pendingUploads.size,
-        '0 tab should be uploading after upload started since processing startts it');
+        1, composebox.pendingUploads.size,
+        '1 tab should be uploading after upload started');
 
-    assertTrue(
+    assertFalse(
         composebox.fileUploadsComplete,
-        'Tabs should be finished uploading since all uploads are started but not processing');
+        'Tabs should not be finished uploading while an upload is started');
 
     tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
 

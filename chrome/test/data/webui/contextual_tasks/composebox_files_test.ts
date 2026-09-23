@@ -170,9 +170,9 @@ suite('ContextualTasksComposeboxFilesTest', () => {
         await microtasksFinished();
 
         assertEquals(
-            0, composebox.pendingUploads.size,
+            1, composebox.pendingUploads.size,
             'First file should be uploading.');
-        assertTrue(
+        assertFalse(
             composebox.fileUploadsComplete,
             'Files should not be finished uploading (first file)');
 
@@ -366,7 +366,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
         assertEquals(2, composebox.attachedContext.size);
       });
 
-  test('Composebox upload disabled when uploading files', async () => {
+  test('Composebox upload stays enabled when uploading files', async () => {
     composebox.searchboxLayoutMode = '';
     composebox.contextMenuEnabled = true;
     await composebox.updateComplete;
@@ -397,9 +397,9 @@ suite('ContextualTasksComposeboxFilesTest', () => {
     assertFalse(
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
-    assertTrue(
+    assertFalse(
         contextEntrypoint.uploadButtonDisabled,
-        'Upload button should be disabled while uploading');
+        'Upload button should stay enabled while uploading');
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
@@ -420,7 +420,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
   });
 
   test(
-      'Composebox upload disabled when uploading files with contextMenu',
+      'Composebox upload stays enabled when uploading files with contextMenu',
       async () => {
         composebox.searchboxLayoutMode = '';
         composebox.contextMenuEnabled = true;
@@ -460,9 +460,9 @@ suite('ContextualTasksComposeboxFilesTest', () => {
             composebox.fileUploadsComplete,
             'Files should not be finished uploading');
 
-        assertTrue(
+        assertFalse(
             contextEntrypoint.uploadButtonDisabled,
-            'Context menu button should be disabled while uploading');
+            'Context menu button should stay enabled while uploading');
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             FAKE_TOKEN_STRING,
             ContextUploadStatus.kUploadSuccessful,
