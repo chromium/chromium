@@ -854,7 +854,8 @@ base::DictValue EnrollmentScreenHandler::ScreenDataForOAuthEnrollment() {
   screen_data.Set("management_domain", config_.management_domain);
   screen_data.Set("gaia_buttons_type",
                   GetGaiaButtonsTypeString(gaia_buttons_type_));
-  const std::string& app_locale = application_locale_storage_->Get();
+  std::string_view app_locale =
+      application_locale_storage_->GetTag().tag_string();
   if (!app_locale.empty()) {
     screen_data.Set("hl", app_locale);
   }

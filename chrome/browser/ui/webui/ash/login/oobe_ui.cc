@@ -851,8 +851,9 @@ base::DictValue OobeUI::GetLocalizedStrings() {
     handler->GetLocalizedStrings(&localized_strings);
   }
 
-  const std::string& app_locale = application_locale_storage_->Get();
-  webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
+  std::string_view app_locale =
+      application_locale_storage_->GetTag().tag_string();
+  webui::SetLoadTimeDataDefaults(std::string(app_locale), &localized_strings);
   localized_strings.Set("app_locale", app_locale);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

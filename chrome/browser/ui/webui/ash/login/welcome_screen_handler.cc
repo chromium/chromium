@@ -267,19 +267,21 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::DictValue* dict) {
   base::ListValue language_list = language_list_.Clone();
 
   if (language_list.empty()) {
-    language_list =
-        GetMinimalUILanguageList(application_locale_storage_->Get());
+    language_list = GetMinimalUILanguageList(
+        application_locale_storage_->GetTag().tag_string());
   }
 
   dict->Set("languageList", std::move(language_list));
   dict->Set("inputMethodsList",
-            GetAndActivateOobeInputMethods(application_locale_storage_->Get(),
-                                           selected_input_method,
-                                           input_method_manager));
+            GetAndActivateOobeInputMethods(
+                std::string(application_locale_storage_->GetTag().tag_string()),
+                selected_input_method, input_method_manager));
   dict->Set("timezoneList", GetTimezoneList());
-  dict->Set("demoModeCountryList",
-            DemoSession::GetCountryList(local_state_.get(),
-                                        application_locale_storage_->Get()));
+  dict->Set(
+      "demoModeCountryList",
+      DemoSession::GetCountryList(
+          local_state_.get(),
+          std::string(application_locale_storage_->GetTag().tag_string())));
 
   // If this switch is set allow to open advanced options and configure device
   // requisition.

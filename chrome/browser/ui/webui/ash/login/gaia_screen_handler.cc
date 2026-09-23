@@ -510,7 +510,8 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   }
   params.Set("screenMode", screen_mode_);
 
-  const std::string& app_locale = application_locale_storage_->Get();
+  std::string_view app_locale =
+      application_locale_storage_->GetTag().tag_string();
   if (!app_locale.empty()) {
     params.Set("hl", app_locale);
   }
