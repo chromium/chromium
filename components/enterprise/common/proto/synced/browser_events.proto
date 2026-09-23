@@ -10,6 +10,7 @@ package chrome.cros.reporting.proto;
 // ${COPYBARA_DATAPOL_IMPORT}
 
 import "components/safe_browsing/core/common/proto/csd.proto";
+import "third_party/metrics_proto/histogram_event.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -1493,4 +1494,9 @@ message BrowserLaunchEvent {
 
   // List of CLI switch keys used to launch the browser.
   repeated string command_line_switch_keys = 2;
+}
+
+message BrowserHistogramEvent {
+  // List of Histogram events in the exact same format as UMA.
+  repeated metrics.HistogramEventProto histograms = 1;
 }

@@ -152,6 +152,10 @@ enum Destination {
   // |BROWSER_LAUNCH| is for reporting browser launch events.
   BROWSER_LAUNCH = 40;
 
+  // |CHROME_BROWSER_ENTERPRISE_METRIC| is for Chrome Browser Enterprise
+  // Metrics.
+  CHROME_BROWSER_ENTERPRISE_METRIC = 41;
+
   reserved 8;
 }
 

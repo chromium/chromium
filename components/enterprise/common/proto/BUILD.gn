@@ -10,7 +10,16 @@ fuzzable_proto_library("browser_events_proto") {
   proto_in_dir = "//"
   sources = [ "synced/browser_events.proto" ]
 
-  deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
+  deps = [
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//third_party/metrics_proto",
+  ]
+}
+
+proto_extras("metrics_proto_with_histogram_event_extras") {
+  sources = [ "//third_party/metrics_proto/histogram_event.proto" ]
+  proto_in_dir = "//"
+  deps = [ "//third_party/metrics_proto" ]
 }
 
 proto_extras("browser_events_proto_extras") {
@@ -18,9 +27,12 @@ proto_extras("browser_events_proto_extras") {
   deps = [
     ":browser_events_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//third_party/metrics_proto",
   ]
-  extras_deps =
-      [ "//components/safe_browsing/core/common/proto:csd_proto_extras" ]
+  extras_deps = [
+    ":metrics_proto_with_histogram_event_extras",
+    "//components/safe_browsing/core/common/proto:csd_proto_extras",
+  ]
 }
 
 fuzzable_proto_library("connectors_proto") {
