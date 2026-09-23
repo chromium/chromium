@@ -15,8 +15,25 @@
 #include "content/public/browser/web_contents.h"
 
 namespace {
+
 constexpr base::TimeDelta kTimeout = base::Seconds(5);
+
+// Maximum number of bytes reported for a tab title. Kept in sync with the
+// truncation the reporting pipeline applies in
+// enterprise_connectors::MaybeTruncateLongUrls().
+constexpr size_t kMaxTabTitleBytes = 1024;
+
+// Returns the current tab title of `web_contents`, truncated on a UTF-8 code
+// point boundary. Returns an empty string if there is no WebContents.
+std::string GetTruncatedTabTitle(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return std::string();
+  }
+  return std::string(base::TruncateUTF8ToByteSize(
+      base::UTF16ToUTF8(web_contents->GetTitle()), kMaxTabTitleBytes));
 }
+
+}  // namespace
 
 namespace enterprise_data_protection {
 
@@ -34,15 +51,13 @@ void DelayedInterstitialReporter::Start(content::WebContents* web_contents,
   // If the document has already finished loading, report immediately.
   if (!is_bypassing_interstitial &&
       web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-    std::string tab_title = base::UTF16ToUTF8(web_contents->GetTitle());
-
     base::UmaHistogramTimes(
         "Enterprise.DelayedReportingInterstitial.Time." + uma_suffix,
         base::TimeDelta());
     base::UmaHistogramBoolean(
         "Enterprise.DelayedReportingInterstitial.Timeout." + uma_suffix, false);
 
-    std::move(report_callback).Run(tab_title);
+    std::move(report_callback).Run(GetTruncatedTabTitle(web_contents));
     return;
   }
 
@@ -76,11 +91,7 @@ void DelayedInterstitialReporter::OnTimeout() {
 
 DelayedInterstitialReporter::~DelayedInterstitialReporter() {
   if (report_callback_) {
-    std::string tab_title;
-    if (web_contents()) {
-      tab_title = base::UTF16ToUTF8(web_contents()->GetTitle());
-    }
-    std::move(report_callback_).Run(tab_title.substr(0, 1024));
+    std::move(report_callback_).Run(GetTruncatedTabTitle(web_contents()));
   }
 }
 
@@ -104,10 +115,7 @@ void DelayedInterstitialReporter::PrimaryPageChanged(content::Page& page) {
 
 void DelayedInterstitialReporter::RunCallbackAndCleanUp(RunState run_state) {
   if (report_callback_) {
-    std::string tab_title;
-    if (web_contents()) {
-      tab_title = base::UTF16ToUTF8(web_contents()->GetTitle());
-    }
+    std::string tab_title = GetTruncatedTabTitle(web_contents());
 
     switch (run_state) {
       case RunState::kSuccess:
@@ -121,10 +129,15 @@ void DelayedInterstitialReporter::RunCallbackAndCleanUp(RunState run_state) {
             run_state == RunState::kTimeout);
         break;
       case RunState::kFailed:
+        // TODO(crbug.com/467657459): the primary page changed before the page
+        // being reported on finished loading, so the sampled title may describe
+        // a different document. No histogram is recorded here, so the rate of
+        // this path is currently unknown; add one before deciding whether to
+        // report an empty title instead.
         break;
     }
 
-    std::move(report_callback_).Run(tab_title.substr(0, 1024));
+    std::move(report_callback_).Run(tab_title);
   }
   if (web_contents()) {
     web_contents()->RemoveUserData(UserDataKey());

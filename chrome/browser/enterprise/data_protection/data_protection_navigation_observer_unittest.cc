@@ -342,7 +342,8 @@ TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
   expected_event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
   *expected_event.add_triggered_rule_info() =
       MakeTriggeredRuleInfo(/*has_watermark=*/false);
-  expected_event.set_tab_title("example.com");
+  // kEnterpriseTabTitleReporting is disabled in this test, so `tab_title` must
+  // be left unset.
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
@@ -1371,7 +1372,8 @@ TEST_P(OrderedDataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   expected_event.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
   *expected_event.add_triggered_rule_info() =
       MakeTriggeredRuleInfo(/*has_watermark=*/true);
-  expected_event.set_tab_title("test");
+  // kEnterpriseTabTitleReporting is disabled in this test, so `tab_title` must
+  // be left unset.
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;

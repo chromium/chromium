@@ -16,6 +16,7 @@ source_set("enterprise") {
     "connectors/analysis/analysis_service_settings.h",
     "connectors/connectors_manager.h",
     "connectors/connectors_service.h",
+    "connectors/interstitials/delayed_interstitial_reporter.h",
     "connectors/interstitials/enterprise_block_controller_client.h",
     "connectors/interstitials/enterprise_block_page.h",
     "connectors/interstitials/enterprise_warn_controller_client.h",

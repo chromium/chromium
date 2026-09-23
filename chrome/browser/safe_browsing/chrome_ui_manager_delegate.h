@@ -37,7 +37,8 @@ class ChromeSafeBrowsingUIManagerDelegate
       content::WebContents* web_contents,
       const GURL& page_url,
       const std::string& threat_type,
-      safe_browsing::RTLookupResponse rt_lookup_response) override;
+      safe_browsing::RTLookupResponse rt_lookup_response,
+      bool is_bypassing_interstitial) override;
   prerender::NoStatePrefetchContents* GetNoStatePrefetchContentsIfExists(
       content::WebContents* web_contents) override;
   bool IsHostingExtension(content::WebContents* web_contents) override;
