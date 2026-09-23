@@ -1789,9 +1789,8 @@ bool TestRecipeReplayer::ExecuteTypePasswordAction(base::DictValue action) {
   VLOG(1) << "Typing '" << *value << "' inside `" << xpath << "`.";
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(frame);
-  for (size_t index = 0; index < value->size(); index++) {
-    SimulateKeyPressWrapper(web_contents,
-                            ui::DomKey::FromCharacter(value->at(index)));
+  for (char character : *value) {
+    SimulateKeyPressWrapper(web_contents, ui::DomKey::FromCharacter(character));
   }
   WaitTillPageIsIdle();
   return true;
@@ -2162,8 +2161,7 @@ bool TestRecipeReplayer::GetIFrameOffsetFromIFramePath(
     gfx::Vector2d* offset) {
   *offset = gfx::Vector2d(0, 0);
 
-  for (auto it_xpath = iframe_path.begin(); it_xpath != iframe_path.end();
-       it_xpath++) {
+  for (const std::string& xpath : iframe_path) {
     content::RenderFrameHost* parent_frame = frame->GetParent();
     if (parent_frame == nullptr) {
       ADD_FAILURE() << "Trying to iterate past the top level frame!";
@@ -2171,9 +2169,9 @@ bool TestRecipeReplayer::GetIFrameOffsetFromIFramePath(
     }
 
     gfx::Rect rect;
-    if (!GetBoundingRectOfTargetElement(*it_xpath, parent_frame, &rect)) {
+    if (!GetBoundingRectOfTargetElement(xpath, parent_frame, &rect)) {
       ADD_FAILURE() << "Failed to extract position of iframe with xpath `"
-                    << *it_xpath << "`!";
+                    << xpath << "`!";
       return false;
     }
 
