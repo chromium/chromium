@@ -1843,6 +1843,7 @@ suite('SearchboxMixinTest', () => {
         type: KeywordType.kChip,
         keyword,
         chipHint: 'Search Google',
+        placeholder: 'Search Google',
       }),
     });
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
@@ -1866,6 +1867,8 @@ suite('SearchboxMixinTest', () => {
     assertEquals(KeywordType.kInKeyword, element.inputKeywordModel.type);
     assertEquals(keyword, element.inputKeywordModel.keyword);
     assertEquals('Search Google', element.inputKeywordModel.displayText);
+    assertEquals('Search Google', element.inputKeywordModel.placeholder);
+    assertEquals('Search Google', mockInput.inputElement.placeholder);
     assertEquals('', mockInput.inputElement.value);
   });
 
@@ -1900,6 +1903,7 @@ suite('SearchboxMixinTest', () => {
           keyword,
           displayText: 'Search Google',
           iconPath: '',
+          placeholder: '',
         };
         await microtasksFinished();
         await mockInput.updateComplete;
@@ -2010,6 +2014,7 @@ suite('SearchboxMixinTest', () => {
             type: KeywordType.kChip,
             keyword,
             chipHint: 'Search Google',
+            placeholder: 'Search Google',
           }),
         });
         element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
@@ -2030,6 +2035,8 @@ suite('SearchboxMixinTest', () => {
         assertTrue(element.inputKeywordModel !== null);
         assertEquals(KeywordType.kInKeyword, element.inputKeywordModel.type);
         assertEquals(keyword, element.inputKeywordModel.keyword);
+        assertEquals('Search Google', element.inputKeywordModel.placeholder);
+        assertEquals('Search Google', mockInput.inputElement.placeholder);
         assertEquals('', mockInput.inputElement.value);
         assertTrue(event.defaultPrevented);
       });
@@ -2760,6 +2767,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
       keyword: '@tabs',
       displayText: 'Tabs',
       iconPath: '',
+      placeholder: '',
     };
 
     const match = createSearchMatchForTesting({
@@ -3282,12 +3290,14 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         keyword: 'google.com',
         displayText: 'Search Google',
         iconPath: '',
+        placeholder: '',
       },
       {
         type: KeywordType.kInstant,
         keyword: '@history',
         displayText: '@history',
         iconPath: '',
+        placeholder: '',
       },
     ]);
     await testProxy.callbackRouterRemote.$.flushForTesting();
@@ -3311,6 +3321,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
           keyword: 'youtube.com',
           displayText: 'Search YouTube',
           iconPath: '',
+          placeholder: '',
         }]);
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -3353,6 +3364,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
           keyword: 'youtube.com',
           displayText: 'Search YouTube',
           iconPath: '',
+          placeholder: '',
         }]);
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -3390,6 +3402,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
           keyword: '@history',
           displayText: 'History',
           iconPath: '',
+          placeholder: '',
         }]);
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -3415,6 +3428,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
           keyword: 'google.com',
           displayText: 'Google',
           iconPath: '',
+          placeholder: '',
         }]);
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -3438,6 +3452,7 @@ suite('SearchboxMixinVirtualFocusTest', () => {
       keyword: '@history',
       displayText: 'History',
       iconPath: '',
+      placeholder: '',
     }]);
     await testProxy.callbackRouterRemote.$.flushForTesting();
 

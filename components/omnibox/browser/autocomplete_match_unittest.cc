@@ -1298,5 +1298,17 @@ TEST_F(AutocompleteMatchTest, GetKeywordUiState) {
 #else
     EXPECT_EQ(keyword_placeholder, u"Enter a question");
 #endif
+
+    AutocompleteMatch hint_match;
+    hint_match.associated_keyword = u"aggregator";
+    hint_match.GetKeywordUiState(template_url_service, false, &keyword_state,
+                                 &keyword, &keyword_placeholder);
+    EXPECT_EQ(keyword, u"aggregator");
+    EXPECT_EQ(keyword_state, KeywordState::kHint);
+#if BUILDFLAG(IS_IOS)
+    EXPECT_TRUE(keyword_placeholder.empty());
+#else
+    EXPECT_EQ(keyword_placeholder, u"Enter a question");
+#endif
   }
 }

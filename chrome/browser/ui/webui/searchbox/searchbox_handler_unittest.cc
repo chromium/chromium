@@ -325,6 +325,16 @@ TEST_F(SearchboxHandlerTest, AvailableKeywordModels) {
   gemini_data.is_active = TemplateURLData::ActiveStatus::kTrue;
   template_url_service->Add(std::make_unique<TemplateURL>(gemini_data));
 
+  // Add a starter pack bookmarks engine.
+  TemplateURLData bookmarks_data;
+  bookmarks_data.SetShortName(u"Bookmarks");
+  bookmarks_data.SetKeyword(u"@bookmarks");
+  bookmarks_data.SetURL("chrome://bookmarks/?q={searchTerms}");
+  bookmarks_data.starter_pack_id = static_cast<int>(
+      template_url_starter_pack_data::StarterPackId::kBookmarks);
+  bookmarks_data.is_active = TemplateURLData::ActiveStatus::kTrue;
+  template_url_service->Add(std::make_unique<TemplateURL>(bookmarks_data));
+
   auto web_contents = content::WebContents::Create(
       content::WebContents::CreateParams(profile()));
   testing::NiceMock<MockBrowserWindowInterface> browser_window_interface;
@@ -372,6 +382,13 @@ TEST_F(SearchboxHandlerTest, AvailableKeywordModels) {
           return base::EqualsCaseInsensitiveASCII(m->keyword, kw);
         });
       };
+  auto get_keyword_model =
+      [](const std::vector<searchbox::mojom::InputKeywordModelPtr>& list,
+         const std::string& kw) -> const searchbox::mojom::InputKeywordModel* {
+    auto it = std::ranges::find_if(
+        list, [&](const auto& m) { return m->keyword == kw; });
+    return it != list.end() ? it->get() : nullptr;
+  };
 
   // Initial models should contain google.com, but NOT inactive.com or
   // noreplace.com, and duplicate case keywords should be deduplicated to 1.
@@ -380,16 +397,14 @@ TEST_F(SearchboxHandlerTest, AvailableKeywordModels) {
   EXPECT_FALSE(has_keyword(initial_models, "inactive.com"));
   EXPECT_FALSE(has_keyword(initial_models, "noreplace.com"));
 
-  auto get_keyword_model =
-      [](const std::vector<searchbox::mojom::InputKeywordModelPtr>& list,
-         const std::string& kw) -> const searchbox::mojom::InputKeywordModel* {
-    for (const auto& m : list) {
-      if (m->keyword == kw) {
-        return m.get();
-      }
-    }
-    return nullptr;
-  };
+  const auto* google_model = get_keyword_model(initial_models, "google.com");
+  ASSERT_TRUE(google_model);
+  EXPECT_TRUE(google_model->placeholder.empty());
+  EXPECT_EQ(google_model->icon_path, "");
+
+  const auto* bookmarks_model = get_keyword_model(initial_models, "@bookmarks");
+  ASSERT_TRUE(bookmarks_model);
+  EXPECT_FALSE(bookmarks_model->placeholder.empty());
 
   const auto* gemini_model = get_keyword_model(initial_models, "@gemini");
   ASSERT_TRUE(gemini_model);
@@ -397,10 +412,6 @@ TEST_F(SearchboxHandlerTest, AvailableKeywordModels) {
             features::IsWebUIRoundedIconsEnabled()
                 ? "//resources/cr_components/searchbox/icons/spark.svg"
                 : "//resources/cr_components/searchbox/icons/spark_old.svg");
-
-  const auto* google_model = get_keyword_model(initial_models, "google.com");
-  ASSERT_TRUE(google_model);
-  EXPECT_EQ(google_model->icon_path, "");
 
   // Now activate the inactive engine via TemplateURLService.
   std::vector<searchbox::mojom::InputKeywordModelPtr> updated_models;

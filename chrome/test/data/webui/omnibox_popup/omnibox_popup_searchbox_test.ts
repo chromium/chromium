@@ -2434,6 +2434,7 @@ suite('OmniboxPopupSearchboxTest', function() {
        keyword: 'google.com',
        displayText: 'Search Google',
        iconPath: '',
+       placeholder: '',
      },
    }));
    await microtasksFinished();
