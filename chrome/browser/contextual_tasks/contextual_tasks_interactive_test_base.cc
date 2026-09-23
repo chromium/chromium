@@ -152,26 +152,13 @@ void ContextualTasksInteractiveTestBase::InitTabContextOverride() {
                   }));
 }
 
-UserVariation ContextualTasksInteractiveTestBase::GetUserVariation() const {
-  return UserVariation::kSignedIn;
-}
-
-void ContextualTasksInteractiveTestBase::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  LensOverlayInteractiveTestBase::SetUpCommandLine(command_line);
-  if (GetUserVariation() == UserVariation::kIncognito) {
-    command_line->AppendSwitch(::switches::kIncognito);
-  }
-}
-
 // static
 std::vector<base::test::FeatureRefAndParams>
 ContextualTasksInteractiveTestBase::GetDefaultEnabledFeatures() {
   return {
       {kContextualTasks, {}},
       {lens::features::kLensOverlay, {}},
-      {lens::features::kLensSidePanelUnification,
-       {{"allow-signed-out", "true"}}},
+      {lens::features::kLensSidePanelUnification, {}},
       {lens::features::kLensOverlayContextualSearchbox,
        {{"use-pdfs-as-context", "true"}, {"auto-focus-searchbox", "false"}}},
       {lens::features::kLensOverlayTranslateButton, {}},
@@ -215,12 +202,6 @@ void ContextualTasksInteractiveTestBase::SetUpBrowserContextKeyedServices(
 void ContextualTasksInteractiveTestBase::SetUpOnMainThread() {
   TestTabContextualizationController::screenshot_color_ = SK_ColorRED;
   LensOverlayInteractiveTestBase::SetUpOnMainThread();
-
-  if (GetUserVariation() == UserVariation::kSignedIn) {
-    signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
-        "user@example.com", signin::ConsentLevel::kSignin);
-  }
 
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       lens::prefs::kLensSharingPageScreenshotEnabled, true);
@@ -367,11 +348,10 @@ std::unique_ptr<KeyedService>
 ContextualTasksInteractiveTestBase::BuildMockContextualTasksUiServiceInstance(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  const bool is_signed_in = (GetUserVariation() == UserVariation::kSignedIn);
   return std::make_unique<TestContextualTasksUiService>(
       profile, ContextualTasksServiceFactory::GetForProfile(profile),
       AimEligibilityServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile), is_signed_in);
+      IdentityManagerFactory::GetForProfile(profile), /*is_signed_in=*/true);
 }
 
 MockAimEligibilityService*

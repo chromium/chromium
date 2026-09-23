@@ -8,13 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string_view>
-#include <tuple>
-#include <type_traits>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_test_user_variation.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_interactive_test_base.h"
@@ -106,13 +103,10 @@ class ContextualTasksInteractiveTestBase
   }
   ~ContextualTasksInteractiveTestBase() override;
 
-  virtual UserVariation GetUserVariation() const;
-
   static std::vector<base::test::FeatureRefAndParams>
   GetDefaultEnabledFeatures();
   static std::vector<base::test::FeatureRef> GetDefaultDisabledFeatures();
 
-  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpFeatureList() override;
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override;
@@ -137,46 +131,6 @@ class ContextualTasksInteractiveTestBase
   ui::UserDataFactory::ScopedOverride tab_context_override_;
 };
 
-namespace internal {
-template <typename T, typename = void>
-struct HasTupleGet : std::false_type {};
-
-template <typename T>
-struct HasTupleGet<T, std::void_t<decltype(std::get<0>(std::declval<T>()))>>
-    : std::true_type {};
-}  // namespace internal
-
-// Parameterized wrapper template that extracts UserVariation from ParamType.
-template <typename ParamType>
-class ContextualTasksInteractiveTestBaseT
-    : public ContextualTasksInteractiveTestBase,
-      public testing::WithParamInterface<ParamType> {
- public:
-  template <typename... Args>
-  explicit ContextualTasksInteractiveTestBaseT(Args&&... args)
-      : ContextualTasksInteractiveTestBase(std::forward<Args>(args)...) {}
-
-  UserVariation GetUserVariation() const override {
-    if constexpr (std::is_same_v<ParamType, UserVariation>) {
-      return this->GetParam();
-    } else if constexpr (internal::HasTupleGet<ParamType>::value) {
-      return std::get<0>(this->GetParam());
-    } else {
-      return UserVariation::kSignedIn;
-    }
-  }
-};
-
 }  // namespace contextual_tasks
-
-// Convenience macros for skipping tests based on GetUserVariation().
-// These must be macros rather than member functions because GTEST_SKIP()
-// contains a 'return;' statement that must return from the caller's test body.
-#define SkipIf(target, reason) SKIP_IF(GetUserVariation(), (target), (reason))
-#define SkipIfIncognito(reason) SKIP_IF_INCOGNITO(GetUserVariation(), (reason))
-#define SkipIfSignedOut(reason) SKIP_IF_SIGNED_OUT(GetUserVariation(), (reason))
-#define SkipIfSignedIn(reason) SKIP_IF_SIGNED_IN(GetUserVariation(), (reason))
-#define SkipIfNotSignedIn(reason) \
-  SKIP_IF_NOT_SIGNED_IN(GetUserVariation(), (reason))
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_INTERACTIVE_TEST_BASE_H_
