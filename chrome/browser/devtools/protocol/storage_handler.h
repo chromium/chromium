@@ -38,6 +38,10 @@ class StorageHandler : public protocol::Storage::Backend,
 
   void GetPrivateVerificationTokens(
       std::unique_ptr<GetPrivateVerificationTokensCallback> callback) override;
+  protocol::Response GetPrivateVerificationTokensIssuerConfigs(
+      std::unique_ptr<protocol::Array<
+          protocol::Storage::PrivateVerificationTokensIssuerConfig>>*
+          out_configs) override;
   void ClearPrivateVerificationTokens(
       const std::string& in_issuerOrigin,
       std::unique_ptr<ClearPrivateVerificationTokensCallback> callback)

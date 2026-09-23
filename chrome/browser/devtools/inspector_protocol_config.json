@@ -49,7 +49,7 @@
             },
             {
                 "domain": "Storage",
-                "include": ["runBounceTrackingMitigations", "getPrivateVerificationTokens", "clearPrivateVerificationTokens", "deletePrivateVerificationToken", "setPrivateVerificationTokensTracking"],
+                "include": ["runBounceTrackingMitigations", "getPrivateVerificationTokens", "getPrivateVerificationTokensIssuerConfigs", "clearPrivateVerificationTokens", "deletePrivateVerificationToken", "setPrivateVerificationTokensTracking"],
                 "include_events": ["privateVerificationTokensUpdated"],
                 "async": ["runBounceTrackingMitigations", "getPrivateVerificationTokens", "clearPrivateVerificationTokens", "deletePrivateVerificationToken"]
             },

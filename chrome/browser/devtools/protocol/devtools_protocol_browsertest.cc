@@ -2432,7 +2432,51 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_PrivateVerificationTokens,
     EXPECT_TRUE(first_token->FindDouble("creationTime").has_value());
   }
 
-  // 3. Delete one token by ID.
+  // 3. Verify getPrivateVerificationTokensIssuerConfigs.
+  {
+    SendCommandSync("Storage.getPrivateVerificationTokensIssuerConfigs");
+    ASSERT_TRUE(result());
+    EXPECT_THAT(result()->FindList("configs"),
+                testing::Pointee(testing::IsEmpty()));
+
+    base::DictValue custom_issuer;
+    custom_issuer.Set("issuerRequestUrl", "https://issuer.example.com/issue");
+    custom_issuer.Set("version", 1);
+    custom_issuer.Set("publicKey",
+                      base::Base64Encode(std::vector<uint8_t>{1, 2, 3, 4}));
+    custom_issuer.Set("publicKeyProof",
+                      base::Base64Encode(std::vector<uint8_t>{5, 6, 7}));
+    custom_issuer.Set("batchSize", 7);
+    custom_issuer.Set("expiration", "2147483647");
+    base::ListValue redeemers;
+    redeemers.Append("https://redeemer1.example.com");
+    redeemers.Append("https://redeemer2.example.com");
+    custom_issuer.Set("redeemers", std::move(redeemers));
+    custom_issuer.Set("deploymentId", "test-deployment-id");
+
+    pvt_service_->SetIssuerConfig(
+        private_verification_tokens::PrivateVerificationTokensIssuerConfig::
+            CreateWithCustomIssuer(/*base_config=*/nullptr,
+                                   std::move(custom_issuer)));
+
+    SendCommandSync("Storage.getPrivateVerificationTokensIssuerConfigs");
+    ASSERT_TRUE(result());
+    const base::ListValue* configs_list = result()->FindList("configs");
+    ASSERT_THAT(configs_list, testing::Pointee(testing::SizeIs(1)));
+
+    const base::DictValue* first_config = configs_list->front().GetIfDict();
+    ASSERT_TRUE(first_config);
+    EXPECT_THAT(first_config->FindString("issuerOrigin"),
+                testing::Pointee(testing::Eq(issuer_origin.Serialize())));
+    const base::ListValue* redeemer_origins =
+        first_config->FindList("redeemerOrigins");
+    ASSERT_TRUE(redeemer_origins);
+    EXPECT_EQ(*redeemer_origins, base::ListValue()
+                                     .Append("https://redeemer1.example.com")
+                                     .Append("https://redeemer2.example.com"));
+  }
+
+  // 4. Delete one token by ID.
   {
     base::DictValue params;
     params.Set("tokenId", first_token_id);
@@ -2447,7 +2491,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_PrivateVerificationTokens,
                 testing::Pointee(testing::SizeIs(2)));
   }
 
-  // 4. Clear all tokens for the issuer.
+  // 5. Clear all tokens for the issuer.
   {
     base::DictValue params;
     params.Set("issuerOrigin", issuer_origin.Serialize());

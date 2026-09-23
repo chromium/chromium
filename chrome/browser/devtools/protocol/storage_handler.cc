@@ -117,6 +117,41 @@ void StorageHandler::GetPrivateVerificationTokens(
       std::move(callback)));
 }
 
+protocol::Response StorageHandler::GetPrivateVerificationTokensIssuerConfigs(
+    std::unique_ptr<protocol::Array<
+        protocol::Storage::PrivateVerificationTokensIssuerConfig>>*
+        out_configs) {
+  PrivateVerificationTokensService* pvt_service =
+      GetPrivateVerificationTokensService(web_contents_.get());
+  if (!pvt_service) {
+    return protocol::Response::ServerError(
+        "Private Verification Tokens service is not available");
+  }
+
+  auto configs = std::make_unique<protocol::Array<
+      protocol::Storage::PrivateVerificationTokensIssuerConfig>>();
+  scoped_refptr<
+      const private_verification_tokens::PrivateVerificationTokensIssuerConfig>
+      issuer_config = pvt_service->issuer_config();
+  if (issuer_config) {
+    for (const auto& [issuer_origin, config] : issuer_config->config()) {
+      auto redeemer_origins =
+          std::make_unique<protocol::Array<protocol::String>>();
+      for (const url::Origin& redeemer : config.redeemers) {
+        redeemer_origins->push_back(redeemer.Serialize());
+      }
+      configs->push_back(
+          protocol::Storage::PrivateVerificationTokensIssuerConfig::Create()
+              .SetIssuerOrigin(issuer_origin.Serialize())
+              .SetRedeemerOrigins(std::move(redeemer_origins))
+              .Build());
+    }
+  }
+
+  *out_configs = std::move(configs);
+  return protocol::Response::Success();
+}
+
 void StorageHandler::ClearPrivateVerificationTokens(
     const std::string& in_issuerOrigin,
     std::unique_ptr<ClearPrivateVerificationTokensCallback> callback) {

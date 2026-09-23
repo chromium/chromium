@@ -58,6 +58,14 @@ experimental domain Storage
       # Base64-encoded serialized token.
       string token
 
+  # Configuration for a Private Verification Tokens issuer.
+  experimental type PrivateVerificationTokensIssuerConfig extends object
+    properties
+      # Origin of the token issuer.
+      string issuerOrigin
+      # Origins authorized to redeem tokens from this issuer.
+      array of string redeemerOrigins
+
 
 
   type StorageBucketsDurability extends string
@@ -233,6 +241,12 @@ experimental domain Storage
   experimental command getPrivateVerificationTokens
     returns
       array of PrivateVerificationToken tokens
+
+  # Returns the configured Private Verification Tokens issuers and their redeemer
+  # origins.
+  experimental command getPrivateVerificationTokensIssuerConfigs
+    returns
+      array of PrivateVerificationTokensIssuerConfig configs
 
   # Removes all Private Verification Tokens issued by the provided issuerOrigin.
   experimental command clearPrivateVerificationTokens
