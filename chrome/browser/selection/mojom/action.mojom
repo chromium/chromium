@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module selection.mojom;
+
+// Renders a component inside the surface that offered the Suggestion.
+struct InlineFulfillment {
+  // The WebUI resource to load, after the user interacting with the Suggestion.
+  string resource_name;
+};
+
+// The Suggestion hands off to another surface (e.g., the side panel).
+struct Handoff {};
+
+// What the surface does when the user executes a Suggestion.
+union Action {
+  InlineFulfillment inline_fulfillment;
+  Handoff handoff;
+};

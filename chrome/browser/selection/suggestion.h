@@ -9,6 +9,7 @@
 #include <variant>
 #include <vector>
 
+#include "chrome/browser/selection/mojom/action.mojom-forward.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
@@ -43,6 +44,10 @@ class Suggestion {
 
   // Called when the user accepts a suggestion associated with this tool.
   virtual void OnSuggestionExecuted() = 0;
+
+  // Returns what executing this suggestion should do to the surface that
+  // offered it.
+  virtual mojom::ActionPtr GetAction() const = 0;
 };
 
 }  // namespace selection

@@ -761,9 +761,8 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
     // TODO(b/556786015): Fix issue when side panel is not open.
     service->InvokeWithAutoSubmit(
         InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
-    // Only dismiss the overlay for sessions that the browser started itself.
-    // `capture_region_observer_` is bound only when the web client started the
-    // session and will close it.
+    // `capture_region_observer_` is only bound if the overlay is invoked
+    // from the side panel web client.
     if (!capture_region_observer_.is_bound()) {
       Close();
     }
@@ -791,10 +790,11 @@ void SelectionOverlayController::GetSuggestedActions(
   if (region_data->suggestions_requested) {
     if (!region_data->suggestions.empty() ||
         region_data->suggestions_complete) {
-      std::vector<selection::SuggestedActionPtr> actions = base::ToVector(
-          region_data->suggestions, [](const auto& item) {
+      std::vector<selection::SuggestedActionPtr> actions =
+          base::ToVector(region_data->suggestions, [](const auto& item) {
             return selection::SuggestedAction::New(
-                item.first, base::UTF16ToUTF8(item.second->GetLabel()));
+                item.first, base::UTF16ToUTF8(item.second->GetLabel()),
+                item.second->GetAction());
           });
       suggested_actions_listener_->OnSuggestedActionsAvailable(
           std::move(actions));
@@ -878,10 +878,11 @@ void SelectionOverlayController::OnSuggestionsReceived(
   for (auto& suggestion : suggestions) {
     auto action_id = base::UnguessableToken::Create();
     std::string label = base::UTF16ToUTF8(suggestion->GetLabel());
+    ::selection::mojom::ActionPtr action = suggestion->GetAction();
     suggestion->OnSuggestionPresented();
     region_data->suggestions.emplace_back(action_id, std::move(suggestion));
-    actions.push_back(
-        selection::SuggestedAction::New(action_id, std::move(label)));
+    actions.push_back(selection::SuggestedAction::New(
+        action_id, std::move(label), std::move(action)));
   }
 
   // This appends the new ones. The `suggested_actions_listener_` will be
@@ -914,9 +915,21 @@ void SelectionOverlayController::ExecuteSuggestedAction(
     receiver_.ReportBadMessage("Unknown suggested action ID.");
     return;
   }
+
+  auto tag = matched_suggestion->GetAction()->which();
   matched_suggestion->OnSuggestionExecuted();
-  if (!capture_region_observer_.is_bound()) {
-    Close();
+
+  switch (tag) {
+    case ::selection::mojom::Action::Tag::kHandoff:
+      // `capture_region_observer_` is only bound if the overlay is invoked
+      // from the side panel web client.
+      if (!capture_region_observer_.is_bound()) {
+        Close();
+      }
+      return;
+    case ::selection::mojom::Action::Tag::kInlineFulfillment:
+      // The overlay remains.
+      return;
   }
 }
 

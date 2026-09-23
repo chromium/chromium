@@ -26,9 +26,14 @@ build_webui("build") {
     "selection_overlay_app.css",
   ]
 
-  mojo_files_deps =
-      [ "//chrome/browser/glic/selection:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/glic/selection/selection_overlay.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/browser/glic/selection:mojo_bindings_ts__generator",
+    "//chrome/browser/selection/mojom:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/glic/selection/selection_overlay.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/selection/mojom/action.mojom-webui.ts",
+  ]
 
   ts_deps = [
     "//chrome/browser/resources/lens/overlay:build_ts",

@@ -27,6 +27,7 @@ class PromptSuggestion : public ::selection::Suggestion {
   const std::u16string& GetLabel() const override;
   void OnSuggestionPresented() override;
   void OnSuggestionExecuted() override;
+  ::selection::mojom::ActionPtr GetAction() const override;
 
   const std::string& prompt() const { return prompt_; }
 

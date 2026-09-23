@@ -60,6 +60,7 @@ source_set("selection") {
 mojom("mojo_bindings") {
   sources = [ "selection_overlay.mojom" ]
   public_deps = [
+    "//chrome/browser/selection/mojom:mojo_bindings",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]

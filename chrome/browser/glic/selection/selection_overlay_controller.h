@@ -201,8 +201,10 @@ class SelectionOverlayController
   mojo::Receiver<selection::SelectionOverlayPageHandler> receiver_{this};
   mojo::Remote<selection::SelectionOverlayPage> page_;
 
-  // Legacy IPC that's used to signal the WebUI any browser side errors, and
-  // used to dismiss the overlay from the WebUI.
+  // Legacy IPC that's used to signal the web client any browser side errors,
+  // and used to dismiss the overlay from the web client. Only bound if the
+  // overlay is invoked from the web client (web client UI, keyboard shortcut).
+  // There are other invocations from outside the web client.
   // TODO(b/452032491): Remove this once the old codepath is no longer used.
   mojo::Remote<mojom::CaptureRegionObserver> capture_region_observer_;
 

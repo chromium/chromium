@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
@@ -209,6 +210,22 @@ class FakeSelectionSuggestionTool
   raw_ptr<tabs::TabInterface> tab_;
 };
 
+class ScopedToolRegistration {
+ public:
+  ScopedToolRegistration(::selection::SuggestionService* service,
+                         ::selection::SuggestionTool* tool)
+      : service_(service), tool_(tool) {
+    service_->RegisterTool(tool_);
+  }
+  ScopedToolRegistration(const ScopedToolRegistration&) = delete;
+  ScopedToolRegistration& operator=(const ScopedToolRegistration&) = delete;
+  ~ScopedToolRegistration() { service_->UnregisterTool(tool_); }
+
+ private:
+  const raw_ptr<::selection::SuggestionService> service_;
+  const raw_ptr<::selection::SuggestionTool> tool_;
+};
+
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
@@ -219,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   auto* suggestion_service = ::selection::SuggestionService::From(tab);
   ASSERT_TRUE(suggestion_service);
   FakeStaticSelectionSuggestionTool static_tool(tab);
-  suggestion_service->RegisterTool(&static_tool);
+  ScopedToolRegistration registration(suggestion_service, &static_tool);
 
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
@@ -252,7 +269,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   EXPECT_NE(actions[0]->id, actions[1]->id);
   EXPECT_NE(actions[1]->id, actions[2]->id);
 
-  suggestion_service->UnregisterTool(&static_tool);
 }
 
 class SelectionOverlayStaticSuggestionsBrowserTest : public GlicBrowserTest {
@@ -355,8 +371,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   ASSERT_TRUE(suggestion_service);
   FakeStaticSelectionSuggestionTool static_tool(tab);
   FakeSelectionSuggestionTool fake_tool(tab);
-  suggestion_service->RegisterTool(&static_tool);
-  suggestion_service->RegisterTool(&fake_tool);
+  ScopedToolRegistration static_registration(suggestion_service, &static_tool);
+  ScopedToolRegistration fake_registration(suggestion_service, &fake_tool);
 
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
@@ -389,8 +405,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   EXPECT_EQ(actions[4]->title, "Fact check");
   EXPECT_NE(actions[3]->id, actions[4]->id);
 
-  suggestion_service->UnregisterTool(&static_tool);
-  suggestion_service->UnregisterTool(&fake_tool);
 }
 
 namespace {
@@ -442,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   auto* suggestion_service = ::selection::SuggestionService::From(tab);
   ASSERT_TRUE(suggestion_service);
   CountingSelectionSuggestionTool counting_tool(tab);
-  suggestion_service->RegisterTool(&counting_tool);
+  ScopedToolRegistration registration(suggestion_service, &counting_tool);
 
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
@@ -544,8 +558,141 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
     EXPECT_NE(listener.actions()[0]->id, region1_action_id);
     EXPECT_EQ(counting_tool.request_count(), 3);
   }
+}
 
-  suggestion_service->UnregisterTool(&counting_tool);
+namespace {
+
+class FakePromptSuggestionTool : public ::selection::SuggestionTool {
+ public:
+  explicit FakePromptSuggestionTool(tabs::TabInterface* tab) : tab_(tab) {}
+  ~FakePromptSuggestionTool() override = default;
+
+  void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
+                          ::selection::SuggestionsCallback callback) override {
+    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
+    suggestions.push_back(std::make_unique<PromptSuggestion>(
+        *tab_, u"Explain", "Explain the selection in a few sentences."));
+    std::move(callback).Run(std::move(suggestions), /*complete=*/true);
+  }
+
+ private:
+  raw_ptr<tabs::TabInterface> tab_;
+};
+
+class InlineSuggestion : public ::selection::Suggestion {
+ public:
+  InlineSuggestion() = default;
+  ~InlineSuggestion() override = default;
+
+  // ::selection::Suggestion:
+  const std::u16string& GetLabel() const override { return label_; }
+  void OnSuggestionPresented() override {}
+  void OnSuggestionExecuted() override {}
+  ::selection::mojom::ActionPtr GetAction() const override {
+    return ::selection::mojom::Action::NewInlineFulfillment(
+        ::selection::mojom::InlineFulfillment::New("does_not_matter.js"));
+  }
+
+ private:
+  std::u16string label_ = u"InlineSuggestion";
+};
+
+class FakeInlineSuggestionTool : public ::selection::SuggestionTool {
+ public:
+  FakeInlineSuggestionTool() = default;
+  ~FakeInlineSuggestionTool() override = default;
+
+  void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
+                          ::selection::SuggestionsCallback callback) override {
+    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
+    suggestions.push_back(std::make_unique<InlineSuggestion>());
+    std::move(callback).Run(std::move(suggestions), /*complete=*/true);
+  }
+};
+
+::selection::mojom::ActionPtr GetActionFromRegion(
+    SelectionOverlayController* controller,
+    base::UnguessableToken* action_id) {
+  auto* handler =
+      static_cast<selection::SelectionOverlayPageHandler*>(controller);
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          base::UnguessableToken::Create(),
+          selection::RegionShape::NewRect(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+      /*is_using_keyboard=*/false);
+
+  TestSuggestedActionsListener listener;
+  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  listener.WaitForBatches(1);
+  if (listener.actions().empty()) {
+    return nullptr;
+  }
+  *action_id = listener.actions()[0]->id;
+  return listener.actions()[0]->action.Clone();
+}
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       HandoffDismissesOverlay) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(OpenGlicForActiveTab().has_value());
+
+  auto* suggestion_service = ::selection::SuggestionService::From(tab);
+  ASSERT_TRUE(suggestion_service);
+  FakePromptSuggestionTool tool(tab);
+  ScopedToolRegistration registration(suggestion_service, &tool);
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  base::UnguessableToken action_id;
+  ::selection::mojom::ActionPtr action =
+      GetActionFromRegion(controller, &action_id);
+  ASSERT_TRUE(action);
+  EXPECT_TRUE(action->is_handoff());
+
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->ExecuteSuggestedAction(action_id);
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       InlineFulfillmentKeepsOverlay) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+
+  auto* suggestion_service = ::selection::SuggestionService::From(tab);
+  ASSERT_TRUE(suggestion_service);
+  FakeInlineSuggestionTool tool;
+  ScopedToolRegistration registration(suggestion_service, &tool);
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  base::UnguessableToken action_id;
+  ::selection::mojom::ActionPtr action =
+      GetActionFromRegion(controller, &action_id);
+  ASSERT_TRUE(action);
+  ASSERT_TRUE(action->is_inline_fulfillment());
+  EXPECT_EQ(action->get_inline_fulfillment()->resource_name,
+            "does_not_matter.js");
+
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->ExecuteSuggestedAction(action_id);
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOverlay);
+  EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
 }
 
 }  // namespace glic

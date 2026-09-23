@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/selection/mojom/action.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
@@ -39,6 +40,11 @@ void PromptSuggestion::OnSuggestionExecuted() {
     service->InvokeWithAutoSubmit(
         InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
   }
+}
+
+::selection::mojom::ActionPtr PromptSuggestion::GetAction() const {
+  return ::selection::mojom::Action::NewHandoff(
+      ::selection::mojom::Handoff::New());
 }
 
 }  // namespace glic

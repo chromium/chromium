@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/selection/mojom/action.mojom.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,6 +28,9 @@ class TestSuggestion : public Suggestion {
   const std::u16string& GetLabel() const override { return label_; }
   void OnSuggestionPresented() override {}
   void OnSuggestionExecuted() override {}
+  mojom::ActionPtr GetAction() const override {
+    return mojom::Action::NewHandoff(mojom::Handoff::New());
+  }
 
  private:
   std::u16string label_;
