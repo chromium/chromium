@@ -195,9 +195,7 @@ media::EncoderStatus IsAcceleratedConfigurationSupported(
 
   // Hardware encoders only support subsamplings other than 4:2:0 for AV1
   // profile 1, where we require 4:4:4.
-  // High bit depths are supported by HEVC Main10 and AV1 Main only; AV1
-  // profile 1 is deliberately left out because the 4:4:4 hardware input format
-  // is 8 bit AYUV, and 10b lacks hardware support for now.
+  // High bit depths are supported by HEVC Main10, AV1 Main and AV1 profile 1.
   // TODO(crbug.com/537818862): Advertise chroma_sampling and bit_depth on every
   // SupportedProfile and drop this hardcoded allowlist.
   if (profile != media::HEVCPROFILE_REXT) {
@@ -210,7 +208,8 @@ media::EncoderStatus IsAcceleratedConfigurationSupported(
     const bool bit_depth_supported =
         bit_depth == 8 ||
         (bit_depth == 10 && (profile == media::HEVCPROFILE_MAIN10 ||
-                             profile == media::AV1PROFILE_PROFILE_MAIN));
+                             profile == media::AV1PROFILE_PROFILE_MAIN ||
+                             profile == media::AV1PROFILE_PROFILE_HIGH));
     if ((options.subsampling.has_value() &&
          options.subsampling.value() != required_sampling) ||
         !bit_depth_supported) {

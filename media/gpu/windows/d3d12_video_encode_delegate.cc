@@ -120,7 +120,15 @@ std::optional<DXGI_FORMAT> GetDxgiInputFormat(VideoCodecProfile output_profile,
        input_format == PIXEL_FORMAT_P010LE)) {
     return DXGI_FORMAT_P010;
   } else if (output_profile == AV1PROFILE_PROFILE_HIGH) {
-    return DXGI_FORMAT_AYUV;
+    switch (input_format) {
+      case PIXEL_FORMAT_P410LE:
+        return DXGI_FORMAT_Y410;  // 10 bit 4:4:4
+      case PIXEL_FORMAT_P010LE:
+      case PIXEL_FORMAT_P210LE:
+        return std::nullopt;
+      default:
+        return DXGI_FORMAT_AYUV;  // 8 bit inputs
+    }
   } else if (output_profile == HEVCPROFILE_REXT) {
     // The input format selects the range extension profile variant and thus
     // the DXGI format of the coded stream. Only the 10 bit variants are
@@ -297,6 +305,14 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
       if (profile == HEVCPROFILE_REXT) {
         supported_profile.chroma_sampling =
             VideoPixelFormatToChromaSampling(formats[0]);
+        supported_profile.bit_depth =
+            base::checked_cast<uint8_t>(BitDepth(formats[0]));
+      } else if (profile == AV1PROFILE_PROFILE_HIGH &&
+                 BitDepth(formats[0]) > 8) {
+        // Only the 10 bit high profile entry reports the fields: the 8 bit
+        // entry must keep matching the legacy inputs that are converted to
+        // AYUV (NV12 and other 8 bit formats), so it stays unconstrained.
+        supported_profile.chroma_sampling = VideoChromaSampling::k444;
         supported_profile.bit_depth =
             base::checked_cast<uint8_t>(BitDepth(formats[0]));
       } else {
@@ -831,6 +847,38 @@ EncoderStatus::Or<size_t> D3D12VideoEncodeDelegate::ReadbackBitstream(
     return status;
   }
   return size;
+}
+
+// Intel drivers allocate the reconstructed pictures for packed YUV encoder
+// input formats with an internal layout larger than the coded picture, so the
+// reference-only textures must be sized to match what the driver expects.
+// Their DXGI format has to stay Y210/Y410 or the D3D12 runtime rejects them at
+// encoder initialization, so only the dimensions can compensate.
+//
+// Both dimensions are first aligned to 64, and the height then grows by the
+// format's chroma factor: 3/2 for Y410 (10 bit 4:4:4) and 2 for Y210 (10 bit
+// 4:2:2). The aligned height keeps both multiplications exact. These rules
+// mirror the driver's internal allocation and were established empirically;
+// they apply only when the d3d12_encode_packed_format_dpb_sizing workaround is
+// active.
+gfx::Size D3D12VideoEncodeDelegate::GetAdjustedReferenceTextureSize(
+    gfx::Size texture_size) const {
+  if (!gpu_workarounds_.d3d12_encode_packed_format_dpb_sizing) {
+    return texture_size;
+  }
+  const gfx::Size aligned_size(
+      base::checked_cast<int>(base::bits::AlignUp(
+          base::checked_cast<uint32_t>(texture_size.width()), 64u)),
+      base::checked_cast<int>(base::bits::AlignUp(
+          base::checked_cast<uint32_t>(texture_size.height()), 64u)));
+  switch (input_format_) {
+    case DXGI_FORMAT_Y410:  // 10 bit 4:4:4: 3/2 the aligned height.
+      return gfx::Size(aligned_size.width(), aligned_size.height() * 3 / 2);
+    case DXGI_FORMAT_Y210:  // 10 bit 4:2:2: twice the aligned height.
+      return gfx::Size(aligned_size.width(), aligned_size.height() * 2);
+    default:
+      return texture_size;
+  }
 }
 
 template <size_t maxDpbSize>

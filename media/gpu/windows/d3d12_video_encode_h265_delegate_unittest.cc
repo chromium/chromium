@@ -679,7 +679,7 @@ TEST_F(D3D12VideoEncodeH265DelegateTest, InitializeRangeExtensionProfiles) {
   }
 }
 
-// With the d3d12_hevc_encode_packed_format_dpb_sizing workaround active, the
+// With the d3d12_encode_packed_format_dpb_sizing workaround active, the
 // reference-only textures must match the recon layout the Intel driver
 // allocates internally. The fixture's coded size is 1280x720, which both
 // dimensions 64-align to 1280x768; the height then grows by the format's
@@ -702,7 +702,7 @@ TEST_F(D3D12VideoEncodeH265DelegateTest,
       });
 
   gpu::GpuDriverBugWorkarounds gpu_workarounds;
-  gpu_workarounds.d3d12_hevc_encode_packed_format_dpb_sizing = true;
+  gpu_workarounds.d3d12_encode_packed_format_dpb_sizing = true;
 
   const struct {
     VideoCodecProfile profile;

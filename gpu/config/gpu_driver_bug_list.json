@@ -3998,14 +3998,14 @@
     {
       "id": 502,
       "cr_bugs": [40275246],
-      "description": "Intel drivers ask for D3D12 HEVC RExt recon pictures with an internal packed 4:2:2/4:4:4.",
+      "description": "Intel drivers ask for D3D12 encoder recon pictures with an internal layout larger than the coded picture for packed 4:2:2/4:4:4 YUV input formats.",
       "os": {
         "type": "win"
       },
       "vendor_id": "0x8086",
       "multi_gpu_category": "active",
       "features": [
-        "d3d12_hevc_encode_packed_format_dpb_sizing"
+        "d3d12_encode_packed_format_dpb_sizing"
       ]
     }
   ]

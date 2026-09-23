@@ -1254,6 +1254,25 @@ TEST(VideoEncodeAcceleratorTest, SelectsInputPixelFormat) {
                 HEVCPROFILE_MAIN10, options),
             PIXEL_FORMAT_P010LE);
 
+  // AV1 main keeps the default 8 bit format and switches to P010LE for 10 bit
+  // requests.
+  EXPECT_EQ(VideoEncodeAcceleratorAdapter::GetInputPixelFormat(
+                AV1PROFILE_PROFILE_MAIN, options),
+            default_format);
+  options.bit_depth = 10;
+  EXPECT_EQ(VideoEncodeAcceleratorAdapter::GetInputPixelFormat(
+                AV1PROFILE_PROFILE_MAIN, options),
+            PIXEL_FORMAT_P010LE);
+  // AV1 high is 4:4:4 at the requested bit depth.
+  options.bit_depth = 8;
+  EXPECT_EQ(VideoEncodeAcceleratorAdapter::GetInputPixelFormat(
+                AV1PROFILE_PROFILE_HIGH, options),
+            default_format);
+  options.bit_depth = 10;
+  EXPECT_EQ(VideoEncodeAcceleratorAdapter::GetInputPixelFormat(
+                AV1PROFILE_PROFILE_HIGH, options),
+            PIXEL_FORMAT_P410LE);
+
   options.subsampling = VideoChromaSampling::k422;
   options.bit_depth = 8;
   EXPECT_EQ(VideoEncodeAcceleratorAdapter::GetInputPixelFormat(HEVCPROFILE_REXT,

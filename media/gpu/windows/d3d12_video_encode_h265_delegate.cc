@@ -127,35 +127,6 @@ uint8_t D3D12VideoEncoderLevelsHevcToH265LevelIDC(
   return kD3D12H265LevelToH265LevelIDCMap.at(level);
 }
 
-// Intel drivers allocate the HEVC range extension reconstructed pictures with
-// an internal layout larger than the coded picture, so the reference-only
-// textures must be sized to match what the driver expects. Their DXGI format
-// has to stay Y210/Y410 or the D3D12 runtime rejects them at encoder
-// initialization, so only the dimensions can compensate.
-//
-// Both dimensions are first aligned to 64, and the height then grows by the
-// format's chroma factor: 3/2 for Y410 (10 bit 4:4:4) and 2 for Y210 (10 bit
-// 4:2:2). The aligned height keeps both multiplications exact. These rules
-// mirror the driver's internal allocation and were established empirically;
-// they apply only when the d3d12_hevc_encode_packed_format_dpb_sizing
-// workaround is active.
-gfx::Size GetAdjustedReferenceTextureSize(gfx::Size texture_size,
-                                          DXGI_FORMAT format) {
-  const gfx::Size aligned_size(
-      base::checked_cast<int>(base::bits::AlignUp(
-          base::checked_cast<uint32_t>(texture_size.width()), 64u)),
-      base::checked_cast<int>(base::bits::AlignUp(
-          base::checked_cast<uint32_t>(texture_size.height()), 64u)));
-  switch (format) {
-    case DXGI_FORMAT_Y410:  // 10 bit 4:4:4: 3/2 the aligned height.
-      return gfx::Size(aligned_size.width(), aligned_size.height() * 3 / 2);
-    case DXGI_FORMAT_Y210:  // 10 bit 4:2:2: twice the aligned height.
-      return gfx::Size(aligned_size.width(), aligned_size.height() * 2);
-    default:
-      return texture_size;
-  }
-}
-
 // Convert the mastering display colour volume metadata from `gfx::HDRMetadata`
 // into the SEI representation. This is the inverse of
 // `H26xSEIMasteringDisplayInfo::ToSkHdr()`: chromaticity coordinates are in
@@ -1001,11 +972,8 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
   bool use_texture_array =
       encoder_support_flags_ &
       D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RECONSTRUCTED_FRAMES_REQUIRE_TEXTURE_ARRAYS;
-  gfx::Size reference_texture_size = config.input_visible_size;
-  if (gpu_workarounds_.d3d12_hevc_encode_packed_format_dpb_sizing) {
-    reference_texture_size =
-        GetAdjustedReferenceTextureSize(reference_texture_size, input_format_);
-  }
+  gfx::Size reference_texture_size =
+      GetAdjustedReferenceTextureSize(config.input_visible_size);
   if (!reference_frame_manager_.InitializeTextureResources(
           device_.Get(), reference_texture_size, input_format_,
           max_num_ref_frames_, use_texture_array)) {

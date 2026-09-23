@@ -164,6 +164,73 @@ class D3D12VideoEncodeAV1DelegateTest
     return vea_config;
   }
 
+  // Makes the mock driver report AV1 high profile support for both the 8 bit
+  // AYUV and the 10 bit Y410 input formats.
+  void AllowAV1HighProfile() {
+    ON_CALL(*video_device3_.Get(), CheckFeatureSupport(_, _, _))
+        .WillByDefault([](D3D12_FEATURE_VIDEO feature,
+                          void* pFeatureSupportData,
+                          UINT FeatureSupportDataSize) -> HRESULT {
+          if (feature == D3D12_FEATURE_VIDEO_ENCODER_CODEC) {
+            auto* feature_data =
+                static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC*>(
+                    pFeatureSupportData);
+            feature_data->IsSupported =
+                feature_data->Codec == D3D12_VIDEO_ENCODER_CODEC_AV1;
+          } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_PROFILE_LEVEL) {
+            auto* feature_data =
+                static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL*>(
+                    pFeatureSupportData);
+            CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+            CHECK(feature_data->Profile.pAV1Profile);
+            feature_data->IsSupported = (*feature_data->Profile.pAV1Profile ==
+                                         D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH);
+          } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_INPUT_FORMAT) {
+            auto* feature_data =
+                static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT*>(
+                    pFeatureSupportData);
+            CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+            CHECK_EQ(*feature_data->Profile.pAV1Profile,
+                     D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH);
+            feature_data->IsSupported =
+                feature_data->Format == DXGI_FORMAT_AYUV ||
+                feature_data->Format == DXGI_FORMAT_Y410;
+          } else if (feature ==
+                     D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT) {
+            auto* feature_data = static_cast<
+                D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT*>(
+                pFeatureSupportData);
+            CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+            CHECK_LE(*feature_data->Profile.pAV1Profile,
+                     D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH);
+            auto* av1_support = feature_data->CodecSupportLimits.pAV1Support;
+            av1_support->SupportedInterpolationFilters =
+                D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAG_EIGHTTAP;
+            av1_support->SupportedFeatureFlags =
+                D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CDEF_FILTERING |
+                D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_ORDER_HINT_TOOLS |
+                D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER |
+                D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_REDUCED_TX_SET;
+            av1_support->RequiredFeatureFlags =
+                D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER;
+            feature_data->IsSupported = true;
+          } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_SUPPORT1) {
+            auto* feature_data =
+                static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT1*>(
+                    pFeatureSupportData);
+            CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+            feature_data->SupportFlags =
+                D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK;
+            if (feature_data->SuggestedLevel.pAV1LevelSetting) {
+              *feature_data->SuggestedLevel.pAV1LevelSetting = {
+                  .Level = D3D12_VIDEO_ENCODER_AV1_LEVELS_4_0,
+                  .Tier = D3D12_VIDEO_ENCODER_AV1_TIER_MAIN};
+            }
+          }
+          return S_OK;
+        });
+  }
+
   // `D3D12VideoEncodeAV1DelegateTest` is a friend of the delegate, but the
   // TEST_F bodies are subclasses of it and are not, so private state has to be
   // reached through the fixture.
@@ -287,9 +354,8 @@ class D3D12VideoEncodeAV1DelegateTest
 TEST_F(D3D12VideoEncodeAV1DelegateTest, GetSupportedProfiles) {
   std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
       expected_profiles = {
-          {AV1PROFILE_PROFILE_MAIN,
-           {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE, PIXEL_FORMAT_ABGR}}};
-  EXPECT_CALL(*video_device3_.Get(), CheckFeatureSupport).Times(7);
+          {AV1PROFILE_PROFILE_MAIN, {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE}}};
+  EXPECT_CALL(*video_device3_.Get(), CheckFeatureSupport).Times(6);
   auto profiles = D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(
       video_device3_.Get(), gpu::GpuDriverBugWorkarounds());
   EXPECT_EQ(profiles, expected_profiles);
@@ -361,6 +427,184 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, GetSupportedProfiles_HighProfile) {
 }
 
 TEST_F(D3D12VideoEncodeAV1DelegateTest,
+       GetSupportedProfiles_HighProfile10Bit444) {
+  // Simulate a driver that supports AV1 high profile for both the 8 bit and
+  // 10 bit 4:4:4 variants, accepting AYUV and Y410 inputs.
+  ON_CALL(*video_device3_.Get(), CheckFeatureSupport(_, _, _))
+      .WillByDefault([](D3D12_FEATURE_VIDEO feature, void* pFeatureSupportData,
+                        UINT FeatureSupportDataSize) -> HRESULT {
+        if (feature == D3D12_FEATURE_VIDEO_ENCODER_CODEC) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC*>(
+                  pFeatureSupportData);
+          feature_data->IsSupported =
+              feature_data->Codec == D3D12_VIDEO_ENCODER_CODEC_AV1;
+        } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_PROFILE_LEVEL) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL*>(
+                  pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          CHECK(feature_data->Profile.pAV1Profile);
+          feature_data->IsSupported = (*feature_data->Profile.pAV1Profile ==
+                                       D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH);
+        } else if (feature == D3D12_FEATURE_VIDEO_ENCODER_INPUT_FORMAT) {
+          auto* feature_data =
+              static_cast<D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT*>(
+                  pFeatureSupportData);
+          CHECK_EQ(feature_data->Codec, D3D12_VIDEO_ENCODER_CODEC_AV1);
+          CHECK_EQ(*feature_data->Profile.pAV1Profile,
+                   D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH);
+          feature_data->IsSupported =
+              feature_data->Format == DXGI_FORMAT_AYUV ||
+              feature_data->Format == DXGI_FORMAT_Y410;
+        }
+        return S_OK;
+      });
+  std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
+      expected_profiles = {{AV1PROFILE_PROFILE_HIGH, {PIXEL_FORMAT_P410LE}},
+                           {AV1PROFILE_PROFILE_HIGH, {PIXEL_FORMAT_ABGR}}};
+  auto profiles = D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(
+      video_device3_.Get(), gpu::GpuDriverBugWorkarounds());
+  EXPECT_EQ(profiles, expected_profiles);
+}
+
+// With the d3d12_encode_packed_format_dpb_sizing workaround active, the
+// reference-only textures must match the recon layout the Intel driver
+// allocates internally, like the HEVC delegates do. The fixture's coded size
+// is 1280x720, which both dimensions 64-align to 1280x768; the height then
+// grows by the format's chroma factor, so Y410 textures are 1280x1152, while
+// AYUV textures stay 1280x720.
+TEST_F(D3D12VideoEncodeAV1DelegateTest,
+       ReferenceTextureSizingWithPackedFormatWorkaround) {
+  AllowAV1HighProfile();
+
+  // The delegate only commits the reference textures, so the captured
+  // descriptors are exactly the DPB resources.
+  std::vector<D3D12_RESOURCE_DESC> committed_resource_descs;
+  ON_CALL(*device_.Get(), CreateCommittedResource)
+      .WillByDefault([&](const D3D12_HEAP_PROPERTIES*, D3D12_HEAP_FLAGS,
+                         const D3D12_RESOURCE_DESC* desc, D3D12_RESOURCE_STATES,
+                         const D3D12_CLEAR_VALUE*, REFIID, void**) {
+        committed_resource_descs.push_back(*desc);
+        return S_OK;
+      });
+
+  gpu::GpuDriverBugWorkarounds gpu_workarounds;
+  gpu_workarounds.d3d12_encode_packed_format_dpb_sizing = true;
+
+  const struct {
+    VideoPixelFormat input_format;
+    DXGI_FORMAT reference_format;
+    gfx::Size expected_reference_size;
+  } kCases[] = {
+      {PIXEL_FORMAT_ABGR, DXGI_FORMAT_AYUV, {1280, 720}},
+      {PIXEL_FORMAT_P410LE, DXGI_FORMAT_Y410, {1280, 1152}},
+  };
+  for (const auto& test_case : kCases) {
+    committed_resource_descs.clear();
+    auto encoder_delegate = std::make_unique<MockD3D12VideoEncodeAV1Delegate>(
+        video_device3_, gpu_workarounds);
+    encoder_delegate->SetFactoriesForTesting(
+        base::BindRepeating(&CreateVideoEncoderWrapper),
+        base::BindRepeating(&CreateVideoProcessorWrapper));
+
+    VideoEncodeAccelerator::Config config = GetDefaultConfig();
+    config.output_profile = AV1PROFILE_PROFILE_HIGH;
+    config.input_format = test_case.input_format;
+    ASSERT_TRUE(encoder_delegate->Initialize(config).is_ok())
+        << "input format: " << test_case.input_format;
+
+    int reference_texture_count = 0;
+    for (const D3D12_RESOURCE_DESC& desc : committed_resource_descs) {
+      if (desc.Format != test_case.reference_format) {
+        continue;
+      }
+      ++reference_texture_count;
+      EXPECT_EQ(desc.Width,
+                static_cast<UINT64>(test_case.expected_reference_size.width()));
+      EXPECT_EQ(desc.Height,
+                static_cast<UINT>(test_case.expected_reference_size.height()));
+    }
+    EXPECT_GT(reference_texture_count, 0)
+        << "input format: " << test_case.input_format;
+  }
+}
+
+TEST_F(D3D12VideoEncodeAV1DelegateTest, InitializeHighProfile10Bit444) {
+  // The delegate picks Y410 for 10 bit 4:4:4 input and signals 10 bit in the
+  // sequence header.
+  AllowAV1HighProfile();
+  VideoEncodeAccelerator::Config config = GetDefaultConfig();
+  config.output_profile = AV1PROFILE_PROFILE_HIGH;
+  config.input_format = PIXEL_FORMAT_P410LE;
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+  EXPECT_EQ(encoder_delegate_->GetInputFormat(), DXGI_FORMAT_Y410);
+  EXPECT_EQ(GetSequenceHeader().bit_depth, 10u);
+}
+
+TEST_F(D3D12VideoEncodeAV1DelegateTest,
+       InitializeHighProfile8Bit444WithSubsampledInput) {
+  // A subsampled 8 bit input is upconverted to AYUV, the 8 bit 4:4:4 input
+  // format, preserving the behavior from before 10 bit support was added.
+  AllowAV1HighProfile();
+  VideoEncodeAccelerator::Config config = GetDefaultConfig();
+  config.output_profile = AV1PROFILE_PROFILE_HIGH;
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+  EXPECT_EQ(encoder_delegate_->GetInputFormat(), DXGI_FORMAT_AYUV);
+  EXPECT_EQ(GetSequenceHeader().bit_depth, 8u);
+}
+
+// The emitted sequence header must signal 10 bit depth when encoding 10 bit
+// 4:4:4 high profile content from a Y410 input frame.
+TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeHighProfile10Bit444Frame) {
+  AllowAV1HighProfile();
+  VideoEncodeAccelerator::Config config = GetDefaultConfig();
+  config.output_profile = AV1PROFILE_PROFILE_HIGH;
+  config.input_format = PIXEL_FORMAT_P410LE;
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  // A 10 bit 4:4:4 frame already in the encoder's Y410 input format needs no
+  // video processor pass.
+  auto input_frame = MakeComPtr<NiceMock<D3D12ResourceMock>>();
+  EXPECT_CALL(*input_frame.Get(), GetDesc())
+      .WillOnce(Return(D3D12_RESOURCE_DESC{
+          .Width = static_cast<UINT64>(config.input_visible_size.width()),
+          .Height = static_cast<UINT>(config.input_visible_size.height()),
+          .Format = DXGI_FORMAT_Y410,
+      }));
+  constexpr size_t kBufferSize = 4096;
+  constexpr size_t kStreamSize = 3072;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kBufferSize);
+  EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
+      .WillOnce(Return(EncoderStatus::Codes::kOk));
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+      .WillRepeatedly(
+          [&] { return GetEncoderOutputMetadataResourceMap(kStreamSize); });
+  EXPECT_CALL(*GetMockDelegate(), GetEncodedBitstreamWrittenBytesCount(_))
+      .WillRepeatedly(Return(kStreamSize));
+
+  auto result = encoder_delegate_->Encode(
+      {input_frame.Get()}, gfx::Rect(config.input_visible_size),
+      gfx::ColorSpace::CreateREC709(), bitstream_buffer,
+      VideoEncoder::EncodeOptions());
+  ASSERT_TRUE(result.has_value());
+  auto [bitstream_buffer_id, metadata] = std::move(result).value();
+  EXPECT_EQ(bitstream_buffer_id, bitstream_buffer.id());
+  EXPECT_TRUE(metadata.key_frame);
+
+  base::WritableSharedMemoryMapping map = shared_memory.Map();
+  base::span bitstream =
+      map.GetMemoryAsSpan<uint8_t>().first(metadata.payload_size_bytes);
+  libgav1::RefCountedBufferPtr frame;
+  ASSERT_EQ(ParseTemporalUnit(bitstream, &frame), libgav1::kStatusOk);
+  ASSERT_NE(frame, nullptr);
+  const libgav1::ColorConfig& color_config =
+      parser_->sequence_header().color_config;
+  EXPECT_EQ(color_config.bitdepth, 10);
+}
+
+TEST_F(D3D12VideoEncodeAV1DelegateTest,
        GetSupportedProfiles_WorkaroundLimitsToMain) {
   // Simulate a driver that supports all three AV1 profiles (Main, High, Pro).
   ON_CALL(*video_device3_.Get(), CheckFeatureSupport(_, _, _))
@@ -402,8 +646,22 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest,
 TEST_F(D3D12VideoEncodeAV1DelegateTest, UnsupportedProfile) {
   VideoEncodeAccelerator::Config config = GetDefaultConfig();
   config.output_profile = AV1PROFILE_PROFILE_HIGH;
+  // P410LE selects the 10 bit 4:4:4 variant, so the request reaches the
+  // profile gate and is rejected there; an input format that selects no
+  // variant is rejected earlier as an unsupported config.
+  config.input_format = PIXEL_FORMAT_P410LE;
   EXPECT_EQ(encoder_delegate_->Initialize(config).code(),
             EncoderStatus::Codes::kEncoderUnsupportedProfile);
+}
+
+TEST_F(D3D12VideoEncodeAV1DelegateTest, UnsupportedInputFormatForHighProfile) {
+  // 10 bit 4:2:0 input selects no high profile variant and is rejected as an
+  // unsupported config before the profile gate.
+  VideoEncodeAccelerator::Config config = GetDefaultConfig();
+  config.output_profile = AV1PROFILE_PROFILE_HIGH;
+  config.input_format = PIXEL_FORMAT_P010LE;
+  EXPECT_EQ(encoder_delegate_->Initialize(config).code(),
+            EncoderStatus::Codes::kEncoderUnsupportedConfig);
 }
 
 TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {

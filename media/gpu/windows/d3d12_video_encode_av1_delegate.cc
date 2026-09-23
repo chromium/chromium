@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -49,6 +50,14 @@ constexpr auto kVideoCodecProfileToD3D12Profile =
          {AV1PROFILE_PROFILE_HIGH, D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH},
          {AV1PROFILE_PROFILE_PRO,
           D3D12_VIDEO_ENCODER_AV1_PROFILE_PROFESSIONAL}});
+
+// Input formats probed per profile in GetSupportedProfiles().
+constexpr std::array<std::pair<VideoPixelFormat, DXGI_FORMAT>, 2>
+    kHighProfileFormatsToProbe = {{{PIXEL_FORMAT_P410LE, DXGI_FORMAT_Y410},
+                                   {PIXEL_FORMAT_ABGR, DXGI_FORMAT_AYUV}}};
+constexpr std::array<std::pair<VideoPixelFormat, DXGI_FORMAT>, 2>
+    kMainProfileFormatsToProbe = {{{PIXEL_FORMAT_NV12, DXGI_FORMAT_NV12},
+                                   {PIXEL_FORMAT_P010LE, DXGI_FORMAT_P010}}};
 
 // See AV1 spec 7.12 for details. The quantizer is bit depth dependent, so the
 // 8 and 10 bit lookups are kept separate, matching `ac_qlookup_QTX` and
@@ -763,23 +772,30 @@ D3D12VideoEncodeAV1Delegate::GetSupportedProfiles(
              .is_ok()) {
       continue;
     }
+    // Although D3D12 encoder spec for AV1 section 3.1.3 mentions that high
+    // profile "also" allows AYUV and Y410 input formats, which might be
+    // interpretted as if NV12 and P010 may be supported as input format for
+    // the high profile, which they are actually not supported.
+    base::span<const std::pair<VideoPixelFormat, DXGI_FORMAT>>
+        formats_to_probe = codec_profile == AV1PROFILE_PROFILE_HIGH
+                               ? base::span(kHighProfileFormatsToProbe)
+                               : base::span(kMainProfileFormatsToProbe);
     std::vector<VideoPixelFormat> formats;
-    for (VideoPixelFormat format :
-         {PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE, PIXEL_FORMAT_ABGR}) {
+    for (auto [format, dxgi_format] : formats_to_probe) {
       D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT input_format{
           .Codec = D3D12_VIDEO_ENCODER_CODEC_AV1,
           .Profile = profile_level.Profile,
-          // It makes no sense to encode at Y:U:V 444 if input UV is already
-          // subsampled. So only allow profile 1 encoding when input is RGBA
-          // frame, and converts to AYUV which is the only DXGI format supported
-          // by drivers at 8b profile 1.
-          .Format = (format == PIXEL_FORMAT_ABGR)
-                        ? DXGI_FORMAT_AYUV
-                        : VideoPixelFormatToDxgiFormat(format),
+          .Format = dxgi_format,
       };
       if (CheckD3D12VideoEncoderInputFormat(video_device, &input_format)
               .is_ok()) {
-        formats.push_back(format);
+        // Explicity advertise the supported input formats for the high profile.
+        if (codec_profile == AV1PROFILE_PROFILE_HIGH) {
+          profiles.emplace_back(codec_profile,
+                                std::vector<VideoPixelFormat>{format});
+        } else {
+          formats.push_back(format);
+        }
       }
     }
     if (!formats.empty()) {
@@ -893,7 +909,7 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
       .FeatureFlags = enabled_features_,
       .OrderHintBitsMinus1 = kDefaultOrderHintBitsMinus1};
 
-  const uint8_t bit_depth = input_format_ == DXGI_FORMAT_P010 ? 10 : 8;
+  const uint8_t bit_depth = GetDxgiFormatBitDepth(input_format_);
   if (config.bitrate.mode() == Bitrate::Mode::kConstant ||
       config.bitrate.mode() == Bitrate::Mode::kVariable) {
     software_brc_ = aom::AV1RateControlRTC::Create(ConvertToRateControlConfig(
@@ -976,7 +992,9 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
   bool use_texture_array =
       support.SupportFlags &
       D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RECONSTRUCTED_FRAMES_REQUIRE_TEXTURE_ARRAYS;
-  if (!dpb_.InitializeTextureResources(device_.Get(), config.input_visible_size,
+  gfx::Size reference_texture_size =
+      GetAdjustedReferenceTextureSize(config.input_visible_size);
+  if (!dpb_.InitializeTextureResources(device_.Get(), reference_texture_size,
                                        input_format_, max_num_ref_frames_,
                                        use_texture_array)) {
     return {EncoderStatus::Codes::kEncoderInitializationError,

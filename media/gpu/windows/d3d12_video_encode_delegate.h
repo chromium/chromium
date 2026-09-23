@@ -170,6 +170,12 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   virtual EncoderStatus::Or<size_t> ReadbackBitstream(
       base::span<uint8_t> bitstream_buffer);
 
+  // Returns the size the D3D12 encoder driver expects the reference-only DPB
+  // textures holding |texture_size| pictures in |input_format_| to have; see
+  // the implementation in the .cc file. Only valid after |input_format_| has
+  // been determined by |Initialize()|.
+  gfx::Size GetAdjustedReferenceTextureSize(gfx::Size texture_size) const;
+
   Microsoft::WRL::ComPtr<ID3D12Device> device_;
   Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device_;
 
