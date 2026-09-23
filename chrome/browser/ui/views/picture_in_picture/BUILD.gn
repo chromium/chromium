@@ -35,6 +35,7 @@ source_set("picture_in_picture") {
     "//base",
     "//components/web_modal",
     "//content/public/browser",
+    "//extensions/buildflags",
     "//third_party/blink/public/common:headers",
     "//ui/gfx",
     "//ui/gfx/geometry",
@@ -64,7 +65,6 @@ source_set("picture_in_picture") {
     "//components/url_formatter",
     "//components/vector_icons",
     "//components/webapps/isolated_web_apps:scheme",
-    "//extensions/buildflags",
     "//media",
     "//ui/base",
     "//ui/base/metadata",
@@ -77,7 +77,10 @@ source_set("picture_in_picture") {
   if (enable_extensions_core) {
     public += [ "document_pip_base_window.h" ]
     sources += [ "document_pip_base_window.cc" ]
+    public_deps += [ "//components/sessions" ]
     deps += [
+      "//chrome/browser/extensions",
+      "//components/zoom",
       "//extensions/browser",
       "//extensions/common",
     ]
@@ -118,7 +121,6 @@ source_set("unit_tests") {
     "//components/web_modal",
     "//content/public/browser",
     "//content/test:test_support",
-    "//extensions/buildflags",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//ui/base",
@@ -131,4 +133,14 @@ source_set("unit_tests") {
     "//ui/views/controls/webview",
     "//url",
   ]
+
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions",
+      "//components/sessions",
+      "//components/zoom",
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+  }
 }

@@ -27,7 +27,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
-#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
@@ -47,7 +46,13 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_base_window.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/zoom/zoom_controller.h"
+#include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/test/mock_native_widget.h"
 #include "ui/views/window/frame_view.h"
@@ -283,6 +288,25 @@ TEST_F(DocumentPipHostTest, Accessors) {
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+TEST_F(DocumentPipHostTest, ExtensionWindowIdentityAndHelpers) {
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* child = host->GetChildWebContents();
+  EXPECT_TRUE(host->GetSessionId().is_valid());
+  EXPECT_EQ(host->GetSessionId(),
+            sessions::SessionTabHelper::IdForWindowContainingTab(child));
+  EXPECT_TRUE(sessions::SessionTabHelper::IdForTab(child).is_valid());
+  EXPECT_NE(host->GetSessionId(), sessions::SessionTabHelper::IdForTab(child));
+  EXPECT_EQ(extensions::mojom::ViewType::kTabContents,
+            extensions::GetViewType(child));
+  EXPECT_TRUE(
+      extensions::ChromeExtensionWebContentsObserver::FromWebContents(child));
+  ASSERT_TRUE(extensions::TabHelper::FromWebContents(child));
+  EXPECT_TRUE(extensions::TabHelper::FromWebContents(child)->script_executor());
+  EXPECT_TRUE(zoom::ZoomController::FromWebContents(child));
+  host->Close();
+  EXPECT_FALSE(host->GetSessionId().is_valid());
+}
+
 TEST_F(DocumentPipHostTest, ExtensionWindowAdapterOperations) {
   // Test adapter forwarding without the native window manager overriding the
   // requested z-order.

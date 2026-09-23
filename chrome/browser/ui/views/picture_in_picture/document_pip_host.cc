@@ -54,9 +54,15 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
+#include "chrome/browser/extensions/tab_helper.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/zoom/zoom_controller.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
 namespace {
@@ -129,6 +135,12 @@ void DocumentPipHost::CreateAndShowPipWindow(
 
   CHECK(child_web_contents);
   pip_options_ = std::move(pip_options);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  session_id_ = SessionID::NewUnique();
+  extensions::SetViewType(child_web_contents.get(),
+                          extensions::mojom::ViewType::kTabContents);
+#endif
 
   // Store a back-pointer on the child so the content-settings refresh path can
   // find this host given the captured (child) WebContents. Done before the
@@ -621,6 +633,23 @@ bool DocumentPipHost::CheckMediaAccessPermission(
 
 void DocumentPipHost::CreateChildWebContentsHelpers(
     content::WebContents* child_web_contents) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
+      child_web_contents);
+  // Supply extension identity without registering the script-created document
+  // with session restore. TabHelper preserves an existing SessionTabHelper.
+  sessions::SessionTabHelper::CreateForWebContents(
+      child_web_contents, sessions::SessionTabHelper::DelegateLookup());
+  auto* session_helper =
+      sessions::SessionTabHelper::FromWebContents(child_web_contents);
+  extensions::ChromeExtensionWebContentsObserver::FromWebContents(
+      child_web_contents)
+      ->ListenToWindowIdChangesFrom(session_helper);
+  session_helper->SetWindowID(session_id_);
+  extensions::TabHelper::CreateForWebContents(child_web_contents);
+  zoom::ZoomController::CreateForWebContents(child_web_contents);
+#endif
+
   // Create PageSpecificContentSettings so media grants from the PiP document
   // are recorded on the child and mirrored onto the opener via the PiP
   // synced-settings path (MaybeGetSyncedSettingsForPictureInPicture). Without
@@ -682,6 +711,9 @@ void DocumentPipHost::PrepareForWidgetDestruction() {
 
   widget_observation_.Reset();
   contents_view_observation_.Reset();
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  session_id_ = SessionID::InvalidValue();
+#endif
   modal_dialog_host_observer_list_.Notify(
       &web_modal::ModalDialogHostObserver::OnHostDestroying);
 

@@ -23,10 +23,15 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "components/sessions/core/session_id.h"
+#endif
 
 class DocumentPipWidgetDelegate;
 class PictureInPictureTucker;
@@ -93,6 +98,10 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   content::WebContents* GetChildWebContents();
   views::Widget* GetWidget();
   const blink::mojom::PictureInPictureWindowOptions& GetPipOptions() const;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  SessionID GetSessionId() const { return session_id_; }
+#endif
 
   // Looks up the DocumentPipHost that owns `child_web_contents` (the
   // WebContents rendered inside a Document PiP window), or nullptr if it is not
@@ -305,6 +314,10 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   // Declared after `widget_delegate_` so it is destroyed first: members are
   // destroyed in reverse declaration order.
   std::unique_ptr<views::Widget> widget_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  SessionID session_id_ = SessionID::InvalidValue();
+#endif
 
   // Initial options from the requestWindow() call.
   blink::mojom::PictureInPictureWindowOptions pip_options_;
