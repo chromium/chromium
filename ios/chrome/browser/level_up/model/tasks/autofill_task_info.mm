@@ -27,7 +27,8 @@ class AutofillTaskInfo : public TaskInfo {
         IDS_IOS_LEVEL_UP_FEATURE_PASSWORDS_AUTOFILL);
   }
   std::string GetTaskDescription() const override {
-    return "Quickly sign into sites and apps with your saved passwords";
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_PASSWORDS_AUTOFILL_DESCRIPTION);
   }
   Symbol GetIconSymbol() const override { return SymbolPasswordManager; }
   bool IsMulticolorIcon() const override { return true; }

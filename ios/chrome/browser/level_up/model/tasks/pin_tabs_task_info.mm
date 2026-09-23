@@ -21,9 +21,12 @@ class PinTabsTaskInfo : public TaskInfo {
 
   // TaskInfo implementation.
   TaskType GetTaskType() const override { return TaskType::kPinTabs; }
-  std::string GetTitle() const override { return "Pin tabs"; }
+  std::string GetTitle() const override {
+    return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_FEATURE_PIN_TABS);
+  }
   std::string GetTaskDescription() const override {
-    return "Save your favorite sites by pinning them";
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_PIN_TABS_DESCRIPTION);
   }
   Symbol GetIconSymbol() const override { return SymbolPin; }
   LevelUpTaskCategory GetCategory() const override {

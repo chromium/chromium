@@ -20,9 +20,12 @@ class PaymentMethodsTaskInfo : public TaskInfo {
 
   // TaskInfo implementation.
   TaskType GetTaskType() const override { return TaskType::kPaymentMethods; }
-  std::string GetTitle() const override { return "Manage payment methods"; }
+  std::string GetTitle() const override {
+    return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_FEATURE_PAYMENT_METHODS);
+  }
   std::string GetTaskDescription() const override {
-    return "Add new payment methods or edit saved ones to check out faster";
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_PAYMENT_METHODS_DESCRIPTION);
   }
   Symbol GetIconSymbol() const override { return SymbolCreditCard; }
   LevelUpTaskCategory GetCategory() const override {

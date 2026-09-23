@@ -24,7 +24,8 @@ class TabGroupsTaskInfo : public TaskInfo {
     return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_FEATURE_TAB_GROUPS);
   }
   std::string GetTaskDescription() const override {
-    return "Stay organized with tab groups";
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_TAB_GROUPS_DESCRIPTION);
   }
   Symbol GetIconSymbol() const override { return SymbolTabs; }
   LevelUpTaskCategory GetCategory() const override {

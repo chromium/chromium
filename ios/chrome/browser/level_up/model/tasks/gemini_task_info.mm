@@ -21,9 +21,12 @@ class GeminiTaskInfo : public TaskInfo {
 
   // TaskInfo implementation.
   TaskType GetTaskType() const override { return TaskType::kGemini; }
-  std::string GetTitle() const override { return "Use Gemini in Chrome"; }
+  std::string GetTitle() const override {
+    return l10n_util::GetStringUTF8(IDS_IOS_LEVEL_UP_FEATURE_GEMINI);
+  }
   std::string GetTaskDescription() const override {
-    return "Get answers faster with Gemini in Chrome";
+    return l10n_util::GetStringUTF8(
+        IDS_IOS_LEVEL_UP_FEATURE_GEMINI_DESCRIPTION);
   }
   Symbol GetIconSymbol() const override {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)

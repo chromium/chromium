@@ -4724,6 +4724,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_FEATURE_ENHANCED_SAFE_BROWSING_DESCRIPTION" desc="Description for Level Up's Enhanced Safe Browsing task. [iOS only]">
         Add an extra layer of protection against online threats
       </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_GEMINI" desc="Feature name for Level Up's Gemini task. [iOS only]">
+        Ask Gemini a question
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_GEMINI_DESCRIPTION" desc="Description for Level Up's Gemini task. [iOS only]">
+        Get key takeaways, clarify concepts, find answers, and more
+      </message>
       <message name="IDS_IOS_LEVEL_UP_FEATURE_GOOGLE_LENS" desc="Feature name for Google Lens. [iOS only]">
         Google Lens
       </message>
@@ -4734,7 +4740,10 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
         Open tabs in Incognito mode to browse the web more privately
       </message>
       <message name="IDS_IOS_LEVEL_UP_FEATURE_PASSWORDS_AUTOFILL" desc="Feature name for Passwords and Autofill. [iOS only]">
-        Passwords and Autofill
+        Save a password
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_PASSWORDS_AUTOFILL_DESCRIPTION" desc="Description for Level Up's Passwords and Autofill task. [iOS only]">
+        Securely save passwords so you can easily sign in to sites and apps
       </message>
       <message name="IDS_IOS_LEVEL_UP_FEATURE_PASSWORD_CHECKUP" desc="Feature name for Password checkup. [iOS only]">
         Check your passwords
@@ -4742,8 +4751,23 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_FEATURE_PASSWORD_CHECKUP_DESCRIPTION" desc="Description for Level Up's Password checkup task. [iOS only]">
         Use Password Checkup to make sure your passwords are secure
       </message>
-      <message name="IDS_IOS_LEVEL_UP_FEATURE_TAB_GROUPS" desc="Feature name for Tab Groups. [iOS only]">
-        Tab Groups
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_PAYMENT_METHODS" desc="Feature name for Level Up's Payment Methods task. [iOS only]">
+        Manage payment methods
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_PAYMENT_METHODS_DESCRIPTION" desc="Description for Level Up's Payment Methods task. [iOS only]">
+        Save and manage payment info to check out faster
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_PIN_TABS" desc="Feature name for Pin Tabs task. [iOS only]">
+        Pin a tab
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_PIN_TABS_DESCRIPTION" desc="Description for Level Up's Pin Tabs task. [iOS only]">
+        Pin your favorite sites for easy access later
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_TAB_GROUPS" desc="Feature name for Level Up's Tab Groups task. [iOS only]">
+        Create a tab group
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_FEATURE_TAB_GROUPS_DESCRIPTION" desc="Description for Level Up's Tab Groups task. [iOS only]">
+        Organize your tabs into groups
       </message>
       <message name="IDS_IOS_LEVEL_UP_HEADER_TITLE" desc="The header title displaying at the top of the Level Up task progress card. [iOS only]">
         Current Chrome Level
@@ -4846,13 +4870,13 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
         Search with AI Mode completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_AUTOFILL" desc="Completion snackbar message for the Autofill task. [iOS only]">
-        Passwords and Autofill completed!
+        "Save a password" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_DELETE_BROWSING_DATA" desc="Completion snackbar message for the Delete Browsing Data task. [iOS only]">
         "Delete browsing data" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_GEMINI" desc="Completion snackbar message for the Gemini task. [iOS only]">
-        Use Gemini in Chrome completed!
+        "Ask Gemini a question" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_INCOGNITO" desc="Completion snackbar message for the Incognito task. [iOS only]">
         "Go Incognito" completed!
@@ -4867,16 +4891,16 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
         "Check your passwords" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_PAYMENT_METHODS" desc="Completion snackbar message for the Payment Methods task. [iOS only]">
-        Manage payment methods completed!
+        "Manage payment methods" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_PIN_TABS" desc="Completion snackbar message for the Pin Tabs task. [iOS only]">
-        Pin tabs completed!
+        "Pin a tab" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_SAFE_BROWSING" desc="Completion snackbar message for the Safe Browsing task. [iOS only]">
         "Go Incognito" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASK_COMPLETED_TAB_GROUPS" desc="Completion snackbar message for the Tab Groups task. [iOS only]">
-        Tab Groups completed!
+        "Create a tab group" completed!
       </message>
       <message name="IDS_IOS_LEVEL_UP_TURN_OFF_CONFIRMATION_SUBTITLE" desc="Subtitle message in the confirmation alert dialog when turning off Level Up. [iOS only]">
         This will permanently delete your Level Up progress and feature usage data for Level Up will no longer be sent to Google for your profile.
