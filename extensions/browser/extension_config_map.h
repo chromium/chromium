@@ -12,8 +12,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
-#include "base/sequence_checker.h"
-#include "base/thread_annotations.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
@@ -154,11 +152,9 @@ class ExtensionConfigMap : public KeyedService {
 
  private:
   const raw_ref<content::BrowserContext> browser_context_;
-  SEQUENCE_CHECKER(sequence_checker_);
   absl::flat_hash_map<ExtensionId, std::unique_ptr<ExtensionConfigProvider>>
-      providers_map_ GUARDED_BY_CONTEXT(sequence_checker_);
-  absl::flat_hash_map<std::string, ExtensionId> chrome_url_host_map_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+      providers_map_;
+  absl::flat_hash_map<std::string, ExtensionId> chrome_url_host_map_;
 };
 
 }  // namespace extensions

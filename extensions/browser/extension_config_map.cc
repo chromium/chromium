@@ -5,6 +5,7 @@
 #include "extensions/browser/extension_config_map.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -176,7 +177,6 @@ ExtensionConfigMap::~ExtensionConfigMap() = default;
 
 void ExtensionConfigMap::RegisterConfigProvider(
     std::unique_ptr<ExtensionConfigProvider> provider) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(provider);
   std::string_view extension_id = provider->extension_id();
   std::string_view chrome_url_host = provider->GetChromeURLHost();
@@ -194,7 +194,6 @@ void ExtensionConfigMap::RegisterConfigProvider(
 
 ExtensionConfigProvider* ExtensionConfigMap::GetConfigProvider(
     const Extension& extension) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!Manifest::IsComponentLocation(extension.location())) {
     return nullptr;
   }
@@ -203,7 +202,6 @@ ExtensionConfigProvider* ExtensionConfigMap::GetConfigProvider(
 
 ExtensionConfigProvider* ExtensionConfigMap::GetConfigProviderByExtensionId(
     std::string_view extension_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ExtensionConfigProvider* provider =
       base::FindPtrOrNull(providers_map_, extension_id);
   if (!provider) {
@@ -217,7 +215,6 @@ ExtensionConfigProvider* ExtensionConfigMap::GetConfigProviderByExtensionId(
 
 ExtensionConfigProvider* ExtensionConfigMap::GetConfigProviderByChromeURLHost(
     std::string_view chrome_url_host) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (chrome_url_host.empty()) {
     return nullptr;
   }
@@ -228,13 +225,11 @@ ExtensionConfigProvider* ExtensionConfigMap::GetConfigProviderByChromeURLHost(
 
 bool ExtensionConfigMap::IsUnboundedElementAllowed(
     const ExtensionId& extension_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* provider = GetConfigProviderByExtensionId(extension_id);
   return provider && provider->IsUnboundedElementAllowed();
 }
 
 void ExtensionConfigMap::ClearProvidersForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   providers_map_.clear();
   chrome_url_host_map_.clear();
 }

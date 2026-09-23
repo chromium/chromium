@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/sequence_checker.h"
-#include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
@@ -116,9 +114,8 @@ class ExtensionMojoBinderRegistry : public KeyedService {
   ExtensionMojoBinderProvider* GetProviderIfAllowed(
       const Extension& extension) const;
 
-  SEQUENCE_CHECKER(sequence_checker_);
   absl::flat_hash_map<ExtensionId, std::unique_ptr<ExtensionMojoBinderProvider>>
-      providers_ GUARDED_BY_CONTEXT(sequence_checker_);
+      providers_map_;
 };
 
 }  // namespace extensions
