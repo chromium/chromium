@@ -496,7 +496,9 @@ void AutofillAiPersonalContextAccessManagerImpl::GetUnmaskedSpiiEntity(
   const base::TimeTicks request_start_time = base::TimeTicks::Now();
 
   if (base::FeatureList::IsEnabled(
-          features::kAutofillAmbientAutofillSpiiCache)) {
+          features::kAutofillAmbientAutofillSpiiCache) &&
+      proto_entity->entity_case() ==
+          personal_context::proto::Entity::kEncryptedEntity) {
     if (std::optional<EntityInstance> unmasked_entity =
             ConvertProtoToEntityInstance(*proto_entity,
                                          /*mask_spii=*/false)) {
