@@ -138,21 +138,12 @@ def _ReportIssuesWithTests(
 
 def _ReportPythonIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
   """Detects and reports issue with python scripts within tools/metrics."""
+  if not input_api.HasAffectedFiles(extensions=('.py', '.gn')):
+    return
+
   absolute_paths_of_affected_files = [
     f.AbsoluteLocalPath() for f in input_api.AffectedFiles()
   ]
-  py_or_build_modified = any(
-    [
-      (
-        input_api.basename(p).endswith('.py')
-        or input_api.basename(p) == 'BUILD.gn'
-      )
-      for p in absolute_paths_of_affected_files
-    ]
-  )
-
-  if not py_or_build_modified:
-    return
 
   deps_graph = dependency_solver.scan_directory_dependencies(
     path_util.METRICS_TOOLS_PATH, report_relative_to=path_util.CHROMIUM_SRC_PATH
@@ -206,6 +197,8 @@ def _ReportEnumXmlIssues(
 
 def _ReportXmlIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
   """Checks that ukm/ukm.xml is validated on changes to histograms/enums.xml."""
+  if not input_api.HasAffectedFiles(extensions='.xml'):
+    return
   absolute_paths_of_affected_files = [
     f.AbsoluteLocalPath() for f in input_api.AffectedFiles()
   ]
@@ -261,11 +254,11 @@ def _CheckQuoteConsistency(input_api: Any, output_api: Any) -> List[Any]:
   results = []
   cwd = input_api.PresubmitLocalPath()
 
-  for affected_file in input_api.AffectedFiles(include_deletes=False):
+  for affected_file in input_api.AffectedFiles(
+    file_filter=lambda f: f.LocalPath().endswith('.py'),
+    include_deletes=False,
+  ):
     filepath = input_api.os_path.relpath(affected_file.AbsoluteLocalPath(), cwd)
-    if not filepath.endswith('.py'):
-      continue
-
     changed_lines = {
       line_number for line_number, _ in affected_file.ChangedContents()
     }
@@ -302,29 +295,32 @@ def _CheckQuoteConsistency(input_api: Any, output_api: Any) -> List[Any]:
 
 def CheckChange(input_api: Type, output_api: Type):
   problems: List[Any] = []
-  problems.extend(_CheckNoManualSysPathManipulation(input_api, output_api))
-  problems.extend(_CheckQuoteConsistency(input_api, output_api))
+  if input_api.HasAffectedFiles(extensions='.py'):
+    problems.extend(_CheckNoManualSysPathManipulation(input_api, output_api))
+    problems.extend(_CheckQuoteConsistency(input_api, output_api))
   problems.extend(
     input_api.canned_checks.CheckPatchFormatted(input_api, output_api)
   )
-  problems.extend(
-    presubmit_caching_support.RunCheckWithCache(
-      _ReportPythonIssuesList,
-      MetricsPresubmitCheckType.PYTHON_ISSUES.value,
-      input_api,
-      output_api,
-      _CACHE_DIR_PATH,
+  if input_api.HasAffectedFiles(extensions=('.py', '.gn')):
+    problems.extend(
+      presubmit_caching_support.RunCheckWithCache(
+        _ReportPythonIssuesList,
+        MetricsPresubmitCheckType.PYTHON_ISSUES.value,
+        input_api,
+        output_api,
+        _CACHE_DIR_PATH,
+      )
     )
-  )
-  problems.extend(
-    presubmit_caching_support.RunCheckWithCache(
-      _ReportXmlIssuesList,
-      MetricsPresubmitCheckType.XML_ISSUES.value,
-      input_api,
-      output_api,
-      _CACHE_DIR_PATH,
+  if input_api.HasAffectedFiles(extensions='.xml'):
+    problems.extend(
+      presubmit_caching_support.RunCheckWithCache(
+        _ReportXmlIssuesList,
+        MetricsPresubmitCheckType.XML_ISSUES.value,
+        input_api,
+        output_api,
+        _CACHE_DIR_PATH,
+      )
     )
-  )
   return problems
 
 

@@ -32,6 +32,8 @@ def _CommonChecks(input_api, output_api, block_on_failure=False):
 
 
 def CheckPyLint(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   disabled_warnings = [
     'broad-exception-raised',
     'consider-using-dict-items',
@@ -171,6 +173,8 @@ def _CheckPerfJsonConfigs(input_api, output_api, block_on_failure):
 
 def CheckWprShaFiles(input_api, output_api):
   """Check whether the wpr sha files have matching URLs."""
+  if not input_api.HasAffectedFiles(extensions='.sha1'):
+    return []
   wpr_archive_shas = []
   for affected_file in input_api.AffectedFiles(include_deletes=False):
     filename = affected_file.AbsoluteLocalPath()
@@ -194,6 +198,8 @@ def _CheckShardMaps(input_api, output_api, block_on_failure):
 
 def CheckJson(input_api, output_api):
   """Checks whether JSON files in this change can be parsed."""
+  if not input_api.HasAffectedFiles(extensions='.json'):
+    return []
   for affected_file in input_api.AffectedFiles(include_deletes=False):
     filename = affected_file.AbsoluteLocalPath()
     if os.path.splitext(filename)[1] != '.json':

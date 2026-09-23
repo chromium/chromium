@@ -11,29 +11,39 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def RunUnittests(input_api, output_api):
+  if not (
+    input_api.HasAffectedFiles(extensions='.py')
+    or input_api.HasAffectedFiles(
+      path=('symbolize_trace', 'profile_chrome_startup')
+    )
+  ):
+    return []
   results = []
   # Run Pylint over the files in the directory.
   disabled_warnings = [
-      'bad-indentation',
-      'consider-using-from-import',
-      'consider-using-in',
-      'consider-using-with',
-      'deprecated-module',
-      'duplicate-code',
-      'line-too-long',
-      'missing-module-docstring',
-      'protected-access',
-      'superfluous-parens',
-      'unspecified-encoding',
-      'unused-import',
+    'bad-indentation',
+    'consider-using-from-import',
+    'consider-using-in',
+    'consider-using-with',
+    'deprecated-module',
+    'duplicate-code',
+    'line-too-long',
+    'missing-module-docstring',
+    'protected-access',
+    'superfluous-parens',
+    'unspecified-encoding',
+    'unused-import',
   ]
   pylint_checks = input_api.canned_checks.GetPylint(
-      input_api, output_api, disabled_warnings=disabled_warnings, version='3.2')
+    input_api, output_api, disabled_warnings=disabled_warnings, version='3.2'
+  )
   results.extend(input_api.RunTests(pylint_checks))
 
   results.extend(
-      input_api.canned_checks.RunUnitTestsInDirectory(
-          input_api, output_api, '.', files_to_check=[r'.+_unittest\.py$']))
+    input_api.canned_checks.RunUnitTestsInDirectory(
+      input_api, output_api, '.', files_to_check=[r'.+_unittest\.py$']
+    )
+  )
   return results
 
 

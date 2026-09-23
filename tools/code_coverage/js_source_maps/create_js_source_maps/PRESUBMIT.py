@@ -13,6 +13,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckLint(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions=('.py', '.js', '.ts')):
+    return []
   disabled_warnings = [
     'bad-indentation',
     'missing-module-docstring',
@@ -41,6 +43,8 @@ def CheckLint(input_api, output_api):
 
 
 def CheckUnittests(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions=('.py', '.js', '.ts')):
+    return []
   results = input_api.canned_checks.RunUnitTests(
     input_api,
     output_api,

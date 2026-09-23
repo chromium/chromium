@@ -6,11 +6,9 @@ PRESUBMIT_VERSION = '2.0.0'
 USE_PYTHON3 = True
 
 
-def CheckChangeOnCommit(*args):
-  return _CommonChecks(*args)
-
-
-def _CommonChecks(input_api, output_api):
+def CheckUnitTests(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   cwd = input_api.PresubmitLocalPath()
   path = input_api.os_path
   files = [path.basename(f.LocalPath()) for f in input_api.AffectedFiles()]
