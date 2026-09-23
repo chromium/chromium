@@ -288,4 +288,17 @@ public interface BottomSheetController {
      * @return Whether the bottom sheet should use the large form factor UI for the given content.
      */
     boolean isLargeFormFactorUiEnabled(@Nullable BottomSheetContent content);
+
+    /**
+     * Content that draws its own close button should hide it when this returns true, so that the
+     * sheet never shows two close buttons or none at all. Prefer this over re-deriving the rule
+     * from {@link #isLargeFormFactorUiEnabled}, which is only half of it.
+     *
+     * @param content The content prospectively being shown in the bottom sheet.
+     * @return Whether the framework supplies a close button for the given content.
+     */
+    default boolean willShowFrameworkCloseButton(@Nullable BottomSheetContent content) {
+        return BottomSheetUtils.shouldShowFrameworkCloseButton(
+                isLargeFormFactorUiEnabled(content), content);
+    }
 }

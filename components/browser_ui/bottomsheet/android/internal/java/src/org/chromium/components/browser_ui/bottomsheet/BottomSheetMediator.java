@@ -119,7 +119,7 @@ class BottomSheetMediator {
      * @param content The current sheet content.
      */
     void updateCloseButton(boolean isPopup, @Nullable BottomSheetContent content) {
-        boolean showCloseButton = isPopup && BottomSheetUtils.isSheetNonModal(content);
+        boolean showCloseButton = BottomSheetUtils.shouldShowFrameworkCloseButton(isPopup, content);
         mModel.set(BottomSheetProperties.CLOSE_BUTTON_VISIBILITY, showCloseButton);
     }
 

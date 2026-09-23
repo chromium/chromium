@@ -43,4 +43,21 @@ public final class BottomSheetUtils {
         }
         return content.hasCustomScrimLifecycle();
     }
+
+    /**
+     * Returns whether the bottom sheet framework supplies its own close button for the given
+     * content. This is the single definition of that rule: sheet contents must consult it rather
+     * than re-deriving it, so that content which draws its own close button hides that button
+     * exactly when the framework replaces it.
+     *
+     * <p>Modal sheets are dismissible through their scrim, so the framework deliberately adds no
+     * close button of its own for them.
+     *
+     * @param isLargeFormFactorPopup Whether the sheet is showing as a large form factor popup.
+     * @param content The {@link BottomSheetContent} to check.
+     */
+    public static boolean shouldShowFrameworkCloseButton(
+            boolean isLargeFormFactorPopup, @Nullable BottomSheetContent content) {
+        return isLargeFormFactorPopup && isSheetNonModal(content);
+    }
 }

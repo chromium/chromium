@@ -405,7 +405,7 @@ class AccountSelectionMediator {
             @RpContext.EnumType int rpContext,
             Boolean isMultipleIdps) {
         Runnable closeOnClickRunnable = null;
-        if (!mBottomSheetController.isLargeFormFactorUiEnabled(mBottomSheetContent)) {
+        if (!mBottomSheetController.willShowFrameworkCloseButton(mBottomSheetContent)) {
             closeOnClickRunnable =
                     () -> {
                         onDismissed(IdentityRequestDialogDismissReason.CLOSE_BUTTON);

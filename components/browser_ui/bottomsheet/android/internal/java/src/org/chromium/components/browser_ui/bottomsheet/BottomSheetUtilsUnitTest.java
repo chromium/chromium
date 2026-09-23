@@ -141,4 +141,43 @@ public class BottomSheetUtilsUnitTest {
 
         assertFalse(BottomSheetUtils.isSheetNonModal(mBottomSheetContent));
     }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_TYPES)
+    public void testShouldShowFrameworkCloseButton_PopupNonModal() {
+        when(mBottomSheetContent.hasCustomScrimLifecycle()).thenReturn(true);
+
+        assertTrue(
+                BottomSheetUtils.shouldShowFrameworkCloseButton(
+                        /* isLargeFormFactorPopup= */ true, mBottomSheetContent));
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_TYPES)
+    public void testShouldShowFrameworkCloseButton_PopupModal() {
+        // Modal sheets dismiss through their scrim, so the framework adds no close button. Content
+        // must not give up its own one just because it is on a large form factor.
+        when(mBottomSheetContent.hasCustomScrimLifecycle()).thenReturn(false);
+
+        assertFalse(
+                BottomSheetUtils.shouldShowFrameworkCloseButton(
+                        /* isLargeFormFactorPopup= */ true, mBottomSheetContent));
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_TYPES)
+    public void testShouldShowFrameworkCloseButton_NotPopup() {
+        when(mBottomSheetContent.hasCustomScrimLifecycle()).thenReturn(true);
+
+        assertFalse(
+                BottomSheetUtils.shouldShowFrameworkCloseButton(
+                        /* isLargeFormFactorPopup= */ false, mBottomSheetContent));
+    }
+
+    @Test
+    public void testShouldShowFrameworkCloseButton_NullContent() {
+        assertFalse(
+                BottomSheetUtils.shouldShowFrameworkCloseButton(
+                        /* isLargeFormFactorPopup= */ true, null));
+    }
 }

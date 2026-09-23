@@ -206,6 +206,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     public void testCloseOnClickRunnableLargeFormFactor() {
         DeviceInfo.setIsDesktopForTesting(true);
         when(mMockBottomSheetController.isLargeFormFactorUiEnabled(any())).thenReturn(true);
+        when(mMockBottomSheetController.willShowFrameworkCloseButton(any())).thenReturn(true);
         mMediator.showAccounts(
                 new RelyingPartyData(
                         mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
@@ -215,6 +216,28 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         assertNull(headerModel.get(CLOSE_ON_CLICK_LISTENER));
+        DeviceInfo.setIsDesktopForTesting(false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_SHEET_ON_DESKTOP_WINDOWING)
+    public void testCloseOnClickRunnableLargeFormFactor_NoFrameworkCloseButton() {
+        // The framework only supplies a close button for non-modal sheets, so being on a large
+        // form factor is not on its own enough to give up our own one.
+        DeviceInfo.setIsDesktopForTesting(true);
+        when(mMockBottomSheetController.isLargeFormFactorUiEnabled(any())).thenReturn(true);
+        when(mMockBottomSheetController.willShowFrameworkCloseButton(any())).thenReturn(false);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertNotNull(
+                "Content must keep its own close button when the framework supplies none.",
+                headerModel.get(CLOSE_ON_CLICK_LISTENER));
         DeviceInfo.setIsDesktopForTesting(false);
     }
 
