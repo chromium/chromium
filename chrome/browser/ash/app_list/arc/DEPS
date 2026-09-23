@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/extensions/extension_service_test_base.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/sync",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/web_applications/test",
   "+chrome/common/chrome_paths.h",
@@ -27,6 +26,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only the implementation needs sync_start_util; the header just holds a
+  # syncer::SyncableService::StartSyncFlare, which comes from //components/sync.
+  "arc_package_syncable_service\\.cc": [
+    "+chrome/browser/sync",
+  ],
+
   "arc_app_utils\\.cc": [
     "+chrome/browser/apps/app_service/intent_util.h",
   ],
@@ -38,6 +43,7 @@ specific_include_rules = {
     "+chrome/browser/signin",
   ],
   "arc_app_unittest\\.cc": [
+    "+chrome/browser/sync",
     "+chrome/browser/apps/app_service",
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
   ],
