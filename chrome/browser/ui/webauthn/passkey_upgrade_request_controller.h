@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_UPGRADE_REQUEST_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -47,7 +48,8 @@ enum class PasskeyUpgradeResult {
   kNoRecentlyUsedPassword = 6,
   kEnclaveError = 7,
   kSecurityDomainStateStale = 8,
-  kMaxValue = kSecurityDomainStateStale,
+  kOffTheRecord = 9,
+  kMaxValue = kOffTheRecord,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:PasskeyUpgradeResultEnum)
 
@@ -129,6 +131,7 @@ class PasskeyUpgradeRequestController
 
   const raw_ptr<EnclaveManager> enclave_manager_;
   EnclaveState enclave_state_ = EnclaveState::kUnknown;
+  std::optional<PasskeyUpgradeResult> error_reason_;
   bool pending_request_ = false;
 
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>

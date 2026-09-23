@@ -4745,6 +4745,32 @@ IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
       /*expected_bucket_count=*/1);
 }
 
+IN_PROC_BROWSER_TEST_P(EnclaveAuthenticatorConditionalCreateBrowserTest,
+                       ConditionalCreate_Incognito) {
+  BootstrapEnclave();
+  InjectPassword(base::Time::Now());
+
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser,
+      https_server_.GetURL("www.example.com", "/title1.html")));
+
+  content::WebContents* web_contents =
+      incognito_browser->GetTabStripModel()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialConditionalCreate);
+  delegate_observer()->WaitForUI();
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_THAT(script_result, testing::HasSubstr("NotAllowedError"));
+
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.AutomaticPasskeyUpgrade.Result",
+      /*sample=*/PasskeyUpgradeResult::kOffTheRecord,
+      /*expected_bucket_count=*/1);
+}
+
 using EnclaveAuthenticatorImmediateMediationBrowserTest =
     EnclaveAuthenticatorBrowserTest;
 
