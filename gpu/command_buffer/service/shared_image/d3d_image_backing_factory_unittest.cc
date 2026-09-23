@@ -2334,7 +2334,7 @@ TEST_P(D3DImageBackingFactoryTest, CreateP010Backing) {
   auto backing = shared_image_factory_->CreateSharedImage(
       gpu::Mailbox::Generate(),
       {format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-       kPremul_SkAlphaType, usage, "TestLabel"},
+       kUnpremul_SkAlphaType, usage, "TestLabel"},
       kNullSurfaceHandle, /*is_thread_safe=*/false);
   ASSERT_NE(backing, nullptr);
   EXPECT_EQ(backing->format(), format);

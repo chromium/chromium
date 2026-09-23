@@ -39,7 +39,12 @@ struct SharedImageInfo : public SharedImageMetadata {
       : SharedImageMetadata{format_in,         size_in,       color_space_in,
                             surface_origin_in, alpha_type_in, usage_in,
                             array_layers_in},
-        debug_label(debug_label) {}
+        debug_label(debug_label) {
+    if (format_in.is_multi_plane() && !format_in.PrefersExternalSampler()) {
+      CHECK(alpha_type != kPremul_SkAlphaType, base::NotFatalUntil::M156)
+          << "Premul alphatype for multiplanar format - label=" << debug_label;
+    }
+  }
   SharedImageInfo(const viz::SharedImageFormat& format_in,
                   gfx::Size size_in,
                   const gfx::ColorSpace& color_space_in,

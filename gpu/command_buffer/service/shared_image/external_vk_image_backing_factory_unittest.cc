@@ -673,7 +673,7 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest,
                                 size,
                                 color_space,
                                 kTopLeft_GrSurfaceOrigin,
-                                kPremul_SkAlphaType,
+                                kUnpremul_SkAlphaType,
                                 usage,
                                 "TestLabel"};
 
