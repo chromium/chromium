@@ -64,7 +64,11 @@ source_set("unit_tests") {
       "browser_launch/browser_launch_data_collector_desktop_unittest.cc",
       "browser_launch/browser_launch_event_uploader_desktop_unittest.cc",
     ]
-    deps += [ "//chrome/browser/enterprise:browser_launch_reporting" ]
+    deps += [
+      "//chrome/browser:flags",
+      "//chrome/browser/enterprise:browser_launch_reporting",
+      "//components/webui/flags",
+    ]
   }
 }
 

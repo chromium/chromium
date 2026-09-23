@@ -400,6 +400,7 @@ static_library("browser_launch_reporting") {
       "//components/enterprise/common/proto:browser_events_proto",
       "//components/enterprise/connectors/core",
       "//components/policy/core/common",
+      "//components/webui/flags:switches",
     ]
   }
 }
