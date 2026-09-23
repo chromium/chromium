@@ -72,7 +72,8 @@
   max-height: var(--cr-composebox-max-height, 422px);
   pointer-events: auto;
   position: relative;
-  overflow: hidden;
+  /* Elements like the IPH must overflow. */
+  overflow: visible;
   transition:
     opacity var(--fade-duration) ease-in-out,
     visibility var(--fade-duration) ease-in-out;
@@ -93,7 +94,8 @@
   display: flex;
   flex-direction: column;
   padding-bottom: 0;
-  overflow: hidden;
+  /* Elements like the IPH must overflow. */
+  overflow: visible;
   width: 100%;
 }
 
