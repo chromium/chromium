@@ -134,6 +134,7 @@ void FakeWalletPassAccessManager::GetDetailsForUpsertPass(
             std::move(callback).Run(GetDetailsForUpsertPassResponse{
                 .legal_message_lines = std::move(legal_message_lines),
                 .context_token = "mock_context_token",
+                .user_eligibility = UserEligibility::kEligible,
             });
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)),

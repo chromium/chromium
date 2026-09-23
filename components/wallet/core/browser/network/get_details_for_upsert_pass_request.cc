@@ -27,6 +27,19 @@ api::GetDetailsForUpsertPassRequest::PassType ToProtoPassType(
   }
 }
 
+WalletHttpClient::UserEligibility FromProtoUserEligibility(
+    api::GetDetailsForUpsertPassResponse::UserEligibility user_eligibility) {
+  switch (user_eligibility) {
+    case api::GetDetailsForUpsertPassResponse::USER_ELIGIBILITY_ELIGIBLE:
+      return WalletHttpClient::UserEligibility::kEligible;
+    case api::GetDetailsForUpsertPassResponse::USER_ELIGIBILITY_INELIGIBLE:
+      return WalletHttpClient::UserEligibility::kIneligible;
+    case api::GetDetailsForUpsertPassResponse::USER_ELIGIBILITY_UNSPECIFIED:
+      return WalletHttpClient::UserEligibility::kUnspecified;
+  }
+  return WalletHttpClient::UserEligibility::kUnspecified;
+}
+
 }  // namespace
 
 GetDetailsForUpsertPassRequest::GetDetailsForUpsertPassRequest(
@@ -89,6 +102,7 @@ void GetDetailsForUpsertPassRequest::OnResponse(
   std::move(callback_).Run(WalletHttpClient::PassUpsertDetails{
       .context_token = std::move(context_token),
       .legal_message = std::move(legal_message),
+      .user_eligibility = FromProtoUserEligibility(response.user_eligibility()),
   });
 }
 

@@ -34,6 +34,13 @@ class WalletHttpClient {
     kLoyaltyCard = 2,
   };
 
+  // The user's eligibility status for privacy disclosure.
+  enum class UserEligibility {
+    kUnspecified = 0,
+    kEligible = 1,
+    kIneligible = 2,
+  };
+
   // Details retrieved prior to upserting a pass.
   struct PassUpsertDetails {
     // Encrypted context token carrying disclosure session and audit metadata.
@@ -44,6 +51,8 @@ class WalletHttpClient {
     // also `std::nullopt` if the user or account is ineligible for legal
     // disclosures.
     std::optional<LegalMessage> legal_message;
+    // The user's eligibility status for receiving privacy disclosures.
+    UserEligibility user_eligibility = UserEligibility::kUnspecified;
   };
 
   // Callback for UpsertPass requests. On success, it returns the pass_id

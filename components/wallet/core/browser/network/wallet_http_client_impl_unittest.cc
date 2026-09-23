@@ -451,6 +451,8 @@ TEST_F(WalletHttpClientImplTest, GetDetailsForUpsertPass_Success) {
 
   api::GetDetailsForUpsertPassResponse response;
   response.set_context_token("test_context_token");
+  response.set_user_eligibility(
+      api::GetDetailsForUpsertPassResponse::USER_ELIGIBILITY_ELIGIBLE);
   auto* legal_message = response.mutable_legal_message();
   auto* line = legal_message->add_line();
   line->set_template_("Legal text {0}");
@@ -464,6 +466,8 @@ TEST_F(WalletHttpClientImplTest, GetDetailsForUpsertPass_Success) {
   ASSERT_TRUE(callback.Wait());
   EXPECT_TRUE(callback.Get().has_value());
   EXPECT_EQ(callback.Get()->context_token, "test_context_token");
+  EXPECT_EQ(callback.Get()->user_eligibility,
+            WalletHttpClient::UserEligibility::kEligible);
   ASSERT_TRUE(callback.Get()->legal_message.has_value());
   histogram_tester.ExpectUniqueSample("Wallet.NetworkRequest.OauthError",
                                       GoogleServiceAuthError::NONE, 1);

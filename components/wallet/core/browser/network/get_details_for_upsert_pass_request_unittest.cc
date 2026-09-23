@@ -58,6 +58,8 @@ TEST_F(GetDetailsForUpsertPassRequestTest, OnResponse_Success) {
 
   api::GetDetailsForUpsertPassResponse response_proto;
   response_proto.set_context_token("test_context_token");
+  response_proto.set_user_eligibility(
+      api::GetDetailsForUpsertPassResponse::USER_ELIGIBILITY_ELIGIBLE);
   LegalMessage* legal_message = response_proto.mutable_legal_message();
   legal_message->set_token("test_legal_message_token");
   LegalMessage::Line* line = legal_message->add_line();
@@ -71,9 +73,31 @@ TEST_F(GetDetailsForUpsertPassRequestTest, OnResponse_Success) {
   ASSERT_TRUE(callback.Wait());
   ASSERT_TRUE(callback.Get().has_value());
   EXPECT_EQ(callback.Get()->context_token, "test_context_token");
+  EXPECT_EQ(callback.Get()->user_eligibility,
+            WalletHttpClient::UserEligibility::kEligible);
   ASSERT_TRUE(callback.Get()->legal_message.has_value());
   EXPECT_EQ(callback.Get()->legal_message->SerializeAsString(),
             response_proto.legal_message().SerializeAsString());
+}
+
+// Tests that OnResponse handles an ineligible user response.
+TEST_F(GetDetailsForUpsertPassRequestTest, OnResponse_Ineligible) {
+  GetDetailsForUpsertPassCallback callback;
+  GetDetailsForUpsertPassRequest request(
+      WalletHttpClient::PassType::kVehicleRegistration, callback.GetCallback());
+
+  api::GetDetailsForUpsertPassResponse response_proto;
+  response_proto.set_user_eligibility(
+      api::GetDetailsForUpsertPassResponse::USER_ELIGIBILITY_INELIGIBLE);
+
+  std::move(request).OnResponse(response_proto.SerializeAsString());
+
+  ASSERT_TRUE(callback.Wait());
+  ASSERT_TRUE(callback.Get().has_value());
+  EXPECT_FALSE(callback.Get()->context_token.has_value());
+  EXPECT_FALSE(callback.Get()->legal_message.has_value());
+  EXPECT_EQ(callback.Get()->user_eligibility,
+            WalletHttpClient::UserEligibility::kIneligible);
 }
 
 // Tests that OnResponse handles an error HTTP response.

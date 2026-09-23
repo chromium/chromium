@@ -544,16 +544,25 @@ void AutofillAiManager::OnGetDetailsForUpsertPassResponse(
                    wallet::WalletHttpClient::WalletRequestError> response) {
   LegalMessageLines public_passes_notice;
   std::optional<std::string> context_token;
-  if (response.has_value()) {
-    public_passes_notice = std::move(response->legal_message_lines);
-    context_token = std::move(response->context_token);
-  } else {
-    // If fetching details for the upsert pass failed, fall back to saving
-    // locally.
+  const bool should_see_legal_message_notice =
+      response.has_value() &&
+      response->user_eligibility ==
+          WalletPassAccessManager::UserEligibility::kEligible;
+  const bool fallback_to_local =
+      !response.has_value() || (should_see_legal_message_notice &&
+                                (response->legal_message_lines.empty() ||
+                                 response->context_token.empty()));
+  if (fallback_to_local) {
+    // If fetching details for the upsert pass failed, or if the user should
+    // see the legal message notice (`kEligible`) but `legal_message_lines` or
+    // `context_token` is empty, fall back to saving locally.
     new_entity =
         new_entity.CopyWithNewRecordType(EntityInstance::RecordType::kLocal);
     is_save_synchronous =
         !IsSaveAsynchronous(new_entity.type(), new_entity.record_type());
+  } else if (should_see_legal_message_notice) {
+    public_passes_notice = std::move(response->legal_message_lines);
+    context_token = std::move(response->context_token);
   }
   ShowEntityImportBubble(form, ukm_source_id, prompt_type,
                          std::move(new_entity), std::move(old_entity),

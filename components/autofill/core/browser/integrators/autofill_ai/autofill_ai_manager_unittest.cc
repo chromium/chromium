@@ -1954,7 +1954,8 @@ TEST_F(AutofillAiManagerImportFormTest,
   expected_notice.emplace_back();
   WalletPassAccessManager::GetDetailsForUpsertPassResponse expected_details{
       .legal_message_lines = expected_notice,
-      .context_token = "test_context_token"};
+      .context_token = "test_context_token",
+      .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
 
   EXPECT_CALL(wallet_manager(),
               GetDetailsForUpsertPass(EntityType(EntityTypeName::kVehicle), _))
@@ -1970,6 +1971,129 @@ TEST_F(AutofillAiManagerImportFormTest,
 
   EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
   EXPECT_EQ(actual_notice, expected_notice);
+
+  std::move(save_callback).Run(kAcceptBubble, std::nullopt, kAcceptUIContext);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetEntityInstances().size() == 1u; }));
+
+  base::span<const EntityInstance> saved_entities = GetEntityInstances();
+  ASSERT_EQ(saved_entities.size(), 1u);
+  EXPECT_EQ(saved_entities[0].record_type(),
+            EntityInstance::RecordType::kServerWallet);
+}
+
+// Tests that when `GetDetailsForUpsertPass` returns an empty legal message for
+// an eligible user (`kEligible`), the entity falls back to a local save and
+// the import bubble is shown with `RecordType::kLocal` and an empty notice.
+TEST_F(AutofillAiManagerImportFormTest,
+       EligibleWalletPass_EligibleUserWithEmptyLegalMessage_FallsBackToLocal) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDisclosureNoticePublicPass};
+
+  WalletPassAccessManager::GetDetailsForUpsertPassResponse response_details{
+      .legal_message_lines = {},
+      .context_token = "test_context_token",
+      .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
+
+  EXPECT_CALL(wallet_manager(),
+              GetDetailsForUpsertPass(EntityType(EntityTypeName::kVehicle), _))
+      .WillOnce(base::test::RunOnceCallback<1>(response_details));
+
+  LegalMessageLines actual_notice;
+  AutofillClient::EntityImportPromptResultCallback save_callback;
+  EXPECT_CALL(autofill_client(),
+              ShowEntityImportBubble(
+                  HasRecordType(EntityInstance::RecordType::kLocal),
+                  Eq(std::nullopt), /*save_is_synchronous=*/true, _, _))
+      .WillOnce(DoAll(SaveArg<3>(&actual_notice), MoveArg<4>(&save_callback)));
+
+  std::unique_ptr<FormStructure> form = CreateVehicleForm();
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  EXPECT_THAT(actual_notice, IsEmpty());
+
+  std::move(save_callback).Run(kAcceptBubble, std::nullopt, kAcceptUIContext);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetEntityInstances().size() == 1u; }));
+
+  base::span<const EntityInstance> saved_entities = GetEntityInstances();
+  ASSERT_EQ(saved_entities.size(), 1u);
+  EXPECT_EQ(saved_entities[0].record_type(),
+            EntityInstance::RecordType::kLocal);
+}
+
+// Tests that when `GetDetailsForUpsertPass` returns an empty context token for
+// an eligible user (`kEligible`), the entity falls back to a local save and
+// the import bubble is shown with `RecordType::kLocal` and an empty notice.
+TEST_F(AutofillAiManagerImportFormTest,
+       EligibleWalletPass_EligibleUserWithEmptyContextToken_FallsBackToLocal) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDisclosureNoticePublicPass};
+
+  LegalMessageLines notice;
+  notice.emplace_back();
+  WalletPassAccessManager::GetDetailsForUpsertPassResponse response_details{
+      .legal_message_lines = std::move(notice),
+      .context_token = "",
+      .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
+
+  EXPECT_CALL(wallet_manager(),
+              GetDetailsForUpsertPass(EntityType(EntityTypeName::kVehicle), _))
+      .WillOnce(base::test::RunOnceCallback<1>(response_details));
+
+  LegalMessageLines actual_notice;
+  AutofillClient::EntityImportPromptResultCallback save_callback;
+  EXPECT_CALL(autofill_client(),
+              ShowEntityImportBubble(
+                  HasRecordType(EntityInstance::RecordType::kLocal),
+                  Eq(std::nullopt), /*save_is_synchronous=*/true, _, _))
+      .WillOnce(DoAll(SaveArg<3>(&actual_notice), MoveArg<4>(&save_callback)));
+
+  std::unique_ptr<FormStructure> form = CreateVehicleForm();
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  EXPECT_THAT(actual_notice, IsEmpty());
+
+  std::move(save_callback).Run(kAcceptBubble, std::nullopt, kAcceptUIContext);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetEntityInstances().size() == 1u; }));
+
+  base::span<const EntityInstance> saved_entities = GetEntityInstances();
+  ASSERT_EQ(saved_entities.size(), 1u);
+  EXPECT_EQ(saved_entities[0].record_type(),
+            EntityInstance::RecordType::kLocal);
+}
+
+// Tests that when `GetDetailsForUpsertPass` returns an empty legal message for
+// an ineligible user (`kIneligible`), no fallback happens and the entity is
+// saved as `RecordType::kServerWallet` without a notice.
+TEST_F(AutofillAiManagerImportFormTest,
+       EligibleWalletPass_IneligibleUserWithEmptyLegalMessage_SavesToWallet) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDisclosureNoticePublicPass};
+
+  WalletPassAccessManager::GetDetailsForUpsertPassResponse response_details{
+      .legal_message_lines = {},
+      .context_token = "",
+      .user_eligibility =
+          WalletPassAccessManager::UserEligibility::kIneligible};
+
+  EXPECT_CALL(wallet_manager(),
+              GetDetailsForUpsertPass(EntityType(EntityTypeName::kVehicle), _))
+      .WillOnce(base::test::RunOnceCallback<1>(response_details));
+
+  LegalMessageLines actual_notice;
+  AutofillClient::EntityImportPromptResultCallback save_callback;
+  EXPECT_CALL(autofill_client(),
+              ShowEntityImportBubble(
+                  HasRecordType(EntityInstance::RecordType::kServerWallet),
+                  Eq(std::nullopt), /*save_is_synchronous=*/true, _, _))
+      .WillOnce(DoAll(SaveArg<3>(&actual_notice), MoveArg<4>(&save_callback)));
+
+  std::unique_ptr<FormStructure> form = CreateVehicleForm();
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  EXPECT_THAT(actual_notice, IsEmpty());
 
   std::move(save_callback).Run(kAcceptBubble, std::nullopt, kAcceptUIContext);
 

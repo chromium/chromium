@@ -24,10 +24,13 @@ namespace autofill {
 // to issue UpsertPass and GetUnmaskedPass requests.
 class WalletPassAccessManager : public KeyedService {
  public:
+  using UserEligibility = wallet::WalletHttpClient::UserEligibility;
+
   // Information retrieved from a `GetDetailsForUpsertPass` request.
   struct GetDetailsForUpsertPassResponse {
     LegalMessageLines legal_message_lines;
     std::string context_token;
+    UserEligibility user_eligibility = UserEligibility::kUnspecified;
 
     friend bool operator==(const GetDetailsForUpsertPassResponse&,
                            const GetDetailsForUpsertPassResponse&) = default;

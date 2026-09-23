@@ -581,6 +581,7 @@ TEST_P(WalletPassAccessManagerImplTest, GetDetailsForUpsertPass_Success) {
   wallet::WalletHttpClient::PassUpsertDetails details{
       .context_token = "test_context_token",
       .legal_message = std::move(legal_message),
+      .user_eligibility = wallet::WalletHttpClient::UserEligibility::kEligible,
   };
 
   EXPECT_CALL(mock_http_client(),
@@ -604,6 +605,8 @@ TEST_P(WalletPassAccessManagerImplTest, GetDetailsForUpsertPass_Success) {
               {LegalMessageLine::Link(14, 19, "https://example.com/terms"),
                LegalMessageLine::Link(24, 31, "https://example.com/privacy")})},
           .context_token = "test_context_token",
+          .user_eligibility =
+              WalletPassAccessManager::UserEligibility::kEligible,
       };
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(*result, expected_response);
@@ -616,6 +619,7 @@ TEST_P(WalletPassAccessManagerImplTest,
   wallet::WalletHttpClient::PassUpsertDetails details{
       .context_token = "test_context_token",
       .legal_message = std::nullopt,
+      .user_eligibility = wallet::WalletHttpClient::UserEligibility::kEligible,
   };
 
   EXPECT_CALL(mock_http_client(),
@@ -636,6 +640,8 @@ TEST_P(WalletPassAccessManagerImplTest,
       expected_response{
           .legal_message_lines = {},
           .context_token = "test_context_token",
+          .user_eligibility =
+              WalletPassAccessManager::UserEligibility::kEligible,
       };
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(*result, expected_response);
@@ -648,6 +654,8 @@ TEST_P(WalletPassAccessManagerImplTest,
   wallet::WalletHttpClient::PassUpsertDetails details{
       .context_token = std::nullopt,
       .legal_message = std::nullopt,
+      .user_eligibility =
+          wallet::WalletHttpClient::UserEligibility::kIneligible,
   };
 
   EXPECT_CALL(mock_http_client(),
@@ -668,6 +676,8 @@ TEST_P(WalletPassAccessManagerImplTest,
       expected_response{
           .legal_message_lines = {},
           .context_token = "",
+          .user_eligibility =
+              WalletPassAccessManager::UserEligibility::kIneligible,
       };
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(*result, expected_response);
