@@ -491,23 +491,11 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_NotAJson) {
   EXPECT_DEATH_IF_SUPPORTED(gaia_urls(), "Couldn't parse Gaia config file");
 }
 
-TEST_F(GaiaUrlsTest, SigninChromePasskeyUnlockUrl_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      gaia::features::kSigninChromePasskeyUnlockUrlUsesAccountIndex);
+TEST_F(GaiaUrlsTest, SigninChromePasskeyUnlockUrl) {
   EXPECT_EQ(gaia_urls()->SigninChromePasskeyUnlockUrl(1).spec(),
             base::StrCat({"https://accounts.google.com/encryption/unlock/",
                           kSigninChromeSyncKeysPlatformSuffix,
                           "?kdi=CAESDgoMaHdfcHJvdGVjdGVk&authuser=1"}));
-}
-
-TEST_F(GaiaUrlsTest, SigninChromePasskeyUnlockUrl_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      gaia::features::kSigninChromePasskeyUnlockUrlUsesAccountIndex);
-  EXPECT_EQ(gaia_urls()->SigninChromePasskeyUnlockUrl(0).spec(),
-            base::StrCat({"https://accounts.google.com/encryption/unlock/",
-                          kSigninChromeSyncKeysPlatformSuffix,
-                          "?kdi=CAESDgoMaHdfcHJvdGVjdGVk"}));
 }
 
 TEST_F(GaiaUrlsTest, SigninChromeSyncKeysRetrievalUrl_FeatureEnabled) {
@@ -550,21 +538,8 @@ TEST_F(GaiaUrlsTest,
                     "?kdi=CAIaDgoKY2hyb21lc3luYxAB"}));
 }
 
-TEST_F(GaiaUrlsTest,
-       SigninChromePasskeyUnlockDesktopEmbeddedUrl_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      gaia::features::kSigninChromePasskeyUnlockUrlUsesAccountIndex);
+TEST_F(GaiaUrlsTest, SigninChromePasskeyUnlockDesktopEmbeddedUrl) {
   EXPECT_EQ(gaia_urls()->SigninChromePasskeyUnlockDesktopEmbeddedUrl(1).spec(),
             "https://accounts.google.com/encryption/unlock/"
             "desktopembedded?kdi=CAESDgoMaHdfcHJvdGVjdGVk&authuser=1");
-}
-
-TEST_F(GaiaUrlsTest,
-       SigninChromePasskeyUnlockDesktopEmbeddedUrl_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      gaia::features::kSigninChromePasskeyUnlockUrlUsesAccountIndex);
-  EXPECT_EQ(gaia_urls()->SigninChromePasskeyUnlockDesktopEmbeddedUrl(0).spec(),
-            "https://accounts.google.com/encryption/unlock/"
-            "desktopembedded?kdi=CAESDgoMaHdfcHJvdGVjdGVk");
 }

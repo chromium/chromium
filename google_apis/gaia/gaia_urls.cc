@@ -277,10 +277,6 @@ GURL GaiaUrls::SigninChromeSyncKeysRetrievalUrl(size_t account_index) const {
 }
 
 GURL GaiaUrls::SigninChromePasskeyUnlockUrl(size_t account_index) const {
-  if (!base::FeatureList::IsEnabled(
-          gaia::features::kSigninChromePasskeyUnlockUrlUsesAccountIndex)) {
-    return signin_chrome_passkey_unlock_url_;
-  }
   return net::AppendQueryParameter(signin_chrome_passkey_unlock_url_,
                                    "authuser",
                                    base::NumberToString(account_index));
@@ -304,10 +300,6 @@ GURL GaiaUrls::SigninChromeSyncKeysRecoverabilityDegradedUrl(
 
 GURL GaiaUrls::SigninChromePasskeyUnlockDesktopEmbeddedUrl(
     size_t account_index) const {
-  if (!base::FeatureList::IsEnabled(
-          gaia::features::kSigninChromePasskeyUnlockUrlUsesAccountIndex)) {
-    return signin_chrome_passkey_unlock_desktop_embedded_url_;
-  }
   return net::AppendQueryParameter(
       signin_chrome_passkey_unlock_desktop_embedded_url_, "authuser",
       base::NumberToString(account_index));
