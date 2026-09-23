@@ -118,6 +118,18 @@ TEST_P(FindTextTest, FindText) {
   EXPECT_THAT(engine->find_results_for_testing(), ElementsAreArray(kExpected));
 }
 
+TEST_P(FindTextTest, FindDiacriticText) {
+  FindTextTestClient client(/*expected_case_sensitive=*/false,
+                            /*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  ExpectInitialSearchResults(client, 0);
+  engine->StartFind(u"\u064e", /*case_sensitive=*/false);
+  EXPECT_THAT(engine->find_results_for_testing(), IsEmpty());
+}
+
 TEST_P(FindTextTest, FindHyphenatedText) {
   FindTextTestClient client(/*expected_case_sensitive=*/true,
                             /*use_skia_renderer=*/GetParam());
