@@ -194,7 +194,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
 
   if (!suggestion.annotation().empty()) {
     match.description = suggestion.annotation();
-    match.description_class = suggestion.annotation_class();
+    match.description_class = suggestion.ClassifyAnnotation();
   }
 
   const std::u16string input_text = input.IsZeroSuggest() ? u"" : input.text();

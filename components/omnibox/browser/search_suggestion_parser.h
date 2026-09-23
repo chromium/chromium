@@ -196,9 +196,6 @@ class SearchSuggestionParser {
       return match_contents_prefix_;
     }
     const std::u16string& annotation() const { return annotation_; }
-    const ACMatchClassifications& annotation_class() const {
-      return annotation_class_;
-    }
 
     void set_suggestion_group_id(
         std::optional<omnibox::GroupId> suggestion_group_id) {
@@ -233,7 +230,12 @@ class SearchSuggestionParser {
     // of |match_contents_| bolded, do nothing.
     void ClassifyMatchContents(const bool allow_bolding_all,
                                const std::u16string& input_text);
-    void ClassifyAnnotation();
+
+    // Returns the classifications describing how `annotation_` should be
+    // displayed and bolded, based on the fragments the server sent in the
+    // suggest template's secondary text. Falls back to dimming the whole
+    // annotation.
+    ACMatchClassifications ClassifyAnnotation() const;
 
     // Result:
     int CalculateRelevance(const AutocompleteInput& input,
@@ -253,7 +255,6 @@ class SearchSuggestionParser {
     // This may be displayed in the autocomplete match contents, but is defined
     // separately to facilitate different formatting.
     std::u16string annotation_;
-    ACMatchClassifications annotation_class_;
 
     // The optional suggestion group ID used to look up the suggestion group
     // config for the group this suggestion belongs to from the server response.

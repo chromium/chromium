@@ -1790,8 +1790,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestTemplateFromSuggestResults) {
     EXPECT_EQ(11U, classifications[1].offset);
     EXPECT_EQ(ACMatchClassification::NONE, classifications[1].style);
 
-    const auto& sec_classifications =
-        results.suggest_results[1].annotation_class();
+    const auto sec_classifications =
+        results.suggest_results[1].ClassifyAnnotation();
     ASSERT_EQ(2U, sec_classifications.size());
     EXPECT_EQ(0U, sec_classifications[0].offset);
     EXPECT_EQ(ACMatchClassification::MATCH | ACMatchClassification::DIM,
@@ -1803,8 +1803,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestTemplateFromSuggestResults) {
     // template fragments and instead fall back to {0, DIM}.
     results.suggest_results[1].SetAnnotation(u"New Annotation");
     EXPECT_EQ(u"New Annotation", results.suggest_results[1].annotation());
-    const auto& updated_sec_class =
-        results.suggest_results[1].annotation_class();
+    const auto updated_sec_class =
+        results.suggest_results[1].ClassifyAnnotation();
     ASSERT_EQ(1U, updated_sec_class.size());
     EXPECT_EQ(0U, updated_sec_class[0].offset);
     EXPECT_EQ(ACMatchClassification::DIM, updated_sec_class[0].style);
