@@ -6,7 +6,6 @@
 
 // This file defines the mojo interface between Android, Chrome and the
 // Chrome OS daemon for the MIDI implementation used in ARC.
-
 module arc.mojom;
 
 // This struct is used to send information to the client regarding a device
@@ -36,6 +35,7 @@ struct MidisRequest {
 // Next Method ID: 2
 interface MidisClient {
   OnDeviceAdded@0(MidisDeviceInfo device);
+
   OnDeviceRemoved@1(MidisDeviceInfo device);
 };
 
@@ -65,8 +65,8 @@ interface MidisServer {
 // by the client).
 // Next Method ID: 1
 interface MidisHost {
-  Connect@0(
-      pending_receiver<MidisServer> server, pending_remote<MidisClient> client);
+  Connect@0(pending_receiver<MidisServer> server,
+            pending_remote<MidisClient> client);
 };
 
 // MidisInstance is implemented in the ARC MIDI JNI code that
@@ -75,5 +75,6 @@ interface MidisHost {
 // Next Method ID: 2
 interface MidisInstance {
   // Establishes full-duplex communication with the host.
-  [MinVersion=1] Init@1(pending_remote<MidisHost> host_remote) => ();
+  [MinVersion=1]
+  Init@1(pending_remote<MidisHost> host_remote) => ();
 };

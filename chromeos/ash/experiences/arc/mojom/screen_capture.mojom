@@ -11,7 +11,6 @@
 // src/components/arc/mojom/screen_capture.mojom
 
 // Next MinVersion: 3
-
 module arc.mojom;
 
 import "chromeos/ash/experiences/arc/mojom/gfx.mojom";
@@ -47,13 +46,15 @@ interface ScreenCaptureHost {
   // display_name is the string that should be used in the UI
   // package_name is what should be used as the permission token
   // returns true if the user accepts, false otherwise
-  RequestPermission@0(string display_name, string package_name) => (bool granted);
+  RequestPermission@0(string display_name, string package_name)
+      => (bool granted);
 
   // Requests that a corresponding active permission dialog from a prior call to
   // RequestPermission be accepted. This will only be allowed under test
   // conditions.
   // package_name should match what was passed into RequestPermission
-  [MinVersion=1] TestModeAcceptPermission@2(string package_name);
+  [MinVersion=1]
+  TestModeAcceptPermission@2(string package_name);
 
   // Starts a new capture session, binding the session interface to the passed
   // in session request.
@@ -65,8 +66,8 @@ interface ScreenCaptureHost {
   // returns null interface in the case the permission was not granted, a valid
   //     interface pointer otherwise
   OpenSession@1(pending_remote<ScreenCaptureSessionNotifier> notifier,
-                string package_name, Size size)
-      => (pending_remote<ScreenCaptureSession>? session);
+                string package_name,
+                Size size) => (pending_remote<ScreenCaptureSession>? session);
 };
 
 // Implemented by Chrome for handling a screen capture session.
@@ -89,10 +90,11 @@ interface ScreenCaptureSession {
   // buffer_format_modifier is an additional buffer format modifier value
   //     (See DRM_FORMAT_MOD_* in drm_fourcc.h)
   // stride is the stride in pixels for each row of the buffer
-  [MinVersion=2] SetOutputBuffer@1(handle graphics_buffer,
-                                   BufferFormat buffer_format,
-                                   uint64 buffer_format_modifier,
-                                   uint32 stride) => ();
+  [MinVersion=2]
+  SetOutputBuffer@1(handle graphics_buffer,
+                    BufferFormat buffer_format,
+                    uint64 buffer_format_modifier,
+                    uint32 stride) => ();
 };
 
 // Implemented by Android.

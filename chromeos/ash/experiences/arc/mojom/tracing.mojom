@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // Next MinVersion: 2
-
 module arc.mojom;
 
 interface TracingInstance {
@@ -13,8 +12,8 @@ interface TracingInstance {
   // Starts tracing in the container with the given categories. A handle is
   // passed to the client for sending trace events back to the host. The client
   // should send trace event as a JSON object in each write.
-  StartTracing@1(array<string> categories,
-                 [MinVersion=1] handle? socket) => (bool success);
+  StartTracing@1(array<string> categories, [MinVersion=1] handle? socket)
+      => (bool success);
 
   // Stops tracing in the container.
   StopTracing@2() => (bool success);
