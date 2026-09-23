@@ -7137,7 +7137,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
         <ph name="EVENT_NAME" /></translation>
-<translation id="6520087076882753524">Vous pouvez afficher et gérer les mots de passe enregistrés dans le Gestionnaire de mots de passe Google</translation>
+<translation id="6520087076882753524">Vous pouvez afficher et gérer les mots de passe enregistrés dans le Gestionnaire de mots de passe de Google</translation>
 <translation id="6520115099532274511"><ph name="SITE" /> souhaite valider votre identité. Saisissez votre code alphanumérique pour le Gestionnaire de mots de passe de Google.</translation>
 <translation id="6520876759015997832">Résultat de recherche <ph name="LIST_POSITION" /> sur <ph name="LIST_SIZE" /> : <ph name="SEARCH_RESULT_TEXT" />. Appuyez sur Entrée pour accéder à la section.</translation>
 <translation id="6521214596282732365">Les sites utilisent généralement vos polices pour que vous puissiez créer du contenu haute fidélité grâce à des outils de conception et de graphisme en ligne</translation>

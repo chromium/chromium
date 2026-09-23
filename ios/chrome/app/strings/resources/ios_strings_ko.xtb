@@ -1563,7 +1563,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6089212833343035912">Google 비밀번호 관리자 PIN</translation>
 <translation id="6090760257419195752">닫은 경고</translation>
 <translation id="6094325891006032858">향상된 세이프 브라우징 사용 설정하기</translation>
-<translation id="6096965253650248286"><ph name="COUNT" /> 찾음</translation>
+<translation id="6096965253650248286"><ph name="COUNT" />개 찾음</translation>
 <translation id="6099466082815574659">이 iPad는 아동용으로 설정되어 있습니다</translation>
 <translation id="6100617279104942061"><ph name="USER_EMAIL" /> 계정으로 로그인되었습니다. 설정을 엽니다.</translation>
 <translation id="6100676328067737810">데이터가 Google 계정(<ph name="USER_EMAIL" />)에 저장됩니다.</translation>
@@ -2297,7 +2297,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8385363453480067273">Google 렌즈로 눈앞의 사물을 렌즈로 검색해 보세요</translation>
 <translation id="8386068868580335421">재설정</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
-<translation id="8393889347136007944">탭을 <ph name="THRESHOLD" />일 동안 사용하지 않음</translation>
+<translation id="8393889347136007944"><ph name="THRESHOLD" />일 동안 사용하지 않은 탭</translation>
 <translation id="8395180897620197612">로깅 중지</translation>
 <translation id="8407669440184693619">이 사이트의 비밀번호를 찾을 수 없음</translation>
 <translation id="8407831512155324054">비밀번호가 안전함</translation>

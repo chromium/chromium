@@ -502,7 +502,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2977350910003566746">Ordenar por último aberto</translation>
 <translation id="297771753501244313">Ordenar por último aberto</translation>
 <translation id="2979639724566107830">Abrir em uma nova janela</translation>
-<translation id="2980545254049127870">Abra com facilidade links de mensagens, documentos e outros apps</translation>
+<translation id="2980545254049127870">Abra links de mensagens, documentos e outros apps com facilidade</translation>
 <translation id="2983398917942897288">Guias inativas (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Sair de "picture in picture"</translation>
 <translation id="2984978667043170458">Incluir o texto ao redor nas pesquisas do Google</translation>
@@ -605,7 +605,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3430670036890315772">Se o bloqueio de perfil for desativado, as informações salvas serão removidas</translation>
 <translation id="3435575784518354875">Para manter o acesso às suas senhas, exporte-as agora, atualize o Google Play Services e importe-as de volta ao Gerenciador de senhas do Google. <ph name="BEGIN_LINK" />Ver instruções completas<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Segurança</translation>
-<translation id="3435914367318771664">Incluir no novo grupo</translation>
+<translation id="3435914367318771664">Adicionar guia ao novo grupo</translation>
 <translation id="3436118221454753036">Pergunte ao Modo IA</translation>
 <translation id="3438681572027105609">Para acessar suas senhas e muito mais em todos os seus dispositivos, faça login no Chrome.</translation>
 <translation id="3439276997620616816">Suas guias recentes serão mostradas aqui</translation>
@@ -783,7 +783,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4137746084635924146">Idioma atual do dispositivo</translation>
 <translation id="414128724510021958">Sites para computador solicitados por padrão</translation>
 <translation id="4162867837470729563">Lista de opções de compartilhamento no tamanho máximo.</translation>
-<translation id="4164642020717536140">Navegação rápida e segura na web</translation>
+<translation id="4164642020717536140">Navegue na web de forma rápida e segura</translation>
 <translation id="4165077084524712774">Mais ferramentas</translation>
 <translation id="4170577491341606575">Buscando seus dados\u2026</translation>
 <translation id="4172051516777682613">Sempre mostrar</translation>
@@ -1458,7 +1458,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787600234697426339">Limite de <ph name="MAX_INSTANCE_COUNT" /> de janelas atingido</translation>
 <translation id="6795633245022906657">Abrir rapidamente uma nova guia. Para editar esse atalho, acesse as Configurações.</translation>
-<translation id="679588508577699489">Torne o Chrome seu navegador padrão</translation>
+<translation id="679588508577699489">Definir Chrome como navegador padrão</translation>
 <translation id="679845623837196966">Mostrar Lista de leitura</translation>
 <translation id="679956319013005046">Para definir seu preenchimento automático preferido, primeiro adicione o serviço nas <ph name="BEGIN_LINK" />Configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">A janela será fechada</translation>
@@ -2055,7 +2055,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="9015111999662965458">Para garantir que o dispositivo seja usado com segurança, talvez sua organização precise acessar informações sobre o sistema operacional, o navegador, as configurações e os softwares instalados no dispositivo</translation>
 <translation id="9019199799064251516">Continuar sem um bloqueio de perfil do carro?</translation>
 <translation id="9022774213089566801">Visitados com frequência</translation>
-<translation id="9024318700713112071">Defina o Chrome como navegador padrão</translation>
+<translation id="9024318700713112071">Definir Chrome como navegador padrão</translation>
 <translation id="9027728231343310283">Desfazer <ph name="SITE" /></translation>
 <translation id="9035378196785279980">Mover para\u2026</translation>
 <translation id="904146253922032365">Toque e segure para mostrar as guias na vertical</translation>
