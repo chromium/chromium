@@ -15,10 +15,14 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** An implementation of {@link BottomSheetContent} for the price insights bottom sheet content. */
 @NullMarked
 public class PriceInsightsBottomSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).setModal(false).build();
+
     private final View mContentView;
     private final ScrollView mScrollView;
 
@@ -44,6 +48,11 @@ public class PriceInsightsBottomSheetContent implements BottomSheetContent {
             return mScrollView.getScrollY();
         }
         return 0;
+    }
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
     }
 
     @Override
