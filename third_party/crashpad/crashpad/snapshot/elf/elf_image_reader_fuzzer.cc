@@ -14,6 +14,8 @@
 
 #include <inttypes.h>
 
+#include <algorithm>
+
 #include "base/logging.h"
 #include "snapshot/elf/elf_image_reader.h"
 #include "util/process/process_memory.h"

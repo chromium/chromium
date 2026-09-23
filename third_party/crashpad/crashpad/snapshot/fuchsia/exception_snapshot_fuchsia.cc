@@ -14,6 +14,8 @@
 
 #include "snapshot/fuchsia/exception_snapshot_fuchsia.h"
 
+#include <algorithm>
+
 #include "base/numerics/safe_conversions.h"
 #include "snapshot/fuchsia/cpu_context_fuchsia.h"
 #include "snapshot/fuchsia/process_reader_fuchsia.h"

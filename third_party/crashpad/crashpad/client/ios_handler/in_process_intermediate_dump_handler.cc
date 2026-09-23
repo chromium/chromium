@@ -21,6 +21,7 @@
 #include <sys/sysctl.h>
 #include <time.h>
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 

@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <algorithm>
 #include <atomic>
 #include <memory>
 #include <set>

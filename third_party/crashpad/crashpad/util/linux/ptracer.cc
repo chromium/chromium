@@ -20,6 +20,8 @@
 #include <sys/ptrace.h>
 #include <sys/uio.h>
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "build/build_config.h"

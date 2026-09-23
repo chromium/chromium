@@ -38,6 +38,7 @@
 #include <sys/types.h>
 #include <unwind.h>
 
+#include <algorithm>
 #include <atomic>
 #include <exception>
 #include <type_traits>

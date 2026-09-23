@@ -21,6 +21,7 @@
 #include <time.h>
 #include <wchar.h>
 
+#include <algorithm>
 #include <mutex>
 #include <tuple>
 #include <utility>

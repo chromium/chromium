@@ -14,6 +14,7 @@
 
 #include "snapshot/crashpad_types/crashpad_info_reader.h"
 
+#include <algorithm>
 #include <type_traits>
 #include <utility>
 

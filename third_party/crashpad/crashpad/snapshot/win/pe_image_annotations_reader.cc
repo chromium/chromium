@@ -17,6 +17,7 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/logging.h"

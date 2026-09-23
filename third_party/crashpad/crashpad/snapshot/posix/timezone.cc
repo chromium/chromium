@@ -17,6 +17,7 @@
 #include <stddef.h>
 #include <time.h>
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/check.h"
