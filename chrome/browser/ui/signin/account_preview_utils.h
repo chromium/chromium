@@ -26,6 +26,12 @@ std::optional<std::string> GetAccountPreviewProfileMenuSubtitle(
     std::string_view email,
     const AccountPreviewDataService::AccountPreviewPreference& preference);
 
+// Returns a formatted subtitle string for the Settings signin promo based on
+// the account preview preference, or std::nullopt if preference contains no
+// preferred data types.
+std::optional<std::string> GetAccountPreviewSettingsPromoSubtitle(
+    const AccountPreviewDataService::AccountPreviewPreference& preference);
+
 // Returns a formatted subtitle string for the profile separation (multi-user)
 // intercept bubble with account preview, or std::nullopt if preference contains
 // no preferred data types.
