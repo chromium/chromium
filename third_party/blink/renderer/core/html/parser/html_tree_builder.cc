@@ -416,6 +416,10 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
     template_insertion_modes_.push_back(kTemplateContentsMode);
 
   ResetInsertionModeAppropriately();
+
+  // The first token is tokenized before ConstructTree(), so initialize the
+  // tokenizer flags from the context element now.
+  UpdateTokenizerFlags();
 }
 
 HTMLTreeBuilder::~HTMLTreeBuilder() = default;
@@ -477,18 +481,24 @@ void HTMLTreeBuilder::ConstructTree(AtomicHTMLToken* token) {
   if (parser_->IsDetached())
     return;
 
+  UpdateTokenizerFlags();
+}
+
+void HTMLTreeBuilder::UpdateTokenizerFlags() {
+  bool in_non_html_namespace = false;
   bool in_foreign_content = false;
   if (!tree_.IsEmpty()) {
     HTMLStackItem* adjusted_current_node = AdjustedCurrentStackItem();
+    in_non_html_namespace = !adjusted_current_node->IsInHTMLNamespace();
     in_foreign_content =
-        !adjusted_current_node->IsInHTMLNamespace() &&
+        in_non_html_namespace &&
         !HTMLElementStack::IsHTMLIntegrationPoint(adjusted_current_node) &&
         !HTMLElementStack::IsMathMLTextIntegrationPoint(adjusted_current_node);
   }
 
   parser_->tokenizer().SetForceNullCharacterReplacement(
       GetInsertionMode() == kTextMode || in_foreign_content);
-  parser_->tokenizer().SetShouldAllowCDATA(in_foreign_content);
+  parser_->tokenizer().SetShouldAllowCDATA(in_non_html_namespace);
 }
 
 void HTMLTreeBuilder::ProcessToken(AtomicHTMLToken* token) {

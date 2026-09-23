@@ -224,6 +224,8 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   static const char* ToString(InsertionMode);
 #endif
 
+  ALWAYS_INLINE void UpdateTokenizerFlags();
+
   void ProcessToken(AtomicHTMLToken*);
 
   void ProcessDoctypeToken(AtomicHTMLToken*);
