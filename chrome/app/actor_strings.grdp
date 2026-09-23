@@ -48,7 +48,7 @@
    Done
   </message>
   <message name="IDS_EXPERIMENTAL_TRIGGERING_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE" desc="Subtitle shown for an experimental triggering task in the task list bubble informing the user that the task is completed.">
-   Task done and returned to Gemini Spark
+   Task done and returned to Gemini
   </message>
   <message name="IDS_ACTOR_TASK_LIST_BUBBLE_ROW_FAILED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task has failed." formatter_data="android_java">
    Something went wrong
