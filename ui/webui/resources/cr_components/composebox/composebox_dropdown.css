@@ -27,6 +27,7 @@
 .matches.vertical {
   display: flex;
   flex-direction: column;
+  padding-bottom: 2px;
   padding-inline-end: 16px;
 }
 
