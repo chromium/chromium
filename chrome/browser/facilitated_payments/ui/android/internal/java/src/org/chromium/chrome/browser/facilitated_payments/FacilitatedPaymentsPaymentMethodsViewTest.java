@@ -973,6 +973,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
                     mModel.get(SCREEN_VIEW_MODEL).set(ACCOUNT_EMAIL, "test@gmail.com");
                     mModel.get(SCREEN_VIEW_MODEL).set(SETTINGS_LINK_CALLBACK, emptyClickListener());
+                    mModel.get(SCREEN_VIEW_MODEL).set(VIDEO_LINK_CALLBACK, emptyClickListener());
                     mModel.get(SCREEN_VIEW_MODEL)
                             .set(
                                     DECLINE_BUTTON_TEXT_ID,
@@ -1053,7 +1054,8 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         TextView title = mView.getContentView().findViewById(R.id.title);
         assertThat(title.getText(), is("Pay with Pix without switching apps"));
 
-        TextView valuePropMessage1 = mView.getContentView().findViewById(R.id.value_prop_message_1);
+        TextView valuePropMessage1 =
+                mView.getContentView().findViewById(R.id.prompt_b_value_prop_message_1);
         assertThat(
                 valuePropMessage1.getText().toString(),
                 is("Pay without copying and pasting Pix code. See how it works"));
