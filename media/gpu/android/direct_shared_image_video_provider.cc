@@ -150,7 +150,7 @@ void GpuSharedImageVideoFactory::CreateImage(
             ->gpu_channel_manager()
             ->gpu_preferences()
             .enable_threaded_texture_mailboxes;
-    const bool is_thread_safe = !drdc_lock;
+    const bool is_thread_safe = !!drdc_lock;
     // When threaded texture mailboxes are enabled and the SharedImage is not
     // thread-safe, it cannot be shared directly between contexts of different
     // share groups. Hence, DISPLAY_READ and SCANOUT usages are omitted so that

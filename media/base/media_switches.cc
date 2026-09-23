@@ -1012,7 +1012,7 @@ BASE_FEATURE(kUseTaskRunnerForMojoAudioDecoderService,
 // SHARED_IMAGE_USAGE_DISPLAY_READ, rather than using
 // VideoFrameMetadata::copy_required.
 BASE_FEATURE(kUseSharedImageUsageForVideoFrameCopy,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Safety switch to allow us to revert to the previous behavior of using the
 // restored bounds for PiP windows, rather than the window bounds.  If this
