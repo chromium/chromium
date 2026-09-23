@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_MODEL_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_MODEL_H_
 
+#include <memory>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
@@ -14,9 +17,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_action_icon_factory.h"
-#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/buildflags/buildflags.h"

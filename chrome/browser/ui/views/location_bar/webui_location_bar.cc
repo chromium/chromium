@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
