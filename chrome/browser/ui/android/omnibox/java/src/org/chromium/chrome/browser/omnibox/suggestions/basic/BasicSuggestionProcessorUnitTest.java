@@ -396,7 +396,10 @@ public class BasicSuggestionProcessorUnitTest {
                         Map.entry(
                                 SuggestTemplateInfo.IconType.PHOTO_SPARK,
                                 R.drawable.ic_photo_spark_24dp),
-                        Map.entry(SuggestTemplateInfo.IconType.BOLT, R.drawable.bolt_24dp));
+                        Map.entry(SuggestTemplateInfo.IconType.BOLT, R.drawable.bolt_24dp),
+                        Map.entry(
+                                SuggestTemplateInfo.IconType.IMAGE_CREATE,
+                                R.drawable.image_create_24dp));
 
         for (var iconType : SuggestTemplateInfo.IconType.values()) {
             assertTrue(iconType.toString(), resourceMap.containsKey(iconType));

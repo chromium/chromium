@@ -100,7 +100,7 @@ message AimEligibilityResponse {
 
   // Query parameters that, if present in the URL, will prevent the browser
   // from entering Co-Browse mode (bypassing interception).
-  repeated QueryParam no_cobrowse_params = 13;
+  repeated QueryParam no_cobrowse_params = 13 [deprecated = true];
 
   // Controls whether the user is eligible for the Contextual Searchbox.
   optional bool is_contextual_searchbox_eligible = 14;

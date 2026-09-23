@@ -137,6 +137,9 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             case SuggestTemplateInfo.IconType.BOLT_VALUE:
                 return R.drawable.bolt_24dp;
 
+            case SuggestTemplateInfo.IconType.IMAGE_CREATE_VALUE:
+                return R.drawable.image_create_24dp;
+
             default: // Icon type is specified, but not recognized
                 assert false : "Unrecognized IconType: " + iconType;
                 return 0;
