@@ -247,6 +247,9 @@ class ContextualSearchContextController {
   // Return the file infos for all files in the request.
   virtual std::vector<raw_ptr<const FileInfo>> GetFileInfoList() = 0;
 
+  // Sets the multi-login account index to use when fetching 1P auth headers.
+  virtual void SetAuthUserIndex(size_t auth_user_index) = 0;
+
   // Returns a weak pointer to the context controller.
   virtual base::WeakPtr<ContextualSearchContextController> AsWeakPtr() = 0;
 };

@@ -8131,4 +8131,57 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST_F(ComposeboxQueryControllerTest,
+       IdentityDelegationUsesAuthUserIndexWhenSet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      lens::features::kLensComposeboxIdentityDelegation);
+
+  controller().SetAuthUserIndex(2);
+
+  std::optional<size_t> received_auth_user_index;
+  controller().set_get_auth_headers_callback_for_testing(
+      base::BindLambdaForTesting(
+          [&](std::optional<size_t> auth_user_index,
+              base::OnceCallback<void(std::vector<std::string>)> callback) {
+            received_auth_user_index = auth_user_index;
+            std::move(callback).Run({"Authorization: SAPISIDHASH 123"});
+          }));
+
+  controller().TriggerFetchClusterInfo();
+  WaitForClusterInfo();
+
+  EXPECT_EQ(received_auth_user_index, std::make_optional<size_t>(2));
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       FileUploadUsesAuthUserIndexForIdentityDelegation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      lens::features::kLensComposeboxIdentityDelegation);
+
+  controller().SetAuthUserIndex(3);
+
+  std::vector<std::optional<size_t>> received_indices;
+  controller().set_get_auth_headers_callback_for_testing(
+      base::BindLambdaForTesting(
+          [&](std::optional<size_t> auth_user_index,
+              base::OnceCallback<void(std::vector<std::string>)> callback) {
+            received_indices.push_back(auth_user_index);
+            std::move(callback).Run({"Authorization: SAPISIDHASH 456"});
+          }));
+
+  controller().TriggerFetchClusterInfo();
+  WaitForClusterInfo();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  EXPECT_GE(received_indices.size(), 2u);
+  for (const auto& idx : received_indices) {
+    EXPECT_EQ(idx, std::make_optional<size_t>(3));
+  }
+}
+
 }  // namespace contextual_search

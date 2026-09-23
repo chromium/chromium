@@ -1393,9 +1393,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
   // Async Flow 2: Retrieve the OAuth headers.
   current_file_info.context_upload_access_token_fetcher_ =
       CreateAuthHeadersAndContinue(
-          // TODO(crbug.com/534400256): Get auth_user_index from the active
-          // webpage if available
-          /*auth_user_index=*/0,
+          auth_user_index_,
           base::BindOnce(
               &ComposeboxQueryController::OnUploadRequestHeadersReady,
               weak_ptr_factory_.GetWeakPtr(), file_token));
@@ -1758,9 +1756,7 @@ void ComposeboxQueryController::SendInteractionRequest(
   // Start getting the OAuth headers for the interaction request.
   latest_interaction_request_data_->interaction_access_token_fetcher_ =
       CreateAuthHeadersAndContinue(
-          // TODO(crbug.com/534400256): Get auth_user_index from the active
-          // webpage if available
-          /*auth_user_index=*/0,
+          auth_user_index_,
           base::BindOnce(
               &ComposeboxQueryController::OnInteractionRequestHeadersReady,
               weak_ptr_factory_.GetWeakPtr()));
@@ -1836,9 +1832,7 @@ void ComposeboxQueryController::FetchClusterInfo() {
 #endif  // DCHECK_IS_ON()
   }
   cluster_info_access_token_fetcher_ = CreateAuthHeadersAndContinue(
-      // TODO(crbug.com/534400256): Get auth_user_index from the active webpage
-      // if available
-      /*auth_user_index=*/0,
+      auth_user_index_,
       base::BindOnce(&ComposeboxQueryController::SendClusterInfoNetworkRequest,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -2767,6 +2761,10 @@ ComposeboxQueryController::GetFileInfoList() {
   return file_infos;
 }
 
+void ComposeboxQueryController::SetAuthUserIndex(size_t auth_user_index) {
+  auth_user_index_ = auth_user_index;
+}
+
 base::WeakPtr<contextual_search::ContextualSearchContextController>
 ComposeboxQueryController::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -2900,9 +2898,7 @@ void ComposeboxQueryController::PrepareChunkedUpload(
   // Fetch OAuth headers first.
   file_info->context_upload_access_token_fetcher_ =
       CreateAuthHeadersAndContinue(
-          // TODO(crbug.com/534400256): Get auth_user_index from the active
-          // webpage if available
-          /*auth_user_index=*/0,
+          auth_user_index_,
           base::BindOnce(
               &ComposeboxQueryController::OnChunkedUploadHeadersReady,
               weak_ptr_factory_.GetWeakPtr(), file_token));

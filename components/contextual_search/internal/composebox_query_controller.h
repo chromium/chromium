@@ -129,6 +129,7 @@ class ComposeboxQueryController
       const base::UnguessableToken& file_token) override;
   std::vector<raw_ptr<const contextual_search::FileInfo>> GetFileInfoList()
       override;
+  void SetAuthUserIndex(size_t auth_user_index) override;
   base::WeakPtr<ContextualSearchContextController> AsWeakPtr() override;
 
   // Returns a request id to use for the viewport image upload request for the
@@ -199,6 +200,11 @@ class ComposeboxQueryController
     // expired.
     kClusterInfoInvalid = 3,
   };
+
+  void set_get_auth_headers_callback_for_testing(
+      GetAuthHeadersCallback callback) {
+    get_auth_headers_callback_ = std::move(callback);
+  }
 
  protected:
   // Struct containing information about an individual network request.
@@ -751,6 +757,9 @@ class ComposeboxQueryController
   // `IsValidContextUploadStatusForMultimodalRequest()`, whereas
   // this tracks which of those active files are still uploading.
   std::set<base::UnguessableToken> pending_context_uploads_;
+
+  // The multi-login account index to use when fetching 1P auth headers.
+  size_t auth_user_index_ = 0;
 
   base::WeakPtrFactory<ComposeboxQueryController> weak_ptr_factory_{this};
 };

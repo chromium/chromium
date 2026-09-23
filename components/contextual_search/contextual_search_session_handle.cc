@@ -988,4 +988,12 @@ void ContextualSearchSessionHandle::RemoveDeselectedTab(
   deselected_tabs_urls_.erase(tab_session_id);
 }
 
+void ContextualSearchSessionHandle::set_auth_user_index(
+    size_t auth_user_index) {
+  auth_user_index_ = auth_user_index;
+  if (auto* controller = GetController()) {
+    controller->SetAuthUserIndex(auth_user_index);
+  }
+}
+
 }  // namespace contextual_search

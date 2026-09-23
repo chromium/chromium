@@ -42,6 +42,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
@@ -479,6 +480,42 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                      EXPECT_EQ("data:image/png;base64,test_crop", *data_uri);
                      run_loop.Quit();
                    }));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    OnWebviewMessage_SearchToClientMessageHandshakeResponse) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_page_, OnHandshakeComplete())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(*mock_controller_, SetAuthUserIndex(2));
+
+  lens::SearchToClientMessage message;
+  message.mutable_handshake_response()->set_auth_user_index(2);
+  const size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  message.SerializeToArray(serialized_message.data(), size);
+
+  handler_->OnWebviewMessage(serialized_message);
+  run_loop.Run();
+
+  EXPECT_EQ(mock_session_handle_->auth_user_index(), 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       OnWebviewMessage_AimToClientMessageHandshakeResponse) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_page_, OnHandshakeComplete())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  lens::AimToClientMessage message;
+  message.mutable_handshake_response();
+  const size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  message.SerializeToArray(serialized_message.data(), size);
+
+  handler_->OnWebviewMessage(serialized_message);
   run_loop.Run();
 }
 
