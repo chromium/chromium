@@ -26,10 +26,8 @@ class CC_PAINT_EXPORT ToneMapUtil {
   // Return true if the specified SkImage should be drawn using a tone mapping
   // shader. The `dst_color_space` parameter is used only as a workaround to
   // disable tone mapping (see comments in the source).
-  static bool UseGlobalToneMapFilter(
-      const SkImage* image,
-      const gfx::HDRMetadata& metadata,
-      const SkColorSpace* dst_color_space = nullptr);
+  static bool UseGlobalToneMapFilter(const SkImage* image,
+                                     const gfx::HDRMetadata& metadata);
 
   // Return true if images that have the specified color space should be drawn
   // using a tone mapping shader.

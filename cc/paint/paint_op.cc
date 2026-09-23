@@ -1405,8 +1405,7 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
 
     // Add a tone mapping filter to `paint` if needed.
     if (ToneMapUtil::UseGlobalToneMapFilter(sk_image.get(),
-                                            op->image.hdr_metadata_,
-                                            canvas->imageInfo().colorSpace())) {
+                                            op->image.hdr_metadata_)) {
       ToneMapUtil::AddGlobalToneMapFilterToPaint(
           paint, sk_image.get(), op->image.hdr_metadata_,
           ComputeEffectiveHdrHeadroom(flags, params));
@@ -1535,8 +1534,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
       // If this uses a global tone map filter, then incorporate that filter
       // into the paint.
       if (ToneMapUtil::UseGlobalToneMapFilter(sk_image.get(),
-                                              op->image.hdr_metadata_,
-                                              c->imageInfo().colorSpace())) {
+                                              op->image.hdr_metadata_)) {
         SkPaint tonemap_paint = p;
         ToneMapUtil::AddGlobalToneMapFilterToPaint(
             tonemap_paint, sk_image.get(), op->image.hdr_metadata_,

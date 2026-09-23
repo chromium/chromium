@@ -22,15 +22,8 @@
 namespace cc {
 
 bool ToneMapUtil::UseGlobalToneMapFilter(const SkImage* image,
-                                         const gfx::HDRMetadata& metadata,
-                                         const SkColorSpace* dst_color_space) {
+                                         const gfx::HDRMetadata& metadata) {
   if (!image) {
-    return false;
-  }
-  // Workaround for crbug.com/337538021: Disable tone mapping when the source
-  // and destination spaces are the same, to avoid applying tone mapping when
-  // uploading HLG or PQ frames to textures.
-  if (SkColorSpace::Equals(image->colorSpace(), dst_color_space)) {
     return false;
   }
   return UseGlobalToneMapFilter(image->colorSpace(), metadata);
