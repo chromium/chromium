@@ -27,10 +27,16 @@
 
 #voiceSelectionDialog::part(body-container) {
   max-height: min(400px, 65vh);
+  overflow-x: hidden;
 }
 
 .voice-menu-body {
   padding-block-end: 8px;
+}
+
+#voiceRadioGroup {
+  display: block;
+  width: 100%;
 }
 
 .lang-group-title {
@@ -63,9 +69,11 @@
 
 .voice-row-content {
   align-items: center;
+  contain: inline-size;
   display: flex;
   flex: 1;
   min-width: 0;
+  width: 100%;
 }
 
 /* Left: Play Button & Adjacent Spinner */
