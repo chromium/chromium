@@ -1272,6 +1272,7 @@ libfuzzer_linux_asan_builder(
     ],
     max_concurrent_invocations = 2,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    use_component_build = False,
 )
 
 libfuzzer_linux_builder(
@@ -1295,6 +1296,7 @@ libfuzzer_linux_builder(
     max_concurrent_invocations = 2,
     sanitizer = "hwasan",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    use_component_build = False,
 )
 
 def libfuzzer_mac_asan_builder(**kwargs):

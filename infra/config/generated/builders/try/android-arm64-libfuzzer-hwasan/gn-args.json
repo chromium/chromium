@@ -5,7 +5,7 @@
     "debuggable_apks": true,
     "enable_r8_tracerefs": true,
     "ffmpeg_branding": "ChromeOS",
-    "is_component_build": true,
+    "is_component_build": false,
     "is_debug": false,
     "is_hwasan": true,
     "optimize_for_fuzzing": true,
