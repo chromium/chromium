@@ -3172,12 +3172,6 @@ static_library("ui") {
       "views/frame/top_container_view.h",
       "views/frame/vertical_tab_strip_region_view.cc",
       "views/frame/vertical_tab_strip_region_view.h",
-      "views/web_apps/frame_toolbar/web_app_frame_toolbar_view.cc",
-      "views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h",
-      "views/web_apps/frame_toolbar/web_app_menu_button.cc",
-      "views/web_apps/frame_toolbar/web_app_menu_button.h",
-      "views/web_apps/frame_toolbar/web_app_toolbar_button_container.cc",
-      "views/web_apps/frame_toolbar/web_app_toolbar_button_container.h",
     ]
 
     sources += get_target_outputs(":webui_name_variants")
@@ -3541,10 +3535,16 @@ static_library("ui") {
       "//chrome/browser/ui/views/web_apps/frame_toolbar:system_app_accessible_name",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_content_settings_container",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_utils",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view_impl",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_menu_button",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_menu_button_impl",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_navigation_button_container",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_navigation_button_container_impl",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_origin_text",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_origin_text_impl",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_toolbar_button_container",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_toolbar_button_container_impl",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:window_controls_overlay_toggle_button",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:window_controls_overlay_toggle_button_impl",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_identity_view",
@@ -3739,8 +3739,21 @@ static_library("ui") {
       # browser_view.h, browser_widget.h, and top_container_view.h from
       # //chrome/browser/ui:ui.
       "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view",
+
+      # web_app_frame_toolbar_view.cc includes browser_frame_view.h and
+      # browser_view.h from //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view_impl",
+
+      # web_app_menu_button.cc includes browser_view.h from
+      # //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_menu_button_impl",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_navigation_button_container_impl",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_origin_text_impl",
+
+      # web_app_toolbar_button_container.cc includes
+      # browser_command_controller.h and browser_view.h from
+      # //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_toolbar_button_container_impl",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:window_controls_overlay_toggle_button_impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
@@ -3827,7 +3840,6 @@ static_library("ui") {
       # c/b/ui/views/omnibox/omnibox_popup_presenter_delegate.h
       # c/b/ui/views/omnibox/webui_readonly_omnibox.h
       # c/b/ui/views/permissions/chip/permission_dashboard_controller.h
-      # c/b/ui/views/web_apps/frame_toolbar/web_app_menu_button.h
       "//chrome/browser/ui/views/location_bar",
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the

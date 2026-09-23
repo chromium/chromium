@@ -258,6 +258,8 @@ source_set("browser_tests") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop",
     "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
+    "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_toolbar_button_container",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
     "//chrome/browser/ui/webui/ash/system_web_dialog",

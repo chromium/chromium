@@ -71,6 +71,7 @@ if (toolkit_views) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":web_app_toolbar_button_container",
       "//base",
       "//base:i18n",
       "//chrome/browser/ui:view_ids",
@@ -149,6 +150,158 @@ if (toolkit_views) {
     ]
   }
 
+  source_set("web_app_menu_button") {
+    public = [ "web_app_menu_button.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/views/frame:app_menu_button",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/web_applications",
+      "//skia",
+      "//ui/base/metadata",
+    ]
+  }
+
+  source_set("web_app_menu_button_impl") {
+    sources = [ "web_app_menu_button.cc" ]
+    public_deps = [
+      ":web_app_menu_button",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":web_app_toolbar_button_container",
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/web_applications",
+      "//ui/base",
+      "//ui/base:features",
+      "//ui/base/metadata",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+  }
+
+  source_set("web_app_toolbar_button_container") {
+    public = [ "web_app_toolbar_button_container.h" ]
+    public_deps = [
+      ":web_app_menu_button",
+      "//base",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/immersive:immersive_mode_controller",
+      "//chrome/browser/ui/views/frame:app_menu_button",
+      "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/views/location_bar:icon_label_bubble",
+      "//chrome/browser/ui/views/page_action",
+      "//chrome/browser/ui/views/profiles:avatar_toolbar_button",
+      "//chrome/browser/ui/web_applications",
+      "//components/webapps/common",
+      "//skia",
+      "//ui/base/metadata",
+      "//ui/views",
+    ]
+  }
+
+  source_set("web_app_toolbar_button_container_impl") {
+    sources = [ "web_app_toolbar_button_container.cc" ]
+    public_deps = [
+      ":web_app_toolbar_button_container",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":system_app_accessible_name",
+      ":web_app_content_settings_container",
+      ":web_app_frame_toolbar_utils",
+      ":web_app_origin_text",
+      ":window_controls_overlay_toggle_button",
+      "//base",
+      "//build:buildflag_header_h",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:browser_content_setting_bubble_model_delegate",
+      "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui:view_ids",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/page_action",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_button",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/views/page_action",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/common:chrome_features",
+      "//components/vector_icons",
+      "//components/webapps/browser",
+      "//ui/base",
+      "//ui/base:features",
+      "//ui/base/metadata",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+    if (is_chromeos) {
+      deps += [ "//chromeos/ash/experiences/system_web_apps/types" ]
+    }
+    if (is_mac) {
+      deps += [ "//chrome/browser/web_applications" ]
+    }
+  }
+
+  source_set("web_app_frame_toolbar_view") {
+    public = [ "web_app_frame_toolbar_view.h" ]
+    public_deps = [
+      "//base",
+      "//build:buildflag_header_h",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//skia",
+      "//ui/base/metadata",
+      "//ui/gfx:color_utils",
+      "//ui/views",
+    ]
+  }
+
+  source_set("web_app_frame_toolbar_view_impl") {
+    sources = [ "web_app_frame_toolbar_view.cc" ]
+    public_deps = [
+      ":web_app_frame_toolbar_view",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":web_app_content_settings_container",
+      ":web_app_menu_button",
+      ":web_app_navigation_button_container",
+      ":web_app_toolbar_button_container",
+      ":window_controls_overlay_toggle_button",
+      "//base",
+      "//chrome/browser/ui:layout_constants",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui:view_ids",
+      "//chrome/browser/ui/page_action",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_button",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop_view_controller",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/page_action",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/views/zoom",
+      "//chrome/browser/ui/web_applications",
+      "//ui/base",
+      "//ui/base/metadata",
+      "//ui/views",
+    ]
+  }
+
   source_set("test_support") {
     testonly = true
 
@@ -164,7 +317,9 @@ if (toolkit_views) {
     ]
 
     deps = [
+      ":web_app_frame_toolbar_view",
       ":web_app_origin_text",
+      ":web_app_toolbar_button_container",
       "//base/test:test_support",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/web_applications:launch_utils",
