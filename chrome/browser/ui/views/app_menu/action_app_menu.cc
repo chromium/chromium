@@ -67,43 +67,18 @@ bool ShouldShowNewBadge(BrowserWindowInterface* browser_window_interface,
       browser_window_interface->GetProfile(), feature);
 }
 
-bool ShouldShowMenuItem(size_t index, const actions::ActionListVector& items) {
-  actions::ActionItem* item = items[index]->GetActionItem();
-  if (!item->GetVisible()) {
-    return false;
-  }
-
-  if (item->GetProperty(AppMenuActionItem::kDisplayTypeKey) !=
-      AppMenuActionItem::DisplayType::kNotification) {
-    return true;
-  }
-
-  // At most one non-upgrade notification item (Safety Hub, Global Error, or
-  // Default Browser, which are ordered by priority) should be shown at a time.
-  if (item->GetActionId() != kActionUpgradeDialog) {
-    for (size_t i = 0; i < index; ++i) {
-      actions::ActionItem* prev_item = items[i]->GetActionItem();
-      CHECK(prev_item->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
-            AppMenuActionItem::DisplayType::kNotification);
-      if (prev_item->GetVisible() &&
-          prev_item->GetActionId() != kActionUpgradeDialog) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
-
 bool ShouldRoundBottomCorners(size_t index,
                               const actions::ActionListVector& items) {
   // An item rounds its bottom corners if it is the last non-divider item in
-  // its list OR if its the zoom submenu.
-  if (items[index]->GetActionItem()->GetActionId() == kActionZoomSubmenu) {
+  // its list, if it is a notification item, OR if it is the zoom submenu.
+  actions::ActionItem* const item = items[index]->GetActionItem();
+  if (item->GetActionId() == kActionZoomSubmenu ||
+      item->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+          AppMenuActionItem::DisplayType::kNotification) {
     return true;
   }
   for (size_t i = index + 1; i < items.size(); ++i) {
-    if (!ShouldShowMenuItem(i, items)) {
+    if (!items[i]->GetActionItem()->GetVisible()) {
       continue;
     }
     const auto display_type = items[i]->GetActionItem()->GetProperty(
@@ -122,7 +97,7 @@ bool ShouldRoundTopCorners(size_t index,
   // preceding non-divider item rounded its bottom corners.
   for (size_t i = index; i > 0; --i) {
     size_t prev_index = i - 1;
-    if (!ShouldShowMenuItem(prev_index, items)) {
+    if (!items[prev_index]->GetActionItem()->GetVisible()) {
       continue;
     }
     const auto display_type = items[prev_index]->GetActionItem()->GetProperty(
@@ -284,7 +259,7 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
     actions::BaseAction* const child_base = children_action_items[i].get();
     actions::ActionItem* const child_ptr = child_base->GetActionItem();
 
-    if (!ShouldShowMenuItem(i, children_action_items)) {
+    if (!child_ptr->GetVisible()) {
       continue;
     }
 

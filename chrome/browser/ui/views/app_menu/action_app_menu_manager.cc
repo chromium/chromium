@@ -326,14 +326,43 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
 }
 
 void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
-  AppMenuBuilder(
-      root, BrowserActions::From(browser_window_interface_)->root_action_item(),
-      ui::kColorAppMenuUpgradeRowBackground)
-      .AddSection(DisplayType::kSection, [this](AppMenuBuilder& section) {
-        section.AddAction(
+  actions::ActionItem* scope =
+      BrowserActions::From(browser_window_interface_)->root_action_item();
+  AppMenuBuilder(root, scope, ui::kColorAppMenuUpgradeRowBackground)
+      .AddSection(DisplayType::kSection, [this,
+                                          scope](AppMenuBuilder& section) {
+        bool has_notification = false;
+
+        // Helper for adding a notification if its action is visible, with an
+        // optional leading spacer if there is another notification already
+        // added.
+        auto maybe_add_notification =
+            [&section, scope, &has_notification](
+                actions::ActionId id,
+                AppMenuActionItem::ActionParams params = {}) {
+              actions::ActionItem* action =
+                  actions::ActionManager::Get().FindAction(id, scope);
+              CHECK(action);
+              if (!action->GetVisible()) {
+                return false;
+              }
+              if (has_notification) {
+                section.AddDivider(ui::MenuSeparatorType::SPACING_SEPARATOR);
+              }
+              params.display_type = DisplayType::kNotification;
+              section.AddAction(id, std::move(params));
+              has_notification = true;
+              return true;
+            };
+
+        maybe_add_notification(
             kActionUpgradeDialog,
-            {.display_type = DisplayType::kNotification,
-             .minor_text = AppMenuModel::GetUpgradeDialogSubstringText()});
+            {.minor_text = AppMenuModel::GetUpgradeDialogSubstringText()});
+
+        // At most one non-upgrade notification item (Safety Hub, Global
+        // Error, or Default Browser, which are ordered by priority) should
+        // be shown at a time. Return early as soon as the first one is added.
+
         // Query for the correct safety hub notification (if any) rather than
         // adding all potential actions here and allowing their visibility to
         // be determined by the action itself because
@@ -347,17 +376,21 @@ void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
             if (std::optional<actions::ActionId> action_id =
                     chrome::CommandActionUpdater::GetActionId(
                         notification->command)) {
-              section.AddAction(action_id.value(),
-                                {.display_type = DisplayType::kNotification,
-                                 .text_override = notification->label});
+              if (maybe_add_notification(
+                      action_id.value(),
+                      {.text_override = notification->label})) {
+                return;
+              }
             }
           }
         }
-        section.AddAction(kActionGlobalError,
-                          {.display_type = DisplayType::kNotification});
+
+        if (maybe_add_notification(kActionGlobalError)) {
+          return;
+        }
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-        section.AddAction(kActionSetBrowserAsDefault,
-                          {.display_type = DisplayType::kNotification});
+        maybe_add_notification(kActionSetBrowserAsDefault);
 #endif
       });
 }

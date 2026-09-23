@@ -481,26 +481,11 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderNoNotification) {
   actions::ActionItem* root = menu_manager.GetAppMenuRoot();
   ASSERT_NE(root, nullptr);
 
-  // The notification header actions are present in the action tree, but are not
-  // visible.
   ASSERT_FALSE(root->GetChildren().children().empty());
   actions::ActionItem* notification_section =
       root->GetChildren().children()[0]->GetActionItem();
   ASSERT_NE(notification_section, nullptr);
-  const auto& section_children = notification_section->GetChildren().children();
-  ASSERT_GE(section_children.size(), 2u);
-  EXPECT_EQ(section_children[0]->GetActionItem()->GetActionId(),
-            kActionUpgradeDialog);
-  EXPECT_FALSE(section_children[0]->GetActionItem()->GetVisible());
-  EXPECT_EQ(section_children[1]->GetActionItem()->GetActionId(),
-            kActionGlobalError);
-  EXPECT_FALSE(section_children[1]->GetActionItem()->GetVisible());
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  ASSERT_EQ(section_children.size(), 3u);
-  EXPECT_EQ(section_children[2]->GetActionItem()->GetActionId(),
-            kActionSetBrowserAsDefault);
-  EXPECT_FALSE(section_children[2]->GetActionItem()->GetVisible());
-#endif
+  EXPECT_TRUE(notification_section->GetChildren().children().empty());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -534,7 +519,7 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderUpgradeNotification) {
       ui::kColorAppMenuUpgradeRowBackground);
 
   const auto& section_children = notification_section->GetChildren().children();
-  ASSERT_GE(section_children.size(), 1u);
+  ASSERT_EQ(section_children.size(), 1u);
   EXPECT_EQ(section_children[0]->GetActionItem()->GetActionId(),
             kActionUpgradeDialog);
   EXPECT_TRUE(section_children[0]->GetActionItem()->GetVisible());
@@ -580,22 +565,22 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderSafetyHubNotification) {
   actions::ActionItem* notification_section = children[0]->GetActionItem();
   ASSERT_NE(notification_section, nullptr);
   const auto& section_children = notification_section->GetChildren().children();
-  ASSERT_GE(section_children.size(), 2u);
+  ASSERT_EQ(section_children.size(), 1u);
 
-  EXPECT_EQ(section_children[1]->GetActionItem()->GetActionId(),
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetActionId(),
             kActionOpenSafetyHub);
-  EXPECT_TRUE(section_children[1]->GetActionItem()->GetVisible());
+  EXPECT_TRUE(section_children[0]->GetActionItem()->GetVisible());
   ASSERT_NE(
-      section_children[1]->GetProperty(AppMenuActionItem::kTextOverrideKey),
+      section_children[0]->GetProperty(AppMenuActionItem::kTextOverrideKey),
       nullptr);
   EXPECT_EQ(
-      *section_children[1]->GetProperty(AppMenuActionItem::kTextOverrideKey),
+      *section_children[0]->GetProperty(AppMenuActionItem::kTextOverrideKey),
       l10n_util::GetStringUTF16(
           IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION));
-  EXPECT_EQ(section_children[1]->GetActionItem()->GetProperty(
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kNotification);
-  EXPECT_EQ(section_children[1]->GetActionItem()->GetProperty(
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kContainerColorKey),
             ui::kColorAppMenuUpgradeRowBackground);
 }
@@ -625,15 +610,15 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderGlobalError) {
       ui::kColorAppMenuUpgradeRowBackground);
 
   const auto& section_children = notification_section->GetChildren().children();
-  ASSERT_GE(section_children.size(), 2u);
+  ASSERT_EQ(section_children.size(), 1u);
 
-  EXPECT_EQ(section_children[1]->GetActionItem()->GetActionId(),
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetActionId(),
             kActionGlobalError);
-  EXPECT_TRUE(section_children[1]->GetActionItem()->GetVisible());
-  EXPECT_EQ(section_children[1]->GetActionItem()->GetProperty(
+  EXPECT_TRUE(section_children[0]->GetActionItem()->GetVisible());
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kNotification);
-  EXPECT_EQ(section_children[1]->GetActionItem()->GetProperty(
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kContainerColorKey),
             ui::kColorAppMenuUpgradeRowBackground);
 }
@@ -677,17 +662,15 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderDefaultBrowserPrompt) {
       ui::kColorAppMenuUpgradeRowBackground);
 
   const auto& section_children = notification_section->GetChildren().children();
-  ASSERT_GE(section_children.size(), 3u);
+  ASSERT_EQ(section_children.size(), 1u);
 
-  // The third item in the notification section should be the default browser
-  // action and visible.
-  EXPECT_EQ(section_children[2]->GetActionItem()->GetActionId(),
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetActionId(),
             kActionSetBrowserAsDefault);
-  EXPECT_TRUE(section_children[2]->GetActionItem()->GetVisible());
-  EXPECT_EQ(section_children[2]->GetActionItem()->GetProperty(
+  EXPECT_TRUE(section_children[0]->GetActionItem()->GetVisible());
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kNotification);
-  EXPECT_EQ(section_children[2]->GetActionItem()->GetProperty(
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kContainerColorKey),
             ui::kColorAppMenuUpgradeRowBackground);
 }

@@ -80,6 +80,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -2140,6 +2141,60 @@ TEST_F(ActionAppMenuTest, GlobalErrorPrioritizedOverDefaultBrowser) {
   EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 8);
 
   EXPECT_FALSE(root->GetMenuItemByID(kActionSetBrowserAsDefault));
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(ActionAppMenuTest, MultipleNotificationsSeparatedBySpacingSeparator) {
+  if (!browser_defaults::kShowUpgradeMenuItem) {
+    GTEST_SKIP() << "Upgrade menu item is not supported on this platform.";
+  }
+
+  actions::ActionItem* upgrade_action =
+      actions::ActionManager::Get().FindAction(
+          kActionUpgradeDialog, browser_actions_->root_action_item());
+  ASSERT_NE(upgrade_action, nullptr);
+  upgrade_action->SetVisible(true);
+
+  actions::ActionItem* global_error_action =
+      actions::ActionManager::Get().FindAction(
+          kActionGlobalError, browser_actions_->root_action_item());
+  ASSERT_NE(global_error_action, nullptr);
+  global_error_action->SetVisible(true);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+
+  views::MenuItemView* upgrade_item =
+      root->GetMenuItemByID(kActionUpgradeDialog);
+  ASSERT_TRUE(upgrade_item);
+  ASSERT_TRUE(upgrade_item->GetMenuItemBackground().has_value());
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->top_radius, 8);
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->bottom_radius, 8);
+
+  views::MenuItemView* global_error_item =
+      root->GetMenuItemByID(kActionGlobalError);
+  ASSERT_TRUE(global_error_item);
+  ASSERT_TRUE(global_error_item->GetMenuItemBackground().has_value());
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_radius, 8);
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 8);
+
+  ASSERT_GE(submenu->children().size(), 3u);
+  EXPECT_EQ(submenu->children()[0], upgrade_item);
+  auto* separator =
+      views::AsViewClass<views::MenuSeparator>(submenu->children()[1]);
+  ASSERT_NE(separator, nullptr);
+  EXPECT_EQ(separator->GetType(), ui::MenuSeparatorType::SPACING_SEPARATOR);
+  EXPECT_EQ(submenu->children()[2], global_error_item);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
