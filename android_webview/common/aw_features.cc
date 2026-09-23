@@ -332,8 +332,7 @@ BASE_FEATURE(kWebViewPrefetchOffTheMainThread,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Prefetches the native WebView code to memory when renderer is reused.
-BASE_FEATURE(kWebViewPrefetchOnRendererReuse,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebViewPrefetchOnRendererReuse, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, stale `AwPrefetchHandleWrapper`s in `AwPrefetchManagerData` are
 // proactively pruned when new prefetch requests are added or reserved.
