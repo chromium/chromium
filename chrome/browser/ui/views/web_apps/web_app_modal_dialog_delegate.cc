@@ -55,7 +55,7 @@ void WebAppModalDialogDelegate::OnOcclusionStateChanged(bool occluded) {
   // If a picture-in-picture window is occluding the dialog, force it to close
   // to prevent spoofing.
   if (occluded) {
-    PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
+    PictureInPictureWindowManager::ExitPictureInPictureSoon();
   }
 }
 

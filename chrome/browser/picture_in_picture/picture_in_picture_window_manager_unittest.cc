@@ -176,6 +176,41 @@ TEST_F(PictureInPictureWindowManagerTest,
       PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture());
 }
 
+TEST_F(PictureInPictureWindowManagerTest,
+       ExitPictureInPictureSoonClosesWindowAsynchronously) {
+  PictureInPictureWindowManager* picture_in_picture_window_manager =
+      PictureInPictureWindowManager::GetInstance();
+  MockPictureInPictureWindowController controller;
+  picture_in_picture_window_manager->EnterPictureInPictureWithController(
+      &controller);
+  EXPECT_TRUE(picture_in_picture_window_manager->IsInPictureInPicture());
+
+  // Window should not be closed synchronously.
+  EXPECT_CALL(controller, Close(/*should_pause_video=*/false)).Times(0);
+  PictureInPictureWindowManager::ExitPictureInPictureSoon();
+  EXPECT_TRUE(picture_in_picture_window_manager->IsInPictureInPicture());
+
+  // Window should close asynchronously once the posted task runs.
+  base::RunLoop run_loop;
+  EXPECT_CALL(controller, Close(/*should_pause_video=*/false))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  run_loop.Run();
+  EXPECT_FALSE(picture_in_picture_window_manager->IsInPictureInPicture());
+}
+
+TEST_F(PictureInPictureWindowManagerTest,
+       ExitPictureInPictureSoonDoesNotCrashWhenThereIsNoWindow) {
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::GetInstance()->IsInPictureInPicture());
+  PictureInPictureWindowManager::ExitPictureInPictureSoon();
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::GetInstance()->IsInPictureInPicture());
+}
+
 TEST_F(PictureInPictureWindowManagerTest, OnEnterVideoPictureInPicture) {
   PictureInPictureWindowManager* picture_in_picture_window_manager =
       PictureInPictureWindowManager::GetInstance();
