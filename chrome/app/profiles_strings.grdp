@@ -1379,6 +1379,9 @@
     <message name="IDS_TABS_DISABLED_ERROR_DESCRIPTION" desc="Message that is shown in an error dialog when a user tries to sign in to use a service that requires history sync opt in (e.g. sharing/joining tab groups), but sync is disabled.">
       Your organization turned off saving tabs in your Google Account
     </message>
+    <message name="IDS_HISTORY_DISABLED_ERROR_DESCRIPTION" desc="Message that is shown in an error dialog when a user tries to sign in to use a service that requires history sync opt in, but history sync is disabled.">
+      Your organization turned off saving history in your Google Account
+    </message>
     <!-- Avatar Button Promos Desktop -->
     <if expr="not use_titlecase">
       <message name="IDS_AVATAR_BUTTON_SYNC_HISTORY" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">

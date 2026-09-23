@@ -203,8 +203,7 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
       break;
     case signin_metrics::AccessPoint::kHistoryPage:
       required_types = {syncer::UserSelectableType::kHistory};
-      // TODO(crbug.com/453996401): Use a history-specific error string.
-      error_message_id = IDS_TABS_DISABLED_ERROR_DESCRIPTION;
+      error_message_id = IDS_HISTORY_DISABLED_ERROR_DESCRIPTION;
       break;
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
     case signin_metrics::AccessPoint::kCollaborationShareTabGroup:
