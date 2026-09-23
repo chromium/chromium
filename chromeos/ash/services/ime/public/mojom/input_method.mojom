@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 26
+// Next MinVersion: 27
 
 module ash.ime.mojom;
 
@@ -398,6 +398,18 @@ enum PinyinLayout {
 };
 
 // Next ordinal: 7
+[Stable, Extensible]
+enum PinyinScheme {
+  [Default] kQuanpin = 0,
+  kShuangpinAbc = 1,
+  kShuangpinFlypy = 2,
+  kShuangpinJiajia = 3,
+  kShuangpinMs = 4,
+  kShuangpinZiguang = 5,
+  kShuangpinZiranma = 6,
+};
+
+// Next ordinal: 8
 [Stable, RenamedFrom="chromeos.ime.mojom.PinyinSettings"]
 struct PinyinSettings {
   [MinVersion=6] FuzzyPinyinSettings? fuzzy_pinyin@0;
@@ -407,6 +419,7 @@ struct PinyinSettings {
   [MinVersion=6] bool default_to_chinese@4;
   [MinVersion=6] bool default_to_full_width_characters@5;
   [MinVersion=6] bool default_to_full_width_punctuation@6;
+  [MinVersion=26] PinyinScheme pinyin_scheme@7;
 };
 
 // JapaneseSettings are preference values for the Japanese engine as stored
