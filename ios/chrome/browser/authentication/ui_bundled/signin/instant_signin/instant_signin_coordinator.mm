@@ -264,8 +264,12 @@
   _mediator.delegate = nil;
   _mediator = nil;
   [self removeActivityOverlay];
+  // The identity is nil because the completion callback does not need the
+  // identity. The scene is going to be closed to prepare for a profile
+  // switch. The callback only needs to ensure every views are closed, and
+  // potentially do some logging.
   [self runCompletionWithSigninResult:SigninCoordinatorProfileSwitch
-                   completionIdentity:_identity];
+                   completionIdentity:nil];
 }
 
 - (void)instantSigninMediatorSigninIsImpossible:
@@ -351,6 +355,10 @@
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
     case SigninCoordinatorProfileSwitch:
+      // The identity is nil because the completion callback does not need the
+      // identity. The scene is going to be closed to prepare for a profile
+      // switch. The callback only needs to ensure every views are closed, and
+      // potentially do some logging.
       [self runCompletionWithSigninResult:result completionIdentity:nil];
       break;
     case SigninCoordinatorUINotAvailable:

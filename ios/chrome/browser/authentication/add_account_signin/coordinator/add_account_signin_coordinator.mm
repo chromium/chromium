@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -345,9 +346,7 @@ using signin_metrics::PromoAction;
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.postSigninManagerCoordinator);
   DCHECK(!self.historySyncPopupCoordinator);
-  // `identity` is set, only and only if the sign-in is successful.
-  DCHECK(((signinResult == SigninCoordinatorResultSuccess) && identity) ||
-         ((signinResult != SigninCoordinatorResultSuccess) && !identity));
+  signin::CheckSigninCoordinatorResultAndIdentity(signinResult, identity);
   if (_stopped) {
     // The delegate is already dealing with stopping `self`.
     return;

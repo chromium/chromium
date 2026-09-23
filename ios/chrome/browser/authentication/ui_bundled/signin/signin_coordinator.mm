@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/metrics/model/activity_reporter.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -417,15 +418,8 @@ using signin_metrics::PromoAction;
 
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
                    completionIdentity:(id<SystemIdentity>)completionIdentity {
-  // `identity` is set, if and only if the sign-in is successful.
-  CHECK(((signinResult == SigninCoordinatorResultSuccess ||
-          signinResult == SigninCoordinatorProfileSwitch) &&
-         completionIdentity) ||
-            ((signinResult != SigninCoordinatorResultSuccess) &&
-             !completionIdentity),
-        base::NotFatalUntil::M151)
-      << "signinResult: " << signinResult
-      << ", identity: " << (completionIdentity ? "YES" : "NO");
+  signin::CheckSigninCoordinatorResultAndIdentity(signinResult,
+                                                  completionIdentity);
   // If `self.signinCompletion` is nil, this method has been probably called
   // twice.
   CHECK(self.signinCompletion, base::NotFatalUntil::M151);

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 
 #import "base/barrier_callback.h"
+#import "base/check.h"
 #import "base/command_line.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
@@ -635,6 +636,12 @@ Browser* GetRegularBrowser(Browser* browser) {
   }
   return browser->GetSceneState()
       .browserProviderInterface.mainBrowserProvider.browser;
+}
+
+void CheckSigninCoordinatorResultAndIdentity(SigninCoordinatorResult result,
+                                             id<SystemIdentity> identity) {
+  CHECK((result == SigninCoordinatorResultSuccess) == (identity != nil))
+      << "result: " << result << ", identity: " << (identity ? "YES" : "NO");
 }
 
 }  // namespace signin

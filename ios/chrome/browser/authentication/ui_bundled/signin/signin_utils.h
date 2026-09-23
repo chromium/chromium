@@ -190,6 +190,11 @@ bool DifferentUserIsSignedInInAnotherScene(SceneState* scene_state);
 // Returns the regular browser.
 Browser* GetRegularBrowser(Browser* browser);
 
+// Checks that `identity` is nil if and only if `result` is not
+// `SigninCoordinatorResultSuccess`.
+void CheckSigninCoordinatorResultAndIdentity(SigninCoordinatorResult result,
+                                             id<SystemIdentity> identity);
+
 }  // namespace signin
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_SIGNIN_UTILS_H_

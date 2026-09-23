@@ -31,12 +31,16 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   // and when the UI is not ready to present any signin coordinator.
   SigninCoordinatorUINotAvailable,
   // Sign-in coordinator is stopped because of a change in profile.
+  // No identities are returned when the result is Switch, because, from the
+  // point of view of the view that opened the sign-in UI, no sign-in will
+  // actually occur. This is because the sign-in will be done in a differente
+  // scene, that is not known to the UI’s opener.
   SigninCoordinatorProfileSwitch,
 };
 
 namespace signin_ui {
 
-// The result of a authentiaction.
+// The result of an authentication.
 enum class CancelationReason {
   // Not canceled.
   kNotCanceled,
@@ -87,7 +91,12 @@ enum class SigninFullscreenPromoEvents {
 // Called when the sign-in dialog is closed.
 // `coordinator` the SigninCoordinator to which this block was assigned. nil if
 // this block was not assigned to a signin coordinator. `result` is the sign-in
-// result state. `signinCompletionIdentity` the identity that was used if any.
+// result state. `identity` in case of Success, the identity in which the UI is
+// now signed-in. `nil` in every other case (in particular, for profile switch,
+// the `identity` is nil, because it’s executed before sign-in occurred, and
+// from the point of view of the UI that opened the sign-in coordinator, no
+// sign-in will occur during its lifespan. The UI will be dismissed and the
+// scene changed to allow for the next identity).
 using SigninCoordinatorCompletionCallback =
     void (^)(SigninCoordinator* coordinator,
              SigninCoordinatorResult result,
