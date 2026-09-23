@@ -205,6 +205,7 @@ END_METADATA
 
 QuietModeView::QuietModeView(Shelf* shelf) : TrayItemView(shelf) {
   CreateImageView();
+  UpdateLabelOrImageViewColor(is_active());
   image_view()->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_QUIET_MODE_TOOLTIP));
   SetVisible(false);
@@ -230,11 +231,6 @@ void QuietModeView::Update() {
 void QuietModeView::HandleLocaleChange() {
   image_view()->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_QUIET_MODE_TOOLTIP));
-}
-
-void QuietModeView::OnThemeChanged() {
-  TrayItemView::OnThemeChanged();
-  Update();
 }
 
 void QuietModeView::UpdateLabelOrImageViewColor(bool active) {
