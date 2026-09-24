@@ -74,7 +74,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/metrics",
     "//chrome/test:test_support",
-    "//chrome/test/base:testing_browser_process",
     "//content/public/browser",
     "//content/test:test_support",
     "//services/tracing/public/cpp",

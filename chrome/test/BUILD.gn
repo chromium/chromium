@@ -149,13 +149,6 @@ static_library("test_support") {
     "//chrome/browser:global_features",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/browser_window",
-
-    # testing_profile_impl (still in public_deps) calls TestingBrowserProcess
-    # methods defined in testing_browser_process_impl. Keep this until
-    # testing_profile_impl is migrated out of public_deps.
-    # TODO(crbug.com/353332589): remove once testing_profile_impl is migrated
-    # out.
-    "//chrome/test/base:testing_browser_process_impl",
   ]
 
   if (is_android || is_mac || is_win || is_chromeos) {
@@ -178,6 +171,7 @@ static_library("test_support") {
     "//chrome/browser/safe_browsing:test_database_helper",
     "//chrome/browser/search_engines:test_support",
     "//chrome/browser/signin:identity_test_support",
+    "//chrome/test/base:testing_browser_process_impl",
     "//chrome/test/base:testing_profile_impl",
   ]
 
@@ -1256,8 +1250,6 @@ if (is_android) {
       "//chrome/test/base:chrome_render_view_test",
       "//chrome/test/base:chrome_test_launcher",
       "//chrome/test/base:chrome_test_utils",
-      "//chrome/test/base:testing_browser_process",
-      "//chrome/test/base:testing_browser_process_impl",
       "//chrome/test/data/webui:browser_tests",
       "//chrome/test/data/webui:interactive_ui_tests",
       "//chrome/test/data/webui:resources",
@@ -2222,8 +2214,6 @@ if (!is_android) {
       "//chrome/services/removable_storage_writer:lib",
       "//chrome/test/base:browser_tests",
       "//chrome/test/base:browser_tests_runner",
-      "//chrome/test/base:testing_browser_process",
-      "//chrome/test/base:testing_browser_process_impl",
       "//chrome/test/components_tests:browser_tests",
       "//chrome/test/data/webui:resources",
       "//chrome/test/data/webui/mojo:mojo_bindings",
@@ -5199,8 +5189,6 @@ test("unit_tests") {
     "//chrome/common/themes:unit_tests",
     "//chrome/services/file_util:unit_tests",
     "//chrome/test/base:chrome_render_view_host_test_harness",
-    "//chrome/test/base:testing_browser_process",
-    "//chrome/test/base:testing_browser_process_impl",
     "//components/account_id",
     "//components/account_id:test_support",
     "//components/affiliations/core/browser:test_support",
@@ -7657,8 +7645,6 @@ static_library("test_support_unit") {
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/autofill",
     "//chrome/test/base:chrome_unit_test_suite",
-    "//chrome/test/base:testing_browser_process",
-    "//chrome/test/base:testing_browser_process_impl",
     "//components/autofill/content/browser:test_support",
   ]
 
@@ -8385,8 +8371,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/test/base:browser_test_waiters",
       "//chrome/test/base:chrome_test_launcher",
       "//chrome/test/base:chrome_test_suite",
-      "//chrome/test/base:testing_browser_process",
-      "//chrome/test/base:testing_browser_process_impl",
       "//chrome/test/media:performance_tests",
       "//chrome/test/media_router:browser_tests",
       "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
