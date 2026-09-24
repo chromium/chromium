@@ -53,6 +53,7 @@
 #include "components/search_engines/regulatory_extension_type.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_settings_data_provider.h"
 #include "components/search_engines/search_engine_split_metrics.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -583,15 +584,6 @@ class TemplateURLService::PreLoadingProviders {
   // loaded and it can be merged into |template_urls_|.
   TemplateURLService::OwnedTemplateURLVector search_engines_;
 };
-
-// TemplateURLService::CategorizedTemplateUrls --------------------------------
-
-TemplateURLService::CategorizedTemplateUrls::CategorizedTemplateUrls() =
-    default;
-TemplateURLService::CategorizedTemplateUrls::~CategorizedTemplateUrls() =
-    default;
-TemplateURLService::CategorizedTemplateUrls::CategorizedTemplateUrls(
-    const CategorizedTemplateUrls& other) = default;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // TemplateURLService::PrepopulatedAndRecentlyVisitedTemplateUrls -------------
@@ -1409,49 +1401,11 @@ const TemplateURL* TemplateURLService::GetDefaultSearchProvider() const {
                  : pre_loading_providers_->default_search_provider();
 }
 
-const TemplateURLService::CategorizedTemplateUrls
-TemplateURLService::GetCategorizedTemplateURLs(
-    template_url_starter_pack_data::StarterPackIdSet
-        disabled_starter_pack_ids) {
-  CategorizedTemplateUrls data;
-
-  for (TemplateURL* url : GetTemplateURLs()) {
-    // Exclude those URL's that cannot be enabled or should be hidden.
-    if (disabled_starter_pack_ids.Has(url->starter_pack_id()) ||
-        HiddenFromLists(url)) {
-      continue;
-    }
-
-    const bool is_starter_pack =
-        url->starter_pack_id() !=
-        template_url_starter_pack_data::StarterPackId::kNone;
-    const bool is_extension = url->type() == TemplateURL::OMNIBOX_API_EXTENSION;
-
-    if (ShowInDefaultList(url)) {
-      data.active_site_shortcuts.push_back(url);
-    } else if (is_starter_pack || is_extension) {
-      if (ShowInActivesList(url)) {
-        data.active_feature_shortcuts.push_back(url);
-      } else {
-        data.inactive_feature_shortcuts.push_back(url);
-      }
-    } else {
-      if (ShowInActivesList(url)) {
-        data.active_site_shortcuts.push_back(url);
-      } else {
-        data.inactive_site_shortcuts.push_back(url);
-      }
-    }
-  }
-
-  std::ranges::sort(
-      data.active_site_shortcuts,
-      internal::OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically(
-          prepopulate_data_resolver_->GetPrepopulatedEngines()));
-  std::ranges::sort(data.inactive_site_shortcuts,
-                    internal::OrderTemplateUrlsByManagedAndAlphabetically());
-
-  return data;
+std::unique_ptr<search_engines::SearchEngineSettingsDataProvider>
+TemplateURLService::CreateSearchEngineSettingsDataProvider() {
+  return std::make_unique<search_engines::SearchEngineSettingsDataProvider>(
+      *this, *prepopulate_data_resolver_, *regional_capabilities_service_,
+      *profile_metrics_service_);
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

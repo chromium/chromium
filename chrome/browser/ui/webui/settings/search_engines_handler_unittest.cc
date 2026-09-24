@@ -10,7 +10,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,7 +24,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
-#include "components/search_engines/search_engine_split_metrics.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_test_util.h"
@@ -536,94 +534,6 @@ TEST_F(SearchEnginesHandlerTest, IsRecommendedFromPolicy) {
     }
   }
   EXPECT_TRUE(found_rec);
-}
-
-TEST_F(SearchEnginesHandlerTest, OseSplitMetrics_NonJapan_NotRecorded) {
-  ConfigureTestWithRegularProfile();
-
-  base::ListValue args;
-  args.Append("callback_id");
-  web_ui()->HandleReceivedMessage("getCategorizedTemplateUrls", args);
-
-  histogram_tester().ExpectTotalCount(
-      "Search.OseSplitYahooJapan.DseTypeOnSettingsPageLoad", 0);
-  histogram_tester().ExpectTotalCount(
-      "Search.OseSplitYahooJapan.CountOnSettingsPageLoad", 0);
-  histogram_tester().ExpectTotalCount(
-      "Search.OseSplitYahooJapan.EngineStateOnSettingsPageLoad", 0);
-}
-
-TEST_F(SearchEnginesHandlerTest, OseSplitMetrics_Japan_Recorded) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kApplySearchEngineTypeMigration);
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry, "JP");
-  ConfigureTestWithRegularProfile(
-      base::BindOnce([](TemplateURLService& template_url_service) {
-        AddSearchEngine(&template_url_service, "yahoo_jp", u"yj1",
-                        TemplateURLPrepopulateData::yahoo_jp.id,
-                        TemplateURLPrepopulateData::yahoo_jp.search_url);
-        AddSearchEngine(&template_url_service, "yahoo_jp_next", u"yj2",
-                        TemplateURLPrepopulateData::yahoo_jp_next.id,
-                        TemplateURLPrepopulateData::yahoo_jp_next.search_url);
-      }));
-
-  base::ListValue args;
-  args.Append("callback_id");
-  web_ui()->HandleReceivedMessage("getCategorizedTemplateUrls", args);
-
-  histogram_tester().ExpectTotalCount(
-      "Search.OseSplitYahooJapan.DseTypeOnSettingsPageLoad", 0);
-  histogram_tester().ExpectUniqueSample(
-      "Search.OseSplitYahooJapan.CountOnSettingsPageLoad", 2, 1);
-  histogram_tester().ExpectBucketCount(
-      "Search.OseSplitYahooJapan.EngineStateOnSettingsPageLoad",
-      search_engines::OseSplitEngineState::kLegacyNotDseCustomized, 1);
-  histogram_tester().ExpectBucketCount(
-      "Search.OseSplitYahooJapan.EngineStateOnSettingsPageLoad",
-      search_engines::OseSplitEngineState::kNewNotDseCustomized, 1);
-  histogram_tester().ExpectTotalCount(
-      "Search.OseSplitYahooJapan.EngineStateOnSettingsPageLoad", 2);
-
-  // Calling again in the same session should not record duplicate samples.
-  base::ListValue args2;
-  args2.Append("callback_id_2");
-  web_ui()->HandleReceivedMessage("getCategorizedTemplateUrls", args2);
-
-  histogram_tester().ExpectTotalCount(
-      "Search.OseSplitYahooJapan.DseTypeOnSettingsPageLoad", 0);
-  histogram_tester().ExpectTotalCount(
-      "Search.OseSplitYahooJapan.CountOnSettingsPageLoad", 1);
-  histogram_tester().ExpectTotalCount(
-      "Search.OseSplitYahooJapan.EngineStateOnSettingsPageLoad", 2);
-}
-
-TEST_F(SearchEnginesHandlerTest, OseSplitMetrics_Japan_YahooDse_Recorded) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kApplySearchEngineTypeMigration);
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kSearchEngineChoiceCountry, "JP");
-  ConfigureTestWithRegularProfile(
-      base::BindOnce([](TemplateURLService& template_url_service) {
-        TemplateURL* yj =
-            AddSearchEngine(&template_url_service, "yahoo_jp", u"yj1",
-                            TemplateURLPrepopulateData::yahoo_jp.id,
-                            TemplateURLPrepopulateData::yahoo_jp.search_url);
-        template_url_service.SetUserSelectedDefaultSearchProvider(yj);
-      }));
-
-  base::ListValue args;
-  args.Append("callback_id");
-  web_ui()->HandleReceivedMessage("getCategorizedTemplateUrls", args);
-
-  histogram_tester().ExpectUniqueSample(
-      "Search.OseSplitYahooJapan.DseTypeOnSettingsPageLoad",
-      search_engines::OseSplitType::kLegacy, 1);
-  histogram_tester().ExpectUniqueSample(
-      "Search.OseSplitYahooJapan.CountOnSettingsPageLoad", 1, 1);
-  histogram_tester().ExpectUniqueSample(
-      "Search.OseSplitYahooJapan.EngineStateOnSettingsPageLoad",
-      search_engines::OseSplitEngineState::kLegacyDseCustomized, 1);
 }
 
 }  // namespace settings
