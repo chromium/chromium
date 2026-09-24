@@ -265,12 +265,11 @@ void VoiceIsolationHandler::ProcessCapturedAudioInternal(
       // Dropping these lookahead frames is intentional to prevent stale or
       // echoed speech from leaking when voice isolation is re-enabled.
       was_previously_bypassed_ = true;
-      if (voice_isolation_) {
-        voice_isolation_->ClearBuffers();
-      }
+      CHECK(voice_isolation_);
+      voice_isolation_->ClearBuffers();
     }
   } else {
-    DCHECK(voice_isolation_);
+    CHECK(voice_isolation_);
     DCHECK_EQ(output_bus_->channels(), audio_source.channels());
     DCHECK_EQ(output_bus_->frames(), audio_source.frames());
     was_previously_bypassed_ = false;
