@@ -470,6 +470,7 @@ public class OmniboxTestUtils {
                     mActivity.dispatchKeyEvent(down);
                     mActivity.dispatchKeyEvent(up);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     /**

@@ -26,6 +26,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,6 +37,7 @@ import org.chromium.base.test.params.SkipCommandLineParameterization;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.EnormousTest;
@@ -45,8 +47,11 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Manual;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -630,12 +635,13 @@ public class OmniboxTest {
         omnibox.checkText("first query");
 
         // 2. Open another tab using Ctrl+T keyboard shortcut. Wait for it to become the active tab
-        // rather than merely to exist, so that Tab 1 has handed over its editing state.
+        // and for the browsing layout to settle, so that Tab 1 has handed over its editing state.
         omnibox.sendShortcut(KeyEvent.KEYCODE_T, KeyEvent.META_CTRL_ON);
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getActivityTab() != tab1,
                 "The new tab never became the active tab.");
         Tab tab2 = getActivityTab();
+        waitForTabSelectedAndRestored(tab2);
 
         // 3. In Tab 2, focus omnibox and type second text without committing.
         omnibox.requestFocus();
@@ -644,12 +650,12 @@ public class OmniboxTest {
 
         // 4. Send Ctrl+PageUp to switch back to Tab 1.
         omnibox.sendShortcut(KeyEvent.KEYCODE_PAGE_UP, KeyEvent.META_CTRL_ON);
-        waitForActivityTab(tab1);
+        waitForTabSelectedAndRestored(tab1);
         omnibox.checkText("first query");
 
         // 5. Send Ctrl+PageDown to switch back to Tab 2.
         omnibox.sendShortcut(KeyEvent.KEYCODE_PAGE_DOWN, KeyEvent.META_CTRL_ON);
-        waitForActivityTab(tab2);
+        waitForTabSelectedAndRestored(tab2);
         omnibox.checkText("second query");
     }
 
@@ -658,10 +664,20 @@ public class OmniboxTest {
                 () -> mActivityTestRule.getActivity().getActivityTab());
     }
 
-    private void waitForActivityTab(Tab expected) {
+    private void waitForTabSelectedAndRestored(Tab expected) {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         CriteriaHelper.pollUiThread(
-                () -> mActivityTestRule.getActivity().getActivityTab() == expected,
-                "The tab switch never completed.");
+                () -> {
+                    Criteria.checkThat(
+                            "ActivityTabProvider tab mismatch",
+                            cta.getActivityTabProvider().get(),
+                            Matchers.is(expected));
+                    Criteria.checkThat(
+                            "LocationBarModel tab mismatch",
+                            cta.getToolbarManager().getLocationBarModelForTesting().getTab(),
+                            Matchers.is(expected));
+                });
     }
 
     @Test
