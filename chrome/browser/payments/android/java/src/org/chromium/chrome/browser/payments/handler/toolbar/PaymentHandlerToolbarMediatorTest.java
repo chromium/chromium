@@ -23,8 +23,10 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarMediator.PaymentHandlerToolbarMediatorDelegate;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.Origin;
 
 /** A test for PaymentHandlerToolbarMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -81,5 +83,40 @@ public class PaymentHandlerToolbarMediatorTest {
         Assert.assertEquals(
                 "this is content description.",
                 mModel.get(PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION));
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testDidFinishNavigation_Committed() {
+        mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, true);
+        RenderFrameHost mainFrame = Mockito.mock(RenderFrameHost.class);
+        Origin committedOrigin = Mockito.mock(Origin.class);
+        Mockito.doReturn(mainFrame).when(mMockWebContents).getMainFrame();
+        Mockito.doReturn(committedOrigin).when(mainFrame).getLastCommittedOrigin();
+
+        NavigationHandle navigation = Mockito.mock(NavigationHandle.class);
+        Mockito.when(navigation.hasCommitted()).thenReturn(true);
+
+        mMediator.didFinishNavigationInPrimaryMainFrame(navigation);
+
+        Assert.assertEquals(committedOrigin, mModel.get(PaymentHandlerToolbarProperties.ORIGIN));
+        Assert.assertFalse(mModel.get(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE));
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testDidFinishNavigation_NotCommitted() {
+        Origin initialOrigin = Mockito.mock(Origin.class);
+        mModel.set(PaymentHandlerToolbarProperties.ORIGIN, initialOrigin);
+        mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, true);
+
+        NavigationHandle navigation = Mockito.mock(NavigationHandle.class);
+        Mockito.when(navigation.hasCommitted()).thenReturn(false);
+
+        mMediator.didFinishNavigationInPrimaryMainFrame(navigation);
+
+        Mockito.verify(mMockWebContents, Mockito.never()).getMainFrame();
+        Assert.assertEquals(initialOrigin, mModel.get(PaymentHandlerToolbarProperties.ORIGIN));
+        Assert.assertTrue(mModel.get(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE));
     }
 }

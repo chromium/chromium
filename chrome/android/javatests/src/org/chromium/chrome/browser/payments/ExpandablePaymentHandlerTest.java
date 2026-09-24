@@ -64,6 +64,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -610,6 +611,28 @@ public class ExpandablePaymentHandlerTest {
                     // When the return value is null, the caller needs to hide() manually.
                     paymentHandler.hide();
                 });
+        waitForUiClosed();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Payments"})
+    public void testOriginNotSpoofedByAboutBlankNavigation() throws Throwable {
+        startDefaultServer();
+        PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow();
+        waitForTitleShown(paymentHandler.getWebContentsForTest(), "Max Pay");
+        onView(withId(R.id.origin)).check(matches(withText(getOrigin(mServer))));
+
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                paymentHandler.getWebContentsForTest(),
+                "document.open();"
+                        + "document.write('<title>Spoofed</title>');"
+                        + "document.close();"
+                        + "location.href = '#' + '%20'.repeat(200) + 'paypal.com';");
+        waitForTitleShown(paymentHandler.getWebContentsForTest(), "Spoofed");
+        onView(withId(R.id.origin)).check(matches(withText(getOrigin(mServer))));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> paymentHandler.hide());
         waitForUiClosed();
     }
 }

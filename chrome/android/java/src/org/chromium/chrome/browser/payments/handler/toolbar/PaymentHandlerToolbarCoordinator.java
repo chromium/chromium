@@ -27,6 +27,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.util.function.Supplier;
 
@@ -87,7 +88,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                         .with(
                                 PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION,
                                 getSecurityIconContentDescription(defaultSecurityLevel))
-                        .with(PaymentHandlerToolbarProperties.URL, url)
+                        .with(PaymentHandlerToolbarProperties.ORIGIN, Origin.create(url))
                         .with(
                                 PaymentHandlerToolbarProperties.SECURITY_ICON_ON_CLICK_CALLBACK,
                                 this::showPageInfoDialog)
@@ -121,12 +122,16 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
         return mToolbarView.getToolbarHeightPx();
     }
 
-    /** @return The height of the toolbar shadow height in px. */
+    /**
+     * @return The height of the toolbar shadow height in px.
+     */
     public int getShadowHeightPx() {
         return mToolbarView.getShadowHeightPx();
     }
 
-    /** @return The toolbar of the PaymentHandler. */
+    /**
+     * @return The toolbar of the PaymentHandler.
+     */
     public View getView() {
         return mToolbarView.getView();
     }

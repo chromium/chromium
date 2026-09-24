@@ -20,10 +20,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 /* package */ class PaymentHandlerToolbarViewBinder {
     /* package */ static void bind(
             PropertyModel model, PaymentHandlerToolbarView view, PropertyKey propertyKey) {
-        if (PaymentHandlerToolbarProperties.URL == propertyKey) {
+        if (PaymentHandlerToolbarProperties.ORIGIN == propertyKey) {
             String origin =
-                    UrlFormatter.formatUrlForSecurityDisplay(
-                            model.get(PaymentHandlerToolbarProperties.URL),
+                    UrlFormatter.formatOriginForSecurityDisplay(
+                            model.get(PaymentHandlerToolbarProperties.ORIGIN),
                             SchemeDisplay.OMIT_HTTP_AND_HTTPS);
             view.mOriginView.setText(origin);
         } else if (PaymentHandlerToolbarProperties.TITLE == propertyKey) {

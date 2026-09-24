@@ -10,12 +10,12 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
-import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /** PaymentHandlerToolbar UI properties, which fully describe the state of the UI. */
 @NullMarked
 /* package */ class PaymentHandlerToolbarProperties {
-    /* package */ static final WritableObjectPropertyKey<GURL> URL =
+    /* package */ static final WritableObjectPropertyKey<Origin> ORIGIN =
             new WritableObjectPropertyKey<>();
 
     /* package */ static final WritableObjectPropertyKey<String> TITLE =
@@ -45,7 +45,7 @@ import org.chromium.url.GURL;
 
     /* package */ static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                URL,
+                ORIGIN,
                 TITLE,
                 LOAD_PROGRESS,
                 PROGRESS_VISIBLE,
