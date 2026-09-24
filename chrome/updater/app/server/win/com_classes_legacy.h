@@ -244,8 +244,9 @@ class LegacyProcessLauncherImpl
 // elevated.
 //
 // Parameters can be placeholders (%1-%9) that can be filled by the numbered
-// parameters in `IAppCommandWeb::execute`. Literal `%` characters must be
-// escaped by doubling them.
+// parameters in `IAppCommandWeb::execute`. `%CALLER_SID%` (case-sensitive) can
+// also be used and is replaced with the caller's SID (in SDDL format). Literal
+// `%` characters must be escaped by doubling them.
 //
 // If parameters to `IAppCommandWeb::execute` are AA and BB
 // respectively, a command format of:
@@ -293,8 +294,10 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
   // Executes the AppCommand with the optional substitutions provided. `execute`
   // fails if the number of non-empty VARIANT substitutions provided to
   // `execute` are less than the number of parameter placeholders in the
-  // loaded-from-the-registry command format. Each placeholder %N is replaced
-  // with the corresponding `substitutionN`.
+  // loaded-from-the-registry command format, or if `%CALLER_SID%` is present
+  // but the caller's SID cannot be determined. Each placeholder %N is replaced
+  // with the corresponding `substitutionN`. `%CALLER_SID%` is replaced with the
+  // caller's SID.
   // An empty (VT_EMPTY) or invalid (non BSTR) substitution causes the following
   // substitutions to be ignored; for example, if `substitution2` is VT_EMPTY,
   // then `substitution3` through `substitution9` will be ignored.

@@ -311,6 +311,14 @@ TEST(WinUtil, IsCOMCallerAdmin) {
   EXPECT_THAT(IsCOMCallerAdmin(), base::test::ValueIs(::IsUserAnAdmin()));
 }
 
+TEST(WinUtil, GetCOMCallerSid) {
+  ASSERT_OK_AND_ASSIGN(const auto token,
+                       base::win::AccessToken::FromCurrentProcess(
+                           /*impersonation=*/false, TOKEN_QUERY));
+  ASSERT_OK_AND_ASSIGN(const auto expected_sddl, token.User().ToSddlString());
+  EXPECT_EQ(GetCOMCallerSid(), expected_sddl);
+}
+
 TEST(WinUtil, EnableSecureDllLoading) {
   EXPECT_TRUE(EnableSecureDllLoading());
 }

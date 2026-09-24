@@ -9,10 +9,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
@@ -44,8 +46,17 @@ class AppCommandRunner : public base::RefCountedThreadSafe<AppCommandRunner> {
                                     const std::wstring& app_id);
 
   // Runs the AppCommand with the provided `substitutions` and populates
-  // `process` if successful.
+  // `process` if successful. Returns `E_INVALIDARG` if the command line
+  // contains `%CALLER_SID%`.
   HRESULT Run(base::span<const std::wstring> substitutions,
+              base::Process& process);
+
+  // Runs the AppCommand with the provided `substitutions` and `get_caller_sid`
+  // and populates `process` if successful. If the command line contains
+  // `%CALLER_SID%`, `get_caller_sid` is invoked to obtain the caller's SID; if
+  // it returns an empty string, `Run` fails and returns `E_INVALIDARG`.
+  HRESULT Run(base::span<const std::wstring> substitutions,
+              base::FunctionRef<std::wstring()> get_caller_sid,
               base::Process& process);
 
   // Returns the output that the AppCommand generated, if any.
@@ -74,19 +85,24 @@ class AppCommandRunner : public base::RefCountedThreadSafe<AppCommandRunner> {
   // Formats a single `parameter` using
   // `base::internal::DoReplaceStringPlaceholders`. Any placeholder `%N` in
   // `parameter` is replaced with substitutions[N - 1]. Any literal `%` needs to
-  // be escaped with a `%`.
+  // be escaped with a `%`. `%CALLER_SID%` (case-sensitive) is replaced with the
+  // value returned by `get_caller_sid`.
   //
   // Returns `std::nullopt` if:
   // * a placeholder %N is encountered where N > substitutions.size().
   // * a literal `%` is not escaped with a `%`.
+  // * `%CALLER_SID%` is encountered and `get_caller_sid` returns an empty
+  //   string.
   static std::optional<std::wstring> FormatParameter(
-      const std::wstring& parameter,
-      base::span<const std::wstring> substitutions);
+      std::wstring_view parameter,
+      base::span<const std::wstring> substitutions,
+      base::FunctionRef<std::wstring()> get_caller_sid);
 
   // Formats a vector of `parameters` using the provided `substitutions` and
   // returns a resultant command line. Any placeholder `%N` in `parameters` is
   // replaced with substitutions[N - 1]. Any literal `%` needs to be escaped
-  // with a `%`.
+  // with a `%`. `%CALLER_SID%` (case-sensitive) is replaced with the value
+  // returned by `get_caller_sid`.
   //
   // The parameters are quoted after substitution if necessary so that each
   // parameter will be interpreted as a single command-line parameter according
@@ -95,9 +111,12 @@ class AppCommandRunner : public base::RefCountedThreadSafe<AppCommandRunner> {
   // Returns `std::nullopt` if:
   // * a placeholder %N is encountered where N > substitutions.size().
   // * a literal `%` is not escaped with a `%`.
+  // * `%CALLER_SID%` is encountered and `get_caller_sid` returns an empty
+  //   string.
   static std::optional<std::wstring> FormatAppCommandLine(
       const std::vector<std::wstring>& parameters,
-      base::span<const std::wstring> substitutions);
+      base::span<const std::wstring> substitutions,
+      base::FunctionRef<std::wstring()> get_caller_sid);
 
   const std::wstring app_id_;
   base::FilePath executable_;

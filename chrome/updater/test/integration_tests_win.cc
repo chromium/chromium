@@ -58,10 +58,12 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/win/access_token.h"
 #include "base/win/elevation_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/window_enumerator.h"
 #include "build/branding_buildflags.h"
@@ -1569,11 +1571,30 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
   constexpr size_t kMaxParameters = 9;
   ASSERT_LE(parameters.size(), kMaxParameters);
 
+  std::wstring pv;
+  ASSERT_EQ(ERROR_SUCCESS,
+            base::win::RegKey(UpdaterScopeToHKeyRoot(scope),
+                              GetAppClientsKey(kUpdaterAppId).c_str(),
+                              Wow6432(KEY_READ))
+                .ReadValue(kRegValuePV, &pv));
+  const bool supports_caller_sid = (pv == kUpdaterVersionUtf16);
+
+  ASSERT_OK_AND_ASSIGN(const base::win::AccessToken token,
+                       base::win::AccessToken::FromCurrentProcess(
+                           /*impersonation=*/false, TOKEN_QUERY));
+  ASSERT_NE(token.User(),
+            base::win::Sid(base::win::WellKnownSid::kLocalSystem));
+  ASSERT_OK_AND_ASSIGN(const std::wstring expected_sddl,
+                       token.User().ToSddlString());
+
   base::ScopedTempDir temp_dir;
   const std::wstring appid = base::UTF8ToWide(app_id);
   const std::wstring commandid = base::UTF8ToWide(command_id);
 
-  SetupAppCommand(scope, appid, commandid, L" /c \"exit %1\"", temp_dir);
+  SetupAppCommand(scope, appid, commandid,
+                  supports_caller_sid ? L" /c \"echo %CALLER_SID%& exit %1\""
+                                      : L" /c \"exit %1\"",
+                  temp_dir);
 
   Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
   InitializeBundle(scope, bundle);
@@ -1624,6 +1645,12 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
   EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
   EXPECT_EQ(exit_code, static_cast<DWORD>(expected_exit_code));
 
+  if (supports_caller_sid) {
+    base::win::ScopedBstr output;
+    ASSERT_HRESULT_SUCCEEDED(app_command_web->get_output(output.Receive()));
+    EXPECT_EQ(output.Get(), base::StrCat({expected_sddl, L"\r\n"}));
+  }
+
   // Now also run the AppCommand using the IDispatch methods.
   command_dispatch.Reset();
   ASSERT_HRESULT_SUCCEEDED(app->get_command(
@@ -1641,6 +1668,14 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
       GetDispatchProperty(command_dispatch, L"exitCode");
   EXPECT_EQ(V_UI4(command_exit_code.ptr()),
             static_cast<DWORD>(expected_exit_code));
+
+  if (supports_caller_sid) {
+    base::win::ScopedVariant command_output =
+        GetDispatchProperty(command_dispatch, L"output");
+    ASSERT_EQ(V_VT(command_output.ptr()), VT_BSTR);
+    EXPECT_EQ(V_BSTR(command_output.ptr()),
+              base::StrCat({expected_sddl, L"\r\n"}));
+  }
 
   DeleteAppClientKey(scope, appid);
 }

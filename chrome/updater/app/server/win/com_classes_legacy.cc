@@ -1338,7 +1338,8 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
   }
 
   base::Process process;
-  const HRESULT hr = app_command_runner_.value()->Run(substitutions, process);
+  const HRESULT hr = app_command_runner_.value()->Run(
+      substitutions, &GetCOMCallerSid, process);
   {
     base::AutoLock lock(lock_);
     if (SUCCEEDED(hr)) {
