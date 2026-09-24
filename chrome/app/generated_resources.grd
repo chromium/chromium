@@ -15045,6 +15045,44 @@ This can include information about installed software, files, your browser, the 
         <message name="IDS_ACCOUNT_PREVIEW_PROFILE_MENU_SUBTITLE_EXTENSIONS" desc="Subtitle of the profile menu sign-in promo informing the user they can access their extensions on all your devices.">
           To get your extensions and more on all your devices, sign in as <ph name="EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>
         </message>
+
+        <!-- Account Preview History Signin Promo Subtitles -->
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_SIGNED_IN_HISTORY_SYNC_PROMO_SUBTITLE" desc="Subtitle of the history page sign-in promo when the user is signed in without history sync.">
+          To get your history from your other devices, sync history. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_SIGNED_IN_HISTORY_SYNC_PROMO_SUBTITLE_WITH_DEVICE" desc="Subtitle of the history page sign-in promo when the user is signed in without history sync, informing them they can access their history from their other device.">
+          To get your history from <ph name="DEVICE">$1<ex>your phone</ex></ph>, sync history. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_PROMO_SUBTITLE_PASSWORDS_WITH_DEVICE" desc="Subtitle of the history page sign-in promo informing the user they can access their history from their other device and passwords on all their devices.">
+          To get your history from <ph name="DEVICE">$1<ex>your phone</ex></ph>, sign in and sync your history and tabs to <ph name="EMAIL">$2<ex>elisa.g.beckett@gmail.com</ex></ph>. You’ll also get your passwords and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_PROMO_SUBTITLE_BOOKMARKS_WITH_DEVICE" desc="Subtitle of the history page sign-in promo informing the user they can access their history from their other device and bookmarks on all their devices.">
+          To get your history from <ph name="DEVICE">$1<ex>your phone</ex></ph>, sign in and sync your history and tabs to <ph name="EMAIL">$2<ex>elisa.g.beckett@gmail.com</ex></ph>. You’ll also get your bookmarks and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_PROMO_SUBTITLE_SAVED_INFO_WITH_DEVICE" desc="Subtitle of the history page sign-in promo informing the user they can access their history from their other device and saved info (such as autofill data, addresses, and payment methods) on all their devices.">
+          To get your history from <ph name="DEVICE">$1<ex>your phone</ex></ph>, sign in and sync your history and tabs to <ph name="EMAIL">$2<ex>elisa.g.beckett@gmail.com</ex></ph>. You’ll also get your saved info and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_PROMO_SUBTITLE_READING_LIST_WITH_DEVICE" desc="Subtitle of the history page sign-in promo informing the user they can access their history from their other device and reading list on all their devices.">
+          To get your history from <ph name="DEVICE">$1<ex>your phone</ex></ph>, sign in and sync your history and tabs to <ph name="EMAIL">$2<ex>elisa.g.beckett@gmail.com</ex></ph>. You’ll also get your reading list and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_PROMO_SUBTITLE_EXTENSIONS_WITH_DEVICE" desc="Subtitle of the history page sign-in promo informing the user they can access their history from their computer and extensions on all their devices. Only desktop/computer DEVICE are supported for extensions.">
+          To get your history from <ph name="DEVICE">$1<ex>your computer</ex></ph>, sign in and sync your history and tabs to <ph name="EMAIL">$2<ex>elisa.g.beckett@gmail.com</ex></ph>. You’ll also get your extensions and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_PROMO_SUBTITLE_PASSWORDS" desc="Subtitle of the history page sign-in promo informing the user they can access their history and passwords on all their devices.">
+          To get your history from your other devices, sign in and sync your history and tabs to <ph name="EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>. You’ll also get your passwords and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_PROMO_SUBTITLE_BOOKMARKS" desc="Subtitle of the history page sign-in promo informing the user they can access their history and bookmarks on all their devices.">
+          To get your history from your other devices, sign in and sync your history and tabs to <ph name="EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>. You’ll also get your bookmarks and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_PROMO_SUBTITLE_SAVED_INFO" desc="Subtitle of the history page sign-in promo informing the user they can access their history and saved info (such as autofill data, addresses, and payment methods) on all their devices.">
+          To get your history from your other devices, sign in and sync your history and tabs to <ph name="EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>. You’ll also get your saved info and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_PROMO_SUBTITLE_READING_LIST" desc="Subtitle of the history page sign-in promo informing the user they can access their history and reading list on all their devices.">
+          To get your history from your other devices, sign in and sync your history and tabs to <ph name="EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>. You’ll also get your reading list and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
+        <message name="IDS_ACCOUNT_PREVIEW_HISTORY_PROMO_SUBTITLE_EXTENSIONS" desc="Subtitle of the history page sign-in promo informing the user they can access their history and extensions on all their devices.">
+          To get your history from your other devices, sign in and sync your history and tabs to <ph name="EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>. You’ll also get your extensions and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+        </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_BY_TOKEN" desc="Body of the web signin interception bubble when the new account is managed via a token">
           You just signed in a managed account, creating a new managed profile will allow you to access some resources linked to that account.
         </message>

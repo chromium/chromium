@@ -32,6 +32,19 @@ std::optional<std::string> GetAccountPreviewProfileMenuSubtitle(
 std::optional<std::string> GetAccountPreviewSettingsPromoSubtitle(
     const AccountPreviewDataService::AccountPreviewPreference& preference);
 
+// Returns a formatted subtitle string for the history page signin promo when
+// the user is signed in without history sync, based on the account preview
+// preference.
+std::string GetAccountPreviewHistorySignedInPromoSubtitle(
+    const AccountPreviewDataService::AccountPreviewPreference& preference);
+
+// Returns a formatted subtitle string for the history page signin promo based
+// on the account preview preference and user email, or std::nullopt if
+// preference contains no preferred data types.
+std::optional<std::string> GetAccountPreviewHistoryPromoSubtitle(
+    std::string_view email,
+    const AccountPreviewDataService::AccountPreviewPreference& preference);
+
 // Returns a formatted subtitle string for the profile separation (multi-user)
 // intercept bubble with account preview, or std::nullopt if preference contains
 // no preferred data types.
