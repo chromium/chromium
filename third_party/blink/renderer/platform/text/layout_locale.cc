@@ -368,8 +368,9 @@ scoped_refptr<QuotesData> LayoutLocale::GetQuotesData() const {
 AtomicString LayoutLocale::LocaleWithBreakKeyword(
     LineBreakStrictness strictness,
     bool use_phrase) const {
-  if (string_.empty())
+  if (string_.empty() && strictness == LineBreakStrictness::kDefault) {
     return string_;
+  }
 
   // uloc_setKeywordValue_58 has a problem to handle "@" in the original
   // string. crbug.com/697859

@@ -271,13 +271,15 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
 
 inline const AtomicString& LazyLineBreakIterator::LocaleWithKeyword() const {
   if (!locale_with_keyword_) {
-    if (!locale_) {
+    if (!locale_ && strictness_ == LineBreakStrictness::kDefault) {
       locale_with_keyword_ = g_empty_atom;
     } else if (strictness_ == LineBreakStrictness::kDefault &&
                break_type_ != LineBreakType::kPhrase) {
       locale_with_keyword_ = locale_->LocaleString();
     } else {
-      locale_with_keyword_ = locale_->LocaleWithBreakKeyword(
+      const LayoutLocale* locale =
+          locale_ ? locale_ : LayoutLocale::Get(g_empty_atom);
+      locale_with_keyword_ = locale->LocaleWithBreakKeyword(
           strictness_, break_type_ == LineBreakType::kPhrase);
     }
     DCHECK(locale_with_keyword_);

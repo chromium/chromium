@@ -153,6 +153,18 @@ TEST_F(TextBreakIteratorTest, Strictness) {
   EXPECT_EQ(iterator.LocaleWithKeyword(), "ja@lb=strict");
 
   iterator.SetLocale(nullptr);
+  EXPECT_EQ(iterator.NextBreakOpportunity(0), 2u);
+  EXPECT_EQ(iterator.LocaleWithKeyword(), "@lb=strict");
+
+  iterator.SetLocale(LayoutLocale::Get(g_empty_atom));
+  EXPECT_EQ(iterator.NextBreakOpportunity(0), 2u);
+  EXPECT_EQ(iterator.LocaleWithKeyword(), "@lb=strict");
+
+  iterator.SetStrictness(LineBreakStrictness::kDefault);
+  EXPECT_EQ(iterator.NextBreakOpportunity(0), 1u);
+  EXPECT_EQ(iterator.LocaleWithKeyword(), "");
+
+  iterator.SetLocale(nullptr);
   EXPECT_EQ(iterator.NextBreakOpportunity(0), 1u);
   EXPECT_EQ(iterator.LocaleWithKeyword(), "");
 }

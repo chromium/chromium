@@ -169,8 +169,10 @@ TEST(LayoutLocaleTest, BreakKeyword) {
   } tests[] = {
       {nullptr, nullptr, LineBreakStrictness::kDefault},
       {"", "", LineBreakStrictness::kDefault},
-      {nullptr, nullptr, LineBreakStrictness::kStrict},
-      {"", "", LineBreakStrictness::kStrict},
+      {"@lb=strict", nullptr, LineBreakStrictness::kStrict},
+      {"@lb=strict", "", LineBreakStrictness::kStrict},
+      {"@lb=normal", "", LineBreakStrictness::kNormal},
+      {"@lb=loose", "", LineBreakStrictness::kLoose},
       {"ja", "ja", LineBreakStrictness::kDefault},
       {"ja@lb=normal", "ja", LineBreakStrictness::kNormal},
       {"ja@lb=strict", "ja", LineBreakStrictness::kStrict},
