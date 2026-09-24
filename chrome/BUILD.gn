@@ -132,7 +132,12 @@ group("assert_no_deps") {
 
 if (!is_android && !is_mac) {
   group("chrome") {
-    public_deps = [ ":chrome_initial" ]
+    public_deps = [
+      ":chrome_initial",
+
+      # These files are used by the installer so we need a public dep.
+      ":packed_resources",
+    ]
     data_deps = [ ":chrome_initial" ]
 
     # Do not add any more deps or data_deps to group("chrome").
@@ -368,10 +373,10 @@ if (!is_android && !is_mac) {
       }
     }
 
-    # These files are used by the installer so we need a public dep.
-    public_deps += [ ":packed_resources" ]
-
-    # The step's output are needed at runtime, so we also need a data_dep.
+    # The step's output are needed at runtime, so we need a data_dep.
+    # Note: Do not add ":packed_resources" to deps/public_deps here, as that
+    # forces all C++ compilations in chrome_initial to wait for resources.pak.
+    # Instead, group("chrome") exposes it via public_deps for installers.
     data_deps += [ ":packed_resources" ]
 
     # ChromeOS by design is safe to have rpath=$ORIGIN. This simplifies shared
@@ -549,9 +554,6 @@ if (is_win) {
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
-      ":chrome_app_strings_bundle_data",
-      ":chrome_resources",
-      ":chrome_versioned_bundle_data",
       "//base:compiler_specific",
       "//base/allocator:early_zone_registration_apple",
       "//build:branding_buildflags",
@@ -560,8 +562,14 @@ if (is_win) {
       "//chrome/common:version_header",
     ]
 
+    bundle_deps = [
+      ":chrome_app_strings_bundle_data",
+      ":chrome_resources",
+      ":chrome_versioned_bundle_data",
+    ]
+
     if (enable_updater) {
-      deps += [ ":chromium_updater_privileged_helper" ]
+      bundle_deps += [ ":chromium_updater_privileged_helper" ]
     }
 
     if (enable_stripping) {
