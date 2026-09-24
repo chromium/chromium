@@ -1187,10 +1187,6 @@ source_set("tab_helpers_impl") {
 # BrowserWindowInterface instead. The visibility list below is intentionally
 # minimal -- please do not extend it without discussing with the Bedrock team
 # (crbug.com/428946261).
-#
-# browser.h is still listed in the :ui sources below as well, so this target
-# does not yet restrict anything; that happens in a follow-up which removes it
-# from :ui.
 if (!is_android) {
   source_set("browser_header") {
     public = [ "browser.h" ]
@@ -1989,7 +1985,6 @@ static_library("ui") {
       # WebUI interface binders for desktop, which need this target's headers.
       "//chrome/browser/chrome_browser_interface_binders_webui_parts_desktop.cc",
       "browser.cc",
-      "browser.h",
       "browser_command_controller.cc",
       "browser_command_controller.h",
       "browser_commands.cc",
