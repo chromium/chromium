@@ -6,29 +6,12 @@
 
 #import <memory>
 
-#import "base/test/scoped_feature_list.h"
-#import "components/signin/public/base/signin_metrics.h"
-#import "components/sync/base/features.h"
 #import "components/sync/protocol/sync_enums.pb.h"
-#import "components/sync/test/test_sync_service.h"
 #import "components/sync_sessions/sync_sessions_client.h"
 #import "components/sync_sessions/test_synced_window_delegates_getter.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/profile/features.h"
-#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
-#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "ui/base/page_transition_types.h"
@@ -149,52 +132,16 @@ class FakeSyncSessionsClient : public sync_sessions::SyncSessionsClient {
   sync_sessions::TestSyncedWindowDelegatesGetter window_delegates_getter_;
 };
 
-TEST_F(IOSChromeSyncedTabDelegateTest,
-       SyncOnlyTabsActiveAfterSigninForManagedAccount) {
-  web::WebTaskEnvironment task_environment;
-  IOSChromeScopedTestingLocalState scoped_testing_local_state;
-
-  // Create a BrowserState with the necessary services.
-  TestProfileManagerIOS profile_manager;
-  TestProfileIOS::Builder builder;
-  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
-                            AuthenticationServiceFactory::GetDefaultFactory());
-  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            base::BindRepeating(&CreateTestSyncService));
-  TestProfileIOS* profile =
-      profile_manager.AddProfileWithBuilder(std::move(builder));
-
-  const base::Time pre_signin_time = base::Time::Now();
-
-  // Sign in with a managed account.
-  id<SystemIdentity> identity = [FakeSystemIdentity fakeManagedIdentity];
-  FakeSystemIdentityManager* system_identity_manager =
-      FakeSystemIdentityManager::FromSystemIdentityManager(
-          GetApplicationContext()->GetSystemIdentityManager());
-  system_identity_manager->AddIdentity(identity);
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  // With multi-profile, `profile` is considered to be the personal profile,
-  // and the managed account gets assigned to a separate managed profile. Move
-  // it into the personal profile so that signin becomes possible.
-  GetApplicationContext()
-      ->GetAccountProfileMapper()
-      ->MoveManagedAccountToPersonalProfileForTesting(identity.gaiaId);
-
-  authentication_service->SignIn(identity,
-                                 signin_metrics::AccessPoint::kStartPage);
-
+TEST_F(IOSChromeSyncedTabDelegateTest, ShouldSync) {
   // Create a navigation entry (so that there's something to sync).
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   navigation_manager->AddItem(GURL("https://example.com/"),
                               ui::PAGE_TRANSITION_LINK);
   web::NavigationItem* navigation_item = navigation_manager->GetItemAtIndex(0);
-  navigation_item->SetTimestamp(pre_signin_time - base::Minutes(1));
   navigation_manager->SetLastCommittedItem(navigation_item);
 
-  // Create a WebState aka "a tab" plus the necessary helpers.
+  // Create a WebState aka "a tab".
   web::FakeWebState web_state;
-  web_state.SetBrowserState(profile);
   web_state.SetNavigationManager(std::move(navigation_manager));
   web_state.SetNavigationItemCount(1);
   const SessionID window_id = SessionID::NewUnique();
@@ -204,21 +151,11 @@ TEST_F(IOSChromeSyncedTabDelegateTest,
       IOSChromeSyncedTabDelegate::FromWebState(&web_state);
 
   FakeSyncSessionsClient client;
-  client.window_delegates_getter_.AddWindow(
-      sync_pb::SyncEnums_BrowserType_TYPE_TABBED, window_id);
-
-  // A tab that was last active before the sign-in happened should *not* sync.
-  web_state.SetLastActiveTime(pre_signin_time - base::Minutes(1));
+  // If the window is not known, it shouldn't sync.
   EXPECT_FALSE(tab_delegate->ShouldSync(&client));
 
-  // Once the tab gets reactivated again after the signin, it should sync.
-  web_state.SetLastActiveTime(pre_signin_time + base::Minutes(1));
-  EXPECT_TRUE(tab_delegate->ShouldSync(&client));
-
-  // Alternatively, if the tab does not get reactivated (because the user never
-  // left the tab), but a navigation happens, that should also make it sync.
-  web_state.SetLastActiveTime(pre_signin_time - base::Minutes(1));
-  navigation_item->SetTimestamp(pre_signin_time + base::Minutes(1));
+  client.window_delegates_getter_.AddWindow(
+      sync_pb::SyncEnums_BrowserType_TYPE_TABBED, window_id);
   EXPECT_TRUE(tab_delegate->ShouldSync(&client));
 }
 
