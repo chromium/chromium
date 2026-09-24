@@ -141,21 +141,80 @@
 
 @end
 
+@interface ActuationInterventionData ()
+
+// Designated initializer.
+- (instancetype)initWithType:(ActuationInterventionType)type
+                       title:(NSString*)title
+                    subtitle:(NSString*)subtitle
+           primaryButtonText:(NSString*)primaryButtonText
+         secondaryButtonText:(NSString*)secondaryButtonText
+    NS_DESIGNATED_INITIALIZER;
+
+@end
+
 @implementation ActuationInterventionData
 
-- (instancetype)initWithTitle:(NSString*)title
-                     subtitle:(NSString*)subtitle
-                   buttonText:(NSString*)buttonText {
-  CHECK(title);
-  CHECK(buttonText);
+- (instancetype)initWithType:(ActuationInterventionType)type
+                       title:(NSString*)title
+                    subtitle:(NSString*)subtitle
+           primaryButtonText:(NSString*)primaryButtonText
+         secondaryButtonText:(NSString*)secondaryButtonText {
+  CHECK(primaryButtonText);
+  switch (type) {
+    case ActuationInterventionType::kCard:
+      CHECK(title);
+      break;
+    case ActuationInterventionType::kSingleButton:
+      break;
+    case ActuationInterventionType::kDualButton:
+      CHECK(secondaryButtonText);
+      break;
+  }
 
   self = [super init];
   if (self) {
+    _type = type;
     _title = [title copy];
     _subtitle = [subtitle copy];
-    _buttonText = [buttonText copy];
+    _primaryButtonText = [primaryButtonText copy];
+    _secondaryButtonText = [secondaryButtonText copy];
   }
   return self;
+}
+
+#pragma mark - Factory Constructors
+
++ (instancetype)cardItemWithTitle:(NSString*)title
+                         subtitle:(NSString*)subtitle
+                primaryButtonText:(NSString*)primaryButtonText {
+  return [[ActuationInterventionData alloc]
+             initWithType:ActuationInterventionType::kCard
+                    title:title
+                 subtitle:subtitle
+        primaryButtonText:primaryButtonText
+      secondaryButtonText:nil];
+}
+
++ (instancetype)singleButtonItemWithPrimaryButtonText:
+    (NSString*)primaryButtonText {
+  return [[ActuationInterventionData alloc]
+             initWithType:ActuationInterventionType::kSingleButton
+                    title:nil
+                 subtitle:nil
+        primaryButtonText:primaryButtonText
+      secondaryButtonText:nil];
+}
+
++ (instancetype)dualButtonItemWithPrimaryButtonText:(NSString*)primaryButtonText
+                                secondaryButtonText:
+                                    (NSString*)secondaryButtonText {
+  return [[ActuationInterventionData alloc]
+             initWithType:ActuationInterventionType::kDualButton
+                    title:nil
+                 subtitle:nil
+        primaryButtonText:primaryButtonText
+      secondaryButtonText:secondaryButtonText];
 }
 
 @end

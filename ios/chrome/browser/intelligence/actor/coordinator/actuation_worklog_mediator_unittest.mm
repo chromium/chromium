@@ -218,7 +218,7 @@ TEST_F(ActuationWorklogMediatorTest, TestUserInterventionFlow) {
   ASSERT_NE(fake_consumer_.intervention, nil);
   EXPECT_NSEQ(fake_consumer_.intervention.title, @"Intervention Title");
   EXPECT_NSEQ(fake_consumer_.intervention.subtitle, @"Intervention Subtitle");
-  EXPECT_NSEQ(fake_consumer_.intervention.buttonText, @"Continue");
+  EXPECT_NSEQ(fake_consumer_.intervention.primaryButtonText, @"Continue");
   EXPECT_FALSE(completion_called);
 
   [mediator_ didTapInterventionButton];

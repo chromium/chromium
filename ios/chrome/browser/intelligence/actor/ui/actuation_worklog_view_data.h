@@ -136,25 +136,59 @@ enum class ActuationWorklogItemStyle {
 
 @end
 
-// View data object describing an interactive intervention in the actuation
-// worklog.
+// Visual layouts for an interactive intervention in the actuation worklog.
+enum class ActuationInterventionType {
+  // Card with `title`, optional `subtitle`, and a primary action button.
+  kCard,
+  // Standalone full-width primary action button.
+  kSingleButton,
+  // Standalone, side-by-side secondary and primary action buttons.
+  kDualButton,
+};
+
+// User action triggered on an active worklog intervention.
+enum class ActuationInterventionAction {
+  // The primary confirmation/continuation action.
+  kPrimary,
+  // The secondary cancellation/alternative action.
+  kSecondary,
+};
+
+// View data object describing an intervention in the actuation worklog.
 @interface ActuationInterventionData : NSObject
 
-// Mandatory title text.
+// The visual layout type of the intervention.
+@property(nonatomic, assign, readonly) ActuationInterventionType type;
+
+// Optional title text (mandatory if `type == kCard`).
 @property(nonatomic, copy, readonly) NSString* title;
 
-// Optional subtitle text.
+// Optional subtitle text (used if `type == kCard`).
 @property(nonatomic, copy, readonly) NSString* subtitle;
 
 // Mandatory primary action button title.
-@property(nonatomic, copy, readonly) NSString* buttonText;
+@property(nonatomic, copy, readonly) NSString* primaryButtonText;
 
-// Designated initializer.
-- (instancetype)initWithTitle:(NSString*)title
-                     subtitle:(NSString*)subtitle
-                   buttonText:(NSString*)buttonText NS_DESIGNATED_INITIALIZER;
+// Optional secondary action button title (mandatory if `type == kDualButton`).
+@property(nonatomic, copy, readonly) NSString* secondaryButtonText;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+#pragma mark - Factory Constructors
+
+// Creates a card layout intervention with a single action button.
++ (instancetype)cardItemWithTitle:(NSString*)title
+                         subtitle:(NSString*)subtitle
+                primaryButtonText:(NSString*)primaryButtonText;
+
+// Creates a single-button layout intervention.
++ (instancetype)singleButtonItemWithPrimaryButtonText:
+    (NSString*)primaryButtonText;
+
+// Creates a dual-button layout intervention.
++ (instancetype)dualButtonItemWithPrimaryButtonText:(NSString*)primaryButtonText
+                                secondaryButtonText:
+                                    (NSString*)secondaryButtonText;
 
 @end
 

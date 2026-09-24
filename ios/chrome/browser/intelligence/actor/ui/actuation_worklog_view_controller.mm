@@ -122,7 +122,7 @@ using intelligence::actor::kSpacingMedium;
   if (hasIntervention) {
     _cardView.title = intervention.title;
     _cardView.subtitle = intervention.subtitle;
-    _cardView.buttonTitle = intervention.buttonText;
+    _cardView.buttonTitle = intervention.primaryButtonText;
   }
   _cardView.hidden = !hasIntervention;
   _interventionContainer.hidden = !hasIntervention;

@@ -127,9 +127,9 @@ TEST_F(ActuationWorklogViewControllerTest, TestInterventionCardFlow) {
   EXPECT_TRUE(card_view.hidden);
 
   ActuationInterventionData* intervention =
-      [[ActuationInterventionData alloc] initWithTitle:@"Intervention Title"
-                                              subtitle:@"Intervention Subtitle"
-                                            buttonText:@"Continue"];
+      [ActuationInterventionData cardItemWithTitle:@"Intervention Title"
+                                          subtitle:@"Intervention Subtitle"
+                                 primaryButtonText:@"Continue"];
   [consumer setIntervention:intervention];
   EXPECT_FALSE(card_view.hidden);
 

@@ -228,9 +228,9 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
   }
 
   ActuationInterventionData* data =
-      [[ActuationInterventionData alloc] initWithTitle:title
-                                              subtitle:subtitle
-                                            buttonText:buttonText];
+      [ActuationInterventionData cardItemWithTitle:title
+                                          subtitle:subtitle
+                                 primaryButtonText:buttonText];
   [_consumer setIntervention:data];
 }
 
