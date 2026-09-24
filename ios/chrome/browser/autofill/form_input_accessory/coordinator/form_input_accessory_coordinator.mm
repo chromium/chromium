@@ -1078,8 +1078,8 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
                   [weakSelf suppressEntityForSuggestion:suggestion];
                   [weakSelf dismissAlertCoordinator];
                 }
-                 style:UIAlertActionStyleDestructive
-             preferred:NO
+                 style:UIAlertActionStyleDefault
+             preferred:YES
                enabled:YES];
 
   [_alertCoordinator start];
