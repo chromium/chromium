@@ -14,6 +14,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
+#import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/google_one/shared/google_one_deep_link_util.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -59,30 +60,6 @@ NSString* const kSmartAppBannerKey = @"safarisab";
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
 void LogWidgetKitAction(WidgetKitExtensionAction action) {
   UmaHistogramEnumeration(kWidgetKitActionHistogram, action);
-}
-
-bool CallerAppIsFirstParty(MobileSessionCallerApp callerApp) {
-  switch (callerApp) {
-    case CALLER_APP_GOOGLE_SEARCH:
-    case CALLER_APP_GOOGLE_GMAIL:
-    case CALLER_APP_GOOGLE_PLUS:
-    case CALLER_APP_GOOGLE_DRIVE:
-    case CALLER_APP_GOOGLE_EARTH:
-    case CALLER_APP_GOOGLE_OTHER:
-    case CALLER_APP_GOOGLE_YOUTUBE:
-    case CALLER_APP_GOOGLE_MAPS:
-    case CALLER_APP_GOOGLE_CHROME_SHARE_EXTENSION:
-    case CALLER_APP_GOOGLE_CHROME_OPEN_EXTENSION:
-    case CALLER_APP_GOOGLE_CHROME:
-      return true;
-    case CALLER_APP_OTHER:
-    case CALLER_APP_APPLE_MOBILESAFARI:
-    case CALLER_APP_APPLE_OTHER:
-    case CALLER_APP_THIRD_PARTY:
-    case CALLER_APP_NOT_AVAILABLE:
-    case MOBILE_SESSION_CALLER_APP_COUNT:
-      return false;
-  }
 }
 
 // LINT.IfChange(IsShowDefaultBrowserSettings)
@@ -365,7 +342,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         forceApplicationMode:forceApplicationMode];
     params.openedWithURL = YES;
     params.openedViaFirstPartyScheme =
-        openedViaSpecificScheme && CallerAppIsFirstParty(params.callerApp);
+        openedViaSpecificScheme && IsCallerAppFirstParty(params.callerApp);
     if (isGoogleOneDeepLink) {
       params.postOpeningAction = SHOW_GOOGLE_ONE_SCREEN;
     }
@@ -494,7 +471,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   }
 
   base::UmaHistogramEnumeration(kExternalActionHistogram, action);
-  params.openedViaFirstPartyScheme = CallerAppIsFirstParty(params.callerApp);
+  params.openedViaFirstPartyScheme = IsCallerAppFirstParty(params.callerApp);
   return params;
 }
 // LINT.ThenChange(//ios/chrome/app/task_request_for_standard_url_context.mm:ExternalAction)

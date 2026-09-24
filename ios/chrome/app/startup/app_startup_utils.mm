@@ -67,21 +67,26 @@ CallerApp CallerAppFromAppID(NSString* caller_app_id) {
 
 }  // namespace
 
-bool IsCallerAppFirstParty(NSString* caller_app_id) {
-  CallerApp caller_app = CallerAppFromAppID(caller_app_id);
+bool IsCallerAppFirstParty(MobileSessionCallerApp caller_app) {
   switch (caller_app) {
-    case CallerApp::kGoogleSearch:
-    case CallerApp::kGmail:
-    case CallerApp::kGooglePlus:
-    case CallerApp::kGoogleDrive:
-    case CallerApp::kGoogleEarth:
-    case CallerApp::kGoogleOther:
-    case CallerApp::kYoutube:
-    case CallerApp::kGoogleMaps:
-    case CallerApp::kChrome:
-    case CallerApp::kExperienceKitCatalog:
+    case CALLER_APP_GOOGLE_SEARCH:
+    case CALLER_APP_GOOGLE_GMAIL:
+    case CALLER_APP_GOOGLE_PLUS:
+    case CALLER_APP_GOOGLE_DRIVE:
+    case CALLER_APP_GOOGLE_EARTH:
+    case CALLER_APP_GOOGLE_OTHER:
+    case CALLER_APP_GOOGLE_YOUTUBE:
+    case CALLER_APP_GOOGLE_MAPS:
+    case CALLER_APP_GOOGLE_CHROME_SHARE_EXTENSION:
+    case CALLER_APP_GOOGLE_CHROME_OPEN_EXTENSION:
+    case CALLER_APP_GOOGLE_CHROME:
       return true;
-    case CallerApp::kOtherApp:
+    case CALLER_APP_OTHER:
+    case CALLER_APP_APPLE_MOBILESAFARI:
+    case CALLER_APP_APPLE_OTHER:
+    case CALLER_APP_THIRD_PARTY:
+    case CALLER_APP_NOT_AVAILABLE:
+    case MOBILE_SESSION_CALLER_APP_COUNT:
       return false;
   }
 }

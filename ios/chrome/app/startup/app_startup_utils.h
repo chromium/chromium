@@ -7,8 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/app/startup/app_launch_metrics.h"
+
 // Checks if the caller app is a first party app.
-bool IsCallerAppFirstParty(NSString* caller_app_id);
+bool IsCallerAppFirstParty(MobileSessionCallerApp caller_app);
 
 // Checks if the caller app is allowed for the AI summarization experiment.
 bool IsCallerAppAllowListedForAISummarization(NSString* caller_app_id);
