@@ -6,7 +6,21 @@ found in the LICENSE file.
 -->
 
 <resources>
+    <style name="TextAppearance.TaskManagerCategoryChip"
+        parent="TextAppearance.TextAccentMediumThick">
+        <item name="android:textColor">
+            @color/task_manager_category_chip_text_color
+        </item>
+    </style>
+
     <style name="TaskManagerCategoryChip" parent="SuggestionChip">
+        <item name="chipColor">
+            @color/task_manager_category_chip_bg_color
+        </item>
+        <item name="primaryTextAppearance">
+            @style/TextAppearance.TaskManagerCategoryChip
+        </item>
+        <item name="solidColorChip">true</item>
         <item name="cornerRadius">@dimen/task_manager_chip_corner_radius</item>
         <item name="verticalInset">0dp</item>
     </style>
@@ -15,10 +29,20 @@ found in the LICENSE file.
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:layout_marginHorizontal">@dimen/task_header_margin_horizontal</item>
-        <item name="android:paddingHorizontal">@dimen/task_header_padding_horizontal</item>
-        <item name="android:paddingVertical">@dimen/task_header_padding_vertical</item>
-        <item name="android:background">@drawable/bookmark_bar_ripple_background_selector</item>
-        <item name="android:textAppearance">@style/TextAppearance.TextMediumThick.Primary</item>
+        <item name="android:layout_marginHorizontal">
+            @dimen/task_header_margin_horizontal
+        </item>
+        <item name="android:paddingHorizontal">
+            @dimen/task_header_padding_horizontal
+        </item>
+        <item name="android:paddingVertical">
+            @dimen/task_header_padding_vertical
+        </item>
+        <item name="android:background">
+            @drawable/bookmark_bar_ripple_background_selector
+        </item>
+        <item name="android:textAppearance">
+            @style/TextAppearance.TextMediumThick.Primary
+        </item>
     </style>
 </resources>

@@ -15,7 +15,7 @@ BASE_FEATURE(kTaskManagerClank,
 );
 
 // Enables the Task Manager Toolbar (chips and search) on Android.
-BASE_FEATURE(kTaskManagerToolbar, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTaskManagerToolbar, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

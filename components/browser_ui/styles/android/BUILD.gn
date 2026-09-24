@@ -118,6 +118,8 @@ android_resources("java_resources") {
     "java/res/color/interactable_chip_bg_color.xml",
     "java/res/color/progress_bar_bg_color_list.xml",
     "java/res/color/selection_control_button_tint_list.xml",
+    "java/res/color/task_manager_category_chip_bg_color.xml",
+    "java/res/color/task_manager_category_chip_text_color.xml",
     "java/res/color/text_button_ripple_color_list.xml",
     "java/res/color/text_highlight_color.xml",
     "java/res/color/tonal_button_bg_list.xml",
