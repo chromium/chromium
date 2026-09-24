@@ -95,7 +95,6 @@ _TELEMETRY_STARTUP_BROWSER_ARGS = (
 # absent from this map keep crossbench's default (live) URL.
 _CROSSBENCH_LOCAL_BENCHMARK_DIRS = {
     'speedometer3': 'third_party/speedometer/v3.1',
-    'jetstream2': 'third_party/jetstream/v2.2',
     'jetstream3': 'third_party/jetstream/v3.0',
 }
 
@@ -1199,12 +1198,21 @@ def main():
 
     # JetStream is disabled on 32-bit Windows due to failures, see
     # https://crbug.com/327040688.
-    # JetStream 3 currently fails on 32-bit ARM Android Chrome (see
-    # https://crbug.com/565414952), so run JetStream 2 on arm32 for now.
-    if args.target_arch in ('arm64', 'x64'):
-        benchmarks.append(Benchmark('jetstream3.crossbench', ['jetstream3']))
-    elif args.target_arch == 'arm':
-        benchmarks.append(Benchmark('jetstream2.crossbench', ['jetstream2']))
+    if not (
+        not args.android_browser
+        and sys.platform == 'win32'
+        and args.target_arch == 'x86'
+    ):
+        jetstream_args = ['jetstream3']
+        if args.target_arch in ('arm', 'x86'):
+            # Skip memory-hungry stories on 32-bit platforms to avoid OOM and
+            # timeouts, see https://crbug.com/487336000 and
+            # https://crbug.com/565414952.
+            jetstream_args.append(
+                '--stories=default,-babylonjs-scene-es6,'
+                '-transformersjs-bert-wasm'
+            )
+        benchmarks.append(Benchmark('jetstream3.crossbench', jetstream_args))
 
     # These benchmarks require special access permissions:
     # https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners
