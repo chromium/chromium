@@ -133,15 +133,12 @@ void CanvasResourceDispatcher::PrepareFrame(
               SkBlendMode::kSrcOver, /*sorting_context=*/0, /*layer_id=*/0u,
               /*fast_rounded_corner=*/false);
 
-  viz::TransferableResource resource;
-
   // This property will be overridden by the embedding SurfaceLayer, so this
   // value will have no effect.
   const bool nearest_neighbor = false;
 
-  exported_resource->PrepareTransferableResource(
-      resource,
-      /*needs_verified_synctoken=*/false);
+  viz::TransferableResource resource =
+      exported_resource->PrepareTransferableResource();
 
   gpu::SharedImageInterface* sii = nullptr;
 

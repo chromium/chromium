@@ -70,11 +70,9 @@ void ExportedCanvasResource::EndDisplayCompositorAccess(
   }
 }
 
-void ExportedCanvasResource::PrepareTransferableResource(
-    viz::TransferableResource& transferable_resource,
-    bool needs_verified_synctoken) {
-  resource_->PrepareTransferableResource(transferable_resource,
-                                         needs_verified_synctoken);
+viz::TransferableResource
+ExportedCanvasResource::PrepareTransferableResource() {
+  return resource_->PrepareTransferableResource();
 }
 
 }  // namespace blink

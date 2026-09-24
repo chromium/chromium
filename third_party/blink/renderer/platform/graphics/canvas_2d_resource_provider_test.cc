@@ -128,10 +128,7 @@ class Canvas2DResourceProviderTest : public Test {
   }
 
   void EnsureResourceRecycled(scoped_refptr<CanvasResource>&& resource) {
-    viz::TransferableResource transferable_resource;
-    resource->PrepareTransferableResource(transferable_resource,
-                                          /*needs_verified_synctoken=*/false);
-
+    auto transferable_resource = resource->PrepareTransferableResource();
     CanvasResource::DropRefOnOwningThread(std::move(resource));
   }
 

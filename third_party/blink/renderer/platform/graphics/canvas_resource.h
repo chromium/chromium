@@ -72,10 +72,9 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
     return GetSharedImage()->EstimatedSizeInBytes();
   }
 
-  // Provides a TransferableResource representation of this resource to share it
+  // Returns a TransferableResource representation of this resource to share it
   // with the compositor.
-  void PrepareTransferableResource(viz::TransferableResource&,
-                                   bool needs_verified_synctoken);
+  viz::TransferableResource PrepareTransferableResource();
 
   // Issues a wait for this sync token on the context used by this resource for
   // rendering.

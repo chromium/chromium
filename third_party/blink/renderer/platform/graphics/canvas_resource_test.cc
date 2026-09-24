@@ -48,9 +48,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_Software) {
       /*is_accelerated=*/false, /*provider=*/nullptr,
       /*context_provider_wrapper=*/nullptr, shared_image_interface_provider);
   EXPECT_TRUE(!!canvas_resource);
-  viz::TransferableResource resource;
-  canvas_resource->PrepareTransferableResource(
-      resource, /*needs_verified_synctoken=*/false);
+  auto resource = canvas_resource->PrepareTransferableResource();
 
   EXPECT_TRUE(resource.GetIsSoftware());
 
@@ -63,8 +61,6 @@ TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {
       ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>();
   auto test_context_provider = viz::TestContextProvider::CreateRaster();
   InitializeSharedGpuContext(test_context_provider.get());
-
-  viz::TransferableResource resource;
 
   gpu::ImageInfo image_info(
       gfx::Size(10, 10), viz::SinglePlaneFormat::kRGBA_8888,
@@ -81,8 +77,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {
       /*provider=*/nullptr, SharedGpuContext::ContextProviderWrapper(),
       gfx::HDRMetadata(), /*is_accelerated=*/false);
 
-  premul_canvas_resource->PrepareTransferableResource(
-      resource, /*needs_verified_synctoken=*/false);
+  auto resource = premul_canvas_resource->PrepareTransferableResource();
   EXPECT_EQ(resource.GetAlphaType(), kPremul_SkAlphaType);
 
   image_info.alpha_type = kUnpremul_SkAlphaType;
@@ -95,8 +90,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_PreservesAlphaType) {
       /*provider=*/nullptr, SharedGpuContext::ContextProviderWrapper(),
       gfx::HDRMetadata(), /*is_accelerated=*/false);
 
-  unpremul_canvas_resource->PrepareTransferableResource(
-      resource, /*needs_verified_synctoken=*/false);
+  resource = unpremul_canvas_resource->PrepareTransferableResource();
   EXPECT_EQ(resource.GetAlphaType(), kUnpremul_SkAlphaType);
 
   // InitializeSharedGpuContext() requires SharedGpuContext::Reset()
