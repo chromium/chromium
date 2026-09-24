@@ -23,8 +23,7 @@ ${repeat(
       ` : html`
         <pinned-toolbar-action
             .state="${keyedState.state}"
-            .poppedOut="${this.dividerIndex !== -1 &&
-                          index > this.dividerIndex}"
+            .poppedOut="${index > this.dividerIndex}"
             class="${keyedState.animateIn ? 'animate-in' : ''}
                    ${keyedState.exiting ? 'exiting' : ''}
                    ${keyedState.dragPlaceholder ? 'drag-placeholder' : ''}"

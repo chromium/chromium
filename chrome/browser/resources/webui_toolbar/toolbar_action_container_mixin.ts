@@ -35,6 +35,7 @@ export interface ToolbarActionContainerMixinInterface<T> {
   allExiting(): boolean;
   animateInDivider(): boolean;
   reconcileKeys(): void;
+  onKeyedStatesChanged(): void;
   isDraggable(state: T, index: number): boolean;
   onActionDragover(e: DragEvent): void;
   onActionDrop(e: DragEvent): void;
@@ -63,7 +64,10 @@ export interface ToolbarActionContainerMixinInterface<T> {
  *    suffix that drag-and-drop operations cannot reorder or enter.
  * 4. Optionally override `isInitialUpdate(newStates: T[]): boolean` to suppress
  *    slide-in animations on initial load.
- * 5. In your Lit template (`.html.ts`), iterate over `this.keyedStates` using
+ * 5. Optionally override `onKeyedStatesChanged()` to recompute any state
+ *    derived from `keyedStates`. It is invoked on every change to
+ *    `keyedStates`, before any calls are made to isDraggable().
+ * 6. In your Lit template (`.html.ts`), iterate over `this.keyedStates` using
  *    the Lit `repeat()` directive, applying `animate-in` and `exiting` CSS
  *    classes based on `keyedState.animateIn` and `keyedState.exiting`.
  */
@@ -174,6 +178,17 @@ export const ToolbarActionContainerMixin =
           window.removeEventListener('mousemove', this.mouseMoveListener_);
         }
 
+        /**
+         * Invoked whenever `keyedStates` changes, before anything else
+         * consumes it during the update. Subclasses may override this to
+         * recompute values derived from `keyedStates`. Note that `keyedStates`
+         * is modified in a number of places besides reconcileKeys() (e.g. when
+         * exiting items finish animating out and are removed, or when items
+         * are reordered mid-drag), so derived values must not be computed in
+         * reconcileKeys() alone.
+         */
+        onKeyedStatesChanged() {}
+
         override willUpdate(changedProperties: PropertyValues<this>) {
           super.willUpdate(changedProperties);
 
@@ -190,7 +205,12 @@ export const ToolbarActionContainerMixin =
             this.reconcileKeys();
           }
 
+          // Note that reconcileKeys() assigns a new array to `keyedStates`, so
+          // when it runs above, `changedProperties` gains a `keyedStates` entry
+          // before it's checked here, and this block runs in the same update.
           if (changedProperties.has('keyedStates')) {
+            this.onKeyedStatesChanged();
+
             let draggableCount = 0;
             for (let i = this.keyedStates.length - 1; i >= 0; i--) {
               if (this.isDraggable(this.keyedStates[i]!.state, i)) {

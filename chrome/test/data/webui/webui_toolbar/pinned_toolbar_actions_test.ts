@@ -6,7 +6,7 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {AnimationTracker, BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {PinnedToolbarActionsElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 import {PinnedToolbarAction} from 'chrome://webui-toolbar.top-chrome/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -49,7 +49,16 @@ suite('PinnedToolbarActions', function() {
     window.BroadcastChannel = originalBroadcastChannel;
   });
 
+  teardown(() => {
+    AnimationTracker.resetForTesting();
+  });
+
   setup(async () => {
+    // Explicitly enable animations, so that behavior does not depend on the
+    // host's `prefers-reduced-motion` setting. With animations enabled,
+    // removed actions are temporarily retained in `keyedStates` as "exiting"
+    // states, which affects indices, and thus the position of the divider.
+    AnimationTracker.showAnimations = true;
     channels = [];  // Reset active channels
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     moveCalls = [];
@@ -154,6 +163,151 @@ suite('PinnedToolbarActions', function() {
 
     assertFalse(action1.poppedOut);
     assertTrue(action3.poppedOut);
+  });
+
+  test('Pops out all elements when there is no divider', async () => {
+    // Without a divider, nothing is pinned, so all actions are popped out into
+    // the overflow menu, and none of them may be dragged.
+    container.states = [
+      {
+        action: 1,
+        highlighted: false,
+        enabled: true,
+        activated: false,
+        tooltip: 'Action 1',
+        accessibilityText: '',
+        elementId: 'action-1',
+        icon: {handleId: 1n},
+      },
+      {
+        action: 2,
+        highlighted: false,
+        enabled: true,
+        activated: false,
+        tooltip: 'Action 2',
+        accessibilityText: '',
+        elementId: 'action-2',
+        icon: {handleId: 2n},
+      },
+    ];
+    await microtasksFinished();
+
+    const actionElements =
+        container.shadowRoot.querySelectorAll('pinned-toolbar-action');
+    assertEquals(2, actionElements.length);
+    for (const action of actionElements) {
+      assertTrue(action.poppedOut);
+      assertFalse(action.shadowRoot.querySelector('cr-icon-button')!.draggable);
+    }
+
+    // Dragging an action over another one must not reorder them, either.
+    const helperChannel = new BroadcastChannel('pinned-action-drag');
+    helperChannel.postMessage({type: 'drag-start', itemId: '1'});
+
+    const dragEnterEvent = new DragEvent('dragenter', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    Object.defineProperty(dragEnterEvent, 'dataTransfer', {
+      value: {types: ['application/x-webui-pinned-action']},
+    });
+    container.dispatchEvent(dragEnterEvent);
+
+    const dragOverEvent = new DragEvent('dragover', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    Object.defineProperty(dragOverEvent, 'dataTransfer', {
+      value: {
+        types: ['application/x-webui-pinned-action'],
+        dropEffect: 'none',
+      },
+    });
+    actionElements[1]!.dispatchEvent(dragOverEvent);
+
+    const keyedStates = container.keyedStates;
+    assertEquals(2, keyedStates.length);
+    assertEquals('1', keyedStates[0]!.key);
+    assertEquals('2', keyedStates[1]!.key);
+  });
+
+  test('Dragging over a popped out action does not reorder', async () => {
+    container.states = [
+      {
+        action: 1,
+        highlighted: false,
+        enabled: true,
+        activated: false,
+        tooltip: 'Action 1',
+        accessibilityText: '',
+        elementId: 'action-1',
+        icon: {handleId: 1n},
+      },
+      {
+        action: PinnedToolbarAction.kDivider,
+        highlighted: false,
+        enabled: true,
+        activated: false,
+        tooltip: '',
+        accessibilityText: '',
+        elementId: '',
+        icon: {handleId: 0n},
+      },
+      {
+        action: 3,
+        highlighted: false,
+        enabled: true,
+        activated: false,
+        tooltip: 'Action 3',
+        accessibilityText: '',
+        elementId: 'action-3',
+        icon: {handleId: 3n},
+      },
+    ];
+    await microtasksFinished();
+
+    const actionElements =
+        container.shadowRoot.querySelectorAll('pinned-toolbar-action');
+    assertEquals(2, actionElements.length);
+    const poppedOutAction = actionElements[1]!;  // Action 3
+
+    // Start dragging Action 1, which is pinned, and therefore draggable.
+    const helperChannel = new BroadcastChannel('pinned-action-drag');
+    helperChannel.postMessage({type: 'drag-start', itemId: '1'});
+
+    const dragEnterEvent = new DragEvent('dragenter', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    Object.defineProperty(dragEnterEvent, 'dataTransfer', {
+      value: {types: ['application/x-webui-pinned-action']},
+    });
+    container.dispatchEvent(dragEnterEvent);
+
+    // Hover over Action 3, which is popped out, and thus can't be a drop
+    // target.
+    const dragOverEvent = new DragEvent('dragover', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    Object.defineProperty(dragOverEvent, 'dataTransfer', {
+      value: {
+        types: ['application/x-webui-pinned-action'],
+        dropEffect: 'none',
+      },
+    });
+    poppedOutAction.dispatchEvent(dragOverEvent);
+
+    // Action 1 must not be moved past the divider.
+    const keyedStates = container.keyedStates;
+    assertEquals(3, keyedStates.length);
+    assertEquals('1', keyedStates[0]!.key);
+    assertEquals(PinnedToolbarAction.kDivider.toString(), keyedStates[1]!.key);
+    assertEquals('3', keyedStates[2]!.key);
   });
 
   test('Keyboard reorder retains focus', async () => {
