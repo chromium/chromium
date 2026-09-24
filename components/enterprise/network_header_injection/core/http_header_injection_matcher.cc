@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/hash/hash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
@@ -211,22 +212,28 @@ bool HttpHeaderInjectionMatcherImpl::IsEmpty() const {
 }
 
 void HttpHeaderInjectionMatcherImpl::CalculatePrecedenceRanks() {
-  std::vector<base::MatcherStringPattern::ID> sorted_ids;
-  sorted_ids.reserve(rules_.size());
-  for (const auto& [id, _] : rules_) {
-    sorted_ids.push_back(id);
+  struct RuleEntry {
+    base::MatcherStringPattern::ID id;
+    raw_ptr<Rule> rule;
+  };
+
+  std::vector<RuleEntry> sorted_rules;
+  sorted_rules.reserve(rules_.size());
+  for (auto& [id, rule] : rules_) {
+    sorted_rules.push_back({id, &rule});
   }
 
-  std::sort(sorted_ids.begin(), sorted_ids.end(), [this](auto id1, auto id2) {
-    // We sort in ascending order of precedence (lowest precedence to
-    // highest). So, id1 should come before id2 if id1 has lower
-    // precedence than id2.
-    return FilterTakesPrecedenceStrict(rules_[id2].filter_components, id2,
-                                       rules_[id1].filter_components, id1);
-  });
+  std::sort(sorted_rules.begin(), sorted_rules.end(),
+            [](const RuleEntry& a, const RuleEntry& b) {
+              // We sort in ascending order of precedence (lowest precedence to
+              // highest). So, a should come before b if a has lower
+              // precedence than b.
+              return FilterTakesPrecedenceStrict(b.rule->filter_components, b.id,
+                                                 a.rule->filter_components, a.id);
+            });
 
-  for (size_t i = 0; i < sorted_ids.size(); ++i) {
-    rules_[sorted_ids[i]].precedence_rank = i;
+  for (size_t i = 0; i < sorted_rules.size(); ++i) {
+    sorted_rules[i].rule->precedence_rank = i;
   }
 }
 
