@@ -129,12 +129,10 @@ class FirstRunIntroPixelTest
     scoped_feature_list_.InitWithFeatureStates(
         {{switches::kProfileCreationDeclineSigninCTAExperiment,
           GetParam().decline_signin_cta_experiment_enabled},
-
          {switches::kFirstRunDesktopRefresh, GetParam().use_refresh},
          {switches::kFirstRunDesktopRevamp, GetParam().use_revamp},
          {switches::kFirstRunDesktopRevampSound, GetParam().enable_sound},
-         {switches::kDisableFirstRunAnimationsForTesting,
-          GetParam().use_refresh}});
+         {switches::kDisableFirstRunAnimationsForTesting, true}});
   }
 
   void ShowUi(const std::string& name) override {
@@ -152,7 +150,6 @@ class FirstRunIntroPixelTest
         base::BindRepeating([](ProfilePickerWebContentsHost* host) {
           return CreateIntroStep(
               host, /*choice_callback=*/base::DoNothing(),
-              /*enable_animations=*/false,
               /*query_effects_callback=*/base::BindRepeating([] {
                 return false;
               }),

@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './sign_in_promo.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './intro_app.css.js';
@@ -33,11 +34,11 @@ export class IntroAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.setupViewManager_(new URLSearchParams(window.location.search));
+    this.setupViewManager_();
   }
 
-  private async setupViewManager_(queryParams: URLSearchParams) {
-    if (!queryParams.has('noAnimations')) {
+  private async setupViewManager_() {
+    if (!loadTimeData.getBoolean('disableAnimations')) {
       const kSplashViewDurationMillis = 1500;
       this.$.viewManager.switchView('splash', 'no-animation', 'no-animation');
       // Delay the switch to signInPromo based on the splash animation timing.
@@ -46,10 +47,6 @@ export class IntroAppElement extends CrLitElement {
     }
     this.$.viewManager.switchView(
         'signInPromo', 'no-animation', 'no-animation');
-  }
-
-  setupViewManagerForTest(queryParams: URLSearchParams) {
-    return this.setupViewManager_(queryParams);
   }
 }
 

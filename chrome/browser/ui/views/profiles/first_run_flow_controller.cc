@@ -168,11 +168,9 @@ class IntroStepController : public ProfileManagementStepController {
   explicit IntroStepController(
       ProfilePickerWebContentsHost* host,
       base::RepeatingCallback<void(IntroChoice)> choice_callback,
-      bool enable_animations,
       bool effects_button_shown_by_default,
       base::RepeatingCallback<bool()> query_effects_callback)
       : ProfileManagementStepController(host),
-        intro_url_(BuildIntroURL(enable_animations)),
         choice_callback_(std::move(choice_callback)),
         effects_button_shown_by_default_(effects_button_shown_by_default),
         query_effects_callback_(std::move(query_effects_callback)) {}
@@ -181,15 +179,16 @@ class IntroStepController : public ProfileManagementStepController {
 
   void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
+    const GURL intro_url = GURL(chrome::kChromeUIIntroURL);
     if (reset_state) {
       // Reload the WebUI in the picker contents.
       host().ShowScreenInPickerContents(
-          intro_url_, base::BindOnce(&IntroStepController::OnIntroLoaded,
-                                     weak_ptr_factory_.GetWeakPtr(),
-                                     std::move(step_shown_callback)));
+          intro_url, base::BindOnce(&IntroStepController::OnIntroLoaded,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(step_shown_callback)));
     } else {
       // Just switch to the picker contents, which should be showing this step.
-      DCHECK_EQ(intro_url_, host().GetPickerContents()->GetURL());
+      CHECK_EQ(host().GetPickerContents()->GetURL(), intro_url);
       host().ShowScreenInPickerContents(
           GURL(), base::BindOnce(std::move(step_shown_callback.value()), true));
       if (!effects_button_shown_by_default_) {
@@ -221,14 +220,6 @@ class IntroStepController : public ProfileManagementStepController {
   }
 
  private:
-  GURL BuildIntroURL(bool enable_animations) {
-    std::string url_string = chrome::kChromeUIIntroURL;
-    if (!enable_animations) {
-      url_string += "?noAnimations";
-    }
-    return GURL(url_string);
-  }
-
   void ExpectSigninChoiceOnce() {
     auto* intro_ui = host()
                          .GetPickerContents()
@@ -254,8 +245,6 @@ class IntroStepController : public ProfileManagementStepController {
       intro_ui->ToggleAnimations(active);
     }
   }
-
-  const GURL intro_url_;
 
   // `choice_callback_` is a `Repeating` one to be able to advance the flow more
   // than once in case we navigate back to this step.
@@ -873,12 +862,11 @@ class WelcomeStepController : public ProfileManagementStepController {
 std::unique_ptr<ProfileManagementStepController> CreateIntroStep(
     ProfilePickerWebContentsHost* host,
     base::RepeatingCallback<void(IntroChoice)> choice_callback,
-    bool enable_animations,
     base::RepeatingCallback<bool()> query_effects_callback,
     bool effects_button_shown_by_default) {
   return std::make_unique<IntroStepController>(
-      host, std::move(choice_callback), enable_animations,
-      effects_button_shown_by_default, std::move(query_effects_callback));
+      host, std::move(choice_callback), effects_button_shown_by_default,
+      std::move(query_effects_callback));
 }
 
 std::unique_ptr<ProfileManagementStepController> CreateDefaultBrowserStep(
@@ -1379,7 +1367,6 @@ void FirstRunFlowController::RegisterAndSwitchToIntroStep(
           host(),
           base::BindRepeating(&FirstRunFlowController::HandleIntroSigninChoice,
                               weak_ptr_factory_.GetWeakPtr()),
-          /*enable_animations=*/true,
           base::BindRepeating(&FirstRunFlowController::AreEffectsEnabled,
                               base::Unretained(this)),
           effects_button_shown_by_default));
