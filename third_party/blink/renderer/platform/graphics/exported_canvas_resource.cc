@@ -53,10 +53,6 @@ scoped_refptr<StaticBitmapImage> ExportedCanvasResource::Bitmap() {
   return resource_->Bitmap();
 }
 
-void ExportedCanvasResource::Transfer() {
-  resource_->Transfer();
-}
-
 void ExportedCanvasResource::EndDisplayCompositorAccess(
     gpu::SharedImageExportResult export_result,
     bool is_lost) {

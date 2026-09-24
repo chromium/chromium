@@ -72,13 +72,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
     return GetSharedImage()->EstimatedSizeInBytes();
   }
 
-  // A CanvasResource is not thread-safe and does not allow concurrent usage
-  // from multiple threads. But it maybe used from any thread. It remains bound
-  // to the current thread until Transfer is called. Note that while the
-  // resource maybe used for reads on any thread, it can be written to only on
-  // the thread where it was created.
-  virtual void Transfer() {}
-
   // Provides a TransferableResource representation of this resource to share it
   // with the compositor.
   void PrepareTransferableResource(viz::TransferableResource&,
@@ -189,7 +182,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   void OnRefReturned(scoped_refptr<CanvasResource>&& resource) final;
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   const gfx::HDRMetadata& GetHdrMetadata() const final { return hdr_metadata_; }
-  void Transfer() final;
 
   // Save (and wait on) this sync token on the context used by this resource for
   // rendering.

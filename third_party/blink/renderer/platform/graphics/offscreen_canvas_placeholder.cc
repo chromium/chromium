@@ -74,10 +74,6 @@ void OffscreenCanvasPlaceholder::Client::DispatchFrame(
 
 void OffscreenCanvasPlaceholder::Client::PostImageToPlaceholder(
     scoped_refptr<ExportedCanvasResource>&& canvas_resource) {
-  // After this point, |canvas_resource| can only be used on the main thread,
-  // until it is returned.
-  canvas_resource->Transfer();
-
   CHECK(placeholder_task_runner_);
   PostCrossThreadTask(
       *placeholder_task_runner_, FROM_HERE,

@@ -28,7 +28,6 @@ class PLATFORM_EXPORT ExportedCanvasResource
   gfx::Size Size() const;
   bool OriginClean() const;
   scoped_refptr<StaticBitmapImage> Bitmap();
-  void Transfer();
   void EndDisplayCompositorAccess(gpu::SharedImageExportResult export_result,
                                   bool is_lost);
   void EndDisplayCompositorAccess(gpu::SyncToken export_result, bool is_lost);
