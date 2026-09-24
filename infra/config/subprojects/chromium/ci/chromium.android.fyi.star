@@ -102,6 +102,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "wpt|chrome",
         short_name = "15",
@@ -173,6 +174,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "wpt|webview",
         short_name = "15",
@@ -250,6 +252,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x86|rel",
         short_name = "11",
@@ -316,6 +319,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x64",
         short_name = "15T",
@@ -381,6 +385,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x64|rel",
         short_name = "16",
@@ -472,6 +477,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x64|rel",
         short_name = "17",
@@ -520,6 +526,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "network|traffic|annotations",
         short_name = "and",
@@ -591,6 +598,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "emulator|x64|rel",
         short_name = "canary",
@@ -641,6 +649,7 @@ ci.thin_tester(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
         short_name = "12",
@@ -687,6 +696,7 @@ ci.thin_tester(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
         short_name = "13",
@@ -734,6 +744,7 @@ ci.thin_tester(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",
         short_name = "12",
@@ -796,6 +807,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",
     ),

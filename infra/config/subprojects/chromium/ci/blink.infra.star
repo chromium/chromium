@@ -30,6 +30,7 @@ ci.builder(
     schedule = "0 0 * * 1-5",
     triggered_by = [],
     cores = 8,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         short_name = "bfs",
     ),
@@ -81,6 +82,7 @@ ci.builder(
     schedule = "0 */6 * * *",
     triggered_by = [],
     cores = 8,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         short_name = "fda",
     ),
@@ -124,6 +126,7 @@ ci.builder(
     schedule = "0 19 * * *",
     triggered_by = [],
     cores = 8,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         short_name = "vts-notify",
     ),

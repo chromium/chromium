@@ -84,6 +84,7 @@ ci.builder(
             ),
         ],
     ),
+    ssd = None,
     console_view_entry = [
         consoles.console_view_entry(
             category = "rel",
@@ -159,6 +160,7 @@ ci.builder(
             ),
         },
     ),
+    ssd = None,
     gardener_rotations = gardener_rotations.CHROMIUM,
     console_view_entry = consoles.console_view_entry(
         category = "rel",

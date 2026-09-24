@@ -36,6 +36,7 @@ ci.builder(
     name = "metadata-exporter",
     description_html = description,
     executable = "recipe:chromium_export_metadata",
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         console_view = "metadata.exporter",
     ),

@@ -70,6 +70,7 @@ ci.builder(
             "x64",
         ],
     ),
+    ssd = None,
     # Runs two builds, which can cause the builder to run out of disk space
     # with standard free space.
     free_space = free_space.high,
@@ -157,6 +158,7 @@ ci.builder(
             ),
         },
     ),
+    ssd = None,
     console_view_entry = [
         consoles.console_view_entry(
             category = "cast-receiver",
@@ -255,6 +257,7 @@ ci.builder(
             ),
         },
     ),
+    ssd = None,
     free_space = free_space.high,
     console_view_entry = [
         consoles.console_view_entry(
@@ -357,6 +360,7 @@ ci.builder(
             ],
         },
     ),
+    ssd = None,
     console_view_entry = [
         consoles.console_view_entry(
             category = "cast-receiver",
