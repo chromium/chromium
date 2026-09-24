@@ -14,6 +14,24 @@ source_set("feature_flags") {
   ]
 }
 
+source_set("util") {
+  sources = [
+    "start_surface_util.h",
+    "start_surface_util.mm",
+  ]
+
+  deps = [
+    ":feature_flags",
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/state",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ui/base",
+  ]
+}
+
 source_set("ui_bundled") {
   sources = [
     "start_surface_recent_tab_browser_agent.h",
@@ -24,9 +42,9 @@ source_set("ui_bundled") {
     "start_surface_recent_tab_removal_observer_bridge.mm",
     "start_surface_scene_agent.h",
     "start_surface_scene_agent.mm",
-    "start_surface_util.h",
-    "start_surface_util.mm",
   ]
+
+  public_deps = [ ":util" ]
 
   deps = [
     ":feature_flags",

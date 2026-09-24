@@ -23,10 +23,45 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/url_util.h"
+
+// Observes SceneState transitions to terminate cobrowse when returning to the
+// foreground after the Start Surface inactivity timeout.
+@interface CobrowseSceneStateObserver : NSObject <SceneStateObserver>
+- (instancetype)initWithBrowserAgent:(CobrowseBrowserAgent*)browserAgent;
+@end
+
+@implementation CobrowseSceneStateObserver {
+  raw_ptr<CobrowseBrowserAgent> _browserAgent;
+}
+
+- (instancetype)initWithBrowserAgent:(CobrowseBrowserAgent*)browserAgent {
+  self = [super init];
+  if (self) {
+    _browserAgent = browserAgent;
+  }
+  return self;
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level >= SceneActivationLevelForegroundActive) {
+    // If the scene returns to foreground after the Start Surface timeout has
+    // elapsed, terminate the active cobrowse session so it is not restored with
+    // stale context.
+    if (ShouldShowStartSurfaceForSceneState(sceneState)) {
+      _browserAgent->TerminateSession();
+    }
+  }
+}
+
+@end
 
 CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
     : BrowserUserData<CobrowseBrowserAgent>(browser) {
@@ -44,7 +79,21 @@ CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
   }
 
   SceneState* scene_state = browser_->GetSceneState();
+  if (scene_state) {
+    scene_state_observer_ =
+        [[CobrowseSceneStateObserver alloc] initWithBrowserAgent:this];
+    [scene_state addObserver:scene_state_observer_];
+  }
+
   if (!scene_state || scene_state.sceneSessionID.empty()) {
+    return;
+  }
+
+  // Check if the Start Surface should be shown on cold start. If the inactivity
+  // timeout threshold has elapsed since last backgrounding, discard any saved
+  // session pref to avoid restoring a stale cobrowse session.
+  if (ShouldShowStartSurfaceForSceneState(scene_state)) {
+    TerminateSession();
     return;
   }
 
@@ -72,6 +121,11 @@ CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
 
 CobrowseBrowserAgent::~CobrowseBrowserAgent() {
   StopObserving();
+  SceneState* scene_state = browser_->GetSceneState();
+  if (scene_state && scene_state_observer_) {
+    [scene_state removeObserver:scene_state_observer_];
+    scene_state_observer_ = nil;
+  }
 }
 
 CobrowseContext* CobrowseBrowserAgent::GetCobrowseContext() {
@@ -259,10 +313,23 @@ void CobrowseBrowserAgent::SetSessionActive(bool active) {
 
 void CobrowseBrowserAgent::TerminateSession() {
   if (is_session_active_) {
-    id<SceneCommands> scene_commands_handler =
-        HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands);
-    [scene_commands_handler hideAssistant];
-    SetSessionActive(false);
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+    if ([dispatcher dispatchingForProtocol:@protocol(SceneCommands)]) {
+      id<SceneCommands> scene_commands_handler =
+          HandlerForProtocol(dispatcher, SceneCommands);
+      [scene_commands_handler closeAssistant];
+    }
+  }
+
+  SetSessionActive(false);
+  context_ = nil;
+
+  SceneState* scene_state = browser_->GetSceneState();
+  if (scene_state && !scene_state.sceneSessionID.empty()) {
+    ScopedDictPrefUpdate update(browser_->GetProfile()->GetPrefs(),
+                                prefs::kCobrowseSessionActiveMap);
+    update->Remove(scene_state.sceneSessionID);
+    browser_->GetProfile()->GetPrefs()->CommitPendingWrite();
   }
 }
 

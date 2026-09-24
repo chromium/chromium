@@ -1001,38 +1001,30 @@ void RemoveSharedTab(NSString* title) {
                                                           @"persisted_query")];
 }
 
-// Tests that the Co-browse assistant is hidden on the New Tab Page (NTP)
-// when an NTP is opened after the app restarts with an active session.
+// Tests that the Co-browse assistant is closed when the Start Surface (NTP)
+// is opened after the app restarts with an active session.
 - (void)testAssistantHiddenOnNTPAfterColdStart {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Start surface NTP on cold start is not supported on iPad.");
   }
-  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"Skipped when kComposeboxServerSideState is enabled.");
-  }
 
-  // 1. Setup a specific context by navigating to a simulated AIM URL.
-  [ChromeEarlGrey loadURL:[self simulatedAimURLForQuery:"persisted_query"]];
-  [ChromeEarlGrey waitForPageToFinishLoading];
+  // 1. Open Co-browse on a normal URL.
+  OpenCoBrowse(_defaultURL);
 
-  // 2. Open cobrowse by tapping on a link in the fake aim page.
-  // This opens a new non-AIM tab (pony.html), which will display the sheet.
-  [ChromeEarlGrey tapWebStateElementWithID:@"my_link"];
-  [ChromeEarlGrey waitForMainTabCount:2];
-
+  // Wait for the assistant to appear.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
 
   MakeHomeSurfaceOpenImmediately();
 
-  // 3. Cold start the app. This simulates returning to the app after it was
+  // 2. Cold start the app. This simulates returning to the app after it was
   // force-closed, which natively triggers the Start Surface NTP to open,
-  // preserving the cobrowse session on the background tab.
-  [ChromeEarlGrey saveSessionImmediately];
+  // terminating the cobrowse session.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
 
   // The app will automatically open a Start Surface NTP upon cold start.
   // Wait for the fake omnibox to appear, indicating the NTP has loaded.
@@ -1043,10 +1035,50 @@ void RemoveSharedTab(NSString* title) {
   [[EarlGrey selectElementWithMatcher:CloseButton()]
       assertWithMatcher:grey_nil()];
 
-  // Navigate to a normal URL to ensure the assistant reappears.
+  // Switch back to the previous tab to ensure the assistant does NOT reappear
+  // because the cobrowse session was terminated.
+  [ChromeEarlGrey selectTabAtIndex:0];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
+
+  ResetMakeHomeSurfaceOpenImmediately();
+}
+
+// Tests that the Co-browse assistant is closed when the Start Surface (NTP)
+// is opened after the app is backgrounded and foregrounded after the inactivity
+// threshold.
+- (void)testAssistantClosedOnStartSurfaceAfterWarmStart {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Start surface NTP on warm start is not supported on iPad.");
+  }
+
+  OpenCoBrowse(_defaultURL);
+
+  // Wait for the assistant to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  MakeHomeSurfaceOpenImmediately();
+
+  // Background and foreground the app. With MakeHomeSurfaceOpenImmediately(),
+  // the Start Surface NTP is opened and the cobrowse session is terminated.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Wait for the fake omnibox to appear, indicating the NTP has loaded.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::FakeOmnibox()];
+
+  // Verify the assistant is NOT visible on the Start Surface NTP.
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
+
+  // Navigate to a normal URL to ensure the assistant does NOT reappear because
+  // the cobrowse session was terminated.
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/pony.html")];
   [ChromeEarlGrey waitForPageToFinishLoading];
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_nil()];
 
   ResetMakeHomeSurfaceOpenImmediately();
 }

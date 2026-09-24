@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
 @class CobrowseContext;
+@class CobrowseSceneStateObserver;
 
 // Browser agent that manages the CobrowseTabHelper delegate.
 class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
@@ -79,6 +80,10 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   // legitimately send an empty text query with an attachment or valid session
   // tokens.
   bool ShouldAcceptContextUpdate(CobrowseContext* context) const;
+  // Observer for `SceneState` transitions. Listens for when the scene enters
+  // the foreground active state to terminate any active cobrowse session if the
+  // Start Surface inactivity threshold has elapsed.
+  __strong CobrowseSceneStateObserver* scene_state_observer_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_MODEL_COBROWSE_BROWSER_AGENT_H_
