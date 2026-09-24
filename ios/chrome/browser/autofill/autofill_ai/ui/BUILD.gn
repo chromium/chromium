@@ -20,6 +20,7 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//base:i18n",
     "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -52,6 +53,7 @@ source_set("unit_tests") {
   deps = [
     ":ui",
     "//base",
+    "//base:i18n",
     "//components/autofill/core/browser:legal_message_line",
     "//components/autofill/core/browser:test_support",
     "//ios/chrome/app/strings",

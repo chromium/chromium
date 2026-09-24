@@ -6,6 +6,7 @@
 
 #import <algorithm>
 
+#import "base/i18n/time_formatting.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -94,9 +95,16 @@ NSArray<AutofillAiSourceGroup*>* ExtractSourcesFromEntity(
       }
       case autofill::EntityInstance::PersonalContextRecordTypePayload::Source::
           Type::kPhotos: {
-        NSString* title = l10n_util::GetNSStringF(
-            IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_SAVED_PHOTO,
-            base::NumberToString16(photo_index++));
+        const auto& photos_metadata = std::get<
+            autofill::EntityInstance::PersonalContextRecordTypePayload::
+                PhotosSourceMetadata>(source.metadata);
+        NSString* title =
+            !photos_metadata.timestamp.is_null()
+                ? base::SysUTF16ToNSString(
+                      base::TimeFormatShortDate(photos_metadata.timestamp))
+                : l10n_util::GetNSStringF(
+                      IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_SAVED_PHOTO,
+                      base::NumberToString16(photo_index++));
         AutofillAiSourceItem* item =
             [[AutofillAiSourceItem alloc] initWithTitle:title
                                                subtitle:nil
