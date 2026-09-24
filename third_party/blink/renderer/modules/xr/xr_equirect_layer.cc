@@ -16,7 +16,12 @@ XREquirectLayer::XREquirectLayer(XRSession* session,
                                  V8XRLayerLayout::Enum final_layout,
                                  XRGraphicsBinding* binding,
                                  XRLayerDrawingContext* drawing_context)
-    : XRShapedLayer(session, init, final_layout, binding, drawing_context),
+    : XRShapedLayer(session,
+                    init,
+                    final_layout,
+                    init->textureType().AsEnum(),
+                    binding,
+                    drawing_context),
       radius_(ExcludeNegativeAndNoise(init->radius())),
       central_horizontal_angle_(
           ExcludeNegativeAndNoise(init->centralHorizontalAngle())),

@@ -61,8 +61,10 @@ void OpenXrGraphicsBinding::OnSessionCreated(XrSpace local_space,
   layer_data->read_only_data->layout =
       kNumPrimaryViews > 1 ? mojom::XRLayerLayout::kStereoLeftRight
                            : mojom::XRLayerLayout::kMono;
+  layer_data->read_only_data->texture_type = mojom::XRTextureType::kTexture;
   layer_data->read_only_data->texture_width = 0;
   layer_data->read_only_data->texture_height = 0;
+  layer_data->read_only_data->is_static = false;
   layer_data->mutable_data = mojom::XRLayerMutableData::New();
   layer_data->mutable_data->layer_data =
       mojom::XRLayerSpecificData::NewProjection(

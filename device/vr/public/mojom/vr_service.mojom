@@ -836,12 +836,18 @@ enum XRLayerLayout {
   kStereoTopBottom = 3,
 };
 
+enum XRTextureType {
+  kTexture = 0,
+  kTextureArray = 1,
+};
+
 // Read-only data is only used to create a layer,
 // and cannot be modified after.
 struct XRLayerReadOnlyData {
   // Unique id of the client-created layer, which is provided by the client.
   LayerId layer_id;
   XRLayerLayout layout;
+  XRTextureType texture_type;
   uint32 texture_width;
   uint32 texture_height;
   bool is_static;

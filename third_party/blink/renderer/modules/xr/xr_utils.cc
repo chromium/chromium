@@ -325,6 +325,16 @@ device::mojom::blink::XRLayerLayout V8ToMojomLayerLayout(
   }
 }
 
+device::mojom::blink::XRTextureType V8ToMojomTextureType(
+    V8XRTextureType::Enum type) {
+  switch (type) {
+    case V8XRTextureType::Enum::kTexture:
+      return device::mojom::blink::XRTextureType::kTexture;
+    case V8XRTextureType::Enum::kTextureArray:
+      return device::mojom::blink::XRTextureType::kTextureArray;
+  }
+}
+
 uint16_t GetHorizontalViewCount(V8XRLayerLayout::Enum layout) {
   switch (layout) {
     case V8XRLayerLayout::Enum::kDefault:
