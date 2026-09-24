@@ -533,6 +533,16 @@ void ContextualTasksButton::OnViewLayerBoundsSet(views::View* observed_view) {
   }
 }
 
+void ContextualTasksButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
+  const std::vector<ui::Layer*> region_layers =
+      GetLayersInOrder(views::ViewLayer::kExclude);
+  if (std::ranges::contains(region_layers, old_layer)) {
+    views::View::RemoveLayerFromRegions(old_layer);
+  } else {
+    ToolbarButton::RemoveLayerFromRegions(old_layer);
+  }
+}
+
 void ContextualTasksButton::OnShouldUpdateVisibility(bool should_show) {
   MaybeUpdateVisibility();
 }
@@ -626,6 +636,7 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
     if (layer()) {
       layer()->SetOpacity(0.0f);  // Silence the flash before it becomes visible
     }
+    ClearDropShadow();
     SetVisible(true);
     AnimateShow();
     base::RecordAction(base::UserMetricsAction(

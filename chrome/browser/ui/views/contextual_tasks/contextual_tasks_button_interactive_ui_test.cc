@@ -62,6 +62,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_solid_color.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
@@ -1497,4 +1498,36 @@ IN_PROC_BROWSER_TEST_F(
                       views::AsViewClass<ToolbarView>(button->parent());
                   return toolbar && toolbar->GetIndexOf(button) == 0u;
                 }));
+}
+
+// Regression test for b/552070324: Destroying a layer in a button's region
+// must not leave a dangling pointer in views::View's layers, which would cause
+// a SIGSEGV in ui::LayerAnimator::GetTransitionDuration() when the button
+// becomes visible.
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralButtonInteractiveTest,
+    LayerDestroyedDoesNotLeaveDanglingLayerInRegionAndCrashOnShow) {
+  raw_ptr<ContextualTasksButton> button = nullptr;
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckView(kContextualTasksEphemeralToolbarButtonElementId,
+                [&button](ContextualTasksButton* b) {
+                  button = b;
+                  return true;
+                }),
+      Do([&button]() {
+        ASSERT_NE(button, nullptr);
+        auto extra_layer = std::make_unique<ui::LayerSolidColor>();
+        button->views::View::AddLayerToRegion(extra_layer.get(),
+                                              views::LayerRegion::kBelow);
+        extra_layer.reset();
+        button->SetVisible(false);
+        button->SetVisible(true);
+      }));
 }

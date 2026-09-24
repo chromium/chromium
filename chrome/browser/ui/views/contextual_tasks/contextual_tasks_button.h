@@ -70,6 +70,9 @@ class ContextualTasksButton
   // views::ViewObserver:
   void OnViewLayerBoundsSet(views::View* observed_view) override;
 
+  // views::View:
+  void RemoveLayerFromRegions(ui::Layer* old_layer) override;
+
  protected:
   void UpdateColorsAndInsets() override;
 
