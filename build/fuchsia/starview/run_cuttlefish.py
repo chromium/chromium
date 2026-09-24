@@ -53,6 +53,10 @@ IS_HEADLESS_BY_DEFAULT = not (
     or 'XDG_CURRENT_DESKTOP' in os.environ
 )
 
+# Standard Android phone display metrics (matching standard Chromium test bots).
+_DISPLAY_SIZE = '1080x1920'
+_DISPLAY_DENSITY = 480
+
 
 def sign_uboot_env_image(image_path, partition_size=73728):
     """Signs the uboot_env image with the standard AOSP RSA4096 test key using avbtool."""
@@ -429,6 +433,46 @@ def main():
             ):
                 logging.error("Timed out waiting for package manager.")
                 return 1
+
+            logging.info(f"Configuring display size to {_DISPLAY_SIZE}...")
+            res = subprocess.run(
+                [
+                    args.adb_path,
+                    '-s',
+                    target,
+                    'shell',
+                    'wm',
+                    'size',
+                    _DISPLAY_SIZE,
+                ],
+                capture_output=True,
+                text=True,
+            )
+            if res.stdout.strip():
+                logging.info(f"wm size output: {res.stdout.strip()}")
+            if res.stderr.strip():
+                logging.warning(f"wm size stderr: {res.stderr.strip()}")
+
+            logging.info(
+                f"Configuring display density to {_DISPLAY_DENSITY}..."
+            )
+            res = subprocess.run(
+                [
+                    args.adb_path,
+                    '-s',
+                    target,
+                    'shell',
+                    'wm',
+                    'density',
+                    str(_DISPLAY_DENSITY),
+                ],
+                capture_output=True,
+                text=True,
+            )
+            if res.stdout.strip():
+                logging.info(f"wm density output: {res.stdout.strip()}")
+            if res.stderr.strip():
+                logging.warning(f"wm density stderr: {res.stderr.strip()}")
 
             logging.info("Successfully connected to guest ADB!")
 

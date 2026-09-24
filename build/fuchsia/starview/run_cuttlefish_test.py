@@ -106,6 +106,61 @@ def main():
                     print("Failed to get package list from package manager.")
                     success = False
 
+            if success:
+                wm_size_cmd = [
+                    adb_path,
+                    '-s',
+                    f'127.0.0.1:{adb_port}',
+                    'shell',
+                    'wm',
+                    'size',
+                ]
+                print(
+                    'Running display size verification: '
+                    f"{' '.join(wm_size_cmd)}"
+                )
+                for attempt in range(5):
+                    res = subprocess.run(
+                        wm_size_cmd, capture_output=True, text=True
+                    )
+                    print(f"wm size output: {res.stdout.strip()}")
+                    if '1080x1920' in res.stdout:
+                        print("Display size successfully verified!")
+                        break
+                    time.sleep(2)
+                else:
+                    print("Failed to get expected display size from wm size.")
+                    success = False
+
+            if success:
+                wm_density_cmd = [
+                    adb_path,
+                    '-s',
+                    f'127.0.0.1:{adb_port}',
+                    'shell',
+                    'wm',
+                    'density',
+                ]
+                print(
+                    'Running display density verification: '
+                    f"{' '.join(wm_density_cmd)}"
+                )
+                for attempt in range(5):
+                    res = subprocess.run(
+                        wm_density_cmd, capture_output=True, text=True
+                    )
+                    print(f"wm density output: {res.stdout.strip()}")
+                    if '480' in res.stdout:
+                        print("Display density successfully verified!")
+                        break
+                    time.sleep(2)
+                else:
+                    print(
+                        'Failed to get expected display density from '
+                        'wm density.'
+                    )
+                    success = False
+
     except Exception as e:
         print(f"Test encountered error: {e}")
         success = False
