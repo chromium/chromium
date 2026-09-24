@@ -59,7 +59,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_entry_flow_coordinator.h"
-#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_coordinator.h"
+#import "ios/chrome/browser/intelligence/bwg/first_run/coordinator/gemini_first_run_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"

@@ -405,6 +405,8 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/intelligence/actor/tools/utils:unit_tests",
     "//ios/chrome/browser/intelligence/actor/ui:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/coordinator:unit_tests",
+    "//ios/chrome/browser/intelligence/bwg/first_run/coordinator:unit_tests",
+    "//ios/chrome/browser/intelligence/bwg/first_run/ui:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/model:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/ui:unit_tests",
     "//ios/chrome/browser/intelligence/contextual_cueing:unit_tests",

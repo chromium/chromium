@@ -1,0 +1,151 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "gemini_consent_accordion_view.h",
+    "gemini_consent_accordion_view.mm",
+    "gemini_consent_configuration.h",
+    "gemini_consent_configuration.mm",
+    "gemini_consent_view_controller.h",
+    "gemini_consent_view_controller.mm",
+    "gemini_consent_view_controller_delegate.h",
+    "gemini_first_run_carousel_slide_view.h",
+    "gemini_first_run_carousel_slide_view.mm",
+    "gemini_first_run_carousel_view.h",
+    "gemini_first_run_carousel_view.mm",
+    "gemini_first_run_mutator.h",
+    "gemini_first_run_page_view_controller.h",
+    "gemini_first_run_page_view_controller.mm",
+    "gemini_first_run_step.h",
+    "gemini_first_run_view_controller_protocol.h",
+    "gemini_first_run_wrapper_view_controller.h",
+    "gemini_first_run_wrapper_view_controller.mm",
+    "gemini_lightweight_view_controller.h",
+    "gemini_lightweight_view_controller.mm",
+    "gemini_promo_view_controller.h",
+    "gemini_promo_view_controller.mm",
+    "gemini_visual_rich_view_controller.h",
+    "gemini_visual_rich_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/intelligence/actor/ui",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/intelligence/bwg/ui",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/shared/ui:buildflags",
+    "//ios/chrome/browser/shared/ui/animated_promo:utils",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/font:font_api",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//ui/base",
+    "//url",
+  ]
+  public_deps = [ ":fre_lottie_resources" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "gemini_app_store_promo_egtest.mm",
+    "gemini_first_run_egtest.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/app_bar/ui:constants",
+    "//ios/chrome/browser/assistant/ui:detent",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/first_run/public:constants",
+    "//ios/chrome/browser/first_run/test:eg2_tests",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/page_action_menu/utils",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:test_constants",
+    "//ios/chrome/browser/toolbar/ui:constants",
+    "//ios/chrome/common/ui/button_stack:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+bundle_data("fre_lottie_resources") {
+  sources = [
+    "resources/FRE_Banner.json",
+    "resources/FRE_Planning_Slide.json",
+    "resources/FRE_Planning_Slide_Dark.json",
+    "resources/FRE_Planning_Slide_Dark_RTL.json",
+    "resources/FRE_Planning_Slide_RTL.json",
+    "resources/FRE_Shopping_Slide.json",
+    "resources/FRE_Shopping_Slide_Dark.json",
+    "resources/FRE_Shopping_Slide_Dark_RTL.json",
+    "resources/FRE_Shopping_Slide_RTL.json",
+    "resources/FRE_Summarize_Slide.json",
+    "resources/FRE_Summarize_Slide_RTL.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "gemini_consent_accordion_view_unittest.mm",
+    "gemini_consent_configuration_unittest.mm",
+    "gemini_consent_view_controller_unittest.mm",
+    "gemini_first_run_carousel_slide_view_unittest.mm",
+    "gemini_first_run_carousel_view_unittest.mm",
+    "gemini_first_run_page_view_controller_unittest.mm",
+    "gemini_first_run_wrapper_view_controller_unittest.mm",
+    "gemini_lightweight_view_controller_unittest.mm",
+    "gemini_promo_view_controller_unittest.mm",
+    "gemini_visual_rich_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/intelligence/actor/ui",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/ui:buildflags",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/button_stack:constants",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//url",
+  ]
+}
