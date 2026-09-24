@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -64,6 +65,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -82,6 +84,7 @@ bool HasPointerAndHoverSupport() {
 
 constexpr std::u16string_view kPasswordLabelSeparator = u" ";
 constexpr size_t kMaxBulletCount = 8;
+constexpr size_t kMaxDisplayedSources = 5;
 
 constexpr std::u16string_view kHomeAddressManagementUrl =
     u"https://myaccount.google.com/address/"
@@ -300,8 +303,12 @@ std::u16string GetAutofillAiSuggestionTitle(const EntityInstance& entity,
 
 // Gets the text for a dialog to confirm suppressing an Autofill AI suggestion.
 [[nodiscard]] AutofillAiSuggestionDetailsText
-GetAutofillAiSuggestionDetailsText(const EntityInstance& entity,
-                                   std::string_view app_locale) {
+GetAutofillAiSuggestionDetailsText(
+    const EntityInstance& entity,
+    std::string_view app_locale,
+    const std::vector<EntityInstance::PersonalContextRecordTypePayload::Source>&
+        sources) {
+  CHECK(!sources.empty());
   return AutofillAiSuggestionDetailsText{
       .title = GetAutofillAiSuggestionTitle(entity, app_locale),
       .body =
@@ -919,11 +926,21 @@ bool AutofillKeyboardAccessoryControllerImpl::ShowAutofillAiSuggestionDetails(
   if (base::optional_ref<const EntityInstance> entity =
           GetPersonalContextEntityForSuggestion(suggestions_[index], *client)) {
     SetSelectedSuggestionIndex(std::nullopt);
+    const EntityInstance::PersonalContextRecordTypePayload& payload =
+        std::get<EntityInstance::PersonalContextRecordTypePayload>(
+            entity->record_type_data());
+    CHECK(std::ranges::all_of(
+        payload.sources, &GURL::is_valid,
+        &EntityInstance::PersonalContextRecordTypePayload::Source::url));
+    const size_t count = std::min(payload.sources.size(), kMaxDisplayedSources);
+    std::vector<EntityInstance::PersonalContextRecordTypePayload::Source>
+        sources(payload.sources.begin(), payload.sources.begin() + count);
     AutofillAiSuggestionDetailsText details_text =
-        GetAutofillAiSuggestionDetailsText(*entity, client->GetAppLocale());
+        GetAutofillAiSuggestionDetailsText(*entity, client->GetAppLocale(),
+                                           sources);
     view_->ShowAutofillAiSuggestionDetails(
         details_text.title, details_text.body, details_text.confirm_button_text,
-        details_text.primary_button_text,
+        details_text.primary_button_text, std::move(sources),
         base::BindOnce(&AutofillKeyboardAccessoryControllerImpl::
                            OnAutofillAiSuppressionDialogClosed,
                        GetWeakPtr(), suggestions_[index]));

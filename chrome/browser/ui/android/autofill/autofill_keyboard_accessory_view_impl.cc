@@ -17,9 +17,9 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/autofill/android/autofill_ai_source_attribution_info.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -281,11 +281,16 @@ void AutofillKeyboardAccessoryViewImpl::ShowAutofillAiSuggestionDetails(
     const std::u16string& body,
     const std::u16string& confirm_button_text,
     const std::u16string& primary_button_text,
+    std::vector<EntityInstance::PersonalContextRecordTypePayload::Source>
+        sources,
     base::OnceCallback<void(bool)> suppression_callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
   autofill_ai_suppression_callback_ = std::move(suppression_callback);
   Java_AutofillKeyboardAccessoryViewBridge_showAutofillAiSuggestionDetails(
-      env, java_object_, title, body, confirm_button_text, primary_button_text);
+      env, java_object_, title, body, confirm_button_text, primary_button_text,
+      base::ToVector(sources, [](const auto& source) {
+        return AutofillAiSourceAttributionInfo(source);
+      }));
 }
 
 void AutofillKeyboardAccessoryViewImpl::SuggestionAccepted(int32_t list_index,

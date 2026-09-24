@@ -48,6 +48,7 @@ using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
+using ::testing::IsEmpty;
 using ::testing::Mock;
 using ::testing::MockFunction;
 using ::testing::Property;
@@ -55,6 +56,11 @@ using ::testing::Return;
 
 using RemovalConfirmationText =
     AutofillKeyboardAccessoryController::RemovalConfirmationText;
+using GmailSourceMetadata =
+    EntityInstance::PersonalContextRecordTypePayload::GmailSourceMetadata;
+using PhotosSourceMetadata =
+    EntityInstance::PersonalContextRecordTypePayload::PhotosSourceMetadata;
+using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
 
 auto MatchesConfirmationText(const std::u16string& title,
                              const std::u16string& body,
@@ -129,16 +135,17 @@ class AutofillKeyboardAccessoryControllerImplTest
     return client().suggestion_controller(manager());
   }
 
-  EntityInstance CreatePassport() {
-    using GmailSourceMetadata =
-        EntityInstance::PersonalContextRecordTypePayload::GmailSourceMetadata;
-    using Source = EntityInstance::PersonalContextRecordTypePayload::Source;
+  EntityInstance CreatePassport(
+      std::vector<EntityInstance::PersonalContextRecordTypePayload::Source>
+          sources = {EntityInstance::PersonalContextRecordTypePayload::Source{
+              .url = GURL("https://mail.google.com"),
+              .metadata = EntityInstance::PersonalContextRecordTypePayload::
+                  GmailSourceMetadata{.title = "Flight Confirmation"}}}) {
     return test::GetPassportEntityInstance({
         .guid = "00000000-0000-4000-8000-000000000000",
         .record_type =
             EntityInstance::PersonalContextRecordTypePayload{
-                .sources = {Source{.url = GURL("https://mail.google.com"),
-                                   .metadata = GmailSourceMetadata{}}}},
+                .sources = std::move(sources)},
     });
   }
 
@@ -156,7 +163,8 @@ class AutofillKeyboardAccessoryControllerImplTest
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   base::test::ScopedFeatureList feature_list_{
-      features::kAutofillAndroidKeyboardAccessoryHoverPreview};
+      {features::kAutofillAndroidKeyboardAccessoryHoverPreview,
+       features::kAutofillAmbientAutofillSuppressionUI}};
 };
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -473,9 +481,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
-       ShowAutofillAiSuggestionDetails) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAmbientAutofillSuppressionUI};
+       ShowAutofillAiSuggestionDetails_WithValidSources) {
   EntityInstance passport = CreatePassport();
   SetEntitiesInClient({passport});
 
@@ -500,8 +506,11 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
               IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_SECONDARY_BUTTON),
           l10n_util::GetStringUTF16(
               IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_PRIMARY_BUTTON),
+          ElementsAre(Source{
+              .url = GURL("https://mail.google.com"),
+              .metadata = GmailSourceMetadata{.title = "Flight Confirmation"}}),
           _))
-      .WillOnce(RunOnceCallback<4>(/*confirmed=*/true));
+      .WillOnce(RunOnceCallback<5>(/*confirmed=*/true));
   EXPECT_CALL(manager().external_delegate(), RemoveSuggestion(suggestion))
       .WillOnce(Return(true));
 
@@ -510,9 +519,75 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       ShowAutofillAiSuggestionDetails_CappedAtMaxDisplayedSources) {
+  EntityInstance passport = CreatePassport({
+      Source{.url = GURL("https://mail.google.com/1"),
+             .metadata = GmailSourceMetadata{.title = "Flight Confirmation"}},
+      Source{.url = GURL("https://photos.google.com/1"),
+             .metadata = PhotosSourceMetadata{}},
+      Source{.url = GURL("http://example.com/2"),
+             .metadata = GmailSourceMetadata{.title = "Receipt"}},
+      Source{.url = GURL("https://photos.google.com/3"),
+             .metadata = PhotosSourceMetadata{}},
+      Source{.url = GURL("https://photos.google.com/4"),
+             .metadata = PhotosSourceMetadata{}},
+      Source{.url = GURL("https://photos.google.com/5"),
+             .metadata = PhotosSourceMetadata{}},
+      Source{.url = GURL("https://photos.google.com/6"),
+             .metadata = PhotosSourceMetadata{}},
+  });
+  SetEntitiesInClient({passport});
+
+  Suggestion suggestion(u"Passport", SuggestionType::kFillAutofillAi);
+  suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
+  ShowSuggestions(manager(), {suggestion});
+
+  EXPECT_CALL(
+      *client().popup_view(),
+      ShowAutofillAiSuggestionDetails(
+          base::StrCat({passport.type().GetNameForI18n(),
+                        autofill::kLabelSeparator, u"Pippi Långstrump"}),
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_BODY),
+          l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_SECONDARY_BUTTON),
+          l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_PRIMARY_BUTTON),
+          ElementsAre(
+              Source{.url = GURL("https://mail.google.com/1"),
+                     .metadata =
+                         GmailSourceMetadata{.title = "Flight Confirmation"}},
+              Source{.url = GURL("https://photos.google.com/1"),
+                     .metadata = PhotosSourceMetadata{}},
+              Source{.url = GURL("http://example.com/2"),
+                     .metadata = GmailSourceMetadata{.title = "Receipt"}},
+              Source{.url = GURL("https://photos.google.com/3"),
+                     .metadata = PhotosSourceMetadata{}},
+              Source{.url = GURL("https://photos.google.com/4"),
+                     .metadata = PhotosSourceMetadata{}}),
+          _))
+      .WillOnce(RunOnceCallback<5>(/*confirmed=*/false));
+
+  EXPECT_TRUE(suggestion_controller().ShowAutofillAiSuggestionDetails(0));
+}
+
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       ShowAutofillAiSuggestionDetails_NonPersonalContextEntityRejected) {
+  EntityInstance passport = test::GetPassportEntityInstance({
+      .guid = "00000000-0000-4000-8000-000000000000",
+      .record_type = EntityInstance::LocalRecordTypePayload{},
+  });
+  AddLocalEntity(passport);
+
+  Suggestion suggestion(u"Passport", SuggestionType::kFillAutofillAi);
+  suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
+  ShowSuggestions(manager(), {suggestion});
+
+  EXPECT_CALL(*client().popup_view(), ShowAutofillAiSuggestionDetails).Times(0);
+  EXPECT_FALSE(suggestion_controller().ShowAutofillAiSuggestionDetails(0));
+}
+
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        ShowAutofillAiSuggestionDetails_RemoveSuggestionFails) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAmbientAutofillSuppressionUI};
   EntityInstance passport = CreatePassport();
   SetEntitiesInClient({passport});
 
@@ -521,7 +596,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   ShowSuggestions(manager(), {suggestion});
 
   EXPECT_CALL(*client().popup_view(), ShowAutofillAiSuggestionDetails)
-      .WillOnce(RunOnceCallback<4>(/*confirmed=*/true));
+      .WillOnce(RunOnceCallback<5>(/*confirmed=*/true));
   EXPECT_CALL(manager().external_delegate(), RemoveSuggestion(suggestion))
       .WillOnce(Return(false));
 
@@ -531,8 +606,6 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        ShowAutofillAiSuggestionDetails_StaleSuggestionNotRemoved) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAmbientAutofillSuppressionUI};
   EntityInstance passport = CreatePassport();
   SetEntitiesInClient({passport});
 
@@ -545,6 +618,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
       .WillOnce([&](const std::u16string& title, const std::u16string& body,
                     const std::u16string& confirm_button_text,
                     const std::u16string& primary_button_text,
+                    std::vector<Source> sources,
                     base::OnceCallback<void(bool)> dialog_callback) {
         captured_dialog_callback = std::move(dialog_callback);
       });
@@ -563,8 +637,6 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        ShowAutofillAiSuggestionDetails_Dismissed) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAmbientAutofillSuppressionUI};
   EntityInstance passport = CreatePassport();
   SetEntitiesInClient({passport});
 
@@ -582,8 +654,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
               IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_SECONDARY_BUTTON),
           l10n_util::GetStringUTF16(
               IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_PRIMARY_BUTTON),
-          _))
-      .WillOnce(RunOnceCallback<4>(/*confirmed=*/false));
+          /*sources=*/_, _))
+      .WillOnce(RunOnceCallback<5>(/*confirmed=*/false));
   EXPECT_CALL(manager().external_delegate(), RemoveSuggestion).Times(0);
 
   EXPECT_TRUE(suggestion_controller().ShowAutofillAiSuggestionDetails(0));
@@ -592,8 +664,6 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        ShowAutofillAiSuggestionDetails_Rtl) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale("ar");
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAmbientAutofillSuppressionUI};
   EntityInstance passport = CreatePassport();
   SetEntitiesInClient({passport});
 
@@ -611,7 +681,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
               IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_SECONDARY_BUTTON),
           l10n_util::GetStringUTF16(
               IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_PRIMARY_BUTTON),
-          _));
+          /*sources=*/_, _));
 
   EXPECT_TRUE(suggestion_controller().ShowAutofillAiSuggestionDetails(0));
 }
@@ -634,8 +704,6 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        ShowAutofillAiSuggestionDetails_NonAiSuggestionReturnsFalse) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAmbientAutofillSuppressionUI};
   const auto suggestion =
       Suggestion(u"Autocomplete entry", SuggestionType::kAutocompleteEntry);
   ShowSuggestions(manager(), {suggestion});
@@ -646,8 +714,6 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        ShowAutofillAiSuggestionDetails_NonExistentEntityReturnsFalse) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAmbientAutofillSuppressionUI};
   Suggestion suggestion(u"Passport", SuggestionType::kFillAutofillAi);
   suggestion.payload = Suggestion::AutofillAiPayload(
       EntityInstance::EntityId(base::Uuid::GenerateRandomV4()));
@@ -659,8 +725,6 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        ShowAutofillAiSuggestionDetails_NonPersonalContextEntityReturnsFalse) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAmbientAutofillSuppressionUI};
   EntityInstance local_passport = test::GetPassportEntityInstance({
       .guid = "00000000-0000-4000-8000-000000000001",
       .record_type = EntityInstance::RecordType::kLocal,

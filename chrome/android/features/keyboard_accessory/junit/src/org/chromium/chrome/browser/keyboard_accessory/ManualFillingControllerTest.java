@@ -116,6 +116,8 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.components.autofill.autofill_ai.AutofillAiSourceAttributionInfo;
+import org.chromium.components.autofill.autofill_ai.SourceType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
@@ -134,11 +136,13 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
+import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Controller tests for the root controller for interactions with the manual filling UI. */
@@ -479,6 +483,11 @@ public class ManualFillingControllerTest {
                 "Your info was suggested by Gemini.",
                 "Remove",
                 "Got it",
+                List.of(
+                        new AutofillAiSourceAttributionInfo(
+                                SourceType.GMAIL,
+                                new GURL("https://mail.google.com/"),
+                                "Flight Confirmation")),
                 confirmedCallback,
                 declinedCallback);
 
@@ -513,6 +522,11 @@ public class ManualFillingControllerTest {
                 "Your info was suggested by Gemini.",
                 "Remove",
                 "Got it",
+                List.of(
+                        new AutofillAiSourceAttributionInfo(
+                                SourceType.GMAIL,
+                                new GURL("https://mail.google.com/"),
+                                "Flight Confirmation")),
                 confirmedCallback,
                 declinedCallback);
 
@@ -535,7 +549,7 @@ public class ManualFillingControllerTest {
     }
 
     @Test
-    public void testFormatAutofillAiSuppressionMessageWithMultipleLinks() {
+    public void testFormatAutofillAiSuppressionMessage_WithSources() {
         SettingsNavigation mockSettingsNavigation = mock(SettingsNavigation.class);
         SettingsNavigationFactory.setInstanceForTesting(mockSettingsNavigation);
 
@@ -543,7 +557,13 @@ public class ManualFillingControllerTest {
                 "Suggested by Gemini · <src_link>View sources</src_link>\n\n"
                         + "You can remove this suggestion from Chrome. Your original source won't"
                         + " be deleted. <manage_link>Manage enhanced autofill</manage_link>";
-        CharSequence formatted = mMediator.formatAutofillAiSuppressionMessage(rawBody);
+        List<AutofillAiSourceAttributionInfo> sources =
+                List.of(
+                        new AutofillAiSourceAttributionInfo(
+                                SourceType.GMAIL,
+                                new GURL("https://mail.google.com"),
+                                "Flight Confirmation"));
+        CharSequence formatted = mMediator.formatAutofillAiSuppressionMessage(rawBody, sources);
 
         assertTrue(formatted instanceof Spanned);
         Spanned spanned = (Spanned) formatted;
@@ -570,6 +590,31 @@ public class ManualFillingControllerTest {
     }
 
     @Test
+    public void testFormatAutofillAiSuppressionMessage_MalformedTagsFallbackStripsLinkTags() {
+        // Mismatched or nested tags causing SpanApplier to throw IllegalArgumentException
+        String malformedBody =
+                "Suggested by Gemini · <src_link><manage_link>View"
+                        + " sources</src_link></manage_link>\n\n"
+                        + "You can remove this suggestion. Manage";
+        List<AutofillAiSourceAttributionInfo> sources =
+                List.of(
+                        new AutofillAiSourceAttributionInfo(
+                                SourceType.GMAIL,
+                                new GURL("https://mail.google.com"),
+                                "Flight Confirmation"));
+        CharSequence formatted =
+                mMediator.formatAutofillAiSuppressionMessage(malformedBody, sources);
+
+        String plainText = formatted.toString();
+        assertFalse(plainText.contains("<src_link>"));
+        assertFalse(plainText.contains("</src_link>"));
+        assertFalse(plainText.contains("<manage_link>"));
+        assertFalse(plainText.contains("</manage_link>"));
+        assertTrue(plainText.contains("View sources"));
+        assertTrue(plainText.contains("Manage"));
+    }
+
+    @Test
     public void testDestroyDismissesActiveConfirmationDialog() {
         ActionConfirmationDialog mockDialog = mock(ActionConfirmationDialog.class);
         ActionConfirmationDialog.DismissHandler mockDismissHandler =
@@ -578,7 +623,17 @@ public class ManualFillingControllerTest {
         mMediator.setActionConfirmationDialogForTesting(mockDialog);
 
         mController.showAutofillAiSuggestionDetails(
-                "Title", "Body", "Remove", "Got it", () -> {}, () -> {});
+                "Title",
+                "Body",
+                "Remove",
+                "Got it",
+                List.of(
+                        new AutofillAiSourceAttributionInfo(
+                                SourceType.GMAIL,
+                                new GURL("https://mail.google.com/"),
+                                "Flight Confirmation")),
+                () -> {},
+                () -> {});
         verify(mockDialog).show(any(), any());
 
         mMediator.destroy();

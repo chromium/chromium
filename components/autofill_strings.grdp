@@ -1868,10 +1868,12 @@
     </message>
 
     <!-- Autofill AI Suppression Dialog Strings (Android) -->
+    <!-- LINT.IfChange(SuppressionDialogTags) -->
     <message name="IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_BODY" desc="Description for the modal confirmation dialog on Android.">
       Suggested by Gemini · <ph name="SRC_LINK">&lt;src_link&gt;</ph>View sources<ph name="END_SRC_LINK">&lt;/src_link&gt;</ph>
 You can remove this suggestion from Chrome. Your original source won't be deleted. <ph name="MANAGE_LINK">&lt;manage_link&gt;</ph>Manage enhanced autofill<ph name="END_MANAGE_LINK">&lt;/manage_link&gt;</ph>
     </message>
+    <!-- LINT.ThenChange(/chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingMediator.java:SuppressionDialogTags) -->
     <message name="IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_PRIMARY_BUTTON" desc="Label for the primary acknowledgment button in the Autofill AI suppression dialog on Android.">
       Got it
     </message>

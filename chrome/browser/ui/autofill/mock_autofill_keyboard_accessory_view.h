@@ -29,14 +29,16 @@ class MockAutofillKeyboardAccessoryView : public AutofillKeyboardAccessoryView {
                const std::u16string&,
                base::OnceCallback<void(bool)>),
               (override));
-  MOCK_METHOD(void,
-              ShowAutofillAiSuggestionDetails,
-              (const std::u16string&,
-               const std::u16string&,
-               const std::u16string&,
-               const std::u16string&,
-               base::OnceCallback<void(bool)>),
-              (override));
+  MOCK_METHOD(
+      void,
+      ShowAutofillAiSuggestionDetails,
+      (const std::u16string&,
+       const std::u16string&,
+       const std::u16string&,
+       const std::u16string&,
+       std::vector<EntityInstance::PersonalContextRecordTypePayload::Source>,
+       base::OnceCallback<void(bool)>),
+      (override));
 };
 
 }  // namespace autofill

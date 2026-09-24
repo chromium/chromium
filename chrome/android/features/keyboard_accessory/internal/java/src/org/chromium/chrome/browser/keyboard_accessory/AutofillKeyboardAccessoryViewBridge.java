@@ -21,6 +21,7 @@ import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.AutofillSuggestion.Payload;
 import org.chromium.components.autofill.SuggestionType;
+import org.chromium.components.autofill.autofill_ai.AutofillAiSourceAttributionInfo;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
@@ -225,7 +226,9 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             @JniType("std::u16string") String title,
             @JniType("std::u16string") String body,
             @JniType("std::u16string") String confirmButtonText,
-            @JniType("std::u16string") String primaryButtonText) {
+            @JniType("std::u16string") String primaryButtonText,
+            @JniType("std::vector<AutofillAiSourceAttributionInfo>")
+                    List<AutofillAiSourceAttributionInfo> sources) {
         if (mManualFillingComponent == null) {
             return;
         }
@@ -234,6 +237,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 body,
                 confirmButtonText,
                 primaryButtonText,
+                sources,
                 () -> this.onAutofillAiSuppressionDialogClosed(/* confirmed= */ true),
                 () -> this.onAutofillAiSuppressionDialogClosed(/* confirmed= */ false));
     }

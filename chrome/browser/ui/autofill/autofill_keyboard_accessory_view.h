@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
 namespace autofill {
 
@@ -53,6 +55,8 @@ class AutofillKeyboardAccessoryView {
       const std::u16string& body,
       const std::u16string& confirm_button_text,
       const std::u16string& primary_button_text,
+      std::vector<EntityInstance::PersonalContextRecordTypePayload::Source>
+          sources,
       base::OnceCallback<void(bool)> suppression_callback) = 0;
 };
 

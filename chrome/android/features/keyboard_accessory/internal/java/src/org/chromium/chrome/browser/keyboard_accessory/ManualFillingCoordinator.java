@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.autofill_ai.AutofillAiSourceAttributionInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.AsyncViewStub;
@@ -264,6 +265,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             String body,
             String confirmButtonText,
             String primaryButtonText,
+            List<AutofillAiSourceAttributionInfo> sources,
             Runnable confirmedCallback,
             Runnable declinedCallback) {
         mMediator.showAutofillAiSuggestionDetails(
@@ -271,6 +273,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 body,
                 confirmButtonText,
                 primaryButtonText,
+                sources,
                 confirmedCallback,
                 declinedCallback);
     }
