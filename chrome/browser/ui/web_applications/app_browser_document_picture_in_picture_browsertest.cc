@@ -12,7 +12,6 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -23,7 +22,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "ui/base/base_window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/test/widget_test.h"
@@ -187,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(AppBrowserDocumentPictureInPictureBackendTest,
             app_browser_view->GetContentsSize());
 }
 
-IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
+IN_PROC_BROWSER_TEST_P(AppBrowserDocumentPictureInPictureBackendTest,
                        ResizeToRespectsMinimumInnerWindowSize) {
   const webapps::AppId app_id =
       InstallPWA(picture_in_picture_mixin_test_base_.GetPictureInPictureURL());
@@ -203,12 +201,8 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
           ->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents);
   picture_in_picture_mixin_test_base_.WaitForPageLoad(pip_web_contents);
-
-  auto* pip_browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          pip_web_contents);
-  auto* pip_browser_view = BrowserView::GetBrowserViewForBrowser(pip_browser);
-  EXPECT_EQ(kInitialPipSize, pip_browser_view->GetContentsSize());
+  ExpectPipBackend(pip_web_contents);
+  EXPECT_EQ(kInitialPipSize, pip_web_contents->GetContainerBounds().size());
 
   // Resize Pip window to a size smaller than the allowed minimum.
   EXPECT_TRUE(ExecJs(pip_web_contents, "window.resizeTo(50,50);"));
@@ -218,10 +212,11 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   // Verify that the minimum inner window size is respected.
-  EXPECT_GE(pip_browser_view->GetContentsSize().width(),
+  const gfx::Size contents_size = pip_web_contents->GetContainerBounds().size();
+  EXPECT_GE(contents_size.width(),
             PictureInPictureWindowManager::GetMinimumInnerWindowSize().width());
   EXPECT_GE(
-      pip_browser_view->GetContentsSize().height(),
+      contents_size.height(),
       PictureInPictureWindowManager::GetMinimumInnerWindowSize().height());
 }
 
@@ -233,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
 #define MAYBE_ResizeToRespectsMaximumWindowSize \
   ResizeToRespectsMaximumWindowSize
 #endif
-IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
+IN_PROC_BROWSER_TEST_P(AppBrowserDocumentPictureInPictureBackendTest,
                        MAYBE_ResizeToRespectsMaximumWindowSize) {
   const webapps::AppId app_id =
       InstallPWA(picture_in_picture_mixin_test_base_.GetPictureInPictureURL());
@@ -250,18 +245,14 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
           ->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents);
   picture_in_picture_mixin_test_base_.WaitForPageLoad(pip_web_contents);
+  ExpectPipBackend(pip_web_contents);
+  EXPECT_EQ(kInitialPipSize, pip_web_contents->GetContainerBounds().size());
 
-  auto* pip_browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          pip_web_contents);
-  auto* pip_browser_view = BrowserView::GetBrowserViewForBrowser(pip_browser);
-  EXPECT_EQ(kInitialPipSize, pip_browser_view->GetContentsSize());
-
-  const gfx::NativeWindow native_window =
-      pip_browser->GetWindow()->GetNativeWindow();
+  views::Widget* pip_widget = GetPipWidget(pip_web_contents);
+  ASSERT_NE(nullptr, pip_widget);
   const display::Screen* const screen = display::Screen::Get();
   const display::Display display =
-      screen->GetDisplayNearestWindow(native_window);
+      screen->GetDisplayNearestWindow(pip_widget->GetNativeWindow());
 
   // Resize Pip window to a size bigger than the allowed maximum and, verify
   // that the maximum window size is respected.
@@ -283,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
 
   {
     WidgetResizeWaiter waiter(
-        pip_browser_view->GetWidget(),
+        pip_widget,
         base::BindRepeating(
             [](gfx::Size maximum_window_size, const gfx::Size& size) {
               return size.width() <= maximum_window_size.width() &&
@@ -294,10 +285,9 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
     waiter.Wait();
   }
 
-  EXPECT_LE(pip_browser_view->GetBounds().size().width(),
-            maximum_window_size.width());
-  EXPECT_LE(pip_browser_view->GetBounds().size().height(),
-            maximum_window_size.height());
+  const gfx::Size window_size = pip_widget->GetWindowBoundsInScreen().size();
+  EXPECT_LE(window_size.width(), maximum_window_size.width());
+  EXPECT_LE(window_size.height(), maximum_window_size.height());
 }
 
 }  // namespace
