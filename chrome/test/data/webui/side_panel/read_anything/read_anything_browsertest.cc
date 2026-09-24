@@ -144,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Logger) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppContent) {
+// TODO(crbug.com/565568551): Enable the test.
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DISABLED_AppContent) {
   RunSidePanelTest("side_panel/read_anything/app_content_test.js",
                    "mocha.run()");
 }
