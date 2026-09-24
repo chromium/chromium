@@ -9,12 +9,21 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/i18n/break_iterator.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
@@ -185,11 +194,15 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
   editor_bubble_opened_subscription_ =
       editor_bubble_tracker_.RegisterOnBubbleOpened(
           base::BindRepeating(&TabSlotController::NotifyTabstripBubbleOpened,
-                              base::Unretained(tab_slot_controller_)));
+                              base::Unretained(tab_slot_controller_))
+              .Then(base::BindRepeating(&TabGroupHeader::VisualsChanged,
+                                        base::Unretained(this))));
   editor_bubble_closed_subscription_ =
       editor_bubble_tracker_.RegisterOnBubbleClosed(
           base::BindRepeating(&TabSlotController::NotifyTabstripBubbleClosed,
-                              base::Unretained(tab_slot_controller_)));
+                              base::Unretained(tab_slot_controller_))
+              .Then(base::BindRepeating(&TabGroupHeader::VisualsChanged,
+                                        base::Unretained(this))));
 
   TabGroup* const tab_group = tab_slot_controller_->GetTabGroup(group);
   if (tab_group) {
@@ -437,6 +450,10 @@ views::BubbleBorder::Arrow TabGroupHeader::GetAnchorPosition() const {
 
 void TabGroupHeader::OnGroupContentsChanged() {
   UpdateAccessibleName();
+  TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
+  if (tab_group && tab_group->is_ephemeral()) {
+    VisualsChanged();
+  }
 }
 
 void TabGroupHeader::ShowContextMenuForViewImpl(
@@ -501,10 +518,33 @@ void TabGroupHeader::VisualsChanged() {
   // TODO(crbug.com/372296676): Make TabGroupHeader observe the group for
   // changes to cut down on the number of times we recalculate the view.
   const tab_groups::TabGroupId tab_group_id = group().value();
-  group_title_ = tab_slot_controller_->GetGroupTitle(tab_group_id);
-
-  color_ = tab_slot_controller_->GetPaintedGroupColor(
-      tab_slot_controller_->GetGroupColorId(tab_group_id));
+  TabGroup* tab_group = tab_slot_controller_->GetTabGroup(tab_group_id);
+  if (tab_group && tab_group->is_ephemeral()) {
+    const int tab_count = tab_group->tab_count();
+    group_title_ = l10n_util::GetPluralStringFUTF16(
+        IDS_TAB_GROUP_HEADER_EPHEMERAL_TAB_COUNT, tab_count);
+    if (GetColorProvider()) {
+      const bool frame_active =
+          GetWidget() && GetWidget()->ShouldPaintAsActive();
+      const SkColor normal_bg = GetColorProvider()->GetColor(
+          frame_active ? ui::kColorSysOnHeaderDivider
+                       : ui::kColorSysOnHeaderDividerInactive);
+      if (editor_bubble_tracker_.is_open()) {
+        const SkColor press_ink =
+            GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
+        color_ = color_utils::GetResultingPaintColor(press_ink, normal_bg);
+      } else {
+        color_ = normal_bg;
+      }
+    } else {
+      color_ = tab_slot_controller_->GetPaintedGroupColor(
+          tab_slot_controller_->GetGroupColorId(tab_group_id));
+    }
+  } else {
+    group_title_ = tab_slot_controller_->GetGroupTitle(tab_group_id);
+    color_ = tab_slot_controller_->GetPaintedGroupColor(
+        tab_slot_controller_->GetGroupColorId(tab_group_id));
+  }
   should_show_header_icon_ = ShouldShowHeaderIcon();
 
   // Update collapsed state before changing any UI.
@@ -611,7 +651,16 @@ void TabGroupHeader::UpdateTitleView() {
   title_->SetText(group_title_);
 
   if (!group_title_.empty()) {
-    title_->SetEnabledColor(color_utils::GetColorWithMaxContrast(color_));
+    TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
+    if (tab_group && tab_group->is_ephemeral() && GetColorProvider()) {
+      const bool frame_active =
+          GetWidget() && GetWidget()->ShouldPaintAsActive();
+      title_->SetEnabledColor(GetColorProvider()->GetColor(
+          frame_active ? ui::kColorSysOnSurfacePrimary
+                       : ui::kColorSysOnSurfacePrimaryInactive));
+    } else {
+      title_->SetEnabledColor(color_utils::GetColorWithMaxContrast(color_));
+    }
   }
 }
 

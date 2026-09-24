@@ -9,6 +9,7 @@
 #include "build/buildflag.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -517,57 +518,14 @@ void TabGroupHeaderView::OnDataChanged(
   tab_group_visual_data_ = tab_group_data.visual_data;
   is_shared_ = tab_group_data.is_sharing_group;
 
-  group_header_label_->SetText(tab_group_visual_data_.title());
+  if (delegate_->IsValid() && delegate_->GetTabGroup().is_ephemeral()) {
+    OnTabCountChanged();
+  } else {
+    group_header_label_->SetText(tab_group_visual_data_.title());
+  }
+
+  UpdateColors();
   if (GetColorProvider()) {
-    SkColor background_color = GetColorProvider()->GetColor(
-        GetTabGroupTabStripColorId(tab_group_visual_data_.color(),
-                                   GetWidget()->ShouldPaintAsActive()));
-    SkColor foreground_color = GetForegroundColor();
-
-    // Update label.
-    group_header_label_->SetEnabledColor(foreground_color);
-
-    // Update save tab group related items, the sync icon and attention
-    // indicator.
-    sync_icon_->SetVisible(is_shared_);
-    if (is_shared_) {
-      sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? kGroupCustomIcon
-                                            : kPeopleGroupOldIcon,
-          foreground_color, kIconSize));
-    }
-    if (tab_group_visual_data_.is_collapsed() && needs_attention_) {
-      attention_indicator_->SetVisible(true);
-      attention_indicator_->SetImage(ui::ImageModel::FromVectorIcon(
-          kDefaultTouchFaviconMaskCustomIcon, foreground_color,
-          kAttentionIndicatorWidth));
-    } else {
-      attention_indicator_->SetVisible(false);
-    }
-
-    // Update editor bubble button.
-    if (editor_bubble_button_) {
-      UpdateEditorButtonColors(editor_bubble_button_, foreground_color);
-      UpdateEditorBubbleButtonVisibility();
-    }
-
-    // Update collapse icon.
-    if (collapse_icon_) {
-      collapse_icon_->SetVisible(!delegate_->IsGroupFocused());
-      collapse_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-          tab_group_visual_data_.is_collapsed()
-              ? features::IsRoundedIconsEnabled()
-                    ? kKeyboardArrowDownIcon
-                    : kKeyboardArrowDownChromeRefreshOldIcon
-          : features::IsRoundedIconsEnabled()
-              ? vector_icons::kKeyboardArrowUpIcon
-              : kKeyboardArrowUpChromeRefreshOldIcon,
-          foreground_color, kIconSize));
-    }
-
-    // Update background.
-    SetBackground(views::CreateRoundedRectBackground(background_color,
-                                                     GetCornerRadius()));
     UpdateAttentionState(
         data_sharing::features::IsDataSharingFunctionalityEnabled() &&
         tab_group_data.needs_attention);
@@ -576,6 +534,14 @@ void TabGroupHeaderView::OnDataChanged(
   UpdateIsCollapsed();
   UpdateAccessibleName();
   SetHoverCardDataFrom(tab_group_data);
+}
+
+void TabGroupHeaderView::OnTabCountChanged() {
+  if (delegate_->IsValid() && delegate_->GetTabGroup().is_ephemeral()) {
+    const int tab_count = delegate_->GetTabGroup().tab_count();
+    group_header_label_->SetText(l10n_util::GetPluralStringFUTF16(
+        IDS_TAB_GROUP_HEADER_EPHEMERAL_TAB_COUNT, tab_count));
+  }
 }
 
 void TabGroupHeaderView::UpdateIsCollapsed() {
@@ -610,14 +576,90 @@ void TabGroupHeaderView::UpdateAccessibleName() {
       tab_groups::GetHoverCardAccessibilityText(delegate_->GetTabGroupData()));
 }
 
-SkColor TabGroupHeaderView::GetForegroundColor() const {
-  if (GetColorProvider()) {
-    SkColor background_color = GetColorProvider()->GetColor(
-        GetTabGroupTabStripColorId(tab_group_visual_data_.color(),
-                                   GetWidget()->ShouldPaintAsActive()));
-    return color_utils::GetColorWithMaxContrast(background_color);
+SkColor TabGroupHeaderView::GetBackgroundColor() const {
+  if (!GetColorProvider()) {
+    return SK_ColorBLACK;
   }
-  return SK_ColorBLACK;
+  const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
+  if (delegate_->IsValid() && delegate_->GetTabGroup().is_ephemeral()) {
+    const SkColor normal_bg = GetColorProvider()->GetColor(
+        frame_active ? ui::kColorSysOnHeaderDivider
+                     : ui::kColorSysOnHeaderDividerInactive);
+    if (editor_bubble_tracker_.is_open()) {
+      const SkColor press_ink =
+          GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
+      return color_utils::GetResultingPaintColor(press_ink, normal_bg);
+    }
+    return normal_bg;
+  }
+  return GetColorProvider()->GetColor(
+      GetTabGroupTabStripColorId(tab_group_visual_data_.color(), frame_active));
+}
+
+SkColor TabGroupHeaderView::GetForegroundColor() const {
+  if (!GetColorProvider()) {
+    return SK_ColorBLACK;
+  }
+  if (delegate_->IsValid() && delegate_->GetTabGroup().is_ephemeral()) {
+    const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
+    return GetColorProvider()->GetColor(
+        frame_active ? ui::kColorSysOnSurfacePrimary
+                     : ui::kColorSysOnSurfacePrimaryInactive);
+  }
+  return color_utils::GetColorWithMaxContrast(GetBackgroundColor());
+}
+
+void TabGroupHeaderView::UpdateColors() {
+  if (!GetColorProvider()) {
+    return;
+  }
+  const SkColor background_color = GetBackgroundColor();
+  const SkColor foreground_color = GetForegroundColor();
+
+  // Update label.
+  group_header_label_->SetEnabledColor(foreground_color);
+
+  // Update save tab group related items, the sync icon and attention
+  // indicator.
+  sync_icon_->SetVisible(is_shared_);
+  if (is_shared_) {
+    sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? kGroupCustomIcon
+                                          : kPeopleGroupOldIcon,
+        foreground_color, kIconSize));
+  }
+  if (tab_group_visual_data_.is_collapsed() && needs_attention_) {
+    attention_indicator_->SetVisible(true);
+    attention_indicator_->SetImage(ui::ImageModel::FromVectorIcon(
+        kDefaultTouchFaviconMaskCustomIcon, foreground_color,
+        kAttentionIndicatorWidth));
+  } else {
+    attention_indicator_->SetVisible(false);
+  }
+
+  // Update editor bubble button.
+  if (editor_bubble_button_) {
+    UpdateEditorButtonColors(editor_bubble_button_, foreground_color);
+    UpdateEditorBubbleButtonVisibility();
+  }
+
+  // Update collapse icon.
+  if (collapse_icon_) {
+    collapse_icon_->SetVisible(!delegate_->IsGroupFocused());
+    collapse_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        tab_group_visual_data_.is_collapsed()
+            ? features::IsRoundedIconsEnabled()
+                  ? kKeyboardArrowDownIcon
+                  : kKeyboardArrowDownChromeRefreshOldIcon
+        : features::IsRoundedIconsEnabled()
+            ? vector_icons::kKeyboardArrowUpIcon
+            : kKeyboardArrowUpChromeRefreshOldIcon,
+        foreground_color, kIconSize));
+  }
+
+  // Update background.
+  SetBackground(
+      views::CreateRoundedRectBackground(background_color, GetCornerRadius()));
 }
 
 void TabGroupHeaderView::UpdateEditorBubbleButtonVisibility() {
@@ -643,6 +685,7 @@ void TabGroupHeaderView::OnBubbleOpened() {
   }
 
   UpdateEditorBubbleButtonVisibility();
+  UpdateColors();
 }
 
 void TabGroupHeaderView::OnBubbleClosed() {
@@ -651,6 +694,7 @@ void TabGroupHeaderView::OnBubbleClosed() {
     closing_helper->ResumeMouseWatcher();
   }
   UpdateEditorBubbleButtonVisibility();
+  UpdateColors();
 }
 
 void TabGroupHeaderView::SetEditorBubbleButtonVisibilityOnHover(

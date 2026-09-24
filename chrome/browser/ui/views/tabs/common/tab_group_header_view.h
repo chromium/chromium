@@ -113,6 +113,7 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
 
   void OnDataChanged(const tabs::TabGroupData& tab_group_data);
+  void OnTabCountChanged();
 
   tab_groups::TabGroupId group() const;
 
@@ -138,7 +139,9 @@ class TabGroupHeaderView : public views::FlexLayoutView,
   int GetCornerRadius() const;
   int GetHorizontalInset() const;
 
+  SkColor GetBackgroundColor() const;
   SkColor GetForegroundColor() const;
+  void UpdateColors();
 
   tab_groups::TabGroupVisualData tab_group_visual_data_;
   bool needs_attention_ = false;
