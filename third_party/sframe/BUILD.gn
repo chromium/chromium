@@ -29,6 +29,7 @@ source_set("sframe") {
     "src/include/sframe/map.h",
     "src/include/sframe/result.h",
     "src/include/sframe/sframe.h",
+    "src/include/sframe/span.h",
     "src/include/sframe/vector.h",
   ]
 
