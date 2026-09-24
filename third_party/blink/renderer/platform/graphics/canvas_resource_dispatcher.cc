@@ -40,8 +40,6 @@ constexpr base::TimeDelta kSyntheticFrameDelay = base::Hertz(60);
 
 namespace blink {
 
-BASE_FEATURE(kVerifySyncTokensInCRD, base::FEATURE_ENABLED_BY_DEFAULT);
-
 CanvasResourceDispatcher::CanvasResourceDispatcher(
     CanvasResourceDispatcherClient* client,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -141,30 +139,24 @@ void CanvasResourceDispatcher::PrepareFrame(
   // value will have no effect.
   const bool nearest_neighbor = false;
 
-  if (base::FeatureList::IsEnabled(kVerifySyncTokensInCRD)) {
-    exported_resource->PrepareTransferableResource(
-        resource,
-        /*needs_verified_synctoken=*/false);
+  exported_resource->PrepareTransferableResource(
+      resource,
+      /*needs_verified_synctoken=*/false);
 
-    gpu::SharedImageInterface* sii = nullptr;
+  gpu::SharedImageInterface* sii = nullptr;
 
-    if (SharedGpuContext::IsGpuCompositingEnabled()) {
-      if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-        sii = wrapper->ContextProvider().SharedImageInterface();
-      }
-    } else {
-      if (auto* provider = SharedGpuContext::SharedImageInterfaceProvider()) {
-        sii = provider->SharedImageInterface();
-      }
-    }
-
-    if (sii) {
-      sii->VerifySyncToken(resource.mutable_sync_token());
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+      sii = wrapper->ContextProvider().SharedImageInterface();
     }
   } else {
-    exported_resource->PrepareTransferableResource(
-        resource,
-        /*needs_verified_synctoken=*/true);
+    if (auto* provider = SharedGpuContext::SharedImageInterfaceProvider()) {
+      sii = provider->SharedImageInterface();
+    }
+  }
+
+  if (sii) {
+    sii->VerifySyncToken(resource.mutable_sync_token());
   }
 
   const viz::ResourceId resource_id = id_generator_.GenerateNextId();
