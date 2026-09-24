@@ -16,5 +16,12 @@ AreaOfInterest::~AreaOfInterest() = default;
 Suggestion::Suggestion() = default;
 Suggestion::~Suggestion() = default;
 
+void Suggestion::Execute(mojo::ScopedInterfaceEndpointHandle endpoint) {
+  if (binder_ && endpoint.is_valid()) {
+    binder_.Run(std::move(endpoint));
+  }
+  OnSuggestionExecuted();
+}
+
 }  // namespace selection
 
