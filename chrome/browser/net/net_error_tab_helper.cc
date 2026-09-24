@@ -57,12 +57,6 @@ namespace {
 static NetErrorTabHelper::TestingState testing_state_ =
     NetErrorTabHelper::TESTING_DEFAULT;
 
-bool IsValidEasterEggTarget(content::RenderFrameHost& target_frame) {
-  // Only the primary main-frame error document lives in the isolated
-  // error-page process; subframe error documents can be attacker-controlled.
-  return target_frame.IsErrorDocument() && target_frame.IsInPrimaryMainFrame();
-}
-
 }  // namespace
 
 NetErrorTabHelper::~NetErrorTabHelper() = default;
@@ -332,13 +326,17 @@ void NetErrorTabHelper::DownloadPageLaterHelper(const GURL& page_url) {
 void NetErrorTabHelper::GetHighScore(GetHighScoreCallback callback) {
   content::RenderFrameHost& target_frame =
       network_easter_egg_receivers_.CurrentTargetFrame();
-  if (!IsValidEasterEggTarget(target_frame)) {
+  if (!target_frame.IsErrorDocument()) {
     // IsInMessageDispatch() is checked to avoid calling ReportBadMessage()
     // and crashing when unit tests invoke these methods directly.
     if (mojo::IsInMessageDispatch()) {
       network_easter_egg_receivers_.ReportBadMessage(
           "Easter egg high score request from a non-error document");
     }
+    std::move(callback).Run(0);
+    return;
+  }
+  if (!target_frame.IsInPrimaryMainFrame()) {
     std::move(callback).Run(0);
     return;
   }
@@ -349,7 +347,7 @@ void NetErrorTabHelper::GetHighScore(GetHighScoreCallback callback) {
 void NetErrorTabHelper::UpdateHighScore(uint32_t high_score) {
   content::RenderFrameHost& target_frame =
       network_easter_egg_receivers_.CurrentTargetFrame();
-  if (!IsValidEasterEggTarget(target_frame)) {
+  if (!target_frame.IsErrorDocument()) {
     // IsInMessageDispatch() is checked to avoid calling ReportBadMessage()
     // and crashing when unit tests invoke these methods directly.
     if (mojo::IsInMessageDispatch()) {
@@ -358,21 +356,26 @@ void NetErrorTabHelper::UpdateHighScore(uint32_t high_score) {
     }
     return;
   }
-  if (high_score <= static_cast<uint32_t>(easter_egg_high_score_.GetValue()))
+  if (!target_frame.IsInPrimaryMainFrame() ||
+      high_score <= static_cast<uint32_t>(easter_egg_high_score_.GetValue())) {
     return;
+  }
   easter_egg_high_score_.SetValue(static_cast<int>(high_score));
 }
 
 void NetErrorTabHelper::ResetHighScore() {
   content::RenderFrameHost& target_frame =
       network_easter_egg_receivers_.CurrentTargetFrame();
-  if (!IsValidEasterEggTarget(target_frame)) {
+  if (!target_frame.IsErrorDocument()) {
     // IsInMessageDispatch() is checked to avoid calling ReportBadMessage()
     // and crashing when unit tests invoke these methods directly.
     if (mojo::IsInMessageDispatch()) {
       network_easter_egg_receivers_.ReportBadMessage(
           "Easter egg high score request from a non-error document");
     }
+    return;
+  }
+  if (!target_frame.IsInPrimaryMainFrame()) {
     return;
   }
   easter_egg_high_score_.SetValue(0);
