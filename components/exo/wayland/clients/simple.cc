@@ -9,6 +9,7 @@
 #include <single-pixel-buffer-v1-client-protocol.h>
 
 #include <algorithm>
+#include <array>
 #include <climits>
 #include <cstdint>
 #include <iostream>
@@ -145,8 +146,9 @@ void Simple::Run(int frames,
       break;
 
     wl_buffer* buffer;
-    static const SkColor kColors[] = {SK_ColorRED, SK_ColorBLACK};
-    SkColor color = kColors[++frame_count % std::size(kColors)];
+    static constexpr std::array<SkColor, 2> kColors = {SK_ColorRED,
+                                                       SK_ColorBLACK};
+    SkColor color = kColors[++frame_count % kColors.size()];
     if (run_param.single_pixel_buffer) {
       SkColor4f precise_color = SkColor4f::FromColor(color);
       // Single Pixel Buffer protocol uses premultiplied color.

@@ -6,6 +6,7 @@
 #include "components/exo/wayland/clients/blur.h"
 
 #include <algorithm>
+#include <array>
 #include <vector>
 
 #include "base/command_line.h"
@@ -86,11 +87,12 @@ void DrawContents(SkImage* background_grid_image,
   float rotation = elapsed_time.InMilliseconds() * kRotationSpeed / 1000;
   for (int y = 0; y < kGridSize; ++y) {
     for (int x = 0; x < kGridSize; ++x) {
-      const SkColor kColors[] = {SK_ColorBLUE, SK_ColorGREEN,
-                                 SK_ColorRED,  SK_ColorYELLOW,
-                                 SK_ColorCYAN, SK_ColorMAGENTA};
+      static constexpr std::array<SkColor, 6> kColors = {
+          SK_ColorBLUE,   SK_ColorGREEN, SK_ColorRED,
+          SK_ColorYELLOW, SK_ColorCYAN,  SK_ColorMAGENTA,
+      };
       SkPaint paint;
-      paint.setColor(kColors[(y * kGridSize + x) % std::size(kColors)]);
+      paint.setColor(kColors[(y * kGridSize + x) % kColors.size()]);
       canvas->save();
       canvas->translate(x * cell_size.width() + cell_size.width() / 2.f,
                         y * cell_size.height() + cell_size.height() / 2.f);

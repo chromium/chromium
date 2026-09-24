@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
@@ -114,8 +115,9 @@ void SubSurfaceClient::Run(const ClientBase::InitParams& params) {
     if (frame_count < 400) {
       Buffer* buffer = buffers_.front().get();
       SkCanvas* canvas = buffer->sk_surface->getCanvas();
-      static const SkColor kColors[] = {SK_ColorRED, SK_ColorBLACK};
-      canvas->clear(kColors[frame_count % std::size(kColors)]);
+      static constexpr std::array<SkColor, 2> kColors = {SK_ColorRED,
+                                                         SK_ColorBLACK};
+      canvas->clear(kColors[frame_count % kColors.size()]);
       if (gr_context_) {
         gr_context_->flushAndSubmit();
         glFinish();

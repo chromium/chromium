@@ -13,6 +13,7 @@
 #include <wayland-client-protocol.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <memory>
@@ -419,11 +420,12 @@ int RectsClient::Run(const ClientBase::InitParams& params,
       canvas->save();
       canvas->translate(half_width, half_height);
       for (size_t i = 0; i < num_rects; ++i) {
-        const SkColor kColors[] = {SK_ColorBLUE, SK_ColorGREEN,
-                                   SK_ColorRED,  SK_ColorYELLOW,
-                                   SK_ColorCYAN, SK_ColorMAGENTA};
+        static constexpr std::array<SkColor, 6> kColors = {
+            SK_ColorBLUE,   SK_ColorGREEN, SK_ColorRED,
+            SK_ColorYELLOW, SK_ColorCYAN,  SK_ColorMAGENTA,
+        };
         SkPaint paint;
-        paint.setColor(SkColorSetA(kColors[i % std::size(kColors)], 0xA0));
+        paint.setColor(SkColorSetA(kColors[i % kColors.size()], 0xA0));
         canvas->rotate(rotation / num_rects);
         canvas->drawIRect(rect, paint);
       }
