@@ -1175,10 +1175,10 @@ base::expected<InfTag, ParseStatus> InfTag::Parse(TagItem tag) {
     return base::unexpected(ParseStatusCode::kValueOverflowsTimeDelta);
   }
 
-  if (!duration.is_positive()) {
+  if (duration.is_negative()) {
     return base::unexpected(
         ParseStatus(ParseStatusCode::kFailedToParseDecimalFloatingPoint,
-                    "EXTINF duration values must be greater than zero."));
+                    "EXTINF duration values must be >= 0"));
   }
 
   return InfTag{.duration = duration, .title = title_str};

@@ -1530,11 +1530,14 @@ TEST(HlsTagsTest, ParseInfTag) {
   ErrorTest<InfTag>(",", ParseStatusCode::kFailedToParseDecimalFloatingPoint);
   ErrorTest<InfTag>("-123,",
                     ParseStatusCode::kFailedToParseDecimalFloatingPoint);
-  ErrorTest<InfTag>("0,", ParseStatusCode::kFailedToParseDecimalFloatingPoint);
-  ErrorTest<InfTag>("0.0,",
-                    ParseStatusCode::kFailedToParseDecimalFloatingPoint);
   ErrorTest<InfTag>("asdf,",
                     ParseStatusCode::kFailedToParseDecimalFloatingPoint);
+
+  result = OkTest<InfTag>("0,");
+  EXPECT_EQ(result.tag.duration, base::Seconds(0));
+
+  result = OkTest<InfTag>("0.0,");
+  EXPECT_EQ(result.tag.duration, base::Seconds(0));
 
   // Test max value
   result = OkTest<InfTag>(base::NumberToString(MaxSeconds()) + ",\t");
