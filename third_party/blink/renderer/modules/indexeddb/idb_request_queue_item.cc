@@ -399,8 +399,7 @@ void IDBRequestQueueItem::SendResult() {
       if (key_ && key_->IsValid()) {
         request_->SendResult(MakeGarbageCollected<IDBAny>(std::move(key_)));
       } else {
-        request_->SendResult(
-            MakeGarbageCollected<IDBAny>(IDBAny::kUndefinedType));
+        request_->SendResult(MakeGarbageCollected<IDBAny>());
       }
 
       break;
@@ -444,8 +443,7 @@ void IDBRequestQueueItem::SendResult() {
       break;
     }
     case kVoid: {
-      request_->SendResult(
-          MakeGarbageCollected<IDBAny>(IDBAny::kUndefinedType));
+      request_->SendResult(MakeGarbageCollected<IDBAny>());
       break;
     }
   }

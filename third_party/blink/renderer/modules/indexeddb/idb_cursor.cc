@@ -366,7 +366,7 @@ ScriptValue IDBCursor::value(ScriptState* script_state) {
 #endif  // DCHECK_IS_ON()
 
   } else {
-    value = MakeGarbageCollected<IDBAny>(IDBAny::kUndefinedType);
+    value = MakeGarbageCollected<IDBAny>();
   }
 
   value_dirty_ = false;

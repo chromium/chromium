@@ -292,7 +292,7 @@ void IDBOpenDBRequest::OnDeleteDBSuccess(int64_t old_version) {
   // The spec requires oldVersion to be 0 if the database does not exist:
   // https://w3c.github.io/IndexedDB/#delete-a-database.
   CHECK_GE(old_version, 0);
-  SetResult(MakeGarbageCollected<IDBAny>(IDBAny::kUndefinedType));
+  SetResult(MakeGarbageCollected<IDBAny>());
   DispatchEvent(*MakeGarbageCollected<IDBVersionChangeEvent>(
       event_type_names::kSuccess, old_version, std::nullopt));
 }

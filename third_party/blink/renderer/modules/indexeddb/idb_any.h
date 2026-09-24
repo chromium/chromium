@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_ANY_H_
 
 #include <memory>
-#include <optional>
+#include <variant>
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_record_array.h"
@@ -59,7 +59,6 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
  public:
   enum Type {
     kUndefinedType = 0,
-    kNullType,
     kIDBCursorType,
     kIDBCursorWithValueType,
     kIDBDatabaseType,
@@ -70,7 +69,8 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
     kIDBRecordArrayType,
   };
 
-  explicit IDBAny(Type);
+  // Produces an IDBAny with `kUndefinedType`.
+  IDBAny();
   explicit IDBAny(IDBCursor*);
   explicit IDBAny(IDBDatabase*);
   explicit IDBAny(std::unique_ptr<IDBKey>);
@@ -83,7 +83,7 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
   void Trace(Visitor*) const;
   void ContextWillBeDestroyed();
 
-  Type GetType() const { return type_; }
+  Type GetType() const;
   // Use type() to figure out which one of these you're allowed to call.
   IDBCursor* IdbCursor() const;
   IDBCursorWithValue* IdbCursorWithValue() const;
@@ -102,16 +102,16 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
   v8::Local<v8::Value> ToV8(ScriptState* script_state);
 
  private:
-  const Type type_;
+  using Payload = std::variant<std::monostate,
+                               Member<IDBCursor>,
+                               Member<IDBDatabase>,
+                               std::unique_ptr<IDBKey>,
+                               std::unique_ptr<IDBValue>,
+                               Vector<std::unique_ptr<IDBValue>>,
+                               std::unique_ptr<IDBRecordArray>,
+                               int64_t>;
 
-  // Only one of the following should ever be in use at any given time.
-  const Member<IDBCursor> idb_cursor_;
-  const Member<IDBDatabase> idb_database_;
-  const std::unique_ptr<IDBKey> idb_key_;
-  const std::unique_ptr<IDBValue> idb_value_;
-  const Vector<std::unique_ptr<IDBValue>> idb_values_;
-  std::optional<IDBRecordArray> idb_records_;
-  const int64_t integer_ = 0;
+  Payload value_;
 };
 
 }  // namespace blink

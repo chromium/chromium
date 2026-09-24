@@ -617,7 +617,7 @@ void IDBRequest::SendError(DOMException* error, bool force) {
   }
 
   error_ = error;
-  SetResult(MakeGarbageCollected<IDBAny>(IDBAny::kUndefinedType));
+  SetResult(MakeGarbageCollected<IDBAny>());
   pending_cursor_.Clear();
   DispatchEvent(*Event::CreateCancelableBubble(event_type_names::kError));
 }
