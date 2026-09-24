@@ -901,6 +901,14 @@ BrowserView::BrowserView(BrowserWindowInterface* browser)
   SetShowIcon(::ShouldShowWindowIcon(
       browser_.get(), AppUsesWindowControlsOverlay(), AppUsesTabbed()));
 
+  // Layout deferral during startup is only intended for normal browser windows
+  // (which experience redundant layout passes while loading the WebUI toolbar).
+  // Non-normal windows (popups, app windows, etc.) do not use the WebUI toolbar
+  // and must not defer layout while invisible.
+  if (!GetIsNormalType()) {
+    startup_layout_state_ = StartupLayoutState::kDisabled;
+  }
+
   // In forced app mode, all size controls are always disabled. Otherwise, use
   // `create_params` to enable/disable specific size controls.
   if (IsRunningInForcedAppMode()) {
@@ -4843,11 +4851,15 @@ void BrowserView::Layout(PassKey) {
     // safe to skip because the window size has not changed, meaning the initial
     // bounds remain valid.
     //
-    // However, if the active contents container has not yet received its
+    // However, if the window size changed since the last layout pass, do not
+    // defer; child views must be laid out to match the new window size.
+    //
+    // Also, if the active contents container has not yet received its
     // initial non-empty bounds (e.g. during tab restore or when the first tab
     // is added to the window), allow this layout pass so that the web contents
     // gets properly sized before it starts loading.
-    if (size().IsEmpty() || !GetContentsSize().IsEmpty()) {
+    const bool size_changed = size() != last_laid_out_size_;
+    if (!size_changed && (size().IsEmpty() || !GetContentsSize().IsEmpty())) {
       layout_deferred_while_invisible_ = true;
       return;
     }
@@ -4937,6 +4949,9 @@ void BrowserView::Layout(PassKey) {
   if (startup_layout_state_ == StartupLayoutState::kInitial) {
     startup_layout_state_ = StartupLayoutState::kDeferring;
   }
+
+  layout_deferred_while_invisible_ = false;
+  last_laid_out_size_ = size();
 }
 
 void BrowserView::OnGestureEvent(ui::GestureEvent* event) {

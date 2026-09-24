@@ -785,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
   BrowserWindowCreateParams params =
       BrowserWindowCreateParams::CreateForPictureInPicture(
           "PipApp", /*trusted_source=*/true, browser()->GetProfile(),
-          /*user_gesture=*/true);
+          /*from_user_gesture=*/true);
   BrowserWindowInterface* pip_browser = CreateBrowserWindow(std::move(params));
   pip_browser->GetWindow()->Show();
   BrowserView* pip_browser_view =
@@ -2315,4 +2315,76 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest, DeferLayoutWhileInvisible) {
   EXPECT_FALSE(browser_view2->is_layout_deferred_for_testing());
 
   widget2->CloseNow();
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest,
+                       NoDeferLayoutOnSizeChangeWhileInvisible) {
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile(),
+                                /*from_user_gesture=*/true));
+  BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);
+  views::Widget* widget2 = browser_view2->GetWidget();
+  ASSERT_FALSE(widget2->IsVisible());
+
+  // Trigger initial layout pass.
+  widget2->LayoutRootViewIfNecessary();
+
+  chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
+  widget2->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(browser_view2->GetContentsSize().IsEmpty());
+
+  // Subsequent layout without size change is deferred.
+  browser_view2->InvalidateLayout();
+  widget2->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(browser_view2->is_layout_deferred_for_testing());
+
+  // Changing the widget's size while invisible must not defer layout, so child
+  // views are updated with the new size. Shrink the widget bounds to avoid
+  // hitting display work area limits on smaller test screens (e.g. Windows VMs
+  // or ChromeOS).
+  const gfx::Size original_client_size = browser_view2->size();
+  const gfx::Size original_contents_size = browser_view2->GetContentsSize();
+  gfx::Rect bounds = widget2->GetWindowBoundsInScreen();
+  bounds.set_width(bounds.width() - 100);
+  bounds.set_height(bounds.height() - 100);
+  widget2->SetBounds(bounds);
+  widget2->LayoutRootViewIfNecessary();
+  EXPECT_EQ(browser_view2->size().width(), original_client_size.width() - 100);
+  EXPECT_EQ(browser_view2->size().height(),
+            original_client_size.height() - 100);
+  EXPECT_EQ(browser_view2->GetContentsSize().width(),
+            original_contents_size.width() - 100);
+  EXPECT_EQ(browser_view2->GetContentsSize().height(),
+            original_contents_size.height() - 100);
+
+  // Subsequent layout without size change should be deferred again.
+  browser_view2->InvalidateLayout();
+  widget2->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(browser_view2->is_layout_deferred_for_testing());
+
+  widget2->CloseNow();
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest,
+                       NoDeferLayoutForNonNormalWindow) {
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_POPUP,
+                                   browser()->GetProfile(),
+                                   /*user_gesture=*/true);
+  BrowserWindowInterface* popup = CreateBrowserWindow(std::move(params));
+  BrowserView* popup_view = BrowserView::GetBrowserViewForBrowser(popup);
+  views::Widget* popup_widget = popup_view->GetWidget();
+  ASSERT_FALSE(popup_widget->IsVisible());
+
+  // Non-normal windows should have startup layout deferral disabled.
+  EXPECT_TRUE(popup_view->is_startup_layout_disabled_for_testing());
+
+  popup_widget->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(popup_view->is_layout_deferred_for_testing());
+
+  chrome::AddTabAt(popup, GURL("about:blank"), -1, true);
+  popup_view->InvalidateLayout();
+  popup_widget->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(popup_view->is_layout_deferred_for_testing());
+
+  popup_widget->CloseNow();
 }

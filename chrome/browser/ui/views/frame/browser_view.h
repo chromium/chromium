@@ -1275,20 +1275,29 @@ class BrowserView : public BrowserWindow,
 
   // State machine for deferring layouts during browser startup.
   enum class StartupLayoutState {
-    // Before the very first layout pass has completed. Layout is allowed so the
-    // window gets initial bounds.
+    // Initial state for normal windows, before the very first layout pass has
+    // completed. Layout is allowed so the window gets initial bounds.
     kInitial,
     // The first layout pass has completed, but the window is still invisible.
-    // Subsequent layout requests will be deferred to avoid redundant passes.
+    // Subsequent layout requests will be deferred to avoid redundant passes
+    // (unless the window size changes or web contents bounds are still
+    // pending).
     kDeferring,
-    // The window has been shown at least once. Layout deferral is disabled for
-    // the rest of the browser session to avoid active-use jank.
+    // Layout deferral is disabled for the rest of the browser session. This is
+    // set at initialization for non-normal window types (which do not use the
+    // WebUI toolbar), or once a window has been shown at least once to avoid
+    // active-use jank.
     kDisabled,
   };
   StartupLayoutState startup_layout_state_ = StartupLayoutState::kInitial;
 
   // Set to true if a layout request was skipped while the window was invisible.
   bool layout_deferred_while_invisible_ = false;
+
+  // The size of this view during the last completed layout pass. Used by
+  // kDeferLayoutDuringBrowserStartup to ensure that window resize operations
+  // while invisible still execute layout to update child view bounds.
+  gfx::Size last_laid_out_size_;
 
   // True if (as of the last time it was checked) the frame type is native.
   bool using_native_frame_ = true;
