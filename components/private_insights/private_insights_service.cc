@@ -288,8 +288,10 @@ PrivateInsightsService::UploadBlocking(
   FederatedComputationResult result =
       GetRunFederatedComputationFunc().Run(params);
 
-  base::UmaHistogramTimes(kUploadTimeHistogram,
-                          base::TimeTicks::Now() - upload_start_time);
+  const base::TimeDelta upload_duration =
+      base::TimeTicks::Now() - upload_start_time;
+  base::UmaHistogramTimes(kUploadTimeHistogram, upload_duration);
+  base::UmaHistogramMediumTimes(kUploadTime2Histogram, upload_duration);
   return result;
 }
 

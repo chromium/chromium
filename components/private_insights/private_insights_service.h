@@ -60,6 +60,8 @@ inline constexpr char kUploadPendingTimeHistogram[] =
     "PrivateMetrics.PrivateInsights.Upload.PendingTime";
 inline constexpr char kUploadTimeHistogram[] =
     "PrivateMetrics.PrivateInsights.Upload.Time";
+inline constexpr char kUploadTime2Histogram[] =
+    "PrivateMetrics.PrivateInsights.Upload.Time2";
 inline constexpr char kContributedTaskCountHistogram[] =
     "PrivateMetrics.PrivateInsights.ContributedTaskCount";
 inline constexpr char kFederatedComputationOutcomeHistogram[] =

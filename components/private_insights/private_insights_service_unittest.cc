@@ -118,6 +118,7 @@ TEST_F(PrivateInsightsServiceTest,
 
   histogram_tester.ExpectTotalCount(kUploadPendingTimeHistogram, 1);
   histogram_tester.ExpectTotalCount(kUploadTimeHistogram, 1);
+  histogram_tester.ExpectTotalCount(kUploadTime2Histogram, 1);
   histogram_tester.ExpectUniqueSample(
       kFederatedComputationOutcomeHistogram,
       PrivateInsightsService::FederatedComputationOutcome::kSuccess, 1);
@@ -261,6 +262,7 @@ TEST_F(PrivateInsightsServiceTest, UploadSkippedWhenServerUriEmpty) {
 
   histogram_tester.ExpectTotalCount(kUploadPendingTimeHistogram, 1);
   histogram_tester.ExpectTotalCount(kUploadTimeHistogram, 0);
+  histogram_tester.ExpectTotalCount(kUploadTime2Histogram, 0);
   histogram_tester.ExpectUniqueSample(
       kFederatedComputationOutcomeHistogram,
       PrivateInsightsService::FederatedComputationOutcome::kErrorNoServerUri,

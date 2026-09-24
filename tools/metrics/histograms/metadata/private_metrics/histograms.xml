@@ -270,7 +270,20 @@ chromium-metrics-reviews@google.com.
   <owner>private-metrics@google.com</owner>
   <summary>
     The time spent running UploadBlocking on the background thread. Logged when
-    UploadBlocking finishes.
+    UploadBlocking finishes. Note that this histogram only covers up to 10
+    seconds; see PrivateMetrics.PrivateInsights.Upload.Time2 for a version with
+    a wider range.
+  </summary>
+</histogram>
+
+<histogram name="PrivateMetrics.PrivateInsights.Upload.Time2" units="ms"
+    expires_after="2027-06-01">
+  <owner>kjarosz@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The time spent running UploadBlocking on the background thread. Logged when
+    UploadBlocking finishes. Same as PrivateMetrics.PrivateInsights.Upload.Time,
+    but covers up to 3 minutes.
   </summary>
 </histogram>
 
