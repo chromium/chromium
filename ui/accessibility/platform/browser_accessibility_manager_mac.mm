@@ -499,6 +499,9 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
     NSString* mac_notification,
     BrowserAccessibility& node) {
   DCHECK(mac_notification);
+  if (!node.CanFireEvents()) {
+    return;
+  }
   BrowserAccessibilityCocoa* native_node =
       ObjCCastStrict<BrowserAccessibilityCocoa>(
           node.GetNativeViewAccessible().Get());

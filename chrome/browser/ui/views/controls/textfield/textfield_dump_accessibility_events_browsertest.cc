@@ -50,6 +50,8 @@ IN_PROC_BROWSER_TEST_P(TextfieldDumpAccessibilityEventsTest, ValueChanged) {
   }
   // The ViewsAX path fires AXValueChanged on the parent AXGroup in addition
   // to the textfield itself. Filter it for consistent cross-variant output.
+  // When WebUILocationBar is enabled, the browser's address bar (AXComboBox)
+  // fires an asynchronous AXValueChanged event during the test; filter it.
   SetFilters(R"(
 @WIN-ALLOW:EVENT_OBJECT_VALUECHANGE*
 @WIN-ALLOW:IA2_EVENT_TEXT_INSERTED*
@@ -59,6 +61,7 @@ IN_PROC_BROWSER_TEST_P(TextfieldDumpAccessibilityEventsTest, ValueChanged) {
 @AURALINUX-ALLOW:TEXT-INSERT*
 )");
   AddDenyFilter("AXValueChanged on AXGroup*");
+  AddDenyFilter("AXValueChanged on AXComboBox*");
   BEGIN_RECORDING_EVENTS_OR_SKIP("textfield-value-changed");
   textfield_->SetText(u"Hello World");
 }
