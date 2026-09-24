@@ -195,8 +195,7 @@ bool Canvas2DResourceProvider::ShouldReplaceTargetBuffer(
   return !resource_->HasOneRef();
 }
 
-std::unique_ptr<gpu::RasterScopedAccess>
-Canvas2DResourceProvider::WillDrawInternal() {
+void Canvas2DResourceProvider::EnsureResourceReadyForDraw() {
   DCHECK(resource_);
 
   // Since the resource will be updated, the cached snapshot is no longer
@@ -241,6 +240,11 @@ Canvas2DResourceProvider::WillDrawInternal() {
     // subsequent CopyOnWrite.
     must_preserve_content_on_copy_on_write_ = true;
   }
+}
+
+std::unique_ptr<gpu::RasterScopedAccess>
+Canvas2DResourceProvider::WillDrawInternal() {
+  EnsureResourceReadyForDraw();
   return resource_->BeginAccess(/*readonly=*/false);
 }
 

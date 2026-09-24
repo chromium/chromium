@@ -309,6 +309,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
 
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
+  void EnsureResourceReadyForDraw();
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
   // Notifies before any unaccelerated drawing will be done on the resource used
