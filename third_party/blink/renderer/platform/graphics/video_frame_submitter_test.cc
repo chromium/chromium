@@ -648,6 +648,34 @@ TEST_F(VideoFrameSubmitterTest, OnBeginFrameSubmitsFrame) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(VideoFrameSubmitterTest, OnBeginFrameThrottledDeadlines) {
+  EXPECT_CALL(*sink_, SetNeedsBeginFrame(true));
+
+  submitter_->StartRendering();
+  task_environment_.RunUntilIdle();
+
+  viz::BeginFrameArgs args = begin_frame_source_->CreateBeginFrameArgs(
+      BEGINFRAME_FROM_HERE, now_src_.get());
+  const base::TimeDelta vsync_interval = args.interval;
+  const base::TimeDelta throttled_interval = base::Seconds(2);
+  args.interval = throttled_interval;
+  args.unthrottled_interval = vsync_interval;
+
+  EXPECT_CALL(
+      *video_frame_provider_,
+      UpdateCurrentFrame(args.frame_time + vsync_interval,
+                         args.frame_time + throttled_interval + vsync_interval))
+      .WillOnce(Return(true));
+  EXPECT_GET_PUT_FRAME();
+  EXPECT_CALL(*sink_, DoSubmitCompositorFrame(_, _));
+  EXPECT_CALL(*resource_provider_, AppendQuads(_, _, _, _));
+  EXPECT_CALL(*resource_provider_, PrepareSendToParent(_));
+  EXPECT_CALL(*resource_provider_, ReleaseFrameResources());
+
+  OnBeginFrame(args, {}, Vector<viz::ReturnedResource>());
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(VideoFrameSubmitterTest, MissedFrameArgDoesNotProduceFrame) {
   EXPECT_CALL(*sink_, DidNotProduceFrame(_));
 

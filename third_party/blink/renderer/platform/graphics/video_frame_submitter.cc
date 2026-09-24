@@ -494,8 +494,12 @@ void VideoFrameSubmitter::OnBeginFrame(
     }
   }
 
-  base::TimeTicks deadline_min = args.frame_time + args.interval;
-  base::TimeTicks deadline_max = args.frame_time + 2 * args.interval;
+  const base::TimeDelta vsync_interval = args.unthrottled_interval.is_positive()
+                                             ? args.unthrottled_interval
+                                             : args.interval;
+  base::TimeTicks deadline_min = args.frame_time + vsync_interval;
+  base::TimeTicks deadline_max =
+      args.frame_time + args.interval + vsync_interval;
   // Default expected display time for tracing: the end of the BeginFrame
   // deadline window (two intervals after frame_time). This is unrelated to how
   // |average_delta_between_receive_and_present_| is computed: that EMA is built
