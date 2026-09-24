@@ -13,8 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
-#include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/actor/core/task_id.h"
@@ -102,7 +102,7 @@ class GlicSplitButtonDelegateAndroid : public GlicSplitButtonDelegate {
 
   void ShowActorTaskListBubble() override {
     Profile* profile = browser_->GetProfile();
-    auto* manager = glic::GlicActivityManagerFactory::GetForProfile(profile);
+    auto* manager = GlicActivityManager::Get(profile);
     if (!manager) {
       return;
     }

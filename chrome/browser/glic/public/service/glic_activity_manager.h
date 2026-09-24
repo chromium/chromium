@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_SERVICE_GLIC_ACTIVITY_MANAGER_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_SERVICE_GLIC_ACTIVITY_MANAGER_H_
 
-#include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "components/actor/core/task_id.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -24,11 +26,16 @@ class Profile;
 
 namespace glic {
 
-class GlicActivityManager : public KeyedService {
+// Centralized Profile-scoped manager for Glic Actor tasks.
+class GlicActivityManager {
  public:
+  // Returns the GlicActivityManager instance associated with `profile`, or
+  // nullptr if GlicKeyedService is not available for this profile.
+  static GlicActivityManager* Get(Profile* profile);
+
   GlicActivityManager(Profile* profile,
                       actor::ActorKeyedService* actor_service);
-  ~GlicActivityManager() override;
+  ~GlicActivityManager();
 
   // Called whenever actor task state updates.
   void OnActorTaskStateUpdate(actor::TaskId task_id);
@@ -73,15 +80,16 @@ class GlicActivityManager : public KeyedService {
       TaskNudgeChangeCallback callback);
 
   // Register for this callback to get task state change notifications for the
-  // bubble. Virtual for testing.
+  // bubble.
   using TaskListBubbleChangeCallback =
       base::RepeatingCallback<void(bool is_start_notification)>;
-  virtual base::CallbackListSubscription RegisterTaskListBubbleStateChange(
+  base::CallbackListSubscription RegisterTaskListBubbleStateChange(
       TaskListBubbleChangeCallback callback);
 
   actor::ui::ActorTaskNudgeState GetCurrentActorTaskNudgeState() const;
   size_t GetNumActorTasksNeedProcessing() const;
   bool HasActiveExperimentalTask() const;
+
   const absl::flat_hash_map<actor::TaskId, bool>& actor_task_list_bubble_rows()
       const {
     return actor_task_list_bubble_rows_;
@@ -94,8 +102,7 @@ class GlicActivityManager : public KeyedService {
   // The nudge should be visible until all task rows have been processed.
   void ProcessRowInTaskListBubble(actor::TaskId task_id);
 
-  // KeyedService:
-  void Shutdown() override;
+  void Shutdown();
 
  private:
   // Called once on startup.

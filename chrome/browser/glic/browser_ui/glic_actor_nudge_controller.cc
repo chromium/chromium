@@ -15,7 +15,6 @@
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
-#include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/common/buildflags.h"
@@ -81,12 +80,8 @@ base::WeakPtr<GlicActorNudgeController> GlicActorNudgeController::GetWeakPtr() {
 void GlicActorNudgeController::OnStateUpdate(
     bool show_bubble,
     ActorTaskNudgeState actor_task_nudge_state) {
-  // If the task icon is inactive, hide it and perform no additional style
-  // changes.
-  GlicActivityManager* manager =
-      GlicActivityManagerFactory::GetForProfile(profile_);
-  DCHECK(manager);
-  if (manager->actor_task_list_bubble_rows().empty()) {
+  auto* manager = GlicActivityManager::Get(profile_);
+  if (!manager || manager->actor_task_list_bubble_rows().empty()) {
     HideGlicActorTaskIcon();
     CloseBubble();
     return;
@@ -143,7 +138,7 @@ void GlicActorNudgeController::UpdateNudgeLabelOrRetrigger(
 }
 
 void GlicActorNudgeController::RegisterActorNudgeStateCallback() {
-  if (auto* manager = GlicActivityManagerFactory::GetForProfile(profile_)) {
+  if (auto* manager = GlicActivityManager::Get(profile_)) {
     actor_nudge_state_change_callback_subscription_.push_back(
         manager->RegisterTaskNudgeStateChange(base::BindRepeating(
             &GlicActorNudgeController::OnStateUpdate, base::Unretained(this))));
@@ -151,7 +146,7 @@ void GlicActorNudgeController::RegisterActorNudgeStateCallback() {
 }
 
 void GlicActorNudgeController::UpdateCurrentActorNudgeState() {
-  if (auto* manager = GlicActivityManagerFactory::GetForProfile(profile_)) {
+  if (auto* manager = GlicActivityManager::Get(profile_)) {
     // This will "sync" a new window's state to the current nudge state. Do not
     // show the bubble in the new window as the user navigated away from the
     // bubble that was previously shown.

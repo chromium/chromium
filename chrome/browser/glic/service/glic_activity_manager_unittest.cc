@@ -12,13 +12,18 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,22 +65,35 @@ class GlicActivityManagerTest : public testing::Test,
 
   // testing::Test:
   void SetUp() override {
-    TestingProfile::Builder builder;
-    builder.AddTestingFactory(
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+    scoped_glic_bypass_.emplace();
+
+    TestingProfile::TestingFactories factories;
+    factories.emplace_back(
         actor::ActorKeyedServiceFactory::GetInstance(),
         base::BindRepeating([](content::BrowserContext* context)
                                 -> std::unique_ptr<KeyedService> {
-          return std::make_unique<ActorKeyedServiceFake>(
+          return std::make_unique<actor::ActorKeyedServiceFake>(
               Profile::FromBrowserContext(context));
         }));
-    profile_ = builder.Build();
+    factories.emplace_back(
+        glic::GlicKeyedServiceFactory::GetInstance(),
+        base::BindRepeating(&GlicActivityManagerTest::BuildMockGlicKeyedService,
+                            base::Unretained(this)));
+
+    profile_ = testing_profile_manager_.CreateTestingProfile(
+        "profile", std::move(factories));
+
 #if !BUILDFLAG(IS_ANDROID)
     display_service_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile_.get());
+        std::make_unique<NotificationDisplayServiceTester>(profile_);
 #endif
-    actor_service_ = static_cast<ActorKeyedServiceFake*>(
-        actor::ActorKeyedService::Get(profile_.get()));
-    manager_ = GlicActivityManagerFactory::GetForProfile(profile_.get());
+    actor_service_ = static_cast<actor::ActorKeyedServiceFake*>(
+        actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_));
+
+    auto* glic_service = GlicKeyedService::Get(profile_);
+    ASSERT_TRUE(glic_service);
+    manager_ = &glic_service->activity_manager();
 
     nudge_subscription_ = manager()->RegisterTaskNudgeStateChange(
         base::BindRepeating(&MockTaskNudgeStateChangeSubscriber::OnStateChanged,
@@ -86,6 +104,16 @@ class GlicActivityManagerTest : public testing::Test,
                             base::Unretained(&mock_bubble_subscriber_)));
   }
 
+  std::unique_ptr<KeyedService> BuildMockGlicKeyedService(
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    return std::make_unique<testing::NiceMock<MockGlicKeyedService>>(
+        profile, identity_test_env_.identity_manager(),
+        testing_profile_manager_.profile_manager(), &glic_profile_manager_,
+        /*contextual_cueing_service=*/nullptr,
+        actor::ActorKeyedServiceFactory::GetActorKeyedService(profile));
+  }
+
   void TearDown() override {
     nudge_subscription_ = {};
     bubble_subscription_ = {};
@@ -94,7 +122,9 @@ class GlicActivityManagerTest : public testing::Test,
 #if !BUILDFLAG(IS_ANDROID)
     display_service_tester_.reset();
 #endif
-    profile_.reset();
+    profile_ = nullptr;
+    testing_profile_manager_.DeleteAllTestingProfiles();
+    scoped_glic_bypass_.reset();
     testing::Test::TearDown();
   }
 
@@ -114,11 +144,17 @@ class GlicActivityManagerTest : public testing::Test,
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
+  std::optional<glic::GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  glic::GlicProfileManager glic_profile_manager_;
+  raw_ptr<TestingProfile> profile_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 #endif
-  raw_ptr<ActorKeyedServiceFake> actor_service_;
+  raw_ptr<actor::ActorKeyedServiceFake> actor_service_;
   raw_ptr<GlicActivityManager> manager_;
   base::CallbackListSubscription nudge_subscription_;
   base::CallbackListSubscription bubble_subscription_;
@@ -598,7 +634,7 @@ TEST_F(GlicActivityManagerTest, StartNotificationNotRepeatedAfterRowClicked) {
   EXPECT_TRUE(manager()->actor_task_list_bubble_rows().at(task_id));
   EXPECT_TRUE(manager()->tasks_notified_of_start().contains(task_id));
 
-  // Process/click the row in the task list bubble (resets requires_processing).
+  // Process row in task list bubble (resets requires_processing).
   manager()->ProcessRowInTaskListBubble(task_id);
   EXPECT_FALSE(manager()->actor_task_list_bubble_rows().at(task_id));
 

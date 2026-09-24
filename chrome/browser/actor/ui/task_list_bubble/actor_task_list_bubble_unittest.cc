@@ -19,7 +19,6 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
-#include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -73,17 +72,6 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
                                         -> std::unique_ptr<KeyedService> {
                   return std::make_unique<actor::ActorKeyedServiceFake>(
                       Profile::FromBrowserContext(context));
-                })},
-            TestingProfile::TestingFactory{
-                glic::GlicActivityManagerFactory::GetInstance(),
-                base::BindRepeating([](content::BrowserContext* context)
-                                        -> std::unique_ptr<KeyedService> {
-                  Profile* profile = Profile::FromBrowserContext(context);
-                  auto* actor_service =
-                      actor::ActorKeyedServiceFactory::GetActorKeyedService(
-                          profile);
-                  return std::make_unique<glic::GlicActivityManager>(
-                      profile, actor_service);
                 })},
             TestingProfile::TestingFactory{
                 glic::GlicKeyedServiceFactory::GetInstance(),

@@ -52,6 +52,7 @@ namespace glic {
 
 class AuthController;
 class ContextualCueingService;
+class GlicActivityManager;
 class GlicActorPolicyChecker;
 class GlicEnabling;
 class GlicMetrics;
@@ -260,6 +261,8 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   bool HasActorPolicyChecker() const { return !!actor_policy_checker_; }
 
+  GlicActivityManager& activity_manager();
+
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
   // callbacks.
@@ -297,6 +300,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   std::unique_ptr<GlicExperimentalOptInController> opt_in_controller_;
   // Is a GlicInstanceCoordinatorImpl.
   std::unique_ptr<GlicInstanceCoordinator> instance_coordinator_;
+  std::unique_ptr<GlicActivityManager> activity_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;
 
   std::unique_ptr<AuthController> auth_controller_;

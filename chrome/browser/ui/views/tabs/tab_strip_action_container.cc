@@ -25,7 +25,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
-#include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -484,7 +483,7 @@ void TabStripActionContainer::ShowActorTaskListBubble() {
   }
   if (!actor_task_list_bubble_) {
     Profile* profile = browser_window_interface_->GetProfile();
-    auto* manager = glic::GlicActivityManagerFactory::GetForProfile(profile);
+    auto* manager = glic::GlicActivityManager::Get(profile);
     auto* controller =
         ActorTaskListBubbleController::From(browser_window_interface_);
     if (manager && controller) {
@@ -666,9 +665,10 @@ TabStripActionContainer::CreateGlicActorTaskIcon() {
 
 void TabStripActionContainer::OnGlicActorTaskIconClicked() {
   Profile* const profile = browser_window_interface_->GetProfile();
-  auto* activity_manager =
-      glic::GlicActivityManagerFactory::GetForProfile(profile);
-  CHECK(activity_manager);
+  auto* activity_manager = glic::GlicActivityManager::Get(profile);
+  if (!activity_manager) {
+    return;
+  }
 
   // Only show the bubble if the button is not currently pressed. Clicking on
   // the pressed button should dismiss the nudge.

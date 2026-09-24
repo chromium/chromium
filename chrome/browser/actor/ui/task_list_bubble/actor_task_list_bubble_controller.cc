@@ -21,7 +21,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
-#include "chrome/browser/glic/public/service/glic_activity_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
@@ -226,13 +225,12 @@ ActorTaskListBubbleController::ActorTaskListBubbleController(
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
-  auto* manager =
-      glic::GlicActivityManagerFactory::GetForProfile(browser_->GetProfile());
-  DCHECK(manager);
-  bubble_state_change_callback_subscription_.push_back(
-      manager->RegisterTaskListBubbleStateChange(
-          base::BindRepeating(&ActorTaskListBubbleController::OnStateUpdate,
-                              base::Unretained(this))));
+  if (auto* manager = glic::GlicActivityManager::Get(browser_->GetProfile())) {
+    bubble_state_change_callback_subscription_.push_back(
+        manager->RegisterTaskListBubbleStateChange(
+            base::BindRepeating(&ActorTaskListBubbleController::OnStateUpdate,
+                                base::Unretained(this))));
+  }
 }
 
 ActorTaskListBubbleController::~ActorTaskListBubbleController() = default;
@@ -270,9 +268,10 @@ void ActorTaskListBubbleController::ShowBubbleImpl(bool is_start_notification) {
     return;
   }
 
-  auto* manager =
-      glic::GlicActivityManagerFactory::GetForProfile(browser_->GetProfile());
-  DCHECK(manager);
+  auto* manager = glic::GlicActivityManager::Get(browser_->GetProfile());
+  if (!manager) {
+    return;
+  }
 
   // If the browser is in the background, only show the bubble if this is a
   // start notification for an experimentalTriggering task triggered while
@@ -291,9 +290,7 @@ void ActorTaskListBubbleController::ShowBubbleImpl(bool is_start_notification) {
             features::kGlicExperimentalTriggeringOsNotification)) {
       return;
     }
-
-    auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-        browser_->GetProfile());
+    auto* glic_service = glic::GlicKeyedService::Get(browser_->GetProfile());
     if (!is_start_notification || !glic_service ||
         !glic_service->IsPanelShowingForBrowser(*browser_)) {
       return;
@@ -372,9 +369,9 @@ void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
   }
   // Regardless of tab navigation, process the row and close the bubble when
   // done.
-  auto* activity_manager =
-      glic::GlicActivityManagerFactory::GetForProfile(profile);
-  activity_manager->ProcessRowInTaskListBubble(task_id);
+  if (auto* activity_manager = glic::GlicActivityManager::Get(profile)) {
+    activity_manager->ProcessRowInTaskListBubble(task_id);
+  }
   CloseBubble();
   actor::ui::LogTaskListBubbleRowClicked();
 }

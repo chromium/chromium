@@ -52,6 +52,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_activity_manager.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_service_factory.h"
@@ -182,6 +183,8 @@ GlicKeyedService::GlicKeyedService(
           this,
           enabling_.get(),
           contextual_cueing_service)),
+      activity_manager_(
+          std::make_unique<GlicActivityManager>(profile_, actor_keyed_service)),
       auth_controller_(
           features::IsGlicNoWebviewEnabled()
               ? nullptr
@@ -294,6 +297,12 @@ void GlicKeyedService::Shutdown() {
   }
   experimental_triggering_state_subscription_ = {};
   instance_coordinator().Shutdown();
+  activity_manager_->Shutdown();
+}
+
+GlicActivityManager& GlicKeyedService::activity_manager() {
+  CHECK(activity_manager_);
+  return *activity_manager_;
 }
 
 void GlicKeyedService::ShowUI(BrowserWindowInterface* bwi,

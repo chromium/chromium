@@ -4,10 +4,18 @@
 
 #include "chrome/browser/glic/public/service/glic_activity_manager.h"
 
+#include <algorithm>
+#include <optional>
+#include <utility>
+
+#include "base/check.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
@@ -28,29 +36,35 @@ using Text = ActorTaskNudgeState::Text;
 
 }  // namespace
 
+// static
+GlicActivityManager* GlicActivityManager::Get(Profile* profile) {
+  auto* glic_service = GlicKeyedService::Get(profile);
+  return glic_service ? &glic_service->activity_manager() : nullptr;
+}
+
 GlicActivityManager::GlicActivityManager(Profile* profile,
                                          ActorKeyedService* actor_service)
     : profile_(profile), actor_service_(actor_service) {
-  CHECK(actor_service);
   RegisterSubscriptions();
 }
 
 GlicActivityManager::~GlicActivityManager() = default;
 
 void GlicActivityManager::RegisterSubscriptions() {
+  auto* ui_state_manager = actor::ui::ActorUiStateManager::Get(profile_);
+  if (!ui_state_manager) {
+    return;
+  }
   callback_subscriptions_.push_back(
-      actor::ui::ActorUiStateManager::Get(profile_)
-          ->RegisterActorTaskStateChange(
-              base::BindRepeating(&GlicActivityManager::OnActorTaskStateUpdate,
-                                  base::Unretained(this))));
-  callback_subscriptions_.push_back(
-      actor::ui::ActorUiStateManager::Get(profile_)->RegisterActorTaskStopped(
-          base::BindRepeating(&GlicActivityManager::UpdateTaskIconComponents,
+      ui_state_manager->RegisterActorTaskStateChange(
+          base::BindRepeating(&GlicActivityManager::OnActorTaskStateUpdate,
                               base::Unretained(this))));
-  callback_subscriptions_.push_back(
-      actor::ui::ActorUiStateManager::Get(profile_)->RegisterActorTaskRemoved(
-          base::BindRepeating(&GlicActivityManager::UpdateTaskIconComponents,
-                              base::Unretained(this))));
+  callback_subscriptions_.push_back(ui_state_manager->RegisterActorTaskStopped(
+      base::BindRepeating(&GlicActivityManager::UpdateTaskIconComponents,
+                          base::Unretained(this))));
+  callback_subscriptions_.push_back(ui_state_manager->RegisterActorTaskRemoved(
+      base::BindRepeating(&GlicActivityManager::UpdateTaskIconComponents,
+                          base::Unretained(this))));
 }
 
 void GlicActivityManager::UpdateTaskIconComponents(actor::TaskId task_id) {
@@ -59,9 +73,11 @@ void GlicActivityManager::UpdateTaskIconComponents(actor::TaskId task_id) {
 }
 
 void GlicActivityManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
-  actor::ActorTask* task = actor_service_->GetTask(task_id);
-  if (!task) {
-    return;
+  if (actor_service_) {
+    actor::ActorTask* task = actor_service_->GetTask(task_id);
+    if (!task) {
+      return;
+    }
   }
   UpdateTaskIconComponents(task_id);
 }
@@ -70,9 +86,16 @@ void GlicActivityManager::OnTabAddedToTask(actor::TaskId task_id) {
   UpdateTaskIconComponents(task_id);
 }
 
-void GlicActivityManager::Shutdown() {}
+void GlicActivityManager::Shutdown() {
+  callback_subscriptions_.clear();
+}
 
 void GlicActivityManager::UpdateTaskNudge() {
+  auto* manager = actor::ui::ActorUiStateManager::Get(profile_);
+  if (!manager) {
+    return;
+  }
+
   ActorTaskNudgeState old_state = current_actor_task_nudge_state_;
 
   bool needs_attention = false;
@@ -85,7 +108,6 @@ void GlicActivityManager::UpdateTaskNudge() {
       continue;
     }
 
-    auto* manager = actor::ui::ActorUiStateManager::Get(profile_);
     const std::optional<TaskState> state = manager->GetActorTaskState(task_id);
 
     // Tasks that have no state no longer exist and should not be processed.
@@ -120,8 +142,7 @@ void GlicActivityManager::UpdateTaskNudge() {
   // when the number of tasks in a given state changes, as the number of tasks
   // in the bubble will only change when a new task is added or removed, not if
   // the state changes.
-  size_t num_inactive_tasks =
-      actor::ui::ActorUiStateManager::Get(profile_)->GetInactiveTaskCount();
+  size_t num_inactive_tasks = manager->GetInactiveTaskCount();
   bool label_plurality_changed =
       stored_bubble_row_need_processing_task_count_ !=
           GetNumActorTasksNeedProcessing() ||
@@ -150,6 +171,9 @@ void GlicActivityManager::ProcessRowInTaskListBubble(actor::TaskId task_id) {
 
 void GlicActivityManager::UpdateTaskListBubble(actor::TaskId task_id) {
   auto* manager = actor::ui::ActorUiStateManager::Get(profile_);
+  if (!manager) {
+    return;
+  }
   const auto state = manager->GetActorTaskState(task_id);
   if (!state.has_value() || state.value() == ActorTask::State::kCancelled) {
     // If there is no value for the state, this means the task does not exist so
