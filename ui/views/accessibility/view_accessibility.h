@@ -45,21 +45,12 @@ class View;
 class ViewAccessibilityAXTreeSource;
 class Widget;
 
-using RoleCallbackList = base::RepeatingCallbackList<void(ax::mojom::Role)>;
-using IntAttributeCallbackList =
-    base::RepeatingCallbackList<void(ax::mojom::IntAttribute,
-                                     std::optional<int>)>;
-using StringAttributeCallbackList =
-    base::RepeatingCallbackList<void(ax::mojom::StringAttribute,
-                                     const std::optional<std::string>&)>;
-using BoolAttributeCallbackList =
-    base::RepeatingCallbackList<void(ax::mojom::BoolAttribute,
-                                     std::optional<bool>)>;
-using StateCallbackList =
-    base::RepeatingCallbackList<void(ax::mojom::State, bool)>;
-using IntListAttributeCallbackList = base::RepeatingCallbackList<void(
-    ax::mojom::IntListAttribute,
-    const std::optional<std::vector<int32_t>>&)>;
+using ui::BoolAttributeCallbackList;
+using ui::IntAttributeCallbackList;
+using ui::IntListAttributeCallbackList;
+using ui::RoleCallbackList;
+using ui::StateCallbackList;
+using ui::StringAttributeCallbackList;
 
 // An object that manages the accessibility interface for a View.
 //

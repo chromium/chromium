@@ -69,26 +69,40 @@ class AXAttributeChangedCallbacks {
       IntListAttributeCallbackList::CallbackType callback);
   void NotifyIntListAttributeChanged(
       ax::mojom::IntListAttribute attribute,
-      const std::optional<std::vector<int>>& value);
+      const std::optional<std::vector<int32_t>>& value);
 
  private:
+  template <typename AttributeType, typename ValueType>
+  class AttributeCallbackMap {
+   public:
+    using CallbackList =
+        base::RepeatingCallbackList<void(AttributeType, ValueType)>;
+
+    AttributeCallbackMap();
+    ~AttributeCallbackMap();
+
+    base::CallbackListSubscription Add(
+        AttributeType attribute,
+        typename CallbackList::CallbackType callback);
+    void Notify(AttributeType attribute, ValueType value);
+
+   private:
+    std::unique_ptr<std::map<AttributeType, CallbackList>> map_;
+  };
+
   RoleCallbackList on_role_changed_callbacks_;
 
-  std::unique_ptr<std::map<ax::mojom::StringAttribute,
-                           std::unique_ptr<StringAttributeCallbackList>>>
-      on_string_attribute_changed_callbacks_map_ = nullptr;
-  std::unique_ptr<std::map<ax::mojom::IntAttribute,
-                           std::unique_ptr<IntAttributeCallbackList>>>
-      on_int_attribute_changed_callbacks_map_ = nullptr;
-  std::unique_ptr<std::map<ax::mojom::BoolAttribute,
-                           std::unique_ptr<BoolAttributeCallbackList>>>
-      on_bool_attribute_changed_callbacks_map_ = nullptr;
-  std::unique_ptr<
-      std::map<ax::mojom::State, std::unique_ptr<StateCallbackList>>>
-      on_state_changed_callbacks_map_ = nullptr;
-  std::unique_ptr<std::map<ax::mojom::IntListAttribute,
-                           std::unique_ptr<IntListAttributeCallbackList>>>
-      on_int_list_attribute_changed_callbacks_map_ = nullptr;
+  AttributeCallbackMap<ax::mojom::StringAttribute,
+                       const std::optional<std::string>&>
+      string_attribute_callbacks_;
+  AttributeCallbackMap<ax::mojom::IntAttribute, std::optional<int>>
+      int_attribute_callbacks_;
+  AttributeCallbackMap<ax::mojom::BoolAttribute, std::optional<bool>>
+      bool_attribute_callbacks_;
+  AttributeCallbackMap<ax::mojom::State, bool> state_callbacks_;
+  AttributeCallbackMap<ax::mojom::IntListAttribute,
+                       const std::optional<std::vector<int32_t>>&>
+      int_list_attribute_callbacks_;
 };
 
 }  // namespace ui

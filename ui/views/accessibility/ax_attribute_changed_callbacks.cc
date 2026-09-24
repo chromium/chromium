@@ -11,20 +11,36 @@
 
 namespace ui {
 
-using StringAttrCallbackPair =
-    std::pair<ax::mojom::StringAttribute,
-              std::unique_ptr<StringAttributeCallbackList>>;
-using IntAttrCallbackPair =
-    std::pair<ax::mojom::IntAttribute,
-              std::unique_ptr<IntAttributeCallbackList>>;
-using BoolAttrCallbackPair =
-    std::pair<ax::mojom::BoolAttribute,
-              std::unique_ptr<BoolAttributeCallbackList>>;
-using StateCallbackPair =
-    std::pair<ax::mojom::State, std::unique_ptr<StateCallbackList>>;
-using IntListAttrCallbackPair =
-    std::pair<ax::mojom::IntListAttribute,
-              std::unique_ptr<IntListAttributeCallbackList>>;
+template <typename AttributeType, typename ValueType>
+AXAttributeChangedCallbacks::AttributeCallbackMap<AttributeType, ValueType>::
+    AttributeCallbackMap() = default;
+
+template <typename AttributeType, typename ValueType>
+AXAttributeChangedCallbacks::AttributeCallbackMap<AttributeType, ValueType>::
+    ~AttributeCallbackMap() = default;
+
+template <typename AttributeType, typename ValueType>
+base::CallbackListSubscription AXAttributeChangedCallbacks::
+    AttributeCallbackMap<AttributeType, ValueType>::Add(
+        AttributeType attribute,
+        typename CallbackList::CallbackType callback) {
+  if (!map_) {
+    map_ = std::make_unique<std::map<AttributeType, CallbackList>>();
+  }
+  return (*map_)[attribute].Add(std::move(callback));
+}
+
+template <typename AttributeType, typename ValueType>
+void AXAttributeChangedCallbacks::AttributeCallbackMap<
+    AttributeType,
+    ValueType>::Notify(AttributeType attribute, ValueType value) {
+  if (map_) {
+    auto it = map_->find(attribute);
+    if (it != map_->end()) {
+      it->second.Notify(attribute, value);
+    }
+  }
+}
 
 AXAttributeChangedCallbacks::AXAttributeChangedCallbacks() = default;
 
@@ -33,7 +49,7 @@ AXAttributeChangedCallbacks::~AXAttributeChangedCallbacks() = default;
 base::CallbackListSubscription
 AXAttributeChangedCallbacks::AddRoleChangedCallback(
     RoleCallbackList::CallbackType callback) {
-  return on_role_changed_callbacks_.Add(callback);
+  return on_role_changed_callbacks_.Add(std::move(callback));
 }
 
 void AXAttributeChangedCallbacks::NotifyRoleChanged(ax::mojom::Role role) {
@@ -44,163 +60,64 @@ base::CallbackListSubscription
 AXAttributeChangedCallbacks::AddStringAttributeChangedCallback(
     ax::mojom::StringAttribute attribute,
     StringAttributeCallbackList::CallbackType callback) {
-  if (!on_string_attribute_changed_callbacks_map_) {
-    on_string_attribute_changed_callbacks_map_ = std::make_unique<
-        std::map<ax::mojom::StringAttribute,
-                 std::unique_ptr<StringAttributeCallbackList>>>();
-  }
-
-  auto it = on_string_attribute_changed_callbacks_map_->find(attribute);
-  if (it == on_string_attribute_changed_callbacks_map_->end()) {
-    return on_string_attribute_changed_callbacks_map_
-        ->insert(StringAttrCallbackPair(
-            attribute, std::make_unique<StringAttributeCallbackList>()))
-        .first->second->Add(std::move(callback));
-  }
-
-  return it->second->Add(std::move(callback));
+  return string_attribute_callbacks_.Add(attribute, std::move(callback));
 }
 
 void AXAttributeChangedCallbacks::NotifyStringAttributeChanged(
     ax::mojom::StringAttribute attribute,
     const std::optional<std::string>& value) {
-  if (on_string_attribute_changed_callbacks_map_) {
-    auto it = on_string_attribute_changed_callbacks_map_->find(attribute);
-
-    if (it != on_string_attribute_changed_callbacks_map_->end()) {
-      it->second->Notify(attribute, value);
-    }
-  }
+  string_attribute_callbacks_.Notify(attribute, value);
 }
 
 base::CallbackListSubscription
 AXAttributeChangedCallbacks::AddIntAttributeChangedCallback(
     ax::mojom::IntAttribute attribute,
     IntAttributeCallbackList::CallbackType callback) {
-  if (!on_int_attribute_changed_callbacks_map_) {
-    on_int_attribute_changed_callbacks_map_ =
-        std::make_unique<std::map<ax::mojom::IntAttribute,
-                                  std::unique_ptr<IntAttributeCallbackList>>>();
-  }
-
-  auto it = on_int_attribute_changed_callbacks_map_->find(attribute);
-  if (it == on_int_attribute_changed_callbacks_map_->end()) {
-    return on_int_attribute_changed_callbacks_map_
-        ->insert(IntAttrCallbackPair(
-            attribute, std::make_unique<IntAttributeCallbackList>()))
-        .first->second->Add(std::move(callback));
-  }
-
-  return it->second->Add(std::move(callback));
+  return int_attribute_callbacks_.Add(attribute, std::move(callback));
 }
 
 void AXAttributeChangedCallbacks::NotifyIntAttributeChanged(
     ax::mojom::IntAttribute attribute,
     std::optional<int> value) {
-  if (on_int_attribute_changed_callbacks_map_) {
-    auto it = on_int_attribute_changed_callbacks_map_->find(attribute);
-
-    if (it != on_int_attribute_changed_callbacks_map_->end()) {
-      it->second->Notify(attribute, value);
-    }
-  }
+  int_attribute_callbacks_.Notify(attribute, value);
 }
 
 base::CallbackListSubscription
 AXAttributeChangedCallbacks::AddBoolAttributeChangedCallback(
     ax::mojom::BoolAttribute attribute,
     BoolAttributeCallbackList::CallbackType callback) {
-  if (!on_bool_attribute_changed_callbacks_map_) {
-    on_bool_attribute_changed_callbacks_map_ = std::make_unique<
-        std::map<ax::mojom::BoolAttribute,
-                 std::unique_ptr<BoolAttributeCallbackList>>>();
-  }
-
-  auto it = on_bool_attribute_changed_callbacks_map_->find(attribute);
-  if (it == on_bool_attribute_changed_callbacks_map_->end()) {
-    return on_bool_attribute_changed_callbacks_map_
-        ->insert(BoolAttrCallbackPair(
-            attribute, std::make_unique<BoolAttributeCallbackList>()))
-        .first->second->Add(std::move(callback));
-  }
-
-  return it->second->Add(std::move(callback));
+  return bool_attribute_callbacks_.Add(attribute, std::move(callback));
 }
 
 void AXAttributeChangedCallbacks::NotifyBoolAttributeChanged(
     ax::mojom::BoolAttribute attribute,
     std::optional<bool> value) {
-  if (on_bool_attribute_changed_callbacks_map_) {
-    auto it = on_bool_attribute_changed_callbacks_map_->find(attribute);
-
-    if (it != on_bool_attribute_changed_callbacks_map_->end()) {
-      it->second->Notify(attribute, value);
-    }
-  }
+  bool_attribute_callbacks_.Notify(attribute, value);
 }
 
 base::CallbackListSubscription
 AXAttributeChangedCallbacks::AddStateChangedCallback(
     ax::mojom::State state,
     StateCallbackList::CallbackType callback) {
-  if (!on_state_changed_callbacks_map_) {
-    on_state_changed_callbacks_map_ = std::make_unique<
-        std::map<ax::mojom::State, std::unique_ptr<StateCallbackList>>>();
-  }
-
-  auto it = on_state_changed_callbacks_map_->find(state);
-  if (it == on_state_changed_callbacks_map_->end()) {
-    return on_state_changed_callbacks_map_
-        ->insert(
-            StateCallbackPair(state, std::make_unique<StateCallbackList>()))
-        .first->second->Add(std::move(callback));
-  }
-
-  return it->second->Add(std::move(callback));
+  return state_callbacks_.Add(state, std::move(callback));
 }
 
 void AXAttributeChangedCallbacks::NotifyStateChanged(ax::mojom::State state,
                                                      bool value) {
-  if (on_state_changed_callbacks_map_) {
-    auto it = on_state_changed_callbacks_map_->find(state);
-
-    if (it != on_state_changed_callbacks_map_->end()) {
-      it->second->Notify(state, value);
-    }
-  }
+  state_callbacks_.Notify(state, value);
 }
 
 base::CallbackListSubscription
 AXAttributeChangedCallbacks::AddIntListAttributeChangedCallback(
     ax::mojom::IntListAttribute attribute,
     IntListAttributeCallbackList::CallbackType callback) {
-  if (!on_int_list_attribute_changed_callbacks_map_) {
-    on_int_list_attribute_changed_callbacks_map_ = std::make_unique<
-        std::map<ax::mojom::IntListAttribute,
-                 std::unique_ptr<IntListAttributeCallbackList>>>();
-  }
-
-  auto it = on_int_list_attribute_changed_callbacks_map_->find(attribute);
-  if (it == on_int_list_attribute_changed_callbacks_map_->end()) {
-    return on_int_list_attribute_changed_callbacks_map_
-        ->insert(IntListAttrCallbackPair(
-            attribute, std::make_unique<IntListAttributeCallbackList>()))
-        .first->second->Add(std::move(callback));
-  }
-
-  return it->second->Add(std::move(callback));
+  return int_list_attribute_callbacks_.Add(attribute, std::move(callback));
 }
 
 void AXAttributeChangedCallbacks::NotifyIntListAttributeChanged(
     ax::mojom::IntListAttribute attribute,
-    const std::optional<std::vector<int>>& value) {
-  if (on_int_list_attribute_changed_callbacks_map_) {
-    auto it = on_int_list_attribute_changed_callbacks_map_->find(attribute);
-
-    if (it != on_int_list_attribute_changed_callbacks_map_->end()) {
-      it->second->Notify(attribute, value);
-    }
-  }
+    const std::optional<std::vector<int32_t>>& value) {
+  int_list_attribute_callbacks_.Notify(attribute, value);
 }
 
 }  // namespace ui
