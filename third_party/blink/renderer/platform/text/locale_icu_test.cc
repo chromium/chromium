@@ -48,7 +48,7 @@ class LocaleIcuTest : public testing::Test {
     bool operator==(const Labels& other) const {
       if (labels_.size() != other.labels_.size())
         return false;
-      for (unsigned index = 0; index < labels_.size(); ++index) {
+      for (wtf_size_t index = 0; index < labels_.size(); ++index) {
         if (labels_[index] != other.labels_[index])
           return false;
       }
@@ -58,7 +58,7 @@ class LocaleIcuTest : public testing::Test {
     String ToString() const {
       StringBuilder builder;
       builder.Append("labels(");
-      for (unsigned index = 0; index < labels_.size(); ++index) {
+      for (wtf_size_t index = 0; index < labels_.size(); ++index) {
         if (index)
           builder.Append(", ");
         builder.Append('"');
@@ -66,7 +66,7 @@ class LocaleIcuTest : public testing::Test {
         builder.Append('"');
       }
       builder.Append(')');
-      return builder.ToString();
+      return builder.ReleaseString();
     }
 
    private:
@@ -96,17 +96,18 @@ class LocaleIcuTest : public testing::Test {
     return locale->ShortTimeFormat();
   }
 
-  String ShortMonthLabel(const char* locale_string, unsigned index) {
+  String ShortMonthLabel(const char* locale_string, wtf_size_t index) {
     auto locale = std::make_unique<LocaleIcu>(locale_string);
     return locale->ShortMonthLabels()[index];
   }
 
-  String ShortStandAloneMonthLabel(const char* locale_string, unsigned index) {
+  String ShortStandAloneMonthLabel(const char* locale_string,
+                                   wtf_size_t index) {
     auto locale = std::make_unique<LocaleIcu>(locale_string);
     return locale->ShortStandAloneMonthLabels()[index];
   }
 
-  String StandAloneMonthLabel(const char* locale_string, unsigned index) {
+  String StandAloneMonthLabel(const char* locale_string, wtf_size_t index) {
     auto locale = std::make_unique<LocaleIcu>(locale_string);
     return locale->StandAloneMonthLabels()[index];
   }

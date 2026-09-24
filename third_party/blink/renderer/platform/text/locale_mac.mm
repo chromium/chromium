@@ -129,7 +129,7 @@ const Vector<String>& LocaleMac::MonthLabels() {
     month_labels_.reserve(12);
     NSArray* array = ShortDateFormatter().monthSymbols;
     if (array.count == 12) {
-      for (unsigned i = 0; i < 12; ++i) {
+      for (wtf_size_t i = 0; i < 12; ++i) {
         month_labels_.push_back(String(array[i]));
       }
     } else {
@@ -144,7 +144,7 @@ const Vector<String>& LocaleMac::WeekDayShortLabels() {
     week_day_short_labels_.reserve(7);
     NSArray* array = ShortDateFormatter().veryShortWeekdaySymbols;
     if (array.count == 7) {
-      for (unsigned i = 0; i < 7; ++i) {
+      for (wtf_size_t i = 0; i < 7; ++i) {
         week_day_short_labels_.push_back(String(array[i]));
       }
     } else {
@@ -155,11 +155,11 @@ const Vector<String>& LocaleMac::WeekDayShortLabels() {
   return week_day_short_labels_;
 }
 
-unsigned LocaleMac::FirstDayOfWeek() {
+wtf_size_t LocaleMac::FirstDayOfWeek() {
   // The document for NSCalendar - firstWeekday doesn't have an explanation of
   // firstWeekday value. We can guess it by the document of NSDateComponents -
   // weekDay, so it can be 1 through 7 and 1 is Sunday.
-  return static_cast<unsigned>(gregorian_calendar_.firstWeekday - 1);
+  return static_cast<wtf_size_t>(gregorian_calendar_.firstWeekday - 1);
 }
 
 bool LocaleMac::IsRtl() {
@@ -256,7 +256,7 @@ const Vector<String>& LocaleMac::ShortMonthLabels() {
     short_month_labels_.reserve(12);
     NSArray* array = ShortDateFormatter().shortMonthSymbols;
     if (array.count == 12) {
-      for (unsigned i = 0; i < 12; ++i) {
+      for (wtf_size_t i = 0; i < 12; ++i) {
         short_month_labels_.push_back(array[i]);
       }
     } else {
@@ -273,8 +273,9 @@ const Vector<String>& LocaleMac::StandAloneMonthLabels() {
   NSArray* array = ShortDateFormatter().standaloneMonthSymbols;
   if (array.count == 12) {
     stand_alone_month_labels_.reserve(12);
-    for (unsigned i = 0; i < 12; ++i)
+    for (wtf_size_t i = 0; i < 12; ++i) {
       stand_alone_month_labels_.push_back(array[i]);
+    }
     return stand_alone_month_labels_;
   }
   stand_alone_month_labels_ = ShortMonthLabels();
@@ -287,8 +288,9 @@ const Vector<String>& LocaleMac::ShortStandAloneMonthLabels() {
   NSArray* array = ShortDateFormatter().shortStandaloneMonthSymbols;
   if (array.count == 12) {
     short_stand_alone_month_labels_.reserve(12);
-    for (unsigned i = 0; i < 12; ++i)
+    for (wtf_size_t i = 0; i < 12; ++i) {
       short_stand_alone_month_labels_.push_back(array[i]);
+    }
     return short_stand_alone_month_labels_;
   }
   short_stand_alone_month_labels_ = ShortMonthLabels();
@@ -320,8 +322,9 @@ void LocaleMac::InitializeLocaleData() {
   if (nine_to_zero.length() != 10)
     return;
   Vector<String, kDecimalSymbolsSize> symbols;
-  for (unsigned i = 0; i < 10; ++i)
+  for (wtf_size_t i = 0; i < 10; ++i) {
     symbols.push_back(nine_to_zero.substr(9 - i, 1));
+  }
   DCHECK(symbols.size() == kDecimalSeparatorIndex);
   symbols.push_back([formatter decimalSeparator]);
   DCHECK(symbols.size() == kGroupSeparatorIndex);

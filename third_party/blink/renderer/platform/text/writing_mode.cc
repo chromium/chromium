@@ -21,7 +21,7 @@ std::ostream& operator<<(std::ostream& ostream, WritingMode writing_mode) {
     case WritingMode::kSidewaysLr:
       return ostream << "sideways-lr";
   }
-  return ostream << static_cast<unsigned>(writing_mode);
+  return ostream << static_cast<uint32_t>(writing_mode);
 }
 
 }  // namespace blink

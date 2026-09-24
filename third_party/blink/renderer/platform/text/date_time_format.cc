@@ -117,7 +117,7 @@ bool DateTimeFormat::Parse(const String& source, TokenHandler& token_handler) {
   StringBuilder literal_buffer;
   int field_counter = 0;
 
-  for (unsigned index = 0; index < source.length(); ++index) {
+  for (wtf_size_t index = 0; index < source.length(); ++index) {
     const UChar ch = source[index];
     switch (state) {
       case kStateInQuote:
@@ -263,7 +263,7 @@ void DateTimeFormat::QuoteAndAppend(const StringView& literal,
     return;
   }
 
-  for (unsigned i = 0; i < literal.length(); ++i) {
+  for (wtf_size_t i = 0; i < literal.length(); ++i) {
     // SAFETY: index `i` checked against length above.
     if (UNSAFE_BUFFERS(literal[i]) == '\'') {
       buffer.Append("''");

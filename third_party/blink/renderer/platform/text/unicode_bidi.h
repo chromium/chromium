@@ -28,7 +28,7 @@
 
 namespace blink {
 
-enum class UnicodeBidi : unsigned {
+enum class UnicodeBidi : uint8_t {
   kNormal,
   kEmbed,
   kBidiOverride,

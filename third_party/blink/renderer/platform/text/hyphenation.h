@@ -66,9 +66,9 @@ class PLATFORM_EXPORT Hyphenation : public RefCounted<Hyphenation> {
 
   // The default values suggested by the spec:
   // https://drafts.csswg.org/css-text-4/#propdef-hyphenate-limit-chars
-  static constexpr unsigned kDefaultMinPrefixLength = 2;
-  static constexpr unsigned kDefaultMinSuffixLength = 2;
-  static constexpr unsigned kDefaultMinWordLength = 5;
+  static constexpr wtf_size_t kDefaultMinPrefixLength = 2;
+  static constexpr wtf_size_t kDefaultMinSuffixLength = 2;
+  static constexpr wtf_size_t kDefaultMinWordLength = 5;
   static_assert(kDefaultMinWordLength >=
                 kDefaultMinPrefixLength + kDefaultMinSuffixLength);
   wtf_size_t min_word_length_ = kDefaultMinWordLength;

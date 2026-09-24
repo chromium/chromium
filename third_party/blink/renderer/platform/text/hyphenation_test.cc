@@ -84,8 +84,8 @@ class HyphenationTest : public testing::Test {
 #if defined(USE_MINIKIN_HYPHENATION)
   void TestWordToHyphenate(StringView text,
                            StringView expected,
-                           unsigned expected_num_leading_chars) {
-    unsigned num_leading_chars;
+                           wtf_size_t expected_num_leading_chars) {
+    wtf_size_t num_leading_chars;
     const StringView result =
         HyphenationMinikin::WordToHyphenate(text, &num_leading_chars);
     EXPECT_EQ(result, expected);

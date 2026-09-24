@@ -16,7 +16,7 @@ struct TabSize {
   TabSize(float num_or_length,
           TabSizeValueType is_spaces = TabSizeValueType::kSpace)
       : float_value_(num_or_length),
-        is_spaces_(static_cast<unsigned>(is_spaces)) {}
+        is_spaces_(static_cast<uint32_t>(is_spaces)) {}
 
   bool IsSpaces() const { return is_spaces_; }
 
@@ -29,7 +29,7 @@ struct TabSize {
   }
 
   float float_value_;
-  unsigned is_spaces_ : 1;
+  uint32_t is_spaces_ : 1;
 };
 
 inline bool operator==(const TabSize& a, const TabSize& b) {

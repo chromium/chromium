@@ -152,8 +152,8 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   // Set the start offset. Text before this offset is disregarded. Properly
   // setting the start offset improves the performance significantly, because
   // ICU break iterator computes all the text from the beginning.
-  unsigned StartOffset() const { return start_offset_; }
-  void SetStartOffset(unsigned offset) {
+  wtf_size_t StartOffset() const { return start_offset_; }
+  void SetStartOffset(wtf_size_t offset) {
     CHECK_LE(offset, string_.length());
     start_offset_ = offset;
     ReleaseIterator();
@@ -179,23 +179,24 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   bool IsSoftHyphenEnabled() const { return !disable_soft_hyphen_; }
   void EnableSoftHyphen(bool value) { disable_soft_hyphen_ = !value; }
 
-  inline bool IsBreakable(unsigned pos) const {
+  inline bool IsBreakable(wtf_size_t pos) const {
     // No need to scan the entire string for the next breakable position when
     // all we need to determine is whether the current position is breakable.
     // Limit length to pos + 1.
     // TODO(layout-dev): We should probably try to break out an actual
     // IsBreakable method from NextBreakablePosition and get rid of this hack.
-    const unsigned len = std::min(pos + 1, string_.length());
-    unsigned next_breakable = NextBreakablePosition(pos, len);
+    const wtf_size_t len = std::min(pos + 1, string_.length());
+    wtf_size_t next_breakable = NextBreakablePosition(pos, len);
     return pos == next_breakable;
   }
 
   // Returns the break opportunity at or after |offset|.
-  unsigned NextBreakOpportunity(unsigned offset) const;
-  unsigned NextBreakOpportunity(unsigned offset, unsigned len) const;
+  wtf_size_t NextBreakOpportunity(wtf_size_t offset) const;
+  wtf_size_t NextBreakOpportunity(wtf_size_t offset, wtf_size_t len) const;
 
   // Returns the break opportunity at or before |offset|.
-  unsigned PreviousBreakOpportunity(unsigned offset, unsigned min = 0) const;
+  wtf_size_t PreviousBreakOpportunity(wtf_size_t offset,
+                                      wtf_size_t min = 0) const;
 
   static bool IsBreakableSpace(UChar ch) {
     return ch == uchar::kSpace || ch == uchar::kTab || ch == uchar::kLineFeed;
@@ -246,22 +247,22 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   }
 
   template <typename CharacterType, LineBreakType, BreakSpaceType>
-  unsigned NextBreakablePosition(unsigned pos,
-                                 base::span<const CharacterType> span) const;
+  wtf_size_t NextBreakablePosition(wtf_size_t pos,
+                                   base::span<const CharacterType> span) const;
   template <typename CharacterType, LineBreakType>
-  unsigned NextBreakablePosition(unsigned pos,
-                                 base::span<const CharacterType> span) const;
+  wtf_size_t NextBreakablePosition(wtf_size_t pos,
+                                   base::span<const CharacterType> span) const;
   template <LineBreakType>
-  unsigned NextBreakablePosition(unsigned pos, unsigned len) const;
-  unsigned NextBreakablePositionBreakCharacter(unsigned pos) const;
-  unsigned NextBreakablePosition(unsigned pos, unsigned len) const;
+  wtf_size_t NextBreakablePosition(wtf_size_t pos, wtf_size_t len) const;
+  wtf_size_t NextBreakablePositionBreakCharacter(wtf_size_t pos) const;
+  wtf_size_t NextBreakablePosition(wtf_size_t pos, wtf_size_t len) const;
 
   String string_;
   const LayoutLocale* locale_ = nullptr;
   mutable AtomicString locale_with_keyword_;
   mutable PooledBreakIterator iterator_;
   mutable std::optional<CharacterBreakIterator> character_iterator_;
-  unsigned start_offset_ = 0;
+  wtf_size_t start_offset_ = 0;
   LineBreakType break_type_;
   BreakSpaceType break_space_ = BreakSpaceType::kAfterSpaceRun;
   LineBreakStrictness strictness_ = LineBreakStrictness::kDefault;

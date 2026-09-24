@@ -76,20 +76,20 @@ class PLATFORM_EXPORT BidiParagraph {
                                               TextDirection direction);
 
   struct Run {
-    Run(unsigned start, unsigned end, UBiDiLevel level)
+    Run(wtf_size_t start, wtf_size_t end, UBiDiLevel level)
         : start(start), end(end), level(level) {
       DCHECK_GT(end, start);
     }
 
-    unsigned Length() const { return end - start; }
+    wtf_size_t Length() const { return end - start; }
     TextDirection Direction() const { return DirectionFromLevel(level); }
 
     bool operator==(const Run& other) const {
       return start == other.start && end == other.end && level == other.level;
     }
 
-    unsigned start;
-    unsigned end;
+    wtf_size_t start;
+    wtf_size_t end;
     UBiDiLevel level;
   };
   using Runs = Vector<Run, 32>;
@@ -101,7 +101,7 @@ class PLATFORM_EXPORT BidiParagraph {
 
   // Returns the end offset of a logical run that starts from the |start|
   // offset.
-  unsigned GetLogicalRun(unsigned start, UBiDiLevel*) const;
+  wtf_size_t GetLogicalRun(wtf_size_t start, UBiDiLevel*) const;
 
   // Get a list of `Run` in the visual order (after bidi reorder.)
   // `text` must be the same one as `SetParagraph`.

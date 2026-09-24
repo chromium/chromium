@@ -52,7 +52,7 @@ class PLATFORM_EXPORT TextRun final {
           TextDirection direction,
           bool directional_override = false)
       : text_(string),
-        direction_(static_cast<unsigned>(direction)),
+        direction_(static_cast<uint32_t>(direction)),
         directional_override_(directional_override) {}
 
   // TextRun supports move construction, but supports neither copy construction,
@@ -64,7 +64,7 @@ class PLATFORM_EXPORT TextRun final {
   TextRun& operator=(TextRun&&) = delete;
 
   const StringView& ToStringView() const { return text_; }
-  unsigned length() const { return text_.length(); }
+  wtf_size_t length() const { return text_.length(); }
 
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
@@ -76,9 +76,9 @@ class PLATFORM_EXPORT TextRun final {
  private:
   const StringView text_;
 
-  const unsigned direction_ : 1;
+  const uint8_t direction_ : 1;
   // Was this direction set by an override character.
-  unsigned directional_override_ : 1;
+  const uint8_t directional_override_ : 1;
 };
 
 }  // namespace blink

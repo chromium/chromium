@@ -51,7 +51,7 @@ class PLATFORM_EXPORT LocaleMac : public Locale {
   ~LocaleMac() override;
 
   const Vector<String>& WeekDayShortLabels() override;
-  unsigned FirstDayOfWeek() override;
+  wtf_size_t FirstDayOfWeek() override;
   bool IsRtl() override;
 
   String DateFormat() override;

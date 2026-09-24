@@ -83,7 +83,7 @@ bool HyphenationMinikin::OpenDictionary(base::File file) {
 
 StringView HyphenationMinikin::WordToHyphenate(
     const StringView& text,
-    unsigned* num_leading_chars_out) {
+    wtf_size_t* num_leading_chars_out) {
   if (text.Is8Bit()) {
     wtf_size_t begin = 0u;
     wtf_size_t end = text.length();
@@ -139,7 +139,7 @@ Vector<uint8_t> HyphenationMinikin::Hyphenate(const StringView& text) const {
 wtf_size_t HyphenationMinikin::LastHyphenLocation(
     const StringView& text,
     wtf_size_t before_index) const {
-  unsigned num_leading_chars;
+  wtf_size_t num_leading_chars;
   const StringView word = WordToHyphenate(text, &num_leading_chars);
   if (before_index <= num_leading_chars || !ShouldHyphenateWord(word))
     return 0;
@@ -165,7 +165,7 @@ wtf_size_t HyphenationMinikin::LastHyphenLocation(
 
 Vector<wtf_size_t, 8> HyphenationMinikin::HyphenLocations(
     const StringView& text) const {
-  unsigned num_leading_chars;
+  wtf_size_t num_leading_chars;
   StringView word = WordToHyphenate(text, &num_leading_chars);
 
   Vector<wtf_size_t, 8> hyphen_locations;

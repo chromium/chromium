@@ -219,14 +219,14 @@ String Locale::QueryString(int resource_id,
                                                    parameter2);
 }
 
-String Locale::ValidationMessageTooLongText(unsigned value_length,
+String Locale::ValidationMessageTooLongText(wtf_size_t value_length,
                                             int max_length) {
   return QueryString(IDS_FORM_VALIDATION_TOO_LONG,
                      ConvertToLocalizedNumber(String::Number(value_length)),
                      ConvertToLocalizedNumber(String::Number(max_length)));
 }
 
-String Locale::ValidationMessageTooShortText(unsigned value_length,
+String Locale::ValidationMessageTooShortText(wtf_size_t value_length,
                                              int min_length) {
   if (value_length == 1) {
     return QueryString(IDS_FORM_VALIDATION_TOO_SHORT,
@@ -244,9 +244,9 @@ String Locale::WeekFormatInLdml() {
   // Converts a string like "Week $2, $1" to an LDML date format pattern like
   // "'Week 'ww', 'yyyy".
   StringBuilder builder;
-  unsigned literal_start = 0;
-  unsigned length = templ.length();
-  for (unsigned i = 0; i + 1 < length; ++i) {
+  wtf_size_t literal_start = 0;
+  wtf_size_t length = templ.length();
+  for (wtf_size_t i = 0; i + 1 < length; ++i) {
     if (templ[i] == '$' && (templ[i + 1] == '1' || templ[i + 1] == '2')) {
       if (literal_start < i) {
         DateTimeFormat::QuoteAndAppend(
@@ -319,7 +319,7 @@ String Locale::ConvertToLocalizedNumber(const String& input) {
   const bool is_negative = input[0] == '-';
   builder.Append(is_negative ? negative_prefix_ : positive_prefix_);
 
-  for (unsigned i = is_negative ? 1 : 0; i < input.length(); ++i) {
+  for (wtf_size_t i = is_negative ? 1 : 0; i < input.length(); ++i) {
     const UChar c = input[i];
     CHECK(c == '.' || IsAsciiDigit(c));
     builder.Append(
@@ -333,8 +333,8 @@ String Locale::ConvertToLocalizedNumber(const String& input) {
 
 bool Locale::DetectSignAndGetDigitRange(const String& input,
                                         bool& is_negative,
-                                        unsigned& start_index,
-                                        unsigned& end_index) {
+                                        wtf_size_t& start_index,
+                                        wtf_size_t& end_index) {
   DCHECK_EQ(input.Find(IsAsciiSpace), kNotFound);
   start_index = 0;
   end_index = input.length();
@@ -371,10 +371,10 @@ bool Locale::DetectSignAndGetDigitRange(const String& input,
   return is_negative;
 }
 
-unsigned Locale::MatchedDecimalSymbolIndex(const String& input,
-                                           unsigned& position) {
+wtf_size_t Locale::MatchedDecimalSymbolIndex(const String& input,
+                                             wtf_size_t& position) {
   const StringView input_view(input, position);
-  for (unsigned symbol_index = 0; symbol_index < kDecimalSymbolsSize;
+  for (wtf_size_t symbol_index = 0; symbol_index < kDecimalSymbolsSize;
        ++symbol_index) {
     const String& symbol = decimal_symbols_[symbol_index];
     if (input_view.starts_with(symbol)) {
@@ -392,8 +392,8 @@ String Locale::ConvertFromLocalizedNumber(const String& localized) {
     return input;
 
   bool is_negative;
-  unsigned start_index;
-  unsigned end_index;
+  wtf_size_t start_index;
+  wtf_size_t end_index;
   if (!DetectSignAndGetDigitRange(input, is_negative, start_index, end_index))
     return input;
 
@@ -405,9 +405,9 @@ String Locale::ConvertFromLocalizedNumber(const String& localized) {
   builder.ReserveCapacity(input.length());
   if (is_negative)
     builder.Append('-');
-  unsigned num_decimal_separators = 0;
-  for (unsigned i = start_index; i < end_index;) {
-    unsigned symbol_index = MatchedDecimalSymbolIndex(input, i);
+  wtf_size_t num_decimal_separators = 0;
+  for (wtf_size_t i = start_index; i < end_index;) {
+    wtf_size_t symbol_index = MatchedDecimalSymbolIndex(input, i);
     if (symbol_index >= kDecimalSymbolsSize)
       return input;
     if (symbol_index == kDecimalSeparatorIndex) {
@@ -434,7 +434,7 @@ String Locale::StripInvalidNumberCharacters(const String& input,
   InitializeLocaleData();
   StringBuilder builder;
   builder.ReserveCapacity(input.length());
-  for (unsigned i = 0; i < input.length(); ++i) {
+  for (wtf_size_t i = 0; i < input.length(); ++i) {
     UChar ch = input[i];
     if (standard_chars.contains(ch)) {
       builder.Append(ch);

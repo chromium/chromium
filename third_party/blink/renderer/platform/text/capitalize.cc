@@ -26,15 +26,15 @@ String CapitalizeWithPreviousCodeUnit(const String& string,
   if (string.IsNull())
     return string;
 
-  unsigned length = string.length();
+  wtf_size_t length = string.length();
   const StringImpl& input = *string.Impl();
 
-  CHECK_LT(length, std::numeric_limits<unsigned>::max());
+  CHECK_LT(length, std::numeric_limits<wtf_size_t>::max());
   StringBuffer<UChar> string_with_previous(length + 1);
   string_with_previous[0] = previous_character == uchar::kNoBreakSpace
                                 ? uchar::kSpace
                                 : previous_character;
-  for (unsigned i = 1; i < length + 1; i++) {
+  for (wtf_size_t i = 1; i < length + 1; ++i) {
     // Replace &nbsp with a real space since ICU no longer treats &nbsp as a
     // word separator.
     if (UNSAFE_TODO(input[i - 1]) == uchar::kNoBreakSpace) {
@@ -74,17 +74,17 @@ String CapitalizeWithPreviousCodePoint(const String& string,
     return string;
   }
 
-  unsigned length = string.length();
+  wtf_size_t length = string.length();
   if (previous_character == uchar::kNoBreakSpace) {
     previous_character = uchar::kSpace;
   }
   const int32_t previous_character_length = U16_LENGTH(previous_character);
   CHECK_LE(length,
-           std::numeric_limits<unsigned>::max() - previous_character_length);
+           std::numeric_limits<wtf_size_t>::max() - previous_character_length);
   StringBuilder string_with_previous;
   string_with_previous.Reserve16BitCapacity(length + previous_character_length);
   string_with_previous.Append(previous_character);
-  for (unsigned i = 0; i < length; i++) {
+  for (wtf_size_t i = 0; i < length; ++i) {
     // Replace &nbsp with a real space since ICU no longer treats &nbsp as a
     // word separator.
     const UChar character = string[i];

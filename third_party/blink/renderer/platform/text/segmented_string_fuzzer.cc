@@ -38,7 +38,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     }
     while (fuzzed_data.ConsumeBool()) {
       auto offset =
-          fuzzed_data.ConsumeIntegralInRange<unsigned int>(0, str.length() - 1);
+          fuzzed_data.ConsumeIntegralInRange<uint32_t>(0, str.length() - 1);
       if (!offset) {
         break;
       }

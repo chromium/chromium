@@ -86,7 +86,7 @@ CharacterBreakIterator::CharacterBreakIterator(const StringView& string) {
     charaters8_ = chars.data();
     offset_ = 0;
     // static_cast<> is safe because `chars` came from a StringView.
-    length_ = static_cast<unsigned>(chars.size());
+    length_ = static_cast<wtf_size_t>(chars.size());
     return;
   }
 
@@ -147,14 +147,14 @@ int CharacterBreakIterator::Following(int offset) const {
   if (!is_8bit_) {
     return iterator_->following(offset);
   }
-  if (static_cast<unsigned>(offset) >= length_) {
+  if (static_cast<wtf_size_t>(offset) >= length_) {
     return kTextBreakDone;
   }
   return offset + ClusterLengthStartingAt(offset);
 }
 
-unsigned NumGraphemeClusters(const StringView& string) {
-  unsigned string_length = string.length();
+wtf_size_t NumGraphemeClusters(const StringView& string) {
+  wtf_size_t string_length = string.length();
 
   if (!string_length) {
     return 0;
@@ -170,7 +170,7 @@ unsigned NumGraphemeClusters(const StringView& string) {
     return string_length;
   }
 
-  unsigned num = 0;
+  wtf_size_t num = 0;
   while (it.Next() != kTextBreakDone) {
     ++num;
   }
@@ -178,8 +178,8 @@ unsigned NumGraphemeClusters(const StringView& string) {
 }
 
 void GraphemesClusterList(const StringView& text,
-                          base::span<unsigned> graphemes) {
-  const unsigned length = text.length();
+                          base::span<wtf_size_t> graphemes) {
+  const wtf_size_t length = text.length();
   DCHECK_EQ(length, graphemes.size());
   if (!length) {
     return;
@@ -187,10 +187,10 @@ void GraphemesClusterList(const StringView& text,
 
   CharacterBreakIterator it(text);
   int cursor_pos = it.Next();
-  unsigned count = 0;
-  unsigned pos = 0;
+  wtf_size_t count = 0;
+  wtf_size_t pos = 0;
   while (cursor_pos >= 0) {
-    for (; pos < static_cast<unsigned>(cursor_pos) && pos < length; ++pos) {
+    for (; pos < static_cast<wtf_size_t>(cursor_pos) && pos < length; ++pos) {
       graphemes[pos] = count;
     }
     cursor_pos = it.Next();
@@ -198,8 +198,9 @@ void GraphemesClusterList(const StringView& text,
   }
 }
 
-unsigned LengthOfGraphemeCluster(const StringView& string, unsigned offset) {
-  unsigned string_length = string.length();
+wtf_size_t LengthOfGraphemeCluster(const StringView& string,
+                                   wtf_size_t offset) {
+  wtf_size_t string_length = string.length();
   CHECK_LE(offset, string_length);
 
   if (string_length - offset <= 1) {

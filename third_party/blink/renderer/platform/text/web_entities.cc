@@ -51,8 +51,8 @@ WebEntities::WebEntities(bool xml_entities) {
 String WebEntities::ConvertEntitiesInString(const String& value) const {
   StringBuilder result;
   bool did_convert_entity = false;
-  unsigned length = value.length();
-  for (unsigned i = 0; i < length; ++i) {
+  wtf_size_t length = value.length();
+  for (wtf_size_t i = 0; i < length; ++i) {
     UChar c = value[i];
     const auto it = entities_map_.find(c);
     if (it != entities_map_.end()) {

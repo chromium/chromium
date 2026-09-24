@@ -21,8 +21,8 @@
 
 namespace blink {
 
-unsigned SegmentedString::length() const {
-  unsigned length = current_string_.length();
+wtf_size_t SegmentedString::length() const {
+  wtf_size_t length = current_string_.length();
   if (IsComposite()) {
     for (auto& substring : substrings_)
       length += substring.length();
@@ -129,8 +129,8 @@ void SegmentedString::Prepend(const SegmentedString& s, PrependType type) {
   Prepend(s.current_string_, type);
 }
 
-void SegmentedString::Advance(unsigned num_chars,
-                              unsigned num_lines,
+void SegmentedString::Advance(wtf_size_t num_chars,
+                              wtf_size_t num_lines,
                               int current_column) {
   SECURITY_DCHECK(num_chars <= length());
   current_line_ += num_lines;

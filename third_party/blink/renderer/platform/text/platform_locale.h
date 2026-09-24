@@ -49,8 +49,8 @@ class PLATFORM_EXPORT Locale {
   String QueryString(int resource_id,
                      const String& parameter1,
                      const String& parameter2);
-  String ValidationMessageTooLongText(unsigned value_length, int max_length);
-  String ValidationMessageTooShortText(unsigned value_length, int min_length);
+  String ValidationMessageTooLongText(wtf_size_t value_length, int max_length);
+  String ValidationMessageTooShortText(wtf_size_t value_length, int min_length);
 
   // Converts the specified number string to another number string localized
   // for this Locale locale. The input string must conform to HTML
@@ -162,7 +162,7 @@ class PLATFORM_EXPORT Locale {
   virtual const Vector<String>& WeekDayShortLabels() = 0;
 
   // The first day of a week. 0 is Sunday, and 6 is Saturday.
-  virtual unsigned FirstDayOfWeek() = 0;
+  virtual wtf_size_t FirstDayOfWeek() = 0;
 
   // Returns true if people use right-to-left writing in the locale for this
   // object.
@@ -213,9 +213,10 @@ class PLATFORM_EXPORT Locale {
  private:
   bool DetectSignAndGetDigitRange(const String& input,
                                   bool& is_negative,
-                                  unsigned& start_index,
-                                  unsigned& end_index);
-  unsigned MatchedDecimalSymbolIndex(const String& input, unsigned& position);
+                                  wtf_size_t& start_index,
+                                  wtf_size_t& end_index);
+  wtf_size_t MatchedDecimalSymbolIndex(const String& input,
+                                       wtf_size_t& position);
 
   std::array<String, kDecimalSymbolsSize> decimal_symbols_;
   String positive_prefix_;

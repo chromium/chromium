@@ -38,7 +38,7 @@ class TextBreakIteratorTest : public testing::Test {
   void TestIsBreakable(const Vector<int> expected_break_positions,
                        const LazyLineBreakIterator& break_iterator) {
     Vector<int> break_positions;
-    for (unsigned i = 0; i <= test_string_.length(); i++) {
+    for (wtf_size_t i = 0; i <= test_string_.length(); ++i) {
       if (break_iterator.IsBreakable(i)) {
         break_positions.push_back(i);
       }
@@ -54,7 +54,7 @@ class TextBreakIteratorTest : public testing::Test {
   void TestNextBreakOpportunity(const Vector<int> expected_break_positions,
                                 const LazyLineBreakIterator& break_iterator) {
     Vector<int> break_positions;
-    for (unsigned i = 0; i <= test_string_.length(); i++) {
+    for (wtf_size_t i = 0; i <= test_string_.length(); ++i) {
       i = break_iterator.NextBreakOpportunity(i);
       break_positions.push_back(i);
     }
@@ -64,14 +64,14 @@ class TextBreakIteratorTest : public testing::Test {
         << break_iterator.BreakSpace();
   }
 
-  unsigned TestLengthOfGraphemeCluster() {
+  wtf_size_t TestLengthOfGraphemeCluster() {
     return LengthOfGraphemeCluster(test_string_);
   }
 
-  Vector<unsigned> GraphemesClusterList(String input,
-                                        unsigned start,
-                                        unsigned length) {
-    Vector<unsigned> result(length);
+  Vector<wtf_size_t> GraphemesClusterList(String input,
+                                          wtf_size_t start,
+                                          wtf_size_t length) {
+    Vector<wtf_size_t> result(length);
     ::blink::GraphemesClusterList(StringView(input, start, length), result);
     return result;
   }
@@ -319,23 +319,24 @@ TEST_F(TextBreakIteratorTest, LengthOfGraphemeCluster) {
 
 TEST_F(TextBreakIteratorTest, GraphemesClusterListTest) {
   EXPECT_EQ(GraphemesClusterList(u"hello", 0, 5),
-            Vector<unsigned>({0, 1, 2, 3, 4}));
-  EXPECT_EQ(GraphemesClusterList(u"hello", 2, 2), Vector<unsigned>({0, 1}));
+            Vector<wtf_size_t>({0, 1, 2, 3, 4}));
+  EXPECT_EQ(GraphemesClusterList(u"hello", 2, 2), Vector<wtf_size_t>({0, 1}));
   EXPECT_EQ(GraphemesClusterList(u"voila\u0300!", 0, 7),
-            Vector<unsigned>({0, 1, 2, 3, 4, 4, 5}));
+            Vector<wtf_size_t>({0, 1, 2, 3, 4, 4, 5}));
   EXPECT_EQ(GraphemesClusterList(u"di\u0303\u031c\u0337!", 0, 6),
-            Vector<unsigned>({0, 1, 1, 1, 1, 2}));
-  EXPECT_EQ(GraphemesClusterList(u"🇨🇦", 0, 4), Vector<unsigned>({0, 0, 0, 0}));
+            Vector<wtf_size_t>({0, 1, 1, 1, 1, 2}));
+  EXPECT_EQ(GraphemesClusterList(u"🇨🇦", 0, 4),
+            Vector<wtf_size_t>({0, 0, 0, 0}));
 
   EXPECT_EQ(GraphemesClusterList(u"🏳️‍🌈", 0, 6),
-            Vector<unsigned>({0, 0, 0, 0, 0, 0}));
+            Vector<wtf_size_t>({0, 0, 0, 0, 0, 0}));
   // NO ZWJ on this sequence.
   EXPECT_EQ(GraphemesClusterList(u"🏳🌈", 0, 4),
-            Vector<unsigned>({0, 0, 1, 1}));
+            Vector<wtf_size_t>({0, 0, 1, 1}));
 
   // ARABIC LETTER MEEM + ARABIC FATHA
   EXPECT_EQ(GraphemesClusterList(u"\u0645\u064E", 0, 2),
-            Vector<unsigned>({0, 0}));
+            Vector<wtf_size_t>({0, 0}));
 }
 
 // word-break:break-all should NOT break before BA-class characters (LB21).

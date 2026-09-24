@@ -271,10 +271,10 @@ void TextLatin1MoveInPrimaryContext(UText* text,
   // points to the UText extra buffer with capacity `extraSize / sizeof(UChar)`.
   auto source = UNSAFE_BUFFERS(base::span(
       static_cast<const LChar*>(text->p) + (text->chunkNativeStart - text->b),
-      static_cast<unsigned>(text->chunkLength)));
+      static_cast<size_t>(text->chunkLength)));
   auto dest =
       UNSAFE_BUFFERS(base::span(const_cast<UChar*>(text->chunkContents),
-                                static_cast<unsigned>(text->chunkLength)));
+                                static_cast<size_t>(text->chunkLength)));
   StringImpl::CopyChars(dest, source);
 }
 
@@ -419,7 +419,7 @@ constexpr struct UTextFuncs kTextLatin1Funcs = {
 void TextInit(UText* text,
               const UTextFuncs* funcs,
               const void* string,
-              unsigned length,
+              size_t length,
               const UChar* prior_context,
               int prior_context_length) {
   text->pFuncs = funcs;
@@ -452,8 +452,7 @@ UText* TextOpenLatin1(UTextWithBuffer* ut_with_buffer,
     DCHECK(!text);
     return nullptr;
   }
-  TextInit(text, &kTextLatin1Funcs, string.data(),
-           base::checked_cast<unsigned>(string.size()), prior_context,
+  TextInit(text, &kTextLatin1Funcs, string.data(), string.size(), prior_context,
            prior_context_length);
   return text;
 }
@@ -604,8 +603,7 @@ UText* TextOpenUtf16(UText* text,
     DCHECK(!text);
     return nullptr;
   }
-  TextInit(text, &kTextUtf16Funcs, string.data(),
-           base::checked_cast<unsigned>(string.size()), prior_context,
+  TextInit(text, &kTextUtf16Funcs, string.data(), string.size(), prior_context,
            prior_context_length);
   return text;
 }
@@ -736,7 +734,7 @@ PooledBreakIterator AcquireLineBreakIterator(
     base::span<const LChar> string,
     const AtomicString& locale,
     const UChar* prior_context = nullptr,
-    unsigned prior_context_length = 0) {
+    wtf_size_t prior_context_length = 0) {
   PooledBreakIterator iterator{
       LineBreakIteratorPool::SharedPool().Take(locale)};
   if (!iterator) {
@@ -772,7 +770,7 @@ PooledBreakIterator AcquireLineBreakIterator(
     base::span<const UChar> string,
     const AtomicString& locale,
     const UChar* prior_context = nullptr,
-    unsigned prior_context_length = 0) {
+    wtf_size_t prior_context_length = 0) {
   PooledBreakIterator iterator{
       LineBreakIteratorPool::SharedPool().Take(locale)};
   if (!iterator) {

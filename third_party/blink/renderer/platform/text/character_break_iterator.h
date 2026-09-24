@@ -71,13 +71,13 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
 
   void CreateIteratorForBuffer(base::span<const UChar>);
 
-  unsigned ClusterLengthStartingAt(unsigned offset) const {
+  wtf_size_t ClusterLengthStartingAt(wtf_size_t offset) const {
     DCHECK(is_8bit_);
     // The only Latin-1 Extended Grapheme Cluster is CR LF
     return IsCrBeforeLf(offset) ? 2 : 1;
   }
 
-  bool IsCrBeforeLf(unsigned offset) const {
+  bool IsCrBeforeLf(wtf_size_t offset) const {
     DCHECK(is_8bit_);
     // SAFTEY: second indexing is safe because of length check, but
     // the first is not. Could be made safe by re-ordering.
@@ -85,7 +85,7 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
            UNSAFE_BUFFERS(charaters8_[offset + 1]) == '\n';
   }
 
-  bool IsLfAfterCr(unsigned offset) const {
+  bool IsLfAfterCr(wtf_size_t offset) const {
     DCHECK(is_8bit_);
     return UNSAFE_TODO(charaters8_[offset]) == '\n' && offset >= 1 &&
            UNSAFE_TODO(charaters8_[offset - 1]) == '\r';
@@ -95,8 +95,8 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
 
   // For 8 bit strings, we implement the iterator ourselves.
   const LChar* charaters8_ = nullptr;
-  unsigned offset_ = 0;
-  unsigned length_ = 0;
+  wtf_size_t offset_ = 0;
+  wtf_size_t length_ = 0;
 
   // For 16 bit strings, we use a TextBreakIterator.
   PooledIterator iterator_;
@@ -105,16 +105,16 @@ class PLATFORM_EXPORT CharacterBreakIterator final {
 // Counts the number of grapheme clusters. A surrogate pair or a sequence
 // of a non-combining character and following combining characters is
 // counted as 1 grapheme cluster.
-PLATFORM_EXPORT unsigned NumGraphemeClusters(const StringView&);
+PLATFORM_EXPORT wtf_size_t NumGraphemeClusters(const StringView&);
 
 // Returns the number of code units that the next grapheme cluster is made of.
-PLATFORM_EXPORT unsigned LengthOfGraphemeCluster(const StringView&,
-                                                 unsigned = 0);
+PLATFORM_EXPORT wtf_size_t LengthOfGraphemeCluster(const StringView&,
+                                                   wtf_size_t = 0);
 
 // Returns a list of graphemes cluster at each character using character break
 // rules. The `graphemes` and `text` must have the same size.
 PLATFORM_EXPORT void GraphemesClusterList(const StringView& text,
-                                          base::span<unsigned> graphemes);
+                                          base::span<wtf_size_t> graphemes);
 
 }  // namespace blink
 

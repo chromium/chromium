@@ -108,12 +108,12 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   UScriptCode script_;
   mutable UScriptCode script_for_han_ = USCRIPT_COMMON;
 
-  mutable unsigned has_script_for_han_ : 1 = false;
-  mutable unsigned hyphenation_computed_ : 1 = false;
-  mutable unsigned quotes_data_computed_ : 1 = false;
-  mutable unsigned case_map_computed_ : 1 = false;
-  mutable unsigned is_macrolanguage_chinese_computed_ : 1 = false;
-  mutable unsigned is_macrolanguage_chinese_ : 1 = false;
+  mutable uint32_t has_script_for_han_ : 1 = false;
+  mutable uint32_t hyphenation_computed_ : 1 = false;
+  mutable uint32_t quotes_data_computed_ : 1 = false;
+  mutable uint32_t case_map_computed_ : 1 = false;
+  mutable uint32_t is_macrolanguage_chinese_computed_ : 1 = false;
+  mutable uint32_t is_macrolanguage_chinese_ : 1 = false;
 };
 
 }  // namespace blink

@@ -45,7 +45,7 @@ namespace blink {
 // - 1 indicates additional break opportunities. 0 indicates to fallback to
 //   normal line break, not "prohibit break."
 // clang-format off
-static constexpr std::array<std::array<unsigned char, BA_LB_COUNT / 8 + 1>,
+static constexpr std::array<std::array<uint8_t, BA_LB_COUNT / 8 + 1>,
                             BA_LB_COUNT>
     kBreakAllLineBreakClassTable = {{
   // XX AI AL B2 BA BB BK CB            SA SG SP SY ZW NL WJ H2             HH
@@ -183,9 +183,9 @@ struct LazyLineBreakIterator::Context {
   };
 
   Context(const CharacterType* str,
-          unsigned len,
-          unsigned start_offset,
-          unsigned index) {
+          wtf_size_t len,
+          wtf_size_t start_offset,
+          wtf_size_t index) {
     DCHECK_GE(index, start_offset);
     CHECK_LE(index, len);
     if (index > start_offset) {
@@ -198,7 +198,7 @@ struct LazyLineBreakIterator::Context {
     }
   }
 
-  bool Fetch(const CharacterType* str, unsigned len, unsigned index) {
+  bool Fetch(const CharacterType* str, wtf_size_t len, wtf_size_t index) {
     if (index >= len) [[unlikely]] {
       return false;
     }
@@ -207,7 +207,7 @@ struct LazyLineBreakIterator::Context {
     return true;
   }
 
-  void Advance(unsigned& index) {
+  void Advance(wtf_size_t& index) {
     ++index;
     last_last_ch = last.ch;
     last = current;
@@ -267,19 +267,19 @@ struct LazyLineBreakIterator::Context {
 template <typename CharacterType,
           LineBreakType kLineBreakType,
           BreakSpaceType kBreakSpace>
-inline unsigned LazyLineBreakIterator::NextBreakablePosition(
-    unsigned pos,
+inline wtf_size_t LazyLineBreakIterator::NextBreakablePosition(
+    wtf_size_t pos,
     base::span<const CharacterType> span) const {
   const CharacterType* str = span.data();
-  unsigned len = base::checked_cast<unsigned>(span.size());
+  wtf_size_t len = base::checked_cast<wtf_size_t>(span.size());
   Context<CharacterType> context(str, len, start_offset_, pos);
-  unsigned next_break = 0;
+  wtf_size_t next_break = 0;
   ULineBreak last_line_break;
   if constexpr (kLineBreakType == LineBreakType::kBreakAll) {
     last_line_break =
         LineBreakPropertyValue(context.last_last_ch, context.last.ch);
   }
-  for (unsigned i = pos; context.Fetch(str, len, i); context.Advance(i)) {
+  for (wtf_size_t i = pos; context.Fetch(str, len, i); context.Advance(i)) {
     switch (kBreakSpace) {
       case BreakSpaceType::kAfterSpaceRun:
         if (context.current.is_space) {
@@ -387,8 +387,8 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
 }
 
 template <typename CharacterType, LineBreakType kLineBreakType>
-inline unsigned LazyLineBreakIterator::NextBreakablePosition(
-    unsigned pos,
+inline wtf_size_t LazyLineBreakIterator::NextBreakablePosition(
+    wtf_size_t pos,
     base::span<const CharacterType> span) const {
   switch (break_space_) {
     case BreakSpaceType::kAfterSpaceRun:
@@ -402,9 +402,9 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
 }
 
 template <LineBreakType kLineBreakType>
-inline unsigned LazyLineBreakIterator::NextBreakablePosition(
-    unsigned pos,
-    unsigned len) const {
+inline wtf_size_t LazyLineBreakIterator::NextBreakablePosition(
+    wtf_size_t pos,
+    wtf_size_t len) const {
   if (string_.IsNull()) [[unlikely]] {
     return 0;
   }
@@ -416,8 +416,8 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
       pos, string_.Span16().first(len));
 }
 
-unsigned LazyLineBreakIterator::NextBreakablePositionBreakCharacter(
-    unsigned pos) const {
+wtf_size_t LazyLineBreakIterator::NextBreakablePositionBreakCharacter(
+    wtf_size_t pos) const {
   DCHECK_LE(start_offset_, string_.length());
   CharacterBreakIterator& iterator = GetCharacterBreakIterator();
   DCHECK_GE(pos, start_offset_);
@@ -429,8 +429,8 @@ unsigned LazyLineBreakIterator::NextBreakablePositionBreakCharacter(
   return next != kTextBreakDone ? next + start_offset_ : string_.length();
 }
 
-unsigned LazyLineBreakIterator::NextBreakablePosition(unsigned pos,
-                                                      unsigned len) const {
+wtf_size_t LazyLineBreakIterator::NextBreakablePosition(wtf_size_t pos,
+                                                        wtf_size_t len) const {
   switch (break_type_) {
     case LineBreakType::kNormal:
     case LineBreakType::kPhrase:
@@ -445,26 +445,28 @@ unsigned LazyLineBreakIterator::NextBreakablePosition(unsigned pos,
   NOTREACHED();
 }
 
-unsigned LazyLineBreakIterator::NextBreakOpportunity(unsigned offset) const {
+wtf_size_t LazyLineBreakIterator::NextBreakOpportunity(
+    wtf_size_t offset) const {
   DCHECK_LE(offset, string_.length());
   return NextBreakablePosition(offset, string_.length());
 }
 
-unsigned LazyLineBreakIterator::NextBreakOpportunity(unsigned offset,
-                                                     unsigned len) const {
+wtf_size_t LazyLineBreakIterator::NextBreakOpportunity(wtf_size_t offset,
+                                                       wtf_size_t len) const {
   DCHECK_LE(offset, len);
   DCHECK_LE(len, string_.length());
   return NextBreakablePosition(offset, len);
 }
 
-unsigned LazyLineBreakIterator::PreviousBreakOpportunity(unsigned offset,
-                                                         unsigned min) const {
-  unsigned pos = std::min(offset, string_.length());
+wtf_size_t LazyLineBreakIterator::PreviousBreakOpportunity(
+    wtf_size_t offset,
+    wtf_size_t min) const {
+  wtf_size_t pos = std::min(offset, string_.length());
   // +2 to ensure at least one code point is included.
-  unsigned end = std::min(pos + 2, string_.length());
+  wtf_size_t end = std::min(pos + 2, string_.length());
   const UChar* chars16 = string_.Is8Bit() ? nullptr : string_.Span16().data();
   while (pos > min) {
-    unsigned next_break = NextBreakablePosition(pos, end);
+    wtf_size_t next_break = NextBreakablePosition(pos, end);
     if (next_break == pos) {
       return next_break;
     }

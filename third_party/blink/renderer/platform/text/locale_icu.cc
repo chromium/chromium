@@ -250,7 +250,7 @@ const Vector<String>& LocaleIcu::WeekDayShortLabels() {
   return week_day_short_labels_;
 }
 
-unsigned LocaleIcu::FirstDayOfWeek() {
+wtf_size_t LocaleIcu::FirstDayOfWeek() {
   if (!first_day_of_week_.has_value()) {
     first_day_of_week_ =
         InitializeShortDateFormat()

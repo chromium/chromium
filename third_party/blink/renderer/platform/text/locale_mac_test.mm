@@ -97,7 +97,7 @@ class LocaleMacTest : public testing::Test {
   String FormatWeek(const String& locale_string, const String& iso_string) {
     std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
     DateComponents date;
-    unsigned end;
+    wtf_size_t end;
     date.ParseWeek(iso_string, 0, end);
     return locale->FormatDateTime(date);
   }
@@ -107,7 +107,7 @@ class LocaleMacTest : public testing::Test {
                      bool use_short_format) {
     std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
     DateComponents date;
-    unsigned end;
+    wtf_size_t end;
     date.ParseMonth(iso_string, 0, end);
     return locale->FormatDateTime(
         date, (use_short_format ? Locale::kFormatTypeShort
@@ -132,17 +132,17 @@ class LocaleMacTest : public testing::Test {
                           : Locale::kFormatTypeMedium));
   }
 
-  unsigned FirstDayOfWeek(const String& locale_string) {
+  wtf_size_t FirstDayOfWeek(const String& locale_string) {
     std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
     return locale->FirstDayOfWeek();
   }
 
-  String MonthLabel(const String& locale_string, unsigned index) {
+  String MonthLabel(const String& locale_string, wtf_size_t index) {
     std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
     return locale->MonthLabels()[index];
   }
 
-  String WeekDayShortLabel(const String& locale_string, unsigned index) {
+  String WeekDayShortLabel(const String& locale_string, wtf_size_t index) {
     std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
     return locale->WeekDayShortLabels()[index];
   }
@@ -167,23 +167,23 @@ class LocaleMacTest : public testing::Test {
     return locale->ShortTimeFormat();
   }
 
-  String ShortMonthLabel(const String& locale_string, unsigned index) {
+  String ShortMonthLabel(const String& locale_string, wtf_size_t index) {
     std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
     return locale->ShortMonthLabels()[index];
   }
 
-  String StandAloneMonthLabel(const String& locale_string, unsigned index) {
+  String StandAloneMonthLabel(const String& locale_string, wtf_size_t index) {
     std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
     return locale->StandAloneMonthLabels()[index];
   }
 
   String ShortStandAloneMonthLabel(const String& locale_string,
-                                   unsigned index) {
+                                   wtf_size_t index) {
     std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
     return locale->ShortStandAloneMonthLabels()[index];
   }
 
-  String TimeAmPmLabel(const String& locale_string, unsigned index) {
+  String TimeAmPmLabel(const String& locale_string, wtf_size_t index) {
     std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
     return locale->TimeAmPmLabels()[index];
   }

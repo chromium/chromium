@@ -11,7 +11,7 @@
 
 namespace blink {
 
-enum class HangingPunctuation : unsigned {
+enum class HangingPunctuation : uint8_t {
   kNone = 0,
   kFirst = 1,
   kLast = 2,
@@ -20,8 +20,8 @@ enum class HangingPunctuation : unsigned {
 
 inline HangingPunctuation operator|(HangingPunctuation a,
                                     HangingPunctuation b) {
-  return static_cast<HangingPunctuation>(static_cast<unsigned>(a) |
-                                         static_cast<unsigned>(b));
+  return static_cast<HangingPunctuation>(static_cast<uint8_t>(a) |
+                                         static_cast<uint8_t>(b));
 }
 inline HangingPunctuation& operator|=(HangingPunctuation& a,
                                       HangingPunctuation b) {
@@ -29,8 +29,8 @@ inline HangingPunctuation& operator|=(HangingPunctuation& a,
 }
 inline HangingPunctuation operator^(HangingPunctuation a,
                                     HangingPunctuation b) {
-  return static_cast<HangingPunctuation>(static_cast<unsigned>(a) ^
-                                         static_cast<unsigned>(b));
+  return static_cast<HangingPunctuation>(static_cast<uint8_t>(a) ^
+                                         static_cast<uint8_t>(b));
 }
 inline HangingPunctuation& operator^=(HangingPunctuation& a,
                                       HangingPunctuation b) {
@@ -38,15 +38,15 @@ inline HangingPunctuation& operator^=(HangingPunctuation& a,
 }
 inline HangingPunctuation operator&(HangingPunctuation a,
                                     HangingPunctuation b) {
-  return static_cast<HangingPunctuation>(static_cast<unsigned>(a) &
-                                         static_cast<unsigned>(b));
+  return static_cast<HangingPunctuation>(static_cast<uint8_t>(a) &
+                                         static_cast<uint8_t>(b));
 }
 inline HangingPunctuation& operator&=(HangingPunctuation& a,
                                       HangingPunctuation b) {
   return a = a & b;
 }
 inline HangingPunctuation operator~(HangingPunctuation x) {
-  return static_cast<HangingPunctuation>(~static_cast<unsigned>(x));
+  return static_cast<HangingPunctuation>(~static_cast<uint8_t>(x));
 }
 
 PLATFORM_EXPORT bool IsHangingPunctuation(UChar32 ch, HangingPunctuation mask);

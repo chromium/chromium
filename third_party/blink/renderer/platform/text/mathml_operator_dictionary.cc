@@ -36,7 +36,7 @@ constexpr auto kOperators2AsciiChars = std::to_array<std::string_view>({
 // https://w3c.github.io/mathml-core/#operator-dictionary-categories-hexa-table
 struct EntryRange {
   uint16_t entry;
-  unsigned range_bounds_delta : 4;
+  uint32_t range_bounds_delta : 4;
 };
 static inline uint16_t ExtractKey(const EntryRange& range) {
   return range.entry & 0x3FFF;

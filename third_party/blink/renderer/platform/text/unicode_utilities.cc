@@ -125,7 +125,7 @@ bool IsSeparator(UChar32 character) {
 }
 
 bool ContainsOnlySeparatorsOrEmpty(const String& pattern) {
-  unsigned index = 0;
+  wtf_size_t index = 0;
   while (index < pattern.length()) {
     const UChar32 character = pattern.CodePointAt(index);
     if (!IsSeparator(character)) {
@@ -301,8 +301,8 @@ static inline bool IsCombiningVoicedSoundMark(UChar character) {
 }
 
 bool ContainsKanaLetters(const String& pattern) {
-  const unsigned length = pattern.length();
-  for (unsigned i = 0; i < length; ++i) {
+  const wtf_size_t length = pattern.length();
+  for (wtf_size_t i = 0; i < length; ++i) {
     if (IsKanaLetter(pattern[i]))
       return true;
   }

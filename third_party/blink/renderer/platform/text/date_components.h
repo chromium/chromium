@@ -97,15 +97,15 @@ class PLATFORM_EXPORT DateComponents {
   // failures, and the trailing extra characters don't cause parse failures.
 
   // Sets FullYear and Month.
-  bool ParseMonth(const String& src, unsigned start, unsigned& end);
+  bool ParseMonth(const String& src, wtf_size_t start, wtf_size_t& end);
   // Sets FullYear, Month and MonthDay.
-  bool ParseDate(const String& src, unsigned start, unsigned& end);
+  bool ParseDate(const String& src, wtf_size_t start, wtf_size_t& end);
   // Sets FullYear and Week.
-  bool ParseWeek(const String& src, unsigned start, unsigned& end);
+  bool ParseWeek(const String& src, wtf_size_t start, wtf_size_t& end);
   // Sets Hour, Minute, Second and Millisecond.
-  bool ParseTime(const String& src, unsigned start, unsigned& end);
+  bool ParseTime(const String& src, wtf_size_t start, wtf_size_t& end);
   // Sets FullYear, Month, MonthDay, Hour, Minute, Second and Millisecond.
-  bool ParseDateTimeLocal(const String&, unsigned start, unsigned& end);
+  bool ParseDateTimeLocal(const String& src, wtf_size_t start, wtf_size_t& end);
 
   // The following SetMillisecondsSinceEpochFor*() functions take
   // the number of milliseconds since 1970-01-01 00:00:00.000 UTC as
@@ -180,7 +180,7 @@ class PLATFORM_EXPORT DateComponents {
   // Returns the maximum week number in this DateComponents's year.
   // The result is either of 52 and 53.
   int MaxWeekNumberInYear() const;
-  bool ParseYear(const String&, unsigned start, unsigned& end);
+  bool ParseYear(const String&, wtf_size_t start, wtf_size_t& end);
   // Helper for MillisecondsSinceEpoch().
   base::TimeDelta MillisecondsSinceEpochForTime() const;
   // Helpers for SetMillisecondsSinceEpochFor*().

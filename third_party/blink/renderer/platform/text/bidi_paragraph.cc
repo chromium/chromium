@@ -110,7 +110,8 @@ String BidiParagraph::StringWithDirectionalOverride(const StringView& text,
   return builder.ToString();
 }
 
-unsigned BidiParagraph::GetLogicalRun(unsigned start, UBiDiLevel* level) const {
+wtf_size_t BidiParagraph::GetLogicalRun(wtf_size_t start,
+                                        UBiDiLevel* level) const {
   int32_t end;
   ubidi_getLogicalRun(ubidi_.get(), start, &end, level);
   return end;
@@ -118,9 +119,9 @@ unsigned BidiParagraph::GetLogicalRun(unsigned start, UBiDiLevel* level) const {
 
 void BidiParagraph::GetLogicalRuns(const String& text, Runs* runs) const {
   DCHECK(runs->empty());
-  for (unsigned start = 0; start < text.length();) {
+  for (wtf_size_t start = 0; start < text.length();) {
     UBiDiLevel level;
-    unsigned end = GetLogicalRun(start, &level);
+    wtf_size_t end = GetLogicalRun(start, &level);
     DCHECK_GT(end, start);
     runs->emplace_back(start, end, level);
     start = end;

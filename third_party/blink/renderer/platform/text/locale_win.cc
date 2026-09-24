@@ -105,7 +105,7 @@ DWORD CallGetLocaleInfoDWORD(LCID lcid, LCTYPE type, DWORD on_failure = 0) {
 }
 
 // First day of week in blink's reckoning.
-unsigned GetFirstDayOfWeek(LCID lcid, bool defaults_for_locale) {
+wtf_size_t GetFirstDayOfWeek(LCID lcid, bool defaults_for_locale) {
   DWORD value = CallGetLocaleInfoDWORD(
       lcid, LOCALE_IFIRSTDAYOFWEEK |
                 (defaults_for_locale ? LOCALE_NOUSEROVERRIDE : 0));
@@ -152,8 +152,8 @@ LCID LCIDFromLocale(const String& locale, bool defaults_for_locale) {
   return lcid;
 }
 
-std::pair<LCID, unsigned> GetLcidAndFirstDayOfWeek(const String& locale,
-                                                   bool defaults_for_locale) {
+std::pair<LCID, wtf_size_t> GetLcidAndFirstDayOfWeek(const String& locale,
+                                                     bool defaults_for_locale) {
   WebSandboxSupport* proxy = Platform::Current()->GetSandboxSupport();
   if (proxy && proxy->IsLocaleProxyEnabled()) {
     return proxy->LcidAndFirstDayOfWeek(locale, DefaultLanguage(),
@@ -371,14 +371,14 @@ std::unique_ptr<Locale> Locale::Create(const String& locale) {
 }
 
 inline LocaleWin::LocaleWin(LCID lcid,
-                            unsigned first_day_of_week,
+                            wtf_size_t first_day_of_week,
                             bool defaults_for_locale)
     : lcid_(lcid),
       first_day_of_week_(first_day_of_week),
       defaults_for_locale_(defaults_for_locale) {}
 
 std::unique_ptr<LocaleWin> LocaleWin::Create(LCID lcid,
-                                             unsigned first_day_of_week,
+                                             wtf_size_t first_day_of_week,
                                              bool defaults_for_locale) {
   return base::WrapUnique(
       new LocaleWin(lcid, first_day_of_week, defaults_for_locale));
@@ -415,7 +415,7 @@ const Vector<String>& LocaleWin::WeekDayShortLabels() {
   return week_day_short_labels_;
 }
 
-unsigned LocaleWin::FirstDayOfWeek() {
+wtf_size_t LocaleWin::FirstDayOfWeek() {
   return first_day_of_week_;
 }
 
