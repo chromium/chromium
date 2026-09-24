@@ -728,7 +728,7 @@ enum ItemType {
       symbol = SymbolMicrophone;
       break;
     case SiteSettingsCategory::kCamera:
-      symbol = SymbolVideo;
+      symbol = SymbolSystemCamera;
       break;
     case SiteSettingsCategory::kLocation:
       symbol = SymbolLocation;
@@ -745,7 +745,7 @@ enum ItemType {
       symbol = SymbolMicrophoneSlash;
       break;
     case SiteSettingsCategory::kCamera:
-      symbol = SymbolVideoSlash;
+      symbol = SymbolCameraSlash;
       break;
     case SiteSettingsCategory::kLocation:
       symbol = SymbolLocationSlash;

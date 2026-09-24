@@ -54,6 +54,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolCamera,
   SymbolCameraFill,
   SymbolCameraLens,
+  SymbolCameraSlash,
   SymbolCarSpark,
   SymbolChromeProduct,
   SymbolCloudAndArrowUp,

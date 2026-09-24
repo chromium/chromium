@@ -1212,7 +1212,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   return [self detailItemWithType:SettingsItemTypeSiteSettings
                              text:@"Site settings"
                        detailText:nil
-                           symbol:SettingsRootSymbol(SymbolGearshape2)
+                           symbol:SettingsRootSymbol(SymbolSliderHorizontal)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:kSettingsSiteSettingsCellId];
 }

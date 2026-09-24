@@ -24,6 +24,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/bottom_omnibox_option.symbolset/bottom.omnibox.option.cr.svg",
     "Assets.xcassets/camera_lens.symbolset/Contents.json",
     "Assets.xcassets/camera_lens.symbolset/camera.lens.cr.svg",
+    "Assets.xcassets/camera_slash.symbolset/Contents.json",
+    "Assets.xcassets/camera_slash.symbolset/camera.slash.cr.svg",
     "Assets.xcassets/car_spark.symbolset/Contents.json",
     "Assets.xcassets/car_spark.symbolset/car.spark.cr.svg",
     "Assets.xcassets/checkerboard_shield.symbolset/Contents.json",

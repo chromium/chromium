@@ -115,7 +115,7 @@ NSString* DetailTextForSetting(ContentSetting setting) {
            detailItemWithType:kCamera
                          text:l10n_util::GetNSString(IDS_IOS_PERMISSIONS_CAMERA)
                    detailText:DetailTextForSetting(_cameraSetting)
-                       symbol:SymbolVideo
+                       symbol:SymbolSystemCamera
       accessibilityIdentifier:kSiteSettingsCameraCellId];
   [model addItem:_cameraItem toSectionWithIdentifier:kSettings];
 

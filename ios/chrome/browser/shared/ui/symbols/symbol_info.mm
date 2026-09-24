@@ -79,6 +79,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"custom_camera_fill", SymbolType::kCustom};
     case SymbolCameraLens:
       return {@"camera_lens", SymbolType::kCustom};
+    case SymbolCameraSlash:
+      return {@"camera_slash", SymbolType::kCustom};
     case SymbolCarSpark:
       return {@"car_spark", SymbolType::kCustom};
     case SymbolChromeProduct:
