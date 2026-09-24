@@ -9,6 +9,7 @@
 #include <IOKit/hidsystem/IOLLEvent.h>  // for NX_ constants
 #include <stddef.h>
 
+#include <array>
 #import <string_view>
 
 #include "base/apple/owned_objc.h"
@@ -47,7 +48,7 @@ struct ModifierKey {
 };
 
 // Modifier keys, grouped into left/right pairs.
-const ModifierKey kModifierKeys[] = {
+constexpr std::array<ModifierKey, 8> kModifierKeys = {{
     // Left Shift
     {kVK_Shift, NX_DEVICELSHIFTKEYMASK, NSEventModifierFlagShift},
     // Right Shift
@@ -64,7 +65,7 @@ const ModifierKey kModifierKeys[] = {
     {kVK_Control, NX_DEVICELCTLKEYMASK, NSEventModifierFlagControl},
     // Right Control
     {kVK_RightControl, NX_DEVICERCTLKEYMASK, NSEventModifierFlagControl},
-};
+}};
 
 NSEvent* BuildFakeKeyEvent(NSUInteger key_code,
                            std::u16string_view character,
@@ -232,9 +233,9 @@ TEST(WebInputEventBuilderMacTest, NumPadMapping) {
 // Test that left- and right-hand modifier keys are interpreted correctly when
 // pressed simultaneously.
 TEST(WebInputEventFactoryTestMac, SimultaneousModifierKeys) {
-  for (size_t i = 0; i < std::size(kModifierKeys) / 2; ++i) {
-    const ModifierKey& left = UNSAFE_TODO(kModifierKeys[2 * i]);
-    const ModifierKey& right = UNSAFE_TODO(kModifierKeys[2 * i + 1]);
+  for (size_t i = 0; i < kModifierKeys.size() / 2; ++i) {
+    const ModifierKey& left = kModifierKeys[2 * i];
+    const ModifierKey& right = kModifierKeys[2 * i + 1];
     // Press the left key.
     NSEvent* mac_event =
         BuildFakeKeyEvent(left.mac_key_code, 0,
