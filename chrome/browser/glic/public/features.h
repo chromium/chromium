@@ -209,7 +209,7 @@ BASE_DECLARE_FEATURE(kGlicOptInDialogA11yFix);
 BASE_DECLARE_FEATURE(kGlicStructuredYieldMetadata);
 
 BASE_DECLARE_FEATURE(kGlicNoWebview);
-// Returns true if kGlicNoWebview is enabled.
+// Returns true if kGlicNoWebview is enabled or if GEiC is enabled.
 bool IsGlicNoWebviewEnabled();
 BASE_DECLARE_FEATURE(kGlicDisconnectedWebview);
 

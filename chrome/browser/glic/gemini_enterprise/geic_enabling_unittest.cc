@@ -105,6 +105,37 @@ TEST_F(GeicEnablingTest, CommandLineSwitchOverridesGuestUrl) {
             GURL("https://business.gemini.google/cli-panel"));
 }
 
+TEST_F(GeicEnablingTest, IsGlicNoWebviewEnabled_BothOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({},
+                                {features::kGlicNoWebview, features::kGeic});
+
+  EXPECT_FALSE(features::IsGlicNoWebviewEnabled());
+}
+
+TEST_F(GeicEnablingTest, IsGlicNoWebviewEnabled_GlicNoWebviewOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kGlicNoWebview}, {features::kGeic});
+
+  EXPECT_TRUE(features::IsGlicNoWebviewEnabled());
+}
+
+TEST_F(GeicEnablingTest, IsGlicNoWebviewEnabled_GeicOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic, {{"enabled", "true"}}}}, {features::kGlicNoWebview});
+
+  EXPECT_TRUE(features::IsGlicNoWebviewEnabled());
+}
+
+TEST_F(GeicEnablingTest, IsGlicNoWebviewEnabled_GeicOnButParamFalse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic, {{"enabled", "false"}}}}, {features::kGlicNoWebview});
+
+  EXPECT_FALSE(features::IsGlicNoWebviewEnabled());
+}
+
 TEST_F(GeicEnablingTest, AcceptsAllowedHosts) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGeic);
