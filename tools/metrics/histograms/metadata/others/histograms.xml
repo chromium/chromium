@@ -6100,18 +6100,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebFont.Clients.RenderBlockingFonts.ExpiredFonts"
-    units="fonts" expires_after="2024-04-28">
-  <owner>xiaochengh@chromium.org</owner>
-  <owner>chrome-rendering-core@google.com</owner>
-  <summary>
-    Recorded when render-blocking web font preloads have reached the maximum
-    blocking time, and therefore, turned into non-render-blocking. Records the
-    number of web font preloads that are still pending. This is a diagnostic
-    metric for feature RenderBlockingFonts.
-  </summary>
-</histogram>
-
 <histogram name="WebFont.DownloadTime.LoadError" units="ms"
     expires_after="2027-01-31">
   <owner>kenjibaheux@chromium.org</owner>

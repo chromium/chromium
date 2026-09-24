@@ -1498,17 +1498,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemoveCommitRedirectUrlsArray);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kReuseNoStoreImageOnSameSrcReassignment);
 
-// Makes preloaded fonts render-blocking up to the limits below.
-// See https://crbug.com/1412861
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderBlockingFonts);
-// Max milliseconds from navigation start that fonts can block rendering.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kMaxBlockingTimeMsForRenderBlockingFonts);
-// Max milliseconds that font are allowed to delay of FCP.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kMaxFCPDelayMsForRenderBlockingFonts);
 
 // Enable the optional renderSize field in the browserSignals parameter of
 // scoreAd function of Protected Audience API.

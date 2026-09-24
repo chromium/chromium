@@ -3913,13 +3913,12 @@ base::TimeDelta DocumentLoader::RemainingTimeToLCPLimit() const {
 
 base::TimeDelta
 DocumentLoader::RemainingTimeToRenderBlockingFontMaxBlockingTime() const {
-  DCHECK(base::FeatureList::IsEnabled(features::kRenderBlockingFonts));
   // We shouldn't call this function before navigation start
   DCHECK(!document_load_timing_.NavigationStart().is_null());
-  base::TimeTicks max_blocking_time =
-      document_load_timing_.NavigationStart() +
-      base::Milliseconds(
-          features::kMaxBlockingTimeMsForRenderBlockingFonts.Get());
+  static constexpr base::TimeDelta kMaxBlockingTimeForRenderBlockingFonts =
+      base::Milliseconds(1500);
+  base::TimeTicks max_blocking_time = document_load_timing_.NavigationStart() +
+                                      kMaxBlockingTimeForRenderBlockingFonts;
   base::TimeTicks now = clock_->NowTicks();
   if (now < max_blocking_time) {
     return max_blocking_time - now;

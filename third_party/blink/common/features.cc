@@ -1952,19 +1952,6 @@ BASE_FEATURE(kRemoveCommitRedirectUrlsArray, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kReuseNoStoreImageOnSameSrcReassignment,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRenderBlockingFonts, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE_PARAM(int,
-                   kMaxBlockingTimeMsForRenderBlockingFonts,
-                   &features::kRenderBlockingFonts,
-                   "max-blocking-time",
-                   1500);
-
-BASE_FEATURE_PARAM(int,
-                   kMaxFCPDelayMsForRenderBlockingFonts,
-                   &features::kRenderBlockingFonts,
-                   "max-fcp-delay",
-                   100);
 
 BASE_FEATURE(kRenderSizeInScoreAdBrowserSignals,
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -121,7 +121,6 @@ class CORE_EXPORT RenderBlockingResourceManager final
       font_preload_max_blocking_timer_;
   HeapTaskRunnerTimer<RenderBlockingResourceManager>
       font_preload_max_fcp_delay_timer_;
-  base::TimeDelta font_preload_timeout_;
   bool font_preload_timer_has_fired_ = false;
 };
 

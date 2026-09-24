@@ -4,9 +4,6 @@
 
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 
-#include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -21,10 +18,6 @@
 namespace blink {
 
 namespace {
-
-// 50ms is the overall best performing value in our experiments.
-const base::TimeDelta kMaxRenderingDelayForFontPreloads =
-    base::Milliseconds(50);
 
 class ImperativeFontLoadFinishedCallback final
     : public GarbageCollected<ImperativeFontLoadFinishedCallback>,
@@ -70,8 +63,7 @@ RenderBlockingResourceManager::RenderBlockingResourceManager(Document& document)
       font_preload_max_fcp_delay_timer_(
           document.GetTaskRunner(TaskType::kInternalFrameLifecycleControl),
           this,
-          &RenderBlockingResourceManager::FontPreloadingTimerFired),
-      font_preload_timeout_(kMaxRenderingDelayForFontPreloads) {}
+          &RenderBlockingResourceManager::FontPreloadingTimerFired) {}
 
 void RenderBlockingResourceManager::AddPendingFontPreload(
     const PendingLinkPreload& link) {
@@ -122,10 +114,7 @@ void RenderBlockingResourceManager::EnsureStartFontPreloadMaxBlockingTimer() {
     return;
   }
   base::TimeDelta timeout =
-      base::FeatureList::IsEnabled(features::kRenderBlockingFonts)
-          ? document_->Loader()
-                ->RemainingTimeToRenderBlockingFontMaxBlockingTime()
-          : font_preload_timeout_;
+      document_->Loader()->RemainingTimeToRenderBlockingFontMaxBlockingTime();
   font_preload_max_blocking_timer_.StartOneShot(timeout, FROM_HERE);
 }
 
@@ -133,9 +122,6 @@ void RenderBlockingResourceManager::FontPreloadingTimerFired(TimerBase*) {
   if (font_preload_timer_has_fired_) {
     return;
   }
-  base::UmaHistogramBoolean(
-      "WebFont.Clients.RenderBlockingFonts.ExpiredFonts",
-      pending_font_preloads_.size() + imperative_font_loading_count_);
   font_preload_timer_has_fired_ = true;
   pending_font_preloads_.clear();
   imperative_font_loading_count_ = 0;
@@ -212,7 +198,6 @@ void RenderBlockingResourceManager::SetFontPreloadTimeoutForTest(
     font_preload_max_blocking_timer_.Stop();
     font_preload_max_blocking_timer_.StartOneShot(timeout, FROM_HERE);
   }
-  font_preload_timeout_ = timeout;
 }
 
 void RenderBlockingResourceManager::DisableFontPreloadTimeoutForTest() {
@@ -261,16 +246,14 @@ void RenderBlockingResourceManager::RemovePendingScript(
 }
 
 void RenderBlockingResourceManager::WillInsertDocumentBody() {
-  if (base::FeatureList::IsEnabled(features::kRenderBlockingFonts) &&
-      !HasNonFontRenderBlockingResources() && HasRenderBlockingFonts()) {
+  if (!HasNonFontRenderBlockingResources() && HasRenderBlockingFonts()) {
     EnsureStartFontPreloadMaxFCPDelayTimer();
   }
 }
 
 void RenderBlockingResourceManager::RenderBlockingResourceUnblocked() {
   document_->RenderBlockingResourceUnblocked();
-  if (base::FeatureList::IsEnabled(features::kRenderBlockingFonts) &&
-      !HasNonFontRenderBlockingResources() && HasRenderBlockingFonts() &&
+  if (!HasNonFontRenderBlockingResources() && HasRenderBlockingFonts() &&
       document_->body()) {
     EnsureStartFontPreloadMaxFCPDelayTimer();
   }
@@ -281,9 +264,8 @@ void RenderBlockingResourceManager::EnsureStartFontPreloadMaxFCPDelayTimer() {
       font_preload_max_fcp_delay_timer_.IsActive()) {
     return;
   }
-  base::TimeDelta max_fcp_delay =
-      base::Milliseconds(features::kMaxFCPDelayMsForRenderBlockingFonts.Get());
-  font_preload_max_fcp_delay_timer_.StartOneShot(max_fcp_delay, FROM_HERE);
+  static constexpr base::TimeDelta kMaxFCPDelay = base::Milliseconds(100);
+  font_preload_max_fcp_delay_timer_.StartOneShot(kMaxFCPDelay, FROM_HERE);
 }
 
 void RenderBlockingResourceManager::Trace(Visitor* visitor) const {

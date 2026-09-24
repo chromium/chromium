@@ -485,10 +485,6 @@ public final class ProductionSupportedFlagList {
                         + " HTTPS-related exceptions."),
         Flag.baseFeature("CanvasColorCache"),
         Flag.baseFeature(
-                BlinkFeatures.RENDER_BLOCKING_FONTS,
-                "When enabled, blocks rendering on font preloads to reduce CLS. "
-                        + "See go/critical-font-analysis"),
-        Flag.baseFeature(
                 SafeBrowsingFeatures.HASH_PREFIX_REAL_TIME_LOOKUPS,
                 "When enabled, Safe Browsing checks will happen in real time"),
         Flag.baseFeature(

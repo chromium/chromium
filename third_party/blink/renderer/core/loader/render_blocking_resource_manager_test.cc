@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -24,6 +22,11 @@ namespace blink {
 
 class RenderBlockingResourceManagerTest : public SimTest {
  public:
+  explicit RenderBlockingResourceManagerTest(
+      std::optional<base::test::TaskEnvironment::TimeSource> time_source =
+          std::nullopt)
+      : SimTest(time_source) {}
+
   static Vector<char> ReadAhemWoff2() {
     return *test::ReadFromFile(test::CoreTestDataPath("Ahem.woff2"));
   }
@@ -711,19 +714,18 @@ TEST_F(RenderBlockingResourceManagerTest, PausedPageBlocksFontLoading) {
   }
 }
 
+namespace {
+
+constexpr base::TimeDelta kMaxBlockingTime = base::Milliseconds(1500);
+constexpr base::TimeDelta kMaxFCPDelay = base::Milliseconds(100);
+
+}  // namespace
+
 class RenderBlockingFontTest : public RenderBlockingResourceManagerTest {
  public:
-  void SetUp() override {
-    // Use a longer timeout to prevent flakiness when test is running slow.
-    std::map<std::string, std::string> parameters;
-    parameters["max-fcp-delay"] = "500";
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kRenderBlockingFonts, parameters);
-    SimTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  RenderBlockingFontTest()
+      : RenderBlockingResourceManagerTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
 TEST_F(RenderBlockingFontTest, FastFontPreloadWithoutOtherBlockingResources) {
@@ -767,8 +769,7 @@ TEST_F(RenderBlockingFontTest, SlowFontPreloadWithoutOtherBlockingResources) {
 
   // Wait until we've delayed FCP for the max allowed amount of time, and the
   // relevant timeout fires.
-  test::RunDelayedTasks(
-      base::Milliseconds(features::kMaxFCPDelayMsForRenderBlockingFonts.Get()));
+  test::RunDelayedTasks(kMaxFCPDelay);
 
   // Rendering is unblocked as max FCP delay is reached.
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
@@ -794,8 +795,7 @@ TEST_F(RenderBlockingFontTest,
 
   // Wait until we've blocked rendering for the max allowed amount of time since
   // navigation, and the relevant timeout fires.
-  test::RunDelayedTasks(base::Milliseconds(
-      features::kMaxBlockingTimeMsForRenderBlockingFonts.Get()));
+  test::RunDelayedTasks(kMaxBlockingTime);
 
   // The font preload is no longer render-blocking, but Rendering is still
   // blocked because the document has no body.
@@ -857,8 +857,7 @@ TEST_F(RenderBlockingFontTest, FontPreloadExceedingMaxBlockingTime) {
 
   // Wait until we've blocked rendering for the max allowed amount of time since
   // navigation, and the relevant timeout fires.
-  test::RunDelayedTasks(base::Milliseconds(
-      features::kMaxBlockingTimeMsForRenderBlockingFonts.Get()));
+  test::RunDelayedTasks(kMaxBlockingTime);
 
   // The font preload is no longer render-blocking, but we still have a
   // render-blocking style sheet.
@@ -901,8 +900,7 @@ TEST_F(RenderBlockingFontTest, FontPreloadExceedingMaxFCPDelay) {
       GetRenderBlockingResourceManager().HasNonFontRenderBlockingResources());
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
 
-  test::RunDelayedTasks(
-      base::Milliseconds(features::kMaxFCPDelayMsForRenderBlockingFonts.Get()));
+  test::RunDelayedTasks(kMaxFCPDelay);
 
   // After delaying FCP for the max allowed time, the font is no longer
   // render-blocking.
@@ -932,10 +930,8 @@ TEST_F(RenderBlockingFontTest, FontPreloadExceedingBothLimits) {
 
   EXPECT_TRUE(Compositor().DeferMainFrameUpdate());
 
-  test::RunDelayedTasks(
-      base::Milliseconds(features::kMaxFCPDelayMsForRenderBlockingFonts.Get()));
-  test::RunDelayedTasks(base::Milliseconds(
-      features::kMaxBlockingTimeMsForRenderBlockingFonts.Get()));
+  test::RunDelayedTasks(kMaxFCPDelay);
+  test::RunDelayedTasks(kMaxBlockingTime);
 
   EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
 
