@@ -141,6 +141,13 @@ cr-searchbox-input::part(searchbox-input) {
   padding-top: 2px;
 }
 
+#inputWrapper:has(#profileIcon[is-enterprise-profile]):not(:has(#composeButton))
+    cr-searchbox-input::part(searchbox-input),
+:host:has(#profileIcon[is-enterprise-profile]):not(:has(#composeButton))
+    cr-searchbox-input::part(searchbox-input) {
+  padding-inline-end: 88px;
+}
+
 :host([compose-button-enabled]) cr-searchbox-input::part(searchbox-input) {
   padding-inline-end: 8px;
 }
