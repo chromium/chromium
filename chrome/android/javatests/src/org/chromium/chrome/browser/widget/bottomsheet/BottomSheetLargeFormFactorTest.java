@@ -33,6 +33,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -61,6 +62,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandLineFlags.Add({DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.BOTTOM_SHEET_ON_DESKTOP_WINDOWING})
 @Batch(Batch.PER_CLASS)
+@DisableIf.Build(sdk_is_less_than = 32, message = "crbug.com/565680022")
 public class BottomSheetLargeFormFactorTest {
     @Rule
     public FreshCtaTransitTestRule mTestRule =
