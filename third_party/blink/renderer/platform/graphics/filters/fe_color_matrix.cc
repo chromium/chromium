@@ -26,10 +26,10 @@
 #include <array>
 
 #include "base/containers/span.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/color_filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
@@ -84,7 +84,7 @@ static void SaturateMatrix(float s,
 
 static void HueRotateMatrix(float hue,
                             base::span<float, kColorMatrixSize> matrix) {
-  const float hue_radians = Deg2rad(hue);
+  const float hue_radians = base::DegToRad(hue);
   const float cos_hue = cosf(hue_radians);
   const float sin_hue = sinf(hue_radians);
   matrix[0] = 0.213f + cos_hue * 0.787f - sin_hue * 0.213f;

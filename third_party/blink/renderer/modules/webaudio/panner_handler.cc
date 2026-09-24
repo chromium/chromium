@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
@@ -598,7 +599,7 @@ void PannerHandler::CalculateAzimuthElevation(
   // value when one of the vectors has zero length.  We know here that
   // `projected_source` and `listener_right` are "normalized", so the dot
   // product is good enough.
-  double azimuth = Rad2deg(acos(
+  double azimuth = base::RadToDeg(acos(
       ClampTo(gfx::DotProduct(projected_source, listener_right), -1.0f, 1.0f)));
   azimuth = EnsureFinite(azimuth);  // avoid illegal values
 

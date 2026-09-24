@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/style/style_ray.h"
 
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -68,7 +69,7 @@ float CalculateDistanceToReferenceBoxSide(
   if (!gfx::RectF(reference_box_size).InclusiveContains(point)) {
     return 0;
   }
-  const float theta = Deg2rad(angle);
+  const float theta = base::DegToRad(angle);
   float cos_t = std::cos(theta);
   float sin_t = std::sin(theta);
   // We are looking for % point, let's swap signs and lines
@@ -126,7 +127,7 @@ PointAndTangent StyleRay::PointAndNormalAtLength(
     const gfx::PointF& starting_point,
     float length) const {
   const float angle = Angle() - 90;
-  const float rad = Deg2rad(angle);
+  const float rad = base::DegToRad(angle);
   const float x = starting_point.x() + length * std::cos(rad);
   const float y = starting_point.y() + length * std::sin(rad);
   return {{x, y}, angle};

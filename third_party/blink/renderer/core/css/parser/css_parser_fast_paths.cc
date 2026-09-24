@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/numerics/angle_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -1013,7 +1014,7 @@ static bool FastParseColorInternal(Color& color,
         // Unitless numbers are to be treated as degrees.
         break;
       case CSSPrimitiveValue::UnitType::kRadians:
-        hue = Rad2deg(hue);
+        hue = base::RadToDeg(hue);
         break;
       case CSSPrimitiveValue::UnitType::kGradians:
         hue = Grad2deg(hue);

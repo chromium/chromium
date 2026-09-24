@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unrestricteddoublesequence.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
@@ -242,7 +242,7 @@ DOMMatrix* DOMMatrix::rotateSelf(double rot_x, double rot_y, double rot_z) {
 }
 
 DOMMatrix* DOMMatrix::rotateFromVectorSelf(double x, double y) {
-  matrix_.Rotate(Rad2deg(atan2(y, x)));
+  matrix_.Rotate(base::RadToDeg(atan2(y, x)));
   return this;
 }
 

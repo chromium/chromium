@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
@@ -453,8 +454,8 @@ PathBuilder& PathBuilder::AddEllipse(const gfx::PointF& p,
   const SkRect oval = SkRect::MakeLTRB(p.x() - radius_x, p.y() - radius_y,
                                        p.x() + radius_x, p.y() + radius_y);
 
-  const float start_degrees = Rad2deg(start_angle);
-  const float sweep_degrees = Rad2deg(end_angle - start_angle);
+  const float start_degrees = base::RadToDeg(start_angle);
+  const float sweep_degrees = base::RadToDeg(end_angle - start_angle);
 
   // We can't use SkPath::addOval(), because addOval() makes a new sub-path.
   // addOval() calls moveTo() and close() internally.

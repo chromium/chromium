@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/numerics/angle_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -24,7 +25,6 @@
 #include "third_party/blink/renderer/modules/screen_orientation/web_lock_orientation_callback.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/display/screen_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -300,8 +300,8 @@ MediaControlsOrientationLockDelegate::ComputeDeviceOrientation(
   // onto the device's screen in its natural orientation. (x,y) will lie within
   // the unit circle centered on (0,0), e.g. if the top of the device is
   // pointing upwards (x,y) will be (0,-1).
-  double x = -std::sin(Deg2rad(gamma)) * std::cos(Deg2rad(beta));
-  double y = -std::sin(Deg2rad(beta));
+  double x = -std::sin(base::DegToRad(gamma)) * std::cos(base::DegToRad(beta));
+  double y = -std::sin(base::DegToRad(beta));
 
   // Convert (x,y) to polar coordinates: 0 <= device_orientation_angle < 360 and
   // 0 <= r <= 1, such that device_orientation_angle is the clockwise angle in
@@ -315,14 +315,15 @@ MediaControlsOrientationLockDelegate::ComputeDeviceOrientation(
   // so we pass y=x and x=-y to atan2 to rotate by 90 degrees.
   double r = std::sqrt(x * x + y * y);
   double device_orientation_angle =
-      std::fmod(Rad2deg(std::atan2(/* y= */ x, /* x= */ -y)) + 360, 360);
+      std::fmod(base::RadToDeg(std::atan2(/* y= */ x, /* x= */ -y)) + 360, 360);
 
   // If angle between device's screen and the horizontal plane is less than
   // kMinElevationAngle (chosen to approximately match Android's behavior), then
   // device is too flat to reliably determine orientation.
   constexpr double kMinElevationAngle = 24;  // degrees from horizontal plane
-  if (r < std::sin(Deg2rad(kMinElevationAngle)))
+  if (r < std::sin(base::DegToRad(kMinElevationAngle))) {
     return DeviceOrientationType::kFlat;
+  }
 
   // device_orientation_angle snapped to nearest multiple of 90.
   int device_orientation_angle90 =

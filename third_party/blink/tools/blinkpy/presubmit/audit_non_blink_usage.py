@@ -149,6 +149,7 @@ _CONFIG = [
             'base::PostJob',
             'base::PowerMonitor',
             'base::Process',
+            'base::DegToRad',
             'base::RadToDeg',
             'base::raw_span',
             'base::RefCountedData',

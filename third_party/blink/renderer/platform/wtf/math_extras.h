@@ -62,12 +62,6 @@ constexpr float kPiOverFourFloat = static_cast<float>(M_PI_4);
 constexpr double kTwoPiDouble = kPiDouble * 2.0;
 constexpr float kTwoPiFloat = kPiFloat * 2.0f;
 
-constexpr double Deg2rad(double d) {
-  return d * (kPiDouble / 180.0);
-}
-constexpr double Rad2deg(double r) {
-  return r * (180.0 / kPiDouble);
-}
 constexpr double Deg2grad(double d) {
   return d * (400.0 / 360.0);
 }
@@ -99,12 +93,6 @@ constexpr double Turn2rad(double t) {
   return t * kTwoPiDouble;
 }
 
-constexpr float Deg2rad(float d) {
-  return d * (kPiFloat / 180.0f);
-}
-constexpr float Rad2deg(float r) {
-  return r * (180.0f / kPiFloat);
-}
 constexpr float Deg2grad(float d) {
   return d * (400.0f / 360.0f);
 }

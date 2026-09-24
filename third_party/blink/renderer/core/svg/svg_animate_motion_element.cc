@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_animate_motion_element.h"
 
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
@@ -48,7 +49,6 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
@@ -327,7 +327,7 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
                                           from_point.y(), to_point.y(),
                                           to_point_at_end_of_duration.y()));
     position.tangent_in_degrees =
-        Rad2deg((to_point - from_point).SlopeAngleRadians());
+        base::RadToDeg((to_point - from_point).SlopeAngleRadians());
   } else {
     DCHECK(!animation_path_.IsEmpty());
 

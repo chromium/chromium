@@ -36,6 +36,7 @@
 #include <cstddef>
 #include <optional>
 
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
@@ -260,7 +261,7 @@ static std::optional<PointAndTangent> CalculatePointAndNormalOnPath(
         PointAndTangent result;
         result.point = gfx::SkPointToPointF(position);
         result.tangent_in_degrees =
-            Rad2deg(SkScalarATan2(tangent.fY, tangent.fX));
+            base::RadToDeg(SkScalarATan2(tangent.fY, tangent.fX));
         return result;
       }
     }

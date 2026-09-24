@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_lighting.h"
 
+#include "base/numerics/angle_conversions.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/distant_light_source.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
@@ -87,8 +88,8 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
     case kLsDistant: {
       DistantLightSource* distant_light_source =
           static_cast<DistantLightSource*>(light_source_.get());
-      float azimuth_rad = Deg2rad(distant_light_source->Azimuth());
-      float elevation_rad = Deg2rad(distant_light_source->Elevation());
+      float azimuth_rad = base::DegToRad(distant_light_source->Azimuth());
+      float elevation_rad = base::DegToRad(distant_light_source->Elevation());
       const SkPoint3 direction = SkPoint3::Make(
           cosf(azimuth_rad) * cosf(elevation_rad),
           sinf(azimuth_rad) * cosf(elevation_rad), sinf(elevation_rad));

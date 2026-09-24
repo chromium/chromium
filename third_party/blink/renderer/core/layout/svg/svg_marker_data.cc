@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_marker_data.h"
 
 #include "base/auto_reset.h"
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 #include "third_party/blink/renderer/core/svg/svg_path_parser.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -151,8 +152,8 @@ void SVGMarkerDataBuilder::EmitSegment(const PathSegmentData& segment) {
 double SVGMarkerDataBuilder::CurrentAngle(AngleType type) const {
   // For details of this calculation, see:
   // http://www.w3.org/TR/SVG/single-page.html#painting-MarkerElement
-  double in_angle = Rad2deg(in_slope_.SlopeAngleRadians());
-  double out_angle = Rad2deg(out_slope_.SlopeAngleRadians());
+  double in_angle = base::RadToDeg(in_slope_.SlopeAngleRadians());
+  double out_angle = base::RadToDeg(out_slope_.SlopeAngleRadians());
   switch (type) {
     case kOutbound:
       return out_angle;

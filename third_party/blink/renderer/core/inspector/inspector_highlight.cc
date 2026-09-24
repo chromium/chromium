@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
@@ -1241,7 +1242,7 @@ int GetRotationAngle(const LayoutObject* layout_object) {
   double theta = atan2(abs_b.x() - abs_a.x(), abs_a.y() - abs_b.y());
   if (theta < 0.0)
     theta += kTwoPiDouble;
-  int bearing = std::round(Rad2deg(theta));
+  int bearing = std::round(base::RadToDeg(theta));
   return bearing - local_vector_bearing;
 }
 

@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
 
+#include "base/numerics/angle_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -133,7 +133,7 @@ TEST(RotationTest, SlerpTest) {
                       Rotation(gfx::Vector3dF(0, 1, 0), 90), 0.5);
   double root2_inv = 1 / std::sqrt(2);  // half angle is 60 degrees
   EXPECT_AXIS(gfx::Vector3dF(root2_inv, root2_inv, 0), xy_rotation.axis);
-  double expected_angle = Rad2deg(std::acos(1.0 / 3.0));
+  double expected_angle = base::RadToDeg(std::acos(1.0 / 3.0));
   EXPECT_ANGLE(expected_angle, xy_rotation.angle);
 }
 

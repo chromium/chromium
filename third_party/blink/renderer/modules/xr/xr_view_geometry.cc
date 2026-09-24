@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define _USE_MATH_DEFINES  // For VC++ to get M_PI. This has to be first.
-
 #include "third_party/blink/renderer/modules/xr/xr_view_geometry.h"
 
 #include <cmath>
 
+#include "base/numerics/angle_conversions.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace {
-const double kDegToRad = M_PI / 180.0;
-
 constexpr float kDefaultNearDepth = 0.0001;
 constexpr float kDefaultFarDepth = 10000;
 }
@@ -40,9 +37,9 @@ void XRViewGeometry::UpdateViewGeometry(
 
   const auto& fov = view_geometry->field_of_view;
   UpdateProjectionMatrixFromFoV(
-      fov->up_degrees * kDegToRad, fov->down_degrees * kDegToRad,
-      fov->left_degrees * kDegToRad, fov->right_degrees * kDegToRad, depth_near,
-      depth_far);
+      base::DegToRad(fov->up_degrees), base::DegToRad(fov->down_degrees),
+      base::DegToRad(fov->left_degrees), base::DegToRad(fov->right_degrees),
+      depth_near, depth_far);
 
   mojo_from_view_ = view_geometry->mojo_from_view;
 }

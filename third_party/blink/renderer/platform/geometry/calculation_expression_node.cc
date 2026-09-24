@@ -9,10 +9,10 @@
 #include <numeric>
 
 #include "base/notreached.h"
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/math_functions.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
@@ -385,7 +385,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       } else {
         if (ShouldConvertRad2DegForOperator(op) &&
             children.front()->IsNumber()) {
-          value = Rad2deg(value);
+          value = base::RadToDeg(value);
         }
         value = EvaluateTrigonometricFunction(op, value);
         return MakeGarbageCollected<CalculationExpressionNumberNode>(value);
@@ -637,7 +637,7 @@ float CalculationExpressionOperationNode::Evaluate(
       float a = children_[0]->Evaluate(max_value, input);
       if (ShouldConvertRad2DegForOperator(operator_) &&
           children_.front()->EvaluatesToNumber()) {
-        a = Rad2deg(a);
+        a = base::RadToDeg(a);
       }
       std::optional<float> b =
           operator_ == CalculationOperator::kAtan2

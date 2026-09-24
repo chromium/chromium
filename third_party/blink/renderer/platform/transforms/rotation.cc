@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
 
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/transform.h"
@@ -35,7 +36,8 @@ const double kAngleEpsilon = 1e-4;
 
 Quaternion ComputeQuaternion(const Rotation& rotation) {
   return Quaternion::FromAxisAngle(rotation.axis.x(), rotation.axis.y(),
-                                   rotation.axis.z(), Deg2rad(rotation.angle));
+                                   rotation.axis.z(),
+                                   base::DegToRad(rotation.angle));
 }
 
 gfx::Vector3dF NormalizeAxis(gfx::Vector3dF axis) {
@@ -48,7 +50,7 @@ gfx::Vector3dF NormalizeAxis(gfx::Vector3dF axis) {
 
 Rotation ComputeRotation(Quaternion q) {
   double cos_half_angle = q.w();
-  double interpolated_angle = Rad2deg(2 * std::acos(cos_half_angle));
+  double interpolated_angle = base::RadToDeg(2 * std::acos(cos_half_angle));
   gfx::Vector3dF interpolated_axis =
       NormalizeAxis(gfx::Vector3dF(q.x(), q.y(), q.z()));
   return Rotation(interpolated_axis, interpolated_angle);

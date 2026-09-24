@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/geometry/math_functions.h"
 
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
+
 namespace blink {
 
 // https://drafts.csswg.org/css-values-5/#random-evaluation

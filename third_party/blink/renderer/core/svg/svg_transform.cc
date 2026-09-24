@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -134,7 +135,7 @@ const char* TransformTypePrefixForParsing(SVGTransformType type) {
 
 gfx::PointF DecomposeRotationCenter(const AffineTransform& matrix,
                                     float angle) {
-  const double angle_in_rad = Deg2rad(angle);
+  const double angle_in_rad = base::DegToRad(angle);
   const double cos_angle = std::cos(angle_in_rad);
   const double sin_angle = std::sin(angle_in_rad);
   if (cos_angle == 1)

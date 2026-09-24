@@ -28,6 +28,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_AFFINE_TRANSFORM_H_
 
 #include <string.h>  // for memcpy
+
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -158,10 +160,10 @@ class PLATFORM_EXPORT AffineTransform {
   }
 
   [[nodiscard]] static constexpr AffineTransform MakeSkewX(double angle) {
-    return AffineTransform(1, 0, std::tan(Deg2rad(angle)), 1, 0, 0);
+    return AffineTransform(1, 0, std::tan(base::DegToRad(angle)), 1, 0, 0);
   }
   [[nodiscard]] static constexpr AffineTransform MakeSkewY(double angle) {
-    return AffineTransform(1, std::tan(Deg2rad(angle)), 0, 1, 0, 0);
+    return AffineTransform(1, std::tan(base::DegToRad(angle)), 0, 1, 0, 0);
   }
   [[nodiscard]] static constexpr AffineTransform Translation(double x,
                                                              double y) {

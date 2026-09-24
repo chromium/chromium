@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 
+#include "base/numerics/angle_conversions.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
@@ -99,7 +100,7 @@ double CSSNumericLiteralValue::ComputeDegrees() const {
     case UnitType::kDegrees:
       return num_;
     case UnitType::kRadians:
-      return Rad2deg(num_);
+      return base::RadToDeg(num_);
     case UnitType::kGradians:
       return Grad2deg(num_);
     case UnitType::kTurns:

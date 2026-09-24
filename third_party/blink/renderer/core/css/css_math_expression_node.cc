@@ -38,6 +38,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/core/css/css_color_channel_keywords.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
@@ -2074,7 +2075,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateTrigonometricFunction(
                        : CSSPrimitiveValue::UnitType::kDegrees;
   double a = operands.front()->ComputeValueInCanonicalUnit().value();
   if (is_number_output && operands.front()->Category() == kCalcNumber) {
-    a = Rad2deg(a);
+    a = base::RadToDeg(a);
   }
   std::optional<double> b = op == CSSMathOperator::kAtan2
                                 ? operands.back()->ComputeValueInCanonicalUnit()
@@ -3203,7 +3204,7 @@ double CSSMathExpressionOperation::DoubleValue() const {
     double value = operand->DoubleValue();
     if (ShouldConvertRad2DegForOperator(operator_) &&
         operand->Category() == kCalcNumber) {
-      value = Rad2deg(value);
+      value = base::RadToDeg(value);
     }
     double_values.push_back(value);
   }
@@ -3252,7 +3253,7 @@ std::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit(
     double value = maybe_value.value();
     if (ShouldConvertRad2DegForOperator(operator_) &&
         operand->Category() == kCalcNumber) {
-      value = Rad2deg(maybe_value.value());
+      value = base::RadToDeg(maybe_value.value());
     }
     double_values.push_back(value);
   }
@@ -3268,7 +3269,7 @@ double CSSMathExpressionOperation::ComputeDouble(
         CSSMathExpressionNode::ComputeDouble(operand, length_resolver);
     if (ShouldConvertRad2DegForOperator(operator_) &&
         operand->Category() == kCalcNumber) {
-      value = Rad2deg(value);
+      value = base::RadToDeg(value);
     }
     double_values.push_back(value);
   }

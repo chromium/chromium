@@ -31,6 +31,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_alpha_color_value.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -1321,7 +1322,7 @@ static void EndPointsFromAngle(float angle_deg,
 
   // angleDeg is a "bearing angle" (0deg = N, 90deg = E),
   // but tan expects 0deg = E, 90deg = N.
-  float slope = tan(Deg2rad(90 - angle_deg));
+  float slope = tan(base::DegToRad(90 - angle_deg));
 
   // We find the endpoint by computing the intersection of the line formed by
   // the slope, and a line perpendicular to it that intersects the corner.
@@ -1425,7 +1426,7 @@ std::unique_ptr<Gradient> CSSLinearGradientValue::CreateGradient(
             rise *= -1;
           }
           // Compute angle, and flip it back to "bearing angle" degrees.
-          float angle = 90 - Rad2deg(atan2(rise, run));
+          float angle = 90 - base::RadToDeg(atan2(rise, run));
           EndPointsFromAngle(angle, size, first_point, second_point,
                              gradient_type_);
         } else if (first_x_ || first_y_) {

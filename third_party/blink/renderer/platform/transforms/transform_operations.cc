@@ -25,6 +25,7 @@
 #include <array>
 
 #include "base/containers/span.h"
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
@@ -431,8 +432,8 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
     } break;
   }
 
-  double min_radians = Deg2rad(from_degrees);
-  double max_radians = Deg2rad(to_degrees);
+  double min_radians = base::DegToRad(from_degrees);
+  double max_radians = base::DegToRad(to_degrees);
   // Once we have the candidates, we now filter them down to ones that
   // actually live on the arc, rather than the entire circle.
   for (int i = 0; i < num_candidates; ++i) {
@@ -446,7 +447,7 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
       continue;
 
     gfx::Transform rotation;
-    rotation.RotateAbout(axis, Rad2deg(radians));
+    rotation.RotateAbout(axis, base::RadToDeg(radians));
     box.ExpandTo(rotation.MapPoint(point));
   }
 }

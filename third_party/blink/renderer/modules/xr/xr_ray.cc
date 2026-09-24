@@ -8,13 +8,13 @@
 #include <cmath>
 #include <utility>
 
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_ray_direction_init.h"
 #include "third_party/blink/renderer/core/geometry/dom_point_read_only.h"
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -171,7 +171,7 @@ NotShared<DOMFloat32Array> XRRay::matrix() {
       matrix.RotateAboutXAxis(180);
     } else {
       // Rotation needed - create it from axis-angle.
-      matrix.RotateAbout(axis, Rad2deg(std::acos(cos_angle)));
+      matrix.RotateAbout(axis, base::RadToDeg(std::acos(cos_angle)));
     }
 
     // Step 7: Let matrix be the result of premultiplying rotation from the left

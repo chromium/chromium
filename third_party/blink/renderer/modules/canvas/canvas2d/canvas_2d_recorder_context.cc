@@ -29,6 +29,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -1403,7 +1404,7 @@ void Canvas2DRecorderContext::rotate(double angle_in_radians) {
   }
 
   SetTransform(new_transform);
-  c->rotate(ClampTo<float>(angle_in_radians * (180.0 / kPiFloat)));
+  c->rotate(ClampTo<float>(base::RadToDeg(angle_in_radians)));
 
   if (IsTransformInvertible()) [[likely]] {
     GetModifiablePath().Transform(
@@ -1630,9 +1631,9 @@ void Canvas2DRecorderContext::DrawPathInternal(
         SkRect::MakeLTRB(arc.x - arc.radius, arc.y - arc.radius,
                          arc.x + arc.radius, arc.y + arc.radius);
     const float start_degrees =
-        ClampNonFiniteToZero(arc.start_angle_radians * 180 / kPiFloat);
+        ClampNonFiniteToZero(base::RadToDeg(arc.start_angle_radians));
     const float sweep_degrees =
-        ClampNonFiniteToZero(arc.sweep_angle_radians * 180 / kPiFloat);
+        ClampNonFiniteToZero(base::RadToDeg(arc.sweep_angle_radians));
     const bool closed = arc.closed;
     Draw<OverdrawOp::kNone>(
         /*draw_func=*/
@@ -2423,7 +2424,7 @@ CanvasGradient* Canvas2DRecorderContext::createConicGradient(double startAngle,
 
   // convert |startAngle| from radians to degree and rotate 90 degree, so
   // |startAngle| at 0 starts from x-axis.
-  a = Rad2deg(a) + 90;
+  a = base::RadToDeg(a) + 90;
 
   return MakeGarbageCollected<CanvasGradient>(a, gfx::PointF(x, y));
 }

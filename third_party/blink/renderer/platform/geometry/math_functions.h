@@ -13,8 +13,8 @@
 #include <utility>
 
 #include "base/notreached.h"
+#include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/sin_cos_degrees.h"
 
 namespace blink {
@@ -100,7 +100,7 @@ T TanDegrees(T degrees) {
     }
   }
   // Slow path for non-table cases.
-  T x = Deg2rad(degrees);
+  T x = base::DegToRad(degrees);
   return std::tan(x);
 }
 
@@ -123,23 +123,23 @@ ValueType EvaluateTrigonometricFunction(
       return TanDegrees(a);
     }
     case OperatorType::kAsin: {
-      ValueType value = Rad2deg(std::asin(a));
+      ValueType value = base::RadToDeg(std::asin(a));
       DCHECK(value >= -90 && value <= 90 || std::isnan(value));
       return value;
     }
     case OperatorType::kAcos: {
-      ValueType value = Rad2deg(std::acos(a));
+      ValueType value = base::RadToDeg(std::acos(a));
       DCHECK(value >= 0 && value <= 180 || std::isnan(value));
       return value;
     }
     case OperatorType::kAtan: {
-      ValueType value = Rad2deg(std::atan(a));
+      ValueType value = base::RadToDeg(std::atan(a));
       DCHECK(value >= -90 && value <= 90 || std::isnan(value));
       return value;
     }
     case OperatorType::kAtan2: {
       DCHECK(b.has_value());
-      ValueType value = Rad2deg(std::atan2(a, b.value()));
+      ValueType value = base::RadToDeg(std::atan2(a, b.value()));
       DCHECK(value >= -180 && value <= 180 || std::isnan(value));
       return value;
     }
