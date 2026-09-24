@@ -33,7 +33,7 @@ OmniboxEverywhereServiceFactory::OmniboxEverywhereServiceFactory()
           "OmniboxEverywhereService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              .WithGuest(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   DependsOn(feature_engagement::TrackerFactory::GetInstance());

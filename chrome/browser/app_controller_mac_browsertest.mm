@@ -285,8 +285,12 @@ bool IsReallyVisible(NSWindow* window) {
 
 size_t CountVisibleWindows() {
   size_t count = 0;
-  for (NSWindow* w in [NSApp windows])
+  for (NSWindow* w in [NSApp windows]) {
+    if ([w isKindOfClass:NSClassFromString(@"NSStatusBarWindow")]) {
+      continue;
+    }
     count = count + (IsReallyVisible(w) ? 1 : 0);
+  }
   return count;
 }
 
