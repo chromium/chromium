@@ -78,6 +78,14 @@ NetworkRestrictionsNavigationThrottle::MaybeApplyNetworkRestrictions(
     return NetworkRestrictionsResult::kProceed;
   }
 
+  // If at this point in the navigation, we haven't selected a RFH to commit to,
+  // it's likely because the navigation never triggers a document render at all,
+  // such as for HTTP 204/205 and downloads. So just allow the navigation to
+  // proceed.
+  if (navigation_request.GetRenderFrameHost() == nullptr) {
+    return NetworkRestrictionsResult::kProceed;
+  }
+
   // Defer the commit until the network restrictions have been applied.
   network::ConnectionAllowlists allowlists =
       policy_container_policies.connection_allowlists;
