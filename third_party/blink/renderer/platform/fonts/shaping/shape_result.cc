@@ -93,6 +93,7 @@ struct SameSizeAsRunInfo {
    public:
     HeapVector<int> glyphs;
     Member<void*> rare_data;
+    Member<void*> compact;
   } glyph_data;
   Member<void*> font_data;
   int integers[5];

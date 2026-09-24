@@ -249,14 +249,29 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
   // Common signatures with RunInfoPart, to templatize algorithms.
   const ShapeResultRun* GetRunInfo() const { return this; }
-  const GlyphDataRange GetGlyphDataRange() const {
-    return GlyphDataRange{*this};
-  }
+  GlyphDataRange GetGlyphDataRange() const { return GlyphDataRange{*this}; }
   unsigned OffsetToRunStartIndex() const { return 0; }
 
   // Collection of |HarfBuzzRunGlyphData| with optional glyph offset
   class GlyphDataCollection final {
     DISALLOW_NEW();
+
+   private:
+    // Compact run: 16-bit glyph ids with one shared advance.
+    struct CompactGlyphData final : public GarbageCollected<CompactGlyphData> {
+      CompactGlyphData(TextRunLayoutUnit shared_advance, unsigned num_glyphs)
+          : advance(shared_advance), glyphs(num_glyphs) {}
+      void Trace(Visitor* visitor) const { visitor->Trace(glyphs); }
+
+#if DCHECK_IS_ON()
+      bool operator==(const CompactGlyphData& other) const {
+        return advance == other.advance && glyphs == other.glyphs;
+      }
+#endif
+
+      TextRunLayoutUnit advance;
+      HeapVector<uint16_t> glyphs;
+    };
 
     class RareData final : public GarbageCollected<RareData> {
      public:
@@ -275,7 +290,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
    public:
     explicit GlyphDataCollection(unsigned num_glyphs) : data_(num_glyphs) {}
 
-    GlyphDataCollection(const GlyphDataCollection& other) : data_(other.data_) {
+    // Offsets are mutable; compact storage is immutable and shared.
+    GlyphDataCollection(const GlyphDataCollection& other)
+        : data_(other.data_), compact_(other.compact_) {
       // Always deep copy offsets, as they are generally modified after copying.
       if (other.HasNonZeroOffsets()) {
         EnsureRareData();
@@ -291,8 +308,33 @@ struct PLATFORM_EXPORT ShapeResultRun final
       }
     }
 
-    unsigned size() const { return data_.size(); }
-    bool IsEmpty() const { return size() == 0; }
+    // Compact storage implies identity indices and safe breaks.
+    bool IsCompact() const { return CompactData() != nullptr; }
+
+    unsigned size() const {
+      const CompactGlyphData* compact = CompactData();
+      return compact ? compact->glyphs.size() : data_.size();
+    }
+    bool IsEmpty() const { return data_.empty() && !IsCompact(); }
+
+    TextRunLayoutUnit CompactAdvance() const {
+      CHECK(IsCompact());
+      return CompactData()->advance;
+    }
+
+    base::span<const uint16_t> CompactGlyphs(unsigned start,
+                                             unsigned count) const {
+      CHECK(IsCompact());
+      return base::span<const uint16_t>(CompactData()->glyphs)
+          .subspan(start, count);
+    }
+
+    HarfBuzzRunGlyphData GlyphAt(unsigned index) const {
+      if (IsCompact()) [[unlikely]] {
+        return GetCompact(index);
+      }
+      return data_[index];
+    }
 
     const HarfBuzzRunGlyphData& operator[](unsigned index) const {
       return data_[index];
@@ -322,9 +364,16 @@ struct PLATFORM_EXPORT ShapeResultRun final
     }
 
     size_t ByteSize() const {
-      return sizeof(*this) + size() * sizeof(HarfBuzzRunGlyphData) +
-             sizeof(GlyphOffset) *
-                 (HasNonZeroOffsets() ? OffsetsVector()->size() : 0u);
+      size_t bytes =
+          sizeof(*this) + data_.size() * sizeof(HarfBuzzRunGlyphData);
+      if (HasNonZeroOffsets()) {
+        bytes += OffsetsVector()->size() * sizeof(GlyphOffset);
+      }
+      if (const CompactGlyphData* compact = CompactData()) {
+        bytes += sizeof(CompactGlyphData) +
+                 compact->glyphs.size() * sizeof(uint16_t);
+      }
+      return bytes;
     }
 
     // The `span` of `GlyphOffset` if `HasNonZeroOffsets()`, or an empty span.
@@ -424,18 +473,43 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
 #if DCHECK_IS_ON()
     bool operator==(const GlyphDataCollection& other) const {
-      return data_ == other.data_ &&
-             base::ValuesEquivalent(OffsetsVector(), other.OffsetsVector()) &&
-             base::ValuesEquivalent(Graphemes(), other.Graphemes());
+      if (!base::ValuesEquivalent(OffsetsVector(), other.OffsetsVector()) ||
+          !base::ValuesEquivalent(Graphemes(), other.Graphemes())) {
+        return false;
+      }
+      if (IsCompact() && other.IsCompact()) {
+        return base::ValuesEquivalent(CompactData(), other.CompactData());
+      }
+      const unsigned num_glyphs = size();
+      if (num_glyphs != other.size()) {
+        return false;
+      }
+      for (unsigned i = 0; i < num_glyphs; ++i) {
+        if (!(GlyphAt(i) == other.GlyphAt(i))) {
+          return false;
+        }
+      }
+      return true;
     }
 #endif
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(data_);
       visitor->Trace(rare_data_);
+      visitor->Trace(compact_);
     }
 
    private:
+    FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                             CompactCopyMaterializesIndependently);
+
+    NOINLINE HarfBuzzRunGlyphData GetCompact(unsigned index) const {
+      CHECK(IsCompact());
+      const CompactGlyphData& compact = *CompactData();
+      return HarfBuzzRunGlyphData(compact.glyphs[index], index,
+                                  SafeToBreak::kSafe, compact.advance);
+    }
+
     void AllocateOffsets() {
       DCHECK_GE(size(), 1u);
       DCHECK(!HasNonZeroOffsets());
@@ -463,6 +537,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
       rare_data_->offsets_ = nullptr;
       ClearRareDataIfEmpty();
     }
+    const CompactGlyphData* CompactData() const { return compact_.Get(); }
+    void ClearCompact() { compact_ = nullptr; }
     void EnsureRareData() {
       if (!rare_data_) {
         rare_data_ = MakeGarbageCollected<RareData>();
@@ -477,6 +553,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
     HeapVector<HarfBuzzRunGlyphData> data_;
     // Most runs need neither offsets nor grapheme data.
     Member<RareData> rare_data_;
+    Member<CompactGlyphData> compact_;
   };
 
 #if DCHECK_IS_ON()
@@ -505,6 +582,10 @@ struct PLATFORM_EXPORT ShapeResultRun final
   }
 
   void CheckConsistency() const {
+    if (glyph_data_.IsCompact()) {
+      CHECK_LE(glyph_data_.size(), num_characters_);
+      return;
+    }
     for (const HarfBuzzRunGlyphData& glyph : glyph_data_.NonCompactGlyphs()) {
       DCHECK_LT(glyph.character_index, num_characters_);
     }
@@ -523,6 +604,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
   FRIEND_TEST_ALL_PREFIXES(GlyphDataRangeTest, Data);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultCursorTest, Ltr);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultCursorTest, Rtl);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           FixedPitchDoesNotGuaranteeConstantAdvances);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataCopyConstructor);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataCopyFromRange);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataReverse);
@@ -530,6 +613,31 @@ struct PLATFORM_EXPORT ShapeResultRun final
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataAddOffsetWidthAt);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataSetAt);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataShrink);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactHitTestingUsesFixedPointPositions);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactHitTestingAfterMaterialization);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, CompactEmptyGlyphRangeKeepsRun);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactRejectsOversizedInputBeforeReading);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactReaderMatchesGlyphAtForSubRange);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           RangeSurvivesRepresentationChanges);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           NestedCompactRangesMatchFullStorage);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactEqualityDoesNotMaterialize);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactCopyMaterializesIndependently);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactCharacterIndexCorrectsFloatRounding);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactReadShortcutsDoNotMaterialize);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactTrailingCharactersMatchFullStorage);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactZeroOffsetDoesNotMaterialize);
 
   GlyphDataCollection glyph_data_;
   Member<SimpleFontData> font_data_;

@@ -19,9 +19,9 @@ inline bool IsSafeToBreak(SafeToBreak value) {
   return value == SafeToBreak::kSafe;
 }
 
-// Because glyph offsets are often zero, particularly for Latin runs, we hold it
-// in |ShapeResultRun::GlyphDataCollection::offsets_| for reducing memory
-// usage.
+// Because glyph offsets are often zero, particularly for Latin runs,
+// ShapeResultRun::GlyphDataCollection allocates them separately only when
+// needed.
 struct HarfBuzzRunGlyphData {
   DISALLOW_NEW();
 
@@ -62,6 +62,9 @@ struct HarfBuzzRunGlyphData {
   void AddAdvance(float value) {
     advance += TextRunLayoutUnit::FromFloatRound(value);
   }
+
+  friend bool operator==(const HarfBuzzRunGlyphData&,
+                         const HarfBuzzRunGlyphData&) = default;
 
   unsigned glyph : 16;
   // The index of the character this glyph is for. To use as an index of

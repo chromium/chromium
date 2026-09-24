@@ -11,7 +11,7 @@
 
 namespace blink {
 
-// An iterator for `ShapeResultRun::offsets_`.
+// An iterator for a ShapeResultRun's optional glyph offsets.
 //
 // Since it could be empty if there are no glyph offsets in the run, this
 // iterator makes iterating offsets to be no-operations in such case.

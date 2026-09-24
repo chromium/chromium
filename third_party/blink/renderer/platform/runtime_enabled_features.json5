@@ -4288,6 +4288,10 @@
       base_feature: "none",
       custom_enable_check: "CanEnableMojoJSTest",
     },
+    // Optimization for monospace text.
+    {
+      name: "MonospaceGlyphCompaction",
+    },
     // Move the selection to the last position in the list item. See
     // https://crbug.com/331841851
     {
