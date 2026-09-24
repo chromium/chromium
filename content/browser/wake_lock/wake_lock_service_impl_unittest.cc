@@ -114,4 +114,31 @@ TEST_F(WakeLockServiceImplTest, DisallowedByPermissionsPolicy) {
   EXPECT_TRUE(service.is_connected());
 }
 
+TEST_F(WakeLockServiceImplTest,
+       VideoPlaybackAllowedWhenDisallowedByPermissionsPolicy) {
+  // Navigate with permissions policy disallowing screen-wake-lock (e.g., as in
+  // a cross-origin iframe or Picture-in-Picture window).
+  network::ParsedPermissionsPolicy permissions_policy(1);
+  permissions_policy[0].feature =
+      network::mojom::PermissionsPolicyFeature::kScreenWakeLock;
+
+  auto navigation_simulator =
+      NavigationSimulator::CreateRendererInitiated(GURL(kTestUrl), main_rfh());
+  navigation_simulator->SetPermissionsPolicyHeader(permissions_policy);
+  navigation_simulator->Commit();
+
+  mojo::Remote<blink::mojom::WakeLockService> service = BindWakeLockService();
+
+  mojo::Remote<device::mojom::WakeLock> wake_lock;
+  service->GetWakeLock(device::mojom::WakeLockType::kPreventDisplaySleep,
+                       device::mojom::WakeLockReason::kVideoPlayback,
+                       "Video Wake Lock",
+                       wake_lock.BindNewPipeAndPassReceiver());
+
+  service.FlushForTesting();
+  EXPECT_TRUE(service.is_connected());
+  wake_lock.FlushForTesting();
+  EXPECT_TRUE(wake_lock.is_connected());
+}
+
 }  // namespace content
