@@ -67,6 +67,7 @@ CallerApp CallerAppFromAppID(NSString* caller_app_id) {
 
 }  // namespace
 
+// LINT.IfChange(IsCallerAppFirstParty)
 bool IsCallerAppFirstParty(MobileSessionCallerApp caller_app) {
   switch (caller_app) {
     case CALLER_APP_GOOGLE_SEARCH:
@@ -90,6 +91,7 @@ bool IsCallerAppFirstParty(MobileSessionCallerApp caller_app) {
       return false;
   }
 }
+// LINT.ThenChange(//ios/chrome/app/startup/app_launch_metrics.h:MobileSessionCallerApp)
 
 bool IsCallerAppAllowListedForAISummarization(NSString* caller_app_id) {
   if (!IsAppSwitcherAISummarizationEnabled()) {
