@@ -6,10 +6,6 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.when;
-
 import static org.chromium.ui.test.util.ViewUtils.waitForStableView;
 import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
@@ -24,11 +20,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -41,7 +35,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -87,8 +80,6 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                     .setBugComponent(RenderTestRule.Component.ENTERPRISE)
                     .build();
 
-    @Mock private SigninManager mSigninManager;
-
     private @Nullable EnterpriseSignalsDisclaimerCoordinator mCoordinator;
     private @Nullable WindowAndroid mWindowAndroid;
     private @Nullable ViewGroup mContainer;
@@ -126,16 +117,6 @@ public class EnterpriseSignalsDisclaimerRenderTest {
         mActivityTestRule.launchActivity(null);
         mAccountManagerTestRule.addAccount(mAccountInfo);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(mAccountInfo);
-
-        when(mSigninManager.getIdentityManager())
-                .thenReturn(mAccountManagerTestRule.getIdentityManager());
-        doAnswer(
-                        invocation -> {
-                            ((Callback<Boolean>) invocation.getArgument(1)).onResult(true);
-                            return null;
-                        })
-                .when(mSigninManager)
-                .isAccountManaged(any(), any());
     }
 
     @After
@@ -195,11 +176,12 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                                             activity,
                                             controller,
                                             activity.getModalDialogManager(),
-                                            mSigninManager,
+                                            mAccountManagerTestRule.getIdentityManager(),
                                             mAccountInfo,
                                             (url) -> {},
                                             () -> {},
-                                            new MetricsHelper());
+                                            new MetricsHelper(),
+                                            (dismissalCause) -> {});
                             mCoordinator.show(MetricsHelper.ShownOn.STARTUP);
                             return controller;
                         });
@@ -229,11 +211,12 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                                     activity,
                                     createBottomSheetController(activity, mContainer),
                                     activity.getModalDialogManager(),
-                                    mSigninManager,
+                                    mAccountManagerTestRule.getIdentityManager(),
                                     mAccountInfo,
                                     (url) -> {},
                                     () -> {},
-                                    new MetricsHelper());
+                                    new MetricsHelper(),
+                                    (dismissalCause) -> {});
                     mCoordinator.show(MetricsHelper.ShownOn.STARTUP);
                 });
         CriteriaHelper.pollUiThread(() -> activity.getModalDialogManager().isShowing());

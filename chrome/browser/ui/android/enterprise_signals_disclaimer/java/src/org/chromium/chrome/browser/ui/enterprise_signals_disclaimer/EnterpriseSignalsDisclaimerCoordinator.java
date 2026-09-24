@@ -9,10 +9,10 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -51,6 +51,7 @@ public class EnterpriseSignalsDisclaimerCoordinator
     private @Nullable Runnable mOnDestroyCallback;
     private long mShownAtUptimeMillis = UNSET_TIME;
     private @Nullable @MetricsHelper.ShownOn Integer mShownOn;
+    private @Nullable Callback<@DismissalCause Integer> mOnDismissedCallback;
 
     /**
      * Constructs an {@link EnterpriseSignalsDisclaimerCoordinator}.
@@ -66,20 +67,23 @@ public class EnterpriseSignalsDisclaimerCoordinator
      * @param delegate The {@link Delegate} for embedder interactions.
      * @param onDestroyCallback Callback to be invoked when the coordinator is destroyed.
      * @param metricsHelper The {@link MetricsHelper} for recording interaction metrics.
+     * @param onDismissedCallback Callback to be invoked with the {@link DismissalCause} when the
+     *     disclaimer is dismissed.
      */
     public EnterpriseSignalsDisclaimerCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
-            SigninManager signinManager,
+            IdentityManager identityManager,
             CoreAccountInfo account,
             Delegate delegate,
             Runnable onDestroyCallback,
-            MetricsHelper metricsHelper) {
+            MetricsHelper metricsHelper,
+            Callback<@DismissalCause Integer> onDismissedCallback) {
         mOnDestroyCallback = onDestroyCallback;
         mDelegate = delegate;
         mMetricsHelper = metricsHelper;
-        final IdentityManager identityManager = signinManager.getIdentityManager();
+        mOnDismissedCallback = onDismissedCallback;
 
         // For the large form factors a modal dialog will be displayed, while smaller screens will
         // get a bottom sheet.
@@ -100,7 +104,7 @@ public class EnterpriseSignalsDisclaimerCoordinator
 
         mMediator =
                 new EnterpriseSignalsDisclaimerMediator(
-                        context, identityManager, account, /* delegate= */ this, signinManager);
+                        context, identityManager, account, /* delegate= */ this);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), mView, EnterpriseSignalsDisclaimerViewBinder::bind);
@@ -125,12 +129,13 @@ public class EnterpriseSignalsDisclaimerCoordinator
 
     private void onDialogDismissed(@DismissalCause int dismissalCause) {
         mMetricsHelper.recordResult(dismissalCause);
-        if (shouldSignOutBasedOnDismissalCause(dismissalCause)) {
-            mMediator.signOutUser();
-        }
         if (mShownAtUptimeMillis != UNSET_TIME) {
             MetricsHelper.recordTimeToUserAction(TimeUtils.uptimeMillis() - mShownAtUptimeMillis);
             mShownAtUptimeMillis = UNSET_TIME;
+        }
+        if (mOnDismissedCallback != null) {
+            mOnDismissedCallback.onResult(dismissalCause);
+            mOnDismissedCallback = null;
         }
         destroy();
     }
@@ -181,12 +186,4 @@ public class EnterpriseSignalsDisclaimerCoordinator
 
     @Override
     public void onViewDetachedFromWindow(View view) {}
-
-    private static boolean shouldSignOutBasedOnDismissalCause(@DismissalCause int dismissalCause) {
-        // If the user taps sign out explicitly, the Mediator will already start the sign out flow.
-        return dismissalCause == DismissalCause.DISMISSED_BY_BACK_PRESS
-                || dismissalCause == DismissalCause.DISMISSED_BY_SWIPE_DOWN
-                || dismissalCause == DismissalCause.DISMISSED_BY_TAP_OUTSIDE
-                || dismissalCause == DismissalCause.DISMISSED_BY_CLOSE_BUTTON;
-    }
 }

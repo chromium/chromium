@@ -10,10 +10,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -53,7 +51,6 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
     private final ProfileDataCache mProfileDataCache;
     private final CoreAccountInfo mAccount;
     private final Delegate mDelegate;
-    private final SigninManager mSigninManager;
     private boolean mIsDecisionHandled;
 
     /**
@@ -62,16 +59,13 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
      * @param account The account the disclaimer is shown for. This account is not required to be
      *     signed in yet.
      * @param delegate The {@link Delegate} handling the user's decision.
-     * @param signinManager The {@link SigninManager} used to sign the user out on decline.
      */
     EnterpriseSignalsDisclaimerMediator(
             Context context,
             IdentityManager identityManager,
             CoreAccountInfo account,
-            EnterpriseSignalsDisclaimerMediator.Delegate delegate,
-            SigninManager signinManager) {
+            EnterpriseSignalsDisclaimerMediator.Delegate delegate) {
         mDelegate = delegate;
-        mSigninManager = signinManager;
         mAccount = account;
 
         // Puts the badge in the bottom right corner of the profile picture.
@@ -152,34 +146,14 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
     private void onAcceptButtonClicked() {
         if (mIsDecisionHandled) return;
         mIsDecisionHandled = true;
-
-        assert !mAccount.getGaiaId().toString().isEmpty();
-        EnterpriseSignalsDisclaimerBridge.setAccountAcknowledgedSignalsDisclaimer(
-                mAccount.getGaiaId());
-
         mDelegate.onAccept();
     }
 
     /** Called when the user explicitly clicks the Cancel button in the UI. */
     private void onCancelButtonClicked() {
         if (mIsDecisionHandled) return;
-
-        signOutUser();
-        mDelegate.onDecline();
-    }
-
-    /** Performs sign-out when the user declined/dismissed the disclaimer. */
-    void signOutUser() {
-        if (mIsDecisionHandled) return;
         mIsDecisionHandled = true;
-
-        mSigninManager.runAfterOperationInProgress(
-                () -> {
-                    if (mSigninManager.isSignOutAllowed()) {
-                        mSigninManager.signOut(
-                                SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER);
-                    }
-                });
+        mDelegate.onDecline();
     }
 
     /** Implements {@link ProfileDataCache.Observer}. */

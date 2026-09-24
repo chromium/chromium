@@ -5,13 +5,10 @@
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -32,11 +29,9 @@ import org.robolectric.annotation.GraphicsMode;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -52,20 +47,10 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
 
     @Mock private EnterpriseSignalsDisclaimerBridge.Natives mBridgeNativesMock;
     @Mock private EnterpriseSignalsDisclaimerMediator.Delegate mDelegate;
-    @Mock private SigninManager mSigninManager;
 
     @Before
     public void setUp() {
         EnterpriseSignalsDisclaimerBridgeJni.setInstanceForTesting(mBridgeNativesMock);
-
-        doAnswer(
-                        invocation -> {
-                            Runnable runnable = invocation.getArgument(0);
-                            runnable.run();
-                            return null;
-                        })
-                .when(mSigninManager)
-                .runAfterOperationInProgress(any());
     }
 
     @After
@@ -79,12 +64,11 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
                 ContextUtils.getApplicationContext(),
                 mAccountManagerTestRule.getIdentityManager(),
                 accountInfo,
-                mDelegate,
-                mSigninManager);
+                mDelegate);
     }
 
     @Test
-    public void primaryAccount_profilePicture() {
+    public void account_profilePicture() {
         EnterpriseSignalsDisclaimerMediator mediator =
                 createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
         PropertyModel model = mediator.getModel();
@@ -130,7 +114,7 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
     }
 
     @Test
-    public void onAcceptButtonClicked_notifiesDelegateAndAcknowledgesDisclaimer() {
+    public void onAcceptButtonClicked_notifiesDelegate() {
         EnterpriseSignalsDisclaimerMediator mediator =
                 createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
         PropertyModel model = mediator.getModel();
@@ -138,14 +122,12 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         model.get(EnterpriseSignalsDisclaimerProperties.ON_ACCEPT_CLICKED).onClick(null);
 
         verify(mDelegate).onAccept();
-        verify(mBridgeNativesMock)
-                .setAccountAcknowledgedSignalsDisclaimer(
-                        eq(TestAccounts.MANAGED_ACCOUNT.getGaiaId()));
+        // Acknowledging the disclaimer is the embedder's responsibility, not the mediator's.
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 
     @Test
-    public void onCancelButtonClicked_notifiesDelegateAndSignsOutUser() {
-        when(mSigninManager.isSignOutAllowed()).thenReturn(true);
+    public void onCancelButtonClicked_notifiesDelegate() {
         EnterpriseSignalsDisclaimerMediator mediator =
                 createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
         PropertyModel model = mediator.getModel();
@@ -153,33 +135,6 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         model.get(EnterpriseSignalsDisclaimerProperties.ON_CANCEL_CLICKED).onClick(null);
 
         verify(mDelegate).onDecline();
-        verify(mSigninManager)
-                .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
-    }
-
-    @Test
-    public void signOutUser_signOutAllowed_signsOut() {
-        when(mSigninManager.isSignOutAllowed()).thenReturn(true);
-        EnterpriseSignalsDisclaimerMediator mediator =
-                createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
-
-        mediator.signOutUser();
-
-        verify(mSigninManager)
-                .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
-    }
-
-    @Test
-    public void signOutUser_signOutNotAllowed_doesNotSignOut() {
-        when(mSigninManager.isSignOutAllowed()).thenReturn(false);
-        EnterpriseSignalsDisclaimerMediator mediator =
-                createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
-
-        mediator.signOutUser();
-
-        verify(mSigninManager, never()).signOut(anyInt());
         verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 
@@ -194,14 +149,10 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         onAccept.onClick(null);
 
         verify(mDelegate, times(1)).onAccept();
-        verify(mBridgeNativesMock, times(1))
-                .setAccountAcknowledgedSignalsDisclaimer(
-                        eq(TestAccounts.MANAGED_ACCOUNT.getGaiaId()));
     }
 
     @Test
-    public void onCancelButtonClicked_calledTwice_signsOutAndNotifiesDelegateOnlyOnce() {
-        when(mSigninManager.isSignOutAllowed()).thenReturn(true);
+    public void onCancelButtonClicked_calledTwice_notifiesDelegateOnlyOnce() {
         EnterpriseSignalsDisclaimerMediator mediator =
                 createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
         PropertyModel model = mediator.getModel();
@@ -211,14 +162,10 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         onCancel.onClick(null);
 
         verify(mDelegate, times(1)).onDecline();
-        verify(mSigninManager, times(1))
-                .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 
     @Test
     public void onAcceptButtonClicked_thenCancelButtonClicked_ignoresSecondClick() {
-        when(mSigninManager.isSignOutAllowed()).thenReturn(true);
         EnterpriseSignalsDisclaimerMediator mediator =
                 createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
         PropertyModel model = mediator.getModel();
@@ -228,15 +175,10 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
 
         verify(mDelegate, times(1)).onAccept();
         verify(mDelegate, never()).onDecline();
-        verify(mSigninManager, never()).signOut(anyInt());
-        verify(mBridgeNativesMock, times(1))
-                .setAccountAcknowledgedSignalsDisclaimer(
-                        eq(TestAccounts.MANAGED_ACCOUNT.getGaiaId()));
     }
 
     @Test
     public void onCancelButtonClicked_thenAcceptButtonClicked_ignoresSecondClick() {
-        when(mSigninManager.isSignOutAllowed()).thenReturn(true);
         EnterpriseSignalsDisclaimerMediator mediator =
                 createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
         PropertyModel model = mediator.getModel();
@@ -246,69 +188,5 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
 
         verify(mDelegate, times(1)).onDecline();
         verify(mDelegate, never()).onAccept();
-        verify(mSigninManager, times(1))
-                .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
-    }
-
-    @Test
-    public void signOutUser_calledTwice_signsOutOnlyOnce() {
-        when(mSigninManager.isSignOutAllowed()).thenReturn(true);
-        EnterpriseSignalsDisclaimerMediator mediator =
-                createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
-
-        mediator.signOutUser();
-        mediator.signOutUser();
-
-        verify(mSigninManager, times(1))
-                .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
-    }
-
-    @Test
-    public void signOutUser_afterAcceptClicked_doesNotSignOut() {
-        when(mSigninManager.isSignOutAllowed()).thenReturn(true);
-        EnterpriseSignalsDisclaimerMediator mediator =
-                createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
-        PropertyModel model = mediator.getModel();
-
-        model.get(EnterpriseSignalsDisclaimerProperties.ON_ACCEPT_CLICKED).onClick(null);
-        mediator.signOutUser();
-
-        verify(mDelegate, times(1)).onAccept();
-        verify(mSigninManager, never()).signOut(anyInt());
-        verify(mBridgeNativesMock, times(1))
-                .setAccountAcknowledgedSignalsDisclaimer(
-                        eq(TestAccounts.MANAGED_ACCOUNT.getGaiaId()));
-    }
-
-    @Test
-    public void onAcceptButtonClicked_afterSignOutUser_doesNotAcknowledgeDisclaimer() {
-        when(mSigninManager.isSignOutAllowed()).thenReturn(true);
-        EnterpriseSignalsDisclaimerMediator mediator =
-                createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
-        PropertyModel model = mediator.getModel();
-
-        mediator.signOutUser();
-        model.get(EnterpriseSignalsDisclaimerProperties.ON_ACCEPT_CLICKED).onClick(null);
-
-        verify(mSigninManager, times(1))
-                .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
-        verify(mDelegate, never()).onAccept();
-    }
-
-    @Test
-    public void onCancelButtonClicked_afterSignOutUser_doesNotDeclineAgain() {
-        when(mSigninManager.isSignOutAllowed()).thenReturn(true);
-        EnterpriseSignalsDisclaimerMediator mediator =
-                createMediatorForAccount(TestAccounts.MANAGED_ACCOUNT);
-        PropertyModel model = mediator.getModel();
-
-        mediator.signOutUser();
-        model.get(EnterpriseSignalsDisclaimerProperties.ON_CANCEL_CLICKED).onClick(null);
-
-        verify(mSigninManager, times(1))
-                .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
-        verify(mDelegate, never()).onDecline();
     }
 }

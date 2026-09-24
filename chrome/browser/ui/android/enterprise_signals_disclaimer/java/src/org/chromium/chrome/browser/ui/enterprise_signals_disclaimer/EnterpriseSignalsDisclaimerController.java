@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -16,10 +17,12 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -53,11 +56,12 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
                 AppCompatActivity activity,
                 BottomSheetController bottomSheetController,
                 ModalDialogManager modalDialogManager,
-                SigninManager signinManager,
+                IdentityManager identityManager,
                 CoreAccountInfo account,
                 EnterpriseSignalsDisclaimerCoordinator.Delegate delegate,
                 Runnable onDestroyCallback,
-                MetricsHelper metricsHelper);
+                MetricsHelper metricsHelper,
+                Callback<@DismissalCause Integer> onDismissedCallback);
     }
 
     /**
@@ -190,11 +194,12 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
                         mActivity,
                         mBottomSheetController,
                         mModalDialogManager,
-                        mSigninManager,
+                        mSigninManager.getIdentityManager(),
                         primaryAccountInfo,
                         mDelegate,
                         this::onCoordinatorDestroyed,
-                        mMetricsHelper);
+                        mMetricsHelper,
+                        dismissalCause -> onDismissed(dismissalCause, primaryAccountInfo));
         // If the dialog is not shown immediately it will be queued by the controller and shown
         // whenever possible.
         MetricsHelper.recordShownRequested(shownOn);
@@ -229,5 +234,29 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
 
     private void onCoordinatorDestroyed() {
         mCoordinator = null;
+    }
+
+    private void onDismissed(@DismissalCause int dismissalCause, CoreAccountInfo account) {
+        if (dismissalCause == DismissalCause.TAPPED_ACCEPT) {
+            assert !account.getGaiaId().toString().isEmpty();
+            EnterpriseSignalsDisclaimerBridge.setAccountAcknowledgedSignalsDisclaimer(
+                    account.getGaiaId());
+        } else if (shouldSignOutBasedOnDismissalCause(dismissalCause)) {
+            mSigninManager.runAfterOperationInProgress(
+                    () -> {
+                        if (mSigninManager.isSignOutAllowed()) {
+                            mSigninManager.signOut(
+                                    SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER);
+                        }
+                    });
+        }
+    }
+
+    private static boolean shouldSignOutBasedOnDismissalCause(@DismissalCause int dismissalCause) {
+        return dismissalCause == DismissalCause.TAPPED_SIGN_OUT
+                || dismissalCause == DismissalCause.DISMISSED_BY_BACK_PRESS
+                || dismissalCause == DismissalCause.DISMISSED_BY_SWIPE_DOWN
+                || dismissalCause == DismissalCause.DISMISSED_BY_TAP_OUTSIDE
+                || dismissalCause == DismissalCause.DISMISSED_BY_CLOSE_BUTTON;
     }
 }
