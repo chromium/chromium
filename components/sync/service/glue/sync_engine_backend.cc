@@ -30,7 +30,6 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/events/protocol_event.h"
-#include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_manager.h"
 #include "components/sync/engine/sync_manager_factory.h"
@@ -308,10 +307,6 @@ void SyncEngineBackend::DoInitialize(
   sync_manager_->AddObserver(this);
 
   SyncManager::InitArgs args;
-  args.service_url = params.service_url;
-  args.enable_local_sync_backend = params.enable_local_sync_backend;
-  args.local_sync_backend_folder = params.local_sync_backend_folder;
-  args.post_factory = std::move(params.http_factory_getter).Run();
   args.encryption_observer_proxy = std::move(params.encryption_observer_proxy);
   args.extensions_activity = params.extensions_activity.get();
   args.engine_components_factory = std::move(params.engine_components_factory);
@@ -321,10 +316,10 @@ void SyncEngineBackend::DoInitialize(
   args.cache_guid = restored_local_transport_data.cache_guid;
   args.birthday = restored_local_transport_data.birthday;
   args.bag_of_chips = restored_local_transport_data.bag_of_chips;
-  // Local sync communicates with a loopback server on disk and does not need
-  // an access token.
+  // Local sync communicates with a loopback server on disk and does not have
+  // an authenticated account or need an access token.
   if (base::FeatureList::IsEnabled(kSyncUsePropagatedAccessToken) &&
-      !params.enable_local_sync_backend) {
+      !authenticated_gaia_id_.empty()) {
     args.sync_access_token_fetcher = this;
   }
   args.account_email = params.authenticated_account_info.email;

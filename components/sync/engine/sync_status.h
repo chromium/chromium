@@ -77,9 +77,6 @@ struct SyncStatus {
 
   // Time of next retry if sync scheduler is throttled or in backoff.
   base::Time retry_time;
-
-  // The location of the local sync backend db file if local sync is enabled.
-  std::string local_sync_folder;
 };
 
 }  // namespace syncer

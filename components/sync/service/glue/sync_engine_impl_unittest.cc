@@ -34,7 +34,6 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
-#include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/engine/sync_manager_factory.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -44,6 +43,7 @@
 #include "components/sync/test/fake_sync_manager.h"
 #include "components/sync/test/mock_sync_invalidations_service.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,12 +147,6 @@ class MockActiveDevicesProvider : public ActiveDevicesProvider {
               (const override));
 };
 
-std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory() {
-  return std::make_unique<HttpBridgeFactory>(
-      /*user_agent=*/"",
-      /*pending_url_loader_factory=*/nullptr);
-}
-
 class SyncEngineImplTest : public testing::Test {
  protected:
   SyncEngineImplTest() = default;
@@ -221,7 +215,6 @@ class SyncEngineImplTest : public testing::Test {
                          const GaiaId& gaia_id = kTestGaiaId) {
     SyncEngine::InitParams params;
     params.host = &mock_host_;
-    params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);
     params.authenticated_account_info.gaia = gaia_id;
     params.authenticated_account_info.account_id =
         CoreAccountId::FromGaiaId(gaia_id);

@@ -636,23 +636,24 @@ void SyncServiceImpl::TryStartImpl(
   params.encryption_observer_proxy = crypto_.GetEncryptionObserverProxy();
 
   params.extensions_activity = sync_client_->GetExtensionsActivity();
-  params.service_url = sync_service_url_;
-  params.http_factory_getter = base::BindOnce(
-      create_http_post_provider_factory_override_for_test_.value_or(
-          create_http_post_provider_factory_),
-      MakeUserAgentForSync(channel_), url_loader_factory_->Clone());
   params.authenticated_account_info = authenticated_account_info;
 
   params.sync_manager_factory =
       std::make_unique<SyncManagerFactory>(network_connection_tracker_);
   if (sync_prefs_.IsLocalSyncEnabled()) {
-    params.enable_local_sync_backend = true;
-    params.local_sync_backend_folder =
-        sync_client_->GetLocalSyncBackendFolder();
+    params.engine_components_factory =
+        EngineComponentsFactoryImpl::CreateForLocalSync(
+            EngineSwitchesFromCommandLine(),
+            sync_client_->GetLocalSyncBackendFolder());
+  } else {
+    params.engine_components_factory =
+        EngineComponentsFactoryImpl::CreateForServerSync(
+            EngineSwitchesFromCommandLine(), sync_service_url_,
+            base::BindOnce(
+                create_http_post_provider_factory_override_for_test_.value_or(
+                    create_http_post_provider_factory_),
+                MakeUserAgentForSync(channel_), url_loader_factory_->Clone()));
   }
-  params.engine_components_factory =
-      std::make_unique<EngineComponentsFactoryImpl>(
-          EngineSwitchesFromCommandLine());
 
   params.encryptor = std::move(encryptors[1]);
 
@@ -2419,6 +2420,11 @@ void SyncServiceImpl::RecordHistoryOptInStateOnSigninHistograms(
 const GURL& SyncServiceImpl::GetSyncServiceUrlForDebugging() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_service_url_;
+}
+
+base::FilePath SyncServiceImpl::GetLocalSyncBackendFolderForDebugging() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return sync_client_->GetLocalSyncBackendFolder();
 }
 
 std::string SyncServiceImpl::GetUnrecoverableErrorMessageForDebugging() const {

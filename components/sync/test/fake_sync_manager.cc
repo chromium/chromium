@@ -16,10 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/engine_components_factory.h"
-#include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/test/fake_data_type_connector.h"
-
-class GURL;
 
 namespace syncer {
 

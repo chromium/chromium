@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "components/sync/engine/cycle/sync_cycle_context.h"
+#include "components/sync/test/fake_connection_manager.h"
 #include "components/sync/test/fake_sync_scheduler.h"
 
 namespace syncer {
@@ -14,8 +15,7 @@ namespace syncer {
 std::unique_ptr<SyncScheduler> TestEngineComponentsFactory::BuildScheduler(
     const std::string& name,
     SyncCycleContext* context,
-    CancelationSignal* cancelation_signal,
-    bool ignore_auth_credentials) {
+    CancelationSignal* cancelation_signal) {
   return std::unique_ptr<SyncScheduler>(new FakeSyncScheduler());
 }
 
@@ -37,6 +37,13 @@ std::unique_ptr<SyncCycleContext> TestEngineComponentsFactory::BuildContext(
       connection_manager, monitor, empty_listeners, debug_info_getter,
       data_type_registry, cache_guid, store_birthday, bag_of_chips,
       poll_interval, account_email, sync_access_token_fetcher);
+}
+
+std::unique_ptr<ServerConnectionManager>
+TestEngineComponentsFactory::BuildConnectionManager(
+    const std::string& cache_guid,
+    CancelationSignal* cancelation_signal) {
+  return std::make_unique<FakeConnectionManager>();
 }
 
 }  // namespace syncer

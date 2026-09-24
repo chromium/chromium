@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -29,8 +28,6 @@
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/cycle/sync_cycle.h"
 #include "components/sync/engine/events/protocol_event.h"
-#include "components/sync/engine/net/http_post_provider.h"
-#include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/required_passphrase_verifier.h"
 #include "components/sync/engine/sync_scheduler.h"
@@ -46,11 +43,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
-#include "url/gurl.h"
-
-namespace net {
-class HttpRequestHeaders;
-}  // namespace net
 
 using testing::_;
 using testing::SaveArg;
@@ -60,38 +52,6 @@ using testing::StrictMock;
 namespace syncer {
 
 namespace {
-
-class TestHttpPostProvider : public HttpPostProvider {
- public:
-  void SetExtraRequestHeaders(const net::HttpRequestHeaders& headers) override {
-  }
-  void SetURL(const GURL& url) override {}
-  void SetPostPayload(const char* content_type,
-                      int content_length,
-                      const char* content) override {}
-  bool MakeSynchronousPost(int* net_error_code,
-                           int* http_status_code) override {
-    return false;
-  }
-  int GetResponseContentLength() const override { return 0; }
-  const char* GetResponseContent() const override { return ""; }
-  const std::string GetResponseHeaderValue(
-      const std::string& name) const override {
-    return std::string();
-  }
-  void Abort() override {}
-
- private:
-  ~TestHttpPostProvider() override = default;
-};
-
-class TestHttpPostProviderFactory : public HttpPostProviderFactory {
- public:
-  ~TestHttpPostProviderFactory() override = default;
-  scoped_refptr<HttpPostProvider> Create() override {
-    return new TestHttpPostProvider();
-  }
-};
 
 class SyncManagerObserverMock : public SyncManager::Observer {
  public:
@@ -158,8 +118,7 @@ class ComponentsFactory : public TestEngineComponentsFactory {
   std::unique_ptr<SyncScheduler> BuildScheduler(
       const std::string& name,
       SyncCycleContext* context,
-      CancelationSignal* stop_handle,
-      bool local_sync_backend_enabled) override {
+      CancelationSignal* stop_handle) override {
     DCHECK(scheduler_to_use_);
     return std::move(scheduler_to_use_);
   }
@@ -177,8 +136,6 @@ class SyncManagerImplTest : public testing::Test {
   ~SyncManagerImplTest() override = default;
 
   void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-
     extensions_activity_ = new ExtensionsActivity();
 
     sync_manager_.AddObserver(&manager_observer_);
@@ -194,13 +151,9 @@ class SyncManagerImplTest : public testing::Test {
     EXPECT_CALL(manager_observer_, OnSyncStatusChanged).Times(2);
 
     SyncManager::InitArgs args;
-    args.service_url = GURL("https://example.com/");
-    args.post_factory = std::make_unique<TestHttpPostProviderFactory>();
     args.encryption_observer_proxy = std::move(encryption_observer);
     args.extensions_activity = extensions_activity_.get();
     args.cache_guid = "fake_cache_guid";
-    args.enable_local_sync_backend = false;
-    args.local_sync_backend_folder = temp_dir_.GetPath();
     args.engine_components_factory =
         std::make_unique<ComponentsFactory>(std::move(scheduler));
     args.encryption_handler = &encryption_handler_;
@@ -223,7 +176,6 @@ class SyncManagerImplTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::ScopedTempDir temp_dir_;
   scoped_refptr<ExtensionsActivity> extensions_activity_;
 
   FakeSyncEncryptionHandler encryption_handler_;

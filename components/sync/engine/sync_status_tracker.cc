@@ -176,10 +176,4 @@ void SyncStatusTracker::SetHasPendingInvalidations(
   status_changed_callback_.Run(status_);
 }
 
-void SyncStatusTracker::SetLocalBackendFolder(const std::string& folder) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  status_.local_sync_folder = folder;
-  status_changed_callback_.Run(status_);
-}
-
 }  // namespace syncer

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,7 +21,6 @@
 #include "components/sync/engine/sync_credentials.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager_factory.h"
-#include "url/gurl.h"
 
 namespace os_crypt_async {
 class Encryptor;
@@ -32,7 +30,6 @@ namespace syncer {
 
 class CustomPassphraseBootstrapToken;
 class EngineComponentsFactory;
-class HttpPostProviderFactory;
 class SyncEngineHost;
 struct SyncStatus;
 
@@ -41,9 +38,6 @@ struct SyncStatus;
 // Lives on the UI thread.
 class SyncEngine : public DataTypeConfigurer {
  public:
-  using HttpPostProviderFactoryGetter =
-      base::OnceCallback<std::unique_ptr<HttpPostProviderFactory>()>;
-
   // Utility struct for holding initialization options.
   struct InitParams {
     InitParams();
@@ -58,12 +52,8 @@ class SyncEngine : public DataTypeConfigurer {
     raw_ptr<SyncEngineHost> host = nullptr;
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
     scoped_refptr<ExtensionsActivity> extensions_activity;
-    GURL service_url;
-    SyncEngine::HttpPostProviderFactoryGetter http_factory_getter;
     CoreAccountInfo authenticated_account_info;
     std::unique_ptr<SyncManagerFactory> sync_manager_factory;
-    bool enable_local_sync_backend = false;
-    base::FilePath local_sync_backend_folder;
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
     scoped_refptr<os_crypt_async::Encryptor> encryptor;
   };

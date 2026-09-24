@@ -165,6 +165,7 @@ class TestSyncService : public SyncService {
       base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const override;
   const GURL& GetSyncServiceUrlForDebugging() const override;
+  base::FilePath GetLocalSyncBackendFolderForDebugging() const override;
   std::string GetUnrecoverableErrorMessageForDebugging() const override;
   base::Location GetUnrecoverableErrorLocationForDebugging() const override;
   void AddProtocolEventObserver(ProtocolEventObserver* observer) override;

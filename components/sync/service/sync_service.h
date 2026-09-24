@@ -11,6 +11,7 @@
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/time/time.h"
@@ -639,6 +640,8 @@ class SyncService : public KeyedService {
       const = 0;
 
   virtual const GURL& GetSyncServiceUrlForDebugging() const = 0;
+
+  virtual base::FilePath GetLocalSyncBackendFolderForDebugging() const = 0;
 
   virtual std::string GetUnrecoverableErrorMessageForDebugging() const = 0;
   virtual base::Location GetUnrecoverableErrorLocationForDebugging() const = 0;

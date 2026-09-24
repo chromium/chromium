@@ -433,6 +433,10 @@ const GURL& TestSyncService::GetSyncServiceUrlForDebugging() const {
   return sync_service_url_;
 }
 
+base::FilePath TestSyncService::GetLocalSyncBackendFolderForDebugging() const {
+  return base::FilePath();
+}
+
 std::string TestSyncService::GetUnrecoverableErrorMessageForDebugging() const {
   return std::string();
 }

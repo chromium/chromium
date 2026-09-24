@@ -132,6 +132,10 @@ class MockSyncService : public SyncService {
               (base::RepeatingCallback<void(const TypeEntitiesCount&)>),
               (const override));
   MOCK_METHOD(const GURL&, GetSyncServiceUrlForDebugging, (), (const override));
+  MOCK_METHOD(base::FilePath,
+              GetLocalSyncBackendFolderForDebugging,
+              (),
+              (const override));
   MOCK_METHOD(std::string,
               GetUnrecoverableErrorMessageForDebugging,
               (),

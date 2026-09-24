@@ -568,8 +568,9 @@ base::DictValue ConstructAboutInformation(
     is_syncing->Set(full_status.syncing);
   }
   is_local_sync_enabled->Set(is_local_sync_enabled_state);
-  if (is_local_sync_enabled_state && is_status_valid) {
-    local_backend_path->Set(full_status.local_sync_folder);
+  if (is_local_sync_enabled_state) {
+    local_backend_path->Set(
+        service->GetLocalSyncBackendFolderForDebugging().AsUTF8Unsafe());
   }
 
   // Network.

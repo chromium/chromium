@@ -68,8 +68,6 @@ class SyncStatusTracker : public SyncEngineEventListener {
   void SetHasPendingInvalidations(DataType type,
                                   bool has_pending_invalidations);
 
-  void SetLocalBackendFolder(const std::string& folder);
-
  protected:
   // Examines syncer to calculate syncing and the unsynced count,
   // and returns a Status with new values.
