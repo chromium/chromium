@@ -1123,6 +1123,15 @@ DesktopWindowTreeHostWin::GetParentNativeViewAccessible() {
   }
 
   views::Widget* parent_widget = widget->parent();
+  if (!parent_widget && widget->IsVisible()) {
+    // Context-created popups, such as TooltipAura's widget, can have a Win32
+    // owner without a Widget parent. Resolve the owner's content window to
+    // obtain its Widget.
+    if (HWND owner_hwnd = ::GetWindow(GetHWND(), GW_OWNER)) {
+      parent_widget =
+          Widget::GetWidgetForNativeView(GetContentWindowForHWND(owner_hwnd));
+    }
+  }
   if (!parent_widget) {
     return nullptr;
   }
