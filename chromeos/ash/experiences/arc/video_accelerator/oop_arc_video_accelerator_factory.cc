@@ -19,7 +19,7 @@
 #include "media/gpu/macros.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace arc {
 
@@ -46,7 +46,7 @@ class MojoProtectedBufferManager : public DecoderProtectedBufferManager {
       GetProtectedSharedMemoryRegionForResponseCB response_cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     remote_->GetProtectedSharedMemoryFromHandle(
-        mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(dummy_fd))),
+        mojo::PlatformHandle(std::move(dummy_fd)),
         // TODO(b/195769334): does anything need to be validated here?
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             base::BindPostTaskToCurrentDefault(std::move(response_cb)),
@@ -59,7 +59,7 @@ class MojoProtectedBufferManager : public DecoderProtectedBufferManager {
     // TODO(b/195769334): do we need to validate anything about the response
     // gfx::NativePixmapHandle before calling |response_cb|.
     remote_->GetProtectedNativePixmapHandleFromHandle(
-        mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(dummy_fd))),
+        mojo::PlatformHandle(std::move(dummy_fd)),
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             base::BindPostTaskToCurrentDefault(base::BindOnce(
                 &OnGetProtectedNativePixmapHandleFor, std::move(response_cb))),

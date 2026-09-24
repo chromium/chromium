@@ -9,7 +9,7 @@
 #include "chromeos/ash/experiences/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/gpu/macros.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace arc {
 
@@ -23,7 +23,7 @@ GpuArcProtectedBufferManagerProxy::~GpuArcProtectedBufferManagerProxy() {}
 
 void GpuArcProtectedBufferManagerProxy::
     DeprecatedGetProtectedSharedMemoryFromHandle(
-        mojo::ScopedHandle dummy_handle,
+        mojo::PlatformHandle dummy_handle,
         DeprecatedGetProtectedSharedMemoryFromHandleCallback callback) {
   base::ScopedFD unwrapped_fd = UnwrapFdFromMojoHandle(std::move(dummy_handle));
 
@@ -33,7 +33,7 @@ void GpuArcProtectedBufferManagerProxy::
     // Note: this will just cause the remote endpoint to reject the message with
     // VALIDATION_ERROR_UNEXPECTED_INVALID_HANDLE, but we don't have another way
     // to indicate that we couldn't find the protected shared memory region.
-    std::move(callback).Run(mojo::ScopedHandle());
+    std::move(callback).Run(mojo::PlatformHandle());
     return;
   }
 
@@ -45,11 +45,11 @@ void GpuArcProtectedBufferManagerProxy::
       base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
           std::move(region));
   base::subtle::ScopedFDPair fd_pair = platform_region.PassPlatformHandle();
-  std::move(callback).Run(mojo::WrapPlatformFile(std::move(fd_pair.fd)));
+  std::move(callback).Run(mojo::PlatformHandle(std::move(fd_pair.fd)));
 }
 
 void GpuArcProtectedBufferManagerProxy::GetProtectedSharedMemoryFromHandle(
-    mojo::ScopedHandle dummy_handle,
+    mojo::PlatformHandle dummy_handle,
     GetProtectedSharedMemoryFromHandleCallback callback) {
   base::ScopedFD unwrapped_fd = UnwrapFdFromMojoHandle(std::move(dummy_handle));
 
@@ -61,7 +61,7 @@ void GpuArcProtectedBufferManagerProxy::GetProtectedSharedMemoryFromHandle(
 
 void GpuArcProtectedBufferManagerProxy::
     GetProtectedNativePixmapHandleFromHandle(
-        mojo::ScopedHandle dummy_handle,
+        mojo::PlatformHandle dummy_handle,
         GetProtectedNativePixmapHandleFromHandleCallback callback) {
   base::ScopedFD unwrapped_fd = UnwrapFdFromMojoHandle(std::move(dummy_handle));
   gfx::NativePixmapHandle native_pixmap_handle =
@@ -74,7 +74,7 @@ void GpuArcProtectedBufferManagerProxy::
 }
 
 void GpuArcProtectedBufferManagerProxy::IsProtectedNativePixmapHandle(
-    mojo::ScopedHandle dummy_handle,
+    mojo::PlatformHandle dummy_handle,
     IsProtectedNativePixmapHandleCallback callback) {
   base::ScopedFD unwrapped_fd = UnwrapFdFromMojoHandle(std::move(dummy_handle));
   std::move(callback).Run(

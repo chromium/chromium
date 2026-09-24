@@ -7,15 +7,12 @@
 #include <limits>
 #include <utility>
 
-#include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
 #include "base/numerics/safe_conversions.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_allocator.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/gpu/macros.h"
-#include "mojo/public/c/system/types.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace arc {
@@ -43,7 +40,7 @@ GpuArcVideoProtectedBufferAllocator::~GpuArcVideoProtectedBufferAllocator() {
 }
 
 void GpuArcVideoProtectedBufferAllocator::AllocateProtectedSharedMemory(
-    mojo::ScopedHandle handle_fd,
+    mojo::PlatformHandle handle_fd,
     uint64_t size,
     AllocateProtectedSharedMemoryCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -65,7 +62,7 @@ void GpuArcVideoProtectedBufferAllocator::AllocateProtectedSharedMemory(
 }
 
 void GpuArcVideoProtectedBufferAllocator::AllocateProtectedNativePixmap(
-    mojo::ScopedHandle handle_fd,
+    mojo::PlatformHandle handle_fd,
     mojom::HalPixelFormat format,
     const gfx::Size& picture_size,
     AllocateProtectedNativePixmapCallback callback) {
@@ -98,7 +95,7 @@ void GpuArcVideoProtectedBufferAllocator::AllocateProtectedNativePixmap(
 }
 
 void GpuArcVideoProtectedBufferAllocator::ReleaseProtectedBuffer(
-    mojo::ScopedHandle handle_fd) {
+    mojo::PlatformHandle handle_fd) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::ScopedFD fd = UnwrapFdFromMojoHandle(std::move(handle_fd));
   if (!fd.is_valid()) {

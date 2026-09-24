@@ -13,7 +13,7 @@
 #include "chromeos/ash/experiences/arc/video_accelerator/video_frame_plane.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_types.h"
-#include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
@@ -21,9 +21,9 @@ namespace arc {
 
 class ProtectedBufferManager;
 
-// Creates ScopedFD from given mojo::ScopedHandle.
+// Creates ScopedFD from given mojo::PlatformHandle.
 // Returns invalid ScopedFD on failure.
-base::ScopedFD UnwrapFdFromMojoHandle(mojo::ScopedHandle handle);
+base::ScopedFD UnwrapFdFromMojoHandle(mojo::PlatformHandle handle);
 
 // Return a list of duplicated |fd|. The size of list is |num_fds|. Return an
 // empty list if duplicatation fails.

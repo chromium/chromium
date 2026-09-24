@@ -5,30 +5,21 @@
 #include "chromeos/ash/experiences/arc/video_accelerator/arc_video_accelerator_util.h"
 
 #include "base/files/file_util.h"
-#include "base/files/platform_file.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace arc {
 
-base::ScopedFD UnwrapFdFromMojoHandle(mojo::ScopedHandle handle) {
+base::ScopedFD UnwrapFdFromMojoHandle(mojo::PlatformHandle handle) {
   if (!handle.is_valid()) {
     VLOGF(1) << "Handle is invalid";
     return base::ScopedFD();
   }
-
-  base::ScopedPlatformFile platform_file;
-  MojoResult mojo_result =
-      mojo::UnwrapPlatformFile(std::move(handle), &platform_file);
-  if (mojo_result != MOJO_RESULT_OK) {
-    VLOGF(1) << "UnwrapPlatformFile failed: " << mojo_result;
-  }
-  return platform_file;
+  return handle.TakeFD();
 }
 
 std::vector<base::ScopedFD> DuplicateFD(base::ScopedFD fd, size_t num_fds) {

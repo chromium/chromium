@@ -21,6 +21,7 @@
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace arc {
 
@@ -73,7 +74,7 @@ class GpuArcVideoDecodeAccelerator
   void AssignPictureBuffers(uint32_t count) override;
   void ImportBufferForPicture(int32_t picture_buffer_id,
                               mojom::HalPixelFormat format,
-                              mojo::ScopedHandle handle,
+                              mojo::PlatformHandle handle,
                               std::vector<VideoFramePlane> planes,
                               mojom::BufferModifierPtr modifier) override;
   void ReusePictureBuffer(int32_t picture_buffer_id) override;

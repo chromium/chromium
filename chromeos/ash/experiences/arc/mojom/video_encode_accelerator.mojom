@@ -135,7 +135,7 @@ interface VideoEncodeAccelerator {
   //  accelerator.
   [MinVersion=3]
   Encode@8(VideoPixelFormat format,
-           handle frame_fd,
+           handle<platform> frame_fd,
            array<VideoFramePlane> planes,
            int64 timestamp,
            bool force_keyframe) => ();
@@ -154,7 +154,8 @@ interface VideoEncodeAccelerator {
   //  |payload_size| is the byte size of the used portion of the buffer.
   //  |key_frame| is true if this delivered frame is a keyframe.
   //  |timestamp| is the same timestamp as the one passed to Encode().
-  UseBitstreamBuffer@3(handle shmem_fd, uint32 offset, uint32 size)
+  UseBitstreamBuffer@3(
+      handle<platform> shmem_fd, uint32 offset, uint32 size)
       => (uint32 payload_size, bool key_frame, int64 timestamp);
 
   // Requests a change to the encoding parameters. This is only a request,

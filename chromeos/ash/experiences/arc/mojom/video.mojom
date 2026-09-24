@@ -21,7 +21,7 @@ interface VideoHost {
   // connected to a new VideoAcceleratorFactory.
   [MinVersion=4]
   OnBootstrapVideoAcceleratorFactory@1()
-      => (handle channel_handle, string token);
+      => (handle<platform> channel_handle, string token);
 
   // Similar to OnBootstrapVideoAcceleratorFactory, but returns a remote
   // to a VideoAcceleratorFactory directly, instead of returning a channel

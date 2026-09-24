@@ -16,16 +16,16 @@ interface VideoProtectedBufferAllocator {
   // |size| is the size of allocated protected shared memory.
   // Returns true on success, false on allocation failure or if |handle_fd| is
   // already associated with an existing protected buffer.
-  AllocateProtectedSharedMemory@0(handle handle_fd, uint64 size)
+  AllocateProtectedSharedMemory@0(handle<platform> handle_fd, uint64 size)
       => (bool result);
 
   // Allocates protected native pixmap associated with |handle_fd|.
   // |pixel_format| and |picture_size| are parameters to allocate native pixmap.
   // Returns true on success, false on allocation failure or if |handle_fd| is
   // already associated with an existing protected buffer.
-  AllocateProtectedNativePixmap@1(
-      handle handle_fd, HalPixelFormat pixel_format, Size picture_size)
-      => (bool result);
+  AllocateProtectedNativePixmap@1(handle<platform> handle_fd,
+                                  HalPixelFormat pixel_format,
+                                  Size picture_size) => (bool result);
 
   // Releases protected buffer associated with |handle_fd|, regardless of
   // the type of protected memory.
@@ -37,5 +37,5 @@ interface VideoProtectedBufferAllocator {
   // not be released until this method is called. Closing Mojo IPC message pipe
   // to this instance will automatically release all buffers allocated for this
   // instance.
-  ReleaseProtectedBuffer@2(handle handle_fd);
+  ReleaseProtectedBuffer@2(handle<platform> handle_fd);
 };

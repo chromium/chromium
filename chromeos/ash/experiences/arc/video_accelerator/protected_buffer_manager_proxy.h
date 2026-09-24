@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_EXPERIENCES_ARC_VIDEO_ACCELERATOR_PROTECTED_BUFFER_MANAGER_PROXY_H_
 
 #include "chromeos/ash/experiences/arc/mojom/protected_buffer_manager.mojom.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace arc {
 
@@ -27,16 +28,16 @@ class GpuArcProtectedBufferManagerProxy
 
   // arc::mojom::ProtectedBufferManager implementation.
   void DeprecatedGetProtectedSharedMemoryFromHandle(
-      mojo::ScopedHandle dummy_handle,
+      mojo::PlatformHandle dummy_handle,
       DeprecatedGetProtectedSharedMemoryFromHandleCallback callback) override;
   void GetProtectedSharedMemoryFromHandle(
-      mojo::ScopedHandle dummy_handle,
+      mojo::PlatformHandle dummy_handle,
       GetProtectedSharedMemoryFromHandleCallback callback) override;
   void GetProtectedNativePixmapHandleFromHandle(
-      mojo::ScopedHandle dummy_handle,
+      mojo::PlatformHandle dummy_handle,
       GetProtectedNativePixmapHandleFromHandleCallback callback) override;
   void IsProtectedNativePixmapHandle(
-      mojo::ScopedHandle dummy_handle,
+      mojo::PlatformHandle dummy_handle,
       IsProtectedNativePixmapHandleCallback callback) override;
 
  private:

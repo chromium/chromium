@@ -17,6 +17,7 @@
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 
 namespace gpu {
@@ -69,12 +70,12 @@ class GpuArcVideoEncodeAccelerator
       mojo::PendingRemote<mojom::VideoEncodeClient> client);
 
   void Encode(media::VideoPixelFormat format,
-              mojo::ScopedHandle fd,
+              mojo::PlatformHandle fd,
               std::vector<::arc::VideoFramePlane> planes,
               int64_t timestamp,
               bool force_keyframe,
               EncodeCallback callback) override;
-  void UseBitstreamBuffer(mojo::ScopedHandle shmem_fd,
+  void UseBitstreamBuffer(mojo::PlatformHandle shmem_fd,
                           uint32_t offset,
                           uint32_t size,
                           UseBitstreamBufferCallback callback) override;

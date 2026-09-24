@@ -9,7 +9,7 @@
 
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/experiences/arc/mojom/video_protected_buffer_allocator.mojom.h"
-#include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace arc {
 class ProtectedBufferAllocator;
@@ -35,15 +35,15 @@ class GpuArcVideoProtectedBufferAllocator
 
   // Implementation of mojom::VideoProtectedBufferAllocator
   void AllocateProtectedSharedMemory(
-      mojo::ScopedHandle handle_fd,
+      mojo::PlatformHandle handle_fd,
       uint64_t size,
       AllocateProtectedSharedMemoryCallback callback) override;
   void AllocateProtectedNativePixmap(
-      mojo::ScopedHandle handle_fd,
+      mojo::PlatformHandle handle_fd,
       mojom::HalPixelFormat format,
       const gfx::Size& picture_size,
       AllocateProtectedNativePixmapCallback callback) override;
-  void ReleaseProtectedBuffer(mojo::ScopedHandle handle_fd) override;
+  void ReleaseProtectedBuffer(mojo::PlatformHandle handle_fd) override;
 
  private:
   explicit GpuArcVideoProtectedBufferAllocator(

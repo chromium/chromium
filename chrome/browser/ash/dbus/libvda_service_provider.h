@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
-#include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace dbus {
 class MethodCall;
@@ -48,7 +48,7 @@ class LibvdaServiceProvider : public CrosDBusService::ServiceProviderInterface {
   void OnBootstrapVideoAcceleratorFactoryCallback(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender,
-      mojo::ScopedHandle handle,
+      mojo::PlatformHandle handle,
       const std::string& s);
 
   // Keep this last so that all weak pointers will be invalidated at the

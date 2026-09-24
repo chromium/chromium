@@ -25,7 +25,7 @@ struct BitstreamBuffer {
   int32 bitstream_id;
   // This handle is passed and used in Decode().
   // The handle fd is ashmem.
-  handle handle_fd;
+  handle<platform> handle_fd;
   uint32 offset;
   uint32 bytes_used;
 };
@@ -120,7 +120,7 @@ interface VideoDecodeAccelerator {
   [MinVersion=2]
   ImportBufferForPicture@9(int32 picture_buffer_id,
                            HalPixelFormat format,
-                           handle handle_fd,
+                           handle<platform> handle_fd,
                            array<VideoFramePlane> planes,
                            [MinVersion=4] BufferModifier? modifier);
 

@@ -30,7 +30,6 @@
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 // Make sure arc::mojom::VideoDecodeAccelerator::Result and
 // media::VideoDecodeAccelerator::Error match.
@@ -708,7 +707,7 @@ void GpuArcVideoDecodeAccelerator::OnAssignPictureBuffersCalled(
 void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
     int32_t picture_buffer_id,
     mojom::HalPixelFormat format,
-    mojo::ScopedHandle handle,
+    mojo::PlatformHandle handle,
     std::vector<VideoFramePlane> planes,
     mojom::BufferModifierPtr modifier_ptr) {
   DVLOGF(3);

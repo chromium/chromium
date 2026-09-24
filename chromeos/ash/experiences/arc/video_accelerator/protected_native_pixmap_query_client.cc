@@ -5,6 +5,7 @@
 #include "chromeos/ash/experiences/arc/video_accelerator/protected_native_pixmap_query_client.h"
 
 #include "content/public/browser/gpu_service_registry.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace arc {
 
@@ -23,8 +24,7 @@ void ProtectedNativePixmapQueryClient::IsProtectedNativePixmapHandle(
                        weak_factory_.GetWeakPtr()));
   }
   gpu_buffer_manager_->IsProtectedNativePixmapHandle(
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(handle))),
-      std::move(callback));
+      mojo::PlatformHandle(std::move(handle)), std::move(callback));
 }
 
 void ProtectedNativePixmapQueryClient::OnMojoDisconnect() {

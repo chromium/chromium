@@ -96,7 +96,7 @@ struct OemCryptoSecureBuffer {
   // the GPU in order to retrieve the shared memory handle that corresponds
   // to the actual secure buffer. It should then be mapped and data written at
   // offset up until offset + max_length.
-  handle buffer_handle;
+  handle<platform> buffer_handle;
   uint32 max_length;
   uint32 offset;
 };

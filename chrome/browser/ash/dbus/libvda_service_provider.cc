@@ -11,7 +11,6 @@
 #include "chromeos/ash/experiences/arc/video/gpu_arc_video_service_host.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
@@ -50,9 +49,9 @@ void LibvdaServiceProvider::ProvideMojoConnection(
 void LibvdaServiceProvider::OnBootstrapVideoAcceleratorFactoryCallback(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender,
-    mojo::ScopedHandle handle,
+    mojo::PlatformHandle handle,
     const std::string& pipe_name) {
-  base::ScopedFD fd = mojo::UnwrapPlatformHandle(std::move(handle)).TakeFD();
+  base::ScopedFD fd = handle.TakeFD();
 
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);

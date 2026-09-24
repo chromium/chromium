@@ -32,8 +32,9 @@ interface ProtectedBufferManager {
   //
   // TODO(b/195769334): switch existing clients to
   // GetProtectedSharedMemoryFromHandle().
-  DeprecatedGetProtectedSharedMemoryFromHandle@0(handle dummy_handle)
-      => (handle shared_memory_handle);
+  DeprecatedGetProtectedSharedMemoryFromHandle@0(
+      handle<platform> dummy_handle)
+      => (handle<platform> shared_memory_handle);
 
   // Translates from a given |dummy_handle| to a shared memory buffer handle.
   // The intended use is for the video decoder to gain access to the input data:
@@ -43,7 +44,7 @@ interface ProtectedBufferManager {
   // Returns invalid UnsafeSharedMemoryRegion instance on failure (including if
   // the dummy handle does not correspond to a valid shared memory buffer).
   [MinVersion=1]
-  GetProtectedSharedMemoryFromHandle@4(handle dummy_handle)
+  GetProtectedSharedMemoryFromHandle@4(handle<platform> dummy_handle)
       => (mojo_base.mojom.UnsafeSharedMemoryRegion? unsafe_region);
 
   // Translates from a given |dummy_handle| to a native pixmap handle. The
@@ -51,12 +52,13 @@ interface ProtectedBufferManager {
   // Returns null on failure (including if the dummy handle does not correspond
   // to a valid native pixmap).
   [MinVersion=1]
-  GetProtectedNativePixmapHandleFromHandle@2(handle dummy_handle)
+  GetProtectedNativePixmapHandleFromHandle@2(handle<platform> dummy_handle)
       => (media.stable.mojom.NativePixmapHandle? native_pixmap_handle);
 
   // This is used by exo in the browser process to determine if a GMB refers to
   // a protected native pixmap so it can set the HW protection properly in the
   // quad if the platform supports HWDRM.
   [MinVersion=2]
-  IsProtectedNativePixmapHandle@3(handle dummy_handle) => (bool is_protected);
+  IsProtectedNativePixmapHandle@3(handle<platform> dummy_handle)
+      => (bool is_protected);
 };

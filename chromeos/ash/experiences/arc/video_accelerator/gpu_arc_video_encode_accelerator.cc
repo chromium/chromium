@@ -33,7 +33,6 @@
 #include "media/gpu/macros.h"
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace arc {
@@ -192,7 +191,7 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
 
 void GpuArcVideoEncodeAccelerator::Encode(
     media::VideoPixelFormat format,
-    mojo::ScopedHandle handle,
+    mojo::PlatformHandle handle,
     std::vector<::arc::VideoFramePlane> planes,
     int64_t timestamp,
     bool force_keyframe,
@@ -290,7 +289,7 @@ void GpuArcVideoEncodeAccelerator::Encode(
 }
 
 void GpuArcVideoEncodeAccelerator::UseBitstreamBuffer(
-    mojo::ScopedHandle shmem_fd,
+    mojo::PlatformHandle shmem_fd,
     uint32_t offset,
     uint32_t size,
     UseBitstreamBufferCallback callback) {

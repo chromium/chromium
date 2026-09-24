@@ -42,8 +42,8 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace arc {
 
@@ -97,7 +97,7 @@ class FailingVideoDecodeAccelerator : public mojom::VideoDecodeAccelerator {
   void AssignPictureBuffers(uint32_t count) override { NOTREACHED(); }
   void ImportBufferForPicture(int32_t picture_buffer_id,
                               mojom::HalPixelFormat format,
-                              mojo::ScopedHandle handle,
+                              mojo::PlatformHandle handle,
                               std::vector<VideoFramePlane> planes,
                               mojom::BufferModifierPtr modifier) override {
     NOTREACHED();
@@ -316,8 +316,8 @@ void GpuArcVideoServiceHost::OnBootstrapVideoAcceleratorFactory(
                                  kUnusedChildProcessHandle,
                                  channel.TakeLocalEndpoint());
 
-  mojo::ScopedHandle client_handle = mojo::WrapPlatformHandle(
-      channel.TakeRemoteEndpoint().TakePlatformHandle());
+  mojo::PlatformHandle client_handle =
+      channel.TakeRemoteEndpoint().TakePlatformHandle();
   std::move(callback).Run(std::move(client_handle), pipe_name);
 
   // The receiver will be removed automatically, when the receiver is destroyed.
