@@ -230,7 +230,6 @@ java_cpp_enum("autofill_core_browser_java_enums") {
   sources = [
     "../core/browser/data_model/addresses/autofill_profile.h",
     "../core/browser/data_model/addresses/autofill_structured_address_component.h",
-    "../core/browser/data_model/payments/iban.h",
     "../core/browser/field_types.h",
     "../core/browser/filling/filling_product.h",
     "../core/browser/foundations/autofill_client.h",
@@ -249,6 +248,7 @@ java_cpp_enum("autofill_core_browser_java_enums") {
 java_cpp_enum("payments_autofill_core_browser_java_enums") {
   sources = [
     "../core/browser/data_model/payments/bank_account.h",
+    "../core/browser/data_model/payments/iban.h",
     "../core/browser/data_model/payments/payment_instrument.h",
     "../core/browser/metrics/payments/wallet_reminder_notice_metrics.h",
   ]
@@ -373,6 +373,7 @@ android_library("payments_autofill_java") {
     "java/src/org/chromium/components/autofill/payments/BnplIssuerTosDetail.java",
     "java/src/org/chromium/components/autofill/payments/CardDetail.java",
     "java/src/org/chromium/components/autofill/payments/Ewallet.java",
+    "java/src/org/chromium/components/autofill/payments/Iban.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessage.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
     "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
@@ -446,6 +447,7 @@ generate_jni("payments_jni_headers") {
     "java/src/org/chromium/components/autofill/payments/BnplIssuerForSettings.java",
     "java/src/org/chromium/components/autofill/payments/BnplIssuerTosDetail.java",
     "java/src/org/chromium/components/autofill/payments/Ewallet.java",
+    "java/src/org/chromium/components/autofill/payments/Iban.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
     "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
     "java/src/org/chromium/components/autofill/payments/TouchToFillDisplayOptions.java",

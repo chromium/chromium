@@ -128,7 +128,6 @@ source_set("test_support") {
 
 android_library("public_java") {
   deps = [
-    "//chrome/browser/autofill/android:java",
     "//components/autofill/android:main_autofill_java",
     "//components/autofill/android:payments_autofill_java",
   ]

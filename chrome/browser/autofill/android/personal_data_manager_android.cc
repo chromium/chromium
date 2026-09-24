@@ -64,6 +64,7 @@
 #include "chrome/browser/autofill/android/jni_headers/PersonalDataManager_jni.h"
 #include "components/autofill/android/payments_jni_headers/BankAccount_jni.h"
 #include "components/autofill/android/payments_jni_headers/BnplIssuerForSettings_jni.h"
+#include "components/autofill/android/payments_jni_headers/Iban_jni.h"
 #include "components/autofill/android/payments_jni_headers/PaymentInstrument_jni.h"
 
 namespace autofill {
@@ -579,7 +580,7 @@ PersonalDataManagerAndroid::GetIbansForSettings(JNIEnv* env) {
     j_ibans_list.push_back(CreateJavaIbanFromNative(env, *iban));
   }
   ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env, "org/chromium/chrome/browser/autofill/PersonalDataManager$Iban");
+      env, "org/chromium/components/autofill/payments/Iban");
   return base::android::ToTypedJavaArrayOfObjects(env, j_ibans_list,
                                                   type.obj());
 }

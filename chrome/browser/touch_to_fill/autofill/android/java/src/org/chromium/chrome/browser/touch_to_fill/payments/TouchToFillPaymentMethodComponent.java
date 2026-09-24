@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.LoyaltyCard;
 import org.chromium.components.autofill.payments.BnplIssuerContext;
 import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
+import org.chromium.components.autofill.payments.Iban;
 import org.chromium.components.autofill.payments.TouchToFillDisplayOptions;
 
 import java.util.List;
@@ -109,7 +109,7 @@ interface TouchToFillPaymentMethodComponent {
             TouchToFillDisplayOptions touchToFillDisplayOptions);
 
     /** Displays a new IBAN bottom sheet. */
-    void showIbans(List<PersonalDataManager.Iban> ibans);
+    void showIbans(List<Iban> ibans);
 
     /**
      * Displays a bottom sheet for affiliated loyalty cards.
