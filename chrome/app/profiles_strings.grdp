@@ -850,9 +850,6 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON" desc="Label of the proceed button on the enterprise profile welcome screen when a user signed in an enterprise account outside of the profile creation flow. The label informs the user that a profile will be created.">
       Create
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SCHOOL_TITLE" desc="Title of the dialog disclaiming information about the school profile they are about to create.">
-      About school profiles
-    </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_WORK_TITLE" desc="Title of the dialog disclaiming information about the work profile they are about to create.">
       About work profiles
     </message>
@@ -925,26 +922,17 @@
     <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE_WITH_BOOKMARKS" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
       Sign in to get your passwords, bookmarks, and more on all your devices
     </message>
-    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SCHOOL_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile for school.">
-      Set up a school profile to save and use your passwords and more in your account
-    </message>
     <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_WORK_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile for work.">
       Set up a work profile to save and use your passwords and more in your account
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_WORK_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the work profile they will create or keep it separate.">
       Do you want to create a new profile for work?
     </message>
-    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_SCHOOL_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the school profile they will create or keep it separate.">
-      Do you want to create a new profile for school?
-    </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_ALREADY_SIGNED_IN_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the managed profile they will create or keep it separate, this is shown when the user was already signed into a profile.">
       What would you like to do with your existing profile data?
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE" desc="Title of the dialog that asks the user to either keep their browsing data in the new profile they will create or keep it separate.">
       Keep existing browsing data separate from this new profile?
-    </message>
-    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_SCHOOL_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
-      Yes, keep my data separate from school (recommended)
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_WORK_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
       Yes, keep my data separate from work (recommended)
@@ -966,9 +954,6 @@
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_WORK_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created work profile.">
       No, continue to work in this profile
-    </message>
-    <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_SCHOOL_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created school profile.">
-      No, continue to use for school in this profile
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_ALREADY_SIGNED_IN_CHOICE" desc="Label of a radio button option that lets the user add their existing data from a newly created managed profile, this is shown when the user was already signed into a profile">
       Continue to work in this profile

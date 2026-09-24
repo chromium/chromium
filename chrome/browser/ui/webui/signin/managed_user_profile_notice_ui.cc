@@ -300,17 +300,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
 
   const std::string domain =
       enterprise_util::GetDomainFromEmail(account_info.GetEmail());
-  if (account_info.IsManaged() == signin::Tribool::kTrue) {
-    source->AddString(
-        "profileDisclosureSubtitle",
-        l10n_util::GetStringFUTF16(
-            IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_KNOWN_DOMAIN_SUBTITLE,
-            base::UTF8ToUTF16(domain)));
-  }
-
-  const bool is_school_account =
-      account_info.GetAccountCapabilities().can_use_edu_features() ==
-      signin::Tribool::kTrue;
   if (account_info.IsManaged() != signin::Tribool::kTrue) {
     source->AddString(
         "valuePropSubtitle",
@@ -322,9 +311,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
         "separateBrowsingDataTitle",
         l10n_util::GetStringUTF16(
             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE));
-  } else if (create_param->user_already_signed_in ||
-             base::FeatureList::IsEnabled(
-                 switches::kEnforceManagementDisclaimer)) {
+  } else {
     source->AddString(
         "separateBrowsingDataTitle",
         l10n_util::GetStringUTF16(
@@ -353,33 +340,13 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
         l10n_util::GetStringFUTF16(
             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_ALREADY_SIGNED_IN_DETAILS,
             base::UTF8ToUTF16(domain)));
-    if (type == ScreenType::kEnterpriseAccountCreation) {
-      source->AddString("cancelLabel",
-                        l10n_util::GetStringUTF16(
-                            create_param->profile_creation_required_by_policy
-                                ? IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON
-                                : IDS_CANCEL));
+    // When a managed profile is mandatory, show Sign out instead of Cancel.
+    if (type == ScreenType::kEnterpriseAccountCreation &&
+        create_param->profile_creation_required_by_policy) {
+      source->AddString(
+          "cancelLabel",
+          l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON));
     }
-  } else if (is_school_account) {
-    source->AddString(
-        "separateBrowsingDataTitle",
-        l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_SCHOOL_TITLE));
-    source->AddString(
-        "profileDisclosureTitle",
-        l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SCHOOL_TITLE));
-    source->AddString("valuePropSubtitle",
-                      l10n_util::GetStringUTF16(
-                          IDS_ENTERPRISE_VALUE_PROPOSITION_SCHOOL_SUBTITLE));
-    source->AddString(
-        "mergeBrowsingDataChoiceTitle",
-        l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_SCHOOL_CHOICE));
-    source->AddString(
-        "separateBrowsingDataChoiceTitle",
-        l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_SCHOOL_CHOICE));
   }
 
   if (type == ScreenType::kDeviceSignalsDisclaimer) {
@@ -412,12 +379,10 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
     source->AddString("enterpriseProfileWelcomeTitle",
                       l10n_util::GetStringUTF16(title_id));
 
-    // If the user is already signed in and is trying to turn sync on, we can
-    // skip the value proposition screen since they are already signed in.
-    if (create_param->user_already_signed_in) {
-      source->AddInteger("initialState",
-                         ManagedUserProfileNoticeHandler::State::kDisclosure);
-    } else {
+    // If the user is already signed in and is trying to turn sync on, we use
+    // the default state (kDisclosure). Otherwise we show the value proposition
+    // screen
+    if (!create_param->user_already_signed_in) {
       source->AddInteger(
           "initialState",
           ManagedUserProfileNoticeHandler::State::kValueProposition);
@@ -425,8 +390,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
     source->AddBoolean("enforcedByPolicy",
                        create_param->profile_creation_required_by_policy);
   } else if (type == ScreenType::kEnterpriseOIDC) {
-    source->AddInteger("initialState",
-                       ManagedUserProfileNoticeHandler::State::kDisclosure);
     source->AddBoolean("isModalDialog", true);
     source->AddString(
         "enterpriseProfileWelcomeTitle",
@@ -458,6 +421,9 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
   if (create_param->show_link_data_option &&
       (profile_separation_data_migration_settings_optout ||
        check_link_data_checkbox_by_default_from_legacy_policy)) {
+    const bool is_school_account =
+        account_info.GetAccountCapabilities().can_use_edu_features() ==
+        signin::Tribool::kTrue;
     source->AddString(
         "separateBrowsingDataChoiceTitle",
         l10n_util::GetStringUTF16(
