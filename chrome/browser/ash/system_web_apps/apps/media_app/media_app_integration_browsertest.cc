@@ -18,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -156,9 +155,7 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
         {"trigger_id", "s5EmUqzvY0jBnuKU19R0Tdf9ticy"}};
 
     feature_list_.InitWithFeaturesAndParameters(
-        {{ash::kHatsMediaAppPdfSurvey.feature, survey_params},
-         {ash::kHatsPhotosExperienceSurvey.feature, survey_params}},
-        {});
+        {{ash::kHatsMediaAppPdfSurvey.feature, survey_params}}, {});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -187,20 +184,6 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
   // Launch the MediApp with the given |file_path| as a launch param, and wait
   // for the application to finish loading.
   content::WebContents* DirectlyLaunchWithFile(const base::FilePath& file_path);
-
-  struct DataArgsHelper {
-    const char* const open_image = "0";
-    const char* const open_video = "0";
-    const char* const edit_image = "0";
-    const char* const edit_video = "0";
-  };
-  void ExpectProductSurveyData(DataArgsHelper expected_data) {
-    auto data = HatsProductSpecificDataForMediaApp();
-    EXPECT_EQ(data["did_open_image_in_gallery"], expected_data.open_image);
-    EXPECT_EQ(data["did_open_video_in_gallery"], expected_data.open_video);
-    EXPECT_EQ(data["clicked_edit_image_in_photos"], expected_data.edit_image);
-    EXPECT_EQ(data["clicked_edit_video_in_photos"], expected_data.edit_video);
-  }
 
   void LaunchAndWait(const ash::SystemAppLaunchParams& params) {
     content::TestNavigationObserver observer =
@@ -451,7 +434,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   MediaAppUiBrowserTest::PrepareAppForTest(app);
 
   EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
-  ExpectProductSurveyData({.open_image = "1"});
 
   // Launch with a different file in a new window.
   app = DirectlyLaunchWithFile(TestFile(kFileJpeg640x480));
@@ -461,7 +443,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
   EXPECT_NE(first_browser, second_browser);
-  ExpectProductSurveyData({.open_image = "1"});  // The "1" is a bool.
 }
 
 // Test that the MediaApp successfully loads a file using
@@ -478,7 +459,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
   content::WebContents* app = PrepareActiveBrowserForTest();
 
   EXPECT_EQ("800x600", WaitForImageAlt(app, kFilePng800x600));
-  ExpectProductSurveyData({.open_image = "1"});
 
   // Launch the App for the second time.
   ash::SystemAppLaunchParams image_params;
@@ -490,7 +470,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
   EXPECT_NE(first_browser, second_browser);
-  ExpectProductSurveyData({.open_image = "1"});
 }
 
 // Test that the Media App launches a single window for images.
@@ -512,7 +491,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchImageMulti) {
       system_app_browser->GetTabStripModel()->GetActiveWebContents(),
       u"image.png");
   EXPECT_EQ(u"image.png", watcher.WaitAndGetTitle());
-  ExpectProductSurveyData({.open_image = "1"});
 }
 
 // Test that the Media App launches multiple windows for PDFs.
@@ -539,7 +517,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchPdfMulti) {
       pdf_img_browser->GetTabStripModel()->GetActiveWebContents(), u"img.pdf");
   EXPECT_EQ(u"tall.pdf", watcher1.WaitAndGetTitle());
   EXPECT_EQ(u"img.pdf", watcher2.WaitAndGetTitle());
-  ExpectProductSurveyData({});  // Only images and video are tracked.
 }
 
 // Test that the Media App appears as a handler for files in the App Service.
@@ -915,8 +892,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, HandleRawFiles) {
 
   // Width and height should be swapped now.
   EXPECT_EQ("272x378", WaitForImageAlt(web_ui, kRaw378x272));
-  // Raw files aren't tracked (they are not directly editable by Photos).
-  ExpectProductSurveyData({});
 }
 
 // Ensures that chrome://media-app is available as a file task for the ChromeOS
@@ -1511,7 +1486,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, OpenVideoFile) {
   content::WebContents* web_ui = LaunchWithOneTestFile(kFileVideoVP9);
 
   EXPECT_NE(web_ui, nullptr);
-  ExpectProductSurveyData({.open_video = "1"});
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, ToggleBrowserFullscreen) {
@@ -1527,10 +1501,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, ToggleBrowserFullscreen) {
   )";
 
   EXPECT_FALSE(app_browser->GetWindow()->IsFullscreen());
-
   EXPECT_EQ("success", ExtractStringInGlobalScope(web_ui, kToggleFullscreen));
   EXPECT_TRUE(app_browser->GetWindow()->IsFullscreen());
-
   EXPECT_EQ("success", ExtractStringInGlobalScope(web_ui, kToggleFullscreen));
   EXPECT_FALSE(app_browser->GetWindow()->IsFullscreen());
 }
@@ -1571,43 +1543,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPdfHats) {
       notification_id));
 }
 
-// Tests that the Photos happiness tracking survey triggers when the monitored
-// app is closed, after force-enabling display of the survey.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPhotosHats) {
-  // Enable HaTS testing for the Photos Experience.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      ash::switches::kForceHappinessTrackingSystem,
-      ash::features::kHappinessTrackingPhotosExperience.name);
-
-  // Pretend the Gallery is the Android Photos app, so it can be tracked for
-  // survey triggers that fire when the app is closed.
-  std::string media_app_app_id = MediaAppAppId();
-  SetPhotosExperienceSurveyTriggerAppIdForTesting(media_app_app_id.c_str());
-
-  // Notifications only fire if the device is "online". Simulate that.
-  network_portal_detector_.SimulateDefaultNetworkState(
-      ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
-  const user_manager::User& user = CHECK_DEREF(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
-  const std::string notification_id =
-      ash::HatsNotificationController::GetMessageCenterNotificationIdForTesting(
-          user);
-  message_center::MessageCenterWaiter waiter(notification_id);
-
-  LaunchWithNoFiles();
-  GlobalBrowserCollection::GetInstance()
-      ->GetActiveBrowser()
-      ->GetWindow()
-      ->Close();
-
-  waiter.WaitUntilAdded();
-  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
-      notification_id));
-
-  // Avoid leaving a ref to the std::string about to be destroyed.
-  SetPhotosExperienceSurveyTriggerAppIdForTesting("");
-}
-
 // Tests the survey trigger codepaths without kForceHappinessTrackingSystem,
 // which skips over some important coverage.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, SurveyTriggers) {
@@ -1621,40 +1556,11 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, SurveyTriggers) {
   EXPECT_TRUE(ash::ProfileHelper::IsOwnerProfile(profile()));
   EXPECT_TRUE(
       base::FeatureList::IsEnabled(ash::kHatsMediaAppPdfSurvey.feature));
-  EXPECT_TRUE(
-      base::FeatureList::IsEnabled(ash::kHatsPhotosExperienceSurvey.feature));
 
   // The constructor configures the survey features with a 100% probability, so
   // it should always trigger.
   EXPECT_TRUE(ash::HatsNotificationController::ShouldShowSurveyToProfile(
       profile(), ash::kHatsMediaAppPdfSurvey));
-  EXPECT_TRUE(ash::HatsNotificationController::ShouldShowSurveyToProfile(
-      profile(), ash::kHatsPhotosExperienceSurvey));
-}
-
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, CapturesUserActionsForHats) {
-  ExpectProductSurveyData({});  // Initially nothing.
-
-  using base::RecordAction;
-  using base::UserMetricsAction;
-
-  // Actions aren't tracked when the app isn't running (the corresponding
-  // buttons are impossible to click).
-  RecordAction(UserMetricsAction("MediaApp.Image.Tool.EditInPhotos"));
-  RecordAction(UserMetricsAction("MediaApp.Video.Tool.EditInPhotos"));
-
-  LaunchWithNoFiles();
-  ExpectProductSurveyData({});
-
-  RecordAction(UserMetricsAction("MediaApp.Image.Tool.EditInPhotos"));
-  ExpectProductSurveyData({.edit_image = "1"});
-
-  RecordAction(UserMetricsAction("MediaApp.Video.Tool.EditInPhotos"));
-  ExpectProductSurveyData({.edit_image = "1", .edit_video = "1"});
-
-  // Actions are boolean, and never go back to false.
-  RecordAction(UserMetricsAction("MediaApp.Image.Tool.EditInPhotos"));
-  ExpectProductSurveyData({.edit_image = "1", .edit_video = "1"});
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, GuestCanReadLocalFonts) {
