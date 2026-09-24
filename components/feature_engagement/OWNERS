@@ -1,18 +1,19 @@
 dfried@chromium.org
 dtrainor@chromium.org
+mschillaci@google.com
 nyquist@chromium.org
 shaktisahu@chromium.org
 
 # For mobile platforms:
-per-file ...event_constants.*=twellington@chromium.org,mschillaci@google.com
-per-file ...feature_configurations.cc=twellington@chromium.org,mschillaci@google.com
-per-file ...feature_constants.*=twellington@chromium.org,mschillaci@google.com
-per-file ...feature_list.*=twellington@chromium.org,mschillaci@google.com
-per-file ...group_configurations.cc=twellington@chromium.org,mschillaci@google.com
-per-file ...group_constants.*=twellington@chromium.org,mschillaci@google.com
-per-file ...group_list.cc=twellington@chromium.org,mschillaci@google.com
-per-file ...EventConstants.java=twellington@chromium.org,mschillaci@google.com
-per-file ...FeatureConstants.java=twellington@chromium.org,mschillaci@google.com
+per-file ...event_constants.*=twellington@chromium.org
+per-file ...feature_configurations.cc=twellington@chromium.org
+per-file ...feature_constants.*=twellington@chromium.org
+per-file ...feature_list.*=twellington@chromium.org
+per-file ...group_configurations.cc=twellington@chromium.org
+per-file ...group_constants.*=twellington@chromium.org
+per-file ...group_list.cc=twellington@chromium.org
+per-file ...EventConstants.java=twellington@chromium.org
+per-file ...FeatureConstants.java=twellington@chromium.org
 
 # For iOS:
 per-file ...event_constants.*=rkgibson@google.com
