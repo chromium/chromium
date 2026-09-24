@@ -19,7 +19,11 @@ bool IsInstantExtendedAPIEnabled();
 bool DefaultSearchProviderIsGoogle(
     const TemplateURLService* template_url_service);
 
-// Returns whether supplied template URL is Google template URL.
+// Returns true if `template_url` is non-nullptr and its search URL is
+// cryptographic (or loopback/localhost) and resolves to
+// `SEARCH_ENGINE_GOOGLE`. If `template_url` specifies a suggestions URL, that
+// URL must also be cryptographic (or loopback/localhost) and resolve to
+// `SEARCH_ENGINE_GOOGLE`.
 bool TemplateURLIsGoogle(const TemplateURL* template_url,
                          const SearchTermsData& search_terms_data);
 }  // namespace search

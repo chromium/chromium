@@ -13,6 +13,7 @@ static_library("search") {
   deps = [
     "//base",
     "//components/search_engines",
+    "//net",
   ]
 }
 
@@ -28,6 +29,7 @@ source_set("unit_tests") {
     ":search",
     "//base",
     "//base/test:test_support",
+    "//components/search_engines",
     "//testing/gmock",
     "//testing/gtest",
   ]
