@@ -157,7 +157,7 @@ void AppMenuFooterButton::SetUseRowStyle(bool use_row_style) {
     layout_->set_inside_border_insets(
         gfx::Insets::VH(vertical_padding, horizontal_padding));
   } else {
-    label_->SetTextStyle(views::style::STYLE_BODY_5);
+    label_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
     label_->SetEnabledColor(kColorAppMenuFooterButtonForeground);
 
     const int corner_radius = provider->GetDistanceMetric(
