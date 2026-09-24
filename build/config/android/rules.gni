@@ -2046,6 +2046,9 @@ if (!is_robolectric && enable_java_templates) {
       if (_test_only) {
         defines += [ "_IS_FOR_TEST" ]
       }
+      if (defined(invoker.is_robolectric) && invoker.is_robolectric) {
+        defines += [ "_IS_ROBOLECTRIC" ]
+      }
 
       if (!is_java_debug && (!_test_only || is_cronet_build)) {
         defines += [ "_DISABLE_DEBUG_LOGS" ]

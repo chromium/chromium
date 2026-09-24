@@ -21,6 +21,7 @@ if (enable_java_templates) {
 
   generate_build_config_srcjar("build_config_for_robolectric_srcjar") {
     testonly = true
+    is_robolectric = true
   }
 
   write_native_libraries_java("native_libraries_gen") {

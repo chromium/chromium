@@ -21,6 +21,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
@@ -95,6 +96,9 @@ public class Clipboard {
                 sInstance = new ClipboardImpl(clipboardManager);
             } else {
                 sInstance = new Clipboard();
+            }
+            if (BuildConfig.IS_ROBOLECTRIC) {
+                ResettersForTesting.register(Clipboard::resetForTesting);
             }
         }
         return sInstance;
