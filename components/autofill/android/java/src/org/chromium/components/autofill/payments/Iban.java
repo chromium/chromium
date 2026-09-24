@@ -86,7 +86,7 @@ public class Iban {
             @JniType("std::u16string") String nickname,
             @JniType("std::u16string") String value) {
         return new Iban.Builder()
-                .setInstrumentId(Long.valueOf(instrumentId))
+                .setInstrumentId(instrumentId)
                 .setLabel(label)
                 .setNickname(nickname)
                 .setRecordType(IbanRecordType.SERVER_IBAN)
@@ -145,19 +145,25 @@ public class Iban {
 
         Iban otherIban = (Iban) obj;
 
-        return Objects.equals(mLabel, otherIban.getLabel())
-                && Objects.equals(mNickname, otherIban.getNickname())
-                && mRecordType == otherIban.getRecordType()
+        return Objects.equals(mLabel, otherIban.mLabel)
+                && Objects.equals(mNickname, otherIban.mNickname)
+                && mRecordType == otherIban.mRecordType
                 && (mRecordType != IbanRecordType.SERVER_IBAN
-                        || Objects.equals(mInstrumentId, otherIban.getInstrumentId()))
+                        || Objects.equals(mInstrumentId, otherIban.mInstrumentId))
                 && (mRecordType != IbanRecordType.LOCAL_IBAN
-                        || Objects.equals(mGuid, otherIban.getGuid()))
-                && Objects.equals(mValue, otherIban.getValue());
+                        || Objects.equals(mGuid, otherIban.mGuid))
+                && Objects.equals(mValue, otherIban.mValue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mGuid, mLabel, mNickname, mRecordType, mValue);
+        Object identifier = null;
+        if (mRecordType == IbanRecordType.SERVER_IBAN) {
+            identifier = mInstrumentId;
+        } else if (mRecordType == IbanRecordType.LOCAL_IBAN) {
+            identifier = mGuid;
+        }
+        return Objects.hash(identifier, mLabel, mNickname, mRecordType, mValue);
     }
 
     /** Builder for {@link Iban}. */
@@ -174,7 +180,7 @@ public class Iban {
             return this;
         }
 
-        public Builder setInstrumentId(Long instrumentId) {
+        public Builder setInstrumentId(long instrumentId) {
             mInstrumentId = instrumentId;
             return this;
         }
@@ -217,6 +223,9 @@ public class Iban {
                                     && TextUtils.isEmpty(mValue)
                             : "Server IBANs must have a non-zero instrumentId, empty GUID and"
                                     + " empty value.";
+                    break;
+                default:
+                    assert false : "Unexpected record type: " + mRecordType;
                     break;
             }
             // Non-null enforcement happens inside the constructor if applicable, assume

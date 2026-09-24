@@ -404,6 +404,7 @@ robolectric_library("payments_autofill_junit_tests") {
     "junit/src/org/chromium/components/autofill/payments/BnplIssuerTosDetailTest.java",
     "junit/src/org/chromium/components/autofill/payments/CardDetailTest.java",
     "junit/src/org/chromium/components/autofill/payments/EwalletTest.java",
+    "junit/src/org/chromium/components/autofill/payments/IbanTest.java",
     "junit/src/org/chromium/components/autofill/payments/LegalMessageLineTest.java",
     "junit/src/org/chromium/components/autofill/payments/LegalMessageTest.java",
     "junit/src/org/chromium/components/autofill/payments/PaymentInstrumentTest.java",
