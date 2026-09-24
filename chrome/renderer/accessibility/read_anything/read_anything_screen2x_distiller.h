@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_SCREEN2X_DISTILLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -34,9 +35,10 @@ class Screen2xDistiller : public ReadAnythingDistiller {
   Screen2xDistiller& operator=(const Screen2xDistiller&) = delete;
 
   // ReadAnythingDistiller:
-  void Distill(const DistillationRequest& request) override;
+  using ReadAnythingDistiller::Distill;
+  void Distill(std::optional<DistillationRequest> request) override;
   void Reset() override;
-  bool IsInProgress() const override;
+  bool IsDistillationInProgress() const override;
   ReadAnythingAppModel::DistillationMethod GetDistillationMethod()
       const override;
 

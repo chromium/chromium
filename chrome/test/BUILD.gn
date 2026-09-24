@@ -2803,6 +2803,7 @@ if (!is_android) {
       "../renderer/accessibility/ax_tree_distiller_browsertest.cc",
       "../renderer/accessibility/read_anything/read_anything_app_controller_browsertest.cc",
       "../renderer/accessibility/read_anything/read_anything_distiller_factory_browsertest.cc",
+      "../renderer/accessibility/read_anything/read_anything_readability_distiller_browsertest.cc",
       "../renderer/accessibility/read_anything/read_anything_screen2x_distiller_browsertest.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.h",

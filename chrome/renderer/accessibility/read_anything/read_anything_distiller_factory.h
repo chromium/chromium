@@ -6,9 +6,11 @@
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_DISTILLER_FACTORY_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller.h"
 
@@ -26,9 +28,19 @@ class ReadAnythingDistillerFactory {
  public:
   using ScreenAIReadinessCallback = base::RepeatingCallback<bool()>;
 
+  // Reply from the browser process: (result, title, html_content).
+  using ReadabilityResultCallback = base::OnceCallback<void(
+      read_anything::mojom::ReadabilityDistillationResult result,
+      const std::string& title,
+      const std::string& content)>;
+
+  using RequestReadabilityDistillationCallback =
+      base::RepeatingCallback<void(ReadabilityResultCallback)>;
+
   ReadAnythingDistillerFactory(
       content::RenderFrame* render_frame,
-      ScreenAIReadinessCallback is_screen_ai_ready_callback);
+      ScreenAIReadinessCallback is_screen_ai_ready_callback,
+      RequestReadabilityDistillationCallback request_distillation_callback);
   virtual ~ReadAnythingDistillerFactory();
   ReadAnythingDistillerFactory(const ReadAnythingDistillerFactory&) = delete;
   ReadAnythingDistillerFactory& operator=(const ReadAnythingDistillerFactory&) =
@@ -49,6 +61,10 @@ class ReadAnythingDistillerFactory {
   // Callback forwarded to Screen2xDistiller to query whether the ScreenAI
   // service in the utility process is ready for distillation.
   ScreenAIReadinessCallback is_screen_ai_ready_callback_;
+
+  // Callback forwarded to ReadabilityDistiller to request a distillation from
+  // the browser process, which owns the DOM distiller.
+  RequestReadabilityDistillationCallback request_distillation_callback_;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_DISTILLER_FACTORY_H_

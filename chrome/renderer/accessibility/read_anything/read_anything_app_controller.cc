@@ -168,7 +168,10 @@ ReadAnythingAppController::ReadAnythingAppController(
     distiller_factory_ = std::make_unique<ReadAnythingDistillerFactory>(
         render_frame,
         base::BindRepeating(&ReadAnythingAppModel::is_screen_ai_service_ready,
-                            base::Unretained(&model_)));
+                            base::Unretained(&model_)),
+        base::BindRepeating(
+            &ReadAnythingAppController::RequestReadabilityDistillation,
+            weak_ptr_factory_.GetWeakPtr()));
   } else {
     distiller_ = std::make_unique<AXTreeDistiller>(
         render_frame,
@@ -444,11 +447,14 @@ void ReadAnythingAppController::ProcessModelUpdates() {
       model_.set_requires_readability_distillation(false);
     } else {
       PrepareForNewContentDistillation();
-      // In the legacy path, distillation results are sent via UpdateContent()
-      // rather than this callback, so the callback does not need to be handled.
-      // TODO(b/543987370): Implement readability interface path when refactor
-      // flag is enabled.
-      page_handler_->RequestReadabilityDistillation(base::DoNothing());
+      if (features::IsReadAnythingDistillerRefactorEnabled()) {
+        ExecuteDistillation();
+      } else {
+        // In the legacy path, distillation results are sent via UpdateContent()
+        // rather than this callback, so the callback does not need to be
+        // handled.
+        page_handler_->RequestReadabilityDistillation(base::DoNothing());
+      }
     }
   }
 
@@ -579,11 +585,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     if (features::IsReadAnythingDistillerRefactorEnabled()) {
       SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
                                kDistillationInProgress);
-
-      // Distillation data will be received via this callback once refactored.
-      // TODO(b/543987370): Replace with ReadabilityDistiller to handle the
-      // callback.
-      page_handler_->RequestReadabilityDistillation(base::DoNothing());
+      ExecuteDistillation();
     }
     return;
   }
@@ -769,7 +771,7 @@ void ReadAnythingAppController::UpdateActiveDistiller() {
 }
 
 void ReadAnythingAppController::ExecuteDistillation(
-    const DistillationRequest& request) {
+    std::optional<DistillationRequest> request) {
   // Ensure the active distiller matches the model's next distillation method
   // before dispatching the request.
   UpdateActiveDistiller();
@@ -842,6 +844,12 @@ void ReadAnythingAppController::Distill() {
   }
 }
 
+void ReadAnythingAppController::RequestReadabilityDistillation(
+    read_anything::mojom::UntrustedPageHandler::
+        RequestReadabilityDistillationCallback callback) {
+  page_handler_->RequestReadabilityDistillation(std::move(callback));
+}
+
 void ReadAnythingAppController::OnDistillationComplete(
     const DistillationResult& result) {
   CHECK(features::IsReadAnythingDistillerRefactorEnabled());
@@ -850,7 +858,8 @@ void ReadAnythingAppController::OnDistillationComplete(
       OnAXTreeDistilled(result.tree_id, result.node_ids);
       break;
     case DistillationResult::Type::kHTML:
-      // TODO(b/543987370): Implement readability distiller.
+      // TODO(b/543987370): Rename once the mojo UpdateContent() is removed.
+      UpdateContent(result.title, result.html_content);
       break;
   }
 }

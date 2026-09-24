@@ -7,16 +7,19 @@
 #include <memory>
 #include <utility>
 
-#include "base/notreached.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_readability_distiller.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_screen2x_distiller.h"
 
 ReadAnythingDistillerFactory::ReadAnythingDistillerFactory(
     content::RenderFrame* render_frame,
-    ScreenAIReadinessCallback is_screen_ai_ready_callback)
+    ScreenAIReadinessCallback is_screen_ai_ready_callback,
+    RequestReadabilityDistillationCallback request_distillation_callback)
     : render_frame_(render_frame),
-      is_screen_ai_ready_callback_(std::move(is_screen_ai_ready_callback)) {}
+      is_screen_ai_ready_callback_(std::move(is_screen_ai_ready_callback)),
+      request_distillation_callback_(std::move(request_distillation_callback)) {
+}
 
 ReadAnythingDistillerFactory::~ReadAnythingDistillerFactory() = default;
 
@@ -30,8 +33,7 @@ ReadAnythingDistillerFactory::CreateDistiller(
           render_frame_, is_screen_ai_ready_callback_,
           std::move(on_complete_callback));
     case ReadAnythingAppModel::DistillationMethod::kReadability:
-      // TODO(crbug.com/543987370): Implement in follow-up CL for
-      // ReadabilityDistiller.
-      NOTREACHED();
+      return std::make_unique<ReadabilityDistiller>(
+          request_distillation_callback_, std::move(on_complete_callback));
   }
 }

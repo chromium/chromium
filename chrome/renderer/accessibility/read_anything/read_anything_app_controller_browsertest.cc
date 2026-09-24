@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -7107,8 +7108,10 @@ class ReadAnythingAppControllerDistillerRefactorTest
   ~ReadAnythingAppControllerDistillerRefactorTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kReadAnythingDistillerRefactor);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingDistillerRefactor,
+         features::kReadAnythingWithReadability},
+        {});
     forced_distillation_method_ =
         ReadAnythingAppModel::DistillationMethod::kScreen2x;
     ReadAnythingAppControllerTest::SetUp();
@@ -7133,4 +7136,33 @@ TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
 
   // Distillation completed and tree is updated.
   EXPECT_FALSE(model().screen2x_distiller_running());
+}
+
+// TODO(b/558399596): Add comprehensive controller tests for the refactored
+// distillation pipeline.
+TEST_F(ReadAnythingAppControllerDistillerRefactorTest,
+       Distill_WithRefactorEnabled_ReadabilityDistillsSuccessfully) {
+  controller().set_forced_distillation_method_for_testing(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  EXPECT_CALL(page_handler_, RequestReadabilityDistillation(testing::_))
+      .WillOnce([](MockReadAnythingUntrustedPageHandler::
+                       RequestReadabilityDistillationCallback callback) {
+        std::move(callback).Run(
+            read_anything::mojom::ReadabilityDistillationResult::kSuccess,
+            "Distilled Title", "<p>Distilled Content</p>");
+      });
+
+  ui::AXTreeID readability_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  controller().OnActiveAXTreeIDChanged(readability_tree_id,
+                                       ukm::kInvalidSourceId, /*is_pdf=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return model().readability_distillation_complete_for_current_tree();
+  }));
+
+  EXPECT_EQ(controller().GetDomDistillerTitle(), "Distilled Title");
+  EXPECT_EQ(controller().GetDomDistillerContentHtml(),
+            "<p>Distilled Content</p>");
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
 }

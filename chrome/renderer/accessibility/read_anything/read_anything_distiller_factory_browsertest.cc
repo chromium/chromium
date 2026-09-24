@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller.h"
 #include "chrome/test/base/chrome_render_view_test.h"
@@ -18,6 +19,19 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
+
+namespace {
+
+// The factory only stores this callback and forwards it to
+// ReadabilityDistiller, so tests that do not use ReadabilityDistiller can hand
+// it a requester that drops the request and never replies.
+ReadAnythingDistillerFactory::RequestReadabilityDistillationCallback
+NoOpDistillationRequester() {
+  return base::BindRepeating(
+      [](ReadAnythingDistillerFactory::ReadabilityResultCallback callback) {});
+}
+
+}  // namespace
 
 class ReadAnythingDistillerFactoryTest : public ChromeRenderViewTest {
  public:
@@ -47,7 +61,8 @@ class ReadAnythingDistillerFactoryTest : public ChromeRenderViewTest {
 TEST_F(ReadAnythingDistillerFactoryTest,
        CreateDistiller_Screen2x_CreatesNonNullDistiller) {
   ReadAnythingDistillerFactory factory(
-      GetRenderFrame(), base::BindRepeating([]() { return false; }));
+      GetRenderFrame(), base::BindRepeating([]() { return false; }),
+      NoOpDistillationRequester());
 
   std::unique_ptr<ReadAnythingDistiller> distiller = factory.CreateDistiller(
       ReadAnythingAppModel::DistillationMethod::kScreen2x, base::DoNothing());
@@ -59,7 +74,8 @@ TEST_F(ReadAnythingDistillerFactoryTest,
        CreateDistiller_Screen2x_DistillsSuccessfully) {
   std::optional<DistillationResult> captured_result;
   ReadAnythingDistillerFactory factory(
-      GetRenderFrame(), base::BindRepeating([]() { return false; }));
+      GetRenderFrame(), base::BindRepeating([]() { return false; }),
+      NoOpDistillationRequester());
 
   std::unique_ptr<ReadAnythingDistiller> distiller = factory.CreateDistiller(
       ReadAnythingAppModel::DistillationMethod::kScreen2x,
@@ -88,7 +104,8 @@ TEST_F(ReadAnythingDistillerFactoryTest,
                                        base::BindLambdaForTesting([&]() {
                                          readiness_callback_invoked = true;
                                          return false;
-                                       }));
+                                       }),
+                                       NoOpDistillationRequester());
 
   std::unique_ptr<ReadAnythingDistiller> distiller = factory.CreateDistiller(
       ReadAnythingAppModel::DistillationMethod::kScreen2x, base::DoNothing());
@@ -100,4 +117,73 @@ TEST_F(ReadAnythingDistillerFactoryTest,
 
   distiller->Distill(request);
   EXPECT_TRUE(readiness_callback_invoked);
+}
+
+TEST_F(ReadAnythingDistillerFactoryTest,
+       CreateDistiller_Readability_CreatesNonNullDistiller) {
+  ReadAnythingDistillerFactory factory(
+      GetRenderFrame(), base::BindRepeating([]() { return false; }),
+      NoOpDistillationRequester());
+
+  std::unique_ptr<ReadAnythingDistiller> distiller = factory.CreateDistiller(
+      ReadAnythingAppModel::DistillationMethod::kReadability,
+      base::DoNothing());
+
+  EXPECT_NE(distiller, nullptr);
+  EXPECT_EQ(distiller->GetDistillationMethod(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+}
+
+TEST_F(ReadAnythingDistillerFactoryTest,
+       CreateDistiller_Readability_ForwardsRequestCallback) {
+  bool request_callback_invoked = false;
+  ReadAnythingDistillerFactory factory(
+      GetRenderFrame(), base::BindRepeating([]() { return false; }),
+      base::BindLambdaForTesting(
+          [&](ReadAnythingDistillerFactory::ReadabilityResultCallback
+                  callback) { request_callback_invoked = true; }));
+
+  std::unique_ptr<ReadAnythingDistiller> distiller = factory.CreateDistiller(
+      ReadAnythingAppModel::DistillationMethod::kReadability,
+      base::DoNothing());
+  ASSERT_NE(distiller, nullptr);
+
+  // Readability distills in the browser process, so unlike Screen2x it needs
+  // no AXTree on the request.
+  distiller->Distill();
+
+  EXPECT_TRUE(request_callback_invoked);
+  EXPECT_TRUE(distiller->IsDistillationInProgress());
+}
+
+TEST_F(ReadAnythingDistillerFactoryTest,
+       CreateDistiller_Readability_DistillsSuccessfully) {
+  std::optional<DistillationResult> captured_result;
+  ReadAnythingDistillerFactory::ReadabilityResultCallback captured_reply;
+  ReadAnythingDistillerFactory factory(
+      GetRenderFrame(), base::BindRepeating([]() { return false; }),
+      base::BindLambdaForTesting(
+          [&](ReadAnythingDistillerFactory::ReadabilityResultCallback
+                  callback) { captured_reply = std::move(callback); }));
+
+  std::unique_ptr<ReadAnythingDistiller> distiller = factory.CreateDistiller(
+      ReadAnythingAppModel::DistillationMethod::kReadability,
+      base::BindLambdaForTesting(
+          [&](const DistillationResult& result) { captured_result = result; }));
+  ASSERT_NE(distiller, nullptr);
+
+  distiller->Distill();
+  ASSERT_FALSE(captured_reply.is_null());
+  EXPECT_TRUE(distiller->IsDistillationInProgress());
+
+  // Simulate the browser process replying with distilled content.
+  std::move(captured_reply)
+      .Run(read_anything::mojom::ReadabilityDistillationResult::kSuccess,
+           "Title", "<p>Content</p>");
+
+  EXPECT_FALSE(distiller->IsDistillationInProgress());
+  ASSERT_TRUE(captured_result.has_value());
+  EXPECT_EQ(captured_result->type, DistillationResult::Type::kHTML);
+  EXPECT_EQ(captured_result->title, "Title");
+  EXPECT_EQ(captured_result->html_content, "<p>Content</p>");
 }

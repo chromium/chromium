@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_DISTILLER_H_
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_READ_ANYTHING_DISTILLER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -47,14 +48,16 @@ class ReadAnythingDistiller {
 
   virtual ~ReadAnythingDistiller() = default;
 
-  // Initiates distillation.
-  virtual void Distill(const DistillationRequest& request) = 0;
+  // Initiates distillation. `request` is required for tree-based engines
+  // (Screen2x) and unused for DOM-based engines (Readability).
+  virtual void Distill(std::optional<DistillationRequest> request) = 0;
+  void Distill() { Distill(std::nullopt); }
 
   // Resets internal state.
   virtual void Reset() = 0;
 
   // Returns whether a distillation is currently in progress.
-  virtual bool IsInProgress() const = 0;
+  virtual bool IsDistillationInProgress() const = 0;
 
   // Returns the distillation method handled by this distiller instance.
   virtual ReadAnythingAppModel::DistillationMethod GetDistillationMethod()
