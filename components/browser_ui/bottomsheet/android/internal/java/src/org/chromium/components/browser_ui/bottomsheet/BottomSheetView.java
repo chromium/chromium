@@ -229,17 +229,6 @@ public class BottomSheetView extends FrameLayout {
     }
 
     /**
-     * Sets the elevation (Z-index) of the content container.
-     *
-     * @param z The elevation value in pixels.
-     */
-    public void setContainerZ(float z) {
-        if (mBottomSheetContentContainer != null) {
-            ViewCompat.setElevation(mBottomSheetContentContainer, z);
-        }
-    }
-
-    /**
      * Sets the accessibility pane title for the sheet view.
      *
      * @param title The pane title.
@@ -248,12 +237,7 @@ public class BottomSheetView extends FrameLayout {
         ViewCompat.setAccessibilityPaneTitle(this, title);
     }
 
-    /**
-     * Sets whether the fallback shadow is visible.
-     *
-     * @param visible Whether the fallback shadow should be visible.
-     */
-    public void setFallbackShadowVisible(boolean visible) {
+    private void setFallbackShadowVisible(boolean visible) {
         if (mFallbackShadowLayer != null) {
             mFallbackShadowLayer.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
@@ -334,6 +318,9 @@ public class BottomSheetView extends FrameLayout {
                     mShadowLayer.setBackgroundResource(0);
                     mShadowLayer.setPadding(0, 0, 0, 0);
                     updateShadowLayerMargins(false);
+                }
+                if (mGlowSpec != null) {
+                    setGlowSpec(mGlowSpec);
                 }
             }
             default -> {
@@ -602,7 +589,7 @@ public class BottomSheetView extends FrameLayout {
      *
      * @param icon The pointer icon.
      */
-    public void setHandlebarPointerIcon(PointerIcon icon) {
+    public void setHandlebarPointerIcon(@Nullable PointerIcon icon) {
         if (mHandlebar != null) {
             mHandlebar.setPointerIcon(icon);
         }

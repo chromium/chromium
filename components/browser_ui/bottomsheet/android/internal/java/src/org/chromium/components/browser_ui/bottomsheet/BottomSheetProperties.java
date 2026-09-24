@@ -23,14 +23,11 @@ public class BottomSheetProperties {
     public static final WritableObjectPropertyKey<GlowSpec> GLOW_SPEC =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
-    public static final WritableFloatPropertyKey CONTAINER_Z = new WritableFloatPropertyKey();
     public static final WritableBooleanPropertyKey CLOSE_BUTTON_VISIBILITY =
             new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<@Nullable OnClickListener>
             CLOSE_BUTTON_CLICK_LISTENER = new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey CONTAINER_TOUCH_ENABLED =
-            new WritableBooleanPropertyKey();
-    public static final WritableBooleanPropertyKey FALLBACK_SHADOW_VISIBILITY =
             new WritableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<@Nullable View> CONTENT_VIEW =
@@ -60,11 +57,9 @@ public class BottomSheetProperties {
                 SHEET_LAYOUT_MODE,
                 GLOW_SPEC,
                 BACKGROUND_COLOR,
-                CONTAINER_Z,
                 CLOSE_BUTTON_VISIBILITY,
                 CLOSE_BUTTON_CLICK_LISTENER,
                 CONTAINER_TOUCH_ENABLED,
-                FALLBACK_SHADOW_VISIBILITY,
                 CONTENT_VIEW,
                 TOOLBAR_VIEW,
                 KEYBOARD_CURTAIN_HEIGHT,

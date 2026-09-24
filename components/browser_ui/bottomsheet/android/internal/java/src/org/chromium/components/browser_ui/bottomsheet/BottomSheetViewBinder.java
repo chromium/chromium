@@ -25,8 +25,6 @@ public class BottomSheetViewBinder {
             view.setGlowSpec(model.get(BottomSheetProperties.GLOW_SPEC));
         } else if (BottomSheetProperties.BACKGROUND_COLOR == propertyKey) {
             view.setSheetBackgroundColor(model.get(BottomSheetProperties.BACKGROUND_COLOR));
-        } else if (BottomSheetProperties.CONTAINER_Z == propertyKey) {
-            view.setContainerZ(model.get(BottomSheetProperties.CONTAINER_Z));
         } else if (BottomSheetProperties.CLOSE_BUTTON_VISIBILITY == propertyKey) {
             view.setCloseButtonVisible(model.get(BottomSheetProperties.CLOSE_BUTTON_VISIBILITY));
         } else if (BottomSheetProperties.CLOSE_BUTTON_CLICK_LISTENER == propertyKey) {
@@ -34,9 +32,6 @@ public class BottomSheetViewBinder {
                     model.get(BottomSheetProperties.CLOSE_BUTTON_CLICK_LISTENER));
         } else if (BottomSheetProperties.CONTAINER_TOUCH_ENABLED == propertyKey) {
             view.setContainerTouchEnabled(model.get(BottomSheetProperties.CONTAINER_TOUCH_ENABLED));
-        } else if (BottomSheetProperties.FALLBACK_SHADOW_VISIBILITY == propertyKey) {
-            view.setFallbackShadowVisible(
-                    model.get(BottomSheetProperties.FALLBACK_SHADOW_VISIBILITY));
         } else if (BottomSheetProperties.CONTENT_VIEW == propertyKey) {
             view.setContentView(model.get(BottomSheetProperties.CONTENT_VIEW));
         } else if (BottomSheetProperties.TOOLBAR_VIEW == propertyKey) {
@@ -63,6 +58,8 @@ public class BottomSheetViewBinder {
                     model.get(BottomSheetProperties.VISIBLE_BACKGROUND_HEIGHT));
         } else if (BottomSheetProperties.SHEET_FOCUSABLE == propertyKey) {
             view.setSheetFocusable(model.get(BottomSheetProperties.SHEET_FOCUSABLE));
+        } else {
+            assert false : "Unhandled property key: " + propertyKey;
         }
     }
 

@@ -4,7 +4,10 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Color;
@@ -22,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.SheetLayoutMode;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -59,12 +63,6 @@ public class BottomSheetViewBinderUnitTest {
     }
 
     @Test
-    public void testContainerZ() {
-        mModel.set(BottomSheetProperties.CONTAINER_Z, 12f);
-        verify(mView).setContainerZ(12f);
-    }
-
-    @Test
     public void testCloseButtonVisibility() {
         mModel.set(BottomSheetProperties.CLOSE_BUTTON_VISIBILITY, true);
         verify(mView).setCloseButtonVisible(true);
@@ -81,12 +79,6 @@ public class BottomSheetViewBinderUnitTest {
     public void testContainerTouchEnabled() {
         mModel.set(BottomSheetProperties.CONTAINER_TOUCH_ENABLED, false);
         verify(mView).setContainerTouchEnabled(false);
-    }
-
-    @Test
-    public void testFallbackShadowVisibility() {
-        mModel.set(BottomSheetProperties.FALLBACK_SHADOW_VISIBILITY, true);
-        verify(mView).setFallbackShadowVisible(true);
     }
 
     @Test
@@ -161,5 +153,18 @@ public class BottomSheetViewBinderUnitTest {
     public void testSheetFocusable() {
         mModel.set(BottomSheetProperties.SHEET_FOCUSABLE, true);
         verify(mView).setSheetFocusable(true);
+    }
+
+    @Test
+    public void testAllKeysAreBound() {
+        for (PropertyKey key : BottomSheetProperties.ALL_KEYS) {
+            clearInvocations(mView);
+            BottomSheetViewBinder.bind(mModel, mView, key);
+            assertFalse(
+                    "Every key in BottomSheetProperties.ALL_KEYS must be handled by"
+                            + " BottomSheetViewBinder: "
+                            + key,
+                    mockingDetails(mView).getInvocations().isEmpty());
+        }
     }
 }

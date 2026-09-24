@@ -1906,4 +1906,68 @@ public class BottomSheetUnitTest {
                 0,
                 contentContainer.getPaddingBottom());
     }
+
+    /**
+     * Verifies that when the shared {@link BottomSheet} instance on a large-form-factor device
+     * switches from a sheet with desktop UI ({@code supportsLargeFormFactor() == true}, rendered as
+     * {@link SheetLayoutMode#DESKTOP_POPUP}) to a sheet without desktop UI ({@code
+     * supportsLargeFormFactor() == false}, rendered as {@link SheetLayoutMode#DESKTOP_FALLBACK}),
+     * the 24dp desktop floatation bottom margin added for the desktop-UI sheet is removed so the
+     * non-desktop-UI sheet sits flush against the bottom.
+     */
+    @Test
+    public void testContainerBottomMargin_PopupToFallbackTransition_RemovesDesktopMargin() {
+        BottomSheet sheet = buildSheet(/* isLargeFormFactor= */ true);
+        int desktopMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+        BottomSheetContent desktopUiContent =
+                buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f);
+        BottomSheetContent nonDesktopUiContent =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f);
+
+        sheet.setBottomMargin(40);
+
+        // 1. Show a sheet with desktop UI enabled (DESKTOP_POPUP).
+        sheet.showContent(desktopUiContent);
+        assertEquals(SheetLayoutMode.DESKTOP_POPUP, sheet.getSheetLayoutMode());
+        assertEquals(
+                "A sheet with desktop UI must add the 24dp desktop bottom margin on top of the"
+                        + " caller margin.",
+                40 + desktopMargin,
+                sheet.getContainerBottomMargin());
+
+        // 2. Switch on the same BottomSheet instance to a sheet without desktop UI
+        // (DESKTOP_FALLBACK).
+        sheet.showContent(nonDesktopUiContent);
+        assertEquals(SheetLayoutMode.DESKTOP_FALLBACK, sheet.getSheetLayoutMode());
+        assertEquals(
+                "Switching from a sheet with desktop UI to a sheet without desktop UI must remove"
+                        + " the desktop bottom margin offset.",
+                40,
+                sheet.getContainerBottomMargin());
+    }
+
+    @Test
+    public void testShowContent_NullOnLargeFormFactor_ResetsToStandardLayoutMode() {
+        BottomSheet sheet = buildSheet(/* isLargeFormFactor= */ true);
+        sheet.showContent(buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f));
+        assertEquals(SheetLayoutMode.DESKTOP_POPUP, sheet.getSheetLayoutMode());
+
+        sheet.showContent(null);
+
+        assertEquals(
+                "Clearing sheet content on desktop must not leave the view in DESKTOP_FALLBACK.",
+                SheetLayoutMode.STANDARD,
+                sheet.getSheetLayoutMode());
+        assertEquals(
+                "Fallback shadow must remain hidden when no content is shown.",
+                View.GONE,
+                sheet.findViewById(R.id.desktop_fallback_shadow).getVisibility());
+        assertEquals(
+                "Desktop bottom margin must be removed when content is cleared.",
+                0,
+                sheet.getContainerBottomMargin());
+    }
 }

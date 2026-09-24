@@ -179,7 +179,8 @@ class BottomSheet extends BottomSheetView
     /** The last recorded app header height, in px. */
     private int mAppHeaderHeight;
 
-    private int mBottomMargin;
+    private @Px int mRequestedBottomMargin;
+    private @Px int mBottomMargin;
     private @ColorInt int mSheetBgColor;
 
     @Override
@@ -1112,7 +1113,9 @@ class BottomSheet extends BottomSheetView
         return mMediator.getSheetState();
     }
 
-    /** @return Whether the sheet is currently open. */
+    /**
+     * @return Whether the sheet is currently open.
+     */
     boolean isSheetOpen() {
         return mMediator.isSheetOpen();
     }
@@ -1134,15 +1137,14 @@ class BottomSheet extends BottomSheetView
         super.setSheetLayoutMode(mode);
         mMediator.setSheetLayoutMode(mode);
         boolean isPopup = mode == SheetLayoutMode.DESKTOP_POPUP;
-        if (isPopup) {
-            setBottomMargin(0);
-        }
+        setBottomMargin(mRequestedBottomMargin);
         mMediator.updateCloseButton(isPopup, getCurrentSheetContent());
         updateContainerClipping(isPopup);
     }
 
     private boolean isLargeFormFactorFallbackUiEnabled() {
-        return mIsLargeFormFactor && !isLargeFormFactorUiEnabled();
+        BottomSheetContent content = getCurrentSheetContent();
+        return mIsLargeFormFactor && content != null && !content.supportsLargeFormFactor();
     }
 
     /**
@@ -1453,9 +1455,10 @@ class BottomSheet extends BottomSheetView
 
         boolean showHandlebar = content != null && content.showHandlebar();
         mMediator.setHandlebarVisible(showHandlebar);
-        if (isLargeFormFactorUiEnabled) {
-            setHandlebarPointerIcon(PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND));
-        }
+        setHandlebarPointerIcon(
+                isLargeFormFactorUiEnabled
+                        ? PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND)
+                        : null);
         updateContentContainerHeight();
         sizeAndPositionSheetInParent();
         updateBackgroundColor();
@@ -1658,23 +1661,25 @@ class BottomSheet extends BottomSheetView
     }
 
     void setBottomMargin(@Px int bottomMargin) {
+        mRequestedBottomMargin = bottomMargin;
+        int effectiveBottomMargin = bottomMargin;
         // Enforce the baseline visual requirements for large form factor devices: ensure the sheet
         // physically floats above the logical bottom by attaching a rigid bottom margin offset.
         if (isLargeFormFactorUiEnabled()) {
-            bottomMargin += mDesktopBottomMargin;
+            effectiveBottomMargin += mDesktopBottomMargin;
         }
 
         // TODO(crbug.com/521433079): Should early return if this doesn't change. Leaving for now to
         // ensure we don't introduce subtle client regressions.
-        boolean bottomMarginChanged = mBottomMargin != bottomMargin;
+        boolean bottomMarginChanged = mBottomMargin != effectiveBottomMargin;
 
-        mBottomMargin = bottomMargin;
+        mBottomMargin = effectiveBottomMargin;
         MarginLayoutParams layoutParams = (MarginLayoutParams) mSheetContainer.getLayoutParams();
         layoutParams.bottomMargin = mBottomMargin;
         mSheetContainer.setLayoutParams(layoutParams);
 
         if (!bottomMarginChanged) return;
-        mMediator.notifyContainerBottomMarginChanged(bottomMargin);
+        mMediator.notifyContainerBottomMarginChanged(effectiveBottomMargin);
     }
 
     void onSheetBackgroundColorOverrideChanged() {
