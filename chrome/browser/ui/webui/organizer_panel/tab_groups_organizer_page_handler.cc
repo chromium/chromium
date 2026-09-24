@@ -33,6 +33,11 @@
 
 namespace {
 
+struct SortableTabGroup {
+  organizer_panel::mojom::TabGroupPtr group;
+  base::Time last_used_time;
+};
+
 base::Time GetLastUsedTime(const tab_groups::SavedTabGroup& group) {
   if (!group.last_user_interaction_time().is_null()) {
     return group.last_user_interaction_time();
@@ -80,25 +85,29 @@ TabGroupsOrganizerPageHandler::~TabGroupsOrganizerPageHandler() {
 
 void TabGroupsOrganizerPageHandler::GetTabGroups(
     GetTabGroupsCallback callback) {
-  std::vector<organizer_panel::mojom::TabGroupPtr> tab_groups;
-  if (!tab_group_sync_service_) {
-    std::move(callback).Run(std::move(tab_groups));
-    return;
+  std::vector<SortableTabGroup> sortable_groups;
+
+  if (tab_group_sync_service_) {
+    std::vector<tab_groups::SavedTabGroup> groups =
+        tab_group_sync_service_->GetAllGroups();
+    for (const tab_groups::SavedTabGroup& group : groups) {
+      if (group.saved_tabs().empty()) {
+        continue;
+      }
+      sortable_groups.push_back(
+          {CreateMojoTabGroup(group), GetLastUsedTime(group)});
+    }
   }
 
-  std::vector<tab_groups::SavedTabGroup> groups =
-      tab_group_sync_service_->GetAllGroups();
-  std::erase_if(groups, [](const tab_groups::SavedTabGroup& group) {
-    return group.saved_tabs().empty();
-  });
+  std::ranges::sort(sortable_groups,
+                    [](const SortableTabGroup& a, const SortableTabGroup& b) {
+                      return a.last_used_time > b.last_used_time;
+                    });
 
-  std::ranges::sort(groups, [](const tab_groups::SavedTabGroup& a,
-                               const tab_groups::SavedTabGroup& b) {
-    return GetLastUsedTime(a) > GetLastUsedTime(b);
-  });
-
-  for (const tab_groups::SavedTabGroup& group : groups) {
-    tab_groups.push_back(CreateMojoTabGroup(group));
+  std::vector<organizer_panel::mojom::TabGroupPtr> tab_groups;
+  tab_groups.reserve(sortable_groups.size());
+  for (SortableTabGroup& entry : sortable_groups) {
+    tab_groups.push_back(std::move(entry.group));
   }
 
   std::move(callback).Run(std::move(tab_groups));
@@ -106,23 +115,20 @@ void TabGroupsOrganizerPageHandler::GetTabGroups(
 
 void TabGroupsOrganizerPageHandler::OpenTabGroup(const std::string& id) {
   const base::Uuid uuid = base::Uuid::ParseLowercase(id);
-  if (!tab_group_sync_service_ || !uuid.is_valid()) {
-    return;
+  if (tab_group_sync_service_ && uuid.is_valid()) {
+    const std::optional<tab_groups::SavedTabGroup> group =
+        tab_group_sync_service_->GetGroup(uuid);
+    if (group && !group->saved_tabs().empty()) {
+      BrowserWindowInterface* browser =
+          webui::GetBrowserWindowInterface(web_contents_);
+      CHECK(browser);
+
+      tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
+          browser, group->saved_guid(),
+          tab_groups::OpeningSource::kOpenedFromRevisitUi,
+          tab_group_sync_service_);
+    }
   }
-
-  const std::optional<tab_groups::SavedTabGroup> group =
-      tab_group_sync_service_->GetGroup(uuid);
-  if (!group || group->saved_tabs().empty()) {
-    return;
-  }
-
-  BrowserWindowInterface* browser =
-      webui::GetBrowserWindowInterface(web_contents_);
-  CHECK(browser);
-
-  tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
-      browser, group->saved_guid(),
-      tab_groups::OpeningSource::kOpenedFromRevisitUi, tab_group_sync_service_);
 }
 
 void TabGroupsOrganizerPageHandler::ShowContextMenu(
