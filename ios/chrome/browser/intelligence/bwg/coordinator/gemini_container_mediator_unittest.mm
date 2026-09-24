@@ -1159,4 +1159,66 @@ TEST_F(GeminiContainerMediatorTest,
   [mock_wrapper_class stopMocking];
 }
 
+// Test that `assistantContainer:didChangeDetent:` requests full page context
+// generation when the detent changes from `kMinimized` to `kMedium` or
+// `kLarge`, but not for other detent transitions.
+TEST_F(
+    GeminiContainerMediatorTest,
+    TestDidChangeDetentRequestsPageContextGenerationWhenExpandingFromMinimized) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration, kPageActionMenu},
+      {});
+
+  web::FakeWebState* web_state = AppendActiveWebState();
+  web_state->WasShown();
+  web_state->SetCurrentURL(GURL("https://example.com"));
+  web_state->SetContentsMimeType("text/html");
+
+  id mock_wrapper_class = OCMClassMock([PageContextWrapper class]);
+  MediatorFakePageContextWrapper* fake_wrapper =
+      [[MediatorFakePageContextWrapper alloc]
+            initWithWebState:web_state
+          completionCallback:base::DoNothing()];
+  OCMStub([mock_wrapper_class alloc]).andReturn(fake_wrapper);
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+  [mediator_ connect];
+  EXPECT_TRUE(fake_wrapper.populateCalled);
+  fake_wrapper.populateCalled = NO;
+
+  // Transitioning from `kMedium` to `kLarge` should not request context
+  // generation.
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kLarge];
+  EXPECT_FALSE(fake_wrapper.populateCalled);
+
+  // Transitioning from `kLarge` to `kMinimized` should not request context
+  // generation.
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMinimized];
+  EXPECT_FALSE(fake_wrapper.populateCalled);
+
+  // Transitioning from `kMinimized` to `kMedium` should request full page
+  // context generation.
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMedium];
+  EXPECT_TRUE(fake_wrapper.populateCalled);
+  fake_wrapper.populateCalled = NO;
+
+  // Transitioning back to `kMinimized` and then to `kLarge` should also request
+  // full page context generation.
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMinimized];
+  EXPECT_FALSE(fake_wrapper.populateCalled);
+
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kLarge];
+  EXPECT_TRUE(fake_wrapper.populateCalled);
+
+  [mock_wrapper_class stopMocking];
+}
+
 }  // namespace

@@ -361,8 +361,13 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (void)assistantContainer:(AssistantContainerViewController*)container
            didChangeDetent:(AssistantContainerDetent)newDetent {
-  [_stateManager updateDetent:newDetent];
   BOOL minimized = (newDetent == kMinimized);
+  if (_stateManager.currentUIState.detent == kMinimized && !minimized) {
+    [self requestActivePageContextGeneration];
+  }
+
+  [_stateManager updateDetent:newDetent];
+
   if (_stateManager.currentUIState.actuating) {
     [self.containerHandler setAssistantContainerGrabberHidden:NO animated:YES];
   } else if ([_stateManager shouldBeDismissed]) {
