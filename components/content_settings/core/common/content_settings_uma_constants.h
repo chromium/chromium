@@ -149,7 +149,9 @@ inline constexpr auto kContentSettingsTypeToHistogramValue =
         // Removed STORAGE_ACCESS_HEADER_ORIGIN_TRIAL in M156.
         {ContentSettingsType::HAND_TRACKING, 128},
         {ContentSettingsType::WEB_APP_INSTALLATION, 129},
-        {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS, 130},
+        // DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS deprecated in M151.
+        {ContentSettingsType::DEPRECATED_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
+         130},
         {ContentSettingsType::LEGACY_COOKIE_SCOPE, 131},
         {ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
          132},

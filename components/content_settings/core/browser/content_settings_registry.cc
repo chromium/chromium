@@ -756,19 +756,6 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
            PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
-  // TODO(crbug.com/368266657): Switch to CONTENT_SETTING_ASK once the prompt is
-  // implemented and replace INHERIT_IN_INCOGNITO -> INTERIT_IF_LESS_PERMISSIVE.
-  Register(ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
-           "direct-sockets-private-network-access", CONTENT_SETTING_ALLOW,
-           WebsiteSettingsInfo::UNSYNCABLE,
-           /*allowlisted_primary_schemes=*/{},
-           /*valid_settings=*/
-           {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
-           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP,
-           ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
-
   Register(ContentSettingsType::CONTROLLED_FRAME, "controlled-frame",
            CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
            /*allowlisted_primary_schemes=*/{},

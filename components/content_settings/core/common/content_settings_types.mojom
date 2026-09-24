@@ -415,7 +415,8 @@ enum ContentSettingsType {
 
   // Content settings for private network access in the context of the
   // Direct Sockets API.
-  DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
+  // Deprecated in M151.
+  DEPRECATED_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
 
   // Content settings for legacy cookie scope.
   // Checks whether cookies scope is handled according to origin-bound cookies
