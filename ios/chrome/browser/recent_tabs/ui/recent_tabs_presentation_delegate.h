@@ -11,6 +11,8 @@
 
 #import "components/sessions/core/session_id.h"
 
+@class ShowSigninCommand;
+
 namespace synced_sessions {
 struct DistantTab;
 }

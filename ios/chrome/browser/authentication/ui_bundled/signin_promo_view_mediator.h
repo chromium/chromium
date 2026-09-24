@@ -116,10 +116,6 @@ enum class SigninPromoAction {
 // disappeared silently. See crbug.com/395959814.
 @property(nonatomic, assign, readonly) signin::Tribool signinInProgress;
 
-// YES if the promo spinner should be displayed. Either the sign-in or the
-// initial sync is in progress.
-@property(nonatomic, assign, readonly) BOOL spinnerVisible;
-
 // Returns YES if the sign-in promo view is in a state where its buttons may be
 // used.
 @property(nonatomic, assign, readonly, getter=isUsable) BOOL usable;
@@ -168,13 +164,6 @@ enum class SigninPromoAction {
     changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
                                           changeProfileContinuationProvider
     NS_DESIGNATED_INITIALIZER;
-
-- (SigninPromoViewConfigurator*)createConfigurator;
-
-// Increments the "shown" counter used for histograms. Called when the signin
-// promo view is visible. If the sign-in promo is already visible, this method
-// does nothing.
-- (void)signingPromoDidBecomeVisible;
 
 // Called when the sign-in promo view is hidden. If the sign-in promo view has
 // never been shown, or it is already hidden, this method does nothing.

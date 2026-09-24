@@ -905,6 +905,9 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (void)signingPromoDidBecomeVisible {
+  // Increments the "shown" counter used for histograms. Called when the signin
+  // promo view is visible. If the sign-in promo is already visible, this method
+  // does nothing.
   CHECK(![self isClosedOrDisconnected], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   if (self.signinPromoViewVisible) {

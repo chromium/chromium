@@ -22,10 +22,12 @@
 #import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/signin/reauth/coordinator/signin_reauth_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_recent_tabs_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
@@ -52,6 +54,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
@@ -59,6 +62,7 @@
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -72,6 +76,7 @@
 
 @interface RecentTabsCoordinator () <HistorySyncPopupCoordinatorDelegate,
                                      RecentTabsPresentationDelegate,
+                                     SigninPromoViewMediatorDelegate,
                                      SigninReauthCoordinatorDelegate,
                                      TabContextMenuDelegate>
 // Completion block called once the recentTabsViewController is dismissed.
@@ -95,6 +100,8 @@
   raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<syncer::SyncService> _syncService;
   SigninReauthCoordinator* _reauthCoordinator;
+  SigninCoordinator* _signinCoordinator;
+  SigninPromoViewMediator* _signinPromoViewMediator;
 }
 
 - (void)dealloc {
@@ -105,6 +112,8 @@
   CHECK(!_authenticationService, base::NotFatalUntil::M150);
   CHECK(!_syncService, base::NotFatalUntil::M150);
   CHECK(!_reauthCoordinator, base::NotFatalUntil::M150);
+  CHECK(!_signinCoordinator, base::NotFatalUntil::M156);
+  CHECK(!_signinPromoViewMediator, base::NotFatalUntil::M156);
 }
 
 #pragma mark - ChromeCoordinator
@@ -170,6 +179,24 @@
   self.mediator.consumer = self.recentTabsTableViewController;
   self.recentTabsTableViewController.imageDataSource = self.mediator;
 
+  _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
+                initWithIdentityManager:identityManager
+                  accountManagerService:ChromeAccountManagerServiceFactory::
+                                            GetForProfile(profile)
+                            authService:authService
+                            prefService:profile->GetPrefs()
+                            syncService:_syncService
+                            accessPoint:signin_metrics::AccessPoint::kRecentTabs
+                               delegate:self
+               accountSettingsPresenter:nil
+      changeProfileContinuationProvider:
+          base::BindRepeating(&CreateChangeProfileRecentTabsContinuation)];
+  _signinPromoViewMediator.signinPromoAction =
+      SigninPromoAction::kSigninWithNoDefaultIdentity;
+  _signinPromoViewMediator.consumer = self.recentTabsTableViewController;
+  self.recentTabsTableViewController.signinPromoViewDelegate =
+      _signinPromoViewMediator;
+
   // Present RecentTabsNavigationController.
   self.recentTabsNavigationController = [[TableViewNavigationController alloc]
       initWithTable:self.recentTabsTableViewController];
@@ -189,6 +216,9 @@
 }
 
 - (void)stop {
+  [self stopSigninCoordinator];
+  [_signinPromoViewMediator disconnect];
+  _signinPromoViewMediator = nil;
   [self stopHistorySyncPopupCoordinator];
   [self.recentTabsTableViewController dismissModals];
   self.recentTabsTableViewController.imageDataSource = nil;
@@ -374,6 +404,24 @@
   }
 }
 
+- (void)showSigninWithCommand:(ShowSigninCommand*)command {
+  if (_signinCoordinator.viewWillPersist) {
+    return;
+  }
+  [self stopSigninCoordinator];
+  __weak __typeof(self) weakSelf = self;
+  [command addSigninCompletion:^(SigninCoordinator* coordinator,
+                                 SigninCoordinatorResult result,
+                                 id<SystemIdentity>) {
+    [weakSelf signinDidCompleteWithCoordinator:coordinator result:result];
+  }];
+  _signinCoordinator = [SigninCoordinator
+      signinCoordinatorWithCommand:command
+                           browser:signin::GetRegularBrowser(self.browser)
+                baseViewController:self.recentTabsTableViewController];
+  [_signinCoordinator start];
+}
+
 - (void)deleteForeignSession:(const std::string&)sessionTag {
   SessionSyncServiceFactory::GetForProfile(self.profile)
       ->GetOpenTabsUIDelegate()
@@ -443,6 +491,14 @@
   [self.mediator refreshSessionsView];
 }
 
+#pragma mark - SigninPromoViewMediatorDelegate
+
+- (void)showSignin:(SigninPromoViewMediator*)mediator
+           command:(ShowSigninCommand*)command {
+  CHECK_EQ(mediator, _signinPromoViewMediator);
+  [self showSigninWithCommand:command];
+}
+
 #pragma mark - SigninReauthCoordinatorDelegate
 
 - (void)reauthFinishedWithResult:(ReauthResult)result
@@ -480,5 +536,17 @@
   _reauthCoordinator = nil;
 }
 
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+}
+
+- (void)signinDidCompleteWithCoordinator:(SigninCoordinator*)coordinator
+                                  result:(SigninCoordinatorResult)result {
+  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
+  [_signinPromoViewMediator signinDidCompleteWithResult:result];
+  [self stopSigninCoordinator];
+  [self showHistorySyncOptInAfterDedicatedSignIn:YES];
+}
 
 @end

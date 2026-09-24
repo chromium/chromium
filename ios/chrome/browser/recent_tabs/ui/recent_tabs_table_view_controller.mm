@@ -28,13 +28,9 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_recent_tabs_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
@@ -130,7 +126,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @end
 
 @interface RecentTabsTableViewController () <SigninPromoViewConsumer,
-                                             SigninPromoViewMediatorDelegate,
                                              TableViewURLDragDataSource,
                                              UIContextMenuInteractionDelegate,
                                              UIGestureRecognizerDelegate> {
@@ -148,8 +143,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
 // The sync state.
 @property(nonatomic, assign) SessionsSyncUserState sessionState;
-// Mediator in charge of inviting the user to sign-in with a Google account.
-@property(nonatomic, strong) SigninPromoViewMediator* signinPromoViewMediator;
 // The browser state used for many operations, derived from the one provided by
 // `self.browser`.
 @property(nonatomic, readonly) ProfileIOS* profile;
@@ -161,9 +154,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @property(nonatomic, strong) TableViewURLDragDropHandler* dragDropHandler;
 @end
 
-@implementation RecentTabsTableViewController {
-  SigninCoordinator* _signinCoordinator;
-}
+@implementation RecentTabsTableViewController
 
 #pragma mark - Public Interface
 
@@ -647,37 +638,14 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)addSigninPromoViewItem {
-  // Init `_signinPromoViewMediator` if nil.
-  ProfileIOS* profile = self.profile;
-  if (!self.signinPromoViewMediator && profile) {
-    self.signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-                  initWithIdentityManager:IdentityManagerFactory::GetForProfile(
-                                              profile)
-                    accountManagerService:ChromeAccountManagerServiceFactory::
-                                              GetForProfile(profile)
-                              authService:AuthenticationServiceFactory::
-                                              GetForProfile(profile)
-                              prefService:profile->GetPrefs()
-                              syncService:self.syncService
-                              accessPoint:signin_metrics::AccessPoint::
-                                              kRecentTabs
-                                 delegate:self
-                 accountSettingsPresenter:nil
-        changeProfileContinuationProvider:
-            base::BindRepeating(&CreateChangeProfileRecentTabsContinuation)];
-    self.signinPromoViewMediator.signinPromoAction =
-        SigninPromoAction::kSigninWithNoDefaultIdentity;
-    self.signinPromoViewMediator.consumer = self;
-  }
-
   // Configure and add a TableViewSigninPromoItem to the model.
   TableViewSigninPromoItem* signinPromoItem = [[TableViewSigninPromoItem alloc]
       initWithType:ItemTypeOtherDevicesSigninPromo];
   signinPromoItem.text =
       l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_RECENT_TABS_WITH_UNITY);
-  signinPromoItem.delegate = self.signinPromoViewMediator;
+  signinPromoItem.delegate = self.signinPromoViewDelegate;
   signinPromoItem.configurator =
-      [self.signinPromoViewMediator createConfigurator];
+      [self.signinPromoViewDelegate createConfigurator];
   [self.tableViewModel addItem:signinPromoItem
        toSectionWithIdentifier:SectionIdentifierOtherDevices];
 }
@@ -822,11 +790,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 #pragma mark - Private
 
-- (void)stopSigninCoordinator {
-  [_signinCoordinator stop];
-  _signinCoordinator = nil;
-}
-
 // Returns YES if `sectionIdentifier` is a Sessions sectionIdentifier.
 - (BOOL)isSessionSectionIdentifier:(NSInteger)sectionIdentifier {
   NSArray* sessionSectionIdentifiers = [self allSessionSectionIdentifiers];
@@ -845,7 +808,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if ((newSessionState == self.sessionState &&
        self.sessionState !=
            SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS) ||
-      self.signinPromoViewMediator.spinnerVisible) {
+      self.signinPromoViewDelegate.spinnerVisible) {
     // No need to refresh the sections since all states other than
     // USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS only have static content. This means
     // that if the previous State is the same as the new one the static content
@@ -899,10 +862,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // Table updates must happen before `sessionState` gets updated, since some
   // table updates rely on knowing the previous state.
   self.sessionState = newSessionState;
-
-  if (self.sessionState != SessionsSyncUserState::USER_SIGNED_OUT) {
-    [self disconnectMediator];
-  }
 }
 
 - (void)refreshRecentlyClosedTabs {
@@ -922,8 +881,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)dismissModals {
-  [self disconnectMediator];
-  [self stopSigninCoordinator];
   [self.tableView.contextMenuInteraction dismissMenu];
 }
 
@@ -1003,9 +960,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
 
-  // If SigninPromo will be shown, `self.signinPromoViewMediator` must know.
+  // If SigninPromo will be shown, `self.signinPromoViewDelegate` must know.
   if (itemTypeSelected == ItemTypeOtherDevicesSigninPromo) {
-    [self.signinPromoViewMediator signingPromoDidBecomeVisible];
+    [self.signinPromoViewDelegate signingPromoDidBecomeVisible];
     TableViewSigninPromoCell* signinPromoCell =
         base::apple::ObjCCastStrict<TableViewSigninPromoCell>(cell);
     TableViewSigninPromoItem* signinPromoItem =
@@ -1370,17 +1327,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (void)configureSigninPromoWithConfigurator:
     (SigninPromoViewConfigurator*)configurator {
-  DCHECK(self.signinPromoViewMediator);
   if (![self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierOtherDevices] ||
       ![self.tableViewModel hasItemForItemType:ItemTypeOtherDevicesSigninPromo
                              sectionIdentifier:SectionIdentifierOtherDevices]) {
-    // Need to remove the sign-in promo view mediator when the section doesn't
-    // exist anymore. The mediator should not be removed each time the section
-    // is removed since the section is replaced at each reload.
-    // Metrics would be recorded too often.
-    // The other device section can be present even without the promo.
-    [self disconnectMediator];
     return;
   }
   if ([self.tableViewModel hasItemForItemType:ItemTypeOtherDevicesSigninPromo
@@ -1404,38 +1354,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     [self reloadCellsForItems:@[ signInItem ]
              withRowAnimation:UITableViewRowAnimationNone];
   }
-}
-
-#pragma mark - SigninPromoViewMediatorDelegate
-
-- (void)showSignin:(SigninPromoViewMediator*)mediator
-           command:(ShowSigninCommand*)command {
-  CHECK_EQ(mediator, self.signinPromoViewMediator);
-  __weak __typeof(self) weakSelf = self;
-  [command addSigninCompletion:^(SigninCoordinator* coordinator,
-                                 SigninCoordinatorResult result,
-                                 id<SystemIdentity>) {
-    [weakSelf signinDidCompleteWithCoordinator:coordinator result:result];
-  }];
-  if (_signinCoordinator.viewWillPersist) {
-    return;
-  }
-  [_signinCoordinator stop];
-  _signinCoordinator = [SigninCoordinator
-      signinCoordinatorWithCommand:command
-                           browser:signin::GetRegularBrowser(_browser)
-                baseViewController:self];
-  [_signinCoordinator start];
-}
-
-#pragma mark - SigninPromoViewMediatorDelegate Helper
-
-- (void)signinDidCompleteWithCoordinator:(SigninCoordinator*)coordinator
-                                  result:(SigninCoordinatorResult)result {
-  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
-  [self.signinPromoViewMediator signinDidCompleteWithResult:result];
-  [self stopSigninCoordinator];
-  [self.presentationDelegate showHistorySyncOptInAfterDedicatedSignIn:YES];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -1475,14 +1393,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (void)keyCommand_close {
   base::RecordAction(base::UserMetricsAction(kMobileKeyCommandClose));
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
-}
-
-#pragma mark - Private Helpers
-
-// Disconnects the mediator.
-- (void)disconnectMediator {
-  [self.signinPromoViewMediator disconnect];
-  self.signinPromoViewMediator = nil;
 }
 
 - (void)didTapPromoActionButton {
