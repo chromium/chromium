@@ -457,6 +457,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/565472116")
     public void testTabGridDialogAnimation() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
