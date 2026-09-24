@@ -28,6 +28,19 @@ void InitializeMac() {
     // Chrome is unusable for a long period after returning from sleep.
     // https://crbug.com/41406192.
     @"NSAppSleepDisabled" : @YES,
+
+    // Prior to macOS 15, AppKit assumed that apps would not be so silly as to
+    // attempt to start a concurrent drag session while one was already in
+    // progress. Starting in macOS 15, AppKit guards against it, but it has a
+    // BoolAppConfig to allow it, presumably to allow for a case where this
+    // would be needed for compatibility. Given that starting a second drag
+    // while one is in progress could be used to mount an attack on the user,
+    // explicitly set the config. See -[NSCoreDragManager
+    // beginDraggingSessionWithItems:fromWindow:withClipRect:event:source:] for
+    // where the config is accessed, and see https://crbug.com/553160293,
+    // https://crbug.com/553163770, and https://crbug.com/553163820 for the
+    // rationale.
+    @"NSAllowMultipleDrags" : @NO,
   }];
 
   // Disable NSAutoFillHeuristicController on macOS 26.0 and 26.1. On those OS

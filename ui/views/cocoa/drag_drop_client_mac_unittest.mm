@@ -40,7 +40,12 @@ int g_begin_dragging_session_call_count = 0;
                                                 source:(id<NSDraggingSource>)
                                                            source {
   ++g_begin_dragging_session_call_count;
-  return nil;
+
+  // Return a fake dragging session to pretend that the dragging initiation was
+  // successful. The only thing done to the return object is a nil check, so a
+  // raw NSObject will do, and if that ever changes, a blank object will explode
+  // immediately, alerting to the issue.
+  return (NSDraggingSession*)[[NSObject alloc] init];
 }
 @end
 

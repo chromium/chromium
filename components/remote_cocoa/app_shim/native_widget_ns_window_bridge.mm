@@ -48,6 +48,7 @@
 #include "ui/base/cocoa/animation_utils.h"
 #import "ui/base/cocoa/constrained_window/constrained_window_animation.h"
 #include "ui/base/cocoa/cursor_utils.h"
+#include "ui/base/cocoa/drag_permission.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
@@ -1404,6 +1405,10 @@ void NativeWidgetNSWindowBridge::BeginFileDrag(
     const gfx::PointF& mouse_location) {
   if (!window_ || !bridged_view_) {
     DLOG(WARNING) << "BeginFileDrag failed: window or bridged_view is null";
+    return;
+  }
+  if (!ui::IsDragSessionInitiationAllowed()) {
+    DLOG(WARNING) << "BeginFileDrag failed: drag session not allowed";
     return;
   }
 

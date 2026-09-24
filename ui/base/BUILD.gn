@@ -319,6 +319,8 @@ component("base") {
       "cocoa/default_command_dispatcher_delegate.mm",
       "cocoa/defaults_utils.h",
       "cocoa/defaults_utils.mm",
+      "cocoa/drag_permission.h",
+      "cocoa/drag_permission.mm",
       "cocoa/find_pasteboard.h",
       "cocoa/find_pasteboard.mm",
       "cocoa/menu_utils.h",

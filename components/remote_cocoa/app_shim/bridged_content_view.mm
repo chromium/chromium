@@ -16,6 +16,7 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #import "ui/base/cocoa/appkit_utils.h"
+#include "ui/base/cocoa/drag_permission.h"
 #include "ui/base/cocoa/find_pasteboard.h"
 #include "ui/base/cocoa/tracking_area.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -1704,11 +1705,18 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 }
 
 - (void)draggingSession:(NSDraggingSession*)session
+       willBeginAtPoint:(NSPoint)screenPoint {
+  ui::SetDragSessionInProgress(true);
+}
+
+- (void)draggingSession:(NSDraggingSession*)session
            endedAtPoint:(NSPoint)screenPoint
               operation:(NSDragOperation)operation {
+  ui::SetDragSessionInProgress(false);
   remote_cocoa::DragDropClient* client = [self dragDropClient];
-  if (client)
+  if (client) {
     client->EndDrag();
+  }
 }
 
 // NSAccessibility formal protocol implementation:
