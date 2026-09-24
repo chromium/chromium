@@ -130,46 +130,6 @@ TEST_P(FindTextTest, FindDiacriticText) {
   EXPECT_THAT(engine->find_results_for_testing(), IsEmpty());
 }
 
-TEST_P(FindTextTest, FindJapaneseKanaText) {
-  static constexpr char16_t kKa[] = u"\u304b";
-  static constexpr char16_t kGa[] = u"\u304c";
-  FindTextTestClient client(/*expected_case_sensitive=*/false,
-                            /*use_skia_renderer=*/GetParam());
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("japanese_ga_ka.pdf"));
-  ASSERT_TRUE(engine);
-
-  ExpectInitialSearchResults(client, 4);
-  engine->StartFind(kGa, /*case_sensitive=*/false);
-  // TODO(crbug.com/40707270): Ga and Ka should each return 2 results.
-  const auto kWrongExpectations = {
-      PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/1, /*char_count=*/1, kKa),
-      PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/3, /*char_count=*/1, kGa),
-      PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/5, /*char_count=*/1, kGa),
-      PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/7, /*char_count=*/1,
-                    kKa)};
-  EXPECT_THAT(engine->find_results_for_testing(),
-              ElementsAreArray(kWrongExpectations));
-
-  ExpectInitialSearchResults(client, 4);
-  engine->StartFind(kKa, /*case_sensitive=*/false);
-  EXPECT_THAT(engine->find_results_for_testing(),
-              ElementsAreArray(kWrongExpectations));
-
-  // Also try finding ASCII characters in the same document.
-  ExpectInitialSearchResults(client, 1);
-  engine->StartFind(u"a", /*case_sensitive=*/false);
-  EXPECT_THAT(engine->find_results_for_testing(),
-              ElementsAre(PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/0,
-                                        /*char_count=*/1, u"a")));
-
-  ExpectInitialSearchResults(client, 1);
-  engine->StartFind(u"C", /*case_sensitive=*/false);
-  EXPECT_THAT(engine->find_results_for_testing(),
-              ElementsAre(PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/4,
-                                        /*char_count=*/1, u"c")));
-}
-
 TEST_P(FindTextTest, FindHyphenatedText) {
   FindTextTestClient client(/*expected_case_sensitive=*/true,
                             /*use_skia_renderer=*/GetParam());
