@@ -28,14 +28,20 @@ def CheckWebViewExposedExperiments(input_api, output_api):
       'android_webview/common/ProductionSupportedFlagList.java')
 
   warnings = []
-  if (IsComponentsAndroidAutofillFileAffected(input_api, 'features.cc') and
-      not AnyAffectedFileMatches(
-          input_api, lambda f: f.LocalPath() == _PRODUCTION_SUPPORT_FILE)):
+  if (
+      IsComponentsAndroidAutofillFileAffected(input_api, 'features.cc')
+      and not AnyAffectedFileMatches(
+          input_api, lambda f: f.LocalPath() == _PRODUCTION_SUPPORT_FILE
+      )
+      and not 'Bypass-Webview-Feature-Check'
+      in input_api.change.GitFootersFromDescription()
+  ):
     warnings += [
         output_api.PresubmitPromptWarning(
             (
                 'You may need to modify {} instructions if your feature affects'
-                ' WebView.'
+                ' WebView.\nAdd "Bypass-WebView-Feature-Check: <Explanation>"'
+                ' to the footer of the CL description to skip this check.'
             ).format(_PRODUCTION_SUPPORT_FILE)
         )
     ]
