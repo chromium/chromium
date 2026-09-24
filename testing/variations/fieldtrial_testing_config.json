@@ -6800,6 +6800,24 @@
             ]
         }
     ],
+    "DiscoverActionUploadOptimisationsBling": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260907",
+                    "enable_features": [
+                        "IOSGCR_disable_action_upload_post_refresh",
+                        "IOSGCR_enable_full_reload_check_fix",
+                        "IOSGCR_enable_pending_actions_check_fix",
+                        "IOSGCR_enable_view_action_provider_fix"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiscoverEnableSkinnerOnBling": [
         {
             "platforms": [
