@@ -1575,6 +1575,28 @@ suite('ComposeboxVoiceSearch', () => {
     assertEquals('16px', window.getComputedStyle(input).fontSize);
   });
 
+  test('error message font size matches transcript by default', async () => {
+    await createComposeboxElement();
+    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
+    composeboxElement.style.setProperty('--cr-composebox-font-size', 'initial');
+
+    mockSpeechRecognition.onerror!
+        ({error: 'network'} as SpeechRecognitionErrorEvent);
+    voiceSearchElement.liveTranscriptEnabled = true;
+    await microtasksFinished();
+    await voiceSearchElement.updateComplete;
+
+    const input =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#input')!;
+    const errorContainer =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+            '#error-container')!;
+
+    assertEquals(
+        window.getComputedStyle(input).fontSize,
+        window.getComputedStyle(errorContainer).fontSize);
+  });
+
   test(
       'input ends above bottom action buttons and spans full width',
       async () => {

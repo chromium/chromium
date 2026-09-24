@@ -103,7 +103,7 @@
 
 #error-container {
   display: none;
-  font-size: var(--cr-composebox-font-size, 18px);
+  font-size: var(--cr-composebox-font-size, 16px);
 }
 
 #error-container:not([hidden]) {
