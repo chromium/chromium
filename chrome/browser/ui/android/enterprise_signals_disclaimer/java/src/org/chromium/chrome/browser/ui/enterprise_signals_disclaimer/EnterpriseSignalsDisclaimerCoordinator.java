@@ -15,6 +15,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -77,7 +78,8 @@ public class EnterpriseSignalsDisclaimerCoordinator
         mDelegate = delegate;
         mMetricsHelper = metricsHelper;
         final IdentityManager identityManager = signinManager.getIdentityManager();
-        assert identityManager.hasPrimaryAccount();
+        final CoreAccountInfo primaryAccount =
+                assertNonNull(identityManager.getPrimaryAccountInfo());
 
         // For the large form factors a modal dialog will be displayed, while smaller screens will
         // get a bottom sheet.
@@ -98,7 +100,11 @@ public class EnterpriseSignalsDisclaimerCoordinator
 
         mMediator =
                 new EnterpriseSignalsDisclaimerMediator(
-                        context, identityManager, /* delegate= */ this, signinManager);
+                        context,
+                        identityManager,
+                        primaryAccount,
+                        /* delegate= */ this,
+                        signinManager);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), mView, EnterpriseSignalsDisclaimerViewBinder::bind);

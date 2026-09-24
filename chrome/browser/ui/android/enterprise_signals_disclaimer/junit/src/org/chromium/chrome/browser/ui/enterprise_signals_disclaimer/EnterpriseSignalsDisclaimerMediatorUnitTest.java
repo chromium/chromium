@@ -75,10 +75,10 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
 
     private EnterpriseSignalsDisclaimerMediator createMediatorForAccount(AccountInfo accountInfo) {
         mAccountManagerTestRule.addAccount(accountInfo);
-        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(accountInfo);
         return new EnterpriseSignalsDisclaimerMediator(
                 ContextUtils.getApplicationContext(),
                 mAccountManagerTestRule.getIdentityManager(),
+                accountInfo,
                 mDelegate,
                 mSigninManager);
     }

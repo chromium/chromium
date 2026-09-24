@@ -11,15 +11,13 @@ import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
-
-import java.util.Objects;
 
 /**
  * Mediator for the enterprise signals disclaimer.
@@ -53,19 +51,28 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
 
     private final PropertyModel mModel;
     private final ProfileDataCache mProfileDataCache;
-    private final AccountInfo mPrimaryAccount;
+    private final CoreAccountInfo mAccount;
     private final Delegate mDelegate;
     private final SigninManager mSigninManager;
     private boolean mIsDecisionHandled;
 
+    /**
+     * @param context The Android {@link Context}.
+     * @param identityManager The {@link IdentityManager} used to back the {@link ProfileDataCache}.
+     * @param account The account the disclaimer is shown for. This account is not required to be
+     *     signed in yet.
+     * @param delegate The {@link Delegate} handling the user's decision.
+     * @param signinManager The {@link SigninManager} used to sign the user out on decline.
+     */
     EnterpriseSignalsDisclaimerMediator(
             Context context,
             IdentityManager identityManager,
+            CoreAccountInfo account,
             EnterpriseSignalsDisclaimerMediator.Delegate delegate,
             SigninManager signinManager) {
         mDelegate = delegate;
         mSigninManager = signinManager;
-        mPrimaryAccount = Objects.requireNonNull(identityManager.getPrimaryAccountInfo());
+        mAccount = account;
 
         // Puts the badge in the bottom right corner of the profile picture.
         BadgeConfig badgeConfig =
@@ -86,7 +93,7 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
                 new PropertyModel.Builder(EnterpriseSignalsDisclaimerProperties.ALL_KEYS)
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.PROFILE_PICTURE,
-                                mProfileDataCache.getById(mPrimaryAccount.getId()).getImage())
+                                mProfileDataCache.getById(mAccount.getId()).getImage())
                         .with(
                                 EnterpriseSignalsDisclaimerProperties.TITLE,
                                 context.getString(R.string.enterprise_signals_disclaimer_title))
@@ -146,9 +153,9 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
         if (mIsDecisionHandled) return;
         mIsDecisionHandled = true;
 
-        assert !mPrimaryAccount.getGaiaId().toString().isEmpty();
+        assert !mAccount.getGaiaId().toString().isEmpty();
         EnterpriseSignalsDisclaimerBridge.setAccountAcknowledgedSignalsDisclaimer(
-                mPrimaryAccount.getGaiaId());
+                mAccount.getGaiaId());
 
         mDelegate.onAccept();
     }
@@ -178,7 +185,7 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
     /** Implements {@link ProfileDataCache.Observer}. */
     @Override
     public void onProfileDataUpdated(DisplayableProfileData profileData) {
-        if (profileData.getAccountId().equals(mPrimaryAccount.getId())) {
+        if (profileData.getAccountId().equals(mAccount.getId())) {
             mModel.set(
                     EnterpriseSignalsDisclaimerProperties.PROFILE_PICTURE, profileData.getImage());
         }
