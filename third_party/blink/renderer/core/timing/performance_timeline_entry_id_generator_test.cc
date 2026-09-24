@@ -30,6 +30,7 @@ TEST(PerformanceTimelineEntryIdGeneratorTest, ResetValues) {
   }
   // Check that the ids are mostly unique - but we allow 10 collisions,
   // since the ids are randomly generated between 100 and 10000.
+  std::sort(ids.begin(), ids.end());
   auto last = std::unique(ids.begin(), ids.end());
   auto num_collisions = std::distance(last, ids.end());
   EXPECT_LT(num_collisions, 10u);

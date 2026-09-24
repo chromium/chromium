@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <type_traits>
@@ -2476,16 +2477,18 @@ TEST_F(WindowPerformanceNavigationIdTest, NavigationIdHardNavigations) {
     EXPECT_EQ(performance->NavigationId().non_web_exposed_id, 1u);
     ids.push_back(performance->NavigationId().web_exposed_id);
   }
-  // We allow 10 collisions, since the IDs are randomly generated between 100
-  // and 10000.
-  auto last = std::unique(ids.begin(), ids.end());
-  auto num_collisions = std::distance(last, ids.end());
-  EXPECT_LT(num_collisions, 10u);
-  ids.erase(last, ids.end());
   // The IDs are not in sorted order.
   std::vector<uint64_t> sorted_ids(ids.begin(), ids.end());
   std::sort(sorted_ids.begin(), sorted_ids.end());
   EXPECT_NE(sorted_ids, ids);
+
+  // We allow 10 collisions, since the IDs are randomly generated between 100
+  // and 10000.
+  std::sort(ids.begin(), ids.end());
+  auto last = std::unique(ids.begin(), ids.end());
+  auto num_collisions = std::distance(last, ids.end());
+  EXPECT_LT(num_collisions, 10u);
+  ids.erase(last, ids.end());
 }
 
 TEST_F(WindowPerformanceNavigationIdTest, NavigationIdSoftNavigations) {
