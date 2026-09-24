@@ -2330,6 +2330,21 @@
       },
     },
 
+    'litert_lm_advanced_main_legacy_tests_gpu_suite': {
+      'litert_lm_advanced_main_legacy_tests_gpu': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+          ],
+          'args': [
+            '--benchmark_binary_dir=./',
+            '--backends=gpu_artisan',
+          ],
+        },
+        'test': 'litert_lm_advanced_main_legacy_tests',
+      },
+    },
+
     'model_validation_tests_light_suite': {
       'model_validation_tests_light': {
         'mixins': [
@@ -3514,6 +3529,12 @@
           'non-gce',
         ],
       },
+      'litert_lm_advanced_main_legacy_tests_gpu_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
+        ],
+      },
       'model_validation_tests_light_suite': {
         'mixins': [
           'gce',
@@ -3537,6 +3558,7 @@
       'litert_e2e_tests_cpu_suite': {},
       'litert_e2e_tests_gpu_suite': {},
       'litert_lm_advanced_main_legacy_tests_cpu_suite': {},
+      'litert_lm_advanced_main_legacy_tests_gpu_suite': {},
       'model_validation_tests_light_suite': {},
       'model_validation_tests_suite': {},
       'ondevice_stability_tests_suite': {},
@@ -3605,6 +3627,12 @@
         ],
       },
       'litert_lm_advanced_main_legacy_tests_cpu_suite': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'non-gce',
+        ],
+      },
+      'litert_lm_advanced_main_legacy_tests_gpu_suite': {
         'mixins': [
           'chrome-intelligence-swarming-pool',
           'non-gce',

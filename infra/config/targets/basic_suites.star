@@ -1430,13 +1430,12 @@ targets.legacy_basic_suite(
     },
 )
 
-# TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
-# targets.legacy_basic_suite(
-#     name = "litert_lm_advanced_main_legacy_tests_gpu_suite",
-#     tests = {
-#         "litert_lm_advanced_main_legacy_tests_gpu": targets.legacy_test_config(),
-#     },
-# )
+targets.legacy_basic_suite(
+    name = "litert_lm_advanced_main_legacy_tests_gpu_suite",
+    tests = {
+        "litert_lm_advanced_main_legacy_tests_gpu": targets.legacy_test_config(),
+    },
+)
 
 _CHROME_AI_WPT_TEST_CONFIG = targets.legacy_test_config(
     mixins = [

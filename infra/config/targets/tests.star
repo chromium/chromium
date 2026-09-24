@@ -1895,18 +1895,17 @@ targets.tests.isolated_script_test(
     binary = "litert_lm_advanced_main_legacy_tests",
 )
 
-# TODO(b:484388901): Enable GPU backedn testing when the issue is fixed.
-# targets.tests.isolated_script_test(
-#     name = "litert_lm_advanced_main_legacy_tests_gpu",
-#     mixins = [
-#         "has_native_resultdb_integration",
-#     ],
-#     args = [
-#         "--benchmark_binary_dir=./",
-#         "--backends=gpu",
-#     ],
-#     binary = "litert_lm_advanced_main_legacy_tests",
-# )
+targets.tests.isolated_script_test(
+    name = "litert_lm_advanced_main_legacy_tests_gpu",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    args = [
+        "--benchmark_binary_dir=./",
+        "--backends=gpu_artisan",
+    ],
+    binary = "litert_lm_advanced_main_legacy_tests",
+)
 
 targets.tests.isolated_script_test(
     name = "chrome_ai_wpt_tests_manifest_gpu_high_tier",
