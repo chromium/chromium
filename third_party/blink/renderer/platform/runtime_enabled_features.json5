@@ -1596,7 +1596,7 @@
       // https://drafts.csswg.org/css-backgrounds/#layering
       // https://github.com/w3c/csswg-drafts/issues/7164
       name: "CSSBackgroundLayerCountIndependence",
-      status: "test",
+      status: "experimental",
     },
     // https://chromestatus.com/feature/5459864205393920
     {
