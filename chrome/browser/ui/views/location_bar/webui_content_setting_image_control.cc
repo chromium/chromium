@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
@@ -82,6 +83,40 @@ void WebUIContentSettingImageControl::InitForTesting(
     WebUIToolbarControlDelegate* webui_delegate) {
   models_ = std::move(models);
   webui_delegate_ = webui_delegate;
+}
+
+bool WebUIContentSettingImageControl::UpdatePermissionDashboard(
+    PermissionDashboardController* permission_dashboard_controller) {
+  if (!permission_dashboard_controller) {
+    return false;
+  }
+
+  bool permission_dashboard_changed = false;
+  bool dashboard_updated = false;
+
+  // Prioritize Media Stream (kMediaStream) over Sensors (kSensors) by selecting
+  // the first visible model, matching `LocationBarView`.
+  if (ContentSettingImageModel::IsLeftHandSideIndicatorEnabled(
+          ImageType::kMediaStream)) {
+    if (ContentSettingImageModel* media_stream_model =
+            GetModel(ImageType::kMediaStream)) {
+      permission_dashboard_changed |=
+          permission_dashboard_controller->Update(media_stream_model);
+      dashboard_updated = media_stream_model->is_visible();
+    }
+  }
+
+  if (!dashboard_updated &&
+      ContentSettingImageModel::IsLeftHandSideIndicatorEnabled(
+          ImageType::kSensors)) {
+    if (ContentSettingImageModel* sensors_model =
+            GetModel(ImageType::kSensors)) {
+      permission_dashboard_changed |=
+          permission_dashboard_controller->Update(sensors_model);
+    }
+  }
+
+  return permission_dashboard_changed;
 }
 
 std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>

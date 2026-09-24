@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -51,11 +52,9 @@ class ContextualTasksPermissionChipTest : public testing::Test {
         base::BindLambdaForTesting([this]() { ++update_state_count_; }));
   }
 
-  void TearDown() override { chip_.reset(); }
-
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  ContextualTasksLocationBar location_bar_{nullptr};
+  ContextualTasksLocationBar location_bar_{nullptr, base::DoNothing()};
   int update_state_count_ = 0;
   std::unique_ptr<ContextualTasksPermissionChip> chip_;
 };
@@ -171,7 +170,7 @@ TEST_F(ContextualTasksPermissionChipTest, GetAnchorIsNullWithoutWebView) {
 class MockContextualTasksLocationBar : public ContextualTasksLocationBar {
  public:
   explicit MockContextualTasksLocationBar(BrowserWindowInterface* browser)
-      : ContextualTasksLocationBar(browser) {}
+      : ContextualTasksLocationBar(browser, base::DoNothing()) {}
   MOCK_METHOD(ui::TrackedElement*, GetAnchorOrNull, (), (override));
 };
 
@@ -212,16 +211,6 @@ class ContextualTasksPermissionChipAnchorTestBase : public testing::Test {
                                                             kTestChipElementId);
   }
 
-  void TearDown() override {
-    // Destroy in reverse creation order: the chip and the location bar hold
-    // raw pointers to the location bar and the browser window respectively.
-    chip_.reset();
-    location_bar_.reset();
-    web_view_.reset();
-    browser_window_.reset();
-    profile_ = nullptr;
-  }
-
  protected:
   content::BrowserTaskEnvironment task_environment_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -233,9 +222,9 @@ class ContextualTasksPermissionChipAnchorTestBase : public testing::Test {
   BrowserWindowFeatures browser_window_features_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<NiceMock<MockBrowserWindowInterface>> browser_window_;
+  std::unique_ptr<ContextualTasksWebView> web_view_;
   std::unique_ptr<testing::NiceMock<MockContextualTasksLocationBar>>
       location_bar_;
-  std::unique_ptr<ContextualTasksWebView> web_view_;
   std::unique_ptr<ContextualTasksPermissionChip> chip_;
 };
 

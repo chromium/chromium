@@ -323,6 +323,7 @@ source_set("ui") {
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/permissions/chip",
       "//chrome/browser/ui/views/permissions/chip:impl",
@@ -693,6 +694,7 @@ source_set("unit_tests") {
     sources += [
       "contextual_tasks_panel_host_desktop_unittest.cc",
       "contextual_tasks_permission_chip_unittest.cc",
+      "contextual_tasks_permission_controller_unittest.cc",
       "contextual_tasks_utils_unittest.cc",
       "contextual_tasks_web_contents_user_data_unittest.cc",
       "contextual_tasks_web_view_unittest.cc",

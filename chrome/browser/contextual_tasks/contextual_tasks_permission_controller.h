@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom-forward.h"
@@ -25,7 +25,6 @@ namespace contextual_tasks {
 
 class ContextualTasksLocationBar;
 class ContextualTasksPermissionChip;
-class ContextualTasksPermissionDashboard;
 
 // Implements the toolbar mojom interface to control
 // the dashboard and permission chip for contextual tasks.
@@ -46,6 +45,14 @@ class ContextualTasksPermissionController
   void OnPermissionRequestManagerDestructed() override;
 
   virtual toolbar_ui_api::mojom::PermissionDashboardStatePtr GetState() const;
+
+  // Schedules a push of the current dashboard state to the toolbar WebUI.
+  //
+  // Coalesced: a single logical update (e.g. `PermissionDashboardController`
+  // setting an icon, message, theme and visibility in sequence) mutates the
+  // chips many times, and each mutation funnels through here. Batching them
+  // into one task collapses the burst into a single IPC carrying only the
+  // final state.
   void PushStateToWebUI();
 
   // Chip Interactions (called from Mojo via ContextualTasksUI):
@@ -82,13 +89,23 @@ class ContextualTasksPermissionController
   ContextualTasksPermissionChip* GetChip(
       toolbar_ui_api::mojom::LhsChipIdentifier chip_identifier);
 #endif
+  // Resolves the toolbar WebUI and hands it the current state. Does nothing if
+  // the side panel is gone, or if this controller's task is not the one
+  // currently on screen.
+  void PushStateToWebUINow();
+
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ContextualTasksLocationBar> location_bar_;
 #endif
 
+  // Whether a `PushStateToWebUINow()` task is already queued.
+  bool state_push_pending_ = false;
+
   base::ScopedObservation<permissions::PermissionRequestManager,
                           permissions::PermissionRequestManager::Observer>
       prm_observation_{this};
+
+  base::WeakPtrFactory<ContextualTasksPermissionController> weak_factory_{this};
 };
 
 }  // namespace contextual_tasks

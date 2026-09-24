@@ -22,6 +22,7 @@ class WebContents;
 
 class ContentSettingImageModel;
 class ContentSettingImageViewDelegate;
+class PermissionDashboardController;
 class WebUIToolbarControlDelegate;
 
 // Manages the ContentSettingImageModels for WebUI toolbar and provides
@@ -46,6 +47,12 @@ class WebUIContentSettingImageControl {
   void InitForTesting(
       std::vector<std::unique_ptr<ContentSettingImageModel>> models,
       WebUIToolbarControlDelegate* webui_delegate = nullptr);
+
+  // Updates `permission_dashboard_controller` with the left-hand side activity
+  // indicator models (prioritizing Media Stream over Sensors). Returns `true`
+  // if that produced a user-visible change to the permission dashboard.
+  bool UpdatePermissionDashboard(
+      PermissionDashboardController* permission_dashboard_controller);
 
   // Returns the current state of all content setting images for `web_contents`,
   // auto-opens a bubble if requested, and updates model state for fields that

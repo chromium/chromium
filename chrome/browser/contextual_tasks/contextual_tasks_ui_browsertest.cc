@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -18,12 +19,20 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate_desktop.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_permission_chip.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_permission_dashboard.h"
+#endif
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -848,6 +857,142 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
   EXPECT_TRUE(side_panel_ui->CanUpdateSuggestedTabContext(
       tab, GURL("https://example.com")));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+namespace {
+
+class TestContextualTasksToolbarUIObserver
+    : public contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIObserver {
+ public:
+  explicit TestContextualTasksToolbarUIObserver(
+      mojo::PendingReceiver<
+          contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIObserver>
+          receiver)
+      : receiver_(this, std::move(receiver)) {}
+
+  void OnPermissionDashboardStateChanged(
+      toolbar_ui_api::mojom::PermissionDashboardStatePtr state) override {
+    push_count_++;
+    last_state_ = std::move(state);
+    if (on_push_callback_) {
+      on_push_callback_.Run();
+    }
+  }
+
+  int push_count() const { return push_count_; }
+  const toolbar_ui_api::mojom::PermissionDashboardStatePtr& last_state() const {
+    return last_state_;
+  }
+  void set_on_push_callback(base::RepeatingClosure callback) {
+    on_push_callback_ = std::move(callback);
+  }
+
+ private:
+  int push_count_ = 0;
+  toolbar_ui_api::mojom::PermissionDashboardStatePtr last_state_;
+  base::RepeatingClosure on_push_callback_;
+  mojo::Receiver<
+      contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIObserver>
+      receiver_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
+                       PermissionDashboardStatePushEndToEnd) {
+  auto* service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  auto* tab = TabListInterface::From(browser())->GetActiveTab();
+
+  service->InitSidePanelWithGhostLoader(browser(), tab, nullptr);
+
+  auto* panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(panel_controller);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return panel_controller->IsPanelOpenForContextualTask(); }));
+
+  content::WebContents* web_contents = panel_controller->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  ContextualTasksUI* side_panel_ui = static_cast<ContextualTasksUI*>(
+      web_contents->GetWebUI()->GetController());
+  ASSERT_TRUE(side_panel_ui);
+
+  auto* permission_controller =
+      contextual_tasks::ContextualTasksPermissionController::FromWebContents(
+          web_contents);
+  ASSERT_TRUE(permission_controller);
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIService>
+      toolbar_service;
+  side_panel_ui->BindInterface(toolbar_service.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<
+      base::expected<contextual_tasks_toolbar::mojom::InitialStatePtr,
+                     mojo_base::mojom::ErrorPtr>>
+      initial_state_future;
+  toolbar_service->GetInitialState(initial_state_future.GetCallback());
+  auto initial_result = initial_state_future.Take();
+  ASSERT_TRUE(initial_result.has_value());
+  ASSERT_TRUE(initial_result.value()->state);
+  ASSERT_TRUE(initial_result.value()->state->request_chip);
+  EXPECT_FALSE(initial_result.value()->state->request_chip->is_visible);
+
+  TestContextualTasksToolbarUIObserver observer(
+      std::move(initial_result.value()->update_stream));
+
+  auto* location_bar = permission_controller->GetLocationBarForTesting();
+  ASSERT_TRUE(location_bar);
+  auto* dashboard = location_bar->permission_dashboard();
+  ASSERT_TRUE(dashboard);
+  auto* request_chip =
+      static_cast<contextual_tasks::ContextualTasksPermissionChip*>(
+          dashboard->GetRequestChip());
+  ASSERT_TRUE(request_chip);
+
+  // Mutate the dashboard and chip multiple times synchronously. All synchronous
+  // mutations should coalesce into a single async push to the WebUI observer.
+  base::RunLoop push_loop;
+  observer.set_on_push_callback(push_loop.QuitClosure());
+
+  dashboard->SetVisible(true);
+  request_chip->SetVisible(true);
+  request_chip->SetMessage(u"Use your microphone?");
+  request_chip->AnimateExpand(base::Milliseconds(350));
+
+  EXPECT_EQ(observer.push_count(), 0);
+  push_loop.Run();
+
+  EXPECT_EQ(observer.push_count(), 1);
+  ASSERT_TRUE(observer.last_state());
+  ASSERT_TRUE(observer.last_state()->request_chip);
+  EXPECT_TRUE(observer.last_state()->request_chip->is_visible);
+  EXPECT_EQ(observer.last_state()->request_chip->message,
+            u"Use your microphone?");
+  EXPECT_FALSE(observer.last_state()->request_chip->is_fully_collapsed);
+
+  // Triggering `OnChanged()` again without changing state should be
+  // deduplicated by `ContextualTasksUIBase` and not emit a Mojo update.
+  // Queue a real state change after the unchanged `PushStateToWebUINow()`
+  // task runs; only the real change should arrive at `observer`.
+  location_bar->OnChanged();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        request_chip->SetMessage(u"Updated microphone message");
+      }));
+
+  base::RunLoop second_push_loop;
+  observer.set_on_push_callback(second_push_loop.QuitClosure());
+  second_push_loop.Run();
+
+  EXPECT_EQ(observer.push_count(), 2);
+  EXPECT_EQ(observer.last_state()->request_chip->message,
+            u"Updated microphone message");
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 class ContextualTasksDarkModeBrowserTest

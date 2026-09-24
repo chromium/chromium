@@ -114,6 +114,18 @@ class ContextualTasksUIBase
     return toolbar_page_.get();
   }
 
+  // Returns the Contextual Tasks toolbar WebUI controller hosted by
+  // `web_contents`, or null if `web_contents` does not host one.
+  static ContextualTasksUIBase* FromWebContents(
+      content::WebContents* web_contents);
+
+  // Called by `ContextualTasksPermissionController` when its permission
+  // dashboard state changes. Forwards the new state to subscribed WebUI
+  // clients, and does nothing if `controller` belongs to a task that is not
+  // currently on screen.
+  void NotifyPermissionDashboardStateChanged(
+      ContextualTasksPermissionController* controller);
+
  protected:
   // Helper to dynamically resolve the active tab's permission controller.
   virtual ContextualTasksPermissionController* GetActiveController();
@@ -131,6 +143,8 @@ class ContextualTasksUIBase
   mojo::RemoteSet<
       contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIObserver>
       toolbar_ui_observers_;
+  toolbar_ui_api::mojom::PermissionDashboardStatePtr
+      last_pushed_permission_dashboard_state_;
 
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>

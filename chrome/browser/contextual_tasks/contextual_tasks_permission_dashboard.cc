@@ -66,6 +66,9 @@ ContextualTasksPermissionDashboard::GetState() const {
   state->request_chip = request_chip_.GetState();
   state->indicator_chip = indicator_chip_.GetState();
 
+  // `PermissionDashboardState` has no visibility field of its own, and its chip
+  // fields are non-nullable, so a hidden dashboard is expressed as two hidden
+  // chips rather than a null state.
   if (!is_visible_) {
     state->request_chip->is_visible = false;
     state->indicator_chip->is_visible = false;

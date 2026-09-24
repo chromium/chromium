@@ -8,6 +8,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_post_rearchitecture.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +26,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/mojom/base/error.mojom.h"
@@ -269,10 +273,50 @@ ContextualTasksUIBase::GetActiveController() {
                        : nullptr;
 }
 
-// TODO(crbug.com/558849041): Observe ContextualTasksPermissionController and
-// active task changes, and dashboard push state updates via
-// toolbar_ui_observers_.Notify(
-//    &ContextualTasksToolbarUIObserver::OnPermissionDashboardStateChanged).
+ContextualTasksUIBase* ContextualTasksUIBase::FromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  content::WebUI* web_ui = web_contents->GetWebUI();
+  if (!web_ui) {
+    return nullptr;
+  }
+  content::WebUIController* controller = web_ui->GetController();
+  // `GetAs()` CHECKs if the controller has no WEB_UI_CONTROLLER_TYPE_DECL().
+  if (!controller || !controller->GetType()) {
+    return nullptr;
+  }
+  // `GetAs()` matches the exact concrete type, so every `ContextualTasksUIBase`
+  // subclass has to be listed here.
+  if (auto* ui = controller->GetAs<ContextualTasksUI>()) {
+    return ui;
+  }
+  return controller->GetAs<ContextualTasksUIPostRearchitecture>();
+}
+
+void ContextualTasksUIBase::NotifyPermissionDashboardStateChanged(
+    ContextualTasksPermissionController* controller) {
+  // Only the active task's chips are on screen. Background tasks keep their
+  // own dashboard state and will be picked up by `GetState()` if and when they
+  // become active.
+  if (!controller || controller != GetActiveController()) {
+    return;
+  }
+
+  toolbar_ui_api::mojom::PermissionDashboardStatePtr state =
+      controller->GetState();
+  if (mojo::Equals(state, last_pushed_permission_dashboard_state_)) {
+    return;
+  }
+  last_pushed_permission_dashboard_state_ = state.Clone();
+
+  // Notify observers (one of which is the webUI).
+  for (auto& observer : toolbar_ui_observers_) {
+    observer->OnPermissionDashboardStateChanged(state.Clone());
+  }
+}
+
 void ContextualTasksUIBase::GetInitialState(GetInitialStateCallback callback) {
   auto* controller = GetActiveController();
   if (!controller) {
@@ -291,6 +335,7 @@ void ContextualTasksUIBase::GetInitialState(GetInitialStateCallback callback) {
   toolbar_ui_observers_.Add(std::move(observer_remote));
 
   initial_state->state = controller->GetState();
+  last_pushed_permission_dashboard_state_ = initial_state->state.Clone();
 
   std::move(callback).Run(std::move(initial_state));
 }

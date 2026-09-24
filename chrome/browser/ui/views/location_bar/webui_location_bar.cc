@@ -310,34 +310,9 @@ bool WebUILocationBar::UpdateContentSettingModels() {
     return false;
   }
 
-  bool permission_dashboard_changed = false;
-  bool dashboard_updated = false;
-
-  if (ContentSettingImageModel::IsLeftHandSideIndicatorEnabled(
-          ContentSettingImageModel::ImageType::kMediaStream)) {
-    ContentSettingImageModel* media_stream_model =
-        content_setting_image_control_.GetModel(
-            ContentSettingImageModel::ImageType::kMediaStream);
-    if (media_stream_model) {
-      permission_dashboard_changed |=
-          permission_dashboard_controller_->Update(media_stream_model);
-      if (media_stream_model->is_visible()) {
-        dashboard_updated = true;
-      }
-    }
-  }
-
-  if (!dashboard_updated &&
-      ContentSettingImageModel::IsLeftHandSideIndicatorEnabled(
-          ContentSettingImageModel::ImageType::kSensors)) {
-    ContentSettingImageModel* sensors_model =
-        content_setting_image_control_.GetModel(
-            ContentSettingImageModel::ImageType::kSensors);
-    if (sensors_model) {
-      permission_dashboard_changed |=
-          permission_dashboard_controller_->Update(sensors_model);
-    }
-  }
+  bool permission_dashboard_changed =
+      content_setting_image_control_.UpdatePermissionDashboard(
+          permission_dashboard_controller_.get());
 
   if (!toolbar_delegate_) {
     return permission_dashboard_changed;
