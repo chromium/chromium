@@ -13,7 +13,6 @@
 #include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "mojo/public/c/system/types.h"
 
 namespace arc {
 
@@ -22,17 +21,15 @@ void DeletePrintDocument(const base::FilePath& file_path) {
     LOG(ERROR) << "Failed to delete print document.";
 }
 
-base::FilePath SavePrintDocument(mojo::ScopedHandle scoped_handle) {
-  base::ScopedPlatformFile platform_file;
-  if (mojo::UnwrapPlatformFile(std::move(scoped_handle), &platform_file) !=
-      MOJO_RESULT_OK) {
-    PLOG(ERROR) << "UnwrapPlatformFile failed.";
+base::FilePath SavePrintDocument(mojo::PlatformHandle scoped_handle) {
+  if (!scoped_handle.is_valid_platform_file()) {
+    LOG(ERROR) << "Platform handle is invalid.";
     return base::FilePath();
   }
 
-  base::File src_file(std::move(platform_file));
+  base::File src_file(scoped_handle.TakePlatformFile());
   if (!src_file.IsValid()) {
-    PLOG(ERROR) << "Source file is invalid.";
+    LOG(ERROR) << "Source file is invalid.";
     return base::FilePath();
   }
 

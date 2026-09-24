@@ -19,6 +19,7 @@
 #include "device/bluetooth/floss/floss_dbus_manager.h"
 #include "device/bluetooth/floss/floss_sdp_types.h"
 #include "device/bluetooth/floss/floss_socket_manager.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 using device::BluetoothUUID;
 using floss::BluetoothDeviceFloss;
@@ -448,9 +449,7 @@ void ArcFlossBridge::OnCreateConnectSocketCallback(
   std::move(callback).Run(mojom::BluetoothStatus::SUCCESS,
                           sock_wrapper->remote.BindNewPipeAndPassReceiver());
   auto connection = mojom::BluetoothSocketConnection::New();
-  mojo::ScopedHandle handle = mojo::WrapPlatformHandle(
-      mojo::PlatformHandle(std::move(sock_wrapper->file)));
-  connection->sock = std::move(handle);
+  connection->sock = mojo::PlatformHandle(std::move(sock_wrapper->file));
   switch (sock_wrapper->sock_type) {
     case mojom::BluetoothSocketType::TYPE_RFCOMM:
     case mojom::BluetoothSocketType::TYPE_L2CAP_LE:
@@ -525,10 +524,8 @@ void ArcFlossBridge::OnConnectionAccepted(
     return;
   }
 
-  mojo::ScopedHandle handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(*socket.fd)));
   auto connection = mojom::BluetoothSocketConnection::New();
-  connection->sock = std::move(handle);
+  connection->sock = mojo::PlatformHandle(std::move(*socket.fd));
   connection->addr =
       mojom::BluetoothAddress::From(socket.remote_device.address);
   connection->port = socket.port;

@@ -18,7 +18,7 @@
 #include "chromeos/ash/experiences/arc/usb/usb_host_ui_delegate.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "content/public/browser/device_service.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace arc {
 namespace {
@@ -72,17 +72,10 @@ void OnDeviceOpened(mojom::UsbHostHost::OpenDeviceCallback callback,
                     base::ScopedFD fd) {
   if (!fd.is_valid()) {
     LOG(ERROR) << "Invalid USB device FD";
-    std::move(callback).Run(mojo::ScopedHandle());
+    std::move(callback).Run(mojo::PlatformHandle());
     return;
   }
-  mojo::ScopedHandle wrapped_handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
-  if (!wrapped_handle.is_valid()) {
-    LOG(ERROR) << "Failed to wrap device FD. Closing.";
-    std::move(callback).Run(mojo::ScopedHandle());
-    return;
-  }
-  std::move(callback).Run(std::move(wrapped_handle));
+  std::move(callback).Run(mojo::PlatformHandle(std::move(fd)));
 }
 
 void OnDeviceOpenError(mojom::UsbHostHost::OpenDeviceCallback callback,
@@ -90,7 +83,7 @@ void OnDeviceOpenError(mojom::UsbHostHost::OpenDeviceCallback callback,
                        const std::string& error_message) {
   LOG(WARNING) << "Cannot open USB device: " << error_name << ": "
                << error_message;
-  std::move(callback).Run(mojo::ScopedHandle());
+  std::move(callback).Run(mojo::PlatformHandle());
 }
 
 std::string GetDevicePath(const device::mojom::UsbDeviceInfo& device_info) {
@@ -177,7 +170,7 @@ void ArcUsbHostBridge::OpenDevice(const std::string& guid,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 
   if (!package) {
-    std::move(callback).Run(mojo::ScopedHandle());
+    std::move(callback).Run(mojo::PlatformHandle());
     return;
   }
 
@@ -185,13 +178,13 @@ void ArcUsbHostBridge::OpenDevice(const std::string& guid,
   // method is being called with a valid GUID.
   auto iter = devices_.find(guid);
   if (iter == devices_.end()) {
-    std::move(callback).Run(mojo::ScopedHandle());
+    std::move(callback).Run(mojo::PlatformHandle());
     return;
   }
 
   // The RequestPermission was never done, abort.
   if (!HasPermissionForDevice(*iter->second, package.value())) {
-    std::move(callback).Run(mojo::ScopedHandle());
+    std::move(callback).Run(mojo::PlatformHandle());
     return;
   }
 

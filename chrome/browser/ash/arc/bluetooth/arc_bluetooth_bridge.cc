@@ -57,8 +57,6 @@
 #include "device/bluetooth/floss/bluetooth_gatt_characteristic_floss.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/platform/platform_handle.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL

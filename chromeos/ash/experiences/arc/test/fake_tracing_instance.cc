@@ -21,7 +21,7 @@ void FakeTracingInstance::QueryAvailableCategories(
 
 void FakeTracingInstance::StartTracing(
     const std::vector<std::string>& categories,
-    mojo::ScopedHandle socket,
+    mojo::PlatformHandle socket,
     StartTracingCallback callback) {
   ++start_count_;
   start_categories_ = categories;

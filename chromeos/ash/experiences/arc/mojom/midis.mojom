@@ -48,11 +48,11 @@ interface MidisServer {
   // midis daemon.
   ListDevices@0() => (array<MidisDeviceInfo> devices);
 
-  // This function returns a handle(a Unix FD wrapped in a Mojo Handle)
+  // This function returns a platform handle (a Unix FD)
   // for a subdevice specified by |request|.
   // In the event of an error, returns an empty handle.
   [MinVersion=2]
-  RequestPort@3(MidisRequest request) => (handle? port_handle);
+  RequestPort@3(MidisRequest request) => (handle<platform>? port_handle);
 
   // This function closes all open FDs the client may have on the specified
   // device, and removes the client from the device's data structure.

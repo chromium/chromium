@@ -92,7 +92,7 @@ struct PrintJobRequest {
   PrintContentType content_type;
   int64 data_size;
   // android.printservice.PrintDocument fields:
-  handle? data;
+  handle<platform>? data;
 };
 
 // android.print.PrinterInfo.STATUS_*

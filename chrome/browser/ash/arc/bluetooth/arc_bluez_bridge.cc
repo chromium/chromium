@@ -18,6 +18,7 @@
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluez/bluetooth_device_bluez.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 using device::BluetoothAdapter;
 using device::BluetoothAdapterFactory;
@@ -337,12 +338,9 @@ void ArcBluezBridge::OnBluezListeningSocketReady(
     return;
   }
 
-  mojo::ScopedHandle handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(accept_fd)));
-
   // Tells Android we successfully accept() a new connection.
   auto connection = mojom::BluetoothSocketConnection::New();
-  connection->sock = std::move(handle);
+  connection->sock = mojo::PlatformHandle(std::move(accept_fd));
   switch (sock_wrapper->sock_type) {
     case mojom::BluetoothSocketType::TYPE_RFCOMM:
       connection->addr =
@@ -395,12 +393,9 @@ void ArcBluezBridge::OnBluezConnectingSocketReady(
     sock_wrapper->remote->OnConnectFailed();
   }
 
-  mojo::ScopedHandle handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
-
   // Notifies Android.
   auto connection = mojom::BluetoothSocketConnection::New();
-  connection->sock = std::move(handle);
+  connection->sock = mojo::PlatformHandle(std::move(fd));
   switch (sock_wrapper->sock_type) {
     case mojom::BluetoothSocketType::TYPE_RFCOMM:
       connection->addr =

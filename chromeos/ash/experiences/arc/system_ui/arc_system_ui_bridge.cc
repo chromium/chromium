@@ -16,7 +16,6 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/connection_holder.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace arc {
 

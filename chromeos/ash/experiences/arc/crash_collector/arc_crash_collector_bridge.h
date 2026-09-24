@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/experiences/arc/mojom/crash_collector.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/mojom/base/time.mojom.h"
 
 namespace content {
@@ -41,13 +42,13 @@ class ArcCrashCollectorBridge : public KeyedService,
 
   // mojom::CrashCollectorHost overrides.
   void DumpCrash(const std::string& type,
-                 mojo::ScopedHandle pipe,
+                 mojo::PlatformHandle pipe,
                  std::optional<base::TimeDelta> uptime) override;
   void DumpNativeCrash(const std::string& exec_name,
                        int32_t pid,
                        int64_t timestamp,
-                       mojo::ScopedHandle minidump_fd) override;
-  void DumpKernelCrash(mojo::ScopedHandle ramoops_handle) override;
+                       mojo::PlatformHandle minidump_fd) override;
+  void DumpKernelCrash(mojo::PlatformHandle ramoops_handle) override;
   void SetBuildProperties(
       const std::string& device,
       const std::string& board,

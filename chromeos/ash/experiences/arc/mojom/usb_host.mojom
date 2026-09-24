@@ -20,7 +20,7 @@ interface UsbHostHost {
   // When app tries to open a device without requesting permission, or
   // permission_broker rejects the open request, empty handle will be returned.
   [MinVersion=3]
-  OpenDevice@3(string guid, string? pkg_name) => (handle? usb_fd);
+  OpenDevice@3(string guid, string? pkg_name) => (handle<platform>? usb_fd);
 
   // Returns the USB device descriptors for the device named 'guid'.
   GetDeviceInfo@1(string guid)

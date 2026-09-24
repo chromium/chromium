@@ -79,7 +79,8 @@ interface ScreenCaptureSession {
   //     surface being rendered to
   // stride is the stride in pixels for each row of the buffer
   // DEPRECATED: Please use SetOutputBuffer@1 instead.
-  SetOutputBufferDeprecated@0(handle graphics_buffer, uint32 stride) => ();
+  SetOutputBufferDeprecated@0(
+      handle<platform> graphics_buffer, uint32 stride) => ();
 
   // Called to set the graphics buffer that the screen capture should be
   // rendered to. This call does not return until the rendering is complete to
@@ -91,7 +92,7 @@ interface ScreenCaptureSession {
   //     (See DRM_FORMAT_MOD_* in drm_fourcc.h)
   // stride is the stride in pixels for each row of the buffer
   [MinVersion=2]
-  SetOutputBuffer@1(handle graphics_buffer,
+  SetOutputBuffer@1(handle<platform> graphics_buffer,
                     BufferFormat buffer_format,
                     uint64 buffer_format_modifier,
                     uint32 stride) => ();

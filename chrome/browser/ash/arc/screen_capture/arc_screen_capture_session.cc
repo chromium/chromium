@@ -26,7 +26,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -217,7 +217,7 @@ void ArcScreenCaptureSession::NotificationStop() {
 }
 
 void ArcScreenCaptureSession::SetOutputBufferDeprecated(
-    mojo::ScopedHandle graphics_buffer,
+    mojo::PlatformHandle graphics_buffer,
     uint32_t stride,
     SetOutputBufferDeprecatedCallback callback) {
   // Defined locally to avoid having to add a dependency on drm_fourcc.h
@@ -233,13 +233,13 @@ void ArcScreenCaptureSession::SetOutputBufferDeprecated(
 }
 
 void ArcScreenCaptureSession::SetOutputBuffer(
-    mojo::ScopedHandle graphics_buffer,
+    mojo::PlatformHandle graphics_buffer,
     mojom::BufferFormat buffer_format,
     uint64_t buffer_format_modifier,
     uint32_t stride,
     SetOutputBufferCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-  if (!graphics_buffer.is_valid()) {
+  if (!graphics_buffer.is_valid_platform_file()) {
     LOG(ERROR) << "Invalid handle passed into SetOutputBuffer";
     std::move(callback).Run();
     return;
@@ -253,17 +253,9 @@ void ArcScreenCaptureSession::SetOutputBuffer(
 
   gfx::NativePixmapHandle native_pixmap_handle;
   native_pixmap_handle.modifier = buffer_format_modifier;
-  base::ScopedPlatformFile platform_file;
-  MojoResult mojo_result =
-      mojo::UnwrapPlatformFile(std::move(graphics_buffer), &platform_file);
-  if (mojo_result != MOJO_RESULT_OK) {
-    LOG(ERROR) << "Failed unwrapping Mojo handle " << mojo_result;
-    std::move(callback).Run();
-    return;
-  }
   native_pixmap_handle.planes.emplace_back(
       stride * kBytesPerPixel, 0, stride * kBytesPerPixel * size_.height(),
-      std::move(platform_file));
+      graphics_buffer.TakePlatformFile());
 
   viz::SharedImageFormat si_format = GetSharedImageFormat(buffer_format);
   UMA_HISTOGRAM_ENUMERATION("Arc.ScreenCaptureSession.SharedImageFormat",

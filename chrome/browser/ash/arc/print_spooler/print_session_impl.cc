@@ -154,18 +154,16 @@ mojom::PrintDocumentRequestPtr PrintDocumentRequestFromJobSettings(
       GetPrintAttributes(job_settings));
 }
 
-// Uses the provided ScopedHandle to read a preview document from ARC into
+// Uses the provided PlatformHandle to read a preview document from ARC into
 // read-only shared memory.
 base::ReadOnlySharedMemoryRegion ReadPreviewDocument(
-    mojo::ScopedHandle preview_document,
+    mojo::PlatformHandle preview_document,
     size_t data_size) {
-  base::ScopedPlatformFile platform_file;
-  if (mojo::UnwrapPlatformFile(std::move(preview_document), &platform_file) !=
-      MOJO_RESULT_OK) {
+  if (!preview_document.is_valid_platform_file()) {
     return base::ReadOnlySharedMemoryRegion();
   }
 
-  base::File src_file(std::move(platform_file));
+  base::File src_file(preview_document.TakePlatformFile());
   if (!src_file.IsValid()) {
     DPLOG(ERROR) << "Source file is invalid.";
     return base::ReadOnlySharedMemoryRegion();
@@ -317,7 +315,7 @@ void PrintSessionImpl::CreatePreviewDocument(
 void PrintSessionImpl::OnPreviewDocumentCreated(
     int request_id,
     CreatePreviewDocumentCallback callback,
-    mojo::ScopedHandle preview_document,
+    mojo::PlatformHandle preview_document,
     int64_t data_size) {
   if (data_size < kMinimumPdfSize ||
       !base::IsValueInRangeForNumericType<size_t>(data_size)) {

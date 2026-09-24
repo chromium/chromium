@@ -7,7 +7,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_PRINT_SPOOLER_ARC_PRINT_SPOOLER_UTIL_H_
 #define CHROME_BROWSER_ASH_ARC_PRINT_SPOOLER_ARC_PRINT_SPOOLER_UTIL_H_
 
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace base {
 class FilePath;
@@ -18,9 +18,9 @@ namespace arc {
 // Deletes a print document and logs any errors.
 void DeletePrintDocument(const base::FilePath& file_path);
 
-// Uses the provided scoped handle to save a print document from ARC and returns
-// the document's absolute file path.
-base::FilePath SavePrintDocument(mojo::ScopedHandle scoped_handle);
+// Uses the provided platform handle to save a print document from ARC and
+// returns the document's absolute file path.
+base::FilePath SavePrintDocument(mojo::PlatformHandle scoped_handle);
 
 }  // namespace arc
 

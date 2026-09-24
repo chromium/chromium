@@ -23,7 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
@@ -74,7 +74,7 @@ class PrintSessionImpl : public mojom::PrintSessionHost,
   // PrintRenderer.
   void OnPreviewDocumentCreated(int request_id,
                                 CreatePreviewDocumentCallback callback,
-                                mojo::ScopedHandle preview_document,
+                                mojo::PlatformHandle preview_document,
                                 int64_t data_size);
 
   // Called once the preview document from ARC has been read. The preview

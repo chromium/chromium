@@ -10,7 +10,7 @@
 #include "chromeos/ash/experiences/arc/mojom/print_spooler.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 class Profile;
 
@@ -47,7 +47,7 @@ class ArcPrintSpoolerBridge : public KeyedService,
 
   // mojom::PrintSpoolerHost:
   void StartPrintInCustomTab(
-      mojo::ScopedHandle scoped_handle,
+      mojo::PlatformHandle scoped_handle,
       int32_t task_id,
       mojo::PendingRemote<mojom::PrintSessionInstance> instance,
       StartPrintInCustomTabCallback callback) override;

@@ -78,7 +78,7 @@ interface CameraService {
   // otherwise. This function should be called after Connect().
   StreamOn@2(
       uint32 width, uint32 height, uint32 pixel_format, float frame_rate)
-      => (array<handle> fds, uint32 buffer_size, int32 result);
+      => (array<handle<platform>> fds, uint32 buffer_size, int32 result);
 
   // Disable camera device stream. Return 0 in |result| if device disables
   // stream successfully; -errno otherwise. This function is a no-op if the

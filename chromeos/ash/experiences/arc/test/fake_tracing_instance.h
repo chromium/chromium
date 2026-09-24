@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "chromeos/ash/experiences/arc/mojom/tracing.mojom.h"
-#include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace arc {
 
@@ -25,13 +25,13 @@ class FakeTracingInstance : public mojom::TracingInstance {
   void QueryAvailableCategories(
       QueryAvailableCategoriesCallback callback) override;
   void StartTracing(const std::vector<std::string>& categories,
-                    mojo::ScopedHandle socket,
+                    mojo::PlatformHandle socket,
                     StartTracingCallback callback) override;
   void StopTracing(StopTracingCallback callback) override;
 
   int start_count() const { return start_count_; }
   int stop_count() const { return stop_count_; }
-  mojo::Handle socket() const { return socket_.get(); }
+  const mojo::PlatformHandle& socket() const { return socket_; }
   const std::vector<std::string>& start_categories() {
     return start_categories_;
   }
@@ -39,7 +39,7 @@ class FakeTracingInstance : public mojom::TracingInstance {
  private:
   int start_count_ = 0;
   std::vector<std::string> start_categories_;
-  mojo::ScopedHandle socket_;
+  mojo::PlatformHandle socket_;
   int stop_count_ = 0;
 };
 

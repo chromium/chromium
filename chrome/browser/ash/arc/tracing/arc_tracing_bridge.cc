@@ -24,7 +24,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/system_trace_writer.h"
@@ -369,7 +369,7 @@ void ArcTracingBridge::StartTracing(const std::string& config,
   }
 
   tracing_instance->StartTracing(
-      selected_categories, mojo::ScopedHandle(),
+      selected_categories, mojo::PlatformHandle(),
       base::BindOnce(&ArcTracingBridge::OnArcTracingStarted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

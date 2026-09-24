@@ -300,7 +300,7 @@ struct BluetoothCreateSdpRecordResult {
 // socket on Android side, we also need to pass the peer address and channel
 // number.
 struct BluetoothRfcommConnection {
-  handle sock;
+  handle<platform> sock;
   BluetoothAddress addr;
   int32 channel;
 };
@@ -349,7 +349,7 @@ struct BluetoothSocketFlags {
 // on the transferred socket on Android side, we also need to pass the peer
 // address and port number.
 struct BluetoothSocketConnection {
-  handle sock;
+  handle<platform> sock;
   BluetoothAddress addr;
   int32 port;
 };

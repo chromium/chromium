@@ -21,7 +21,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace arc {
 

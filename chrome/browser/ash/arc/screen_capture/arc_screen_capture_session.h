@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/types/display_constants.h"
@@ -61,10 +62,10 @@ class ArcScreenCaptureSession : public display::DisplayObserver,
 
   // Implements mojo::ScreenCaptureSession interface.
   void SetOutputBufferDeprecated(
-      mojo::ScopedHandle graphics_buffer,
+      mojo::PlatformHandle graphics_buffer,
       uint32_t stride,
       SetOutputBufferDeprecatedCallback callback) override;
-  void SetOutputBuffer(mojo::ScopedHandle graphics_buffer,
+  void SetOutputBuffer(mojo::PlatformHandle graphics_buffer,
                        mojom::BufferFormat buffer_format,
                        uint64_t buffer_format_modifier,
                        uint32_t stride,

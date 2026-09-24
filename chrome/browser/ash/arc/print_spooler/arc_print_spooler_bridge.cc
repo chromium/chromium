@@ -69,7 +69,7 @@ ArcPrintSpoolerBridge::~ArcPrintSpoolerBridge() {
 }
 
 void ArcPrintSpoolerBridge::StartPrintInCustomTab(
-    mojo::ScopedHandle scoped_handle,
+    mojo::PlatformHandle scoped_handle,
     int32_t task_id,
     mojo::PendingRemote<mojom::PrintSessionInstance> instance,
     StartPrintInCustomTabCallback callback) {
