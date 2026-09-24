@@ -18,6 +18,7 @@
 #include "base/features.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/metrics/runtime_field_trial_overrides.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -320,7 +321,9 @@ ScopedFeatureList::ScopedFeatureList(ScopedFeatureList&& other)
       original_feature_list_(std::move(other.original_feature_list_)),
       original_field_trial_list_(other.original_field_trial_list_),
       original_params_(std::move(other.original_params_)),
-      field_trial_list_(std::move(other.field_trial_list_)) {}
+      field_trial_list_(std::move(other.field_trial_list_)),
+      runtime_field_trial_info_cache_(
+          std::move(other.runtime_field_trial_info_cache_)) {}
 
 ScopedFeatureList::ScopedFeatureList(const Feature& enable_feature) {
   InitAndEnableFeature(enable_feature);
@@ -356,7 +359,10 @@ void ScopedFeatureList::Reset() {
   TaskEnvironment::ParallelExecutionFence fence(
       "ScopedFeatureList must be Reset from the test main thread");
 
+  // Destroy the active FeatureList first, clearing its raw_ptr references to
+  // our cached RuntimeFieldTrialInfo objects.
   FeatureList::ClearInstanceForTesting();
+  runtime_field_trial_info_cache_.clear();
 
   if (field_trial_list_) {
     field_trial_list_.reset();
@@ -478,10 +484,10 @@ void ScopedFeatureList::InitWithFeatureStates(
   InitWithFeaturesImpl(enabled_features, {}, disabled_features);
 }
 
-// static
 void ScopedFeatureList::MutateRuntimeMutableFeatures(
     const std::vector<FeatureRef>& features_to_enable,
     const std::vector<FeatureRef>& features_to_disable) {
+  CHECK(init_called_);
   FeatureList* feature_list = FeatureList::GetInstance();
   CHECK(feature_list) << "A FeatureList must be registered before mutating "
                          "runtime-mutable features.";
@@ -514,10 +520,9 @@ void ScopedFeatureList::MutateRuntimeMutableFeatures(
       CHECK(
           feature_list->HasRuntimeMutabilityEnabledByFeatureName(feature->name))
           << feature->name
-          << " does not have runtime mutability enabled. Call "
-             "FeatureList::EnableRuntimeMutability() on a FeatureList and "
-             "install it with InitWithFeatureList() before mutating the "
-             "feature.";
+          << " must be declared with BASE_RUNTIME_MUTABLE_FEATURE and "
+             "registered via EnableRuntimeMutability() before simulating a "
+             "mid-session mutation.";
       CHECK(!feature_list->IsFeatureOverriddenFromCommandLine(feature->name))
           << feature->name
           << " is overridden from the command line, which takes precedence "
@@ -530,15 +535,19 @@ void ScopedFeatureList::MutateRuntimeMutableFeatures(
                         "yet, so "
                      << feature->name << " cannot be enabled at runtime.";
 
+      auto override_info = std::make_unique<RuntimeFieldTrialInfo>(
+          RuntimeMutationTrialName(*feature), RuntimeMutationGroupName(enable),
+          base::FieldTrialParams(), nullptr);
+
       std::optional<FeatureList::RuntimeMutableFeatureUpdate> update =
           feature_list->PrepareRuntimeMutableFeatureStateUpdate(
-              PassKey(), RuntimeMutationTrialName(*feature),
-              RuntimeMutationGroupName(enable), feature->name,
+              PassKey(), override_info.get(), feature->name,
               enable ? FeatureList::OVERRIDE_ENABLE_FEATURE
                      : FeatureList::OVERRIDE_DISABLE_FEATURE);
       CHECK(update.has_value())
           << "Failed to prepare a runtime mutation for " << feature->name;
       updates.push_back(std::move(update).value());
+      runtime_field_trial_info_cache_.push_back(std::move(override_info));
     }
   };
   prepare_updates(features_to_enable, /*enable=*/true);
@@ -567,7 +576,6 @@ void ScopedFeatureList::MutateRuntimeMutableFeatures(
   }
 }
 
-// static
 void ScopedFeatureList::MutateRuntimeMutableFeature(const Feature& feature,
                                                     bool enabled) {
   if (enabled) {

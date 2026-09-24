@@ -1244,12 +1244,12 @@ void FieldTrialList::GetActiveFieldTrialGroupsInternal(
              ->GetRuntimeOverrides()) {
       // Runtime FieldTrial overrides are all considered active, so include them
       // all.
-      active_groups->emplace_back(runtime_override.trial_name,
-                                  runtime_override.group_name,
+      active_groups->emplace_back(runtime_override->trial_name,
+                                  runtime_override->group_name,
                                   /*is_overridden=*/false);
-      if (runtime_override.overridden_trial) {
+      if (runtime_override->overridden_trial) {
         trials_to_ignore.insert(
-            runtime_override.overridden_trial->trial_name());
+            runtime_override->overridden_trial->trial_name());
       }
     }
   }

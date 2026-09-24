@@ -1320,11 +1320,19 @@ TEST_F(FieldTrialListTest, GetActiveFieldTrialGroups_RuntimeOverrides) {
   auto pass_key = variations::VariationsService::CreatePassKeyForTesting();
   ASSERT_TRUE(
       base::RuntimeFieldTrialOverrides::GetInstance()->ApplyRuntimeOverride(
-          pass_key, "OverrideTrial", "OverrideGroup", overridden_trial.get()));
+          pass_key,
+          std::make_unique<base::RuntimeFieldTrialInfo>(
+              "OverrideTrial", "OverrideGroup", base::FieldTrialParams(),
+              overridden_trial.get()),
+          ""));
   // Apply a runtime override that does not override any existing trial.
   ASSERT_TRUE(
       base::RuntimeFieldTrialOverrides::GetInstance()->ApplyRuntimeOverride(
-          pass_key, "StandaloneOverrideTrial", "OverrideGroup2", nullptr));
+          pass_key,
+          std::make_unique<base::RuntimeFieldTrialInfo>(
+              "StandaloneOverrideTrial", "OverrideGroup2",
+              base::FieldTrialParams(), nullptr),
+          ""));
 
   // 1. Check with |include_runtime_overrides| = false.
   {

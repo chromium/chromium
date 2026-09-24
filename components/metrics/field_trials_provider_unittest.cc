@@ -228,7 +228,11 @@ TEST_F(FieldTrialsProviderTest, ActiveFieldTrialsWithRuntimeOverrides) {
   auto pass_key = VariationsService::CreatePassKeyForTesting();
   ASSERT_TRUE(
       base::RuntimeFieldTrialOverrides::GetInstance()->ApplyRuntimeOverride(
-          pass_key, "OverrideTrial", "OverrideGroup", overridden_trial));
+          pass_key,
+          std::make_unique<base::RuntimeFieldTrialInfo>(
+              "OverrideTrial", "OverrideGroup", base::FieldTrialParams(),
+              overridden_trial),
+          ""));
 
   FieldTrialsProvider provider(nullptr, std::string_view());
 

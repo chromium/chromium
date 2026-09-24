@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <optional>
+#include <ranges>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -314,12 +316,12 @@ bool RuntimeMutableExperimentAlreadyApplied(
     const Study::Experiment& experiment) {
   auto* runtime_field_trial_overrides =
       base::RuntimeFieldTrialOverrides::GetInstance();
-  auto runtime_override_info =
+  auto* runtime_override_info =
       runtime_field_trial_overrides->GetRuntimeOverride(study.name());
   base::FieldTrial* existing_trial = base::FieldTrialList::Find(study.name());
   return
       // Check if the override has been applied.
-      (runtime_override_info.has_value() &&
+      (runtime_override_info &&
        runtime_override_info->group_name == experiment.name()) ||
       // It's possible it wasn't applied as a runtime override but simply as
       // a regular FieldTrial at startup.
@@ -999,8 +1001,7 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
     // preferable to running the rest of the session in a corrupted state, and
     // gradual seed rollout will catch any seed-triggered crash.
     CHECK(runtime_field_trial_overrides->ApplyRuntimeOverride(
-        base::PassKey<VariationsService>(), changes.study_name,
-        changes.group_name, changes.trial_to_override,
+        base::PassKey<VariationsService>(), std::move(changes.override_info),
         changes.previous_override_to_replace));
     // TODO(crbug.com/482450632): Clean up overridden trial's variation IDs, and
     // register any new ones from the new trial.
@@ -1018,16 +1019,24 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
   for (const auto& changes : prepared_changes) {
     bool validation_failed = false;
     for (const std::string& feature_name : changes.feature_names) {
-      if (feature_list->GetAssociatedRuntimeFieldTrialOverrideByFeatureName(
-              feature_name) != changes.study_name) {
+      auto override_info =
+          feature_list->GetAssociatedRuntimeFieldTrialOverrideInfoByFeatureName(
+              feature_name);
+      // The features were validated as runtime-mutable before the batch was
+      // applied, and runtime mutability registrations are never removed, so
+      // the entry must still exist. A missing entry is an internal
+      // inconsistency rather than a seed-triggered validation failure.
+      CHECK(override_info.has_value());
+      if (!override_info.value() ||
+          override_info.value()->trial_name != changes.study_name) {
         validation_failed = true;
         break;
       }
     }
     if (!validation_failed) {
-      auto runtime_override_info =
+      auto* runtime_override_info =
           runtime_field_trial_overrides->GetRuntimeOverride(changes.study_name);
-      if (!runtime_override_info.has_value() ||
+      if (!runtime_override_info ||
           runtime_override_info->trial_name != changes.study_name ||
           runtime_override_info->group_name != changes.group_name ||
           runtime_override_info->overridden_trial.get() !=
@@ -1375,7 +1384,7 @@ VariationsService::PrepareRuntimeMutableChanges(
     return base::unexpected(kRuntimeExperimentHasGoogleWebId);
   }
 
-  // TODO(crbug.com/482450632): Support params for runtime mutable experiments.
+  // TODO(crbug.com/536852160): Support params for runtime mutable experiments.
   // For now, disallow applying a runtime experiment if it has params.
   if (experiment.param_size() > 0) {
     return base::unexpected(kRuntimeExperimentHasParams);
@@ -1393,9 +1402,16 @@ VariationsService::PrepareRuntimeMutableChanges(
 
   // First, ensure that all features referenced have runtime mutability enabled
   // and are eligible (not overridden from command line).
-  base::flat_set<std::string> feature_names(
-      experiment.feature_association().disable_feature().begin(),
-      experiment.feature_association().disable_feature().end());
+  std::vector<std::string> feature_names_list;
+  feature_names_list.reserve(
+      experiment.feature_association().disable_feature_size() +
+      experiment.feature_association().enable_feature_size());
+  std::ranges::copy(experiment.feature_association().disable_feature(),
+                    std::back_inserter(feature_names_list));
+  std::ranges::copy(experiment.feature_association().enable_feature(),
+                    std::back_inserter(feature_names_list));
+  base::flat_set<std::string> feature_names(std::move(feature_names_list));
+
   for (const std::string& feature_name : feature_names) {
     if (!feature_list->HasRuntimeMutabilityEnabledByFeatureName(feature_name)) {
       return base::unexpected(kNonRuntimeMutableFeature);
@@ -1502,10 +1518,10 @@ VariationsService::PrepareRuntimeMutableChanges(
   std::string previous_override_to_replace;
   if (controlling_trial_is_runtime_override) {
     CHECK(!controlling_trial_name.empty());
-    const auto& runtime_override_info =
+    const auto* runtime_override_info =
         runtime_field_trial_overrides->GetRuntimeOverride(
             controlling_trial_name);
-    if (!runtime_override_info.has_value()) {
+    if (!runtime_override_info) {
       // This should never happen.
       return base::unexpected(kControllingTrialNotFound);
     }
@@ -1536,17 +1552,21 @@ VariationsService::PrepareRuntimeMutableChanges(
   }
 
   RuntimeMutableChanges changes;
+  // TODO(crbug.com/536852160): clean up redundant members (study_name,
+  // group_name) as they are already stored in changes.override_info.
   changes.study_name = study.name();
   changes.group_name = group_name;
   changes.trial_to_override = trial_to_override;
   changes.previous_override_to_replace = previous_override_to_replace;
   changes.feature_names.assign(feature_names.begin(), feature_names.end());
+  changes.override_info = std::make_unique<base::RuntimeFieldTrialInfo>(
+      study.name(), group_name, base::FieldTrialParams(), trial_to_override);
 
   for (const auto& feature_name : feature_names) {
     DVLOG(1) << "VariationsService: Preparing runtime override to disable "
              << "feature: " << feature_name;
     auto update = feature_list->PrepareRuntimeMutableFeatureStateUpdate(
-        base::PassKey<VariationsService>(), study.name(), group_name,
+        base::PassKey<VariationsService>(), changes.override_info.get(),
         feature_name, base::FeatureList::OVERRIDE_DISABLE_FEATURE);
     CHECK(update.has_value());
     changes.feature_updates.push_back(std::move(*update));

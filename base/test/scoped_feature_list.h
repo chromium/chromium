@@ -19,6 +19,10 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/types/pass_key.h"
 
+namespace base {
+struct RuntimeFieldTrialInfo;
+}  // namespace base
+
 namespace base::test {
 
 // A reference to a base::Feature and field trial params that should be force
@@ -216,12 +220,12 @@ class ScopedFeatureList final {
   //
   // TODO(crbug.com/536851701): Support specifying field trial params for the
   // features being mutated, once runtime mutability supports params.
-  static void MutateRuntimeMutableFeatures(
+  void MutateRuntimeMutableFeatures(
       const std::vector<FeatureRef>& features_to_enable,
       const std::vector<FeatureRef>& features_to_disable);
 
   // Convenience wrapper around the above for mutating a single feature.
-  static void MutateRuntimeMutableFeature(const Feature& feature, bool enabled);
+  void MutateRuntimeMutableFeature(const Feature& feature, bool enabled);
 
  private:
   using PassKey = base::PassKey<ScopedFeatureList>;
@@ -260,6 +264,12 @@ class ScopedFeatureList final {
   raw_ptr<base::FieldTrialList> original_field_trial_list_ = nullptr;
   std::string original_params_;
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
+
+  // Cache for RuntimeFieldTrialInfo objects created during simulated mutations.
+  // These objects must outlive the FeatureList (which holds raw_ptr references
+  // to them) and be destroyed after the FeatureList is cleared in Reset().
+  std::vector<std::unique_ptr<RuntimeFieldTrialInfo>>
+      runtime_field_trial_info_cache_;
 };
 
 }  // namespace base::test

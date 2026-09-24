@@ -216,7 +216,7 @@ VariationsCrashKeys::VariationsCrashKeys() {
   base::RuntimeFieldTrialOverrides::GetInstance()->AddObserver(this);
   for (const auto& [override_trial_name, override_info] :
        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverrides()) {
-    OnRuntimeFieldTrialOverride(override_info,
+    OnRuntimeFieldTrialOverride(*override_info,
                                 /*previous_override_trial_name=*/"");
   }
 

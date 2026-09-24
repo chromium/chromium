@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/runtime_field_trial_overrides.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -478,11 +479,14 @@ class VariationsService
     RuntimeMutableChanges& operator=(RuntimeMutableChanges&&);
     ~RuntimeMutableChanges();
 
+    // TODO(crbug.com/536852160): clean up redundant members (study_name,
+    // group_name) and see if we can avoid copying feature_names.
     std::string study_name;
     std::string group_name;
     raw_ptr<const base::FieldTrial> trial_to_override = nullptr;
     std::string previous_override_to_replace;
     std::vector<std::string> feature_names;
+    std::unique_ptr<const base::RuntimeFieldTrialInfo> override_info;
     std::vector<base::FeatureList::RuntimeMutableFeatureUpdate> feature_updates;
   };
 

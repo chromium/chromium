@@ -56,14 +56,12 @@ void RuntimeMutableFeaturesHandlerBase::HandleFetchRuntimeMutableFeatures(
     std::string trial_name;
     std::string group_name;
     bool runtime_override = false;
-    if (!feature_state.field_trial_name.empty()) {
+    if (feature_state.override_info) {
       // The feature is being controlled by a runtime-mutable field trial.
-      trial_name = feature_state.field_trial_name;
-      auto runtime_override_info =
-          base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
-              feature_state.field_trial_name);
-      CHECK(runtime_override_info.has_value());
-      group_name = runtime_override_info->group_name;
+      CHECK(!feature_state.override_info->trial_name.empty());
+      CHECK(!feature_state.override_info->group_name.empty());
+      trial_name = feature_state.override_info->trial_name;
+      group_name = feature_state.override_info->group_name;
       runtime_override = true;
     } else {
       // The feature is not being controlled by a runtime-mutable field trial.

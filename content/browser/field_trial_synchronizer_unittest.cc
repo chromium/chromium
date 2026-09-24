@@ -104,8 +104,11 @@ TEST_F(FieldTrialSynchronizerTest, RuntimeOverrides) {
   EXPECT_TRUE(ProfileHasFieldTrial("OverriddenTrial", "Group"));
 
   // Apply the runtime override, replacing the overridden trial.
-  EXPECT_TRUE(overrides->ApplyRuntimeOverride(pass_key, "Killswitch",
-                                              "Disabled", trial.get()));
+  EXPECT_TRUE(overrides->ApplyRuntimeOverride(
+      pass_key,
+      std::make_unique<base::RuntimeFieldTrialInfo>(
+          "Killswitch", "Disabled", base::FieldTrialParams(), trial.get()),
+      ""));
 
   // The overridden trial should be removed from the profile, and the new
   // override added.
@@ -115,8 +118,11 @@ TEST_F(FieldTrialSynchronizerTest, RuntimeOverrides) {
   // Now, apply another override targeting the same overridden trial, replacing
   // the previous override.
   EXPECT_TRUE(overrides->ApplyRuntimeOverride(
-      pass_key, "NewKillswitch", "NewDisabled", trial.get(),
-      /*previous_override_trial_name=*/"Killswitch"));
+      pass_key,
+      std::make_unique<base::RuntimeFieldTrialInfo>(
+          "NewKillswitch", "NewDisabled", base::FieldTrialParams(),
+          trial.get()),
+      "Killswitch"));
 
   // The previous override "Killswitch" should be removed, and "NewKillswitch"
   // added.

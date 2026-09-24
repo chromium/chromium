@@ -798,7 +798,7 @@ TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatures) {
   ASSERT_TRUE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
   ASSERT_TRUE(FeatureList::IsEnabled(kTestRuntimeMutableFeature2));
 
-  ScopedFeatureList::MutateRuntimeMutableFeatures(
+  scoped_feature_list.MutateRuntimeMutableFeatures(
       /*features_to_enable=*/{},
       /*features_to_disable=*/{kTestRuntimeMutableFeature1,
                                kTestRuntimeMutableFeature2});
@@ -829,8 +829,8 @@ TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeature) {
 
   ASSERT_TRUE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
 
-  ScopedFeatureList::MutateRuntimeMutableFeature(kTestRuntimeMutableFeature1,
-                                                 /*enabled=*/false);
+  scoped_feature_list.MutateRuntimeMutableFeature(kTestRuntimeMutableFeature1,
+                                                  /*enabled=*/false);
   EXPECT_FALSE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
 }
 
@@ -841,7 +841,7 @@ TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureWithoutMutability) {
     scoped_feature_list.InitWithFeatureList(std::make_unique<FeatureList>());
   }
 
-  EXPECT_CHECK_DEATH(ScopedFeatureList::MutateRuntimeMutableFeature(
+  EXPECT_CHECK_DEATH(scoped_feature_list.MutateRuntimeMutableFeature(
       kTestRuntimeMutableFeature1, /*enabled=*/false));
 }
 
@@ -858,7 +858,7 @@ TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureOverriddenOnCmdLine) {
 
   // The command-line override takes precedence over runtime mutations, so the
   // mutation would silently have no effect.
-  EXPECT_CHECK_DEATH(ScopedFeatureList::MutateRuntimeMutableFeature(
+  EXPECT_CHECK_DEATH(scoped_feature_list.MutateRuntimeMutableFeature(
       kTestRuntimeMutableFeature1, /*enabled=*/false));
 }
 
@@ -873,7 +873,7 @@ TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureEnableUnsupported) {
   }
 
   // Runtime mutability only supports disabling features for now.
-  EXPECT_CHECK_DEATH(ScopedFeatureList::MutateRuntimeMutableFeature(
+  EXPECT_CHECK_DEATH(scoped_feature_list.MutateRuntimeMutableFeature(
       kTestRuntimeMutableFeature1, /*enabled=*/true));
 }
 
@@ -888,12 +888,12 @@ TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureListedTwice) {
   }
 
   // A feature cannot be both enabled and disabled by the same mutation.
-  EXPECT_CHECK_DEATH(ScopedFeatureList::MutateRuntimeMutableFeatures(
+  EXPECT_CHECK_DEATH(scoped_feature_list.MutateRuntimeMutableFeatures(
       /*features_to_enable=*/{kTestRuntimeMutableFeature1},
       /*features_to_disable=*/{kTestRuntimeMutableFeature1}));
 
   // ... nor listed twice within the same list.
-  EXPECT_CHECK_DEATH(ScopedFeatureList::MutateRuntimeMutableFeatures(
+  EXPECT_CHECK_DEATH(scoped_feature_list.MutateRuntimeMutableFeatures(
       /*features_to_enable=*/{},
       /*features_to_disable=*/{kTestRuntimeMutableFeature1,
                                kTestRuntimeMutableFeature1}));

@@ -45,6 +45,8 @@ class FieldTrialList;
 class PersistentMemoryAllocator;
 class FeatureVisitor;
 
+struct RuntimeFieldTrialInfo;
+
 namespace internal {
 struct RuntimeMutableFeatureState;
 }  // namespace internal
@@ -231,13 +233,11 @@ class BASE_EXPORT FeatureList {
 
     RuntimeMutableFeatureUpdate(
         internal::RuntimeMutableFeatureState& state_entry,
-        std::string_view field_trial_name,
-        std::string_view group_name,
+        const RuntimeFieldTrialInfo* override_info,
         OverrideState override_state);
 
     raw_ptr<internal::RuntimeMutableFeatureState> state_entry_ = nullptr;
-    std::string field_trial_name_;
-    std::string group_name_;
+    base::raw_ptr<const RuntimeFieldTrialInfo> override_info_;
     OverrideState override_state_ = OVERRIDE_USE_DEFAULT;
     Stage stage_ = Stage::kInitial;
   };
@@ -364,8 +364,7 @@ class BASE_EXPORT FeatureList {
   [[nodiscard]] std::optional<RuntimeMutableFeatureUpdate>
   PrepareRuntimeMutableFeatureStateUpdate(
       base::PassKey<variations::VariationsService>,
-      std::string_view field_trial_name,
-      std::string_view group_name,
+      const RuntimeFieldTrialInfo* override_info,
       std::string_view feature_name,
       OverrideState override_state);
 
@@ -377,20 +376,26 @@ class BASE_EXPORT FeatureList {
   [[nodiscard]] std::optional<RuntimeMutableFeatureUpdate>
   PrepareRuntimeMutableFeatureStateUpdate(
       base::PassKey<base::test::ScopedFeatureList>,
-      std::string_view field_trial_name,
-      std::string_view group_name,
+      const RuntimeFieldTrialInfo* override_info,
       std::string_view feature_name,
       OverrideState override_state);
 
   // Returns whether the feature with the given `feature_name` has runtime
-  // mutability enabled.
+  // mutability enabled, i.e. it was declared with BASE_RUNTIME_MUTABLE_FEATURE
+  // and registered via EnableRuntimeMutability(). Prefer this over
+  // GetAssociatedRuntimeFieldTrialOverrideInfoByFeatureName() when the override
+  // itself is not needed; callers that need the override should call that
+  // function alone rather than chaining the two, to avoid a double lookup.
   bool HasRuntimeMutabilityEnabledByFeatureName(
       std::string_view feature_name) const;
 
-  // Returns the name of the runtime FieldTrial override associated with the
-  // given runtime-mutability-enabled `feature_name`. Returns an empty string
-  // if there is currently no override.
-  std::string_view GetAssociatedRuntimeFieldTrialOverrideByFeatureName(
+  // Returns the runtime field trial override associated with the
+  // `feature_name`. If the named feature does not have runtime mutability
+  // enabled, returns std::nullopt. Otherwise, it returns a pointer to the field
+  // trial that has overridden the named feature at runtime, nullptr if the
+  // field trial has not been runtime-overridden.
+  std::optional<const RuntimeFieldTrialInfo*>
+  GetAssociatedRuntimeFieldTrialOverrideInfoByFeatureName(
       std::string_view feature_name) const;
 
   // Returns information about the field trial controlling or associated with
@@ -708,10 +713,10 @@ class BASE_EXPORT FeatureList {
   // Common implementation for the PassKey-gated
   // PrepareRuntimeMutableFeatureStateUpdate() overloads.
   [[nodiscard]] std::optional<RuntimeMutableFeatureUpdate>
-  PrepareRuntimeMutableFeatureStateUpdateImpl(std::string_view field_trial_name,
-                                              std::string_view group_name,
-                                              std::string_view feature_name,
-                                              OverrideState override_state);
+  PrepareRuntimeMutableFeatureStateUpdateImpl(
+      const RuntimeFieldTrialInfo* override_info,
+      std::string_view feature_name,
+      OverrideState override_state);
 
   // Returns the non-runtime override state for the given |feature_name|,
   // without falling back to any default state associated with the feature.

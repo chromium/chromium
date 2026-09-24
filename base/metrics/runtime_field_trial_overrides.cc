@@ -18,9 +18,7 @@ RuntimeFieldTrialOverrides* RuntimeFieldTrialOverrides::GetInstance() {
 
 bool RuntimeFieldTrialOverrides::ApplyRuntimeOverride(
     base::PassKey<variations::VariationsService>,
-    std::string_view trial_name,
-    std::string_view group_name,
-    const FieldTrial* overridden_trial,
+    std::unique_ptr<const RuntimeFieldTrialInfo> override_info,
     std::string_view previous_override_trial_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -34,18 +32,14 @@ bool RuntimeFieldTrialOverrides::ApplyRuntimeOverride(
     // The previous override should be overriding the same trial as the
     // new override. (Or, they should both be null -- i.e. not be overriding
     // any specific trial).
-    if (previous_override->second.overridden_trial != overridden_trial) {
+    if (previous_override->second->overridden_trial !=
+        override_info->overridden_trial) {
       return false;
     }
     overrides_.erase(previous_override);
   }
 
-  RuntimeFieldTrialInfo override_info{
-      .trial_name = std::string(trial_name),
-      .group_name = std::string(group_name),
-      .overridden_trial = overridden_trial,
-  };
-  auto [it, inserted] = overrides_.try_emplace(override_info.trial_name,
+  auto [it, inserted] = overrides_.try_emplace(override_info->trial_name,
                                                std::move(override_info));
   // The override trial name should not already exist. The scenario where an
   // override replaces a previous override with the same name is valid and is
@@ -66,34 +60,33 @@ bool RuntimeFieldTrialOverrides::ApplyRuntimeOverride(
   }
 
   for (auto& observer : observers_) {
-    observer.OnRuntimeFieldTrialOverride(it->second,
+    observer.OnRuntimeFieldTrialOverride(*it->second,
                                          previous_override_trial_name);
   }
   return true;
 }
 
-const flat_map<std::string, RuntimeFieldTrialInfo>&
+const flat_map<std::string, std::unique_ptr<const RuntimeFieldTrialInfo>>&
 RuntimeFieldTrialOverrides::GetRuntimeOverrides() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return overrides_;
 }
 
-std::optional<RuntimeFieldTrialInfo>
-RuntimeFieldTrialOverrides::GetRuntimeOverride(
+const RuntimeFieldTrialInfo* RuntimeFieldTrialOverrides::GetRuntimeOverride(
     std::string_view trial_name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = overrides_.find(trial_name);
   if (it == overrides_.end()) {
-    return std::nullopt;
+    return nullptr;
   }
-  return it->second;
+  return it->second.get();
 }
 
 bool RuntimeFieldTrialOverrides::IsFieldTrialOverridden(
     const FieldTrial& trial) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& [trial_name, override_info] : overrides_) {
-    if (override_info.overridden_trial == &trial) {
+    if (override_info->overridden_trial == &trial) {
       return true;
     }
   }
@@ -117,5 +110,15 @@ void RuntimeFieldTrialOverrides::ResetForTesting() {
 }
 
 RuntimeFieldTrialOverrides::RuntimeFieldTrialOverrides() = default;
+RuntimeFieldTrialInfo::RuntimeFieldTrialInfo(std::string trial_name,
+                                             std::string group_name,
+                                             base::FieldTrialParams params,
+                                             const FieldTrial* overridden_trial)
+    : trial_name(std::move(trial_name)),
+      group_name(std::move(group_name)),
+      params(std::move(params)),
+      overridden_trial(overridden_trial) {}
+
+RuntimeFieldTrialInfo::~RuntimeFieldTrialInfo() = default;
 
 }  // namespace base
