@@ -307,6 +307,7 @@ public class PdfCoordinator
         if (mChromePdfViewerFragment == null) {
             mChromePdfViewerFragment = new ChromePdfViewerFragment(this);
             mChromePdfViewerFragment.setViewTag(mTabId);
+            mChromePdfViewerFragment.setInitialPageNumber(PdfUtils.getPageNumberFromUrl(url));
             // Start pdf library initialization. This prepares pdf resources ahead of time, so that
             // pdf could be loaded faster when documentUri is set.
             mPdfSandboxHandle = SandboxedPdfLoader.startInitialization(activity);
@@ -360,6 +361,8 @@ public class PdfCoordinator
         static final String KEY_RESTORE_POSITION_PENDING = "restore_position_pending";
         private static final String KEY_FILE_PATH = "file_path";
         private static final String KEY_FILE_NAME = "file_name";
+        static final String KEY_INITIAL_PAGE_NUMBER = "initial_page_number";
+        static final String KEY_HAS_SCROLLED_TO_INITIAL_PAGE = "has_scrolled_to_initial_page";
         private @Nullable PdfActionsDelegate mDelegate;
         @VisibleForTesting @Nullable PdfView mPdfView;
         @VisibleForTesting boolean mIsPdfViewSetup;
@@ -377,6 +380,19 @@ public class PdfCoordinator
         private boolean mTwoPagesPerRowEnabled;
         @Nullable private String mFilePath;
         @Nullable private String mFileName;
+
+        /** The 1-based page number to open initially, or 0 if none. */
+        private int mInitialPageNumber;
+
+        /** Whether the initial page navigation has already been applied. */
+        private boolean mHasScrolledToInitialPage;
+
+        /** Listener used to defer the initial page navigation until content is ready. */
+        private PdfView.@Nullable OnFirstContentLoadListener mFirstContentLoadListener;
+
+        void setInitialPageNumber(int pageNumber) {
+            mInitialPageNumber = pageNumber;
+        }
 
         public void setPdfViewForTesting(PdfView pdfView) {
             this.mPdfView = pdfView;
@@ -464,6 +480,13 @@ public class PdfCoordinator
         }
 
         private void maybeRestorePosition() {
+            // An initial #page=N navigation that has not been applied yet takes precedence over
+            // restoring a previously saved scroll position. Drop the pending restore so a later
+            // viewport change does not override the initial navigation once it runs.
+            if (mInitialPageNumber > 0 && !mHasScrolledToInitialPage) {
+                mRestorePositionPending = false;
+                return;
+            }
             if (mRestorePositionPending && mPdfView != null) {
                 mRestorePositionPending = false;
                 final float zoom = mSavedZoom;
@@ -586,6 +609,10 @@ public class PdfCoordinator
                 mSavedPageIndex = state.getInt(KEY_SAVED_PAGE_INDEX, -1);
                 mSavedZoom = state.getFloat(KEY_SAVED_ZOOM, -1f);
                 mRestorePositionPending = state.getBoolean(KEY_RESTORE_POSITION_PENDING, false);
+                mInitialPageNumber = state.getInt(KEY_INITIAL_PAGE_NUMBER, mInitialPageNumber);
+                mHasScrolledToInitialPage =
+                        state.getBoolean(
+                                KEY_HAS_SCROLLED_TO_INITIAL_PAGE, mHasScrolledToInitialPage);
             }
             super.onViewCreated(view, savedInstanceState);
             if (getView() != null && mViewTag != null) {
@@ -602,6 +629,10 @@ public class PdfCoordinator
         public void onDestroyView() {
             super.onDestroyView();
             mIsPdfViewSetup = false;
+            if (mFirstContentLoadListener != null && mPdfView != null) {
+                mPdfView.removeOnFirstContentLoadListener(mFirstContentLoadListener);
+            }
+            mFirstContentLoadListener = null;
             mPdfView = null;
         }
 
@@ -983,6 +1014,8 @@ public class PdfCoordinator
             outState.putBoolean(KEY_RESTORE_POSITION_PENDING, mRestorePositionPending);
             outState.putString(KEY_FILE_PATH, mFilePath);
             outState.putString(KEY_FILE_NAME, mFileName);
+            outState.putInt(KEY_INITIAL_PAGE_NUMBER, mInitialPageNumber);
+            outState.putBoolean(KEY_HAS_SCROLLED_TO_INITIAL_PAGE, mHasScrolledToInitialPage);
         }
 
         @Override
@@ -998,6 +1031,7 @@ public class PdfCoordinator
         @Override
         public void onLoadDocumentSuccess(PdfDocument pdfDocument) {
             super.onLoadDocumentSuccess(pdfDocument);
+            scheduleInitialPageScroll();
             if (!PdfUtils.isInlinePdfV2Enabled()) {
                 maybeHideToolBoxForUnsupportedEdit();
             } else if (!PdfUtils.isInlinePdfV2EditEnabled()) {
@@ -1019,6 +1053,45 @@ public class PdfCoordinator
                 PdfUtils.recordPdfLoadResultDetail(PdfLoadResult.SUCCESS);
             }
             mIsLoadDocumentSuccess = true;
+        }
+
+        private void scheduleInitialPageScroll() {
+            if (mHasScrolledToInitialPage || mInitialPageNumber <= 0) {
+                return;
+            }
+            final PdfView pdfView = mPdfView;
+            if (pdfView == null) {
+                return;
+            }
+            // A navigation may already be scheduled and waiting for first content; avoid
+            // registering a second listener.
+            if (mFirstContentLoadListener != null) {
+                return;
+            }
+            // scrollToPage() is 0-based and clamps out-of-range pages; mInitialPageNumber is
+            // 1-based.
+            final int pageIndex = mInitialPageNumber - 1;
+            // The document is attached to the PdfView only after this callback returns, so
+            // scrolling now would throw "Can't scrollToPage without PdfDocument". Defer the
+            // navigation until the first content has loaded.
+            mFirstContentLoadListener =
+                    () -> {
+                        scrollToPage(pageIndex);
+                        // Mark the navigation as consumed only after it has actually been
+                        // applied, so a config change before this point re-runs it instead of
+                        // silently dropping it.
+                        mHasScrolledToInitialPage = true;
+                        // The listener is invoked while PdfView iterates its listener list, so
+                        // remove it asynchronously to avoid a ConcurrentModificationException.
+                        PdfView.OnFirstContentLoadListener listener = mFirstContentLoadListener;
+                        if (listener != null) {
+                            pdfView.post(() -> pdfView.removeOnFirstContentLoadListener(listener));
+                        }
+                        // Clear the field so the lambda and its captured references (this,
+                        // pdfView) are eligible for garbage collection once it has run.
+                        mFirstContentLoadListener = null;
+                    };
+            pdfView.addOnFirstContentLoadListener(mFirstContentLoadListener);
         }
 
         private void maybeHideToolBoxForUnsupportedEdit() {

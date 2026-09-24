@@ -846,4 +846,41 @@ public class PdfUtilsUnitTest {
         PdfUtils.recordRecoveredFragmentUriMatches(false);
         histogramExpectationFalse.assertExpected();
     }
+
+    @Test
+    public void testGetPageNumberFromUrl() {
+        Assert.assertEquals("Null url should return 0.", 0, PdfUtils.getPageNumberFromUrl(null));
+        Assert.assertEquals(
+                "Url without a fragment should return 0.",
+                0,
+                PdfUtils.getPageNumberFromUrl(PDF_LINK));
+        Assert.assertEquals(
+                "Direct http url with #page should return the page number.",
+                10,
+                PdfUtils.getPageNumberFromUrl(PDF_LINK + "#page=10"));
+        Assert.assertEquals(
+                "File url with #page should return the page number.",
+                2,
+                PdfUtils.getPageNumberFromUrl(FILE_URL + "#page=2"));
+        Assert.assertEquals(
+                "Wrapped pdf page url should return the page from the encoded download url.",
+                3,
+                PdfUtils.getPageNumberFromUrl(PdfUtils.encodePdfPageUrl(PDF_LINK + "#page=3")));
+        Assert.assertEquals(
+                "The page parameter should be parsed among other open parameters.",
+                5,
+                PdfUtils.getPageNumberFromUrl(PDF_LINK + "#nameddest=chapter1&page=5&zoom=100"));
+        Assert.assertEquals(
+                "page=0 is invalid and should return 0.",
+                0,
+                PdfUtils.getPageNumberFromUrl(PDF_LINK + "#page=0"));
+        Assert.assertEquals(
+                "Negative page should return 0.",
+                0,
+                PdfUtils.getPageNumberFromUrl(PDF_LINK + "#page=-1"));
+        Assert.assertEquals(
+                "Non-numeric page should return 0.",
+                0,
+                PdfUtils.getPageNumberFromUrl(PDF_LINK + "#page=abc"));
+    }
 }

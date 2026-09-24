@@ -649,7 +649,8 @@ public class PdfCoordinatorUnitTest {
                         tallPageInfo, /* fitToPage= */ false, mPdfView, /* zoomRatio= */ 1.0f);
         assertEquals(1.25f, zoomWidth, 0.001f);
 
-        // 2. Fit to page: zoomWidth = 500 / 400 = 1.25f, zoomHeight = 1000 / 800 = 1.25f => min = 1.25f
+        // 2. Fit to page: zoomWidth = 500 / 400 = 1.25f,
+        // zoomHeight = 1000 / 800 = 1.25f => min = 1.25f
         float zoomPage =
                 mPdfCoordinator.mChromePdfViewerFragment.calculateFitToPageZoom(
                         tallPageInfo, /* fitToPage= */ true, mPdfView, /* zoomRatio= */ 1.0f);
@@ -992,7 +993,8 @@ public class PdfCoordinatorUnitTest {
 
         // 3. User enables single page view without pinch zooming.
         // Single page: width 200, height 800.
-        // zoomWidth = 500 / 200 = 2.5f, zoomHeight = 1000 / 800 = 1.25f => min = 1.25f (100% viewport height).
+        // zoomWidth = 500 / 200 = 2.5f, zoomHeight = 1000 / 800 = 1.25f
+        // => min = 1.25f (100% viewport height).
         mPdfCoordinator.toggleTwoPagesPerRow(false, 1.25f, 0);
         ShadowLooper.idleMainLooper();
 
@@ -1653,6 +1655,64 @@ public class PdfCoordinatorUnitTest {
         pendingField.setAccessible(true);
         boolean restorePositionPending = (boolean) pendingField.get(newFragment);
         assertTrue(restorePositionPending);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testSaveInstanceState_PersistsInitialPageState() throws Exception {
+        PdfCoordinator.ChromePdfViewerFragment fragment =
+                new PdfCoordinator.ChromePdfViewerFragment();
+        fragment.setInitialPageNumber(10);
+
+        Field scrolledField =
+                PdfCoordinator.ChromePdfViewerFragment.class.getDeclaredField(
+                        "mHasScrolledToInitialPage");
+        scrolledField.setAccessible(true);
+        scrolledField.setBoolean(fragment, true);
+
+        Bundle outState = new Bundle();
+        try {
+            fragment.onSaveInstanceState(outState);
+        } catch (Throwable t) {
+            // Ignore exceptions from super.onSaveInstanceState (JNI).
+        }
+
+        assertEquals(
+                10,
+                outState.getInt(PdfCoordinator.ChromePdfViewerFragment.KEY_INITIAL_PAGE_NUMBER));
+        assertTrue(
+                outState.getBoolean(
+                        PdfCoordinator.ChromePdfViewerFragment.KEY_HAS_SCROLLED_TO_INITIAL_PAGE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testOnViewCreated_RestoresInitialPageState() throws Exception {
+        Bundle savedInstanceState = new Bundle();
+        savedInstanceState.putInt(
+                PdfCoordinator.ChromePdfViewerFragment.KEY_INITIAL_PAGE_NUMBER, 10);
+        savedInstanceState.putBoolean(
+                PdfCoordinator.ChromePdfViewerFragment.KEY_HAS_SCROLLED_TO_INITIAL_PAGE, true);
+
+        PdfCoordinator.ChromePdfViewerFragment fragment =
+                new PdfCoordinator.ChromePdfViewerFragment();
+        View placeholderView = new View(mActivity);
+        try {
+            fragment.onViewCreated(placeholderView, savedInstanceState);
+        } catch (Throwable t) {
+            // Ignore exceptions from super.onViewCreated.
+        }
+
+        Field pageField =
+                PdfCoordinator.ChromePdfViewerFragment.class.getDeclaredField("mInitialPageNumber");
+        pageField.setAccessible(true);
+        assertEquals(10, pageField.getInt(fragment));
+
+        Field scrolledField =
+                PdfCoordinator.ChromePdfViewerFragment.class.getDeclaredField(
+                        "mHasScrolledToInitialPage");
+        scrolledField.setAccessible(true);
+        assertTrue(scrolledField.getBoolean(fragment));
     }
 
     @Test
