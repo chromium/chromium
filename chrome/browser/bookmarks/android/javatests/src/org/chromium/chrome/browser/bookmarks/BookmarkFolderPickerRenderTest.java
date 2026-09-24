@@ -26,12 +26,14 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,6 +51,8 @@ import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -260,6 +264,55 @@ public class BookmarkFolderPickerRenderTest {
     }
 
     /**
+     * Waits for the folder row with image thumbnails at {@code position} in {@link #mRecyclerView}
+     * to finish binding and rendering its start image/drawables.
+     */
+    private void waitForFolderRowImages(int position) {
+        RecyclerViewTestUtils.waitForStableMvcRecyclerView(mRecyclerView);
+        final boolean isVisualRow =
+                mUseVisualRowLayout && !BookmarkUtils.isDesktopBookmarksDialogEnabled();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    RecyclerView.ViewHolder viewHolder =
+                            mRecyclerView.findViewHolderForAdapterPosition(position);
+                    Criteria.checkThat("ViewHolder is null", viewHolder, Matchers.notNullValue());
+                    final View itemView = viewHolder.itemView;
+                    Criteria.checkThat(
+                            "ViewHolder item is not ImprovedBookmarkRow",
+                            itemView,
+                            Matchers.instanceOf(ImprovedBookmarkRow.class));
+
+                    if (isVisualRow) {
+                        ImageView primaryImage = itemView.findViewById(R.id.primary_image);
+                        Criteria.checkThat(
+                                "Primary image view is null",
+                                primaryImage,
+                                Matchers.notNullValue());
+                        Criteria.checkThat(
+                                "Primary image is not visible",
+                                primaryImage.getVisibility(),
+                                Matchers.is(View.VISIBLE));
+                        Criteria.checkThat(
+                                "Primary image drawable is null",
+                                primaryImage.getDrawable(),
+                                Matchers.notNullValue());
+                    } else {
+                        ImageView startImage = itemView.findViewById(R.id.start_image);
+                        Criteria.checkThat(
+                                "Start image view is null", startImage, Matchers.notNullValue());
+                        Criteria.checkThat(
+                                "Start image is not visible",
+                                startImage.getVisibility(),
+                                Matchers.is(View.VISIBLE));
+                        Criteria.checkThat(
+                                "Start image drawable is null",
+                                startImage.getDrawable(),
+                                Matchers.notNullValue());
+                    }
+                });
+    }
+
+    /**
      * Waits for the folder rows to finish binding, then renders {@code view}. Some row properties
      * are applied by callbacks that the view binder posts to the looper, so drain it and wait for
      * the resulting layout pass before capturing.
@@ -290,6 +343,7 @@ public class BookmarkFolderPickerRenderTest {
                                         new GURL("https://test.com")));
         createCoordinatorToMoveBookmarkIds(bookmarkId);
 
+        waitForFolderRowImages(/* position= */ 0);
         waitForStableViewAndRender(mContentView, "move_bookmark_from_user_folder");
     }
 
@@ -354,6 +408,7 @@ public class BookmarkFolderPickerRenderTest {
                                         new GURL("https://test.com")));
         createCoordinatorToMoveBookmarkIds(bookmarkId);
 
+        waitForFolderRowImages(/* position= */ 0);
         waitForStableViewAndRender(
                 mCoordinator.getView(), "move_bookmark_from_user_folder_desktop");
     }
