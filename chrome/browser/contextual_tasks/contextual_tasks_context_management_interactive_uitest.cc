@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_interactive_test_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -1110,8 +1111,17 @@ class ContextualTasksOmniboxContextManagementInteractiveUiTest
 
 // Adding the current tab from the omnibox opens the side panel with
 // consistent sign posting.
-IN_PROC_BROWSER_TEST_F(ContextualTasksOmniboxContextManagementInteractiveUiTest,
-                       OmniboxAddCurrentTab_OpensSidePanelWithSignposting) {
+// TODO(crbug.com/565713410): Re-enable this test.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
+#define MAYBE_OmniboxAddCurrentTab_OpensSidePanelWithSignposting \
+  DISABLED_OmniboxAddCurrentTab_OpensSidePanelWithSignposting
+#else
+#define MAYBE_OmniboxAddCurrentTab_OpensSidePanelWithSignposting \
+  OmniboxAddCurrentTab_OpensSidePanelWithSignposting
+#endif
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksOmniboxContextManagementInteractiveUiTest,
+    MAYBE_OmniboxAddCurrentTab_OpensSidePanelWithSignposting) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
 
