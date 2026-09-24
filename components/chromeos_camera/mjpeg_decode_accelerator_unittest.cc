@@ -1192,6 +1192,22 @@ TEST_P(MjpegDecodeAcceleratorTest, DecodeBlit) {
 }
 #endif
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+// The V4L2 backend does not support scaling, so a JPEG whose frame dimensions
+// exceed the requested output frame must be rejected instead of being sent to
+// the hardware decoder.
+TEST_P(MjpegDecodeAcceleratorTest, RejectOversizedInput) {
+  std::vector<DecodeTask> tasks;
+  for (auto& image : g_env->image_data_user_) {
+    tasks.emplace_back(image.get(),
+                       gfx::Size((image->visible_size.width() / 2) & ~1,
+                                 (image->visible_size.height() / 2) & ~1));
+  }
+  const std::vector<ClientState> expected_status(tasks.size(), CS_ERROR);
+  TestDecode(tasks, expected_status);
+}
+#endif
+
 TEST_P(MjpegDecodeAcceleratorTest, InvalidTargetSize) {
   std::vector<DecodeTask> tasks;
   for (auto& image : g_env->image_data_user_) {
