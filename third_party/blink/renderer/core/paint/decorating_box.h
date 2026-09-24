@@ -34,10 +34,11 @@ class CORE_EXPORT DecoratingBox {
                 const ComputedStyle& style,
                 const UsedFont& used_font,
                 const AppliedTextDecorationVector* decorations)
-      : DecoratingBox(item.ContentOffsetInContainerFragment(),
-                      style,
-                      used_font,
-                      decorations) {}
+      : DecoratingBox(
+            item.ContentOffsetInContainerFragmentIgnoringTextBoxTrim(),
+            style,
+            used_font,
+            decorations) {}
   explicit DecoratingBox(const FragmentItem& item)
       : DecoratingBox(item,
                       item.Style(),

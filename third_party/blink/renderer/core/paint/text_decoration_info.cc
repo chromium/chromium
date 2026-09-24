@@ -332,9 +332,9 @@ const ResolvedDecoration TextDecorationInfo::ResolveDecorationAt(
       // Disable the decorating box when the baseline is central, because the
       // decorating box doesn't produce the ideal position.
       // https://drafts.csswg.org/css-text-decor-3/#:~:text=text%20is%20not%20aligned%20to%20the%20alphabetic%20baseline
-      // TODO(kojii): The vertical flow in alphabetic baseline may want to use
-      // the decorating box. It needs supporting the rotated coordinate system
-      // text painters use when painting vertical text.
+      // TODO(crbug.com/563435074): The vertical flow in alphabetic baseline
+      // should use the decorating box. It needs supporting the rotated
+      // coordinate system text painters use when painting vertical text.
       disable_decorating_box = !decorating_box_style->IsHorizontalWritingMode();
     }
 

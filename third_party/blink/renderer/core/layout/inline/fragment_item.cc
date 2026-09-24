@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
@@ -524,6 +525,57 @@ const PhysicalOffset FragmentItem::ContentOffsetInContainerFragment() const {
   PhysicalOffset offset = OffsetInContainerFragment();
   if (const PhysicalBoxFragment* box = BoxFragment()) {
     offset += box->ContentOffset();
+  }
+  return offset;
+}
+
+const PhysicalOffset
+FragmentItem::ContentOffsetInContainerFragmentIgnoringTextBoxTrim() const {
+  PhysicalOffset offset = ContentOffsetInContainerFragment();
+  if (Type() == kBox && !IsSvgText() &&
+      RuntimeEnabledFeatures::TextBoxTrimOnInlineBoxTextDecorationEnabled()) {
+    const ComputedStyle& style = Style();
+    if (style.TextBoxTrim() != ETextBoxTrim::kNone) [[unlikely]] {
+      const WritingMode writing_mode = style.GetWritingMode();
+      if (!IsFlippedBlocksWritingMode(ToLineWritingMode(writing_mode))) {
+        // `horizontal-tb` (`line-over` is top) and `sideways-lr` (`line-over`
+        // is left).
+        if (style.ShouldTextBoxTrimStart()) {
+          const UsedFont used_font = GetUsedFont();
+          const FontBaseline baseline_type = style.GetFontBaseline();
+          FontHeight metrics;
+          InlineBoxState::AdjustEdges(style, used_font.GetFont(), baseline_type,
+                                      /*should_apply_over=*/true,
+                                      /*should_apply_under=*/false, metrics);
+          metrics.ascent *= used_font.ScalingFactor();
+          const LayoutUnit delta =
+              metrics.ascent - used_font.FixedAscent(baseline_type);
+          if (IsHorizontalWritingMode(writing_mode)) {
+            offset.top += delta;
+          } else {
+            offset.left += delta;
+          }
+        }
+      } else {
+        // `vertical-rl`, `vertical-lr`, and `sideways-rl`, where
+        // `ToLineWritingMode` places `line-under` (`metrics.descent`) on the
+        // left.
+        const bool should_apply_under = IsFlippedLinesWritingMode(writing_mode)
+                                            ? style.ShouldTextBoxTrimStart()
+                                            : style.ShouldTextBoxTrimEnd();
+        if (should_apply_under) {
+          const UsedFont used_font = GetUsedFont();
+          const FontBaseline baseline_type = style.GetFontBaseline();
+          FontHeight metrics;
+          InlineBoxState::AdjustEdges(style, used_font.GetFont(), baseline_type,
+                                      /*should_apply_over=*/false,
+                                      /*should_apply_under=*/true, metrics);
+          metrics.descent *= used_font.ScalingFactor();
+          offset.left +=
+              metrics.descent - used_font.FixedDescent(baseline_type);
+        }
+      }
+    }
   }
   return offset;
 }

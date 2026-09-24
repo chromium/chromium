@@ -6359,6 +6359,12 @@
       status: "stable",
     },
     {
+      // Kill switch for crbug.com/562543774.
+      name: "TextBoxTrimOnInlineBoxTextDecoration",
+      depends_on: ["TextBoxTrimOnInlineBox"],
+      status: "stable",
+    },
+    {
       name: "TextDetector",
       status: "experimental",
     },

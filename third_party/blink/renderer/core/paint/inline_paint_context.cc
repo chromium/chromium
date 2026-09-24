@@ -247,9 +247,8 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
         item = line_cursor_->Current().Item();
       }
       DCHECK(item);
-      inline_context_->PushDecoratingBox(
-          item->ContentOffsetInContainerFragment(), style, item->GetUsedFont(),
-          &decorations);
+      inline_context_->PushDecoratingBox(*item, style, item->GetUsedFont(),
+                                         &decorations);
     }
 
     InlinePaintContext* inline_context_;

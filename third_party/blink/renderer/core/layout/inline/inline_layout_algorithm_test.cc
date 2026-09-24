@@ -1422,28 +1422,46 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimOnInlineBox) {
   LayoutObject* target = GetLayoutObjectByElementId("target");
   ASSERT_NE(target, nullptr);
 
-  {
+  for (const char* writing_mode :
+       {"horizontal-tb", "vertical-rl", "vertical-lr", "sideways-rl",
+        "sideways-lr"}) {
+    GetElementById("container")
+        ->SetInlineStyleProperty(CSSPropertyID::kWritingMode, writing_mode);
+    const bool is_horizontal = StringView(writing_mode) == "horizontal-tb";
+    PhysicalOffset untrimmed_offset;
+    {
+      ScopedTextBoxTrimOnInlineBoxForTest enable_text_box_trim_on_inline_box(
+          false);
+      container->SetNeedsLayout("test");
+      UpdateAllLifecyclePhasesForTest();
+
+      InlineCursor cursor(*container);
+      cursor.MoveTo(*target);
+      ASSERT_TRUE(cursor);
+      const PhysicalSize size = cursor.Current().Size();
+      EXPECT_EQ(is_horizontal ? size.height : size.width, LayoutUnit(100))
+          << writing_mode;
+      untrimmed_offset = cursor.Current()->ContentOffsetInContainerFragment();
+    }
+
     ScopedTextBoxTrimOnInlineBoxForTest enable_text_box_trim_on_inline_box(
-        false);
+        true);
     container->SetNeedsLayout("test");
     UpdateAllLifecyclePhasesForTest();
 
     InlineCursor cursor(*container);
     cursor.MoveTo(*target);
     ASSERT_TRUE(cursor);
-    EXPECT_EQ(cursor.Current().Size().height, LayoutUnit(100));
+    // In Ahem at 100px, cap-height is 80px and alphabetic baseline is 0px.
+    // Trimming to cap-to-alphabetic results in block size of 80px.
+    const PhysicalSize size = cursor.Current().Size();
+    EXPECT_EQ(is_horizontal ? size.height : size.width, LayoutUnit(80))
+        << writing_mode;
+    EXPECT_EQ(
+        cursor.Current()->ContentOffsetInContainerFragmentIgnoringTextBoxTrim(),
+        untrimmed_offset)
+        << writing_mode;
   }
-
-  ScopedTextBoxTrimOnInlineBoxForTest enable_text_box_trim_on_inline_box(true);
-  container->SetNeedsLayout("test");
-  UpdateAllLifecyclePhasesForTest();
-
-  InlineCursor cursor(*container);
-  cursor.MoveTo(*target);
-  ASSERT_TRUE(cursor);
-  // In Ahem at 100px, cap-height is 80px and alphabetic baseline is 0px.
-  // Trimming to cap-to-alphabetic results in height of 80px.
-  EXPECT_EQ(cursor.Current().Size().height, LayoutUnit(80));
 }
 
 }  // namespace

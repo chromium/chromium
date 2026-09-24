@@ -261,6 +261,16 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::BoxInfo::
   if (text_metrics != child.text_metrics)
     return true;
 
+  // `BoxInfo::text_metrics` is computed before `text-box-trim` is applied. When
+  // `child` has `text-box-trim`, its height and/or location in the block
+  // direction may differ from this box, and a culled parent would otherwise use
+  // the child's trimmed fragment.
+  if (child_style.TextBoxTrim() != ETextBoxTrim::kNone &&
+      RuntimeEnabledFeatures::TextBoxTrimOnInlineBoxTextDecorationEnabled())
+      [[unlikely]] {
+    return true;
+  }
+
   return false;
 }
 

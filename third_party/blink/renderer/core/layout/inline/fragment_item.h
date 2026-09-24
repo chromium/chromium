@@ -260,6 +260,8 @@ class CORE_EXPORT FragmentItem final {
     return rect_.offset;
   }
   const PhysicalOffset ContentOffsetInContainerFragment() const;
+  const PhysicalOffset ContentOffsetInContainerFragmentIgnoringTextBoxTrim()
+      const;
   const PhysicalSize& Size() const { return rect_.size; }
   PhysicalRect LocalRect() const { return {PhysicalOffset(), Size()}; }
   void SetOffset(const PhysicalOffset& offset) { rect_.offset = offset; }

@@ -352,4 +352,53 @@ TEST_F(InlinePaintContextTest, StopPropagateTextDecorations) {
   // Test pass if no DCHECK failures.
 }
 
+TEST_F(InlinePaintContextTest, TextBoxTrimInlineBox) {
+  ScopedTextBoxTrimOnInlineBoxForTest text_box_trim_on_inline_box(true);
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #container {
+      font-family: Ahem;
+      font-size: 100px;
+      line-height: 1.5;
+    }
+    .decorated {
+      text-decoration-line: underline;
+      text-underline-offset: 20px;
+    }
+    .trim {
+      text-box-trim: trim-both;
+      text-box-edge: ex alphabetic;
+    }
+    </style>
+    <div id="container">
+      <div><span id="untrimmed" class="decorated" style="background: yellow">x</span></div>
+      <div><span id="trimmed" class="decorated trim">x</span></div>
+      <div><span id="parent_decorated" class="decorated"><span id="child_trimmed" class="trim">x</span></span></div>
+    </div>
+  )HTML");
+
+  // `#parent_decorated` should not be culled because its child has
+  // `text-box-trim`.
+  InlineCursor parent_cursor;
+  parent_cursor.MoveTo(*GetLayoutObjectByElementId("parent_decorated"));
+  EXPECT_TRUE(parent_cursor.Current().IsInlineBox());
+
+  auto get_text_bottom_in_line = [&](const char* id) {
+    const LayoutObject* box = GetLayoutObjectByElementId(id);
+    InlineCursor cursor;
+    cursor.MoveTo(*box);
+    EXPECT_TRUE(cursor.Current().IsInlineBox());
+    cursor.MoveToNext();
+    EXPECT_TRUE(cursor.Current().IsText());
+    const FragmentItem& text_item = *cursor.Current();
+    return text_item.InkOverflowRect().Bottom() +
+           text_item.OffsetInContainerFragment().top;
+  };
+
+  const LayoutUnit untrimmed_bottom = get_text_bottom_in_line("untrimmed");
+  EXPECT_EQ(untrimmed_bottom, get_text_bottom_in_line("trimmed"));
+  EXPECT_EQ(untrimmed_bottom, get_text_bottom_in_line("child_trimmed"));
+}
+
 }  // namespace blink
