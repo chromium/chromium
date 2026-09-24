@@ -6,18 +6,71 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
+#import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/app/application_delegate/app_init_stage.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/change_profile_commands.h"
+#import "ios/chrome/app/change_profile_continuation.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/task_request+testing.h"
 #import "ios/chrome/app/task_scheduling_outcome.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+@interface FakeChangeProfileCommandsHandler : NSObject <ChangeProfileCommands>
+@property(nonatomic, assign) BOOL changeProfileCalled;
+@property(nonatomic, assign) std::string profileName;
+@property(nonatomic, assign) ChangeProfileReason reason;
+- (BOOL)hasContinuation;
+- (void)runContinuationForSceneState:(SceneState*)sceneState;
+@end
+
+@implementation FakeChangeProfileCommandsHandler {
+  ChangeProfileContinuation _continuation;
+}
+- (void)changeProfile:(std::string_view)profileName
+             forScene:(SceneState*)sceneState
+               reason:(ChangeProfileReason)reason
+         continuation:(ChangeProfileContinuation)continuation {
+  self.changeProfileCalled = YES;
+  self.profileName = std::string(profileName);
+  self.reason = reason;
+  _continuation = std::move(continuation);
+}
+- (void)deleteProfile:(std::string_view)profileName {
+}
+- (BOOL)hasContinuation {
+  return !_continuation.is_null();
+}
+- (void)runContinuationForSceneState:(SceneState*)sceneState {
+  std::move(_continuation).Run(sceneState, base::DoNothing());
+}
+@end
 
 namespace {
 // Creates a new SceneState with the given `persistentIdentifier`.
@@ -278,4 +331,92 @@ TEST_F(TaskOrchestratorTest, TestGaiaIDForScene) {
 
   // Now no tasks are pending, returns nil.
   EXPECT_NSEQ(nil, [orchestrator_ gaiaIDForScene:scene_state]);
+}
+
+// Tests that a task requiring a profile or account switch triggers
+// ChangeProfileCommands at TaskExecutionProfileLoaded (before
+// TaskExecutionUIReady) and only executes after the continuation completes and
+// TaskExecutionUIReady is reached.
+TEST_F(TaskOrchestratorTest,
+       TestProfileSwitchStartedAtProfileLoadedBeforeUIReady) {
+  IOSChromeScopedTestingLocalState scoped_testing_local_state;
+  TestProfileManagerIOS profile_manager;
+
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
+                            AuthenticationServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                            base::BindRepeating(&CreateTestSyncService));
+  TestProfileIOS* profile =
+      profile_manager.AddProfileWithBuilder(std::move(builder));
+
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity(identity);
+
+  CommandDispatcher* dispatcher = [[CommandDispatcher alloc] init];
+  FakeChangeProfileCommandsHandler* change_profile_handler =
+      [[FakeChangeProfileCommandsHandler alloc] init];
+  [dispatcher startDispatchingToTarget:change_profile_handler
+                           forProtocol:@protocol(ChangeProfileCommands)];
+
+  id mock_app_state = OCMClassMock([AppState class]);
+  OCMStub([mock_app_state initStage]).andReturn(AppInitStage::kFinal);
+  OCMStub([mock_app_state appCommandDispatcher]).andReturn(dispatcher);
+
+  ProfileState* profile_state =
+      [[ProfileState alloc] initWithAppState:mock_app_state];
+  profile_state.profile = profile;
+
+  SceneState* scene_state = CreateFakeSceneState(@"scene_switch");
+  scene_state.profileState = profile_state;
+  id mock_scene_delegate = OCMClassMock([SceneDelegate class]);
+  OCMStub([mock_scene_delegate sceneState]).andReturn(scene_state);
+  OCMStub([scene_state.scene delegate]).andReturn(mock_scene_delegate);
+
+  id mock_browser_provider = OCMProtocolMock(@protocol(BrowserProvider));
+  TestBrowser browser(profile, scene_state);
+  OCMStub([mock_browser_provider browser]).andReturn(&browser);
+  id mock_provider_interface =
+      OCMProtocolMock(@protocol(BrowserProviderInterface));
+  OCMStub([mock_provider_interface mainBrowserProvider])
+      .andReturn(mock_browser_provider);
+  id partial_scene_state = OCMPartialMock(scene_state);
+  OCMStub([partial_scene_state browserProviderInterface])
+      .andReturn(mock_provider_interface);
+
+  bool task_was_executed = false;
+  bool* task_was_executed_ptr = &task_was_executed;
+  TaskRequest* task = [TaskRequest taskForTestingWithScene:scene_state.scene
+                                              executeBlock:^{
+                                                *task_was_executed_ptr = true;
+                                              }];
+  task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
+  task.gaiaID = identity.gaiaId.ToNSString();
+
+  [orchestrator_ addTaskRequest:task];
+  EXPECT_FALSE(change_profile_handler.changeProfileCalled);
+  EXPECT_FALSE(task_was_executed);
+
+  // Updating to TaskExecutionProfileLoaded should immediately initiate
+  // changeProfile: before TaskExecutionUIReady is reached.
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
+                      forScene:scene_state];
+  EXPECT_TRUE(change_profile_handler.changeProfileCalled);
+  EXPECT_EQ(ChangeProfileReason::kSwitchAccountsFromWidget,
+            change_profile_handler.reason);
+  EXPECT_FALSE(task_was_executed);
+
+  // Even if TaskExecutionUIReady is reached while the switch continuation is
+  // still in progress, the task must not execute until the continuation runs.
+  [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
+                      forScene:scene_state];
+  EXPECT_FALSE(task_was_executed);
+
+  // Running the ChangeProfileContinuation completes the switch and executes the
+  // ready task.
+  ASSERT_TRUE([change_profile_handler hasContinuation]);
+  [change_profile_handler runContinuationForSceneState:scene_state];
+  EXPECT_TRUE(base::test::RunUntil([&]() { return task_was_executed; }));
 }

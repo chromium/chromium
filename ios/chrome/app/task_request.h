@@ -37,6 +37,9 @@ using ShortcutCompletionHandler = void (^)(BOOL succeeded);
 // Gaia ID associated with the task, if any.
 @property(nonatomic, readonly) NSString* gaiaID;
 
+// URL associated with the task, if any.
+@property(nonatomic, readonly) NSURL* URL;
+
 // Minimum execution stage for a task.
 @property(nonatomic, assign) TaskExecutionStage minimumStage;
 

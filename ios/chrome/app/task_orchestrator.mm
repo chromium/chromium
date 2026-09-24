@@ -7,19 +7,51 @@
 #import <UIKit/UIKit.h>
 
 #import <map>
+#import <optional>
 #import <string>
+#import <string_view>
 
+#import "base/apple/foundation_util.h"
+#import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/app/application_delegate/app_init_stage.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/change_profile_commands.h"
+#import "ios/chrome/app/change_profile_continuation.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/task_scheduling_outcome.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
 struct SceneInfo {
   // Current stage of a scene.
   TaskExecutionStage current_stage;
+  // Whether a profile or account switch is currently in progress for this
+  // scene.
+  bool is_switching;
+  // Last Gaia ID for which a switch was initiated in the current pending task
+  // batch.
+  NSString* switched_gaia_id;
   // Tasks to be executed on a scene.
   NSMutableArray<TaskRequest*>* pending_tasks;
 
@@ -38,6 +70,13 @@ struct SceneInfo {
 // SceneState). This uses the -persistentIdentifier of the UISceneSession.
 std::string GetSceneIdentifier(UIScene* scene) {
   return base::SysNSStringToUTF8(scene.session.persistentIdentifier);
+}
+
+// Returns the active `SceneState` for `task.scene`.
+SceneState* GetSceneStateForTask(TaskRequest* task) {
+  SceneDelegate* scene_delegate =
+      base::apple::ObjCCast<SceneDelegate>(task.scene.delegate);
+  return scene_delegate.sceneState;
 }
 
 }  // namespace
@@ -141,15 +180,143 @@ std::string GetSceneIdentifier(UIScene* scene) {
 // Internal logic to filter and execute tasks based on the current stage.
 - (void)executeTasksForScene:(std::string_view)sceneKey {
   SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
+  if (sceneInfo.is_switching) {
+    return;
+  }
+
+  // Initiate any required profile or account switch as early as
+  // `TaskExecutionProfileLoaded` (before `TaskExecutionUIReady` and before
+  // task execution).
+  if (sceneInfo.current_stage >=
+          TaskExecutionStage::TaskExecutionProfileLoaded &&
+      [self switchProfileOrAccountIfNeededForScene:sceneKey]) {
+    return;
+  }
+
   NSMutableArray<TaskRequest*>* pendingTasks =
       std::exchange(sceneInfo.pending_tasks, [NSMutableArray new]);
+  bool hasPendingGaiaTask = false;
   for (TaskRequest* task in pendingTasks) {
     if (task.minimumStage <= sceneInfo.current_stage) {
       [task execute];
     } else {
+      if (task.gaiaID.length > 0) {
+        hasPendingGaiaTask = true;
+      }
       sceneInfo.AddTask(task);
     }
   }
+  if (!hasPendingGaiaTask) {
+    sceneInfo.switched_gaia_id = nil;
+  }
+}
+
+// Initiates a profile or account switch via `ChangeProfileCommands` if a
+// pending task for `sceneKey` requires a different profile or identity.
+// Returns YES if an asynchronous switch was started.
+- (BOOL)switchProfileOrAccountIfNeededForScene:(std::string_view)sceneKey {
+  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
+  TaskRequest* gaiaTask = nil;
+  for (TaskRequest* task in sceneInfo.pending_tasks) {
+    if (task.gaiaID.length > 0) {
+      gaiaTask = task;
+      break;
+    }
+  }
+  if (!gaiaTask ||
+      [sceneInfo.switched_gaia_id isEqualToString:gaiaTask.gaiaID]) {
+    return NO;
+  }
+
+  SceneState* sceneState = GetSceneStateForTask(gaiaTask);
+  ProfileIOS* profile = sceneState.profileState.profile;
+  if (!sceneState || !profile ||
+      sceneState.profileState.appState.initStage < AppInitStage::kFinal) {
+    return NO;
+  }
+
+  BOOL shouldSignOut = [gaiaTask.gaiaID isEqualToString:app_group::kNoAccount];
+  std::optional<std::string> targetProfileName;
+  if (shouldSignOut) {
+    targetProfileName = GetApplicationContext()
+                            ->GetProfileManager()
+                            ->GetProfileAttributesStorage()
+                            ->GetPersonalProfileName();
+  } else {
+    targetProfileName = GetApplicationContext()
+                            ->GetAccountProfileMapper()
+                            ->FindProfileNameForGaiaID(GaiaId(gaiaTask.gaiaID));
+  }
+  if (!targetProfileName.has_value()) {
+    return NO;
+  }
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
+  CoreAccountInfo primaryAccount =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+
+  const bool needsProfileSwitch =
+      (*targetProfileName != profile->GetProfileName());
+  const bool needsAccountSwitch =
+      shouldSignOut ? !primaryAccount.gaia.empty()
+                    : (primaryAccount.gaia != GaiaId(gaiaTask.gaiaID));
+  if (!needsProfileSwitch && !needsAccountSwitch) {
+    return NO;
+  }
+
+  id<ChangeProfileCommands> changeProfileHandler =
+      HandlerForProtocol(sceneState.profileState.appState.appCommandDispatcher,
+                         ChangeProfileCommands);
+  if (!changeProfileHandler) {
+    return NO;
+  }
+
+  ChangeProfileReason reason =
+      app_group::IsShareExtensionCommandURL(gaiaTask.URL)
+          ? ChangeProfileReason::kSwitchAccountsFromShareExtension
+          : ChangeProfileReason::kSwitchAccountsFromWidget;
+
+  AccountSwitchType switchType =
+      shouldSignOut ? AccountSwitchType::kSignOut : AccountSwitchType::kSignIn;
+  URLContext* urlContext =
+      [[URLContext alloc] initWithContext:nil
+                                   gaiaID:GaiaId(gaiaTask.gaiaID)
+                                     type:switchType];
+
+  __weak __typeof(self) weakSelf = self;
+  ChangeProfileContinuation completionContinuation = base::BindOnce(
+      [](__weak TaskOrchestrator* orchestrator, std::string scene_key,
+         SceneState* scene_state, base::OnceClosure closure) {
+        [orchestrator
+            onProfileOrAccountSwitchCompletedForScene:scene_key
+                                           completion:std::move(closure)];
+      },
+      weakSelf, std::string(sceneKey));
+
+  ChangeProfileContinuation continuation = ChainChangeProfileContinuations(
+      CreateChangeProfileAuthenticationContinuation(urlContext,
+                                                    /*contexts=*/nil),
+      std::move(completionContinuation));
+
+  sceneInfo.is_switching = true;
+  sceneInfo.switched_gaia_id = [gaiaTask.gaiaID copy];
+
+  [changeProfileHandler changeProfile:*targetProfileName
+                             forScene:sceneState
+                               reason:reason
+                         continuation:std::move(continuation)];
+  return YES;
+}
+
+// Called when a profile or account switch initiated by `ChangeProfileCommands`
+// has completed its authentication continuation.
+- (void)onProfileOrAccountSwitchCompletedForScene:(std::string_view)sceneKey
+                                       completion:(base::OnceClosure)closure {
+  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
+  sceneInfo.is_switching = false;
+  [self executeTasksForScene:sceneKey];
+  std::move(closure).Run();
 }
 
 @end

@@ -57,6 +57,10 @@
   return _scene;
 }
 
+- (NSURL*)URL {
+  return nil;
+}
+
 + (instancetype)taskForURLContext:(UIOpenURLContext*)URLContext
                        sceneState:(SceneState*)sceneState
                       isColdStart:(BOOL)isColdStart {
@@ -120,9 +124,10 @@
 #pragma mark - Protected
 
 - (SceneState*)sceneState {
-  if (!_sceneState) {
-    _sceneState =
-        base::apple::ObjCCast<SceneDelegate>(_scene.delegate).sceneState;
+  SceneDelegate* sceneDelegate =
+      base::apple::ObjCCast<SceneDelegate>(_scene.delegate);
+  if (sceneDelegate.sceneState) {
+    _sceneState = sceneDelegate.sceneState;
   }
   CHECK(_sceneState);
   return _sceneState;

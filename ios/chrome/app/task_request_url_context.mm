@@ -263,6 +263,10 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
                                              completion:completion];
 }
 
+- (NSURL*)URL {
+  return _URLContext.URL;
+}
+
 - (void)execute {
   SceneState* sceneState = self.sceneState;
   CHECK(sceneState);
