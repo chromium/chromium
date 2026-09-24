@@ -25,6 +25,9 @@ Modifications:
   heap-buffer-overflow.
 - parser-check-eof-trailing-whitespace.patch: Allow trailing whitespace in
   xmlParserCheckEOF instead of treating it as a fatal error.
+- parser-grow-capacity-check.patch: Fixes a heap-buffer-overflow in case the new
+  buffer length gets clamped to the maximum value without leaving enough
+  headroom.
 - Add helper classes in the chromium/ subdirectory.
 - Delete various unused files, see chromium/roll.py
 - Disable various unused libxml features:

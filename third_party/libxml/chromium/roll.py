@@ -76,6 +76,7 @@ PATCHES = [
     'xml-attr-extra.patch',
     'widen-extra-field-in-_xmlNode-to-an-int.patch',
     'parser-check-eof-trailing-whitespace.patch',
+    'patser-grow-capacity-check.patch',
 ]
 
 

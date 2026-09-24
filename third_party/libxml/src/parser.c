@@ -4906,7 +4906,7 @@ xmlParseCommentComplex(xmlParserCtxtPtr ctxt, xmlChar *buf,
             int newSize;
 
 	    newSize = xmlGrowCapacity(size, 1, 1, maxLength);
-            if (newSize < 0) {
+            if (newSize < 0 || len + 5 >= (size_t) newSize) {
                 xmlFatalErrMsgStr(ctxt, XML_ERR_COMMENT_NOT_FINISHED,
                              "Comment too big found", NULL);
                 xmlFree (buf);
