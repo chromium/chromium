@@ -245,6 +245,11 @@ TEST_F(DawnCachingInterfaceTest, TestVeryLargeEntrySize) {
 TEST_F(DawnCachingInterfaceTest, TestMemoryPressureCritical) {
   // Verifies that on PurgeMemory the cache becomes empty for critical pressure
   // levels without `kAggressiveShaderCacheLimits` feature flag.
+  // This test relies on the memory limit not persisting after
+  // OnReleaseMemory(). See OnReleaseMemoryLimitPersistsStateful for the
+  // stateful behavior.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
   static constexpr std::string_view kKey1 = "1";
   static constexpr std::string_view kData1 = "1";
   static constexpr size_t kKeySize = kKey1.size();
@@ -268,8 +273,13 @@ TEST_F(DawnCachingInterfaceTest, TestMemoryPressureCritical) {
 
 TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
   // Verifies PurgeMemory with `kAggressiveShaderCacheLimits` feature flag.
-  base::test::ScopedFeatureList feature_list{
-      ::features::kAggressiveShaderCacheLimits};
+  // This test relies on the memory limit not persisting after
+  // OnReleaseMemory(). See OnReleaseMemoryLimitPersistsStateful for the
+  // stateful behavior.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kAggressiveShaderCacheLimits},
+      /*disabled_features=*/{base::kStatefulMemoryPressure});
   static constexpr std::string_view kKey1 = "1";
   static constexpr std::string_view kData1 = "1";
   static constexpr size_t kKeySize = kKey1.size();
@@ -387,6 +397,50 @@ TEST_F(DawnCachingInterfaceTest, NewlyCreatedBackendRespectsMemoryLimit) {
   factory.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
   interface->StoreData(kKey1, base::as_byte_span(kData1));
   EXPECT_EQ(kData1.size(), interface->FindKey(kKey1));
+}
+
+TEST_F(DawnCachingInterfaceTest, OnReleaseMemoryLimitPersistsStateful) {
+  // Use the default policy, where critical pressure scales the cache to 0.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{base::kStatefulMemoryPressure},
+      /*disabled_features=*/{::features::kAggressiveShaderCacheLimits});
+  static constexpr std::string_view kKey1 = "key1";
+  static constexpr std::string_view kData1 = "data1";
+  static constexpr size_t kSingleEntrySize = kKey1.size() + kData1.size();
+  static constexpr size_t kCacheSize = 4u * kSingleEntrySize;
+  static constexpr gpu::GpuDiskCacheDawnWebGPUHandle kOtherDawnWebGPUHandle =
+      gpu::GpuDiskCacheDawnWebGPUHandle(3);
+
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
+  std::unique_ptr<DawnCachingInterface> interface_graphite =
+      factory.CreateInstance(gpu::GpuDiskCacheHandle(kDawnGraphiteHandle));
+  std::unique_ptr<DawnCachingInterface> interface_webgpu =
+      factory.CreateInstance(gpu::GpuDiskCacheHandle(kDawnWebGPUHandle));
+
+  factory.OnReleaseMemory(base::kCriticalMemoryPressureThreshold);
+
+  // The limit persists after OnReleaseMemory(), so stores are rejected.
+  interface_graphite->StoreData(kKey1, base::as_byte_span(kData1));
+  interface_webgpu->StoreData(kKey1, base::as_byte_span(kData1));
+  EXPECT_EQ(0u, interface_graphite->FindKey(kKey1));
+  EXPECT_EQ(0u, interface_webgpu->FindKey(kKey1));
+
+  // Backends created after OnReleaseMemory() also respect the limit.
+  std::unique_ptr<DawnCachingInterface> interface_other_webgpu =
+      factory.CreateInstance(gpu::GpuDiskCacheHandle(kOtherDawnWebGPUHandle));
+  interface_other_webgpu->StoreData(kKey1, base::as_byte_span(kData1));
+  EXPECT_EQ(0u, interface_other_webgpu->FindKey(kKey1));
+
+  // Restoring the memory limit allows storing entries again.
+  factory.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
+  interface_graphite->StoreData(kKey1, base::as_byte_span(kData1));
+  interface_webgpu->StoreData(kKey1, base::as_byte_span(kData1));
+  interface_other_webgpu->StoreData(kKey1, base::as_byte_span(kData1));
+  EXPECT_EQ(kData1.size(), interface_graphite->FindKey(kKey1));
+  EXPECT_EQ(kData1.size(), interface_webgpu->FindKey(kKey1));
+  EXPECT_EQ(kData1.size(), interface_other_webgpu->FindKey(kKey1));
 }
 
 }  // namespace
