@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -29,7 +29,6 @@
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/renderer/render_frame.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -70,53 +69,44 @@ struct KeyInfo {
   char16_t unmodified_char = 0;
 };
 
-// Function to provide access to the key info map.
-// Initialization happens thread-safely on the first call.
-const absl::flat_hash_map<char, KeyInfo>& GetKeyInfoMap() {
-  // TODO(crbug.com/402082693): This map is a temporary solution in converting
-  // between dom code and key code. We should find a central solution to this
-  // that aligns with ui/events/keycodes/ data and functions.
-  static const base::NoDestructor<absl::flat_hash_map<char, KeyInfo>>
-      key_info_map([] {
-        absl::flat_hash_map<char, KeyInfo> map_data = {
-            {' ', {ui::VKEY_SPACE, "Space"}},
-            {')', {ui::VKEY_0, "Digit0", u'0'}},
-            {'!', {ui::VKEY_1, "Digit1", u'1'}},
-            {'@', {ui::VKEY_2, "Digit2", u'2'}},
-            {'#', {ui::VKEY_3, "Digit3", u'3'}},
-            {'$', {ui::VKEY_4, "Digit4", u'4'}},
-            {'%', {ui::VKEY_5, "Digit5", u'5'}},
-            {'^', {ui::VKEY_6, "Digit6", u'6'}},
-            {'&', {ui::VKEY_7, "Digit7", u'7'}},
-            {'*', {ui::VKEY_8, "Digit8", u'8'}},
-            {'(', {ui::VKEY_9, "Digit9", u'9'}},
-            {';', {ui::VKEY_OEM_1, "Semicolon"}},
-            {':', {ui::VKEY_OEM_1, "Semicolon", u';'}},
-            {'=', {ui::VKEY_OEM_PLUS, "Equal"}},
-            {'+', {ui::VKEY_OEM_PLUS, "Equal", u'='}},
-            {',', {ui::VKEY_OEM_COMMA, "Comma"}},
-            {'<', {ui::VKEY_OEM_COMMA, "Comma", u','}},
-            {'-', {ui::VKEY_OEM_MINUS, "Minus"}},
-            {'_', {ui::VKEY_OEM_MINUS, "Minus", u'-'}},
-            {'.', {ui::VKEY_OEM_PERIOD, "Period"}},
-            {'>', {ui::VKEY_OEM_PERIOD, "Period", u'.'}},
-            {'/', {ui::VKEY_OEM_2, "Slash"}},
-            {'?', {ui::VKEY_OEM_2, "Slash", u'/'}},
-            {'`', {ui::VKEY_OEM_3, "Backquote"}},
-            {'~', {ui::VKEY_OEM_3, "Backquote", u'`'}},
-            {'[', {ui::VKEY_OEM_4, "BracketLeft"}},
-            {'{', {ui::VKEY_OEM_4, "BracketLeft", u'['}},
-            {'\\', {ui::VKEY_OEM_5, "Backslash"}},
-            {'|', {ui::VKEY_OEM_5, "Backslash", u'\\'}},
-            {']', {ui::VKEY_OEM_6, "BracketRight"}},
-            {'}', {ui::VKEY_OEM_6, "BracketRight", u']'}},
-            {'\'', {ui::VKEY_OEM_7, "Quote"}},
-            {'"', {ui::VKEY_OEM_7, "Quote", u'\''}},
-        };
-        return map_data;
-      }());
-  return *key_info_map;
-}
+// TODO(crbug.com/402082693): This map is a temporary solution in converting
+// between dom code and key code. We should find a central solution to this
+// that aligns with ui/events/keycodes/ data and functions.
+constexpr auto kKeyInfoMap = base::MakeFixedFlatMap<char, KeyInfo>({
+    {' ', {ui::VKEY_SPACE, "Space"}},
+    {')', {ui::VKEY_0, "Digit0", u'0'}},
+    {'!', {ui::VKEY_1, "Digit1", u'1'}},
+    {'@', {ui::VKEY_2, "Digit2", u'2'}},
+    {'#', {ui::VKEY_3, "Digit3", u'3'}},
+    {'$', {ui::VKEY_4, "Digit4", u'4'}},
+    {'%', {ui::VKEY_5, "Digit5", u'5'}},
+    {'^', {ui::VKEY_6, "Digit6", u'6'}},
+    {'&', {ui::VKEY_7, "Digit7", u'7'}},
+    {'*', {ui::VKEY_8, "Digit8", u'8'}},
+    {'(', {ui::VKEY_9, "Digit9", u'9'}},
+    {';', {ui::VKEY_OEM_1, "Semicolon"}},
+    {':', {ui::VKEY_OEM_1, "Semicolon", u';'}},
+    {'=', {ui::VKEY_OEM_PLUS, "Equal"}},
+    {'+', {ui::VKEY_OEM_PLUS, "Equal", u'='}},
+    {',', {ui::VKEY_OEM_COMMA, "Comma"}},
+    {'<', {ui::VKEY_OEM_COMMA, "Comma", u','}},
+    {'-', {ui::VKEY_OEM_MINUS, "Minus"}},
+    {'_', {ui::VKEY_OEM_MINUS, "Minus", u'-'}},
+    {'.', {ui::VKEY_OEM_PERIOD, "Period"}},
+    {'>', {ui::VKEY_OEM_PERIOD, "Period", u'.'}},
+    {'/', {ui::VKEY_OEM_2, "Slash"}},
+    {'?', {ui::VKEY_OEM_2, "Slash", u'/'}},
+    {'`', {ui::VKEY_OEM_3, "Backquote"}},
+    {'~', {ui::VKEY_OEM_3, "Backquote", u'`'}},
+    {'[', {ui::VKEY_OEM_4, "BracketLeft"}},
+    {'{', {ui::VKEY_OEM_4, "BracketLeft", u'['}},
+    {'\\', {ui::VKEY_OEM_5, "Backslash"}},
+    {'|', {ui::VKEY_OEM_5, "Backslash", u'\\'}},
+    {']', {ui::VKEY_OEM_6, "BracketRight"}},
+    {'}', {ui::VKEY_OEM_6, "BracketRight", u']'}},
+    {'\'', {ui::VKEY_OEM_7, "Quote"}},
+    {'"', {ui::VKEY_OEM_7, "Quote", u'\''}},
+});
 
 // Structure to hold the mapping for dead key compositions.
 struct Composition {
@@ -124,122 +114,106 @@ struct Composition {
   char16_t second_key;
 };
 
-// Function to provide access to the composition map.
-const absl::flat_hash_map<char16_t, Composition>& GetCompositionMap() {
-  static const base::NoDestructor<absl::flat_hash_map<char16_t, Composition>>
-      composition_map([] {
-        absl::flat_hash_map<char16_t, Composition> map_data = {
-            // Acute Accent (')
-            {u'á', {'\'', 'a'}},
-            {u'é', {'\'', 'e'}},
-            {u'í', {'\'', 'i'}},
-            {u'ó', {'\'', 'o'}},
-            {u'ú', {'\'', 'u'}},
-            {u'ý', {'\'', 'y'}},
-            {u'Á', {'\'', 'A'}},
-            {u'É', {'\'', 'E'}},
-            {u'Í', {'\'', 'I'}},
-            {u'Ó', {'\'', 'O'}},
-            {u'Ú', {'\'', 'U'}},
-            {u'Ý', {'\'', 'Y'}},
+constexpr auto kCompositionMap = base::MakeFixedFlatMap<char16_t, Composition>({
+    // Acute Accent (')
+    {u'á', {'\'', 'a'}},
+    {u'é', {'\'', 'e'}},
+    {u'í', {'\'', 'i'}},
+    {u'ó', {'\'', 'o'}},
+    {u'ú', {'\'', 'u'}},
+    {u'ý', {'\'', 'y'}},
+    {u'Á', {'\'', 'A'}},
+    {u'É', {'\'', 'E'}},
+    {u'Í', {'\'', 'I'}},
+    {u'Ó', {'\'', 'O'}},
+    {u'Ú', {'\'', 'U'}},
+    {u'Ý', {'\'', 'Y'}},
 
-            // Grave Accent (`)
-            {u'à', {'`', 'a'}},
-            {u'è', {'`', 'e'}},
-            {u'ì', {'`', 'i'}},
-            {u'ò', {'`', 'o'}},
-            {u'ù', {'`', 'u'}},
-            {u'À', {'`', 'A'}},
-            {u'È', {'`', 'E'}},
-            {u'Ì', {'`', 'I'}},
-            {u'Ò', {'`', 'O'}},
-            {u'Ù', {'`', 'U'}},
+    // Grave Accent (`)
+    {u'à', {'`', 'a'}},
+    {u'è', {'`', 'e'}},
+    {u'ì', {'`', 'i'}},
+    {u'ò', {'`', 'o'}},
+    {u'ù', {'`', 'u'}},
+    {u'À', {'`', 'A'}},
+    {u'È', {'`', 'E'}},
+    {u'Ì', {'`', 'I'}},
+    {u'Ò', {'`', 'O'}},
+    {u'Ù', {'`', 'U'}},
 
-            // Diaeresis / Umlaut (")
-            {u'ä', {'"', 'a'}},
-            {u'ë', {'"', 'e'}},
-            {u'ï', {'"', 'i'}},
-            {u'ö', {'"', 'o'}},
-            {u'ü', {'"', 'u'}},
-            {u'ÿ', {'"', 'y'}},
-            {u'Ä', {'"', 'A'}},
-            {u'Ë', {'"', 'E'}},
-            {u'Ï', {'"', 'I'}},
-            {u'Ö', {'"', 'O'}},
-            {u'Ü', {'"', 'U'}},
-            {u'Ÿ', {'"', 'Y'}},
+    // Diaeresis / Umlaut (")
+    {u'ä', {'"', 'a'}},
+    {u'ë', {'"', 'e'}},
+    {u'ï', {'"', 'i'}},
+    {u'ö', {'"', 'o'}},
+    {u'ü', {'"', 'u'}},
+    {u'ÿ', {'"', 'y'}},
+    {u'Ä', {'"', 'A'}},
+    {u'Ë', {'"', 'E'}},
+    {u'Ï', {'"', 'I'}},
+    {u'Ö', {'"', 'O'}},
+    {u'Ü', {'"', 'U'}},
+    {u'Ÿ', {'"', 'Y'}},
 
-            // Tilde (~)
-            {u'ã', {'~', 'a'}},
-            {u'ñ', {'~', 'n'}},
-            {u'õ', {'~', 'o'}},
-            {u'Ã', {'~', 'A'}},
-            {u'Ñ', {'~', 'N'}},
-            {u'Õ', {'~', 'O'}},
+    // Tilde (~)
+    {u'ã', {'~', 'a'}},
+    {u'ñ', {'~', 'n'}},
+    {u'õ', {'~', 'o'}},
+    {u'Ã', {'~', 'A'}},
+    {u'Ñ', {'~', 'N'}},
+    {u'Õ', {'~', 'O'}},
 
-            // Circumflex (^)
-            {u'â', {'^', 'a'}},
-            {u'ê', {'^', 'e'}},
-            {u'î', {'^', 'i'}},
-            {u'ô', {'^', 'o'}},
-            {u'û', {'^', 'u'}},
-            {u'Â', {'^', 'A'}},
-            {u'Ê', {'^', 'E'}},
-            {u'Î', {'^', 'I'}},
-            {u'Ô', {'^', 'O'}},
-            {u'Û', {'^', 'U'}},
+    // Circumflex (^)
+    {u'â', {'^', 'a'}},
+    {u'ê', {'^', 'e'}},
+    {u'î', {'^', 'i'}},
+    {u'ô', {'^', 'o'}},
+    {u'û', {'^', 'u'}},
+    {u'Â', {'^', 'A'}},
+    {u'Ê', {'^', 'E'}},
+    {u'Î', {'^', 'I'}},
+    {u'Ô', {'^', 'O'}},
+    {u'Û', {'^', 'U'}},
 
-            // Cedilla (')
-            {u'ç', {'\'', 'c'}},
-            {u'Ç', {'\'', 'C'}},
-        };
-        return map_data;
-      }());
-  return *composition_map;
-}
+    // Cedilla (')
+    {u'ç', {'\'', 'c'}},
+    {u'Ç', {'\'', 'C'}},
+});
 
-// Function to provide access to the AltGr map.
-const absl::flat_hash_map<char16_t, char16_t>& GetAltGrMap() {
-  static const base::NoDestructor<absl::flat_hash_map<char16_t, char16_t>>
-      altgr_map([] {
-        absl::flat_hash_map<char16_t, char16_t> map_data = {
-            // Non-shifted characters
-            {u'¡', u'1'},
-            {u'²', u'2'},
-            {u'³', u'3'},
-            {u'€', u'5'},
-            {u'¶', u';'},
-            {u'æ', u'z'},
-            {u'ß', u's'},
-            {u'ð', u'd'},
-            {u'ƒ', u'f'},
-            {u'ø', u'l'},
-            {u'´', u'j'},
-            {u'þ', u't'},
-            {u'å', u'w'},
-            {u'©', u'c'},
-            {u'®', u'r'},
-            {u'µ', u'm'},
-            {u'«', u'['},
-            {u'»', u']'},
-            {u'¿', u'/'},
-            {u'¥', u'-'},
-            // Characters requiring Shift
-            {u'¹', u'!'},
-            {u'¢', u'C'},
-            {u'£', u'$'},
-            {u'§', u'S'},
-            {u'°', u':'},
-            {u'Æ', u'Z'},
-            {u'Ð', u'D'},
-            {u'Ø', u'L'},
-            {u'Þ', u'T'},
-            {u'Å', u'W'},
-        };
-        return map_data;
-      }());
-  return *altgr_map;
-}
+constexpr auto kAltGrMap = base::MakeFixedFlatMap<char16_t, char16_t>({
+    // Non-shifted characters
+    {u'¡', u'1'},
+    {u'²', u'2'},
+    {u'³', u'3'},
+    {u'€', u'5'},
+    {u'¶', u';'},
+    {u'æ', u'z'},
+    {u'ß', u's'},
+    {u'ð', u'd'},
+    {u'ƒ', u'f'},
+    {u'ø', u'l'},
+    {u'´', u'j'},
+    {u'þ', u't'},
+    {u'å', u'w'},
+    {u'©', u'c'},
+    {u'®', u'r'},
+    {u'µ', u'm'},
+    {u'«', u'['},
+    {u'»', u']'},
+    {u'¿', u'/'},
+    {u'¥', u'-'},
+    // Characters requiring Shift
+    {u'¹', u'!'},
+    {u'¢', u'C'},
+    {u'£', u'$'},
+    {u'§', u'S'},
+    {u'°', u':'},
+    {u'Æ', u'Z'},
+    {u'Ð', u'D'},
+    {u'Ø', u'L'},
+    {u'Þ', u'T'},
+    {u'Å', u'W'},
+});
 
 bool PrepareTargetForMode(WebLocalFrame& frame, mojom::TypeAction::Mode mode) {
   // TODO(crbug.com/409570203): Use DELETE_EXISTING regardless of `mode` but
@@ -325,9 +299,8 @@ std::optional<KeyDispatcher::KeyParams> TypeTool::GetKeyParamsForChar(
     params.dom_code = base::StrCat({"Digit", {ascii_char}});
   } else {
     // Symbols and Punctuation (US QWERTY layout assumed)
-    const absl::flat_hash_map<char, KeyInfo>& key_info_map = GetKeyInfoMap();
-    auto it = key_info_map.find(ascii_char);
-    if (it == key_info_map.end()) {
+    auto it = kKeyInfoMap.find(ascii_char);
+    if (it == kKeyInfoMap.end()) {
       ACTOR_LOG() << "Character cannot be mapped directly to key event: "
                   << ascii_char;
       return std::nullopt;
@@ -717,9 +690,6 @@ bool TypeTool::ProcessInputText(
     return false;
   }
 
-  const absl::flat_hash_map<char16_t, Composition>& composition_map =
-      GetCompositionMap();
-
   for (base::i18n::UTF8CharIterator iter(action_->text); !iter.end();
        iter.Advance()) {
     int32_t code_point = iter.get();
@@ -738,8 +708,8 @@ bool TypeTool::ProcessInputText(
     }
 
     // Handle characters requiring composition (dead key)
-    auto comp_it = composition_map.find(c);
-    if (comp_it != composition_map.end()) {
+    auto comp_it = kCompositionMap.find(c);
+    if (comp_it != kCompositionMap.end()) {
       const Composition& composition = comp_it->second;
       std::optional<KeyDispatcher::KeyParams> dead_key_params =
           GetKeyParamsForChar(composition.dead_key);
@@ -763,9 +733,8 @@ bool TypeTool::ProcessInputText(
     }
 
     // Handle characters requiring AltGr combo key
-    const absl::flat_hash_map<char16_t, char16_t>& altgr_map = GetAltGrMap();
-    auto altgr_it = altgr_map.find(c);
-    if (altgr_it != altgr_map.end()) {
+    auto altgr_it = kAltGrMap.find(c);
+    if (altgr_it != kAltGrMap.end()) {
       std::optional<KeyDispatcher::KeyParams> base_key_params =
           GetKeyParamsForChar(altgr_it->second);
       if (!base_key_params.has_value()) {
