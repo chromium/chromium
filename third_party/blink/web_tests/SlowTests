@@ -732,7 +732,7 @@ crbug.com/339686361 external/wpt/pointerevents/coalesced_events_attributes_under
 crbug.com/339686361 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?touch [ Slow ]
 crbug.com/1043396 [ Linux ] http/tests/devtools/network/network-eventsource.js [ Slow ]
 crbug.com/1043396 [ Release Win ] http/tests/devtools/network/network-eventsource.js [ Slow ]
-crbug.com/1043381 [ Release Win ] http/tests/devtools/elements/highlight/highlight-node-scroll.js [ Slow ]
+crbug.com/1043381 [ Release Win ] inspector-protocol/overlay/highlight-node-scroll.js [ Slow ]
 crbug.com/1043356 [ Linux Release ] http/tests/devtools/elements/styles-4/keyframes-source-offsets.js [ Slow ]
 crbug.com/1043356 [ Release Win ] http/tests/devtools/elements/styles-4/keyframes-source-offsets.js [ Slow ]
 crbug.com/1043354 [ Linux Release ] http/tests/devtools/service-workers/service-worker-pause.js [ Slow ]

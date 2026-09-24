@@ -1,0 +1,43 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
+  const {session, dp} = await testRunner.startHTML(
+      `
+      <style>
+
+      body {
+          margin: 0;
+      }
+
+      #container {
+          position: absolute;
+          overflow: hidden;
+          left: 100px;
+          top: 200px;
+      }
+
+      iframe {
+          width: 200px;
+          height: 200px;
+          border: none;
+      }
+
+      </style>
+      <div id="container">    <iframe id="svg-iframe" src="${
+          testRunner.url(
+              './resources/highlight-svg-content-iframe.html')}"></iframe>
+      </div>
+    `,
+      `\n`);
+
+  const OverlayHelper =
+      await testRunner.loadScript('./resources/highlight-test-helper.js');
+  const helper = new OverlayHelper(testRunner, dp, session);
+  await helper.init();
+
+
+  await helper.dumpHighlight('svg-rect');
+  testRunner.completeTest();
+});
