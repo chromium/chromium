@@ -890,11 +890,10 @@ export class SpeechController {
   }
 
   private onSpeechInterrupted_(utterance: SpeechSynthesisUtterance) {
-    // It's possible for there to be a race condition where onSpeechInterrupted
-    // is triggered on an old utterance, which can lead to an indeterminate
-    // state. When this happens, return early.
+    // Ignore late interrupted callbacks for stale utterances arriving after
+    // speech has already stopped or moved to a new utterance.
     const activeUtterance = this.model_.getActiveUtterance();
-    if (activeUtterance && utterance !== activeUtterance) {
+    if (!activeUtterance || utterance !== activeUtterance) {
       return;
     }
 

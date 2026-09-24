@@ -916,6 +916,27 @@ suite('SpeechController', () => {
     assertTrue(speechController.isAudioCurrentlyPlaying());
   });
 
+  test('interruption error ignored when activeUtterance is null', async () => {
+    const text = 'Stale utterance interruption test.';
+    const element = onPlayPauseToggle(text);
+    const utterance = await speech.whenCalled('speak');
+
+    speechController.onPlayPauseToggle(element);
+    assertTrue(speechController.isPausedFromButton());
+    speech.reset();
+    audioBrowserProxy.reset();
+    metrics.reset();
+
+    // Simulate a late interrupted callback arriving after activeUtterance was
+    // cleared on stop.
+    utterance.onstart(
+        new SpeechSynthesisEvent('start', {utterance: utterance}));
+    utterance.onerror(createSpeechErrorEvent(utterance, 'interrupted'));
+
+    assertTrue(speechController.isPausedFromButton());
+    assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
+  });
+
   test('playFromContentPosition logs selection metric', async () => {
     const text = 'This is a selection.';
     setContent(text, readAloudModel);
