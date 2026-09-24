@@ -119,9 +119,9 @@ class DataProtectionNavigationObserver : public content::WebContentsObserver {
 
   // Returns true when the "EnterpriseRealTimeUrlCheckMode" policy is enabled
   // for `browser_context`, and when a `lookup_service_` is available to make
-  // URL filtering checks.
-  bool ShouldPerformRealTimeUrlCheck(
-      content::BrowserContext* browser_context) const;
+  // URL filtering checks, and the url is not skipped in the lookup service.
+  bool ShouldPerformRealTimeUrlCheck(content::BrowserContext* browser_context,
+                                     const GURL& url) const;
 
   // content::WebContentsObserver:
   void DidRedirectNavigation(

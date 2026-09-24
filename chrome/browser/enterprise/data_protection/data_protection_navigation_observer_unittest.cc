@@ -180,6 +180,11 @@ class FakeRealTimeUrlLookupService
                        is_rt_lookup_successful_, std::move(response)));
   }
 
+  MOCK_METHOD(bool,
+              ShouldOverrideKnownSafeUrlDecision,
+              (const GURL& url),
+              (const, override));
+
   void set_on_start_lookup_complete(base::OnceClosure closure) {
     on_start_lookup_complete_ = std::move(closure);
   }
@@ -271,7 +276,7 @@ class DataProtectionNavigationObserverTest
   }
 
  protected:
-  FakeRealTimeUrlLookupService lookup_service_;
+  testing::NiceMock<FakeRealTimeUrlLookupService> lookup_service_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
   signin::IdentityTestEnvironment identity_test_environment_;
@@ -1511,6 +1516,104 @@ TEST_F(DataProtectionNavigationObserverTest,
   simulator->Commit();
 
   EXPECT_TRUE(future.Get().allow_screenshots);
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
+       ShouldOverrideKnownSafeUrlDecision) {
+  DataProtectionNavigationObserver::SetLookupServiceForTesting(
+      &lookup_service_);
+  data_controls::SetDataControls(profile()->GetPrefs(), {R"(
+        {
+          "name":"block",
+          "rule_id":"1234",
+          "sources":{"urls":["*"]},
+          "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
+        }
+      )"});
+  SetContents(CreateTestWebContents());
+
+  const GURL ntp_url(chrome::kChromeUINewTabPageThirdPartyURL);
+  EXPECT_CALL(lookup_service_, ShouldOverrideKnownSafeUrlDecision(ntp_url))
+      .Times(2)
+      .WillRepeatedly(testing::Return(false));
+
+  {
+    base::test::TestFuture<const UrlSettings&> future;
+    FakeDataProtectionNavigationController controller(
+        web_contents(), &lookup_service_, future.GetCallback());
+    auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+        ntp_url, web_contents());
+    simulator->Start();
+    simulator->Commit();
+
+    EXPECT_TRUE(future.Get().watermark_text.empty());
+    EXPECT_FALSE(future.Get().allow_screenshots);
+    auto* user_data = DataProtectionPageUserData::GetForPage(
+        GetPageFromWebContents(web_contents()));
+    ASSERT_TRUE(user_data);
+    EXPECT_FALSE(user_data->rt_lookup_response());
+  }
+
+  SetContents(CreateTestWebContents());
+  NavigateAndCommit(ntp_url);
+  {
+    base::test::TestFuture<const UrlSettings&> future;
+    DataProtectionNavigationObserver::ApplyDataProtectionSettings(
+        Profile::FromBrowserContext(browser_context()), web_contents(),
+        future.GetCallback());
+
+    EXPECT_TRUE(future.Get().watermark_text.empty());
+    EXPECT_FALSE(future.Get().allow_screenshots);
+    auto* user_data = DataProtectionPageUserData::GetForPage(
+        GetPageFromWebContents(web_contents()));
+    ASSERT_TRUE(user_data);
+    EXPECT_FALSE(user_data->rt_lookup_response());
+  }
+
+  const GURL version_url("chrome://version/");
+  EXPECT_CALL(lookup_service_, ShouldOverrideKnownSafeUrlDecision(version_url))
+      .Times(2)
+      .WillRepeatedly(testing::Return(true));
+
+  {
+    base::test::TestFuture<const UrlSettings&> future;
+    FakeDataProtectionNavigationController controller(
+        web_contents(), &lookup_service_, future.GetCallback());
+    base::test::TestFuture<void> future_lookup_complete;
+    lookup_service_.set_on_start_lookup_complete(
+        future_lookup_complete.GetCallback());
+
+    auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+        version_url, web_contents());
+    simulator->Start();
+    EXPECT_TRUE(future_lookup_complete.Wait());
+    simulator->Commit();
+
+    EXPECT_NE(future.Get().watermark_text.find("custom_message"),
+              std::string::npos);
+    EXPECT_FALSE(future.Get().allow_screenshots);
+    auto* user_data = DataProtectionPageUserData::GetForPage(
+        GetPageFromWebContents(web_contents()));
+    ASSERT_TRUE(user_data);
+    EXPECT_TRUE(user_data->rt_lookup_response());
+  }
+
+  SetContents(CreateTestWebContents());
+  NavigateAndCommit(version_url);
+  {
+    base::test::TestFuture<const UrlSettings&> future;
+    DataProtectionNavigationObserver::ApplyDataProtectionSettings(
+        Profile::FromBrowserContext(browser_context()), web_contents(),
+        future.GetCallback());
+
+    EXPECT_NE(future.Get().watermark_text.find("custom_message"),
+              std::string::npos);
+    EXPECT_FALSE(future.Get().allow_screenshots);
+    auto* user_data = DataProtectionPageUserData::GetForPage(
+        GetPageFromWebContents(web_contents()));
+    ASSERT_TRUE(user_data);
+    EXPECT_TRUE(user_data->rt_lookup_response());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(OrderedDataProtectionNavigationObserverTest,

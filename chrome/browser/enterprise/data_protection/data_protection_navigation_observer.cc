@@ -334,7 +334,9 @@ void DataProtectionNavigationObserver::ApplyDataProtectionSettings(
 #else
           : nullptr;
 #endif
-  if (lookup_service && IsEnterpriseLookupEnabled(profile)) {
+  if (lookup_service && IsEnterpriseLookupEnabled(profile) &&
+      (!original_url.SchemeIs(content::kChromeUIScheme) ||
+       lookup_service->ShouldOverrideKnownSafeUrlDecision(original_url))) {
     auto lookup_callback = base::BindOnce(
         [](const std::string& identifier,
            DataProtectionNavigationObserver::Callback callback,
@@ -393,8 +395,8 @@ DataProtectionNavigationObserver::DataProtectionNavigationObserver(
   // main frame still points to the existing page before the navigation, not the
   // ultimate destination page of the navigation.
   is_from_cache_ = navigation_handle.IsServedFromBackForwardCache();
-  if (!is_from_cache_ &&
-      ShouldPerformRealTimeUrlCheck(web_contents->GetBrowserContext())) {
+  if (!is_from_cache_ && ShouldPerformRealTimeUrlCheck(
+                             web_contents->GetBrowserContext(), original_url)) {
     DoLookup(lookup_service_, original_url,
              base::BindOnce(&DataProtectionNavigationObserver::OnLookupComplete,
                             weak_factory_.GetWeakPtr()),
@@ -446,8 +448,11 @@ void DataProtectionNavigationObserver::OnLookupComplete(
 }
 
 bool DataProtectionNavigationObserver::ShouldPerformRealTimeUrlCheck(
-    content::BrowserContext* browser_context) const {
-  return lookup_service_ && IsEnterpriseLookupEnabled(browser_context);
+    content::BrowserContext* browser_context,
+    const GURL& url) const {
+  return lookup_service_ && IsEnterpriseLookupEnabled(browser_context) &&
+         (!url.SchemeIs(content::kChromeUIScheme) ||
+          lookup_service_->ShouldOverrideKnownSafeUrlDecision(url));
 }
 
 void DataProtectionNavigationObserver::DidRedirectNavigation(
@@ -468,13 +473,14 @@ void DataProtectionNavigationObserver::DidRedirectNavigation(
           original_url);
 
   if (ShouldPerformRealTimeUrlCheck(
-          navigation_handle->GetWebContents()->GetBrowserContext())) {
+          navigation_handle->GetWebContents()->GetBrowserContext(),
+          original_url)) {
     is_verdict_received_ = false;
     rt_lookup_response_.reset();
     // Cancel any previous lookup calls before starting a new lookup for
     // the redirect.
     weak_factory_.InvalidateWeakPtrs();
-    DoLookup(lookup_service_, navigation_handle->GetURL(),
+    DoLookup(lookup_service_, original_url,
              base::BindOnce(&DataProtectionNavigationObserver::OnLookupComplete,
                             weak_factory_.GetWeakPtr()),
              navigation_handle->GetWebContents());
@@ -543,11 +549,13 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
       GetPageFromWebContents(navigation_handle->GetWebContents()), identifier_,
       allow_screenshot_);
 
+  const GURL original_url = GetOriginalUrl(navigation_handle->GetURL());
   if (is_from_cache_ &&
-      ShouldPerformRealTimeUrlCheck(web_contents()->GetBrowserContext())) {
+      ShouldPerformRealTimeUrlCheck(web_contents()->GetBrowserContext(),
+                                    original_url)) {
     LogVerdictSource(URLVerdictSource::kPostNavigationLookup);
     DoLookup(
-        lookup_service_, GetOriginalUrl(navigation_handle->GetURL()),
+        lookup_service_, original_url,
         base::BindOnce(&OnDoLookupComplete, web_contents()->GetWeakPtr(),
                        std::move(pending_navigation_callback_), identifier_),
         web_contents());
