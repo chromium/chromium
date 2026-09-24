@@ -129,12 +129,6 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
   // Returns true if the resource is rastered via the GPU.
   virtual bool UsesAcceleratedRaster() const = 0;
 
-  // Verify the sync token that indicates when all writes to the current
-  // resource are finished on the GPU thread. Note that in some subclasses the
-  // token is already verified by GetSyncToken() so this function is no-op for
-  // those classes.
-  virtual void VerifySyncToken() {}
-
   bool is_origin_clean_ = true;
 };
 
@@ -220,7 +214,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
       const override;
 
  private:
-  void VerifySyncToken() override;
   bool UsesAcceleratedRaster() const final { return is_accelerated_; }
 
   ~CanvasResourceSharedImage() override;
@@ -277,7 +270,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   bool UsesAcceleratedRaster() const final { return true; }
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override;
-  void VerifySyncToken() override;
   gpu::InterfaceBase* InterfaceBase() const;
 
   ExternalCanvasResource(

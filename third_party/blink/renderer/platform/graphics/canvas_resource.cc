@@ -393,19 +393,6 @@ void CanvasResourceSharedImage::EndAccess(
   GetSharedImage()->UpdateDestructionSyncToken(sync_token);
 }
 
-void CanvasResourceSharedImage::VerifySyncToken() {
-  DCHECK(!is_cross_thread());
-  auto sync_token = GetSyncToken();
-  if (!sync_token.verified_flush()) {
-    int8_t* token_data = sync_token.GetData();
-    auto* raster_interface = RasterInterface();
-    raster_interface->ShallowFlushCHROMIUM();
-    raster_interface->VerifySyncTokensCHROMIUM(&token_data, 1);
-    sync_token.SetVerifyFlush();
-    SetReleaseSyncToken(sync_token);
-  }
-}
-
 void CanvasResourceSharedImage::NotifyResourceLost() {
   DCHECK(!is_cross_thread());
   resource_is_lost_ = true;
@@ -521,22 +508,6 @@ void ExternalCanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
         interface_base->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
       }
     }
-  }
-}
-
-void ExternalCanvasResource::VerifySyncToken() {
-  auto sync_token = GetSyncToken();
-  if (!sync_token.verified_flush()) {
-    // The offscreencanvas usage needs the sync_token to be verified in order to
-    // be able to use it by the compositor. This is why this method produces a
-    // verified token even if no verification is explicitly requested.
-    int8_t* token_data = sync_token.GetData();
-    auto* interface = InterfaceBase();
-    DCHECK(interface);
-    interface->ShallowFlushCHROMIUM();
-    interface->VerifySyncTokensCHROMIUM(&token_data, 1);
-    sync_token.SetVerifyFlush();
-    SetReleaseSyncToken(sync_token);
   }
 }
 
