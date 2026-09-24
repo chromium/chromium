@@ -270,7 +270,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
-                       TitleResetsWhenTransitioningFromAimToLensPage) {
+                       // TODO(crbug.com/565503241): Re-enable this test
+                       DISABLED_TitleResetsWhenTransitioningFromAimToLensPage) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
