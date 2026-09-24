@@ -20,7 +20,6 @@
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -28,7 +27,6 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -37,60 +35,19 @@ using ::testing::_;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
-MATCHER_P(CarryingConfig, config, "") {
-  if (arg.is_null()) {
-    return false;
-  }
-  return ExplainMatchResult(testing::Eq(config), arg->config, result_listener);
-}
-
-MATCHER_P2(CarryingConfigAndCacheFilter, config, cache_filter, "") {
-  if (arg.is_null()) {
-    return false;
-  }
-  return arg->config == config && arg->cache_filter == cache_filter;
-}
-
 namespace first_party_sets {
 
 namespace {
 base::Version GetVersion() {
   return base::Version("1.2.3");
 }
-}
-
-class MockFirstPartySetsAccessDelegate
-    : public network::mojom::FirstPartySetsAccessDelegate {
- public:
-  MockFirstPartySetsAccessDelegate() = default;
-  MockFirstPartySetsAccessDelegate(const MockFirstPartySetsAccessDelegate&) =
-      delete;
-  MockFirstPartySetsAccessDelegate& operator=(
-      const MockFirstPartySetsAccessDelegate&) = delete;
-  ~MockFirstPartySetsAccessDelegate() override = default;
-
-  MOCK_METHOD1(NotifyReady,
-               void(network::mojom::FirstPartySetsReadyEventPtr ready_event));
-  MOCK_METHOD1(SetEnabled, void(bool));
-};
+}  // namespace
 
 class DefaultFirstPartySetsPolicyServiceTest : public testing::Test {
  public:
   DefaultFirstPartySetsPolicyServiceTest() = default;
 
-  void SetUp() override {
-    mock_delegate_receiver_.Bind(
-        mock_delegate_remote_.BindNewPipeAndPassReceiver());
-  }
-
   content::BrowserTaskEnvironment& env() { return env_; }
-
- protected:
-  testing::NiceMock<MockFirstPartySetsAccessDelegate> mock_delegate;
-  mojo::Receiver<network::mojom::FirstPartySetsAccessDelegate>
-      mock_delegate_receiver_{&mock_delegate};
-  mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
-      mock_delegate_remote_;
 
  private:
   content::BrowserTaskEnvironment env_;
@@ -102,17 +59,9 @@ TEST_F(DefaultFirstPartySetsPolicyServiceTest, DisabledByFeature) {
   TestingProfile profile;
   FirstPartySetsPolicyService* service =
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
-  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
-
-  net::FirstPartySetsContextConfig config;
-  net::FirstPartySetsCacheFilter cache_filter;
-
-  // Ensure NotifyReady is called with the empty config.
-  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfigAndCacheFilter(
-                                 std::ref(config), std::ref(cache_filter))))
-      .Times(1);
 
   env().RunUntilIdle();
+  EXPECT_TRUE(service->is_ready());
 }
 
 TEST_F(DefaultFirstPartySetsPolicyServiceTest, GuestProfiles) {
@@ -122,34 +71,20 @@ TEST_F(DefaultFirstPartySetsPolicyServiceTest, GuestProfiles) {
 
   FirstPartySetsPolicyService* service =
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile.get());
-  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
-
-  net::FirstPartySetsContextConfig config;
-  net::FirstPartySetsCacheFilter cache_filter;
-
-  // Ensure NotifyReady is called with the empty config.
-  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfigAndCacheFilter(
-                                 std::ref(config), std::ref(cache_filter))))
-      .Times(1);
 
   env().RunUntilIdle();
+  EXPECT_FALSE(service->is_enabled());
+  EXPECT_TRUE(service->is_ready());
 }
 
 TEST_F(DefaultFirstPartySetsPolicyServiceTest, EnabledForLegitProfile) {
   TestingProfile profile;
   FirstPartySetsPolicyService* service =
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
-  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
-
-  net::FirstPartySetsContextConfig config;
-  net::FirstPartySetsCacheFilter cache_filter;
-
-  // Ensure NotifyReady is called with the empty config.
-  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfigAndCacheFilter(
-                                 std::ref(config), std::ref(cache_filter))))
-      .Times(1);
 
   env().RunUntilIdle();
+  EXPECT_TRUE(service->is_enabled());
+  EXPECT_TRUE(service->is_ready());
 }
 
 class FirstPartySetsPolicyServiceTest
@@ -179,8 +114,6 @@ class FirstPartySetsPolicyServiceTest
     service_->WaitForFirstInitCompleteForTesting(run_loop.QuitClosure());
     run_loop.Run();
     service_->ResetForTesting();
-
-    service_->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
   }
 
   void TearDown() override {
@@ -452,16 +385,16 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
        OnRelatedWebsiteSetsEnabledChanged_Default_WithConfig) {
   service()->InitForTesting();
 
-  EXPECT_CALL(mock_delegate, SetEnabled(_)).Times(1);
-  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(1);
+  EXPECT_TRUE(service()->is_enabled());
+  EXPECT_TRUE(service()->is_ready());
 
   env().RunUntilIdle();
 }
 
 TEST_F(FirstPartySetsPolicyServicePrefTest,
        OnRelatedWebsiteSetsEnabledChanged_Default_WithoutConfig) {
-  EXPECT_CALL(mock_delegate, SetEnabled(_)).Times(1);
-  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
+  EXPECT_TRUE(service()->is_enabled());
+  EXPECT_FALSE(service()->is_ready());
 
   env().RunUntilIdle();
 }
@@ -469,55 +402,40 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
 TEST_F(FirstPartySetsPolicyServicePrefTest,
        OnRelatedWebsiteSetsEnabledChanged_Disables_WithConfig) {
   service()->InitForTesting();
-  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
+  EXPECT_TRUE(service()->is_enabled());
 
   service()->OnRelatedWebsiteSetsEnabledChanged(false);
 
-  EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
-  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(1);
+  EXPECT_FALSE(service()->is_enabled());
+  EXPECT_TRUE(service()->is_ready());
 
   env().RunUntilIdle();
 }
 
 TEST_F(FirstPartySetsPolicyServicePrefTest,
        OnRelatedWebsiteSetsEnabledChanged_Disables_WithoutConfig) {
-  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
+  EXPECT_TRUE(service()->is_enabled());
 
   service()->OnRelatedWebsiteSetsEnabledChanged(false);
 
-  EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
-  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
+  EXPECT_FALSE(service()->is_enabled());
+  EXPECT_FALSE(service()->is_ready());
 
   env().RunUntilIdle();
 }
-
-
 
 TEST_F(FirstPartySetsPolicyServicePrefTest,
        OnRelatedWebsiteSetsEnabledChanged_Enables_WithoutConfig) {
   service()->OnRelatedWebsiteSetsEnabledChanged(true);
 
-  // NotifyReady isn't called since the config isn't ready to be sent.
-  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(2);
-  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
+  EXPECT_TRUE(service()->is_enabled());
+  EXPECT_FALSE(service()->is_ready());
 
   env().RunUntilIdle();
 }
 
 TEST_F(FirstPartySetsPolicyServicePrefTest,
        OnRelatedWebsiteSetsEnabledChanged_OTRProfile) {
-  testing::NiceMock<MockFirstPartySetsAccessDelegate> mock_delegate;
-  EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
-  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(0);
-  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(1);
-  mojo::Receiver<network::mojom::FirstPartySetsAccessDelegate>
-      mock_delegate_receiver{&mock_delegate};
-  mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
-      mock_delegate_remote;
-
-  mock_delegate_receiver.Bind(
-      mock_delegate_remote.BindNewPipeAndPassReceiver());
-
   FirstPartySetsPolicyService* otr_service =
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
           profile()->GetOffTheRecordProfile(
@@ -526,9 +444,9 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   otr_service->ResetForTesting();
 
   otr_service->InitForTesting();
-  otr_service->AddRemoteAccessDelegate(std::move(mock_delegate_remote));
 
   ASSERT_FALSE(otr_service->is_enabled());
+  EXPECT_TRUE(otr_service->is_ready());
   env().RunUntilIdle();
 
   otr_service->OnRelatedWebsiteSetsEnabledChanged(true);
@@ -655,28 +573,24 @@ class ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest
 };
 
 TEST_F(ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest, EnabledAtInit) {
-  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
-
   TestingProfile profile;
   FirstPartySetsPolicyService* service =
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
-  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
+  EXPECT_TRUE(service->is_enabled());
 
   env().RunUntilIdle();
 }
 
 TEST_F(ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest, AlwaysEnabled) {
-  // The mock method is called once during the service construction.
-  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
-
   TestingProfile profile;
   FirstPartySetsPolicyService* service =
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
-  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
+  EXPECT_TRUE(service->is_enabled());
 
-  // These changes should not be forwarded to the delegate.
   service->OnRelatedWebsiteSetsEnabledChanged(false);
+  EXPECT_TRUE(service->is_enabled());
   service->OnRelatedWebsiteSetsEnabledChanged(true);
+  EXPECT_TRUE(service->is_enabled());
 
   env().RunUntilIdle();
 }

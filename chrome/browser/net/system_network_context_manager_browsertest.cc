@@ -57,6 +57,8 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/net_buildflags.h"
 #include "sandbox/policy/features.h"
 #include "services/network/public/cpp/features.h"

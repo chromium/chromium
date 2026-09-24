@@ -30,7 +30,6 @@ class URLRequestContext;
 class GURL;
 
 namespace network {
-class FirstPartySetsAccessDelegate;
 class SessionCleanupCookieStore;
 
 using SettingsChangeCallback = base::RepeatingClosure;
@@ -41,11 +40,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
  public:
   // Construct a CookieService that can serve mojo requests for the underlying
   // cookie store.  |url_request_context->cookie_store()| must outlive this
-  // object. `*first_party_sets_access_delegate` must outlive
-  // `url_request_context->cookie_store()`.
+  // object.
   CookieManager(
       net::URLRequestContext* url_request_context,
-      FirstPartySetsAccessDelegate* const first_party_sets_access_delegate,
       scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
       mojom::CookieManagerParamsPtr params);
 

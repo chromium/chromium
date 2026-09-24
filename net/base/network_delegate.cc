@@ -115,13 +115,11 @@ void NetworkDelegate::NotifyPACScriptError(int line_number,
 
 bool NetworkDelegate::AnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
-    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   bool allowed = OnAnnotateAndMoveUserBlockedCookies(
-      request, first_party_set_metadata, maybe_included_cookies,
-      excluded_cookies);
+      request, maybe_included_cookies, excluded_cookies);
   cookie_util::DCheckIncludedAndExcludedCookieLists(maybe_included_cookies,
                                                     excluded_cookies);
   return allowed;
@@ -131,12 +129,10 @@ bool NetworkDelegate::CanSetCookie(
     const URLRequest& request,
     const CanonicalCookie& cookie,
     CookieOptions* options,
-    const net::FirstPartySetMetadata& first_party_set_metadata,
     CookieInclusionStatus* inclusion_status) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!(request.load_flags() & LOAD_DO_NOT_SAVE_COOKIES));
-  return OnCanSetCookie(request, cookie, options, first_party_set_metadata,
-                        inclusion_status);
+  return OnCanSetCookie(request, cookie, options, inclusion_status);
 }
 
 bool NetworkDelegate::ShouldForceIgnoreSiteForCookies(

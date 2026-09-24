@@ -37,10 +37,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
@@ -77,7 +74,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/reduce_accept_language_utils.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
@@ -98,7 +94,6 @@
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
-#include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -1581,23 +1576,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
           ->GetDefaultContentSetting(ContentSettingsType::ANTI_ABUSE, nullptr);
   network_context_params->block_trust_tokens =
       anti_abuse_content_setting == CONTENT_SETTING_BLOCK;
-
-  network_context_params->first_party_sets_access_delegate_params =
-      network::mojom::FirstPartySetsAccessDelegateParams::New();
-  network_context_params->first_party_sets_access_delegate_params->enabled =
-      PrivacySandboxSettingsFactory::GetForProfile(profile_)
-          ->AreRelatedWebsiteSetsEnabled();
-
-  mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
-      fps_access_delegate_remote;
-  network_context_params->first_party_sets_access_delegate_receiver =
-      fps_access_delegate_remote.BindNewPipeAndPassReceiver();
-
-  first_party_sets::FirstPartySetsPolicyService* fps_service =
-      first_party_sets::FirstPartySetsPolicyServiceFactory::
-          GetForBrowserContext(profile_);
-  DCHECK(fps_service);
-  fps_service->AddRemoteAccessDelegate(std::move(fps_access_delegate_remote));
 
   network_context_params->acam_preflight_spec_conformant =
       profile_->GetPrefs()->GetBoolean(

@@ -41,12 +41,9 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/test_cookie_access_delegate.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/global_first_party_sets.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/cookie_access_delegate_impl.h"
 #include "services/network/cookie_settings.h"
-#include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -290,11 +287,7 @@ class RestrictedCookieManagerTest
             /*devtools_cookies_setting_overrides=*/
             DevtoolsCookieSettingOverrides(),
             /*prefer_bound_cookie_context=*/false,
-            recording_client_.GetRemote(),
-            RestrictedCookieManager::ComputeFirstPartySetMetadata(
-                kDefaultOrigin,
-                &cookie_monster_,
-                isolation_info_))),
+            recording_client_.GetRemote())),
         receiver_(service_.get(),
                   service_remote_.BindNewPipeAndPassReceiver()) {
     sync_service_ =
@@ -412,9 +405,7 @@ class RestrictedCookieManagerTest
         /*cookies_setting_overrides=*/CookieSettingOverrides(),
         /*devtools_cookies_setting_overrides=*/
         DevtoolsCookieSettingOverrides(), prefer_bound_cookie_context,
-        recording_client_.GetRemote(),
-        RestrictedCookieManager::ComputeFirstPartySetMetadata(
-            kDefaultOrigin, &cookie_monster_, isolation_info));
+        recording_client_.GetRemote());
   }
 
   void ExpectBadMessage(const std::string& reason) {
@@ -1594,9 +1585,7 @@ TEST_P(RestrictedCookieManagerTest,
       /*devtools_cookies_setting_overrides=*/
       DevtoolsCookieSettingOverrides(),
       /*prefer_bound_cookie_context=*/false,
-      mojo::PendingRemote<mojom::CookieAccessObserver>(),
-      RestrictedCookieManager::ComputeFirstPartySetMetadata(
-          kDefaultOrigin, &cookie_monster_, isolation_info_));
+      mojo::PendingRemote<mojom::CookieAccessObserver>());
 
   mojo::Receiver<mojom::RestrictedCookieManager> local_receiver(
       local_service.get(), local_service_remote.BindNewPipeAndPassReceiver());

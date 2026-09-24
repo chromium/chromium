@@ -8,9 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"
@@ -89,10 +87,7 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
 #endif
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
-  DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(FederatedIdentityPermissionContextFactory::GetInstance());
-  DependsOn(
-      first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
   DependsOn(SCTReportingServiceFactory::GetInstance());
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

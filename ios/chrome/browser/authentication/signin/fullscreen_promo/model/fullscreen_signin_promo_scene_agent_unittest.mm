@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/signin/fullscreen_promo/model/fullscreen_signin_promo_scene_agent.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/version.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/test_sync_service.h"

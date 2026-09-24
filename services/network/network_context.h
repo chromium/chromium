@@ -45,7 +45,6 @@
 #include "net/disk_cache/buildflags.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_config_overrides.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_headers.h"
@@ -54,7 +53,6 @@
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_controller.h"
-#include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 #include "services/network/http_cache_data_counter.h"
 #include "services/network/http_cache_data_remover.h"
 #include "services/network/logical_invalidation_store.h"
@@ -786,10 +784,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return cors_non_wildcard_request_headers_support_;
   }
 
-  FirstPartySetsAccessDelegate& first_party_sets_access_delegate() {
-    return first_party_sets_access_delegate_;
-  }
-
 #if BUILDFLAG(ENABLE_REPORTING)
   void AddReportingApiObserver(
       mojo::PendingRemote<network::mojom::ReportingApiObserver> observer)
@@ -1025,8 +1019,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   using Receiver = mojo::Receiver<mojom::NetworkContext>;
   using DirectReceiver = mojo::DirectReceiver<mojom::NetworkContext>;
   std::variant<Receiver, DirectReceiver> receiver_;
-
-  FirstPartySetsAccessDelegate first_party_sets_access_delegate_;
 
   std::unique_ptr<CookieManager> cookie_manager_;
 

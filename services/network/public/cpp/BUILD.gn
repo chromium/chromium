@@ -346,7 +346,6 @@ component("cookies_mojom_support") {
   ]
   deps = [
     ":crash_keys",
-    ":first_party_sets_mojom_support",
     ":schemeful_site_mojom_support",
     "//net",
     "//services/network/public/mojom:cookies_mojom_shared",
@@ -595,23 +594,6 @@ component("schemeful_site_mojom_support") {
 
 # This component is separate from cpp_base as it is a dependency of
 # //services/network/public/mojom:cookies_mojom.
-component("first_party_sets_mojom_support") {
-  sources = [
-    "first_party_sets_mojom_traits.cc",
-    "first_party_sets_mojom_traits.h",
-  ]
-  deps = [
-    ":schemeful_site_mojom_support",
-    "//mojo/public/cpp/base:shared_typemap_traits",
-    "//net",
-    "//services/network/public/mojom:mojom_first_party_sets_shared",
-  ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  defines = [ "IS_FIRST_PARTY_SETS_MOJOM_TRAITS_IMPL" ]
-}
-
-# This component is separate from cpp_base as it is a dependency of
-# //services/network/public/mojom:cookies_mojom.
 component("storage_access_api_mojom_support") {
   sources = [
     "storage_access_api_mojom_traits.cc",
@@ -716,13 +698,11 @@ component("cpp_base") {
   ]
   deps = [
     ":buildflags",
-    ":first_party_sets_mojom_support",
     "//base",
     "//ipc",
     "//mojo/public/mojom/base",
     "//net",
     "//services/network/public/mojom:cookies_mojom",
-    "//services/network/public/mojom:mojom_first_party_sets",
     "//services/network/public/mojom:mojom_network_isolation_key",
     "//services/network/public/mojom:mojom_storage_access_api",
     "//services/network/public/mojom:url_loader_base",
@@ -831,7 +811,6 @@ source_set("tests") {
     "empty_url_loader_client_unittest.cc",
     "fence_event_reporting_parser_unittest.cc",
     "file_enumeration_entry_mojom_traits_unittest.cc",
-    "first_party_sets_mojom_traits_unittest.cc",
     "hash_value_mojom_traits_unittest.cc",
     "header_util_unittest.cc",
     "headers_matcher_unittest.cc",

@@ -25,7 +25,6 @@
 #include "extensions/common/constants.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/extras/sqlite/cookie_crypto_delegate.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/restricted_cookie_manager.h"
 
@@ -137,10 +136,6 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
     const net::IsolationInfo& isolation_info,
     bool prefer_bound_cookie_context,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
-  net::FirstPartySetMetadata first_party_set_metadata =
-      network::RestrictedCookieManager::ComputeFirstPartySetMetadata(
-          origin, GetOrCreateCookieStore(), isolation_info);
-
   // TODO(crbug.com/40247160): Consider whether the following check should
   // somehow determine real CookieSettingOverrides rather than default to none.
   restricted_cookie_managers_.Add(
@@ -152,7 +147,7 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
           /*devtools_cookie_setting_overrides=*/net::CookieSettingOverrides(),
           prefer_bound_cookie_context,
           /* null cookies_observer disables logging */
-          mojo::NullRemote(), std::move(first_party_set_metadata)),
+          mojo::NullRemote()),
       std::move(receiver));
 }
 

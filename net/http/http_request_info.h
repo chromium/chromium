@@ -124,15 +124,6 @@ struct NET_EXPORT HttpRequestInfo {
   // that the request is idempotent.
   Idempotency idempotency = DEFAULT_IDEMPOTENCY;
 
-  // If not null, the value is used to evaluate whether the cache entry should
-  // be bypassed; if is null, that means the request site does not match the
-  // filter.
-  std::optional<int64_t> fps_cache_filter;
-
-  // Use as ID to mark the cache entry when persisting. Should be a positive
-  // number once set.
-  std::optional<int64_t> browser_run_id;
-
   // Used to get a shared dictionary for the request. This may be null if the
   // request does not use a shared dictionary.
   SharedDictionaryGetter dictionary_getter;

@@ -85,8 +85,6 @@ const MockTransaction kSimpleGET_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
-    std::nullopt,
-    std::nullopt,
     TEST_MODE_NORMAL,
     MockTransactionHandler(),
     MockTransactionReadHandler(),
@@ -109,8 +107,6 @@ const MockTransaction kSimplePOST_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
-    std::nullopt,
-    std::nullopt,
     TEST_MODE_NORMAL,
     MockTransactionHandler(),
     MockTransactionReadHandler(),
@@ -134,8 +130,6 @@ const MockTransaction kTypicalGET_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
-    std::nullopt,
-    std::nullopt,
     TEST_MODE_NORMAL,
     MockTransactionHandler(),
     MockTransactionReadHandler(),
@@ -159,8 +153,6 @@ const MockTransaction kETagGET_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
-    std::nullopt,
-    std::nullopt,
     TEST_MODE_NORMAL,
     MockTransactionHandler(),
     MockTransactionReadHandler(),
@@ -183,8 +175,6 @@ const MockTransaction kRangeGET_Transaction = {
     base::Time(),
     "<html><body>Google Blah Blah</body></html>",
     {},
-    std::nullopt,
-    std::nullopt,
     TEST_MODE_NORMAL,
     MockTransactionHandler(),
     MockTransactionReadHandler(),
@@ -246,8 +236,6 @@ MockHttpRequest::MockHttpRequest(const MockTransaction& t) {
   network_isolation_key = NetworkIsolationKey(site, site);
   network_anonymization_key = NetworkAnonymizationKey::CreateSameSite(site);
   frame_origin = url::Origin::Create(url);
-  fps_cache_filter = t.fps_cache_filter;
-  browser_run_id = t.browser_run_id;
   is_shared_resource = t.is_shared_resource;
 }
 

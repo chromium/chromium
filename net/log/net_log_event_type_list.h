@@ -5339,15 +5339,6 @@ EVENT_TYPE(OBLIVIOUS_HTTP_RESPONSE_DATA)
 // decryption.
 EVENT_TYPE(OBLIVIOUS_HTTP_RESPONSE_HEADERS)
 
-// This event is logged when First-Party Sets metadata is requested/received.
-// The following parameters are attached to the "end" event:
-//   {
-//     "cache_filter": <string>,
-//     "frame_entry": <string>,
-//     "top_frame_entry": <string>,
-//   }
-EVENT_TYPE(FIRST_PARTY_SETS_METADATA)
-
 // ------------------------------------------------------------------------
 // Device Bound Sessions
 // ------------------------------------------------------------------------

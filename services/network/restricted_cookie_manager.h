@@ -24,7 +24,6 @@
 #include "net/base/isolation_info.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/cookies/cookie_setting_override.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
@@ -96,10 +95,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // authoritative cookie context the renderer cannot compute (e.g., a frame
   // whose effective top frame for partitioning differs from the actual top).
   //
-  // `first_party_set_metadata` should have been previously computed by
-  // `ComputeFirstPartySetMetadata` using the same `origin`, `cookie_store` and
-  // `isolation_info` as were passed in here.
-  //
   // `metrics_updater` if not null will be used to record metrics about IPCs
   // serviced.
   RestrictedCookieManager(
@@ -112,7 +107,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
       bool prefer_bound_cookie_context,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-      net::FirstPartySetMetadata first_party_set_metadata,
       UmaMetricsUpdater* metrics_updater = nullptr);
 
   RestrictedCookieManager(const RestrictedCookieManager&) = delete;
@@ -187,13 +181,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   void InstallReceiver(
       mojo::PendingReceiver<mojom::RestrictedCookieManager> pending_receiver,
       base::OnceClosure on_disconnect_callback);
-
-  // Computes the First-Party Set metadata corresponding to the given `origin`,
-  // `cookie_store`, and `isolation_info`.
-  static net::FirstPartySetMetadata ComputeFirstPartySetMetadata(
-      const url::Origin& origin,
-      const net::CookieStore* cookie_store,
-      const net::IsolationInfo& isolation_info);
 
   // The owner of this class has context into cookie settings changes. Calling
   // this function makes sure the appropriate state is updated internally to
@@ -357,10 +344,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   base::LinkedList<Listener> listeners_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // The First-Party Set metadata for the context this RestrictedCookieManager
-  // is associated with.
-  net::FirstPartySetMetadata first_party_set_metadata_;
 
   // Cookie partition key that the instance of RestrictedCookieManager will have
   // access to. Must be set only in the constructor or in *ForTesting methods.

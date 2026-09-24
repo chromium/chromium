@@ -535,7 +535,6 @@ void TestNetworkDelegate::OnURLRequestDestroyed(URLRequest* request) {
 
 bool TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
-    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   RecordCookieSettingOverrides(request.cookie_setting_overrides());
@@ -563,7 +562,6 @@ bool TestNetworkDelegate::OnCanSetCookie(
     const URLRequest& request,
     const net::CanonicalCookie& cookie,
     CookieOptions* options,
-    const net::FirstPartySetMetadata& first_party_set_metadata,
     CookieInclusionStatus* inclusion_status) {
   RecordCookieSettingOverrides(request.cookie_setting_overrides());
   bool allow = true;
@@ -611,7 +609,6 @@ bool FilteringTestNetworkDelegate::OnCanSetCookie(
     const URLRequest& request,
     const net::CanonicalCookie& cookie,
     CookieOptions* options,
-    const net::FirstPartySetMetadata& first_party_set_metadata,
     CookieInclusionStatus* inclusion_status) {
   // Filter out cookies with the same name as |cookie_name_filter_| and
   // combine with |allowed_from_caller|.
@@ -624,7 +621,6 @@ bool FilteringTestNetworkDelegate::OnCanSetCookie(
 
   // Call the nested delegate's method first to avoid a short circuit.
   return TestNetworkDelegate::OnCanSetCookie(request, cookie, options,
-                                             first_party_set_metadata,
                                              inclusion_status) &&
          allowed;
 }
@@ -643,7 +639,6 @@ FilteringTestNetworkDelegate::OnForcePrivacyMode(
 
 bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
-    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   // Filter out cookies if |block_annotate_cookies_| is set and
@@ -680,8 +675,7 @@ bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 
   // Call the nested delegate's method first to avoid a short circuit.
   return TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
-             request, first_party_set_metadata, maybe_included_cookies,
-             excluded_cookies) &&
+             request, maybe_included_cookies, excluded_cookies) &&
          allowed;
 }
 

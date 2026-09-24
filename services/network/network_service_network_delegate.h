@@ -15,8 +15,6 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_delegate_impl.h"
 #include "net/cookies/cookie_setting_override.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/url_request/url_request.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/network_context.h"
@@ -82,14 +80,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
       base::optional_ref<const net::RedirectInfo> redirect_info) const override;
   bool OnAnnotateAndMoveUserBlockedCookies(
       const net::URLRequest& request,
-      const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override;
   bool OnCanSetCookie(
       const net::URLRequest& request,
       const net::CanonicalCookie& cookie,
       net::CookieOptions* options,
-      const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieInclusionStatus* inclusion_status) override;
   bool OnShouldForceIgnoreSiteForCookies(
       const net::URLRequest& request) override;

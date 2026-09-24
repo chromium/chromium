@@ -44,8 +44,6 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/unique_cookie_key.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/public/cpp/features.h"
@@ -169,20 +167,6 @@ bool IsCookieDomainValid(const GURL& url,
 
 RestrictedCookieManager::UmaMetricsUpdater::UmaMetricsUpdater() = default;
 RestrictedCookieManager::UmaMetricsUpdater::~UmaMetricsUpdater() = default;
-
-// static
-net::FirstPartySetMetadata
-RestrictedCookieManager::ComputeFirstPartySetMetadata(
-    const url::Origin& origin,
-    const net::CookieStore* cookie_store,
-    const net::IsolationInfo& isolation_info) {
-  std::pair<net::FirstPartySetMetadata,
-            net::FirstPartySetsCacheFilter::MatchInfo>
-      metadata_and_match_info = net::cookie_util::ComputeFirstPartySetMetadata(
-          /*request_site=*/net::SchemefulSite(origin), isolation_info,
-          cookie_store->cookie_access_delegate());
-  return std::move(metadata_and_match_info).first;
-}
 
 bool CookieWithAccessResultComparer::operator()(
     const net::CookieWithAccessResult& cookie_with_access_result1,
@@ -340,7 +324,6 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
     // cookies.
     if (!restricted_cookie_manager_->cookie_settings().IsCookieAccessible(
             change.cookie, url_, site_for_cookies_, top_frame_origin_,
-            restricted_cookie_manager_->first_party_set_metadata_,
             restricted_cookie_manager_->GetCookieSettingOverrides(
                 storage_access_api_status_, /*is_ad_tagged=*/false,
                 /*apply_devtools_overrides=*/false,
@@ -396,7 +379,6 @@ RestrictedCookieManager::RestrictedCookieManager(
     const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
     bool prefer_bound_cookie_context,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-    net::FirstPartySetMetadata first_party_set_metadata,
     UmaMetricsUpdater* metrics_updater)
     : role_(role),
       cookie_store_(cookie_store),
@@ -407,7 +389,6 @@ RestrictedCookieManager::RestrictedCookieManager(
       isolation_info_(isolation_info),
       prefer_bound_cookie_context_(prefer_bound_cookie_context),
       cookie_observer_(std::move(cookie_observer)),
-      first_party_set_metadata_(std::move(first_party_set_metadata)),
       cookie_partition_key_(net::CookiePartitionKey::FromNetworkIsolationKey(
           isolation_info.network_isolation_key(),
           isolation_info.site_for_cookies(),
@@ -492,8 +473,6 @@ void RestrictedCookieManager::OverrideIsolationInfoForTesting(
     const net::IsolationInfo& new_isolation_info) {
   isolation_info_ = new_isolation_info;
 
-  first_party_set_metadata_ =
-      ComputeFirstPartySetMetadata(origin_, cookie_store_, isolation_info_);
   cookie_partition_key_ = net::CookiePartitionKey::FromNetworkIsolationKey(
       isolation_info_.network_isolation_key(),
       isolation_info_.site_for_cookies(), net::SchemefulSite(origin_),
@@ -569,8 +548,8 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   net::CookieAccessResultList maybe_included_cookies = cookie_list;
   net::CookieAccessResultList excluded_cookies = excluded_list;
   cookie_settings().AnnotateAndMoveUserBlockedCookies(
-      url, site_for_cookies, &top_frame_origin, first_party_set_metadata_,
-      cookie_setting_overrides, maybe_included_cookies, excluded_cookies);
+      url, site_for_cookies, &top_frame_origin, cookie_setting_overrides,
+      maybe_included_cookies, excluded_cookies);
 
   std::vector<net::CookieWithAccessResult> result;
   std::vector<mojom::CookieOrLineWithAccessResultPtr>
@@ -779,8 +758,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // Check cookie accessibility with cookie_settings.
   // TODO(morlovich): Try to validate site_for_cookies as well.
   bool blocked = !cookie_settings_->IsCookieAccessible(
-      cookie, url, site_for_cookies, top_frame_origin,
-      first_party_set_metadata_, cookie_setting_overrides, &status);
+      cookie, url, site_for_cookies, top_frame_origin, cookie_setting_overrides,
+      &status);
 
   if (blocked) {
     // Cookie allowed by cookie_settings checks could be blocked explicitly,

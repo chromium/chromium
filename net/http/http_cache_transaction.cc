@@ -102,14 +102,6 @@ enum ExternallyConditionalizedType {
   EXTERNALLY_CONDITIONALIZED_MAX
 };
 
-bool ShouldByPassCacheForFirstPartySets(
-    const std::optional<int64_t>& clear_at_run_id,
-    const std::optional<int64_t>& written_at_run_id) {
-  return clear_at_run_id.has_value() &&
-         (!written_at_run_id.has_value() ||
-          written_at_run_id.value() < clear_at_run_id.value());
-}
-
 // Methods other than "GET" or "HEAD" can have request bodies, which causes
 // problems for the request matching.
 // TODO(https://crbug.com/390459312): Consider supporting additional methods.
@@ -1760,14 +1752,6 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
 #endif  // !defined(NET_DISABLE_ZSTD)
   }
 
-  // If the read response matches the clearing filter of FPS, doom the entry
-  // and restart transaction.
-  if (ShouldByPassCacheForFirstPartySets(initial_request_->fps_cache_filter,
-                                         response_.browser_run_id)) {
-    result = ERR_CACHE_ENTRY_NOT_SUITABLE;
-    return OnCacheReadError(result, true);
-  }
-
   // TODO(https://crbug.com/40516423): Only get data size if there is no other
   // transaction currently writing the response body due to the data race
   // mentioned in the associated bug.
@@ -2342,10 +2326,6 @@ int HttpCache::Transaction::DoOverwriteCachedResponse() {
     }
     TransitionToState(STATE_PARTIAL_HEADERS_RECEIVED);
     return OK;
-  }
-  // Mark the response with browser_run_id before it gets written.
-  if (initial_request_->browser_run_id.has_value()) {
-    response_.browser_run_id = initial_request_->browser_run_id;
   }
 
   TransitionToState(STATE_CACHE_WRITE_RESPONSE);

@@ -10,15 +10,9 @@
 #include <set>
 #include <string>
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
-#include "base/functional/callback_forward.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
-#include "net/first_party_sets/first_party_set_entry.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/first_party_sets_cache_filter.h"
 
 namespace net {
 
@@ -44,10 +38,6 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const SiteForCookies& site_for_cookies,
       const url::Origin& top_level_origin) const override;
   bool ShouldTreatUrlAsTrustworthy(const GURL& url) const override;
-  std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>
-  ComputeFirstPartySetMetadata(
-      const SchemefulSite& site,
-      const SchemefulSite* top_frame_site) const override;
 
   // Sets the expected return value for any cookie whose Domain
   // matches |cookie_domain|. Pass the value of |cookie.Domain()| and any
@@ -68,39 +58,13 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const std::string& site_for_cookies_scheme,
       bool require_secure_origin);
 
-  // Set the test delegate's First-Party Sets. The map's keys are the sites in
-  // the sets. Primary sites must be included among the keys for a given set.
-  void SetFirstPartySets(
-      const base::flat_map<SchemefulSite, FirstPartySetEntry>& sets);
-
-  void set_invoke_callbacks_asynchronously(bool async) {
-    invoke_callbacks_asynchronously_ = async;
-  }
-
-  void set_first_party_sets_cache_filter(FirstPartySetsCacheFilter filter) {
-    first_party_sets_cache_filter_ = std::move(filter);
-  }
-
  private:
-  // Finds a FirstPartySetEntry for the given site, if one exists.
-  std::optional<FirstPartySetEntry> FindFirstPartySetEntry(
-      const SchemefulSite& site) const;
-
   // Discard any leading dot in the domain string.
   std::string GetKeyForDomainValue(const std::string& domain) const;
-
-  // Invokes the given `callback` asynchronously or returns the result
-  // synchronously, depending on the configuration of this instance.
-  template <class T>
-  std::optional<T> RunMaybeAsync(T result,
-                                 base::OnceCallback<void(T)> callback) const;
 
   std::map<std::string, CookieAccessSemantics> expectations_;
   std::map<SchemefulSite, CookieScopeSemantics> expectations_scoped_;
   std::map<std::string, bool> ignore_samesite_restrictions_schemes_;
-  base::flat_map<SchemefulSite, FirstPartySetEntry> first_party_sets_;
-  FirstPartySetsCacheFilter first_party_sets_cache_filter_;
-  bool invoke_callbacks_asynchronously_ = false;
   SchemefulSite trustworthy_site_ =
       SchemefulSite(GURL("http://trustworthysitefortestdelegate.example"));
 };

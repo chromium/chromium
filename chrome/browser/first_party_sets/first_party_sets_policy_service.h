@@ -14,17 +14,12 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/first_party_sets_handler.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
-#include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
 
 namespace net {
-class FirstPartySetsCacheFilter;
-
 class FirstPartySetEntry;
 class SchemefulSite;
 }  // namespace net
@@ -70,21 +65,6 @@ class FirstPartySetsPolicyService
       base::optional_ref<const net::SchemefulSite> top_frame_site,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
-  // Stores `access_delegate` in a RemoteSet for later IPC calls on it when this
-  // service is ready to do so.
-  //
-  // NotifyReady will be called on `access_delegate` in the following cases:
-  // - when site-data is cleared
-  // - upon OnRelatedWebsiteSetsEnabledChanged observations (if site-data has
-  //   already been, or didn't need to be, cleared) and if `config` is ready
-  // - by this method if `config_` has already been computed
-  //
-  // SetEnabled will be called on `access_delegate` when the First-Party Sets
-  // enabled pref changes, as observed by OnRelatedWebsiteSetsEnabledChanged.
-  void AddRemoteAccessDelegate(
-      mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
-          access_delegate);
-
   // PrivacySandboxSettings::Observer
   void OnRelatedWebsiteSetsEnabledChanged(bool enabled) override;
 
@@ -126,7 +106,7 @@ class FirstPartySetsPolicyService
   // initialized.
   bool is_ready() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return cache_filter_.has_value();
+    return is_ready_;
   }
 
   void ResetForTesting();
@@ -179,11 +159,11 @@ class FirstPartySetsPolicyService
   // Initialize this instance by getting the config if needed.
   void Init();
 
-  // Provides the cache filter to all delegates via NotifyReady.
-  void OnReadyToNotifyDelegates(net::FirstPartySetsCacheFilter cache_filter);
+  // Marks this service as ready and runs queued callbacks.
+  void OnReadyToNotifyDelegates();
 
   // Like ComputeFirstPartySetMetadata, but passes the result into the provided
-  // callback. Must not be called before `cache_filter_` has been received.
+  // callback. Must not be called before `is_ready_` is true.
   void ComputeFirstPartySetMetadataInternal(
       const net::SchemefulSite& site,
       base::optional_ref<const net::SchemefulSite> top_frame_site,
@@ -192,11 +172,6 @@ class FirstPartySetsPolicyService
   // Clears the content settings associated with `profile` that were
   // affected/mediated by First-Party Sets.
   void ClearContentSettings(Profile* profile) const;
-
-  // The remote delegates associated with the profile that created this
-  // service.
-  mojo::RemoteSet<network::mojom::FirstPartySetsAccessDelegate>
-      access_delegates_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The BrowserContext with which this service is associated.
   const raw_ref<content::BrowserContext> browser_context_
@@ -211,9 +186,8 @@ class FirstPartySetsPolicyService
   ServiceState service_state_ GUARDED_BY_CONTEXT(sequence_checker_) =
       ServiceState::kEnabled;
 
-  // The filter used to bypass cache access in the network for this profile.
-  std::optional<net::FirstPartySetsCacheFilter> cache_filter_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // Whether this instance has received its config and been initialized.
+  bool is_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // The queue of callbacks that are waiting for the instance to be initialized.
   base::circular_deque<base::OnceClosure> on_ready_callbacks_

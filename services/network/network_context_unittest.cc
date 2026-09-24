@@ -6906,14 +6906,12 @@ TEST_F(NetworkContextTest, CanSetCookieFalseIfCookiesBlocked) {
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
           *request, *cookie, /* options */ nullptr,
-          net::FirstPartySetMetadata(),
           /* inclusion_status */ nullptr));
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
   net::CookieInclusionStatus status;
   EXPECT_FALSE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, /* options */ nullptr,
-          net::FirstPartySetMetadata(), &status));
+          *request, *cookie, /* options */ nullptr, &status));
   EXPECT_FALSE(status.HasWarningReason(
       net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
 }
@@ -6936,8 +6934,7 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
   net::CookieInclusionStatus status;
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, /* options */ nullptr,
-          net::FirstPartySetMetadata(), &status));
+          *request, *cookie, /* options */ nullptr, &status));
 
   EXPECT_TRUE(status.HasWarningReason(
       net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
@@ -6962,16 +6959,14 @@ TEST_F(NetworkContextAnnotateAndMoveUserBlockedCookiesTest,
   EXPECT_TRUE(
       network_context->url_request_context()
           ->network_delegate()
-          ->AnnotateAndMoveUserBlockedCookies(
-              *request, net::FirstPartySetMetadata(), included, excluded));
+          ->AnnotateAndMoveUserBlockedCookies(*request, included, excluded));
 
   // Cookies are blocked, so call returns false.
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
   EXPECT_FALSE(
       network_context->url_request_context()
           ->network_delegate()
-          ->AnnotateAndMoveUserBlockedCookies(
-              *request, net::FirstPartySetMetadata(), included, excluded));
+          ->AnnotateAndMoveUserBlockedCookies(*request, included, excluded));
 
   // Reset content setting, but block third party cookies. The call should still
   // return false.
@@ -6980,8 +6975,7 @@ TEST_F(NetworkContextAnnotateAndMoveUserBlockedCookiesTest,
   EXPECT_FALSE(
       network_context->url_request_context()
           ->network_delegate()
-          ->AnnotateAndMoveUserBlockedCookies(
-              *request, net::FirstPartySetMetadata(), included, excluded));
+          ->AnnotateAndMoveUserBlockedCookies(*request, included, excluded));
 }
 
 TEST_F(NetworkContextAnnotateAndMoveUserBlockedCookiesTest,
@@ -7000,8 +6994,7 @@ TEST_F(NetworkContextAnnotateAndMoveUserBlockedCookiesTest,
   EXPECT_TRUE(
       network_context->url_request_context()
           ->network_delegate()
-          ->AnnotateAndMoveUserBlockedCookies(
-              *request, net::FirstPartySetMetadata(), included, excluded));
+          ->AnnotateAndMoveUserBlockedCookies(*request, included, excluded));
 }
 
 // Gets notified by the EmbeddedTestServer on incoming connections being

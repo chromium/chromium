@@ -4,27 +4,16 @@
 
 #include "services/network/cookie_access_delegate_impl.h"
 
-#include <optional>
-#include <set>
-
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
-#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace network {
 
 CookieAccessDelegateImpl::CookieAccessDelegateImpl(
     mojom::CookieAccessDelegateType type,
-    FirstPartySetsAccessDelegate* const first_party_sets_access_delegate,
     const CookieSettings* cookie_settings)
-    : type_(type),
-      cookie_settings_(cookie_settings),
-      first_party_sets_access_delegate_(first_party_sets_access_delegate) {
+    : type_(type), cookie_settings_(cookie_settings) {
   if (type == mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS) {
     DCHECK(cookie_settings);
   }
@@ -67,18 +56,6 @@ bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(
         url, site_for_cookies, top_level_origin);
   }
   return false;
-}
-
-std::pair<net::FirstPartySetMetadata, net::FirstPartySetsCacheFilter::MatchInfo>
-CookieAccessDelegateImpl::ComputeFirstPartySetMetadata(
-    const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site) const {
-  if (!first_party_sets_access_delegate_) {
-    return std::make_pair(net::FirstPartySetMetadata(),
-                          net::FirstPartySetsCacheFilter::MatchInfo());
-  }
-  return first_party_sets_access_delegate_->ComputeMetadata(site,
-                                                            top_frame_site);
 }
 
 }  // namespace network

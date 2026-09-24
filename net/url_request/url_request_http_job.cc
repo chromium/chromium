@@ -69,9 +69,6 @@
 #include "net/filter/filter_source_stream.h"
 #include "net/filter/source_stream.h"
 #include "net/filter/source_stream_type.h"
-#include "net/first_party_sets/first_party_set_entry.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
@@ -130,24 +127,6 @@ bool ShouldForceIgnoreSiteForCookies(const URLRequest& request) {
   NetworkDelegate* network_delegate = request.network_delegate();
   return network_delegate &&
          network_delegate->ShouldForceIgnoreSiteForCookies(request);
-}
-
-base::DictValue FirstPartySetMetadataNetLogParams(
-    const FirstPartySetMetadata& first_party_set_metadata,
-    const int64_t* const fps_cache_filter) {
-  base::DictValue dict;
-  auto entry_or_empty =
-      [](const std::optional<FirstPartySetEntry>& entry) -> std::string {
-    return entry.has_value() ? entry->GetDebugString() : "none";
-  };
-
-  dict.Set("cache_filter",
-           fps_cache_filter ? base::NumberToString(*fps_cache_filter) : "none");
-  dict.Set("frame_entry",
-           entry_or_empty(first_party_set_metadata.frame_entry()));
-  dict.Set("top_frame_primary",
-           entry_or_empty(first_party_set_metadata.top_frame_entry()));
-  return dict;
 }
 
 base::DictValue CookieInclusionStatusNetLogParams(
@@ -476,28 +455,6 @@ void URLRequestHttpJob::Start() {
 #endif
   request_info_.is_shared_resource = request_->is_shared_resource();
   request_info_.target_network = request_->target_network();
-
-  CookieStore* cookie_store = request()->context()->cookie_store();
-  const CookieAccessDelegate* delegate =
-      cookie_store ? cookie_store->cookie_access_delegate() : nullptr;
-
-  request_->net_log().BeginEvent(NetLogEventType::FIRST_PARTY_SETS_METADATA);
-
-  auto [first_party_set_metadata, match_info] =
-      cookie_util::ComputeFirstPartySetMetadata(SchemefulSite(request()->url()),
-                                                request()->isolation_info(),
-                                                delegate);
-
-  first_party_set_metadata_ = std::move(first_party_set_metadata);
-  request_info_.fps_cache_filter = match_info.clear_at_run_id;
-  request_info_.browser_run_id = match_info.browser_run_id;
-
-  request_->net_log().EndEvent(
-      NetLogEventType::FIRST_PARTY_SETS_METADATA, [&]() {
-        return FirstPartySetMetadataNetLogParams(
-            first_party_set_metadata_,
-            base::OptionalToPtr(request_info_.fps_cache_filter));
-      });
 
   // Privacy mode could still be disabled in SetCookieHeaderAndStart if we are
   // going to send previously saved cookies.
@@ -1005,8 +962,7 @@ void URLRequestHttpJob::AnnotateAndMoveUserBlockedCookies(
   if (request()->network_delegate()) {
     can_get_cookies =
         request()->network_delegate()->AnnotateAndMoveUserBlockedCookies(
-            *request(), first_party_set_metadata_, maybe_included_cookies,
-            excluded_cookies);
+            *request(), maybe_included_cookies, excluded_cookies);
   }
 
   if (!can_get_cookies) {
@@ -1109,8 +1065,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     }
 
     // Check cookie accessibility with cookie_settings.
-    if (cookie && !CanSetCookie(*cookie, &options, first_party_set_metadata_,
-                                &returned_status)) {
+    if (cookie && !CanSetCookie(*cookie, &options, &returned_status)) {
       // Cookie allowed by cookie_settings checks could be blocked explicitly,
       // e.g. via Android Webview APIs, we need to manually add exclusion reason
       // in this case.

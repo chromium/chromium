@@ -128,7 +128,8 @@ enum {
   // This bit is set if the response has `encrypted_client_hello` set.
   RESPONSE_INFO_ENCRYPTED_CLIENT_HELLO = 1 << 29,
 
-  // This bit is set if the response has `browser_run_id` set.
+  // This bit is deprecated; previously set if the response had `browser_run_id`
+  // set.
   RESPONSE_INFO_BROWSER_RUN_ID = 1 << 30,
 
   // This bit is set if the response has extra bit set.
@@ -363,12 +364,12 @@ bool HttpResponseInfo::InitFromPickle(base::PickleIterator iter,
   ssl_info.encrypted_client_hello =
       (flags & RESPONSE_INFO_ENCRYPTED_CLIENT_HELLO) != 0;
 
-  // Read browser_run_id.
   if (flags & RESPONSE_INFO_BROWSER_RUN_ID) {
+    // The browser_run_id field has been removed from HttpResponseInfo. For
+    // backwards compatibility, we should still read the value out of iter.
     int64_t id;
     if (!iter.ReadInt64(&id))
       return false;
-    browser_run_id = std::make_optional(id);
   }
 
   // Do NOT restore the did_use_shared_dictionary flag since
@@ -479,8 +480,6 @@ std::unique_ptr<base::Pickle> HttpResponseInfo::MakePickleImpl(
     flags |= RESPONSE_INFO_HAS_DNS_ALIASES;
   if (ssl_info.encrypted_client_hello)
     flags |= RESPONSE_INFO_ENCRYPTED_CLIENT_HELLO;
-  if (browser_run_id.has_value())
-    flags |= RESPONSE_INFO_BROWSER_RUN_ID;
 
   if (proxy_chain.IsValid()) {
     extra_flags |= RESPONSE_EXTRA_INFO_HAS_PROXY_CHAIN;
@@ -552,10 +551,6 @@ std::unique_ptr<base::Pickle> HttpResponseInfo::MakePickleImpl(
     pickle->WriteInt(dns_aliases.size());
     for (const auto& alias : dns_aliases)
       pickle->WriteString(alias);
-  }
-
-  if (browser_run_id.has_value()) {
-    pickle->WriteInt64(browser_run_id.value());
   }
 
   if (proxy_chain.IsValid()) {

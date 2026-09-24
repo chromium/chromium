@@ -95,8 +95,6 @@ struct MockTransaction {
   // known aliases, e.g. from A, AAAA, or HTTPS, not just from the address used
   // for the connection, in no particular order.
   std::set<std::string> dns_aliases;
-  std::optional<int64_t> fps_cache_filter;
-  std::optional<int64_t> browser_run_id;
   int test_mode;
   MockTransactionHandler handler;
   MockTransactionReadHandler read_handler;

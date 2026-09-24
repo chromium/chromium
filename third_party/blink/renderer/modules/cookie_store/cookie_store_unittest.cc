@@ -101,11 +101,7 @@ class CookieStoreTest : public testing::Test {
             /*devtools_cookies_setting_overrides=*/
             net::CookieSettingOverrides(),
             /*prefer_bound_cookie_context=*/false,
-            /*cookie_observer=*/mojo::NullRemote(),
-            network::RestrictedCookieManager::ComputeFirstPartySetMetadata(
-                origin_,
-                &cookie_monster_,
-                isolation_info_))) {
+            /*cookie_observer=*/mojo::NullRemote())) {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
         &CookieStoreTest::OnBadMessage, base::Unretained(this)));
   }

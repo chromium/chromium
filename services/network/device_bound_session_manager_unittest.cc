@@ -154,7 +154,6 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
             /*client_cert_handler=*/base::DoNothing())),
         cookie_manager_(std::make_unique<CookieManager>(
             context_.get(),
-            nullptr,
             base::MakeRefCounted<SessionCleanupCookieStore>(
                 base::MakeRefCounted<net::SQLitePersistentCookieStore>(
                     base::FilePath(),

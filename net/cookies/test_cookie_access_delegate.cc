@@ -11,17 +11,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
-#include "base/functional/callback.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
-#include "net/first_party_sets/first_party_set_entry.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/first_party_sets_cache_filter.h"
 
 namespace net {
 
@@ -67,40 +59,6 @@ bool TestCookieAccessDelegate::ShouldTreatUrlAsTrustworthy(
   return trustworthy_site_.IsSameSiteWith(url);
 }
 
-std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>
-TestCookieAccessDelegate::ComputeFirstPartySetMetadata(
-    const SchemefulSite& site,
-    const SchemefulSite* top_frame_site) const {
-  FirstPartySetMetadata metadata(
-      FindFirstPartySetEntry(site),
-      top_frame_site ? FindFirstPartySetEntry(*top_frame_site) : std::nullopt);
-  FirstPartySetsCacheFilter::MatchInfo match_info(
-      first_party_sets_cache_filter_.GetMatchInfo(site));
-
-  return std::pair(std::move(metadata), match_info);
-}
-
-std::optional<FirstPartySetEntry>
-TestCookieAccessDelegate::FindFirstPartySetEntry(
-    const SchemefulSite& site) const {
-  auto entry = first_party_sets_.find(site);
-
-  return entry != first_party_sets_.end() ? std::make_optional(entry->second)
-                                          : std::nullopt;
-}
-
-template <class T>
-std::optional<T> TestCookieAccessDelegate::RunMaybeAsync(
-    T result,
-    base::OnceCallback<void(T)> callback) const {
-  if (invoke_callbacks_asynchronously_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
-    return std::nullopt;
-  }
-  return result;
-}
-
 void TestCookieAccessDelegate::SetExpectationForCookieDomain(
     const std::string& cookie_domain,
     CookieAccessSemantics access_semantics) {
@@ -126,11 +84,6 @@ std::string TestCookieAccessDelegate::GetKeyForDomainValue(
     const std::string& domain) const {
   DCHECK(!domain.empty());
   return cookie_util::CookieDomainAsHost(domain);
-}
-
-void TestCookieAccessDelegate::SetFirstPartySets(
-    const base::flat_map<SchemefulSite, FirstPartySetEntry>& sets) {
-  first_party_sets_ = sets;
 }
 
 }  // namespace net

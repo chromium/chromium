@@ -40,8 +40,6 @@
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/parsed_cookie.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/http/http_util.h"
 #include "net/storage_access_api/status.h"
 #include "url/gurl.h"
@@ -1094,22 +1092,6 @@ bool IsOriginBoundCookiesPartiallyEnabled() {
 bool IsTimeLimitedInsecureCookiesEnabled() {
   return IsSchemeBoundCookiesEnabled() &&
          base::FeatureList::IsEnabled(features::kTimeLimitedInsecureCookies);
-}
-
-std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>
-ComputeFirstPartySetMetadata(
-    const SchemefulSite& request_site,
-    const IsolationInfo& isolation_info,
-    const CookieAccessDelegate* cookie_access_delegate) {
-  if (cookie_access_delegate) {
-    return cookie_access_delegate->ComputeFirstPartySetMetadata(
-        request_site,
-        base::OptionalToPtr(
-            isolation_info.network_isolation_key().GetTopFrameSite()));
-  }
-
-  return std::pair(FirstPartySetMetadata(),
-                   FirstPartySetsCacheFilter::MatchInfo());
 }
 
 CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod

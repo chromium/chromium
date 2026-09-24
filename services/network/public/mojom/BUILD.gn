@@ -1456,70 +1456,6 @@ mojom("websocket_mojom") {
   ]
 }
 
-mojom("mojom_first_party_sets") {
-  generate_blink = true
-  generate_java = true
-  sources = [ "first_party_sets.mojom" ]
-
-  public_deps = [
-    ":mojom_schemeful_site",
-    "//mojo/public/mojom/base",
-  ]
-
-  if (!is_ios) {
-    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
-    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
-    export_header_blink = "third_party/blink/public/platform/web_common.h"
-  }
-
-  shared_typemaps = []
-  cpp_typemaps =
-      shared_typemaps + [
-        {
-          types = [
-            {
-              mojom = "network.mojom.SiteType"
-              cpp = "::net::SiteType"
-            },
-            {
-              mojom = "network.mojom.FirstPartySetEntry"
-              cpp = "::net::FirstPartySetEntry"
-            },
-            {
-              mojom = "network.mojom.FirstPartySetMetadata"
-              cpp = "::net::FirstPartySetMetadata"
-              move_only = true
-            },
-            {
-              mojom = "network.mojom.GlobalFirstPartySets"
-              cpp = "::net::GlobalFirstPartySets"
-              move_only = true
-            },
-            {
-              mojom = "network.mojom.FirstPartySetsContextConfig"
-              cpp = "::net::FirstPartySetsContextConfig"
-              move_only = true
-            },
-            {
-              mojom = "network.mojom.FirstPartySetsCacheFilter"
-              cpp = "::net::FirstPartySetsCacheFilter"
-              move_only = true
-            },
-            {
-              mojom = "network.mojom.FirstPartySetEntryOverride"
-              cpp = "::net::FirstPartySetEntryOverride"
-            },
-          ]
-          traits_headers = [
-            "//services/network/public/cpp/first_party_sets_mojom_traits.h",
-          ]
-          traits_public_deps =
-              [ "//services/network/public/cpp:first_party_sets_mojom_support" ]
-        },
-      ]
-  blink_cpp_typemaps = shared_typemaps
-}
-
 mojom("mojom_storage_access_api") {
   generate_blink = true
   generate_java = true
@@ -1626,7 +1562,6 @@ mojom("cookies_mojom") {
   ]
 
   public_deps = [
-    ":mojom_first_party_sets",
     ":mojom_schemeful_site",
     ":mojom_storage_access_api",
     "//components/content_settings/core/common:content_settings_enums",
@@ -1962,7 +1897,6 @@ mojom("mojom") {
     "ct_policy.mojom",
     "default_credentials.mojom",
     "dhcp_wpad_url_client.mojom",
-    "first_party_sets_access_delegate.mojom",
     "http_cache_backend_file_operations.mojom",
     "key_pinning.mojom",
     "mdns_responder.mojom",
@@ -1996,7 +1930,6 @@ mojom("mojom") {
     ":cookies_mojom",
     ":mojom_connection_allowlist",
     ":mojom_cors_origin_pattern",
-    ":mojom_first_party_sets",
     ":mojom_host_resolver",
     ":mojom_http_request_headers",
     ":mojom_ip_address",

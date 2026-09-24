@@ -1,9 +1,7 @@
 First-Party Sets
 ================
 
-This directory is home to all First-Party Sets related code that requires being in the browser process (under chrome/browser/).
-
-Most other First-Party Sets code lives in the Network Service under [/services/network/first_party_sets/](https://source.chromium.org/chromium/chromium/src/+/main:services/network/first_party_sets/).
+This directory is home to First-Party Sets related code in `chrome/browser/`. Most other First-Party Sets code lives in the browser process under [`/content/browser/first_party_sets/`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/first_party_sets/) and [`/net/first_party_sets/`](https://source.chromium.org/chromium/chromium/src/+/main:net/first_party_sets/).
 
 Relevant documentation:
 

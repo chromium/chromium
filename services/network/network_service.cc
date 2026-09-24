@@ -74,7 +74,6 @@
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "net/dns/test_dns_config_service.h"
 #include "net/filter/filter_source_stream.h"
-#include "net/first_party_sets/global_first_party_sets.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/log/file_net_log_observer.h"
 #include "net/log/net_log.h"
@@ -85,7 +84,6 @@
 #include "net/ssl/ssl_key_logger_impl.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/dns_config_change_manager.h"
-#include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/http_auth_cache_proxy_copier.h"
 #include "services/network/net_log_exporter.h"
 #include "services/network/net_log_proxy_sink.h"
@@ -129,10 +127,6 @@
 #include "components/vrp_flags/vrp_flags.h"       // nogncheck
 #include "components/vrp_flags/vrp_flags_impl.h"  // nogncheck
 #endif                                            // BUILDFLAG(ENABLE_VRP_FLAGS)
-
-namespace net {
-class FirstPartySetEntry;
-}
 
 namespace network {
 
@@ -501,10 +495,6 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
     default_url_loader_network_service_observer_.Bind(
         std::move(params->default_observer));
   }
-
-  first_party_sets_manager_ =
-      std::make_unique<FirstPartySetsManager>(params->first_party_sets_enabled);
-
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   constexpr size_t kMaxSCTAuditingCacheEntries = 1024;
@@ -1055,10 +1045,6 @@ void NetworkService::BindTestInterfaceForTesting(
     auto pipe = receiver.PassPipe();
     registry_->TryBindInterface(mojom::NetworkServiceTest::Name_, &pipe);
   }
-}
-
-void NetworkService::SetFirstPartySets(net::GlobalFirstPartySets sets) {
-  first_party_sets_manager_->SetCompleteSets(std::move(sets));
 }
 
 void NetworkService::SetExplicitlyAllowedPorts(

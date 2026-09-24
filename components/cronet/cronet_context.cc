@@ -52,7 +52,6 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_setting_override.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/file_net_log_observer.h"
@@ -143,7 +142,6 @@ class BasicNetworkDelegate : public net::NetworkDelegateImpl {
   // net::NetworkDelegate implementation.
   bool OnAnnotateAndMoveUserBlockedCookies(
       const net::URLRequest& request,
-      const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override {
     // Disallow sending cookies by default.
@@ -157,7 +155,6 @@ class BasicNetworkDelegate : public net::NetworkDelegateImpl {
       const net::URLRequest& request,
       const net::CanonicalCookie& cookie,
       net::CookieOptions* options,
-      const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieInclusionStatus* inclusion_status) override {
     // Disallow saving cookies by default.
     return false;

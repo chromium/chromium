@@ -17,8 +17,6 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/site_for_cookies.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/storage_access_api/status.h"
 #include "url/origin.h"
 
@@ -30,9 +28,7 @@ class CanonicalCookie;
 class CookieAccessDelegate;
 class CookieInclusionStatus;
 class CookiePartitionKey;
-class IsolationInfo;
 class ParsedCookie;
-class SchemefulSite;
 
 struct CookieAccessResult;
 struct CookieWithAccessResult;
@@ -351,15 +347,6 @@ NET_EXPORT bool IsSchemeBoundCookiesEnabled();
 NET_EXPORT bool IsOriginBoundCookiesPartiallyEnabled();
 
 NET_EXPORT bool IsTimeLimitedInsecureCookiesEnabled();
-
-// Computes the First-Party Sets metadata and cache match information.
-// `isolation_info` must be fully populated.
-[[nodiscard]] NET_EXPORT
-    std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>
-    ComputeFirstPartySetMetadata(
-        const SchemefulSite& request_site,
-        const IsolationInfo& isolation_info,
-        const CookieAccessDelegate* cookie_access_delegate);
 
 // Converts a string representing the http request method to its enum
 // representation.

@@ -807,13 +807,6 @@ class InsecureDelegate : public CookieAccessDelegate {
       const url::Origin& top_level_origin) const override {
     return true;
   }
-  [[nodiscard]]
-  std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>
-  ComputeFirstPartySetMetadata(
-      const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site) const override {
-    return {};
-  }
 };
 
 class SameSiteBypassNetworkDelegate : public TestNetworkDelegate {

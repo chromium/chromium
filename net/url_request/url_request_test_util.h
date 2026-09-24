@@ -33,7 +33,6 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_layer.h"
@@ -339,7 +338,6 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   void OnURLRequestDestroyed(URLRequest* request) override;
   bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
-      const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override;
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
@@ -348,7 +346,6 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       const URLRequest& request,
       const net::CanonicalCookie& cookie,
       CookieOptions* options,
-      const net::FirstPartySetMetadata& first_party_set_metadata,
       CookieInclusionStatus* inclusion_status) override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
@@ -422,7 +419,6 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
       const URLRequest& request,
       const net::CanonicalCookie& cookie,
       CookieOptions* options,
-      const net::FirstPartySetMetadata& first_party_set_metadata,
       CookieInclusionStatus* inclusion_status) override;
 
   void SetCookieFilter(std::string filter) {
@@ -439,7 +435,6 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
 
   bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
-      const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override;
 

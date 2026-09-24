@@ -26,8 +26,6 @@
 #include "net/base/privacy_mode.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/http/http_request_info.h"
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_job.h"
@@ -333,10 +331,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   ResponseHeadersCallback response_headers_callback_;
 
   base::RepeatingCallback<bool()> is_shared_dictionary_read_allowed_callback_;
-
-  // The First-Party Set metadata associated with this job. Set when the job is
-  // started.
-  FirstPartySetMetadata first_party_set_metadata_;
 
   // The number of times this request was deferred due to a Device Bound
   // Session.

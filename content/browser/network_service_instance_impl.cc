@@ -49,7 +49,6 @@
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/network/http_cache_backend_file_operations_factory.h"
 #include "content/browser/network_sandbox_grant_result.h"
 #include "content/browser/network_sandbox_grant_result_helper.h"
@@ -71,7 +70,6 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/scheduler/sequence_manager_configurator.h"
 #include "net/base/switches.h"
-#include "net/first_party_sets/global_first_party_sets.h"
 #include "net/log/file_net_log_observer.h"
 #include "net/log/net_log_util.h"
 #include "sandbox/policy/features.h"
@@ -387,9 +385,6 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
           net::NetworkChangeNotifier::GetConnectionSubtype());
   network_service_params->default_observer =
       g_client->BindURLLoaderNetworkServiceObserver();
-  network_service_params->first_party_sets_enabled =
-      GetContentClient()->browser()->IsFirstPartySetsEnabled();
-
 #if BUILDFLAG(IS_LINUX)
   if (IsOutOfProcessNetworkService()) {
     auto [address_map, online_links] =
@@ -765,18 +760,6 @@ network::mojom::NetworkService* GetNetworkService() {
                                     SSLKeyLogFileAction::kLogFileEnabled);
           g_observed_network_service->remote()->SetSSLKeyLogFile(
               std::move(file));
-        }
-      }
-
-      if (FirstPartySetsHandlerImpl::GetInstance()->IsEnabled()) {
-        if (std::optional<net::GlobalFirstPartySets> sets =
-                FirstPartySetsHandlerImpl::GetInstance()->GetSets(
-                    base::BindOnce([](net::GlobalFirstPartySets sets) {
-                      GetNetworkService()->SetFirstPartySets(std::move(sets));
-                    }));
-            sets.has_value()) {
-          g_observed_network_service->remote()->SetFirstPartySets(
-              std::move(sets.value()));
         }
       }
 

@@ -91,7 +91,6 @@
 #include "net/dns/mapped_host_resolver.h"
 #include "net/extras/sqlite/cookie_crypto_delegate.h"
 #include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_auth_preferences.h"
@@ -723,10 +722,6 @@ NetworkContext::NetworkContext(
       params_(std::move(params)),
       on_connection_close_callback_(std::move(on_connection_close_callback)),
       receiver_(std::in_place_type<Receiver>, this),
-      first_party_sets_access_delegate_(
-          std::move(params_->first_party_sets_access_delegate_receiver),
-          std::move(params_->first_party_sets_access_delegate_params),
-          network_service_->first_party_sets_manager()),
       cors_preflight_controller_(network_service),
       http_auth_merged_preferences_(network_service),
       ohttp_handler_(this),
@@ -817,8 +812,7 @@ NetworkContext::NetworkContext(
   url_request_context_ = url_request_context_owner_.url_request_context.get();
 
   cookie_manager_ = std::make_unique<CookieManager>(
-      url_request_context_, &first_party_sets_access_delegate_,
-      std::move(session_cleanup_cookie_store),
+      url_request_context_, std::move(session_cleanup_cookie_store),
       std::move(params_->cookie_manager_params));
 
   cookie_manager_->AddSettingsWillChangeCallback(
@@ -933,14 +927,9 @@ NetworkContext::NetworkContext(
       is_observing_reporting_service_(false),
 #endif  // BUILDFLAG(ENABLE_REPORTING)
       receiver_(std::in_place_type<Receiver>, this),
-      first_party_sets_access_delegate_(
-          /*receiver=*/mojo::NullReceiver(),
-          /*params=*/nullptr,
-          /*manager=*/nullptr),
       cookie_manager_(std::make_unique<CookieManager>(
           url_request_context,
           nullptr,
-          /*first_party_sets_access_delegate=*/nullptr,
           /*params=*/nullptr)),
       socket_factory_(
           std::make_unique<SocketFactory>(url_request_context_->net_log(),
@@ -1203,17 +1192,12 @@ void NetworkContext::GetRestrictedCookieManager(
     const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
     bool prefer_bound_cookie_context,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer) {
-  net::FirstPartySetMetadata first_party_set_metadata =
-      RestrictedCookieManager::ComputeFirstPartySetMetadata(
-          origin, url_request_context_->cookie_store(), isolation_info);
-
   std::unique_ptr<RestrictedCookieManager> ptr =
       std::make_unique<RestrictedCookieManager>(
           role, url_request_context_->cookie_store(),
           cookie_manager_->cookie_settings(), origin, isolation_info,
           cookie_setting_overrides, devtools_cookie_setting_overrides,
           prefer_bound_cookie_context, std::move(cookie_observer),
-          std::move(first_party_set_metadata),
           network_service_->GetMetricsUpdater());
 
   auto callback = base::BindOnce(&NetworkContext::OnRCMDisconnect,

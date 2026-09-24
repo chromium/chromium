@@ -35,7 +35,6 @@ import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
 import "services/network/public/mojom/document_isolation_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
-import "services/network/public/mojom/first_party_sets_access_delegate.mojom";
 import "services/network/public/mojom/hash_value.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_cache_backend_file_operations.mojom";
@@ -598,14 +597,6 @@ struct NetworkContextParams {
   // typically calculated and set later via SetSharedDictionaryCacheMaxSize).
   // Ignored if `shared_dictionary_enabled` is false.
   mojo_base.mojom.ByteSize? shared_dictionary_cache_max_size;
-
-  // Parameters for constructing the FirstPartySetsAccessDelegate.
-  // |first_party_sets_access_delegate_params| is the initial configuration to
-  // use. If nullptr, uses the default configuration. Updated configurations
-  // can be passed in via |first_party_sets_access_delegate_receiver|.
-  FirstPartySetsAccessDelegateParams? first_party_sets_access_delegate_params;
-  pending_receiver<FirstPartySetsAccessDelegate>?
-      first_party_sets_access_delegate_receiver;
 
   // TODO(crbug.com/40777535): This flag is intended to be temporary and to be
   // removed (always enabled) in the future.
