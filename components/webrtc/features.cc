@@ -15,6 +15,6 @@ namespace webrtc::features {
 // network::NetworkService::OnPeerToPeerConnectionsCountChange()). This is a
 // narrowly-scoped alternative to features::kIOThreadInteractiveThreadType,
 // which boosts all IO threads.
-BASE_FEATURE(kWebRTCBoostMediaIOThreads, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebRTCBoostMediaIOThreads, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace webrtc::features

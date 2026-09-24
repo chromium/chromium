@@ -363,7 +363,7 @@ BASE_FEATURE(kAccurateVideoFrameConverterColorSpace,
 
 // Controls whether AOM/VPX decoders should use the presentation thread type.
 BASE_FEATURE(kAomVpxUsePresentationThreadType,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables flash to be ducked by audio focus. This is enabled on Chrome OS which
 // has audio focus enabled.

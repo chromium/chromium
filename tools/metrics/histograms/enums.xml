@@ -8192,6 +8192,7 @@ from previous Chrome versions.
   <int value="-2038132420" label="OmniboxCacheSuggestionResources:enabled"/>
   <int value="-2037921452" label="SwapNewTabAndNewTabInGroupAndroid:enabled"/>
   <int value="-2037824983" label="ContextualCueingV2:disabled"/>
+  <int value="-2037784751" label="UseHighPriorityThreadGroup:enabled"/>
   <int value="-2037390759"
       label="IncognitoBrandConsistencyForAndroid:disabled"/>
   <int value="-2037280696" label="EcheSWASendStartSignaling:disabled"/>
@@ -11073,6 +11074,7 @@ from previous Chrome versions.
   <int value="-1171556368" label="SyncPollImmediatelyOnEveryStartup2:disabled"/>
   <int value="-1170286604" label="Commander:disabled"/>
   <int value="-1170030520" label="WebUIOmniboxAimPopup:enabled"/>
+  <int value="-1169948970" label="WebRTCBoostMediaIOThreads:enabled"/>
   <int value="-1169743270" label="TabBottomSheetFullHeight:enabled"/>
   <int value="-1169571217" label="SharingDesktopScreenshotsEdit:disabled"/>
   <int value="-1169092883" label="SymphoniaDemuxing:enabled"/>
@@ -15914,6 +15916,7 @@ from previous Chrome versions.
   <int value="317128092"
       label="kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration:enabled"/>
   <int value="317328599" label="RegionCaptureOfOtherTabs:enabled"/>
+  <int value="317381675" label="WebRTCBoostMediaIOThreads:disabled"/>
   <int value="317432596" label="DisplayLocking:disabled"/>
   <int value="317880711" label="extensions-toolbar-zero-state-variation"/>
   <int value="317889969" label="AutofillAddressProfileSavePrompt:disabled"/>
@@ -16531,6 +16534,7 @@ from previous Chrome versions.
       label="AutofillEnforceMinRequiredFieldsForQuery:enabled"/>
   <int value="510493780" label="EnableCertManagementUIV2:enabled"/>
   <int value="510759575" label="LeftHandSideActivityIndicators:disabled"/>
+  <int value="510773395" label="UseHighPriorityThreadGroup:disabled"/>
   <int value="510814146" label="OfflineBookmarks:enabled"/>
   <int value="510833540" label="UseOutOfProcessVideoDecoding:enabled"/>
   <int value="511179195" label="ShoppingAssist:disabled"/>
@@ -16914,6 +16918,7 @@ from previous Chrome versions.
   <int value="635032392" label="QuickDeleteAndroidFollowup:disabled"/>
   <int value="635076832" label="MarkHttpAs:disabled"/>
   <int value="635135866" label="FeedbackDisabledDialog:disabled"/>
+  <int value="635307241" label="WebRtcUseMediaThreadTypes:disabled"/>
   <int value="635533110" label="ReleaseNotes:disabled"/>
   <int value="635892962" label="AndroidDeviceSignalsDisclaimer:disabled"/>
   <int value="635947051" label="DesktopRestructuredLanguageSettings:enabled"/>
@@ -20125,6 +20130,7 @@ from previous Chrome versions.
   <int value="1611273367"
       label="EnableOAuthMultiloginCookiesBindingServerExperiment:disabled"/>
   <int value="1611522475" label="AutofillPrimaryInfoStyleExperiment:disabled"/>
+  <int value="1611816172" label="AomVpxUsePresentationThreadType:enabled"/>
   <int value="1612206633" label="CCTModuleCustomHeader:enabled"/>
   <int value="1612446645" label="enable-weak-memorycache"/>
   <int value="1612871297" label="WebPayments:disabled"/>
@@ -20332,6 +20338,7 @@ from previous Chrome versions.
   <int value="1668765771" label="AndroidHubSearch:disabled"/>
   <int value="1669522336"
       label="ExperimentalAccessibilityDictationContextChecking:disabled"/>
+  <int value="1669605512" label="WebRtcUseMediaThreadTypes:enabled"/>
   <int value="1669767166" label="NewTabPageBackgrounds:disabled"/>
   <int value="1670161209" label="ClickToOpenPDFPlaceholder:enabled"/>
   <int value="1670799163" label="ChromeHomeShowGoogleGWhenUrlCleared:enabled"/>
@@ -20981,6 +20988,7 @@ from previous Chrome versions.
   <int value="1861515782" label="WebFeedOnboarding:enabled"/>
   <int value="1861521561" label="OmniboxLocalEntitySuggestions:enabled"/>
   <int value="1861699795" label="AddIdentityInCanMakePaymentEvent:disabled"/>
+  <int value="1861848477" label="AomVpxUsePresentationThreadType:disabled"/>
   <int value="1862050002" label="CastStreamingPerformanceOverlay:enabled"/>
   <int value="1862126613" label="DesktopPWAsRunOnOsLogin:enabled"/>
   <int value="1862205850" label="EnableWebSigninLoadingDialog:enabled"/>

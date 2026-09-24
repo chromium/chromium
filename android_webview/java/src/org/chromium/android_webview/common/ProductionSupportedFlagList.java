@@ -1509,6 +1509,19 @@ public final class ProductionSupportedFlagList {
                 MediaFeatures.HARDEN_URL_PROVISION_FETCHER,
                 "Hardens URLProvisionFetcher against SSRF and OOM by restricting requests and"
                         + " redirects to HTTPS POST and enforcing a maximum response size."),
+        Flag.baseFeature(
+                BaseFeatures.USE_HIGH_PRIORITY_THREAD_GROUP,
+                "Enables high-priority (audio and presentation) thread groups in ThreadPool."),
+        Flag.baseFeature(
+                BlinkFeatures.WEB_RTC_USE_MEDIA_THREAD_TYPES,
+                "Elevates WebRTC and media threads in the renderer to media thread types."),
+        Flag.baseFeature(
+                MediaFeatures.AOM_VPX_USE_PRESENTATION_THREAD_TYPE,
+                "Controls whether AOM/VPX decoders use the presentation thread type."),
+        Flag.baseFeature(
+                "WebRTCBoostMediaIOThreads",
+                "Boosts the thread types of IO threads in the video capture and network utility"
+                        + " processes on the WebRTC media path."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

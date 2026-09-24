@@ -2414,7 +2414,7 @@ BASE_FEATURE(kWebRtcPqcForDtls, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebRtcSuppressDtlsStateChangeOnClose,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebRtcUseMediaThreadTypes, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebRtcUseMediaThreadTypes, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRendererMainIsDefaultThreadTypeForWebRTC,
              "RendererMainIsNormalThreadTypeForWebRTC",

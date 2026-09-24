@@ -25,7 +25,7 @@ namespace base {
 
 BASE_FEATURE(kUseUtilityThreadGroup, FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseHighPriorityThreadGroup, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseHighPriorityThreadGroup, FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAddTaskLeewayFeature,
              "AddTaskLeeway",

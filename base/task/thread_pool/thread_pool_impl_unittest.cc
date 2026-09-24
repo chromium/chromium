@@ -418,23 +418,28 @@ class ThreadPoolImplTestBase : public testing::Test {
 
  private:
   void SetupFeatures() {
-    std::vector<base::test::FeatureRef> features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     if (GetUseResourceEfficientThreadGroup()) {
-      features.push_back(kUseUtilityThreadGroup);
+      enabled_features.push_back(kUseUtilityThreadGroup);
+    } else {
+      disabled_features.push_back(kUseUtilityThreadGroup);
     }
 
     if (GetUseHighPriorityThreadGroup()) {
-      features.push_back(kUseHighPriorityThreadGroup);
+      enabled_features.push_back(kUseHighPriorityThreadGroup);
+    } else {
+      disabled_features.push_back(kUseHighPriorityThreadGroup);
     }
 
     if (GetInheritTaskImportanceByDefault()) {
-      features.push_back(kInheritTaskImportanceByDefault);
+      enabled_features.push_back(kInheritTaskImportanceByDefault);
+    } else {
+      disabled_features.push_back(kInheritTaskImportanceByDefault);
     }
 
-    if (!features.empty()) {
-      feature_list_.InitWithFeatures(features, {});
-    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
     base::internal::JobTaskSource::InitializeFeatures();
   }
 
