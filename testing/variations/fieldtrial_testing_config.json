@@ -24,8 +24,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AIOmniboxAskPlaceholder",
-                        "ComposeboxPlusButtonBottomSheet",
                         "PlusButtonInFakebox"
                     ]
                 }
