@@ -25,7 +25,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "crypto/evp.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
@@ -104,17 +103,18 @@ bool VerifySignature(base::span<const uint8_t> sig,
                      crypto::sign::SignatureKind algorithm,
                      SignedExchangeDevToolsProxy* devtools_proxy) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"), "VerifySignature");
-  crypto::SignatureVerifier verifier;
-  if (!net::x509_util::SignatureVerifierInitWithCertificate(
-          &verifier, algorithm, sig, cert->cert_buffer())) {
+  std::optional<crypto::sign::Verifier> verifier =
+      net::x509_util::CreateSignatureVerifierWithCertificate(
+          algorithm, sig, cert->cert_buffer());
+  if (!verifier) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
-        devtools_proxy, "SignatureVerifierInitWithCertificate failed.");
+        devtools_proxy, "CreateSignatureVerifierWithCertificate failed.");
     return false;
   }
-  verifier.VerifyUpdate(msg);
-  if (!verifier.VerifyFinal()) {
+  verifier->Update(msg);
+  if (!verifier->Finish()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(devtools_proxy,
-                                                    "VerifyFinal failed.");
+                                                    "Verifier::Finish failed.");
     return false;
   }
   return true;

@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -550,8 +551,7 @@ SHA256HashValue CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer) {
   return crypto::hash::Sha256(base::as_byte_span(spki));
 }
 
-bool SignatureVerifierInitWithCertificate(
-    crypto::SignatureVerifier* verifier,
+std::optional<crypto::sign::Verifier> CreateSignatureVerifierWithCertificate(
     crypto::sign::SignatureKind signature_algorithm,
     base::span<const uint8_t> signature,
     const CRYPTO_BUFFER* certificate) {
@@ -566,14 +566,14 @@ bool SignatureVerifierInitWithCertificate(
                               nullptr) ||
       !ParseTbsCertificate(tbs_certificate_tlv,
                            DefaultParseCertificateOptions(), &tbs, nullptr)) {
-    return false;
+    return std::nullopt;
   }
 
   // The key usage extension, if present, must assert the digitalSignature bit.
   if (tbs.extensions_tlv) {
     std::map<bssl::der::Input, bssl::ParsedExtension> extensions;
     if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions)) {
-      return false;
+      return std::nullopt;
     }
     bssl::ParsedExtension key_usage_ext;
     if (ConsumeExtension(bssl::der::Input(bssl::kKeyUsageOid), &extensions,
@@ -581,12 +581,19 @@ bool SignatureVerifierInitWithCertificate(
       bssl::der::BitString key_usage;
       if (!bssl::ParseKeyUsage(key_usage_ext.value, &key_usage) ||
           !key_usage.AssertsBit(bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
-        return false;
+        return std::nullopt;
       }
     }
   }
 
-  return verifier->VerifyInit(signature_algorithm, signature, tbs.spki_tlv);
+  std::optional<crypto::keypair::PublicKey> public_key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(tbs.spki_tlv);
+  if (!public_key) {
+    return std::nullopt;
+  }
+
+  return crypto::sign::Verifier(signature_algorithm, std::move(*public_key),
+                                signature);
 }
 
 bool HasRsaPkcs1Sha1Signature(const CRYPTO_BUFFER* cert_buffer) {

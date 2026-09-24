@@ -9,10 +9,10 @@
 
 #include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/key_util.h"
@@ -662,7 +662,7 @@ bool DigestSign(EVP_PKEY* key,
 
 }  // namespace
 
-TEST(X509UtilTest, SignatureVerifierInitWithCertificate) {
+TEST(X509UtilTest, CreateSignatureVerifierWithCertificate) {
   static const uint8_t kMessage[] = {'h', 'e', 'l', 'l', 'o'};
   static const uint8_t kWrongMessage[] = {'n', 'o', 'p', 'e'};
 
@@ -721,13 +721,6 @@ TEST(X509UtilTest, SignatureVerifierInitWithCertificate) {
        rsaSignaturePKCS1, false},
       {"key_usage_rsa_keyencipherment.pem", crypto::sign::RSA_PSS_SHA256,
        rsaSignaturePSS, false},
-
-      // The key and signature must match, rather than only extracting the hash
-      // function.
-      {"key_usage_p256_digitalsignature.pem", crypto::sign::RSA_PKCS1_SHA256,
-       p256Signature, false},
-      {"key_usage_rsa_digitalsignature.pem", crypto::sign::ECDSA_SHA256,
-       rsaSignaturePKCS1, false},
   };
 
   for (const auto& test : kTests) {
@@ -736,20 +729,38 @@ TEST(X509UtilTest, SignatureVerifierInitWithCertificate) {
         ImportCertFromFile(GetTestCertsDirectory(), test.cert);
     ASSERT_TRUE(cert);
 
-    crypto::SignatureVerifier verifier;
-    bool ok = SignatureVerifierInitWithCertificate(
-        &verifier, test.algorithm, test.signature, cert->cert_buffer());
-    EXPECT_EQ(ok, test.ok);
-    if (ok) {
-      verifier.VerifyUpdate(kMessage);
-      EXPECT_TRUE(verifier.VerifyFinal());
+    std::optional<crypto::sign::Verifier> verifier =
+        CreateSignatureVerifierWithCertificate(test.algorithm, test.signature,
+                                               cert->cert_buffer());
+    EXPECT_EQ(verifier.has_value(), test.ok);
+    if (verifier) {
+      verifier->Update(kMessage);
+      EXPECT_TRUE(verifier->Finish());
 
-      ASSERT_TRUE(SignatureVerifierInitWithCertificate(
-          &verifier, test.algorithm, test.signature, cert->cert_buffer()));
-      verifier.VerifyUpdate(kWrongMessage);
-      EXPECT_FALSE(verifier.VerifyFinal());
+      std::optional<crypto::sign::Verifier> verifier2 =
+          CreateSignatureVerifierWithCertificate(test.algorithm, test.signature,
+                                                 cert->cert_buffer());
+      ASSERT_TRUE(verifier2);
+      verifier2->Update(kWrongMessage);
+      EXPECT_FALSE(verifier2->Finish());
     }
   }
+
+  // Mismatched public key and signature algorithm CHECK-fails in
+  // crypto::sign::Verifier.
+  scoped_refptr<X509Certificate> p256_cert = ImportCertFromFile(
+      GetTestCertsDirectory(), "key_usage_p256_digitalsignature.pem");
+  ASSERT_TRUE(p256_cert);
+  EXPECT_CHECK_DEATH(std::ignore = CreateSignatureVerifierWithCertificate(
+                         crypto::sign::RSA_PKCS1_SHA256, p256Signature,
+                         p256_cert->cert_buffer()));
+
+  scoped_refptr<X509Certificate> rsa_cert = ImportCertFromFile(
+      GetTestCertsDirectory(), "key_usage_rsa_digitalsignature.pem");
+  ASSERT_TRUE(rsa_cert);
+  EXPECT_CHECK_DEATH(std::ignore = CreateSignatureVerifierWithCertificate(
+                         crypto::sign::ECDSA_SHA256, rsaSignaturePKCS1,
+                         rsa_cert->cert_buffer()));
 }
 
 TEST(X509UtilTest, HasRsaPkcs1Sha1Signature) {

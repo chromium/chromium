@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
@@ -176,11 +176,13 @@ NET_EXPORT bssl::ParseCertificateOptions DefaultParseCertificateOptions();
 // this to parse certificates in production code.
 NET_EXPORT SHA256HashValue CalculateSha256SpkiHash(const CRYPTO_BUFFER* buffer);
 
-// Calls |verifier->VerifyInit|, using the public key from |certificate|,
-// checking if the digitalSignature key usage bit is present, and returns true
-// on success or false on error.
-NET_EXPORT bool SignatureVerifierInitWithCertificate(
-    crypto::SignatureVerifier* verifier,
+// Creates a `crypto::sign::Verifier` using the public key from `certificate`,
+// checking that the digitalSignature key usage bit is present (if the
+// keyUsage extension is present). Returns `std::nullopt` on certificate or key
+// usage error. `signature_algorithm` must be compatible with `certificate`'s
+// public key (CHECKed by `crypto::sign::Verifier`).
+NET_EXPORT std::optional<crypto::sign::Verifier>
+CreateSignatureVerifierWithCertificate(
     crypto::sign::SignatureKind signature_algorithm,
     base::span<const uint8_t> signature,
     const CRYPTO_BUFFER* certificate);

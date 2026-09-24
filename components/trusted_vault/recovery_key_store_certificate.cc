@@ -15,7 +15,6 @@
 #include "base/strings/string_view_util.h"
 #include "components/trusted_vault/securebox.h"
 #include "crypto/sign.h"
-#include "crypto/signature_verifier.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert/x509_certificate.h"
@@ -369,13 +368,14 @@ bool VerifySignature(std::shared_ptr<const bssl::ParsedCertificate> certificate,
     case net::X509Certificate::PublicKeyType::kPublicKeyTypeUnknown:
       return false;
   }
-  crypto::SignatureVerifier signature_verifier;
-  if (!net::x509_util::SignatureVerifierInitWithCertificate(
-          &signature_verifier, algo, *signature, certificate->cert_buffer())) {
+  std::optional<crypto::sign::Verifier> signature_verifier =
+      net::x509_util::CreateSignatureVerifierWithCertificate(
+          algo, *signature, certificate->cert_buffer());
+  if (!signature_verifier) {
     return false;
   }
-  signature_verifier.VerifyUpdate(base::as_byte_span(cert_xml));
-  return signature_verifier.VerifyFinal();
+  signature_verifier->Update(base::as_byte_span(cert_xml));
+  return signature_verifier->Finish();
 }
 
 std::vector<std::unique_ptr<SecureBoxPublicKey>> ExtractEndpointPublicKeys(
