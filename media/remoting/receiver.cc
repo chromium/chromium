@@ -56,6 +56,7 @@ Receiver::Receiver(
   // Note: The constructor is running on the main thread, but will be destroyed
   // on the media thread. Therefore, all weak pointers must be dereferenced on
   // the media thread.
+  DETACH_FROM_SEQUENCE(media_sequence_checker_);
   auto receive_callback = base::BindPostTask(
       media_task_runner_,
       BindRepeating(&Receiver::OnReceivedRpc, weak_factory_.GetWeakPtr()));
@@ -71,7 +72,16 @@ Receiver::Receiver(
 }
 
 Receiver::~Receiver() {
-  rpc_messenger_->UnregisterMessageReceiverCallback(rpc_handle_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  // |rpc_messenger_| is owned by |receiver_controller_| which is a singleton
+  // per process, so it's safe to use Unretained() here. Unregistering from the
+  // messenger is posted to |main_task_runner_|; since the RPC callback is bound
+  // with a weak pointer to `this` on |media_task_runner_|, messages that arrive
+  // after destruction are also safely dropped.
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RpcMessenger::UnregisterMessageReceiverCallback,
+                     base::Unretained(rpc_messenger_), rpc_handle_));
 }
 
 // Receiver::Initialize() will be called by the local pipeline, it would only
@@ -80,6 +90,7 @@ Receiver::~Receiver() {
 void Receiver::Initialize(MediaResource* media_resource,
                           RendererClient* client,
                           PipelineStatusCallback init_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   demuxer_ = media_resource;
   init_cb_ = std::move(init_cb);
   ShouldInitializeRenderer();
@@ -125,13 +136,14 @@ void Receiver::SendRpcMessageOnMainThread(
 
 void Receiver::OnReceivedRpc(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   DCHECK(message);
 
   media::cast::DispatchRendererRpcCall(message.get(), this);
 }
 
 void Receiver::SetRemoteHandle(int remote_handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   DCHECK_NE(remote_handle, RpcMessenger::kInvalidHandle);
   DCHECK_EQ(remote_handle_, RpcMessenger::kInvalidHandle);
   remote_handle_ = remote_handle;
@@ -161,7 +173,7 @@ void Receiver::ShouldInitializeRenderer() {
   if (!rpc_initialize_received_ || !init_cb_)
     return;
 
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   DCHECK(renderer_);
   DCHECK(demuxer_);
   renderer_->Initialize(demuxer_, this,
@@ -170,7 +182,7 @@ void Receiver::ShouldInitializeRenderer() {
 }
 
 void Receiver::OnRendererInitialized(PipelineStatus status) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   DCHECK(init_cb_);
   std::move(init_cb_).Run(status);
 
@@ -181,7 +193,7 @@ void Receiver::OnRendererInitialized(PipelineStatus status) {
 }
 
 void Receiver::OnRpcSetPlaybackRate(double playback_rate) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   renderer_->SetPlaybackRate(playback_rate);
 
@@ -198,7 +210,7 @@ void Receiver::OnRpcSetPlaybackRate(double playback_rate) {
 }
 
 void Receiver::OnRpcFlush(uint32_t audio_count, uint32_t video_count) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   receiver_controller_->OnRendererFlush(audio_count, video_count);
 
@@ -214,7 +226,7 @@ void Receiver::OnFlushDone() {
 }
 
 void Receiver::OnRpcStartPlayingFrom(base::TimeDelta time) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   renderer_->StartPlayingFrom(time);
   ScheduleMediaTimeUpdates();
@@ -230,11 +242,12 @@ void Receiver::ScheduleMediaTimeUpdates() {
 }
 
 void Receiver::OnRpcSetVolume(double volume) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   renderer_->SetVolume(volume);
 }
 
 void Receiver::SendMediaTimeUpdate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   // Issues RPC_RC_ONTIMEUPDATE RPC message.
   auto rpc =
       media::cast::CreateMessageForMediaTimeUpdate(renderer_->GetMediaTime());

@@ -8,10 +8,14 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
@@ -237,6 +241,11 @@ class ReceiverTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    mock_renderer_ = nullptr;
+    receiver_.reset();
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return !rpc_messenger_->IsRegisteredForTesting(receiver_renderer_handle_);
+    }));
     rpc_messenger_->UnregisterMessageReceiverCallback(
         RpcMessenger::kAcquireRendererHandle);
   }
@@ -323,6 +332,163 @@ TEST_F(ReceiverTest, AcquireRendererAfterCreateReceiver) {
   EXPECT_CALL(*mock_sender_, AcquireRendererDone()).Times(1);
   mock_sender_->SendRpcAcquireRenderer();
   task_environment_.RunUntilIdle();
+}
+
+// Receiver is constructed on the main sequence but, as a media::Renderer,
+// processes RPC messages and is destroyed on the media sequence. The
+// RpcMessenger it registers with is only safe to use from the main sequence,
+// so unregistration must hop back there.
+TEST_F(ReceiverTest, UnregistersOnMainSequenceWhenDestroyedOnMediaSequence) {
+  base::Thread media_thread("TestMediaThread");
+  ASSERT_TRUE(media_thread.Start());
+
+  auto renderer = std::make_unique<NiceMock<MockRenderer>>();
+  MockRenderer* mock_renderer = renderer.get();
+  EXPECT_CALL(*mock_renderer, SetVolume(0.5f))
+      .WillOnce([&media_thread](float volume) {
+        EXPECT_TRUE(media_thread.task_runner()->RunsTasksInCurrentSequence());
+      });
+
+  auto receiver = std::make_unique<Receiver>(
+      receiver_renderer_handle_, sender_renderer_handle_, mock_controller_,
+      media_thread.task_runner(), std::move(renderer),
+      base::BindOnce(&ReceiverTest::OnAcquireRendererDone,
+                     weak_factory_.GetWeakPtr()));
+  EXPECT_TRUE(
+      rpc_messenger_->IsRegisteredForTesting(receiver_renderer_handle_));
+
+  // Verify that RPC messages received on the main thread are dispatched and
+  // handled on the media thread without sequence DCHECK failures.
+  openscreen::cast::RpcMessage rpc;
+  rpc.set_handle(receiver_renderer_handle_);
+  rpc.set_proc(openscreen::cast::RpcMessage::RPC_R_SETVOLUME);
+  rpc.set_double_value(0.5);
+  rpc_messenger_->ProcessMessageFromRemote(
+      std::make_unique<openscreen::cast::RpcMessage>(rpc));
+  media_thread.FlushForTesting();
+
+  // Destroy the Receiver on the media sequence, as the production pipeline
+  // does, and wait for destruction to complete.
+  media_thread.task_runner()->DeleteSoon(FROM_HERE, std::move(receiver));
+  media_thread.FlushForTesting();
+
+  // The handle must still be registered: only the main sequence may mutate the
+  // messenger, and no main-sequence tasks have run yet.
+  EXPECT_TRUE(
+      rpc_messenger_->IsRegisteredForTesting(receiver_renderer_handle_));
+
+  // Send an RPC message on the main sequence post-destruction. The message will
+  // be forwarded to the media sequence after Receiver is destroyed, where
+  // WeakPtr drops the invocation safely without crashing or UAF.
+  openscreen::cast::RpcMessage rpc_post_destruction;
+  rpc_post_destruction.set_handle(receiver_renderer_handle_);
+  rpc_post_destruction.set_proc(openscreen::cast::RpcMessage::RPC_R_SETVOLUME);
+  rpc_post_destruction.set_double_value(0.8);
+  rpc_messenger_->ProcessMessageFromRemote(
+      std::make_unique<openscreen::cast::RpcMessage>(rpc_post_destruction));
+  media_thread.FlushForTesting();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !rpc_messenger_->IsRegisteredForTesting(receiver_renderer_handle_);
+  }));
+}
+
+// Verifies end-to-end multi-threaded RPC message dispatch from the main
+// sequence to the media sequence, renderer method execution on the media
+// sequence, and response RPC messages sent back on the main sequence.
+TEST_F(ReceiverTest, MultiThreadedRpcDispatchAndRendererCalls) {
+  base::Thread media_thread("TestMediaThread");
+  ASSERT_TRUE(media_thread.Start());
+
+  mock_sender_->SendRpcAcquireRenderer();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return sender_renderer_handle_ != RpcMessenger::kInvalidHandle;
+  }));
+
+  auto renderer = std::make_unique<NiceMock<MockRenderer>>();
+  MockRenderer* mock_renderer = renderer.get();
+
+  EXPECT_CALL(*mock_sender_, AcquireRendererDone()).Times(1);
+  auto receiver = std::make_unique<Receiver>(
+      receiver_renderer_handle_, sender_renderer_handle_, mock_controller_,
+      media_thread.task_runner(), std::move(renderer),
+      base::BindOnce(&ReceiverTest::OnAcquireRendererDone,
+                     weak_factory_.GetWeakPtr()));
+
+  // Call Initialize on the media sequence (as PipelineImpl does in production).
+  EXPECT_CALL(*mock_renderer,
+              OnInitialize(&mock_media_resource_, testing::NotNull(), _))
+      .WillOnce([&media_thread](MediaResource* media_resource,
+                                RendererClient* client,
+                                PipelineStatusCallback& init_cb) {
+        EXPECT_TRUE(media_thread.task_runner()->RunsTasksInCurrentSequence());
+        std::move(init_cb).Run(PIPELINE_OK);
+      });
+  media_thread.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Receiver::Initialize, base::Unretained(receiver.get()),
+                     &mock_media_resource_, receiver.get(), base::DoNothing()));
+
+  // Send RPC_R_INITIALIZE on main sequence and wait for response on main
+  // sequence.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*mock_sender_, InitializeCallback(true))
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+    mock_sender_->SendRpcInitialize();
+    run_loop.Run();
+  }
+
+  // Send RPC_R_SETPLAYBACKRATE on main sequence and flush media thread.
+  EXPECT_CALL(*mock_renderer, SetPlaybackRate(1.0))
+      .WillOnce([&media_thread](double playback_rate) {
+        EXPECT_TRUE(media_thread.task_runner()->RunsTasksInCurrentSequence());
+      });
+  mock_sender_->SendRpcSetPlaybackRate(1.0);
+  media_thread.FlushForTesting();
+
+  // Send RPC_R_STARTPLAYINGFROM on main sequence and flush media thread.
+  EXPECT_CALL(*mock_renderer, StartPlayingFrom(base::Seconds(5)))
+      .WillOnce([&media_thread](base::TimeDelta time) {
+        EXPECT_TRUE(media_thread.task_runner()->RunsTasksInCurrentSequence());
+      });
+  EXPECT_CALL(*mock_sender_, OnTimeUpdate(_, _)).Times(AtLeast(1));
+  mock_sender_->SendRpcStartPlayingFrom(base::Seconds(5));
+  media_thread.FlushForTesting();
+
+  // Send RPC_R_FLUSHUNTIL on main sequence and wait for response on main
+  // sequence.
+  EXPECT_CALL(*mock_renderer, OnFlush(_))
+      .WillOnce([&media_thread](base::OnceClosure& flush_cb) {
+        EXPECT_TRUE(media_thread.task_runner()->RunsTasksInCurrentSequence());
+        std::move(flush_cb).Run();
+      });
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*mock_sender_, FlushUntilCallback())
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+    mock_sender_->SendRpcFlushUntil(0, 0);
+    run_loop.Run();
+  }
+
+  // Trigger OnEnded on media sequence (as the underlying renderer does) and
+  // wait for response on main sequence.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*mock_sender_, OnEnded())
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+    media_thread.task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&RendererClient::OnEnded,
+                                  base::Unretained(receiver.get())));
+    run_loop.Run();
+  }
+
+  // Destroy Receiver on media sequence.
+  media_thread.task_runner()->DeleteSoon(FROM_HERE, std::move(receiver));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !rpc_messenger_->IsRegisteredForTesting(receiver_renderer_handle_);
+  }));
 }
 
 // |Receiver::Initialize| will be called by the local pipeline, and the
