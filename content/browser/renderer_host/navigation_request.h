@@ -3846,6 +3846,13 @@ class CONTENT_EXPORT NavigationRequest
   // stopped before this timer is started (see: https://crbug.com/475716933).
   base::OneShotTimer async_before_unload_timeout_;
 
+  // The extra headers initially provided for this navigation request,
+  // initialized from `begin_params_->headers` prior to merging UA or Client
+  // Hints headers (which are merged into `begin_params_->headers` later during
+  // navigation). Used to strip extra headers on cross-origin redirects even if
+  // the pending NavigationEntry is discarded.
+  std::string initial_extra_headers_;
+
   // If true, any extra headers provided will be removed on a cross-origin
   // redirect.
   bool remove_extra_headers_on_cross_origin_redirect_ = false;

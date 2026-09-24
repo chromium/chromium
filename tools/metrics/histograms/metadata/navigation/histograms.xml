@@ -2281,6 +2281,20 @@ chromium-metrics-reviews@google.com.
   <token key="FrameType" variants="FrameTypes"/>
 </histogram>
 
+<histogram name="Navigation.RemoveExtraHeadersOnCrossOriginRedirect"
+    enum="Boolean" expires_after="2027-03-18">
+  <owner>adelm@google.com</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <summary>
+    Records whether extra headers configured to be stripped on cross-origin
+    redirects were removed during a navigation redirect (true when the redirect
+    was cross-origin and headers were removed, false when the redirect was
+    same-origin and headers were kept). Recorded on each redirect of a
+    navigation that has non-empty extra headers with
+    remove_extra_headers_on_cross_origin_redirect enabled.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Renderer.BlockedForFilterURL"
     enum="RendererBlockedURLReason" expires_after="2026-10-25">
   <owner>creis@chromium.org</owner>

@@ -757,7 +757,12 @@ public class IntentHandler {
             params.setReferrer(new Referrer(referrer, getReferrerPolicyFromIntent(intent)));
         }
         String headers = getExtraHeadersFromIntent(intent, params.getUrl());
-        if (headers != null) params.setVerbatimHeaders(headers);
+        if (headers != null) {
+            params.setVerbatimHeaders(headers);
+            if (ChromeFeatureList.sRemoveExtraHeadersOnCrossOriginRedirect.isEnabled()) {
+                params.setRemoveExtraHeadersOnCrossOriginRedirect(true);
+            }
+        }
     }
 
     public static int getReferrerPolicyFromIntent(Intent intent) {
@@ -1999,7 +2004,7 @@ public class IntentHandler {
                     new Referrer(referrer, IntentHandler.getReferrerPolicyFromIntent(intent)));
         }
 
-        String headers = getExtraHeadersFromIntent(intent);
+        String headers = getExtraHeadersFromIntent(intent, url);
         headers = maybeAddAdditionalContentHeaders(intent, url, headers);
 
         if (IntentHandler.wasIntentSenderChrome(intent)) {
@@ -2037,6 +2042,10 @@ public class IntentHandler {
             loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
         }
         loadUrlParams.setVerbatimHeaders(headers);
+        if (!TextUtils.isEmpty(headers)
+                && ChromeFeatureList.sRemoveExtraHeadersOnCrossOriginRedirect.isEnabled()) {
+            loadUrlParams.setRemoveExtraHeadersOnCrossOriginRedirect(true);
+        }
         loadUrlParams.setIsRendererInitiated(
                 metadata == null ? false : metadata.isRendererInitiated());
 

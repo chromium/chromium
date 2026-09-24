@@ -1746,6 +1746,7 @@ NavigationRequest::NavigationRequest(
       original_url_(common_params_->url),
       prerender_host_id_(
           GetPrerenderHostRegistry().GetPrerenderHostIdForNavigation(this)),
+      initial_extra_headers_(begin_params_->headers),
       initiator_navigation_state_(initiator_navigation_state),
       should_ignore_initiator_policies_for_inheritance_(
           should_ignore_initiator_policies_for_inheritance) {
@@ -6405,29 +6406,47 @@ void NavigationRequest::OnRedirectChecksComplete(
       std::move(headers_update_params_);
   headers_update_params_.Clear();
 
-  if (remove_extra_headers_on_cross_origin_redirect_ &&
-      !url::Origin::Create(commit_params_->redirects.back())
-           .IsSameOriginWith(common_params_->url)) {
-    CHECK(commit_params_->is_browser_initiated);
-
-    // Browser-initiated navigations should always have a NavigationEntry.
-    NavigationEntryImpl* nav_entry =
-        GetNavigationController()->GetEntryWithUniqueIDIncludingPending(
-            nav_entry_id_);
-    CHECK(nav_entry);
-
-    net::HttpRequestHeaders headers;
-    headers.AddHeadersFromString(nav_entry->extra_headers());
-    for (const auto& header : headers.GetHeaderVector()) {
-      headers_update_params.removed_headers.push_back(header.key);
+  if (remove_extra_headers_on_cross_origin_redirect_) {
+    const bool is_cross_origin =
+        !url::Origin::Create(commit_params_->redirects.back())
+             .IsSameOriginWith(common_params_->url);
+    if (!initial_extra_headers_.empty()) {
+      base::UmaHistogramBoolean(
+          "Navigation.RemoveExtraHeadersOnCrossOriginRedirect",
+          is_cross_origin);
     }
+    if (is_cross_origin) {
+      // Renderer-initiated history navigations (e.g. history.back()) can reuse
+      // a NavigationEntry that still has this flag set.
+      net::HttpRequestHeaders begin_headers;
+      begin_headers.AddHeadersFromString(begin_params_->headers);
 
-    // Update the NavigationEntry so that history navigations don't include the
-    // extra headers.
-    nav_entry->set_extra_headers(std::string());
-    nav_entry->SetRemoveExtraHeadersOnCrossOriginRedirect(false);
+      net::HttpRequestHeaders initial_extra_headers;
+      initial_extra_headers.AddHeadersFromString(initial_extra_headers_);
+      for (const auto& header : initial_extra_headers.GetHeaderVector()) {
+        headers_update_params.removed_headers.push_back(header.key);
+        begin_headers.RemoveHeader(header.key);
+      }
+
+      // Also strip begin_params_->headers so UpdateHttpRequestHeaders() doesn't
+      // re-add them on subsequent redirects.
+      begin_params_->headers = begin_headers.ToString();
+      request_headers_.reset();
+      initial_extra_headers_.clear();
+      remove_extra_headers_on_cross_origin_redirect_ = false;
+
+      // May be null if a same-document navigation (e.g. history.pushState())
+      // discarded the pending entry while this request was in flight.
+      if (NavigationEntryImpl* nav_entry =
+              GetNavigationController()->GetEntryWithUniqueIDIncludingPending(
+                  nav_entry_id_)) {
+        // Update the NavigationEntry so that history navigations don't include
+        // the extra headers.
+        nav_entry->set_extra_headers(std::string());
+        nav_entry->SetRemoveExtraHeadersOnCrossOriginRedirect(false);
+      }
+    }
   }
-
 
   // Removes all Client Hints from the request, that were passed on from the
   // previous one.

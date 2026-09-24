@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/browser_url_handler_impl.h"
@@ -917,6 +918,7 @@ TEST_F(NavigationControllerTest, CrossOriginRedirectRemovesHeaders) {
   std::string kExtraHeadersCRLF;
   base::ReplaceChars(kExtraHeaders, "\n", "\r\n", &kExtraHeadersCRLF);
 
+  base::HistogramTester histogram_tester;
   auto navigation =
       NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
   NavigationController::LoadURLParams load_url_params(url1);
@@ -932,6 +934,8 @@ TEST_F(NavigationControllerTest, CrossOriginRedirectRemovesHeaders) {
 
   // Redirect to a cross-origin URL.
   navigation->Redirect(url2);
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.RemoveExtraHeadersOnCrossOriginRedirect", true, 1);
   navigation->Commit();
 
   // The committed entry should not have the extra headers.
@@ -950,6 +954,7 @@ TEST_F(NavigationControllerTest, SameOriginRedirectKeepsHeaders) {
   std::string kExtraHeadersCRLF;
   base::ReplaceChars(kExtraHeaders, "\n", "\r\n", &kExtraHeadersCRLF);
 
+  base::HistogramTester histogram_tester;
   auto navigation =
       NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
   NavigationController::LoadURLParams load_url_params(url1);
@@ -965,6 +970,8 @@ TEST_F(NavigationControllerTest, SameOriginRedirectKeepsHeaders) {
 
   // Redirect to a same-origin URL.
   navigation->Redirect(url2);
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.RemoveExtraHeadersOnCrossOriginRedirect", false, 1);
   navigation->Commit();
 
   // The committed entry should have the extra headers.
@@ -1044,6 +1051,106 @@ TEST_F(NavigationControllerTest, CrossOriginRedirectRemovesHeaders_Reload) {
   NavigationEntryImpl* reload_entry = controller.GetLastCommittedEntry();
   ASSERT_TRUE(reload_entry);
   EXPECT_TRUE(reload_entry->extra_headers().empty());
+}
+
+// Test that extra headers are cleared on cross-origin redirect without crashing
+// when a committed entry with |remove_extra_headers_on_cross_origin_redirect|
+// is later navigated to via a renderer-initiated history.back() call that
+// encounters a cross-origin redirect.
+TEST_F(NavigationControllerTest,
+       CrossOriginRedirectRemovesHeaders_RendererHistoryBack) {
+  DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+  NavigationControllerImpl& controller = controller_impl();
+  const GURL url1("http://foo1.com/foo");
+  const GURL url2("http://foo1.com/page2");
+  const GURL url3("http://foo2.com/bar");
+  const std::string kExtraHeaders = "Foo: Bar\nBaz: Qux";
+
+  // 1. Browser-initiated navigation to url1 commits without redirect.
+  auto nav1 = NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
+  NavigationController::LoadURLParams load_url_params(url1);
+  load_url_params.extra_headers = kExtraHeaders;
+  load_url_params.remove_extra_headers_on_cross_origin_redirect = true;
+  nav1->SetLoadURLParams(&load_url_params);
+  nav1->Commit();
+
+  // 2. Navigate forward to url2.
+  NavigationSimulator::NavigateAndCommitFromDocument(url2, main_test_rfh());
+  EXPECT_EQ(2, controller.GetEntryCount());
+
+  // 3. Renderer initiates history.back() to url1, which now redirects
+  // cross-origin to url3.
+  auto back_nav = NavigationSimulatorImpl::CreateHistoryNavigation(
+      -1, contents(), /*is_renderer_initiated=*/true);
+  back_nav->Start();
+
+  NavigationRequest* request =
+      main_test_rfh()->frame_tree_node()->navigation_request();
+  ASSERT_TRUE(request);
+  EXPECT_FALSE(request->browser_initiated());
+  EXPECT_TRUE(request->GetRequestHeaders().HasHeader("Foo"));
+  EXPECT_TRUE(request->GetRequestHeaders().HasHeader("Baz"));
+
+  back_nav->Redirect(url3);
+  EXPECT_FALSE(request->GetRequestHeaders().HasHeader("Foo"));
+  EXPECT_FALSE(request->GetRequestHeaders().HasHeader("Baz"));
+  back_nav->Commit();
+
+  NavigationEntryImpl* committed_entry = controller.GetLastCommittedEntry();
+  ASSERT_TRUE(committed_entry);
+  EXPECT_TRUE(committed_entry->extra_headers().empty());
+}
+
+// Test that extra headers are still removed on a cross-origin redirect even if
+// the current page performs a same-document history.pushState() navigation that
+// discards the pending NavigationEntry while the cross-document request is in
+// flight.
+TEST_F(NavigationControllerTest,
+       CrossOriginRedirectRemovesHeaders_ConcurrentPushState) {
+  NavigationControllerImpl& controller = controller_impl();
+  const GURL initial_url("http://foo1.com/initial");
+  const GURL pushed_url("http://foo1.com/pushed");
+  const GURL url1("http://foo1.com/foo");
+  const GURL url2("http://foo2.com/bar");
+  const std::string kExtraHeaders = "Foo: Bar\nBaz: Qux";
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), initial_url);
+
+  // Start a browser-initiated navigation with extra headers that waits before
+  // redirecting.
+  auto navigation =
+      NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
+  NavigationController::LoadURLParams load_url_params(url1);
+  load_url_params.extra_headers = kExtraHeaders;
+  load_url_params.remove_extra_headers_on_cross_origin_redirect = true;
+  navigation->SetLoadURLParams(&load_url_params);
+  navigation->Start();
+  EXPECT_TRUE(controller.GetPendingEntry());
+
+  // While the navigation request is in flight, the current document executes a
+  // same-document history.pushState(), which discards the pending entry in
+  // NavigationControllerImpl::RendererDidNavigate (!keep_pending_entry).
+  auto push_state =
+      NavigationSimulator::CreateRendererInitiated(pushed_url, main_test_rfh());
+  push_state->CommitSameDocument();
+  EXPECT_FALSE(controller.GetPendingEntry());
+
+  NavigationRequest* request =
+      main_test_rfh()->frame_tree_node()->navigation_request();
+  ASSERT_TRUE(request);
+  EXPECT_TRUE(request->GetRequestHeaders().HasHeader("Foo"));
+  EXPECT_TRUE(request->GetRequestHeaders().HasHeader("Baz"));
+
+  // Now the in-flight navigation redirects cross-origin to url2.
+  navigation->Redirect(url2);
+  EXPECT_FALSE(request->GetRequestHeaders().HasHeader("Foo"));
+  EXPECT_FALSE(request->GetRequestHeaders().HasHeader("Baz"));
+  navigation->Commit();
+
+  NavigationEntryImpl* committed_entry = controller.GetLastCommittedEntry();
+  ASSERT_TRUE(committed_entry);
+  EXPECT_TRUE(committed_entry->extra_headers().empty());
 }
 
 // Tests what happens when the same page is loaded again.  Should not create a

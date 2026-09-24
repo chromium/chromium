@@ -32,11 +32,15 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** Unit tests for IntentHandler. These tests require use of the native library. */
@@ -265,5 +269,96 @@ public class IntentHandlerNativeTest {
         Intent headersIntent = new Intent(Intent.ACTION_VIEW);
         headersIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
         Assert.assertNull(IntentHandler.getExtraHeadersFromIntent(headersIntent));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Android-AppBase"})
+    @EnableFeatures(ChromeFeatureList.REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT)
+    public void testAddReferrerAndHeaders_RemoveExtraHeadersOnCrossOriginRedirect() {
+        Bundle bundle = new Bundle();
+        bundle.putString("Accept", "application/xhtml+xml");
+        Intent headersIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(GOOGLE_URL));
+        headersIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
+
+        LoadUrlParams params = new LoadUrlParams(GOOGLE_URL);
+        IntentHandler.addReferrerAndHeaders(params, headersIntent);
+        Assert.assertEquals("Accept: application/xhtml+xml", params.getVerbatimHeaders());
+        Assert.assertTrue(params.getRemoveExtraHeadersOnCrossOriginRedirect());
+
+        LoadUrlParams paramsNoHeaders = new LoadUrlParams(GOOGLE_URL);
+        IntentHandler.addReferrerAndHeaders(paramsNoHeaders, new Intent(Intent.ACTION_VIEW));
+        Assert.assertNull(paramsNoHeaders.getVerbatimHeaders());
+        Assert.assertFalse(paramsNoHeaders.getRemoveExtraHeadersOnCrossOriginRedirect());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT)
+    public void testCreateLoadUrlParamsForIntent_RemoveExtraHeadersOnCrossOriginRedirect()
+            throws Exception {
+        Context context = ApplicationProvider.getApplicationContext();
+        Intent headersIntent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        context, "https://www.google.com/");
+
+        Bundle headers = new Bundle();
+        headers.putString("bearer-token", "Some token");
+        headersIntent.putExtra(Browser.EXTRA_HEADERS, headers);
+
+        CustomTabsSessionToken token =
+                CustomTabsSessionToken.getSessionTokenFromIntent(headersIntent);
+        var sessionHolder = SessionHolder.of(token);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token);
+        connection.overridePackageNameForSessionForTesting(sessionHolder, "app1");
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ChromeOriginVerifier.addVerificationOverride(
+                                "app1",
+                                Origin.create("https://www.google.com/"),
+                                CustomTabsService.RELATION_USE_AS_ORIGIN));
+
+        LoadUrlParams verifiedParams =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                IntentHandler.createLoadUrlParamsForIntent(
+                                        "https://www.google.com/", headersIntent, 0));
+        Assert.assertEquals("bearer-token: Some token", verifiedParams.getVerbatimHeaders());
+        Assert.assertTrue(verifiedParams.getRemoveExtraHeadersOnCrossOriginRedirect());
+
+        LoadUrlParams unverifiedParams =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                IntentHandler.createLoadUrlParamsForIntent(
+                                        "https://unverified.example.com/", headersIntent, 0));
+        Assert.assertNull(unverifiedParams.getVerbatimHeaders());
+        Assert.assertFalse(unverifiedParams.getRemoveExtraHeadersOnCrossOriginRedirect());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> ChromeOriginVerifier.clearCachedVerificationsForTesting());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature({"Android-AppBase"})
+    @DisableFeatures(ChromeFeatureList.REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT)
+    public void testRemoveExtraHeadersOnCrossOriginRedirect_KillSwitchDisabled() {
+        Bundle bundle = new Bundle();
+        bundle.putString("Accept", "application/xhtml+xml");
+        Intent headersIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(GOOGLE_URL));
+        headersIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
+
+        LoadUrlParams params = new LoadUrlParams(GOOGLE_URL);
+        IntentHandler.addReferrerAndHeaders(params, headersIntent);
+        Assert.assertEquals("Accept: application/xhtml+xml", params.getVerbatimHeaders());
+        Assert.assertFalse(params.getRemoveExtraHeadersOnCrossOriginRedirect());
+
+        LoadUrlParams createdParams =
+                IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, headersIntent, 0);
+        Assert.assertEquals("Accept: application/xhtml+xml", createdParams.getVerbatimHeaders());
+        Assert.assertFalse(createdParams.getRemoveExtraHeadersOnCrossOriginRedirect());
     }
 }

@@ -742,6 +742,8 @@ public abstract class ChromeFeatureList {
     public static final String RELATED_SEARCHES_ALL_LANGUAGE = "RelatedSearchesAllLanguage";
     public static final String RELATED_SEARCHES_SWITCH = "RelatedSearchesSwitch";
     public static final String RELATED_WEBSITE_SETS_UI = "RelatedWebsiteSetsUi";
+    public static final String REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT =
+            "RemoveExtraHeadersOnCrossOriginRedirect";
     public static final String REMOVE_TAB_FOCUS_ON_SHOWING_AND_SELECT =
             "RemoveTabFocusOnShowingAndSelect";
     public static final String REPORT_NOTIFICATION_CONTENT_DETECTION_DATA =
@@ -1819,6 +1821,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(PDF_LAUNCHER_ACTIVITY, false);
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
+    public static final MutableFlagWithSafeDefault sRemoveExtraHeadersOnCrossOriginRedirect =
+            newMutableFlagWithSafeDefault(REMOVE_EXTRA_HEADERS_ON_CROSS_ORIGIN_REDIRECT, true);
     public static final MutableFlagWithSafeDefault sSafetyFrePromo =
             newMutableFlagWithSafeDefault(SAFETY_FRE_PROMO, false);
     public static final MutableFlagWithSafeDefault sScheduleWindowCleaning =

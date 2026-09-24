@@ -482,6 +482,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReengagementNotification,
     &kRelatedSearchesAllLanguage,
     &kRelatedSearchesSwitch,
+    &kRemoveExtraHeadersOnCrossOriginRedirect,
     &kRemoveTabFocusOnShowingAndSelect,
     &kRobustWindowManagementExperimental,
     &kSafetyFrePromo,
@@ -921,6 +922,7 @@ BASE_FEATURE(kRecordSuppressionMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kReengagementNotification, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kRelatedSearchesAllLanguage, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRelatedSearchesSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRemoveExtraHeadersOnCrossOriginRedirect, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRemoveTabFocusOnShowingAndSelect, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRobustWindowManagementExperimental, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSafetyFrePromo, base::FEATURE_DISABLED_BY_DEFAULT);
