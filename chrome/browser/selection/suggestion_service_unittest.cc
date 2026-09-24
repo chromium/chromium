@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,6 +43,10 @@ class CustomTestTool : public SuggestionTool {
       : label_(std::move(label)) {}
   ~CustomTestTool() override = default;
 
+  ToolId GetToolId() const override {
+    return optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED;
+  }
+
   void RequestSuggestions(const AreaOfInterest& processed_area,
                           SuggestionsCallback callback) override {
     std::vector<std::unique_ptr<Suggestion>> suggestions;
@@ -57,6 +62,10 @@ class AsyncCustomTestTool : public SuggestionTool {
  public:
   AsyncCustomTestTool() = default;
   ~AsyncCustomTestTool() override = default;
+
+  ToolId GetToolId() const override {
+    return optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED;
+  }
 
   void RequestSuggestions(const AreaOfInterest& processed_area,
                           SuggestionsCallback callback) override {

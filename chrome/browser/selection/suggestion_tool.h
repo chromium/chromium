@@ -11,6 +11,10 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/selection/suggestion.h"
 
+namespace optimization_guide::proto {
+enum SmartSelectionToolId : int;
+}  // namespace optimization_guide::proto
+
 namespace selection {
 
 // Callback signature for suggestions retrieval.
@@ -20,7 +24,11 @@ using SuggestionsCallback = base::RepeatingCallback<
 // Interface for Chrome features to register as suggestion tools.
 class SuggestionTool {
  public:
+  using ToolId = optimization_guide::proto::SmartSelectionToolId;
+
   virtual ~SuggestionTool() = default;
+
+  virtual ToolId GetToolId() const = 0;
 
   virtual void RequestSuggestions(const AreaOfInterest& processed_area,
                                   SuggestionsCallback callback) = 0;

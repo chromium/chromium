@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/glic/selection/prompt_suggestion.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 
 namespace glic {
 
@@ -18,6 +19,11 @@ StaticSelectionSuggestionTool::StaticSelectionSuggestionTool(
 
 StaticSelectionSuggestionTool::~StaticSelectionSuggestionTool() =
     default;
+
+StaticSelectionSuggestionTool::ToolId
+StaticSelectionSuggestionTool::GetToolId() const {
+  return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+}
 
 void StaticSelectionSuggestionTool::RequestSuggestions(
     const ::selection::AreaOfInterest& processed_area,

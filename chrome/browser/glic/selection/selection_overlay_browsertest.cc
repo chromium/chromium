@@ -14,6 +14,7 @@
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/common/chrome_features.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -169,6 +170,10 @@ class FakeStaticSelectionSuggestionTool
       : tab_(tab) {}
   ~FakeStaticSelectionSuggestionTool() override = default;
 
+  ToolId GetToolId() const override {
+    return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+  }
+
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
     std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
@@ -192,6 +197,10 @@ class FakeSelectionSuggestionTool
   explicit FakeSelectionSuggestionTool(tabs::TabInterface* tab)
       : tab_(tab) {}
   ~FakeSelectionSuggestionTool() override = default;
+
+  ToolId GetToolId() const override {
+    return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+  }
 
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
@@ -416,6 +425,10 @@ class CountingSelectionSuggestionTool
       : tab_(tab) {}
   ~CountingSelectionSuggestionTool() override = default;
 
+  ToolId GetToolId() const override {
+    return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+  }
+
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
     request_count_++;
@@ -567,6 +580,10 @@ class FakePromptSuggestionTool : public ::selection::SuggestionTool {
   explicit FakePromptSuggestionTool(tabs::TabInterface* tab) : tab_(tab) {}
   ~FakePromptSuggestionTool() override = default;
 
+  ToolId GetToolId() const override {
+    return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+  }
+
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
     std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
@@ -601,6 +618,10 @@ class FakeInlineSuggestionTool : public ::selection::SuggestionTool {
  public:
   FakeInlineSuggestionTool() = default;
   ~FakeInlineSuggestionTool() override = default;
+
+  ToolId GetToolId() const override {
+    return optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME;
+  }
 
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {

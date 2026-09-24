@@ -21,6 +21,7 @@ class StaticSelectionSuggestionTool
   ~StaticSelectionSuggestionTool() override;
 
   // ::selection::SuggestionTool:
+  ToolId GetToolId() const override;
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override;
 
