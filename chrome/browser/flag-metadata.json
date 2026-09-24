@@ -8270,11 +8270,6 @@
     "expiry_milestone": 148
   },
   {
-    "name": "popular-sites-us-refresh",
-    "owners": [ "huangs@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "predictable-reported-quota",
     "owners": ["reemaaa@chromium.org"],
     "expiry_milestone": 150
