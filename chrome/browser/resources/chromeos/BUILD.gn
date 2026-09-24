@@ -34,7 +34,6 @@ group("resources") {
     "lock_screen_reauth:resources",
     "login:resources",
     "mako:resources",
-    "manage_mirrorsync:resources",
     "multidevice_internals:resources",
     "nearby_internals:resources",
     "nearby_share:resources",

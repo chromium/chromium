@@ -365,7 +365,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/kerberos_resources.pak",
         "$root_gen_dir/chrome/launcher_internals_resources.pak",
         "$root_gen_dir/chrome/lock_screen_reauth_resources.pak",
-        "$root_gen_dir/chrome/manage_mirrorsync_resources.pak",
         "$root_gen_dir/chrome/multidevice_internals_resources.pak",
         "$root_gen_dir/chrome/multidevice_setup_resources.pak",
         "$root_gen_dir/chrome/nearby_internals_resources.pak",

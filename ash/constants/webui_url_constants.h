@@ -113,9 +113,6 @@ inline constexpr char kChromeUILockScreenNetworkURL[] = "chrome://lock-network";
 inline constexpr char kChromeUILockScreenStartReauthHost[] = "lock-reauth";
 inline constexpr char kChromeUILockScreenStartReauthURL[] =
     "chrome://lock-reauth";
-inline constexpr char kChromeUIManageMirrorSyncHost[] = "manage-mirrorsync";
-inline constexpr char kChromeUIManageMirrorSyncURL[] =
-    "chrome://manage-mirrorsync";
 inline constexpr char kChromeUIMobileSetupHost[] = "mobilesetup";
 inline constexpr char kChromeUIMobileSetupURL[] = "chrome://mobilesetup/";
 inline constexpr char kChromeUIMultiDeviceInternalsHost[] =
