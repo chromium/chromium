@@ -131,9 +131,15 @@ AslrMask(uintptr_t bits) {
         return AslrAddress(0);
       }
 
-    #elif PA_BUILDFLAG(IS_ANDROID) && (PA_BUILDFLAG(PA_ARCH_CPU_ARM64) || PA_BUILDFLAG(PA_ARCH_CPU_RISCV64))
-      // Restrict the address range on Android to avoid a large performance
-      // regression in single-process WebViews. See https://crbug.com/837640.
+    #elif (PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_CHROMEOS)) && \
+          (PA_BUILDFLAG(PA_ARCH_CPU_ARM64) || PA_BUILDFLAG(PA_ARCH_CPU_RISCV64))
+      // Restrict the address range on Android and ChromeOS (ARM64/RISCV64):
+      // - On Android: Avoids a large performance regression in single-process
+      //   WebViews (https://crbug.com/837640).
+      // - On ChromeOS: ARM64 kernels use 39-bit virtual addressing (512 GiB).
+      //   Restricting the ASLR hint to low memory avoids fragmenting the
+      //   address space and preserves a contiguous 256 GiB block required for
+      //   V8 sandbox full reservation (https://b/537767842).
       PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
       ASLRMask() {
         return AslrMask(30);

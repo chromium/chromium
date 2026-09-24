@@ -312,10 +312,15 @@ constexpr size_t kNumPools = kMaxPoolHandle - 1;
 // pools. Regardless, allocating >8GiB with malloc() on these platforms is
 // unrealistic as of 2022.
 //
+// Special-case ARM64 ChromeOS, which only has a 512 GiB virtual address space.
+// Allocating >8 GiB limits the success rate V8 sandbox reservation
+// (https://b/537767842).
+//
 // When pointer compression is enabled, we cannot use large pools (at most
 // 8GB for each of the glued pools).
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-#if PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_IOS) || \
+#if PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_IOS) ||             \
+    PA_BUILDFLAG(IS_CHROMEOS) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64) || \
     PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 constexpr size_t kPoolMaxSize = 8 * kGiB;
 #else
