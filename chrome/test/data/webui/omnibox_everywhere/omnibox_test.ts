@@ -13,6 +13,7 @@ import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
+import {HelpBubbleArrowPosition} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {browserProxyFactory, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
@@ -24,7 +25,7 @@ import {FreStage} from 'chrome://resources/mojo/components/omnibox/browser/searc
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -610,6 +611,51 @@ suite('OmniboxEverywhereOmniboxTest', () => {
 
     assertEquals('kOmniboxEverywhereLensButtonElementId', hideCalledWith);
   });
+
+  test(
+      'showing lens help bubble updates active state and suppresses focus ring',
+      async () => {
+        const lensContainer = omnibox.shadowRoot.querySelector(
+            '.searchbox-icon-button-container.lens')!;
+        assertTrue(!!lensContainer);
+        assertFalse(lensContainer.classList.contains('help-bubble-open'));
+        assertFalse(omnibox.isLensHelpBubbleShowing);
+
+        omnibox.showHelpBubble({
+          id: {
+            nativeIdentifier: 'kOmniboxEverywhereLensButtonElementId',
+            secondaryIdentifier: '0',
+          },
+          closeButtonAltText: 'Close',
+          position: HelpBubbleArrowPosition.BOTTOM_CENTER,
+          bodyText: 'Lens Help',
+          bodyIconName: null,
+          bodyIconAltText: '',
+          buttons: [],
+          focusOnShowHint: null,
+          titleText: null,
+          progress: null,
+          timeout: null,
+        });
+        await microtasksFinished();
+
+        assertTrue(omnibox.isLensHelpBubbleShowing);
+        assertTrue(lensContainer.classList.contains('help-bubble-open'));
+
+        // When virtually focused with help bubble open, the focus ring is
+        // suppressed.
+        lensContainer.setAttribute('has-virtual-focus', '');
+        assertEquals('none', window.getComputedStyle(lensContainer).boxShadow);
+
+        omnibox.hideHelpBubble('kOmniboxEverywhereLensButtonElementId');
+        await microtasksFinished();
+
+        assertFalse(omnibox.isLensHelpBubbleShowing);
+        assertFalse(lensContainer.classList.contains('help-bubble-open'));
+        // Once the help bubble is closed, virtual focus applies the focus ring.
+        assertNotEquals(
+            'none', window.getComputedStyle(lensContainer).boxShadow);
+      });
 
   test(
       'clicking lens button again toggles it off without calling ' +
@@ -1363,6 +1409,52 @@ suite('OmniboxEverywhereComposeboxTest', () => {
         await microtasksFinished();
 
         assertEquals('kOmniboxEverywhereLensButtonElementId', hideCalledWith);
+      });
+
+  test(
+      'showing lens help bubble in composebox updates active state and ' +
+          'suppresses focus ring',
+      async () => {
+        const lensContainer = composebox.shadowRoot.querySelector(
+            '.searchbox-icon-button-container.lens')!;
+        assertTrue(!!lensContainer);
+        assertFalse(lensContainer.classList.contains('help-bubble-open'));
+        assertFalse(composebox.isLensHelpBubbleShowing);
+
+        composebox.showHelpBubble({
+          id: {
+            nativeIdentifier: 'kOmniboxEverywhereLensButtonElementId',
+            secondaryIdentifier: '0',
+          },
+          closeButtonAltText: 'Close',
+          position: HelpBubbleArrowPosition.BOTTOM_CENTER,
+          bodyText: 'Lens Help',
+          bodyIconName: null,
+          bodyIconAltText: '',
+          buttons: [],
+          focusOnShowHint: null,
+          titleText: null,
+          progress: null,
+          timeout: null,
+        });
+        await microtasksFinished();
+
+        assertTrue(composebox.isLensHelpBubbleShowing);
+        assertTrue(lensContainer.classList.contains('help-bubble-open'));
+
+        // When virtually focused with help bubble open, the focus ring is
+        // suppressed.
+        lensContainer.setAttribute('has-virtual-focus', '');
+        assertEquals('none', window.getComputedStyle(lensContainer).boxShadow);
+
+        composebox.hideHelpBubble('kOmniboxEverywhereLensButtonElementId');
+        await microtasksFinished();
+
+        assertFalse(composebox.isLensHelpBubbleShowing);
+        assertFalse(lensContainer.classList.contains('help-bubble-open'));
+        // Once the help bubble is closed, virtual focus applies the focus ring.
+        assertNotEquals(
+            'none', window.getComputedStyle(lensContainer).boxShadow);
       });
 
   test(

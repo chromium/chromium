@@ -105,7 +105,8 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
               ''}
           ${this.showLensSearchButton_() ? html`
           <div class="searchbox-icon-button-container lens ${
-              this.isScreenshotMenuOpen ? 'menu-open' : ''}"
+              this.isScreenshotMenuOpen ? 'menu-open' : ''} ${
+              this.isLensHelpBubbleShowing ? 'help-bubble-open' : ''}"
               ?has-virtual-focus="${this.isLensSearchVirtualFocused_()}">
             <button id="lensSearchButton" class="searchbox-icon-button"
                 tabindex="${this.virtualFocusEnabled &&
