@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/browser_actuator/internals/session_stream_recorder.h"
+#include "components/browser_actuator/internal/session_stream_recorder.h"
 
 #include <memory>
 #include <string>
@@ -187,7 +187,7 @@ FactoryId SessionStreamRecorderFactory::GetFactoryId() const {
   return FactoryId::kSessionStreamRecorder;
 }
 
-// LINT.IfChange(SessionStreamRecorderSupportedPayloadTypes)
+// LINT.IfChange(RecorderPayloadTypes)
 std::vector<PayloadType>
 SessionStreamRecorderFactory::GetSupportedPayloadTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -208,6 +208,19 @@ std::unique_ptr<TransportHandler> SessionStreamRecorderFactory::OnNewSession(
                      weak_ptr_factory_.GetWeakPtr(), recorder.get()));
   active_recorders_.push_back(recorder->GetWeakPtr());
   return recorder;
+}
+
+void SessionStreamRecorderFactory::OnUpstreamMessage(
+    std::string_view session_id,
+    const ActuatorUpstreamMessage& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& weak_recorder : active_recorders_) {
+    if (weak_recorder && weak_recorder->session_id() == session_id) {
+      weak_recorder->RecordUpstreamMessage(message);
+      return;
+    }
+  }
+  // No active recorder for this session (unknown or already closed). Drop it.
 }
 
 void SessionStreamRecorderFactory::OnRecorderDestroyed(

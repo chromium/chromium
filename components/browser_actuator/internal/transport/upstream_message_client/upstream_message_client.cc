@@ -55,7 +55,7 @@ UpstreamMessageClient::~UpstreamMessageClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void UpstreamMessageClient::SendUpstreamMessage(
+ActuatorUpstreamMessage UpstreamMessageClient::SendUpstreamMessage(
     std::string_view session_id,
     int64_t client_sequence_number,
     std::optional<int64_t> responding_to_sequence_number,
@@ -64,15 +64,19 @@ void UpstreamMessageClient::SendUpstreamMessage(
     SendCompleteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ActuatorUpstreamMessage upstream;
-  upstream.set_session_id(session_id);
-  upstream.set_client_sequence_number(client_sequence_number);
+  SendSessionMessageRequest request;
+  request.set_request_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
+
+  ActuatorUpstreamMessage* upstream =
+      request.mutable_actuator_upstream_message();
+  upstream->set_session_id(session_id);
+  upstream->set_client_sequence_number(client_sequence_number);
   if (responding_to_sequence_number.has_value()) {
-    upstream.set_responding_to_sequence_number(*responding_to_sequence_number);
+    upstream->set_responding_to_sequence_number(*responding_to_sequence_number);
   }
 
   // Pack payload into Any.
-  ActuatorUpstreamTypedPayload* typed_payload = upstream.add_typed_payloads();
+  ActuatorUpstreamTypedPayload* typed_payload = upstream->add_typed_payloads();
   google::protobuf::Any* any_proto = typed_payload->mutable_proto_payload();
   any_proto->set_type_url(
       base::StrCat({"type.googleapis.com/", message.GetTypeName()}));
@@ -81,10 +85,6 @@ void UpstreamMessageClient::SendUpstreamMessage(
 
   UpstreamRequestLog metrics_log(payload_type);
   metrics_log.RecordPayloadSize(message.ByteSizeLong());
-
-  SendSessionMessageRequest request;
-  request.set_request_id(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  *request.mutable_actuator_upstream_message() = std::move(upstream);
 
   endpoint_fetcher::EndpointFetcher::RequestParams::Builder params_builder(
       endpoint_fetcher::HttpMethod::kPost, traffic_annotation_);
@@ -104,6 +104,8 @@ void UpstreamMessageClient::SendUpstreamMessage(
   fetcher_ptr->Fetch(base::BindOnce(
       &UpstreamMessageClient::OnMessageSent, weak_ptr_factory_.GetWeakPtr(),
       fetcher_ptr, std::move(metrics_log), std::move(callback)));
+
+  return std::move(*upstream);
 }
 
 void UpstreamMessageClient::OnMessageSent(

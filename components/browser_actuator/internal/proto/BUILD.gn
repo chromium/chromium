@@ -26,7 +26,7 @@ proto_extras("transport_messages_extras") {
   # group for this target depends on, so `:*` has to be allowed as well.
   visibility = [
     ":*",
-    "//chrome/browser/browser_actuator/internals:*",
+    "//components/browser_actuator/internal:*",
   ]
   sources = [ "transport_messages.proto" ]
   deps = [ ":proto" ]

@@ -36,6 +36,30 @@ source_set("features") {
   visibility = [ "//components/browser_actuator/*" ]
 }
 
+source_set("session_stream_recorder") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "session_stream_recorder.cc",
+    "session_stream_recorder.h",
+    "transport_message_observer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/internal/proto",
+    "//components/browser_actuator/public",
+    "//components/browser_actuator/public:payload_type_mapping",
+    "//components/sharing_message/proto",
+  ]
+
+  deps = [
+    "//components/browser_actuator/internal/proto:transport_messages_extras",
+    "//components/sharing_message/proto:actuator_downstream_message_extras",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
 source_set("internal") {
   visibility = [
     ":*",
@@ -58,6 +82,7 @@ source_set("internal") {
   ]
 
   public_deps = [
+    ":session_stream_recorder",
     "//components/browser_actuator/internal/transport",
     "//components/browser_actuator/public",
     "//components/browser_actuator/public:payload_type_mapping",
@@ -71,6 +96,7 @@ source_set("internal") {
     "//components/browser_actuator/internal/transport/proto_stream_client",
     "//components/browser_actuator/internal/transport/proto_stream_client:rust_stream_framer",
     "//components/browser_actuator/internal/transport/upstream_message_client",
+    "//components/browser_actuator/public:feature_list",
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
     "//services/network/public/cpp",
@@ -83,6 +109,7 @@ source_set("unit_tests") {
   sources = [
     "browser_actuator_service_impl_unittest.cc",
     "control_transport_handler_unittest.cc",
+    "session_stream_recorder_unittest.cc",
     "transport_channel_impl_unittest.cc",
     "transport_handler_factory_registry_impl_unittest.cc",
     "transport_handler_unittest.cc",
@@ -94,6 +121,7 @@ source_set("unit_tests") {
     ":features",
     ":internal",
     ":metrics_utils",
+    ":session_stream_recorder",
     "//base",
     "//base/test:test_support",
     "//components/browser_actuator/internal/proto",
@@ -106,9 +134,11 @@ source_set("unit_tests") {
     "//components/browser_actuator/internal/transport/upstream_message_client",
     "//components/browser_actuator/internal/transport/upstream_message_client:unit_tests",
     "//components/browser_actuator/public",
+    "//components/browser_actuator/public:feature_list",
     "//components/browser_actuator/public:payload_type_mapping",
     "//components/browser_actuator/test_support",
     "//components/endpoint_fetcher",
+    "//components/sharing_message/proto",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//net/traffic_annotation:test_support",

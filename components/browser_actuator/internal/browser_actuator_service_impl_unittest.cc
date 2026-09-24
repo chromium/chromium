@@ -5,6 +5,8 @@
 #include "components/browser_actuator/internal/browser_actuator_service_impl.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -12,7 +14,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/browser_actuator/internal/features.h"
+#include "components/browser_actuator/internal/proto/transport_messages.pb.h"
+#include "components/browser_actuator/internal/session_stream_recorder.h"
 #include "components/browser_actuator/public/common.h"
+#include "components/browser_actuator/public/features.h"
 #include "components/browser_actuator/public/transport_channel.h"
 #include "components/browser_actuator/public/transport_handler.h"
 #include "components/browser_actuator/public/transport_handler_factory.h"
@@ -191,6 +196,46 @@ TEST_F(BrowserActuatorServiceImplTest, DestructionUnregistersFactory) {
   }
   // Called a second time during UnregisterFactory() in the destructor.
   EXPECT_EQ(2u, get_supported_types_calls);
+}
+
+TEST_F(
+    BrowserActuatorServiceImplTest,
+    SessionStreamRecorderFactoryObservesUpstreamMessagesWhenInternalsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kBrowserActuatorChannelEnabled,
+                            kBrowserActuatorInternals},
+      /*disabled_features=*/{});
+
+  BrowserActuatorServiceImpl service(test_shared_url_loader_factory_,
+                                     identity_test_env_.identity_manager(),
+                                     /*extra_factories=*/{});
+
+  ASSERT_NE(service.GetChannel(), nullptr);
+  TransportHandlerFactory* factory =
+      service.GetFactory(FactoryId::kSessionStreamRecorder);
+  ASSERT_NE(factory, nullptr);
+  auto* recorder_factory = static_cast<SessionStreamRecorderFactory*>(factory);
+
+  TransportSession* session = service.GetOrCreateSession("s1");
+  ASSERT_NE(session, nullptr);
+  std::unique_ptr<TransportHandler> handler =
+      recorder_factory->OnNewSession(session);
+  ASSERT_NE(handler, nullptr);
+  EXPECT_EQ(recorder_factory->GetActiveRecordersCountForTesting(), 1u);
+
+  ControlCommand command;
+  command.mutable_close_channel();
+  service.GetChannel()->SendUpstreamMessage("s1", PayloadType::kControl,
+                                            command);
+
+  base::DictValue dump = recorder_factory->ExportAllSessionsAsValue();
+  const base::ListValue* sessions = dump.FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  ASSERT_EQ(sessions->size(), 1u);
+  const base::DictValue* s1_dict = (*sessions)[0].GetIfDict();
+  ASSERT_NE(s1_dict, nullptr);
+  EXPECT_EQ(s1_dict->FindInt("total_upstream_messages"), 1);
 }
 
 }  // namespace browser_actuator

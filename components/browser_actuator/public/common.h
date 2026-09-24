@@ -20,7 +20,7 @@ enum class PayloadType {
 // LINT.ThenChange(
 //     ../internal/metrics_utils.h:PayloadTypeToMetricSuffix,
 //     //tools/metrics/histograms/metadata/browser_actuator/histograms.xml,
-//     //chrome/browser/browser_actuator/internals/session_stream_recorder.cc:SessionStreamRecorderSupportedPayloadTypes)
+//     ../internal/session_stream_recorder.cc:RecorderPayloadTypes)
 
 // Identifies the feature factory instance, to ensure we do not re-register
 // factories of the same type.

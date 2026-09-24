@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/browser_actuator/internals/session_stream_recorder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_actuator/public/browser_actuator_service.h"
@@ -81,9 +80,7 @@ TEST_F(BrowserActuatorServiceFactoryTest,
   TransportHandlerFactory* factory =
       service->GetFactory(FactoryId::kSessionStreamRecorder);
   ASSERT_NE(nullptr, factory);
-
-  auto* recorder_factory = static_cast<SessionStreamRecorderFactory*>(factory);
-  EXPECT_EQ(0u, recorder_factory->GetActiveRecordersCountForTesting());
+  EXPECT_EQ(FactoryId::kSessionStreamRecorder, factory->GetFactoryId());
 }
 
 TEST_F(BrowserActuatorServiceFactoryTest,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/browser_actuator/internals/session_stream_recorder.h"
+#include "components/browser_actuator/internal/session_stream_recorder.h"
 
 #include <memory>
 #include <optional>
@@ -555,6 +555,79 @@ TEST(SessionStreamRecorderFactoryTest, ExportIncludesAllProtoFields) {
             "type.googleapis.com/browser_actuator.ControlCommand");
   EXPECT_EQ(*dumped_proto_payload->FindString("value"),
             base::Base64Encode(serialized_command));
+}
+
+TEST(SessionStreamRecorderFactoryTest, RoutesUpstreamMessageBySessionId) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session1("session_1");
+  FakeTransportSession session2("session_2");
+
+  std::unique_ptr<TransportHandler> h1 = factory.OnNewSession(&session1);
+  std::unique_ptr<TransportHandler> h2 = factory.OnNewSession(&session2);
+  ASSERT_NE(h1, nullptr);
+  ASSERT_NE(h2, nullptr);
+  auto* r1 = static_cast<SessionStreamRecorder*>(h1.get());
+  auto* r2 = static_cast<SessionStreamRecorder*>(h2.get());
+
+  ActuatorUpstreamMessage u2;
+  u2.set_session_id("session_2");
+  u2.set_client_sequence_number(11);
+  factory.OnUpstreamMessage("session_2", u2);
+
+  ActuatorUpstreamMessage u1;
+  u1.set_session_id("session_1");
+  u1.set_client_sequence_number(22);
+  factory.OnUpstreamMessage("session_1", u1);
+
+  EXPECT_EQ(r1->metadata().total_upstream_messages, 1u);
+  ASSERT_EQ(r1->entries().size(), 1u);
+  ASSERT_TRUE(std::holds_alternative<ActuatorUpstreamMessage>(
+      r1->entries()[0].message));
+  EXPECT_EQ(std::get<ActuatorUpstreamMessage>(r1->entries()[0].message)
+                .client_sequence_number(),
+            22);
+
+  EXPECT_EQ(r2->metadata().total_upstream_messages, 1u);
+  ASSERT_EQ(r2->entries().size(), 1u);
+  ASSERT_TRUE(std::holds_alternative<ActuatorUpstreamMessage>(
+      r2->entries()[0].message));
+  EXPECT_EQ(std::get<ActuatorUpstreamMessage>(r2->entries()[0].message)
+                .client_sequence_number(),
+            11);
+}
+
+TEST(SessionStreamRecorderFactoryTest,
+     DropsUpstreamMessageForUnknownOrClosedSession) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session1("session_1");
+
+  ActuatorUpstreamMessage u_unknown;
+  u_unknown.set_session_id("unknown_session");
+  u_unknown.set_client_sequence_number(1);
+  factory.OnUpstreamMessage("unknown_session", u_unknown);
+
+  {
+    std::unique_ptr<TransportHandler> h1 = factory.OnNewSession(&session1);
+    // Destroy h1 so session_1 closes and moves to retained_sessions_.
+  }
+
+  ActuatorUpstreamMessage u_closed;
+  u_closed.set_session_id("session_1");
+  u_closed.set_client_sequence_number(2);
+  factory.OnUpstreamMessage("session_1", u_closed);
+
+  base::DictValue dump = factory.ExportAllSessionsAsValue();
+  const base::ListValue* sessions = dump.FindList("sessions");
+  ASSERT_NE(sessions, nullptr);
+  ASSERT_EQ(sessions->size(), 1u);
+  const base::DictValue* s1_dict = (*sessions)[0].GetIfDict();
+  ASSERT_NE(s1_dict, nullptr);
+  ASSERT_NE(s1_dict->FindString("session_id"), nullptr);
+  EXPECT_EQ(*s1_dict->FindString("session_id"), "session_1");
+  EXPECT_EQ(s1_dict->FindInt("total_upstream_messages"), 0);
+  const base::ListValue* events = s1_dict->FindList("events");
+  ASSERT_NE(events, nullptr);
+  EXPECT_TRUE(events->empty());
 }
 
 }  // namespace

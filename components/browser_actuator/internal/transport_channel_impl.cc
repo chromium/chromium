@@ -93,6 +93,16 @@ TransportSessionRegistry* TransportChannelImpl::GetSessionRegistry() {
   return session_registry_.get();
 }
 
+void TransportChannelImpl::AddObserver(TransportMessageObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.AddObserver(observer);
+}
+
+void TransportChannelImpl::RemoveObserver(TransportMessageObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.RemoveObserver(observer);
+}
+
 void TransportChannelImpl::OnSessionRegistered(TransportSession*) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (stream_client_) {
@@ -159,20 +169,24 @@ void TransportChannelImpl::SendUpstreamMessage(
   if (session->has_last_seen_sequence_number()) {
     responding_to_sequence_number = session->last_seen_sequence_number();
   }
-  upstream_message_client_->SendUpstreamMessage(
-      session_id, client_sequence_number, responding_to_sequence_number,
-      payload_type, message,
-      base::BindOnce(
-          [](std::string session_id, bool success, int response_code) {
-            if (!success) {
-              VLOG(1) << "Failed to send upstream message for session "
-                      << session_id << " (response code: " << response_code
-                      << ")";
-              // TODO(crbug.com/532661039): Consider adding retry buffering or
-              // closing the channel.
-            }
-          },
-          std::string(session_id)));
+  ActuatorUpstreamMessage upstream =
+      upstream_message_client_->SendUpstreamMessage(
+          session_id, client_sequence_number, responding_to_sequence_number,
+          payload_type, message,
+          base::BindOnce(
+              [](std::string session_id, bool success, int response_code) {
+                if (!success) {
+                  VLOG(1) << "Failed to send upstream message for session "
+                          << session_id << " (response code: " << response_code
+                          << ")";
+                  // TODO(crbug.com/532661039): Consider adding retry buffering
+                  // or closing the channel.
+                }
+              },
+              std::string(session_id)));
+
+  observers_.Notify(&TransportMessageObserver::OnUpstreamMessage,
+                    std::string_view(upstream.session_id()), upstream);
 }
 
 std::string TransportChannelImpl::BuildWatchSessionsRequestBody() {

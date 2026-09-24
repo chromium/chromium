@@ -24,6 +24,7 @@ class IdentityManager;
 
 namespace browser_actuator {
 
+class SessionStreamRecorderFactory;
 class TransportChannelImpl;
 class TransportHandlerFactory;
 
@@ -49,9 +50,9 @@ class BrowserActuatorServiceImpl : public BrowserActuatorService {
   TransportSession* GetOrCreateSession(std::string_view session_id) override;
   TransportSession* GetSession(std::string_view session_id) override;
 
-  // Exposes owned extra factories. Intended for embedder diagnostic consumers
-  // (e.g. chrome://browser-actuator-internals) to retrieve concrete injected
-  // factories by `id`.
+  // Exposes owned factories. Intended for embedder diagnostic consumers
+  // (e.g. chrome://browser-actuator-internals) to retrieve concrete factories
+  // by `id`.
   TransportHandlerFactory* GetFactory(FactoryId id) override;
 
  private:
@@ -59,8 +60,11 @@ class BrowserActuatorServiceImpl : public BrowserActuatorService {
 
   // Declared before `channel_` on purpose. C++ destroys members in reverse
   // declaration order, so `channel_` -- and the factory registry it owns, which
-  // holds raw pointers into `extra_factories_` -- is torn down first.
+  // holds raw pointers into `extra_factories_` and
+  // `session_stream_recorder_factory_` -- is torn down first.
   std::vector<std::unique_ptr<TransportHandlerFactory>> extra_factories_;
+  std::unique_ptr<SessionStreamRecorderFactory>
+      session_stream_recorder_factory_;
 
   std::unique_ptr<TransportChannelImpl> channel_;
 };

@@ -37,6 +37,8 @@ struct EndpointResponse;
 
 namespace browser_actuator {
 
+class ActuatorUpstreamMessage;
+
 // Encapsulates the network logic to send upstream actuator messages to
 // OnePlatform via standard HTTPS POST requests (EndpointFetcher).
 class UpstreamMessageClient {
@@ -54,8 +56,9 @@ class UpstreamMessageClient {
   UpstreamMessageClient(const UpstreamMessageClient&) = delete;
   UpstreamMessageClient& operator=(const UpstreamMessageClient&) = delete;
 
-  // Sends an upstream message payload to the server.
-  virtual void SendUpstreamMessage(
+  // Assembles an `ActuatorUpstreamMessage` envelope for `message`, initiates
+  // the HTTPS POST to the server, and returns the assembled envelope.
+  virtual ActuatorUpstreamMessage SendUpstreamMessage(
       std::string_view session_id,
       int64_t client_sequence_number,
       std::optional<int64_t> responding_to_sequence_number,

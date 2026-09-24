@@ -10,11 +10,13 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
@@ -25,6 +27,7 @@
 #include "components/browser_actuator/internal/transport/stream_connection_delegate.h"
 #include "components/browser_actuator/internal/transport/test_support/wait_for.h"
 #include "components/browser_actuator/internal/transport/upstream_message_client/upstream_message_client.h"
+#include "components/browser_actuator/internal/transport_message_observer.h"
 #include "components/browser_actuator/internal/transport_session_impl.h"
 #include "components/browser_actuator/internal/transport_session_registry_impl.h"
 #include "components/browser_actuator/public/features.h"
@@ -732,6 +735,97 @@ TEST_F(TransportChannelImplTestWithMockTime, SendUpstreamMessageHTTPError) {
   }
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+class RecordingMessageObserver : public TransportMessageObserver {
+ public:
+  void OnUpstreamMessage(std::string_view session_id,
+                         const ActuatorUpstreamMessage& message) override {
+    received.emplace_back(std::string(session_id), message);
+  }
+
+  std::vector<std::pair<std::string, ActuatorUpstreamMessage>> received;
+};
+
+TEST_F(TransportChannelImplTest,
+       NotifiesObserversOnUpstreamMessageWithByteIdenticalEnvelope) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  fake_client_->Dispatch(SerializedDownstream("s1", 7));
+
+  ControlCommand command;
+  command.mutable_close_channel();
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command);
+
+  ASSERT_EQ(observer.received.size(), 1u);
+  EXPECT_EQ(observer.received[0].first, "s1");
+  const ActuatorUpstreamMessage& observed = observer.received[0].second;
+  EXPECT_EQ(observed.session_id(), "s1");
+  EXPECT_EQ(observed.client_sequence_number(), 1);
+  EXPECT_EQ(observed.responding_to_sequence_number(), 7);
+  ASSERT_EQ(observed.typed_payloads_size(), 1);
+  EXPECT_EQ(observed.typed_payloads(0).payload_type(),
+            ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  EXPECT_EQ(observed.typed_payloads(0).proto_payload().value(),
+            command.SerializeAsString());
+
+  ASSERT_TRUE(
+      WaitFor([&]() { return test_url_loader_factory_.NumPending() == 1; }));
+  const network::TestURLLoaderFactory::PendingRequest* pending =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_NE(pending, nullptr);
+
+  SendSessionMessageRequest request;
+  ASSERT_TRUE(
+      request.ParseFromString(network::GetUploadData(pending->request)));
+  EXPECT_EQ(request.actuator_upstream_message().SerializeAsString(),
+            observed.SerializeAsString());
+}
+
+TEST_F(TransportChannelImplTest, AddAndRemoveMessageObserver) {
+  RecordingMessageObserver observer1;
+  RecordingMessageObserver observer2;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation1(&observer1);
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation2(&observer2);
+  observation1.Observe(channel_.get());
+  observation2.Observe(channel_.get());
+
+  fake_client_->Dispatch(SerializedDownstream("s1", 1));
+
+  ControlCommand command;
+  command.mutable_close_channel();
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command);
+
+  EXPECT_EQ(observer1.received.size(), 1u);
+  EXPECT_EQ(observer2.received.size(), 1u);
+
+  observation1.Reset();
+
+  channel_->SendUpstreamMessage("s1", PayloadType::kControl, command);
+
+  EXPECT_EQ(observer1.received.size(), 1u);
+  ASSERT_EQ(observer2.received.size(), 2u);
+  EXPECT_EQ(observer2.received[1].second.client_sequence_number(), 2);
+}
+
+TEST_F(TransportChannelImplTest,
+       DoesNotNotifyObserversWhenSessionDoesNotExist) {
+  RecordingMessageObserver observer;
+  base::ScopedObservation<TransportChannelImpl, TransportMessageObserver>
+      observation(&observer);
+  observation.Observe(channel_.get());
+
+  ControlCommand command;
+  command.mutable_close_channel();
+  channel_->SendUpstreamMessage("unknown_session", PayloadType::kControl,
+                                command);
+
+  EXPECT_TRUE(observer.received.empty());
 }
 
 }  // namespace

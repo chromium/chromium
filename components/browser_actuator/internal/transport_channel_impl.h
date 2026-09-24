@@ -11,9 +11,11 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/browser_actuator/internal/transport/message_stream_client.h"
+#include "components/browser_actuator/internal/transport_message_observer.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/transport_channel.h"
 #include "components/browser_actuator/public/transport_session_registry.h"
@@ -68,6 +70,11 @@ class TransportChannelImpl : public TransportChannel,
 
   TransportChannelImpl(const TransportChannelImpl&) = delete;
   TransportChannelImpl& operator=(const TransportChannelImpl&) = delete;
+
+  // Registers or unregisters an observer for transport messages. `observer`
+  // is not owned and must be removed before it is destroyed.
+  void AddObserver(TransportMessageObserver* observer);
+  void RemoveObserver(TransportMessageObserver* observer);
 
   // TransportChannel:
   TransportHandlerFactoryRegistry* GetHandlerFactoryRegistry() override;
@@ -128,6 +135,9 @@ class TransportChannelImpl : public TransportChannel,
 
   // The underlying network client for upstream messages.
   std::unique_ptr<UpstreamMessageClient> upstream_message_client_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::ObserverList<TransportMessageObserver, /*check_empty=*/true> observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<TransportChannelImpl> weak_ptr_factory_{this};

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_BROWSER_ACTUATOR_INTERNALS_SESSION_STREAM_RECORDER_H_
-#define CHROME_BROWSER_BROWSER_ACTUATOR_INTERNALS_SESSION_STREAM_RECORDER_H_
+#ifndef COMPONENTS_BROWSER_ACTUATOR_INTERNAL_SESSION_STREAM_RECORDER_H_
+#define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_SESSION_STREAM_RECORDER_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -23,6 +23,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
+#include "components/browser_actuator/internal/transport_message_observer.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/transport_handler.h"
 #include "components/browser_actuator/public/transport_handler_factory.h"
@@ -126,7 +127,8 @@ class SessionStreamRecorder : public TransportHandler {
 
 // Factory that creates and tracks SessionStreamRecorder instances.
 // Provides export functionality to dump all sessions' history as JSON.
-class SessionStreamRecorderFactory : public TransportHandlerFactory {
+class SessionStreamRecorderFactory : public TransportHandlerFactory,
+                                     public TransportMessageObserver {
  public:
   SessionStreamRecorderFactory();
   ~SessionStreamRecorderFactory() override;
@@ -140,6 +142,10 @@ class SessionStreamRecorderFactory : public TransportHandlerFactory {
   std::vector<PayloadType> GetSupportedPayloadTypes() const override;
   std::unique_ptr<TransportHandler> OnNewSession(
       TransportSession* session) override;
+
+  // TransportMessageObserver implementation:
+  void OnUpstreamMessage(std::string_view session_id,
+                         const ActuatorUpstreamMessage& message) override;
 
   // Exports all tracked sessions' metadata and history as a structured
   // dictionary.
@@ -177,4 +183,4 @@ class SessionStreamRecorderFactory : public TransportHandlerFactory {
 
 }  // namespace browser_actuator
 
-#endif  // CHROME_BROWSER_BROWSER_ACTUATOR_INTERNALS_SESSION_STREAM_RECORDER_H_
+#endif  // COMPONENTS_BROWSER_ACTUATOR_INTERNAL_SESSION_STREAM_RECORDER_H_

@@ -14,7 +14,6 @@ source_set("factory") {
 
   deps = [
     "//base",
-    "//chrome/browser/browser_actuator/internals:session_stream_recorder",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//components/browser_actuator/internal",
@@ -34,7 +33,6 @@ source_set("unit_tests") {
     ":browser_actuator",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/browser_actuator/internals:session_stream_recorder",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//components/browser_actuator/public",

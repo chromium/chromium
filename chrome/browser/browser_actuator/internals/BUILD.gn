@@ -9,27 +9,6 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 }
 
-source_set("session_stream_recorder") {
-  visibility = [ "//chrome/browser/browser_actuator/*" ]
-
-  sources = [ "session_stream_recorder.cc" ]
-  public = [ "session_stream_recorder.h" ]
-
-  public_deps = [
-    "//base",
-    "//components/browser_actuator/internal/proto",
-    "//components/browser_actuator/public",
-    "//components/browser_actuator/public:payload_type_mapping",
-    "//components/sharing_message/proto",
-  ]
-
-  deps = [
-    "//components/browser_actuator/internal/proto:transport_messages_extras",
-    "//components/sharing_message/proto:actuator_downstream_message_extras",
-    "//third_party/protobuf:protobuf_lite",
-  ]
-}
-
 source_set("internals") {
   sources = [
     "browser_actuator_internals_ui.cc",
@@ -44,7 +23,6 @@ source_set("internals") {
     "//ui/webui",
   ]
   deps = [
-    ":session_stream_recorder",
     "//base",
     "//chrome/browser/resources/browser_actuator_internals:resources",
     "//components/browser_actuator/public",
@@ -54,20 +32,13 @@ source_set("internals") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "browser_actuator_internals_ui_mojo_impl_unittest.cc",
-    "session_stream_recorder_unittest.cc",
-  ]
+  sources = [ "browser_actuator_internals_ui_mojo_impl_unittest.cc" ]
   deps = [
     ":internals",
     ":mojo_bindings",
-    ":session_stream_recorder",
     "//base",
     "//base/test:test_support",
-    "//components/browser_actuator/internal/proto",
     "//components/browser_actuator/public",
-    "//components/browser_actuator/public:payload_type_mapping",
-    "//components/sharing_message/proto",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",

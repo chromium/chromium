@@ -67,10 +67,10 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
   command.mutable_close_channel();
 
   base::test::TestFuture<bool, int> future;
-  client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
-                             /*responding_to_sequence_number=*/std::nullopt,
-                             PayloadType::kControl, command,
-                             future.GetCallback());
+  ActuatorUpstreamMessage returned_upstream = client.SendUpstreamMessage(
+      "session_1", /*client_sequence_number=*/1,
+      /*responding_to_sequence_number=*/std::nullopt, PayloadType::kControl,
+      command, future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>());
   EXPECT_EQ(net::HTTP_OK, future.Get<1>());
@@ -87,6 +87,8 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
   EXPECT_EQ("session_1", upstream.session_id());
   EXPECT_EQ(1, upstream.client_sequence_number());
   EXPECT_FALSE(upstream.has_responding_to_sequence_number());
+  EXPECT_EQ(returned_upstream.SerializeAsString(),
+            upstream.SerializeAsString());
 
   ASSERT_EQ(1, upstream.typed_payloads_size());
   const auto& typed_payload = upstream.typed_payloads(0);
@@ -148,10 +150,10 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   command.mutable_close_channel();
 
   base::test::TestFuture<bool, int> future;
-  client.SendUpstreamMessage("session_1", /*client_sequence_number=*/2,
-                             /*responding_to_sequence_number=*/42,
-                             PayloadType::kControl, command,
-                             future.GetCallback());
+  ActuatorUpstreamMessage returned_upstream = client.SendUpstreamMessage(
+      "session_1", /*client_sequence_number=*/2,
+      /*responding_to_sequence_number=*/42, PayloadType::kControl, command,
+      future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>());
   EXPECT_EQ(net::HTTP_OK, future.Get<1>());
@@ -167,6 +169,8 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
   EXPECT_EQ(2, upstream.client_sequence_number());
   EXPECT_TRUE(upstream.has_responding_to_sequence_number());
   EXPECT_EQ(42, upstream.responding_to_sequence_number());
+  EXPECT_EQ(returned_upstream.SerializeAsString(),
+            upstream.SerializeAsString());
 
   histogram_tester.ExpectUniqueSample(
       "Browser.Actuator.Upstream.PayloadSize.Control", command.ByteSizeLong(),
