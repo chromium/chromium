@@ -33,9 +33,13 @@
 #import "components/autofill/ios/form_util/renderer_id_test_util.h"
 #import "components/autofill/ios/form_util/test_form_activity_observer.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
+#import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/fakes/fake_web_state_observer_util.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
@@ -396,6 +400,86 @@ TEST_F(FormActivityTabHelperTest, FocusMainFrame) {
   ASSERT_TRUE(info);
   EXPECT_EQ(FormActivityParams::ActivityType::kFocus, info->form_activity.type);
   EXPECT_FALSE(info->form_activity.input_missing);
+}
+
+// Tests that reentrant observer notifications (such as a form.removal message
+// dispatched while handling a form.activity message due to a nested run loop)
+// do not crash.
+TEST_F(FormActivityTabHelperTest, ReentrantObserverNotification) {
+  class ReentrantFormActivityObserver : public FormActivityObserver {
+   public:
+    explicit ReentrantFormActivityObserver(base::OnceClosure on_activity)
+        : on_activity_(std::move(on_activity)) {}
+
+    void FormActivityRegistered(web::WebState* web_state,
+                                web::WebFrame* sender_frame,
+                                const FormActivityParams& params) override {
+      if (on_activity_) {
+        std::move(on_activity_).Run();
+      }
+    }
+
+   private:
+    base::OnceClosure on_activity_;
+  };
+
+  web::FakeWebState fake_web_state;
+  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+  web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();
+  fake_web_state.SetWebFramesManager(
+      ContentWorldForAutofillJavascriptFeatures(), std::move(frames_manager));
+  auto main_frame =
+      web::FakeWebFrame::CreateMainWebFrame(GURL("https://chromium.test/"));
+  web::WebFrame* main_frame_ptr = main_frame.get();
+  frames_manager_ptr->AddWebFrame(std::move(main_frame));
+
+  FormActivityTabHelper* tab_helper =
+      FormActivityTabHelper::GetOrCreateForWebState(&fake_web_state);
+  TestFormActivityObserver test_observer(&fake_web_state);
+  tab_helper->AddObserver(&test_observer);
+
+  ReentrantFormActivityObserver reentrant_observer(
+      base::BindLambdaForTesting([&]() {
+        auto removal_body =
+            base::Value(base::DictValue()
+                            .Set("command", "form.removal")
+                            .Set("frameID", main_frame_ptr->GetFrameId())
+                            .Set("removedFormIDs", "[\"1\"]")
+                            .Set("removedFieldIDs", "[]"));
+        web::ScriptMessage removal_message(
+            std::make_unique<base::Value>(std::move(removal_body)),
+            /*is_user_interacting=*/true,
+            /*is_main_frame=*/true,
+            /*request_url=*/std::nullopt, main_frame_ptr->GetSecurityOrigin());
+        tab_helper->OnFormMessageReceived(&fake_web_state, removal_message);
+      }));
+
+  tab_helper->AddObserver(&reentrant_observer);
+
+  auto activity_body =
+      base::Value(base::DictValue()
+                      .Set("command", "form.activity")
+                      .Set("frameID", main_frame_ptr->GetFrameId())
+                      .Set("formName", "form1")
+                      .Set("formRendererID", "1")
+                      .Set("fieldIdentifier", "id1")
+                      .Set("fieldRendererID", "2")
+                      .Set("fieldType", "text")
+                      .Set("type", "focus")
+                      .Set("value", "")
+                      .Set("hasUserGesture", true));
+  web::ScriptMessage activity_message(
+      std::make_unique<base::Value>(std::move(activity_body)),
+      /*is_user_interacting=*/true,
+      /*is_main_frame=*/true,
+      /*request_url=*/std::nullopt, main_frame_ptr->GetSecurityOrigin());
+  tab_helper->OnFormMessageReceived(&fake_web_state, activity_message);
+
+  tab_helper->RemoveObserver(&reentrant_observer);
+  tab_helper->RemoveObserver(&test_observer);
+
+  EXPECT_TRUE(test_observer.form_activity_info());
+  EXPECT_TRUE(test_observer.form_removal_info());
 }
 
 // Tests that focus event from same-origin iframe correctly delivered to
