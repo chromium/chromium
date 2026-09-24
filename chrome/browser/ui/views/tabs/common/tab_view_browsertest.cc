@@ -5,8 +5,6 @@
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/icubridge/default_icu_locale.h"
-#include "base/i18n/language_tag.h"
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1347,8 +1345,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, KeyboardExtendTabSelection_RTL) {
-  const std::string original_locale = base::i18n::GetConfiguredLocale();
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   base::UserActionTester user_action_tester;
   AppendTab();
@@ -1387,8 +1384,6 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, KeyboardExtendTabSelection_RTL) {
   EXPECT_TRUE(tab_1->HasFocus());
   EXPECT_EQ(
       2, user_action_tester.GetActionCount("TabMultiSelect_ExtendSelectionTo"));
-
-  base::i18n::SetICUDefaultLocale(original_locale);
 }
 
 class HorizontalTabViewPinnedStylingEnabledTest : public HorizontalTabViewTest {
