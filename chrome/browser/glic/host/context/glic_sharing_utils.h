@@ -13,8 +13,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/tabs/public/tab_interface.h"
 
-class BrowserWindowInterface;
 class BrowserCollection;
+class BrowserWindowInterface;
+class GURL;
 class Profile;
 
 namespace content {
@@ -22,6 +23,9 @@ class WebContents;
 }  // namespace content
 
 namespace glic {
+
+// Returns true if `url` is a Context Hub topic page eligible for Glic.
+bool IsContextHubTopicUrl(const GURL& url);
 
 // True if the immutable attributes of `browser` are valid for Glic focus.
 // or pinning. Invalid browsers are never observed.

@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
@@ -21,6 +22,8 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -35,6 +38,7 @@
 #include "components/tabs/public/tab_handle_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/base_window.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace context_hub {
@@ -476,6 +480,23 @@ bool ContextHubTabProviderDesktop::OpenUrlsInTabGroup(
     target_browser->GetWindow()->Show();
   }
   return true;
+}
+
+// Note that this only navigates. The topic page opens the Glic side panel
+// itself (via PageHandler::OpenGlicPanel) once it has loaded, so that it can
+// provide topic-specific suggestions.
+void ContextHubTabProviderDesktop::OpenTopic(
+    browser::context_hub::mojom::TopicIdOrUrlPtr topic_id_or_url) {
+  GURL url = ResolveTopicUrl(topic_id_or_url);
+  if (!url.is_valid()) {
+    return;
+  }
+
+  // Navigate() resolves the target window itself: for a new foreground tab it
+  // reuses a tabbed browser for this profile, or creates one if none is open.
+  NavigateParams navigate_params(profile_, url, ui::PAGE_TRANSITION_LINK);
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
 }
 
 }  // namespace context_hub

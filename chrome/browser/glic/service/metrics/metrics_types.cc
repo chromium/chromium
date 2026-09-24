@@ -148,6 +148,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "WebContinuity";
     case mojom::InvocationSource::kHistoryPageChatLinkout:
       return "HistoryPageChatLinkout";
+    case mojom::InvocationSource::kContextHubTopics:
+      return "ContextHubTopics";
   }
 }
 

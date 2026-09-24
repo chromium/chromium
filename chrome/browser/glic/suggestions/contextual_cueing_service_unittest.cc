@@ -88,6 +88,10 @@ class ContextualCueingServiceTest : public testing::Test {
 
   ContextualCueingService* service() { return service_.get(); }
 
+  bool IsPageTypeEligibleForContextualSuggestions(const GURL& url) const {
+    return service_->IsPageTypeEligibleForContextualSuggestions(url);
+  }
+
   MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
     return *mock_optimization_guide_keyed_service_;
   }
@@ -720,6 +724,26 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   ASSERT_TRUE(pending_request.has_value());
   EXPECT_EQ(pending_request->supported_tools_size(), 1);
   EXPECT_EQ("tool", pending_request->supported_tools(0));
+}
+
+TEST_F(ContextualCueingServiceTest,
+       IsPageTypeEligibleForContextualSuggestionsForContextHubTopicUrls) {
+  InitializeContextualCueingService();
+  EXPECT_TRUE(IsPageTypeEligibleForContextualSuggestions(
+      GURL("chrome://context-hub/topics")));
+  EXPECT_TRUE(IsPageTypeEligibleForContextualSuggestions(
+      GURL("chrome://context-hub/topic_details")));
+  EXPECT_TRUE(IsPageTypeEligibleForContextualSuggestions(
+      GURL("chrome://context-hub/topic_details?id=123")));
+  EXPECT_TRUE(IsPageTypeEligibleForContextualSuggestions(
+      GURL("chrome://context-hub/topic_details.html")));
+  EXPECT_TRUE(IsPageTypeEligibleForContextualSuggestions(
+      GURL("chrome://context-hub/topic_details.html?id=123")));
+
+  EXPECT_FALSE(IsPageTypeEligibleForContextualSuggestions(
+      GURL("chrome://context-hub/save_to_memory_bank")));
+  EXPECT_FALSE(
+      IsPageTypeEligibleForContextualSuggestions(GURL("chrome://settings")));
 }
 
 }  // namespace glic

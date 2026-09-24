@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_page_data.h"
@@ -248,7 +249,11 @@ bool ContextualCueingService::IsNudgeBlockedByBackoffRule() const {
 }
 
 bool ContextualCueingService::IsPageTypeEligibleForContextualSuggestions(
-    GURL url) const {
+    const GURL& url) const {
+  if (IsContextHubTopicUrl(url)) {
+    return true;
+  }
+
   // Non-HTTP/HTTPS pages are not eligible.
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return false;

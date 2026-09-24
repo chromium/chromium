@@ -227,6 +227,12 @@ struct Topic {
   array<TopicContinuationQuery> continuation_queries;
 };
 
+// Represents either a topic ID or a full topic URL.
+union TopicIdOrUrl {
+  string topic_id;
+  url.mojom.Url topic_url;
+};
+
 // Interface for the browser process to push updates to the WebUI page.
 // Implemented in the renderer process (the Context Hub WebUI).
 interface Page {
@@ -410,4 +416,16 @@ interface PageHandler {
   // Topics that cannot be fully populated are omitted.
   [RuntimeFeature=kTopics]
   GetTopics() => (array<Topic> topics);
+
+  // Opens the specified topic (by topic ID or full URL) in a new tab.
+  [RuntimeFeature=kTopics]
+  OpenTopic(TopicIdOrUrl topic_id_or_url);
+
+  // Opens the Glic side panel bound to the tab hosting this page, offering
+  // `prompts` (capped to 3) as suggestion chips. If the panel is already
+  // showing for that tab, its suggestion chips are replaced with `prompts`
+  // without stealing focus. Safe to call on every page load. No-op if Glic is
+  // unavailable for the profile or if the page is not hosted in a tab.
+  [RuntimeFeature=kTopics]
+  OpenGlicPanel(array<string> prompts);
 };

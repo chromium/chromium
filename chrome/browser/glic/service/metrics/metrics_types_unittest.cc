@@ -34,6 +34,9 @@ TEST(MetricsTypesTest, GetInvocationSourceString) {
             GetInvocationSourceString(mojom::InvocationSource::kTabRestore));
   EXPECT_EQ("ReshowInactive", GetInvocationSourceString(
                                   mojom::InvocationSource::kReshowInactive));
+  EXPECT_EQ(
+      "ContextHubTopics",
+      GetInvocationSourceString(mojom::InvocationSource::kContextHubTopics));
 }
 
 TEST(MetricsTypesTest, GetResponseSegmentation) {
@@ -120,6 +123,12 @@ TEST(MetricsTypesTest, GetResponseSegmentation) {
             GetResponseSegmentation(
                 /*attached=*/true, mojom::WebClientMode::kText,
                 mojom::InvocationSource::kReshowInactive));
+
+  // ContextHubTopics Attached Text
+  EXPECT_EQ(ResponseSegmentation::kContextHubTopicsAttachedText,
+            GetResponseSegmentation(
+                /*attached=*/true, mojom::WebClientMode::kText,
+                mojom::InvocationSource::kContextHubTopics));
 }
 
 }  // namespace

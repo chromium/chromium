@@ -9,6 +9,8 @@ import '//resources/cr_elements/icons.html.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {TopicContinuationQuery} from '../context_hub.mojom-webui.js';
+
 import {getCss} from './topic_card.css.js';
 import {getHtml} from './topic_card.html.js';
 
@@ -21,6 +23,7 @@ export interface TopicItem {
   backgroundColor?: string;
   badgeShape?: BadgeShape;
   relatedUrls?: string[];
+  continuationQueries?: TopicContinuationQuery[];
 }
 
 export type BadgeShape = 'cloud' | 'flower' | 'circle' | 'diamond';

@@ -9,6 +9,7 @@ import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory} from '../context_hub.mojom-webui.js';
+import type {TopicContinuationQuery} from '../context_hub.mojom-webui.js';
 
 import {
   CIRCLE_PATH,
@@ -23,6 +24,17 @@ import {getCss} from './topic_details.css.js';
 import {getHtml} from './topic_details.html.js';
 
 const MAX_URLS_TO_OPEN = 10;
+
+// Matches the cap `PageHandler::OpenGlicPanel()` applies browser-side.
+const MAX_SUGGESTED_PROMPTS = 3;
+
+// Validates a continuation query parsed from the URL, which is untrusted
+// input.
+function isContinuationQuery(value: unknown): value is TopicContinuationQuery {
+  const query = value as Partial<TopicContinuationQuery>| null;
+  return !!query && typeof query.title === 'string' &&
+      typeof query.prompt === 'string';
+}
 
 export class TopicDetailsElement extends CrLitElement {
   static get is() {
@@ -50,6 +62,46 @@ export class TopicDetailsElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.initTopic_();
+    this.maybeOpenGlicPanel_();
+  }
+
+  // Opens the Glic side panel bound to this tab, seeded with topic-specific
+  // suggestion chips. Only runs when the page was opened from the "jump back
+  // in" entry point, which sets the `open_glic` query parameter.
+  //
+  // The parameter is deliberately left in the URL so this runs on every load.
+  // That way the panel comes back if the user closed it, and its suggestion
+  // chips are refreshed to match this topic if it was already open.
+  private maybeOpenGlicPanel_() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('open_glic') !== '1') {
+      return;
+    }
+
+    // `OpenGlicPanel()` is gated by the kTopics runtime feature in the browser
+    // process, so don't call it when the feature is off.
+    if (!loadTimeData.valueExists('kTopics') ||
+        !loadTimeData.getBoolean('kTopics')) {
+      return;
+    }
+
+    // Glic availability is deliberately not checked here; the browser side is
+    // authoritative and no-ops when Glic is unavailable for the profile.
+    const handler = browserProxyFactory.getInstance().handler;
+    if (handler) {
+      handler.openGlicPanel(this.getSuggestedPrompts_());
+    }
+  }
+
+  // Builds the suggestion chips offered when the side panel opens, using the
+  // continuation queries the backend generated for this topic. Returning an
+  // empty list is fine: `PageHandler::OpenGlicPanel()` leaves Zero State
+  // Suggestions enabled when the page has nothing topic-specific to offer.
+  private getSuggestedPrompts_(): string[] {
+    return (this.topic?.continuationQueries || [])
+        .map(query => query.title.trim() || query.prompt.trim())
+        .filter(prompt => !!prompt)
+        .slice(0, MAX_SUGGESTED_PROMPTS);
   }
 
   private initTopic_() {
@@ -84,6 +136,10 @@ export class TopicDetailsElement extends CrLitElement {
       const icon = urlParams.get('icon');
       const title = urlParams.get('title');
       const bg = urlParams.get('bg');
+      const desc = urlParams.get('desc');
+      const longDesc = urlParams.get('long_desc');
+      const urlsParam = urlParams.get('urls');
+      const queriesParam = urlParams.get('queries');
 
       let topic: TopicItem | null = null;
       if (id) {
@@ -100,6 +156,31 @@ export class TopicDetailsElement extends CrLitElement {
         }
       }
 
+      let relatedUrls: string[]|undefined;
+      if (urlsParam) {
+        try {
+          const parsed = JSON.parse(urlsParam);
+          if (Array.isArray(parsed)) {
+            relatedUrls = parsed.filter(
+                (item): item is string => typeof item === 'string');
+          }
+        } catch {
+          // Ignore parse errors.
+        }
+      }
+
+      let continuationQueries: TopicContinuationQuery[]|undefined;
+      if (queriesParam) {
+        try {
+          const parsed = JSON.parse(queriesParam);
+          if (Array.isArray(parsed)) {
+            continuationQueries = parsed.filter(isContinuationQuery);
+          }
+        } catch {
+          // Ignore parse errors.
+        }
+      }
+
       if (topic) {
         if (shape) {
           topic.badgeShape = shape;
@@ -110,14 +191,32 @@ export class TopicDetailsElement extends CrLitElement {
         if (bg && !topic.backgroundColor) {
           topic.backgroundColor = bg;
         }
+        if (desc && !topic.description) {
+          topic.description = desc;
+        }
+        if (longDesc && !topic.longDescription) {
+          topic.longDescription = longDesc;
+        }
+        if (relatedUrls &&
+            (!topic.relatedUrls || topic.relatedUrls.length === 0)) {
+          topic.relatedUrls = relatedUrls;
+        }
+        if (continuationQueries &&
+            (!topic.continuationQueries ||
+             topic.continuationQueries.length === 0)) {
+          topic.continuationQueries = continuationQueries;
+        }
       } else if (id || title) {
         topic = {
           id: id || '',
           title: title || '',
-          description: '',
+          description: desc || '',
+          longDescription: longDesc || undefined,
+          relatedUrls,
           icon: icon || undefined,
           backgroundColor: bg || undefined,
           badgeShape: shape || undefined,
+          continuationQueries,
         };
       }
       return topic;

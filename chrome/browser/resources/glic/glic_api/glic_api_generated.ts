@@ -671,6 +671,8 @@ export enum InvocationSource {
   WEB_CONTINUITY = 42,
   // From the history page chat linkout.
   HISTORY_PAGE_CHAT_LINKOUT = 43,
+  // From the Context Hub topics UI.
+  CONTEXT_HUB_TOPICS = 44,
 }
 
 // Target for actuation.

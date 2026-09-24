@@ -32,6 +32,7 @@ function toTopicItem(topic: Topic): TopicItem {
     // which is what an emoji needs.
     icon: topic.emoji || undefined,
     relatedUrls: topic.visits.map(visit => visit.url),
+    continuationQueries: topic.continuationQueries,
   };
 }
 
@@ -105,11 +106,37 @@ export class TopicsViewElement extends CrLitElement {
     if (topic.backgroundColor) {
       params.set('bg', topic.backgroundColor);
     }
+    if (topic.description) {
+      params.set('desc', topic.description);
+    }
+    if (topic.longDescription) {
+      params.set('long_desc', topic.longDescription);
+    }
+    if (topic.relatedUrls && topic.relatedUrls.length > 0) {
+      params.set('urls', JSON.stringify(topic.relatedUrls));
+    }
+    if (topic.continuationQueries && topic.continuationQueries.length > 0) {
+      params.set('queries', JSON.stringify(topic.continuationQueries));
+    }
+    // Signals the topic details page to open the Glic side panel once it
+    // loads. Only this entry point sets it, so a topic page reached without it
+    // (e.g. a hand-typed URL) never forces the side panel open. It does persist
+    // in the URL, so reload and session restore reopen the panel; see
+    // TopicDetailsElement.maybeOpenGlicPanel_ for why that is intentional.
+    // Whether Glic is actually available is decided browser-side in
+    // PageHandler::OpenGlicPanel, which no-ops when it is not.
+    params.set('open_glic', '1');
     const queryString = params.toString();
     const topicUrl = queryString ?
-        `chrome://context-hub/topic_details.html?${queryString}` :
-        'chrome://context-hub/topic_details.html';
-    OpenWindowProxyImpl.getInstance().openUrl(topicUrl);
+        `chrome://context-hub/topic_details?${queryString}` :
+        'chrome://context-hub/topic_details';
+
+    const handler = browserProxyFactory.getInstance().handler;
+    if (handler) {
+      handler.openTopic({topicUrl});
+    } else {
+      OpenWindowProxyImpl.getInstance().openUrl(topicUrl);
+    }
   }
 }
 

@@ -80,4 +80,42 @@ TEST_F(GlicSharingUtilsTest, IsTabValidForSharing_TabInterface_InvalidUrl) {
   EXPECT_FALSE(IsTabValidForSharing(&mock_tab));
 }
 
+TEST_F(GlicSharingUtilsTest, IsContextHubTopicUrl) {
+  EXPECT_TRUE(IsContextHubTopicUrl(GURL("chrome://context-hub/topics")));
+  EXPECT_TRUE(IsContextHubTopicUrl(GURL("chrome://context-hub/topic_details")));
+  EXPECT_TRUE(
+      IsContextHubTopicUrl(GURL("chrome://context-hub/topic_details?id=123")));
+  EXPECT_TRUE(
+      IsContextHubTopicUrl(GURL("chrome://context-hub/topic_details.html")));
+  EXPECT_TRUE(IsContextHubTopicUrl(
+      GURL("chrome://context-hub/topic_details.html?id=123")));
+
+  // Non-matching paths, hosts, or schemes.
+  EXPECT_FALSE(IsContextHubTopicUrl(GURL("chrome://context-hub")));
+  EXPECT_FALSE(IsContextHubTopicUrl(GURL("chrome://context-hub/")));
+  EXPECT_FALSE(
+      IsContextHubTopicUrl(GURL("chrome://context-hub/save_to_memory_bank")));
+  EXPECT_FALSE(IsContextHubTopicUrl(GURL("chrome://context-hub/invalid")));
+  EXPECT_FALSE(IsContextHubTopicUrl(GURL("https://context-hub/topics")));
+  EXPECT_FALSE(IsContextHubTopicUrl(GURL("chrome://other-host/topics")));
+}
+
+TEST_F(GlicSharingUtilsTest, IsTabValidForSharing_ContextHubTopicUrls) {
+  content::WebContents* topics_contents =
+      CreateWebContents(GURL("chrome://context-hub/topics"));
+  EXPECT_TRUE(IsTabValidForSharing(topics_contents));
+
+  content::WebContents* details_contents =
+      CreateWebContents(GURL("chrome://context-hub/topic_details?id=123"));
+  EXPECT_TRUE(IsTabValidForSharing(details_contents));
+
+  content::WebContents* details_html_contents =
+      CreateWebContents(GURL("chrome://context-hub/topic_details.html?id=123"));
+  EXPECT_TRUE(IsTabValidForSharing(details_html_contents));
+
+  content::WebContents* invalid_hub_contents =
+      CreateWebContents(GURL("chrome://context-hub/save_to_memory_bank"));
+  EXPECT_FALSE(IsTabValidForSharing(invalid_hub_contents));
+}
+
 }  // namespace glic

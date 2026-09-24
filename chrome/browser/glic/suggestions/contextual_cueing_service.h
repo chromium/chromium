@@ -120,6 +120,8 @@ class ContextualCueingService
   GetOutstandingPinnedTabsContents();
 
  private:
+  friend class ContextualCueingServiceTest;
+
   // page_content_annotations::PageContentExtractionService::Observer:
   void OnPageContentExtracted(
       content::Page& page,
@@ -130,7 +132,7 @@ class ContextualCueingService
 
   // Returns true if the given url is of a page type eligible for contextual
   // suggestions.
-  bool IsPageTypeEligibleForContextualSuggestions(GURL url) const;
+  bool IsPageTypeEligibleForContextualSuggestions(const GURL& url) const;
 
   // Utility method to create the initial zero state suggestions request.
   std::unique_ptr<ZeroStateSuggestionsRequest> MakeZeroStateSuggestionsRequest(

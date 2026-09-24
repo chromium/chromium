@@ -47,6 +47,8 @@ class ContextHubTabProviderDesktop : public ContextHubPageHandler::TabProvider {
   void UngroupGroupFromTabstripIfOpen(const base::Uuid& saved_guid) override;
   bool OpenUrlsInTabGroup(const std::string& group_label,
                           base::span<const GURL> urls) override;
+  void OpenTopic(
+      browser::context_hub::mojom::TopicIdOrUrlPtr topic_id_or_url) override;
 
  private:
   raw_ptr<Profile> profile_;

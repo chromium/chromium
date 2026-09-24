@@ -166,6 +166,8 @@ enum InvocationSource {
   [MinVersion=28] kWebContinuity = 42,
   // From the history page chat linkout.
   [MinVersion=29] kHistoryPageChatLinkout = 43,
+  // From the Context Hub topics UI.
+  [MinVersion=30] kContextHubTopics = 44,
 };
 
 // LINT.ThenChange(

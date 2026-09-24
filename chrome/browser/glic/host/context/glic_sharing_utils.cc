@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -43,6 +44,18 @@ const std::vector<GURL>& GetUrlAllowList() {
 
 }  // namespace
 
+// Note: Keep in sync with Context Hub topic URLs. Tested in
+// context_hub_tab_provider_desktop_unittest.cc.
+bool IsContextHubTopicUrl(const GURL& url) {
+  if (!url.SchemeIs(content::kChromeUIScheme) ||
+      url.host() != chrome::kChromeUIContextHubHost) {
+    return false;
+  }
+  const std::string_view path = url.path();
+  return path == "/topic_details" || path == "/topics" ||
+         path == "/topic_details.html";
+}
+
 bool IsBrowserValidForSharingInProfile(
     BrowserWindowInterface* browser_interface,
     Profile* profile) {
@@ -62,6 +75,7 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
   }
   const GURL& url = web_contents->GetLastCommittedURL();
   return url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile() ||
+         IsContextHubTopicUrl(url) ||
          std::ranges::contains(GetUrlAllowList(), url);
 }
 
@@ -71,6 +85,7 @@ bool IsTabValidForSharing(tabs::TabInterface* tab) {
   }
   const GURL url = tab->GetURL();
   return url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile() ||
+         IsContextHubTopicUrl(url) ||
          std::ranges::contains(GetUrlAllowList(), url);
 }
 
