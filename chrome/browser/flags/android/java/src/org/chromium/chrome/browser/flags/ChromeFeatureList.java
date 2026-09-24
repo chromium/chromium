@@ -1158,7 +1158,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDesktopAndroidTWADisclosures =
             newCachedFlag(DESKTOP_ANDROID_TWA_DISCLOSURES, true);
     public static final CachedFlag sDesktopAndroidTWADisclosuresHelpLink =
-            newCachedFlag(DESKTOP_ANDROID_TWA_DISCLOSURES_HELP_LINK, false);
+            newCachedFlag(DESKTOP_ANDROID_TWA_DISCLOSURES_HELP_LINK, true);
     public static final CachedFlag sDesktopUAOnConnectedDisplay =
             newCachedFlag(
                     DESKTOP_UA_ON_CONNECTED_DISPLAY,
