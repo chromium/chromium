@@ -567,4 +567,14 @@ TEST_F(AnchoredMessageBubbleViewTest,
                 [](views::View* button) { return button->HasFocus(); }));
 }
 
+TEST_F(AnchoredMessageBubbleViewTest, GetAnchorRectPlacement) {
+  views::View* anchor_view = anchor_widget_->GetContentsView();
+  const gfx::Rect anchor_bounds = anchor_view->GetAnchorBoundsInScreen();
+
+  const gfx::Rect anchor_rect = bubble_view_->GetAnchorRect();
+  EXPECT_EQ(anchor_rect.bottom(), anchor_bounds.bottom() + 2);
+  EXPECT_EQ(anchor_rect.y(), anchor_bounds.y() - 2);
+  EXPECT_EQ(anchor_rect.right(), anchor_bounds.CenterPoint().x() + 24);
+}
+
 }  // namespace page_actions

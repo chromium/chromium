@@ -30,6 +30,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/menus/simple_menu_model.h"
@@ -64,6 +65,8 @@ const int kAnchoredMessageIconSize = 18;
 const int kAnchoredMessageSpaceLeftOfChip = 16;
 const gfx::Insets kAnchoreMessageActionIconMarginsInset =
     gfx::Insets::TLBR(0, 8, 0, 0);
+const int kIconCenterToBubbleEdgeOffset = 24;
+const int kAnchoredMessageVerticalGap = 2;
 
 // ChipContainerView holds the clickable chip of the anchored message, similar
 // to the Suggestion Chip version of the Page Action View.
@@ -312,6 +315,24 @@ void AnchoredMessageBubbleView::OnThemeChanged() {
 
 bool AnchoredMessageBubbleView::CanActivate() const {
   return true;  // Needed for the widget buttons to work on Windows
+}
+
+gfx::Rect AnchoredMessageBubbleView::GetAnchorRect() const {
+  gfx::Rect anchor_rect = BubbleDialogDelegate::GetAnchorRect();
+  if (anchor_rect.IsEmpty()) {
+    return anchor_rect;
+  }
+
+  // Center horizontally so the bubble's trailing edge aligns 24px past the
+  // icon's center in both LTR and RTL.
+  const int center_x = anchor_rect.CenterPoint().x();
+  anchor_rect.set_x(center_x - kIconCenterToBubbleEdgeOffset);
+  anchor_rect.set_width(2 * kIconCenterToBubbleEdgeOffset);
+
+  // Outset vertically so the 2px gap holds both below the icon
+  // and above it if the bubble flips.
+  anchor_rect.Outset(gfx::Outsets::VH(kAnchoredMessageVerticalGap, 0));
+  return anchor_rect;
 }
 
 views::View* AnchoredMessageBubbleView::GetContentsView() {

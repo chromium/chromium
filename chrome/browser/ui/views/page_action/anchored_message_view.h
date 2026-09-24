@@ -74,6 +74,7 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   // views::BubbleDialogDelegate:
   views::View* GetContentsView() override;
   bool CanActivate() const override;
+  gfx::Rect GetAnchorRect() const override;
 
   // views::View:
   views::Widget* GetWidget() override;
