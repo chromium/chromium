@@ -455,7 +455,8 @@ bool GlicInstanceCoordinatorImpl::MaybeInvoke(BrowserWindowInterface* bwi,
       !GlicEnabling::HasConsentedForProfile(profile_);
 
   if (fre_override_compatible && panel_closed &&
-      base::FeatureList::IsEnabled(features::kGlicMessageFirstFre)) {
+      (base::FeatureList::IsEnabled(features::kGlicMessageFirstFre) ||
+       base::FeatureList::IsEnabled(features::kGlicActionFirstFRE))) {
     GlicInvokeOptions options(source);
     if (auto* active_tab = TabListInterface::From(target_bwi)->GetActiveTab()) {
       options.target = Target(*active_tab);
@@ -1258,7 +1259,8 @@ void GlicInstanceCoordinatorImpl::InvokeAndLogToggle(
   invoke_options.target.surface = std::move(surface);
   invoke_options.fre_completion_wait_mode = FreCompletionWaitMode::kNever;
   if (!GlicEnabling::HasConsentedForProfile(profile_) &&
-      base::FeatureList::IsEnabled(features::kGlicMessageFirstFre)) {
+      (base::FeatureList::IsEnabled(features::kGlicMessageFirstFre) ||
+       base::FeatureList::IsEnabled(features::kGlicActionFirstFRE))) {
     invoke_options.fre_override = mojom::FreOverride::kTrustFirstInline;
   }
   auto weak_instance = InvokeInternal(std::nullopt, std::move(invoke_options),
