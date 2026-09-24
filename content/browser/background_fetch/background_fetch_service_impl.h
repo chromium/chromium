@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "net/base/isolation_info.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
@@ -23,6 +24,7 @@ class NetworkAnonymizationKey;
 
 namespace content {
 
+class RenderFrameHost;
 struct ServiceWorkerVersionBaseInfo;
 
 class CONTENT_EXPORT BackgroundFetchServiceImpl

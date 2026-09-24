@@ -11,13 +11,16 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/content_index_context.h"
 #include "content/public/browser/content_index_provider.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom.h"
 
 class GURL;
+
+namespace blink {
+enum class ServiceWorkerStatusCode;
+}  // namespace blink
 
 namespace url {
 class Origin;
@@ -30,6 +33,9 @@ class SerializedIcons;
 }  // namespace proto
 
 class BrowserContext;
+class ServiceWorkerContextWrapper;
+class ServiceWorkerRegistration;
+class ServiceWorkerVersion;
 
 // Handles interacting with the Service Worker Database for Content Index
 // entries. This is owned by the ContentIndexContext.

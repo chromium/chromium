@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "content/browser/payments/payment_manager.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {

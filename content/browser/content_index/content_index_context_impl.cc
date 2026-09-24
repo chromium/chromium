@@ -5,6 +5,7 @@
 #include "content/browser/content_index/content_index_context_impl.h"
 
 #include "base/functional/bind.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

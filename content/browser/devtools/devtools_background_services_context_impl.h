@@ -20,9 +20,12 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "content/browser/devtools/devtools_background_services.pb.h"
-#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/devtools_background_services_context.h"
+
+namespace blink {
+enum class ServiceWorkerStatusCode;
+}  // namespace blink
 
 namespace content {
 

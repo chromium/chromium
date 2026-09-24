@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/stored_payment_app.h"
@@ -19,6 +18,7 @@
 
 namespace content {
 
+class ServiceWorkerContextWrapper;
 class ServiceWorkerRegistration;
 
 class CONTENT_EXPORT PaymentAppDatabase {

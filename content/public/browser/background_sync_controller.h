@@ -15,6 +15,10 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-shared.h"
 
+namespace blink {
+enum class ServiceWorkerStatusCode;
+}  // namespace blink
+
 namespace url {
 class Origin;
 }  // namespace url
