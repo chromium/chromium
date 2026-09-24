@@ -53,6 +53,12 @@ struct GeminiContainerUIState {
 // Current UI state of the container.
 @property(nonatomic, readonly) GeminiContainerUIState currentUIState;
 
+// Current processing status of the Gemini client.
+@property(nonatomic, readonly) ios::provider::GeminiClientMode processingStatus;
+
+// Current view mode of the Gemini UI (e.g. floaty or live).
+@property(nonatomic, readonly) ios::provider::GeminiViewMode viewMode;
+
 // Resets and applies the initial container UI state.
 - (void)setupInitialUIState;
 

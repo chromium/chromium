@@ -9,6 +9,10 @@
 
 #import "ios/web/public/web_state_id.h"
 
+namespace web {
+class WebState;
+}  // namespace web
+
 @class GeminiPageContext;
 
 // Delegate for GeminiContainerMediator to communicate with the instance
@@ -26,6 +30,9 @@
 // Adds the active page context to the list of shared tabs.
 - (void)saveActivePageContextToSharedTabs:
     (GeminiPageContext*)active_page_context;
+
+// Clears the set of all shared tabs if it doesn't include `active_web_state`.
+- (void)updateSharedTabsForActiveWebState:(web::WebState*)active_web_state;
 
 @end
 

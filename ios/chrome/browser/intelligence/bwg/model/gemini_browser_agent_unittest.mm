@@ -280,6 +280,11 @@ class GeminiBrowserAgentTest : public PlatformTest {
   // Setter for `is_floaty_invoked_`.
   void SetIsFloatyInvoked(bool is_invoked) {
     gemini_browser_agent_->is_floaty_invoked_ = is_invoked;
+    if (is_invoked) {
+      [gemini_browser_agent_->gemini_container_mediator_ onFloatyInvoked];
+    } else {
+      [gemini_browser_agent_->gemini_container_mediator_ onFloatyDismiss];
+    }
   }
 
   // Setter for `is_floaty_temporarily_hidden_`.

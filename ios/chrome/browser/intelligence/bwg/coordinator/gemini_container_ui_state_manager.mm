@@ -64,12 +64,6 @@ GeminiContainerUIState GeminiContainerUIState::Actuating() {
 // used by `gemini_container_ui_state_manager_unittest.mm` via its `(Testing)`
 // category.
 
-// Current processing status of the Gemini client.
-@property(nonatomic, readonly) ios::provider::GeminiClientMode processingStatus;
-
-// Current view mode of the Gemini UI (e.g. floaty or live).
-@property(nonatomic, readonly) ios::provider::GeminiViewMode viewMode;
-
 // Whether there is currently an active conversation in the container.
 @property(nonatomic, assign) BOOL hasConversation;
 
@@ -98,6 +92,7 @@ GeminiContainerUIState GeminiContainerUIState::Actuating() {
   // config/startup config.
   _viewMode = GeminiViewMode::kFloaty;
   _processingStatus = GeminiClientMode::kDormant;
+
   [self resetToZeroStateWithDetent:AssistantContainerDetent::kMedium];
 }
 
@@ -132,6 +127,13 @@ GeminiContainerUIState GeminiContainerUIState::Actuating() {
   }
 
   _viewMode = mode;
+
+  // Keep track of `_viewMode` for all cases, but skip the remaining
+  // state updates that are specific to the container UI.
+  if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
+    return;
+  }
+
   // Any mode change resets the thinking timer.
   _thinkingStartTime = base::TimeTicks();
 
@@ -156,6 +158,14 @@ GeminiContainerUIState GeminiContainerUIState::Actuating() {
     return;
   }
 
+  _processingStatus = processingStatus;
+
+  // Keep track of `_processingStatus` for all cases, but skip the remaining
+  // state updates that are specific to the container UI.
+  if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
+    return;
+  }
+
   // Any status change after thinking that is not responding resets the thinking
   // timer.
   if (!_thinkingStartTime.is_null() &&
@@ -163,9 +173,7 @@ GeminiContainerUIState GeminiContainerUIState::Actuating() {
     _thinkingStartTime = base::TimeTicks();
   }
 
-  _processingStatus = processingStatus;
-
-  // Ignore processing led state updates during actuation
+  // Ignore processing led state updates during actuation.
   if (_currentUIState.actuating) {
     return;
   }
@@ -189,7 +197,8 @@ GeminiContainerUIState GeminiContainerUIState::Actuating() {
 }
 
 - (void)handleResponseCancellationWithReason:(GeminiCancelType)reason {
-  if (reason != GeminiCancelTypeStopButtonTapped) {
+  if (!IsIOSGeminiBottomSheetMigrationEnabled() ||
+      reason != GeminiCancelTypeStopButtonTapped) {
     return;
   }
 
@@ -223,6 +232,10 @@ GeminiContainerUIState GeminiContainerUIState::Actuating() {
 }
 
 - (void)resetToZeroStateWithDetent:(AssistantContainerDetent)detent {
+  if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
+    return;
+  }
+
   _hasConversation = NO;
   _thinkingStartTime = base::TimeTicks();
   [self updateUIState:GeminiContainerUIState::ZeroState(detent)];

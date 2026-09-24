@@ -108,17 +108,19 @@ class GeminiContainerMediatorEventHandler;
 // container session starts.
 - (void)connect;
 
-// Currently, `GeminiBrowserAgent` does some of the state cleanup after each
-// floaty dismissal, but some of the cleanup such as releasing the handlers
-// happens on GeminiBrowserAgent destruction.
+// Currently, `GeminiBrowserAgent` does some of the state setup/cleanup on each
+// floaty invocation/dismissal, while full destruction happens on
+// `GeminiBrowserAgent` destruction.
+// `onFloatyInvoked` handles setup (such as attaching `WebState` observers) that
+// should happen on floaty invocation in legacy mode.
 // `onFloatyDismiss` handles all the cleanup that should happen on floaty
 // dismissal.
 // `disconnect` handles all the cleanup that should happen before
 // mediator/`GeminiBrowserAgent` destruction.
 // TODO(crbug.com/535579970): After the migration is done we can merge
-// `onFloatyDismiss` and `disconnect` as for the new code path the lifcylce
-// of floaty and the mediator will be the same, meaning the mediator will be
-// destructed on each floaty dismissal.
+// `onFloatyInvoked`/`onFloatyDismiss` into `connect`/`disconnect` as for the
+// new code path the lifecycle of floaty and the mediator will be the same.
+- (void)onFloatyInvoked;
 - (void)onFloatyDismiss;
 
 // Fetches zero-state suggestions for the active web state.

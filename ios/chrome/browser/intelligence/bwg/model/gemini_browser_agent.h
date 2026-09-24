@@ -205,6 +205,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void SaveActivePageContextToSharedTabs(
       GeminiPageContext* active_page_context);
 
+  // Clears the set of all shared tabs if it doesn't include the active web
+  // state.
+  void UpdateSharedTabsForActiveWebState(web::WebState* active_web_state);
+
   // Returns the array of page contexts for all currently attached
   // inactive shared tabs.
   NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const;
@@ -388,10 +392,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Called when the microphone preference changes.
   void OnMicrophonePrefChanged();
-
-  // Clears the set of all shared tabs if it doesn't include the active web
-  // state.
-  void UpdateSharedTabsForActiveWebState(web::WebState* active_web_state);
 
   // Creates a partial page context synchronously for a web state.
   GeminiPageContext* CreatePartialPageContext(web::WebState* web_state);

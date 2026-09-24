@@ -111,6 +111,7 @@ namespace ios::provider {
 std::optional<gemini::EntryPoint> GetLastUpdatePromptActionEntryPoint();
 NSString* GetLastUpdatePromptActionPrompt();
 BOOL GetLastUpdatePromptActionShouldAutoSubmit();
+int GetUpdateActivePageContextCallCount();
 }  // namespace ios::provider
 
 namespace {
@@ -194,6 +195,11 @@ class GeminiContainerMediatorTest : public PlatformTest {
                                                     eventHandler:&delegate_];
     mediator_.containerHandler = mock_container_handler_;
     mediator_.geminiHandler = mock_gemini_handler_;
+  }
+
+  void TearDown() override {
+    [mediator_ disconnect];
+    PlatformTest::TearDown();
   }
 
   static std::unique_ptr<KeyedService> CreateMockTracker(ProfileIOS* context) {
@@ -936,6 +942,100 @@ TEST_F(GeminiContainerMediatorTest, TestActuationLifecycle) {
   [mediator_ setActuationActive:NO];
   EXPECT_OCMOCK_VERIFY(mock_container_handler_);
   EXPECT_FALSE(consumer.isActuationActive);
+}
+
+// Test that switching the active `WebState` updates the page context via
+// `ios::provider::UpdateActivePageContext`, notifies `sharedTabsDelegate`, and
+// transfers the `GeminiTabHelper` observer from the old `WebState` to the new
+// active `WebState` only while floaty is invoked.
+TEST_F(GeminiContainerMediatorTest,
+       TestActiveWebStateChangedUpdatesPageContextAndObservers) {
+  id mock_shared_tabs_delegate =
+      OCMProtocolMock(@protocol(GeminiSharedTabsDelegate));
+  mediator_.sharedTabsDelegate = mock_shared_tabs_delegate;
+
+  // Insert and activate the first `WebState` before floaty is invoked.
+  web::FakeWebState* first_web_state = AppendActiveWebState();
+  first_web_state->SetTitle(u"Initial Title Before Invoke");
+  EXPECT_EQ(0, ios::provider::GetUpdateActivePageContextCallCount());
+
+  // Invoke floaty to attach observers.
+  [mediator_ onFloatyInvoked];
+
+  // Updating the active `WebState` while invoked should trigger a page context
+  // update.
+  first_web_state->SetTitle(u"First WebState Title While Invoked");
+  EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
+
+  // Insert and activate a second `WebState`.
+  auto second_web_state_owned = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* second_web_state = second_web_state_owned.get();
+  second_web_state->SetBrowserState(profile_.get());
+  second_web_state->SetCurrentURL(GURL("chrome://newtab/"));
+  second_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  GeminiTabHelper::CreateForWebState(second_web_state);
+
+  OCMExpect([mock_shared_tabs_delegate
+      updateSharedTabsForActiveWebState:second_web_state]);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(second_web_state_owned),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+  EXPECT_OCMOCK_VERIFY(mock_shared_tabs_delegate);
+  EXPECT_EQ(2, ios::provider::GetUpdateActivePageContextCallCount());
+
+  // Updating the title on the inactive first `WebState` should not trigger
+  // a page context update on the mediator.
+  first_web_state->SetTitle(u"First WebState Updated Title");
+  EXPECT_EQ(2, ios::provider::GetUpdateActivePageContextCallCount());
+
+  // Updating the title on the active second `WebState` should trigger a page
+  // context update on the mediator.
+  second_web_state->SetTitle(u"Second WebState Updated Title");
+  EXPECT_EQ(3, ios::provider::GetUpdateActivePageContextCallCount());
+
+  // Dismissing floaty resets Gemini provider state, detaches observers, and
+  // stops further updates.
+  [mediator_ onFloatyDismiss];
+  second_web_state->SetTitle(u"Title Update After Dismiss");
+  browser_->GetWebStateList()->ActivateWebStateAt(0);
+  EXPECT_EQ(0, ios::provider::GetUpdateActivePageContextCallCount());
+}
+
+// Test that `OnPageContextUpdated` skips updating page context when in Live
+// mode and the processing status in `_stateManager` is `kTranscribing`, and
+// resumes updating once `kTranscribing` ends.
+TEST_F(GeminiContainerMediatorTest,
+       TestPageContextUpdatedSkipsUpdateWhenTranscribing) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kGeminiLive, kPageActionMenu}, {});
+
+  web::FakeWebState* web_state = AppendActiveWebState();
+  [mediator_ onFloatyInvoked];
+
+  web_state->SetTitle(u"Initial Title While Invoked");
+  EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
+
+  // Switch to Live mode and transition processing status to `kTranscribing`.
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kTranscribing
+                      sessionID:@"session"
+                 conversationID:@"conv"];
+
+  // Updating the page context while transcribing in Live mode should be
+  // ignored.
+  web_state->SetTitle(u"Ignored Title While Transcribing");
+  EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
+
+  // Transitioning processing status out of `kTranscribing` allows updates
+  // again.
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kListening
+                      sessionID:@"session"
+                 conversationID:@"conv"];
+  web_state->SetTitle(u"Updated Title After Listening");
+  EXPECT_EQ(2, ios::provider::GetUpdateActivePageContextCallCount());
 }
 
 }  // namespace

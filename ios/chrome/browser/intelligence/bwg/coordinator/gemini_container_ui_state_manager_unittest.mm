@@ -17,8 +17,6 @@
 #import "testing/platform_test.h"
 
 @interface GeminiContainerUIStateManager (Testing)
-@property(nonatomic, readonly) ios::provider::GeminiClientMode processingStatus;
-@property(nonatomic, readonly) ios::provider::GeminiViewMode viewMode;
 @property(nonatomic, assign) BOOL hasConversation;
 @property(nonatomic, assign) GeminiContainerUIState currentUIState;
 @end
@@ -50,11 +48,14 @@ class GeminiContainerUIStateManagerTest : public PlatformTest {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         state_manager_([[GeminiContainerUIStateManager alloc] init]),
         delegate_([[FakeGeminiContainerUIStateManagerDelegate alloc] init]) {
+    scoped_feature_list_.InitWithFeatures(
+        {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
     state_manager_.delegate = delegate_;
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   GeminiContainerUIStateManager* state_manager_;
   FakeGeminiContainerUIStateManagerDelegate* delegate_;
 };
