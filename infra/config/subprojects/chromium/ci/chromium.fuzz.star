@@ -1091,7 +1091,7 @@ libfuzzer_linux_asan_builder(
     target_bits = 64,
     clusterfuzz_archive_path = "linux-release-asan/libfuzzer-asan-brp-v2-linux-release",
     console_short_name = "brpv2",
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 6 * time.hour,
     gclient_apply_configs_for_ci = [
         "checkout_mesa",
     ],
@@ -1197,6 +1197,7 @@ libfuzzer_linux_asan_builder(
     target_bits = 32,
     clusterfuzz_archive_path = "linux32-release-asan/libfuzzer-linux32-release",
     console_short_name = "x86",
+    execution_timeout = 5 * time.hour,
     gclient_apply_configs_for_ci = [
         "checkout_mesa",
     ],
