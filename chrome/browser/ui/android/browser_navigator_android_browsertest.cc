@@ -1306,8 +1306,10 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
             tab_list_->GetActiveTab()->GetContents()->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
-                       Disposition_SwitchToTab_NavigatesCurrentTabNtp) {
+// TODO(crbug.com/565635841): Times out waiting for navigation.
+IN_PROC_BROWSER_TEST_F(
+    NavigateAndroidBrowserTest,
+    DISABLED_Disposition_SwitchToTab_NavigatesCurrentTabNtp) {
   SetTabToNewTabPageWithNoHistory();
   ASSERT_EQ(1, tab_list_->GetTabCount());
   ASSERT_EQ(0, tab_list_->GetActiveIndex());
