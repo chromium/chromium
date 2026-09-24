@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
-import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
@@ -77,6 +76,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.ui.lens.LensOverlayTabHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
@@ -780,9 +780,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private void populateOverviewModeMenu(MVCListAdapter.ModelList modelList) {
         Profile profile = getProfileFromTabModel();
         boolean isIncognitoForced = IncognitoUtils.isIncognitoModeForced(profile);
-        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()
-                || !isIncognitoShowing()
-                || isIncognitoForced) {
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing() || isIncognitoForced) {
             modelList.add(buildNewTabItem(isIncognitoForced));
         }
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || isIncognitoShowing()) {
@@ -1569,7 +1567,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
         // Only enforce width constraints if side panel feature is enabled on the device.
         // TODO(crbug.com/519680563): Remove this side panel check once bottom sheet enabled on LFF.
-        if (GlicUtils.isSidePanelFormFactor(mContext)) {
+        if (AndroidSidePanelEnabledFn.isEnabled()) {
             SideUiStateProvider sideUiStateProvider = mSideUiStateProviderSupplier.get();
             assert sideUiStateProvider != null;
             if (!sideUiStateProvider.canShowSideUi(SideUiId.SIDE_PANEL)) {

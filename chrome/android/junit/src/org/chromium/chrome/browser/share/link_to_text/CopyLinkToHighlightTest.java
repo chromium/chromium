@@ -20,7 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -55,7 +54,6 @@ public class CopyLinkToHighlightTest {
     public void setUp() {
         LinkToTextBridgeJni.setInstanceForTesting(mLinkToTextBridgeJniMock);
         when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mTab.getContext()).thenReturn(ContextUtils.getApplicationContext());
         when(mTab.getUrl()).thenReturn(TEST_URL);
         when(mWebContents.getFocusedFrame()).thenReturn(mRenderFrameHost);
         when(mWebContents.getOrSetUserData(SelectionPopupControllerImpl.class, null))

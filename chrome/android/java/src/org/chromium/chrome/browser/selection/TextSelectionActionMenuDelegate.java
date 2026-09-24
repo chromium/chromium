@@ -28,12 +28,12 @@ import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceHandler;
 import org.chromium.chrome.browser.glic.GlicMetrics;
-import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -338,7 +338,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
     private boolean shouldShowAskGeminiForSelection(
             boolean isSelectionPassword, String selectedText) {
         boolean isContainerAvailable =
-                GlicUtils.isSidePanelFormFactor(mTab.getContext())
+                AndroidSidePanelEnabledFn.isEnabled()
                         || TabBottomSheetUtils.isTabBottomSheetEnabled();
         if (!isContainerAvailable) return false;
         if (TextUtils.isEmpty(selectedText) || isSelectionPassword) return false;

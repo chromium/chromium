@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiShowability;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
@@ -463,7 +464,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             mModelSelectorButton.setVisible(false);
         }
 
-        if (GlicEnabling.isEnabledByFlags() && GlicUtils.isSidePanelFormFactor(mContext)) {
+        if (GlicEnabling.isEnabledByFlags() && AndroidSidePanelEnabledFn.isEnabled()) {
             mSideUiStateProviderSupplier.onAvailable(
                     (provider) -> {
                         mSideUiStateProvider = provider;
@@ -1539,7 +1540,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                 || !mSideUiStateProvider.canShowSideUi(SideUiId.SIDE_PANEL)) {
             return false;
         }
-        if (!GlicUtils.isTabStripGlicSupported(mContext, mProfile)
+        if (!GlicUtils.isTabStripGlicSupported(mProfile)
                 || !GlicUtils.isButtonPinnedToTabStrip(mProfile)) {
             return false;
         }

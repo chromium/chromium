@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.glic.GlicSplitButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicSplitButtonDelegateBridge;
 import org.chromium.chrome.browser.glic.GlicSplitButtonDelegateBridgeJni;
-import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -141,7 +140,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Before
     public void setUp() {
         GlicEnabling.setEnabledForTesting(ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC));
-        GlicUtils.setIsSidePanelFormFactorForTesting(true);
         GlicSplitButtonDelegateBridgeJni.setInstanceForTesting(
                 mGlicSplitButtonDelegateBridgeJniMock);
         when(mGlicSplitButtonDelegateBridgeJniMock.create(anyLong(), any())).thenReturn(1L);

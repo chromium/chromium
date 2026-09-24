@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceHandler;
-import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -90,6 +89,7 @@ import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.lens.LensOverlayCoordinator;
 import org.chromium.chrome.browser.ui.lens.LensOverlayInvocationSource;
 import org.chromium.chrome.browser.ui.lens.LensOverlayTabHelper;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -526,7 +526,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         // Enable on desktop if side panel is enabled, and enable on mobile if
         // bottom sheet is enabled.
         return isGlicContextMenuEligible(PARAM_SHOW_ASK_GEMINI_ON_LINK, true)
-                && (GlicUtils.isSidePanelFormFactor(mContext)
+                && (AndroidSidePanelEnabledFn.isEnabled()
                         || TabBottomSheetUtils.isTabBottomSheetEnabled());
     }
 
@@ -535,7 +535,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         // The empty-space (page) entry point is desktop Android only, where
         // Glic is presented in the side panel.
         return isGlicContextMenuEligible(PARAM_SHOW_ASK_GEMINI_ON_PAGE, false)
-                && GlicUtils.isSidePanelFormFactor(mContext);
+                && AndroidSidePanelEnabledFn.isEnabled();
     }
 
     @VisibleForTesting

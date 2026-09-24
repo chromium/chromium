@@ -71,7 +71,6 @@ source_set("tabs_impl") {
     "//components/tabs:public",
     "//content/public/browser",
     "//extensions/buildflags",
-    "//ui/base",
   ]
   if (enable_webui_ntp) {
     deps += [ "//chrome/browser/ui/customize_chrome:customize_chrome_base" ]
