@@ -37,11 +37,12 @@ using manual_fill::ManualFillDataType;
 
 namespace {
 
-// The form suggestion view's layer mask gradient's start point.
-constexpr CGFloat kFormSuggestionViewLayerMaskGradientStartPoint = 0.96;
+// The form suggestion view's layer mask gradient's start point in compact mode.
+constexpr CGFloat kFormSuggestionViewLayerMaskGradientStartPointCompact = 0.96;
 
-// The form suggestion view's layer mask gradient's start point.
-constexpr CGFloat kFormSuggestionViewLayerMaskGradientStartPointForTablet =
+// The form suggestion view's layer mask gradient's start point in non-compact
+// mode.
+constexpr CGFloat kFormSuggestionViewLayerMaskGradientStartPointNonCompact =
     0.98;
 
 // The form suggestion view's layer mask gradient's end point.
@@ -459,9 +460,9 @@ NSArray<FormSuggestion*>* TruncateSuggestionsIfNeeded(
 // Updates the gradient mask layout for the form suggestion view container.
 - (void)updateFormSuggestionViewMaskLayout {
   CGFloat startPoint =
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
-          ? kFormSuggestionViewLayerMaskGradientStartPointForTablet
-          : kFormSuggestionViewLayerMaskGradientStartPoint;
+      [self isCompact]
+          ? kFormSuggestionViewLayerMaskGradientStartPointCompact
+          : kFormSuggestionViewLayerMaskGradientStartPointNonCompact;
   if (base::i18n::IsRTL()) {
     // Create a gradient in the reverse direction from the non RTL case below.
     self.formSuggestionViewMask.startPoint =
@@ -543,6 +544,7 @@ UIImage* GetManualFillSymbol() {
 
   BOOL isTabletFormFactor =
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+  BOOL isCompact = [self isCompact];
 
   UIImage* closeButtonSymbol =
       SymbolWithPointSize(SymbolKeyboardDown, kSymbolActionPointSize);
@@ -562,15 +564,15 @@ UIImage* GetManualFillSymbol() {
                                                      kSymbolActionPointSize)
         atMemoryManualFillSymbol:atMemorySymbol
                closeButtonSymbol:closeButtonSymbol
-              isTabletFormFactor:isTabletFormFactor];
-  [formInputAccessoryView setIsCompact:[self isCompact]];
+              isTabletFormFactor:isTabletFormFactor
+                       isCompact:isCompact];
 
-  if (!isTabletFormFactor) {
+  if (isCompact) {
     [formInputAccessoryView
         showGroup:FormInputAccessoryViewSubitemGroup::kNavigationButtons];
   }
 
-  formInputAccessoryView.accessibilityViewIsModal = !isTabletFormFactor;
+  formInputAccessoryView.accessibilityViewIsModal = isCompact;
 
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
@@ -739,10 +741,7 @@ UIImage* GetManualFillSymbol() {
 }
 
 - (BOOL)isCompact {
-  return self.traitCollection.horizontalSizeClass ==
-             UIUserInterfaceSizeClassCompact ||
-         self.traitCollection.verticalSizeClass ==
-             UIUserInterfaceSizeClassCompact;
+  return IsCompactWidth(self.traitCollection);
 }
 
 // Updates the UI when any UITrait changes on the device.
@@ -753,7 +752,9 @@ UIImage* GetManualFillSymbol() {
 
   BOOL isCompact = [self isCompact];
   [self.formInputAccessoryView setIsCompact:isCompact];
+  self.formInputAccessoryView.accessibilityViewIsModal = isCompact;
   [self.formSuggestionView setIsCompact:isCompact];
+  [self updateFormSuggestionViewMaskLayout];
 
   [self forceUserInterfaceStyle];
 }

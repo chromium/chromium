@@ -40,6 +40,7 @@ TEST_F(FormSuggestionLabelTest, FetchingAmbientDataDisablesUserInteraction) {
                                   numberOfSuggestions:1
                                 accessoryTrailingView:nil
                                  isContextMenuEnabled:NO
+                                            isCompact:YES
                                              delegate:nil];
   EXPECT_FALSE(loadingLabel.userInteractionEnabled);
 
@@ -51,6 +52,7 @@ TEST_F(FormSuggestionLabelTest, FetchingAmbientDataDisablesUserInteraction) {
                                   numberOfSuggestions:1
                                 accessoryTrailingView:nil
                                  isContextMenuEnabled:NO
+                                            isCompact:YES
                                              delegate:nil];
   EXPECT_TRUE(regularLabel.userInteractionEnabled);
 }

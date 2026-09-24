@@ -27,7 +27,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using autofill::SuggestionType;
@@ -35,8 +34,8 @@ using autofill::SuggestionType;
 namespace {
 
 // Font size of button titles.
-constexpr CGFloat kIpadFontSize = 15;
-constexpr CGFloat kIphoneFontSize = 14;
+constexpr CGFloat kNonCompactFontSize = 15;
+constexpr CGFloat kCompactFontSize = 14;
 
 // The horizontal space between the edge of the background and the text.
 constexpr CGFloat kBorderWidth = 12;
@@ -86,11 +85,8 @@ UIFont* SubtitleFont(CGFloat font_size) {
 }
 
 // Returns the font used by a section of the suggestion description text.
-UIFont* TextFont(BOOL bold, BOOL is_title) {
-  CGFloat font_size =
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
-          ? kIpadFontSize
-          : kIphoneFontSize;
+UIFont* TextFont(BOOL bold, BOOL is_title, BOOL is_compact) {
+  CGFloat font_size = is_compact ? kCompactFontSize : kNonCompactFontSize;
   return is_title ? TitleFont(font_size) : SubtitleFont(font_size);
 }
 
@@ -99,10 +95,11 @@ UIFont* TextFont(BOOL bold, BOOL is_title) {
 UILabel* TextLabel(NSString* text,
                    UIColor* text_color,
                    BOOL bold,
-                   BOOL is_title) {
+                   BOOL is_title,
+                   BOOL is_compact) {
   UILabel* label = [[UILabel alloc] init];
   [label setText:text];
-  [label setFont:TextFont(bold, is_title)];
+  [label setFont:TextFont(bold, is_title, is_compact)];
   label.textColor = text_color;
   [label setBackgroundColor:[UIColor clearColor]];
   return label;
@@ -114,7 +111,8 @@ NSAttributedString* AsAttributedString(NSString* text,
                                        UIColor* text_color,
                                        BOOL bold,
                                        BOOL is_title,
-                                       BOOL has_icon) {
+                                       BOOL has_icon,
+                                       BOOL is_compact) {
   NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
   [style setLineSpacing:kVerticalSpacing];
 
@@ -128,7 +126,7 @@ NSAttributedString* AsAttributedString(NSString* text,
   return [[NSAttributedString alloc]
       initWithString:is_title ? text : [NSString stringWithFormat:@"\n%@", text]
           attributes:@{
-            NSFontAttributeName : TextFont(bold, is_title),
+            NSFontAttributeName : TextFont(bold, is_title, is_compact),
             NSForegroundColorAttributeName : text_color,
             NSBackgroundColorAttributeName : [UIColor clearColor],
             NSParagraphStyleAttributeName : style
@@ -140,15 +138,16 @@ NSAttributedString* AsAttributedString(NSString* text,
 UILabel* AttributedTextLabel(NSString* suggestion_text,
                              NSString* minor_value,
                              NSString* display_description,
-                             BOOL has_icon) {
+                             BOOL has_icon,
+                             BOOL is_compact) {
   NSMutableAttributedString* full_text =
       [[NSMutableAttributedString alloc] init];
 
-  [full_text
-      appendAttributedString:AsAttributedString(
-                                 suggestion_text,
-                                 [UIColor colorNamed:kTextPrimaryColor],
-                                 /*bold=*/YES, /*is_title=*/YES, has_icon)];
+  [full_text appendAttributedString:AsAttributedString(
+                                        suggestion_text,
+                                        [UIColor colorNamed:kTextPrimaryColor],
+                                        /*bold=*/YES, /*is_title=*/YES,
+                                        has_icon, is_compact)];
   NSInteger numberOfLines = 1;
 
   if ([minor_value length] > 0) {
@@ -156,7 +155,8 @@ UILabel* AttributedTextLabel(NSString* suggestion_text,
         appendAttributedString:AsAttributedString(
                                    minor_value,
                                    [UIColor colorNamed:kTextPrimaryColor],
-                                   /*bold=*/YES, /*is_title=*/NO, has_icon)];
+                                   /*bold=*/YES, /*is_title=*/NO, has_icon,
+                                   is_compact)];
     numberOfLines++;
   }
 
@@ -165,7 +165,8 @@ UILabel* AttributedTextLabel(NSString* suggestion_text,
         appendAttributedString:AsAttributedString(
                                    display_description,
                                    [UIColor colorNamed:kTextSecondaryColor],
-                                   /*bold=*/NO, /*is_title=*/NO, has_icon)];
+                                   /*bold=*/NO, /*is_title=*/NO, has_icon,
+                                   is_compact)];
     numberOfLines++;
   }
 
@@ -221,24 +222,25 @@ UIView* SplitLabel(UILabel* label, BOOL is_credit_card) {
 NSArray<UIView*>* TextViews(NSString* suggestion_text,
                             NSString* minor_value,
                             NSString* display_description,
-                            BOOL is_credit_card) {
+                            BOOL is_credit_card,
+                            BOOL is_compact) {
   NSMutableArray<UIView*>* views = [NSMutableArray array];
   UILabel* value_label =
       TextLabel(suggestion_text, [UIColor colorNamed:kTextPrimaryColor],
-                /*bold=*/YES, /*is_title=*/YES);
+                /*bold=*/YES, /*is_title=*/YES, is_compact);
   [views addObject:SplitLabel(value_label, is_credit_card)];
 
   if ([minor_value length] > 0) {
     UILabel* minor_value_label =
         TextLabel(minor_value, [UIColor colorNamed:kTextPrimaryColor],
-                  /*bold=*/YES, /*is_title=*/NO);
+                  /*bold=*/YES, /*is_title=*/NO, is_compact);
     [views addObject:SplitLabel(minor_value_label, is_credit_card)];
   }
 
   if ([display_description length] > 0) {
     UILabel* description =
         TextLabel(display_description, [UIColor colorNamed:kTextSecondaryColor],
-                  /*bold=*/NO, /*is_title=*/NO);
+                  /*bold=*/NO, /*is_title=*/NO, is_compact);
     [views addObject:SplitLabel(description, is_credit_card)];
   }
   return views;
@@ -400,14 +402,15 @@ bool ShouldShowEditAction(FormSuggestion* suggestion) {
 // Configures the suggestion label when the suggestion is of type
 // SuggestionType::kFetchingAmbientData.
 void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
-                                            NSString* value) {
+                                            NSString* value,
+                                            BOOL is_compact) {
   UIActivityIndicatorView* spinner = GetMediumUIActivityIndicatorView();
   [spinner startAnimating];
   [stackView addArrangedSubview:spinner];
 
   UILabel* text_label =
       TextLabel(value, [UIColor colorNamed:kTextSecondaryColor],
-                /*bold=*/NO, /*is_title=*/YES);
+                /*bold=*/NO, /*is_title=*/YES, is_compact);
   text_label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   [stackView addArrangedSubview:text_label];
 }
@@ -439,6 +442,9 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
 
   // Whether long pressing to trigger context menu is enabled.
   BOOL _isContextMenuEnabled;
+
+  // Whether the UI is in compact mode.
+  BOOL _isCompact;
 }
 
 #pragma mark - Public
@@ -448,6 +454,7 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
       numberOfSuggestions:(NSUInteger)numberOfSuggestions
     accessoryTrailingView:(UIView*)accessoryTrailingView
      isContextMenuEnabled:(BOOL)isContextMenuEnabled
+                isCompact:(BOOL)isCompact
                  delegate:(id<FormSuggestionLabelDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
   if (self) {
@@ -456,6 +463,7 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
     _numberOfSuggestions = numberOfSuggestions;
     _accessoryTrailingView = accessoryTrailingView;
     _isContextMenuEnabled = isContextMenuEnabled;
+    _isCompact = isCompact;
     _delegate = delegate;
 
     [self setUserInteractionEnabled:YES];
@@ -486,6 +494,15 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
 
 - (NSUInteger)suggestionIndex {
   return _suggestionIndex;
+}
+
+- (void)setIsCompact:(BOOL)isCompact {
+  if (_isCompact == isCompact) {
+    return;
+  }
+
+  _isCompact = isCompact;
+  [self updateSubviews];
 }
 
 #pragma mark - UIView
@@ -620,7 +637,8 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
   }
 
   if (_suggestion.type == SuggestionType::kFetchingAmbientData) {
-    ConfigureFetchingAmbientDataSuggestion(stackView, _suggestion.value);
+    ConfigureFetchingAmbientDataSuggestion(stackView, _suggestion.value,
+                                           _isCompact);
     [self setUserInteractionEnabled:NO];
     return;
   }
@@ -665,28 +683,28 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
 
   NSString* minorValue = isPasskey ? nil : _suggestion.minorValue;
 
-  BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-
   BOOL hasText =
       _suggestion.type != SuggestionType::kAutocompleteAtMemoryButton &&
       (suggestionText.length > 0 || minorValue.length > 0 ||
        displayDescription.length > 0);
 
   if (hasText) {
-    if (isTablet) {
-      // On tablets, the stage manager causes an issue where an infinite loop
-      // happens if we add stack views here, so we can't use more stack views
-      // until the stage manager issue is fixed. As a workaround, on tablets,
-      // since we don't need to truncate the suggestion text, the stack views
-      // can be replaced by a single attributed string to present the data the
-      // same way without having to rely on a stack of UILabel objects, which,
-      // on the plus side, might actually be more light weight in the end.
-      [stackView addArrangedSubview:AttributedTextLabel(
-                                        suggestionText, minorValue,
-                                        displayDescription, _suggestion.icon)];
+    if (!_isCompact) {
+      // On non-compact screens, the stage manager causes an issue where an
+      // infinite loop happens if we add stack views here, so we can't use more
+      // stack views until the stage manager issue is fixed. As a workaround, on
+      // non-compact screens, since we don't need to truncate the suggestion
+      // text, the stack views can be replaced by a single attributed string to
+      // present the data the same way without having to rely on a stack of
+      // UILabel objects, which, on the plus side, might actually be more light
+      // weight in the end.
+      [stackView
+          addArrangedSubview:AttributedTextLabel(suggestionText, minorValue,
+                                                 displayDescription,
+                                                 _suggestion.icon, _isCompact)];
     } else {
-      // On phones, store the suggestion information in a stack view so that
-      // it can be selectively truncated if necessary.
+      // On compact screens, store the suggestion information in a stack view so
+      // that it can be selectively truncated if necessary.
       UIStackView* verticalStackView =
           [[UIStackView alloc] initWithArrangedSubviews:@[]];
       verticalStackView.axis = UILayoutConstraintAxisVertical;
@@ -705,7 +723,7 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
       // needed.
       NSArray<UIView*>* views =
           TextViews(suggestionText, minorValue, displayDescription,
-                    [self isCreditCardSuggestion]);
+                    [self isCreditCardSuggestion], _isCompact);
       for (UIView* view in views) {
         [stackView addArrangedSubview:view];
       }
@@ -715,8 +733,9 @@ void ConfigureFetchingAmbientDataSuggestion(UIStackView* stackView,
   _widthConstraint.active = NO;
   _widthConstraint = nil;
 
-  // On phones, set a maximum width to save space on the keyboard accessory.
-  if (!isTablet) {
+  // On compact screens, set a maximum width to save space on the keyboard
+  // accessory.
+  if (_isCompact) {
     CGFloat maximumWidth = [self maximumWidth];
     if (maximumWidth < CGFLOAT_MAX) {
       _widthConstraint =

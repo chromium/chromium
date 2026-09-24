@@ -199,6 +199,13 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
 
   _isCompact = isCompact;
   self.stackView.layoutMargins = [self adjustedLayoutMargins];
+  for (UIView* view in self.stackView.arrangedSubviews) {
+    if ([view isKindOfClass:[FormSuggestionLabel class]]) {
+      FormSuggestionLabel* label =
+          base::apple::ObjCCastStrict<FormSuggestionLabel>(view);
+      [label setIsCompact:isCompact];
+    }
+  }
   if (self.window) {
     [self layoutIfNeeded];
   }
@@ -399,6 +406,7 @@ NSString* DisplayDescriptionForSuggestion(FormSuggestion* suggestion,
           numberOfSuggestions:[self.suggestions count]
         accessoryTrailingView:self.accessoryTrailingView
          isContextMenuEnabled:self.isContextMenuEnabled
+                    isCompact:self->_isCompact
                      delegate:self];
     [self addFormSuggestionLabel:label atIndex:idx];
     if (idx == 0 &&
