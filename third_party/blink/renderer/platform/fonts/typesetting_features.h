@@ -40,7 +40,7 @@ enum TypesettingFeature {
   // and update kFeatureNames.
 };
 
-typedef unsigned TypesettingFeatures;
+using TypesettingFeatures = uint32_t;
 
 PLATFORM_EXPORT String ToString(TypesettingFeatures);
 

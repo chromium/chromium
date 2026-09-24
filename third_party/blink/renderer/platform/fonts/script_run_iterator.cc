@@ -111,7 +111,7 @@ void FixScriptsByEastAsianWidth(UChar32 ch,
 
 }  // namespace
 
-typedef ScriptData::PairedBracketType PairedBracketType;
+using PairedBracketType = ScriptData::PairedBracketType;
 
 ScriptData::~ScriptData() = default;
 

@@ -62,9 +62,9 @@ struct UInt32 {
   uint32_t v;  // in BigEndian
 };
 
-typedef UInt32 Fixed;
-typedef UInt16 Offset;
-typedef UInt16 GlyphID;
+using Fixed = UInt32;
+using Offset = UInt16;
+using GlyphID = UInt16;
 
 template <typename T>
 static const T* ValidateTable(const Vector<char>& buffer, size_t count = 1) {

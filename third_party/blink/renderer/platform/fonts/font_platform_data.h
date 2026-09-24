@@ -51,7 +51,7 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 
 #if BUILDFLAG(IS_MAC)
-typedef const struct __CTFont* CTFontRef;
+using CTFontRef = const struct __CTFont*;
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace blink {

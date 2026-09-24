@@ -115,21 +115,21 @@ using BreakGlyphsOption = base::StrongAlias<class BreakGlyphsOptionTag, bool>;
 
 // std::function is forbidden in Chromium and base::RepeatingCallback is way too
 // expensive so we resort to a good old function pointer instead.
-typedef void (*GlyphCallback)(void* context,
-                              unsigned character_index,
-                              Glyph,
-                              gfx::Vector2dF glyph_offset,
-                              float total_advance,
-                              bool is_horizontal,
-                              CanvasRotationInVertical,
-                              const SimpleFontData*);
+using GlyphCallback = void (*)(void* context,
+                               unsigned character_index,
+                               Glyph,
+                               gfx::Vector2dF glyph_offset,
+                               float total_advance,
+                               bool is_horizontal,
+                               CanvasRotationInVertical,
+                               const SimpleFontData*);
 
-typedef void (*GraphemeClusterCallback)(void* context,
-                                        unsigned character_index,
-                                        float total_advance,
-                                        unsigned graphemes_in_cluster,
-                                        float cluster_advance,
-                                        CanvasRotationInVertical);
+using GraphemeClusterCallback = void (*)(void* context,
+                                         unsigned character_index,
+                                         float total_advance,
+                                         unsigned graphemes_in_cluster,
+                                         float cluster_advance,
+                                         CanvasRotationInVertical);
 
 class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
  public:

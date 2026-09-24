@@ -56,7 +56,9 @@
 
 namespace blink {
 
-typedef struct { uint32_t parts[2]; } FieldsAsUnsignedType;
+struct FieldsAsUnsignedType {
+  uint32_t parts[2];
+};
 
 class PLATFORM_EXPORT FontDescription {
   DISALLOW_NEW();

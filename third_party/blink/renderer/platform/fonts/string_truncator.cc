@@ -38,7 +38,7 @@ namespace blink {
 
 #define STRING_BUFFER_SIZE 2048
 
-typedef base::span<const UChar> TruncationFunction(const String&,
+using TruncationFunction = base::span<const UChar>(const String&,
                                                    unsigned keep_count,
                                                    base::span<UChar> buffer);
 

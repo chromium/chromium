@@ -184,8 +184,8 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
   }
 
  private:
-  typedef HeapHashMap<ShapeCacheKey, WeakMember<const ShapeResult>> WeakMap;
-  typedef HeapHashMap<ShapeCacheKey, Member<const ShapeResult>> StrongMap;
+  using WeakMap = HeapHashMap<ShapeCacheKey, WeakMember<const ShapeResult>>;
+  using StrongMap = HeapHashMap<ShapeCacheKey, Member<const ShapeResult>>;
 
   static constexpr char kConsumerId[] = "NGShapeCache";
   static constexpr base::MemoryConsumerTraits kNGShapeCacheTraits{

@@ -40,7 +40,7 @@
 
 @class NSFont;
 class SkTypeface;
-typedef uint32_t SkFourByteTag;
+using SkFourByteTag = uint32_t;
 
 namespace blink {
 

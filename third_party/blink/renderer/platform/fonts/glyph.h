@@ -34,7 +34,7 @@
 
 namespace blink {
 
-typedef uint16_t Glyph;
+using Glyph = uint16_t;
 
 }  // namespace blink
 
