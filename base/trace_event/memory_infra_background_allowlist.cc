@@ -210,6 +210,7 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "malloc",
         "malloc/allocated_objects",
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+        "malloc/allocated_objects/partitions",
         "malloc/extreme_lud",
         "malloc/extreme_lud/small_objects",
         "malloc/extreme_lud/large_objects",

@@ -184,6 +184,8 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
                                MemoryDumpLevelOfDetail level_of_detail,
                                size_t* total_virtual_size,
                                size_t* resident_size,
+                               size_t* committed_size,
+                               size_t* wasted_size,
                                size_t* allocated_objects_size,
                                size_t* allocated_objects_count,
                                uint64_t* syscall_count,
@@ -216,8 +218,11 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
                                               populate_discardable_bytes,
                                               &partition_stats_dumper);
 
-  *total_virtual_size += partition_stats_dumper.total_resident_bytes();
+  // virtual_size is address space, not resident memory.
+  *total_virtual_size += partition_stats_dumper.total_mmapped_bytes();
   *resident_size += partition_stats_dumper.total_resident_bytes();
+  *committed_size += partition_stats_dumper.total_committed_bytes();
+  *wasted_size += partition_stats_dumper.total_wasted_bytes();
   *allocated_objects_size += partition_stats_dumper.total_active_bytes();
   *allocated_objects_count += partition_stats_dumper.total_active_count();
   *syscall_count += partition_stats_dumper.syscall_count();
@@ -395,6 +400,12 @@ WinHeapInfo WinHeapInfo::FromHandleForTesting(void* heap) {
 // static
 const char MallocDumpProvider::kAllocatedObjects[] = "malloc/allocated_objects";
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+const char MallocDumpProvider::kPartitions[] = "malloc/partitions";
+const char MallocDumpProvider::kPartitionsAllocatedObjects[] =
+    "malloc/allocated_objects/partitions";
+#endif
+
 #if BUILDFLAG(IS_WIN)
 const char MallocDumpProvider::kWinHeap[] = "malloc/win_heap";
 const char MallocDumpProvider::kWinHeapAllocatedObjects[] =
@@ -447,22 +458,33 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   uint64_t syscall_count = 0;
   size_t cumulative_brp_quarantined_size = 0;
   size_t cumulative_brp_quarantined_count = 0;
+  // Waste already reported under a backend dump, and which therefore must not
+  // be reported again in malloc/metadata_fragmentation_caches.
+  size_t excluded_waste = 0;
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   uint64_t pa_only_resident_size;
   uint64_t pa_only_allocated_objects_size;
-#endif
-#if BUILDFLAG(IS_WIN)
-  size_t win_heap_wasted = 0;
+  uint64_t pa_only_virtual_size;
+  size_t pa_only_committed_size = 0;
+  size_t pa_only_wasted_size = 0;
 #endif
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   ReportPartitionAllocStats(
       pmd, args.level_of_detail, &total_virtual_size, &resident_size,
-      &allocated_objects_size, &allocated_objects_count, &syscall_count,
+      &pa_only_committed_size, &pa_only_wasted_size, &allocated_objects_size,
+      &allocated_objects_count, &syscall_count,
       &cumulative_brp_quarantined_size, &cumulative_brp_quarantined_count);
 
   pa_only_resident_size = resident_size;
   pa_only_allocated_objects_size = allocated_objects_size;
+  pa_only_virtual_size = total_virtual_size;
+  // Each partition reports its resident size, so the resident bytes not handed
+  // out to a live allocation are already part of the malloc/partitions subtree.
+  // This is not the reported `wasted`, which is relative to committed memory.
+  if (pa_only_resident_size >= pa_only_allocated_objects_size) {
+    excluded_waste += pa_only_resident_size - pa_only_allocated_objects_size;
+  }
 
   // Even when PartitionAlloc is used, WinHeap / System malloc is still used as
   // well, report its statistics.
@@ -472,14 +494,15 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
 #elif BUILDFLAG(IS_WIN)
   MemoryAllocatorDump* win_heap_dump = nullptr;
   MemoryAllocatorDump* win_heap_objects_dump = nullptr;
+  size_t win_heap_wasted = 0;
   if (args.level_of_detail == MemoryDumpLevelOfDetail::kDetailed) {
     win_heap_dump = pmd->CreateAllocatorDump(kWinHeap);
     // The objects allocated out of the WinHeap are accounted for under the
     // system allocator pool, and reported as suballocated from the WinHeap
     // dump. That keeps malloc/win_heap's effective size down to the part of the
-    // heap which is not already accounted for by malloc/allocated_objects,
-    // without an ownership edge out of malloc/allocated_objects itself, which
-    // can only own a single target and already owns malloc/partitions.
+    // heap which is not already accounted for by malloc/allocated_objects. An
+    // ownership edge out of malloc/allocated_objects would not scale to several
+    // backends, as an allocator dump can only own a single target.
     win_heap_objects_dump = pmd->CreateAllocatorDump(kWinHeapAllocatedObjects);
     pmd->AddSuballocation(win_heap_objects_dump->guid(), kWinHeap);
   }
@@ -497,6 +520,7 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
     win_heap_waste_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                                    MemoryAllocatorDump::kUnitsBytes,
                                    win_heap_wasted);
+    excluded_waste += win_heap_wasted;
   }
 #endif  // BUILDFLAG(IS_ANDROID), BUILDFLAG(IS_WIN)
 
@@ -520,6 +544,13 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
                         total_virtual_size);
   outer_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                         MemoryAllocatorDump::kUnitsBytes, resident_size);
+  // The same total as malloc/allocated_objects's size, kept here as well
+  // because that size is recomputed when the dump graph is processed: other
+  // providers (e.g. V8, Skia) suballocate from malloc/allocated_objects, which
+  // makes it larger than what malloc itself reported. This scalar is not.
+  outer_dump->AddScalar("allocated_objects_size",
+                        MemoryAllocatorDump::kUnitsBytes,
+                        allocated_objects_size);
 
   MemoryAllocatorDump* inner_dump = pmd->CreateAllocatorDump(kAllocatedObjects);
   inner_dump->AddScalar(MemoryAllocatorDump::kNameSize,
@@ -533,23 +564,10 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
 
   int64_t waste = static_cast<int64_t>(resident_size - allocated_objects_size);
 
-  // With PartitionAlloc, reported size under malloc/partitions is the resident
-  // size, so it already includes fragmentation. Meaning that "malloc/"'s size
-  // would double-count fragmentation if we report it under
-  // "malloc/metadata_fragmentation_caches" as well.
-  //
-  // Still report waste, as on some platforms, PartitionAlloc doesn't capture
-  // all of malloc()'s memory footprint.
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  int64_t pa_waste = static_cast<int64_t>(pa_only_resident_size -
-                                          pa_only_allocated_objects_size);
-  waste -= pa_waste;
-#endif
-#if BUILDFLAG(IS_WIN)
-  // Likewise, the WinHeap waste is reported under malloc/win_heap, so it must
-  // not be counted here a second time.
-  waste -= static_cast<int64_t>(win_heap_wasted);
-#endif
+  // A backend which reports its own waste has already accounted for it, so only
+  // the remainder belongs here. Still report it, as on some platforms no
+  // backend captures all of malloc()'s memory footprint.
+  waste -= static_cast<int64_t>(excluded_waste);
 
   if (waste > 0) {
     // Explicitly specify why is extra memory resident. In mac and ios it
@@ -567,11 +585,49 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   base::trace_event::MemoryAllocatorDump* elud_dump_for_large_objects = nullptr;
   ExtremeLUDStats elud_stats_for_large_objects;
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  partitions_dump = pmd->CreateAllocatorDump("malloc/partitions");
+  partitions_dump = pmd->CreateAllocatorDump(kPartitions);
+  partitions_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                             MemoryAllocatorDump::kUnitsBytes,
+                             pa_only_resident_size);
+  partitions_dump->AddScalar("virtual_size", MemoryAllocatorDump::kUnitsBytes,
+                             pa_only_virtual_size);
   partitions_dump->AddScalar("allocated_objects_size",
                              MemoryAllocatorDump::kUnitsBytes,
                              pa_only_allocated_objects_size);
-  pmd->AddOwnershipEdge(inner_dump->guid(), partitions_dump->guid());
+  partitions_dump->AddScalar("virtual_committed_size",
+                             MemoryAllocatorDump::kUnitsBytes,
+                             pa_only_committed_size);
+  // Summed over the partitions, so that `wasted` and `fragmentation` mean the
+  // same here as in each partition's own dump: committed bytes not handed out
+  // to a live allocation, and their share of the committed bytes.
+  partitions_dump->AddScalar("wasted", MemoryAllocatorDump::kUnitsBytes,
+                             pa_only_wasted_size);
+  partitions_dump->AddScalar(
+      "fragmentation", "percent",
+      pa_only_committed_size == 0
+          ? 0
+          : 100 * pa_only_wasted_size / pa_only_committed_size);
+
+  // The objects allocated out of each partition are reported by the per-bucket
+  // dumps below, which are suballocated from their partition. This dump is
+  // their parent, and only carries the total.
+  MemoryAllocatorDump* pa_allocated_objects_dump =
+      pmd->CreateAllocatorDump(kPartitionsAllocatedObjects);
+  pa_allocated_objects_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                                       MemoryAllocatorDump::kUnitsBytes,
+                                       pa_only_allocated_objects_size);
+  if (args.level_of_detail == MemoryDumpLevelOfDetail::kBackground) {
+    // The per-bucket dumps which suballocate the objects are only reported at
+    // the levels of detail which dump the buckets, and AddSuballocation()
+    // creates no dumps at all in background mode. Without an edge of its own
+    // the objects would be counted once here and once under malloc/partitions,
+    // inflating the malloc-wide total, so own the partitions dump directly
+    // instead. Each backend's objects dump owns its own backend, so this still
+    // scales to several backends, unlike a single edge out of
+    // malloc/allocated_objects.
+    pmd->AddOwnershipEdge(pa_allocated_objects_dump->guid(),
+                          partitions_dump->guid());
+  }
 
   auto& extreme_lud_get_stats_callback = GetExtremeLUDGetStatsCallback();
   if (!extreme_lud_get_stats_callback.is_null()) {
@@ -712,6 +768,17 @@ std::string GetPartitionDumpName(const char* root_name,
                             partition_name);
 }
 
+// Re-roots `dump_name` under the allocated_objects dump of the same root, so
+// that "malloc/partitions/allocator" becomes
+// "malloc/allocated_objects/partitions/allocator".
+std::string GetAllocatedObjectsDumpName(const char* root_name,
+                                        const std::string& dump_name) {
+  const std::string root_prefix = base::StringPrintf("%s/", root_name);
+  CHECK(dump_name.starts_with(root_prefix));
+  return base::StringPrintf("%s/allocated_objects/%s", root_name,
+                            dump_name.substr(root_prefix.size()).c_str());
+}
+
 MemoryDumpPartitionStatsDumper::MemoryDumpPartitionStatsDumper(
     const char* root_name,
     ProcessMemoryDump* memory_dump,
@@ -739,6 +806,22 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   MemoryAllocatorDump* allocator_dump =
       memory_dump_->CreateAllocatorDump(dump_name);
 
+  // Parent of the per-bucket allocated_objects dumps, which are the ones
+  // suballocated from their bucket.
+  if (detailed_ && memory_stats->total_active_bytes > 0) {
+    MemoryAllocatorDump* allocated_objects_dump =
+        memory_dump_->CreateAllocatorDump(
+            GetAllocatedObjectsDumpName(root_name_, dump_name));
+    allocated_objects_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                                      MemoryAllocatorDump::kUnitsBytes,
+                                      memory_stats->total_active_bytes);
+    if (memory_stats->total_active_count > 0) {
+      allocated_objects_dump->AddScalar(MemoryAllocatorDump::kNameObjectCount,
+                                        MemoryAllocatorDump::kUnitsObjects,
+                                        memory_stats->total_active_count);
+    }
+  }
+
   auto total_committed_bytes = memory_stats->total_committed_bytes;
   auto total_active_bytes = memory_stats->total_active_bytes;
   size_t wasted = 0;
@@ -757,6 +840,8 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   if (total_committed_bytes >= total_active_bytes) {
     wasted = total_committed_bytes - total_active_bytes;
   }
+  total_committed_bytes_ += total_committed_bytes;
+  total_wasted_bytes_ += wasted;
   size_t fragmentation =
       total_committed_bytes == 0 ? 0 : 100 * wasted / total_committed_bytes;
 
@@ -849,6 +934,26 @@ void MemoryDumpPartitionStatsDumper::PartitionsDumpBucketStats(
 
   MemoryAllocatorDump* allocator_dump =
       memory_dump_->CreateAllocatorDump(dump_name);
+
+  // The objects live in this bucket, so they are suballocated from it and
+  // accounted for under allocated_objects rather than a second time here.
+  if (memory_stats->active_bytes > 0) {
+    MemoryAllocatorDump* allocated_objects_dump =
+        memory_dump_->CreateAllocatorDump(
+            GetAllocatedObjectsDumpName(root_name_, dump_name));
+    allocated_objects_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                                      MemoryAllocatorDump::kUnitsBytes,
+                                      memory_stats->active_bytes);
+    memory_dump_->AddSuballocation(allocated_objects_dump->guid(), dump_name);
+  }
+  if (memory_stats->resident_bytes > memory_stats->active_bytes) {
+    MemoryAllocatorDump* waste_dump = memory_dump_->CreateAllocatorDump(
+        dump_name + "/metadata_fragmentation_caches");
+    waste_dump->AddScalar(
+        MemoryAllocatorDump::kNameSize, MemoryAllocatorDump::kUnitsBytes,
+        memory_stats->resident_bytes - memory_stats->active_bytes);
+  }
+
   allocator_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                             MemoryAllocatorDump::kUnitsBytes,
                             memory_stats->resident_bytes);

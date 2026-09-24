@@ -39,6 +39,12 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   // from other dump providers.
   static const char kAllocatedObjects[];
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // Names of the PartitionAlloc dumps.
+  static const char kPartitions[];
+  static const char kPartitionsAllocatedObjects[];
+#endif
+
 #if BUILDFLAG(IS_WIN)
   // Names of the WinHeap dumps. Only reported at kDetailed level of detail.
   static const char kWinHeap[];
@@ -146,6 +152,8 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
 
   size_t total_mmapped_bytes() const { return total_mmapped_bytes_; }
   size_t total_resident_bytes() const { return total_resident_bytes_; }
+  size_t total_committed_bytes() const { return total_committed_bytes_; }
+  size_t total_wasted_bytes() const { return total_wasted_bytes_; }
   size_t total_active_bytes() const { return total_active_bytes_; }
   size_t total_active_count() const { return total_active_count_; }
   uint64_t syscall_count() const { return syscall_count_; }
@@ -162,6 +170,8 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
   uint64_t uid_ = 0;
   size_t total_mmapped_bytes_ = 0;
   size_t total_resident_bytes_ = 0;
+  size_t total_committed_bytes_ = 0;
+  size_t total_wasted_bytes_ = 0;
   size_t total_active_bytes_ = 0;
   size_t total_active_count_ = 0;
   uint64_t syscall_count_ = 0;
