@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/geometry/size.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -18,6 +20,8 @@ class ImageDataTest : public testing::Test {};
 // This test passes if it does not crash. If the required memory is not
 // allocated to the ImageData, then an exception must raise.
 TEST_F(ImageDataTest, CreateImageDataTooBig) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
   DummyExceptionStateForTesting exception_state;
   ImageData* too_big_image_data = ImageData::Create(
       32767, 32767, ImageDataSettings::Create(), exception_state);

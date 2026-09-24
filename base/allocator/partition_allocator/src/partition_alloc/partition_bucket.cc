@@ -191,32 +191,39 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
 
   const bool return_null = ContainsFlags(flags, AllocFlags::kReturnNull);
   if (raw_size > MaxAllocationSize()) [[unlikely]] {
-    if (return_null) {
-      return nullptr;
-    }
+    const bool allow_giga =
+        ContainsFlags(flags, AllocFlags::kAllowGigaAllocations) &&
+        root->allow_giga_allocations();
+    if (!allow_giga || raw_size > MaxGigaAllocationSize()) {
+      if (return_null) {
+        return nullptr;
+      }
 
-    // The lock is here to protect PA from:
-    // 1. Concurrent calls
-    // 2. Reentrant calls
-    //
-    // This is fine here however, as:
-    // 1. Concurrency: |PartitionRoot::OutOfMemory()| never returns, so the lock
-    //    will not be re-acquired, which would lead to acting on inconsistent
-    //    data that could have been modified in-between releasing and acquiring
-    //    it.
-    // 2. Reentrancy: This is why we release the lock. On some platforms,
-    //    terminating the process may free() memory, or even possibly try to
-    //    allocate some. Calling free() is fine, but will deadlock since
-    //    |PartitionRoot::lock_| is not recursive.
-    //
-    // Supporting reentrant calls properly is hard, and not a requirement for
-    // PA. However up to that point, we've only *read* data, not *written* to
-    // any state. Reentrant calls are then fine, especially as we don't continue
-    // on this path. The only downside is possibly endless recursion if the OOM
-    // handler allocates and fails to use UncheckedMalloc() or equivalent, but
-    // that's violating the contract of base::TerminateBecauseOutOfMemory().
-    ScopedUnlockGuard unlock{PartitionRootLock(root)};
-    PartitionExcessiveAllocationSize(raw_size);
+      // The lock is here to protect PA from:
+      // 1. Concurrent calls
+      // 2. Reentrant calls
+      //
+      // This is fine here however, as:
+      // 1. Concurrency: |PartitionRoot::OutOfMemory()| never returns, so the
+      // lock
+      //    will not be re-acquired, which would lead to acting on inconsistent
+      //    data that could have been modified in-between releasing and
+      //    acquiring it.
+      // 2. Reentrancy: This is why we release the lock. On some platforms,
+      //    terminating the process may free() memory, or even possibly try to
+      //    allocate some. Calling free() is fine, but will deadlock since
+      //    |PartitionRoot::lock_| is not recursive.
+      //
+      // Supporting reentrant calls properly is hard, and not a requirement for
+      // PA. However up to that point, we've only *read* data, not *written* to
+      // any state. Reentrant calls are then fine, especially as we don't
+      // continue on this path. The only downside is possibly endless recursion
+      // if the OOM handler allocates and fails to use UncheckedMalloc() or
+      // equivalent, but that's violating the contract of
+      // base::TerminateBecauseOutOfMemory().
+      ScopedUnlockGuard unlock{PartitionRootLock(root)};
+      PartitionExcessiveAllocationSize(raw_size);
+    }
   }
 
   PartitionDirectMapExtent* map_extent = nullptr;
@@ -571,7 +578,7 @@ uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size,
   return ComputeSystemPagesPerSlotSpanInternal(slot_size);
 }
 
-void PartitionBucket::Init(uint32_t new_slot_size) {
+void PartitionBucket::Init(size_t new_slot_size) {
   slot_size = new_slot_size;
   slot_size_reciprocal = kReciprocalMask / new_slot_size + 1;
   active_slot_spans_head = SlotSpanMetadata::get_sentinel_slot_span_non_const();

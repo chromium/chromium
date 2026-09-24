@@ -218,6 +218,8 @@ void* ArrayBufferContents::AllocateMemory(size_t size,
     }
   }
 
+  constexpr auto flags_with_size =
+      flags | partition_alloc::AllocFlags::kAllowGigaAllocations;
 #ifdef V8_ENABLE_SANDBOX
   // The V8 sandbox requires all ArrayBuffer backing stores to be allocated
   // inside the sandbox address space. This isn't guaranteed if allocation
@@ -226,11 +228,11 @@ void* ArrayBufferContents::AllocateMemory(size_t size,
   // hooks (which are e.g. used by the heap profiler) should still be invoked.
   // Using the kNoOverrideHooks and kNoMemoryToolOverride flags with
   // accomplishes this.
-  constexpr auto new_flags = flags |
+  constexpr auto new_flags = flags_with_size |
                              partition_alloc::AllocFlags::kNoOverrideHooks |
                              partition_alloc::AllocFlags::kNoMemoryToolOverride;
 #else
-  constexpr auto new_flags = flags;
+  constexpr auto new_flags = flags_with_size;
 #endif
   void* data;
   if (policy == kZeroInitialize) {

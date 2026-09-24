@@ -183,6 +183,8 @@ void Partitions::InitializeArrayBufferPartition() {
             partition_alloc::PartitionOptions::kAllowed;
         opts.memory_tagging = {
             .enabled = partition_alloc::PartitionOptions::kDisabled};
+        opts.allow_giga_allocations =
+            partition_alloc::PartitionOptions::kAllowed;
         return opts;
       }());
 

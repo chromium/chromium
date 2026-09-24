@@ -1643,6 +1643,165 @@ TEST_P(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(requested_size, predicted_capacity);
 }
 
+TEST_P(PartitionAllocTest, AllowGigaAllocationsLimits) {
+  // Normal root:
+  EXPECT_FALSE(allocator.root()->allow_giga_allocations());
+  EXPECT_EQ(allocator.root()->GetMaxAllocationSize<AllocFlags::kNone>(),
+            MaxAllocationSize());
+  EXPECT_EQ(allocator.root()
+                ->GetMaxAllocationSize<AllocFlags::kAllowGigaAllocations>(),
+            MaxAllocationSize());
+  EXPECT_EQ(allocator.root()->GetMaxAllocationSize<AllocFlags::kNone>(),
+            MaxAllocationSize());
+  EXPECT_EQ(allocator.root()
+                ->GetMaxAllocationSize<AllocFlags::kAllowGigaAllocations>(),
+            MaxAllocationSize());
+
+  void* ptr = allocator.root()->Alloc<AllocFlags::kReturnNull>(
+      MaxAllocationSize() + 1, type_name);
+  EXPECT_EQ(ptr, nullptr);
+
+  ptr =
+      allocator.root()
+          ->Alloc<AllocFlags::kReturnNull | AllocFlags::kAllowGigaAllocations>(
+              MaxAllocationSize() + 1, type_name);
+  EXPECT_EQ(ptr, nullptr);
+
+  // Root configured with allow_giga_allocations:
+  PartitionOptions opts;
+  opts.allow_giga_allocations = PartitionOptions::kAllowed;
+  partition_alloc::PartitionAllocatorForTesting giga_allocator(opts);
+  SetDistributionForPartitionRoot(giga_allocator.root(),
+                                  GetBucketDistribution());
+
+  EXPECT_TRUE(giga_allocator.root()->allow_giga_allocations());
+  // Normal allocations do the normal constexpr limit check:
+  EXPECT_EQ(giga_allocator.root()->GetMaxAllocationSize<AllocFlags::kNone>(),
+            MaxAllocationSize());
+
+  // Only with kAllowGigaAllocations does it return the larger limit:
+  EXPECT_EQ(giga_allocator.root()
+                ->GetMaxAllocationSize<AllocFlags::kAllowGigaAllocations>(),
+            MaxGigaAllocationSize());
+
+  // Normal allocation in giga root is rejected at MaxAllocationSize() + 1:
+  ptr = giga_allocator.root()->Alloc<AllocFlags::kReturnNull>(
+      MaxAllocationSize() + 1, type_name);
+  EXPECT_EQ(ptr, nullptr);
+
+  // Allocation with kAllowGigaAllocations exceeding MaxGigaAllocationSize()
+  // is rejected:
+  ptr =
+      giga_allocator.root()
+          ->Alloc<AllocFlags::kReturnNull | AllocFlags::kAllowGigaAllocations>(
+              MaxGigaAllocationSize() + 1, type_name);
+  EXPECT_EQ(ptr, nullptr);
+
+  // Realloc in normal root with kAllowGigaAllocations > MaxAllocationSize():
+  EXPECT_EQ(allocator.root()
+                ->Realloc<AllocFlags::kReturnNull |
+                          AllocFlags::kAllowGigaAllocations>(
+                    nullptr, MaxAllocationSize() + 1, type_name),
+            nullptr);
+
+  // Realloc in giga root without flag > MaxAllocationSize():
+  EXPECT_EQ(giga_allocator.root()->Realloc<AllocFlags::kReturnNull>(
+                nullptr, MaxAllocationSize() + 1, type_name),
+            nullptr);
+
+  // Realloc in giga root with flag > MaxGigaAllocationSize():
+  EXPECT_EQ(giga_allocator.root()
+                ->Realloc<AllocFlags::kReturnNull |
+                          AllocFlags::kAllowGigaAllocations>(
+                    nullptr, MaxGigaAllocationSize() + 1, type_name),
+            nullptr);
+
+  // AlignedAlloc in normal root with flag > MaxAllocationSize():
+  EXPECT_EQ(allocator.root()
+                ->AlignedAlloc<AllocFlags::kReturnNull |
+                               AllocFlags::kAllowGigaAllocations>(
+                    64, MaxAllocationSize() + 1),
+            nullptr);
+
+  // AlignedAlloc in giga root without flag > MaxAllocationSize():
+  EXPECT_EQ(giga_allocator.root()->AlignedAlloc<AllocFlags::kReturnNull>(
+                64, MaxAllocationSize() + 1),
+            nullptr);
+
+  // AlignedAlloc in giga root with flag > MaxGigaAllocationSize():
+  EXPECT_EQ(giga_allocator.root()
+                ->AlignedAlloc<AllocFlags::kReturnNull |
+                               AllocFlags::kAllowGigaAllocations>(
+                    64, MaxGigaAllocationSize() + 1),
+            nullptr);
+}
+
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
+TEST_P(PartitionAllocTest, AllowGigaAllocationsAllocation) {
+  PartitionOptions opts;
+  opts.allow_giga_allocations = PartitionOptions::kAllowed;
+  partition_alloc::PartitionAllocatorForTesting giga_allocator(opts);
+  SetDistributionForPartitionRoot(giga_allocator.root(),
+                                  GetBucketDistribution());
+
+  // Allocate more than MaxAllocationSize() (which is (1UL << 31) -
+  // kSuperPageSize). Use SystemPageSize() increments so that in-place
+  // DirectMap realloc succeeds without a 2 GiB memcpy.
+  const size_t size =
+      static_cast<size_t>(MaxAllocationSize()) + SystemPageSize();
+  void* ptr =
+      giga_allocator.root()
+          ->Alloc<AllocFlags::kReturnNull | AllocFlags::kAllowGigaAllocations>(
+              size, type_name);
+  ASSERT_TRUE(ptr);
+  *static_cast<char*>(ptr) = 0x42;
+  EXPECT_EQ(*static_cast<char*>(ptr), 0x42);
+
+  // Realloc in-place to an even larger size:
+  const size_t new_size = size + SystemPageSize();
+  void* new_ptr = giga_allocator.root()
+                      ->Realloc<AllocFlags::kReturnNull |
+                                AllocFlags::kAllowGigaAllocations>(
+                          ptr, new_size, type_name);
+  ASSERT_TRUE(new_ptr);
+  EXPECT_EQ(new_ptr, ptr);
+  EXPECT_EQ(*static_cast<char*>(new_ptr), 0x42);
+  giga_allocator.root()->Free(new_ptr);
+
+  // Realloc from a small allocation to > MaxAllocationSize() (relocating):
+  void* small_ptr = giga_allocator.root()->Alloc(SystemPageSize(), type_name);
+  ASSERT_TRUE(small_ptr);
+  *static_cast<char*>(small_ptr) = 0x43;
+  void* grown_ptr = giga_allocator.root()
+                        ->Realloc<AllocFlags::kReturnNull |
+                                  AllocFlags::kAllowGigaAllocations>(
+                            small_ptr, size, type_name);
+  ASSERT_TRUE(grown_ptr);
+  EXPECT_EQ(*static_cast<char*>(grown_ptr), 0x43);
+  giga_allocator.root()->Free(grown_ptr);
+
+  // AlignedAlloc more than MaxAllocationSize():
+  void* aligned_ptr = giga_allocator.root()
+                          ->AlignedAlloc<AllocFlags::kReturnNull |
+                                         AllocFlags::kAllowGigaAllocations>(
+                              PartitionPageSize(), size);
+  ASSERT_TRUE(aligned_ptr);
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(aligned_ptr) % PartitionPageSize(), 0u);
+  giga_allocator.root()->Free(aligned_ptr);
+
+  // Allocate up to MaxGigaAllocationSize() with kAllowGigaAllocations:
+  void* max_giga_ptr =
+      giga_allocator.root()
+          ->Alloc<AllocFlags::kReturnNull | AllocFlags::kAllowGigaAllocations>(
+              MaxGigaAllocationSize(), type_name);
+  if (max_giga_ptr) {
+    *static_cast<char*>(max_giga_ptr) = 0x5a;
+    EXPECT_EQ(*static_cast<char*>(max_giga_ptr), 0x5a);
+    giga_allocator.root()->Free(max_giga_ptr);
+  }
+}
+#endif
+
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
   // This test checks that Arm's memory tagging extension (MTE) is correctly
@@ -2921,6 +3080,43 @@ TEST_P(PartitionAllocDeathTest, LargeAllocs) {
       allocator.root()->Realloc(nullptr, MaxAllocationSize() + 1, type_name),
       "");
   allocator.root()->Free(ptr);
+}
+
+TEST_P(PartitionAllocDeathTest, AllowGigaAllocations) {
+  // Normal space without kAllowGigaAllocations: fails.
+  EXPECT_DEATH(allocator.root()->Alloc(MaxAllocationSize() + 1, type_name), "");
+  EXPECT_DEATH(allocator.root()->AlignedAlloc(64, MaxAllocationSize() + 1), "");
+  // Normal space with kAllowGigaAllocations: fails because normal space does
+  // not allow giga allocations.
+  EXPECT_DEATH(allocator.root()->Alloc<AllocFlags::kAllowGigaAllocations>(
+                   MaxAllocationSize() + 1, type_name),
+               "");
+  EXPECT_DEATH(
+      allocator.root()->AlignedAlloc<AllocFlags::kAllowGigaAllocations>(
+          64, MaxAllocationSize() + 1),
+      "");
+
+  PartitionOptions opts;
+  opts.allow_giga_allocations = PartitionOptions::kAllowed;
+  partition_alloc::PartitionAllocatorForTesting giga_allocator(opts);
+  SetDistributionForPartitionRoot(giga_allocator.root(),
+                                  GetBucketDistribution());
+
+  // Special space without kAllowGigaAllocations: fails the constexpr check!
+  EXPECT_DEATH(giga_allocator.root()->Alloc(MaxAllocationSize() + 1, type_name),
+               "");
+  EXPECT_DEATH(giga_allocator.root()->AlignedAlloc(64, MaxAllocationSize() + 1),
+               "");
+
+  // Special space with kAllowGigaAllocations exceeding MaxGigaAllocationSize():
+  // fails!
+  EXPECT_DEATH(giga_allocator.root()->Alloc<AllocFlags::kAllowGigaAllocations>(
+                   MaxGigaAllocationSize() + 1, type_name),
+               "");
+  EXPECT_DEATH(
+      giga_allocator.root()->AlignedAlloc<AllocFlags::kAllowGigaAllocations>(
+          64, MaxGigaAllocationSize() + 1),
+      "");
 }
 
 // These tests don't work deterministically when BRP is enabled on certain

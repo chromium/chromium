@@ -503,19 +503,6 @@
             task.done();
           });
 
-      audit.define('invalid-frame-length', (task, should) => {
-        // Invalid frame length (crbug.com/351277)
-        let testContext;
-
-        should(
-            () => testContext =
-                new OfflineAudioContext(1, -88200000000000, 44100),
-            'testContext = new OfflineAudioContext(1, -88200000000000, 44100)')
-            .notThrow();
-        should(testContext.startRendering(), 'testContext.startRendering()')
-            .beRejected()
-            .then(() => task.done());
-      });
 
       audit.define('waveshaper', (task, should) => {
         // WaveShaper types

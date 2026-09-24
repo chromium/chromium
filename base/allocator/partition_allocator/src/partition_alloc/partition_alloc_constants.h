@@ -52,7 +52,10 @@ enum class AllocFlags {
   kMemoryShouldBeTaggedForMte = 1 << 6,  // Internal.
   // An explicitly aligned allocation.
   kAlignedAlloc = 1 << 7,  // Internal.
-  kMaxValue = kAlignedAlloc,
+  // Allow allocations up to 16GiB. This is intended for ArrayBuffers, and
+  // should not be used for other allocations.
+  kAllowGigaAllocations = 1 << 8,
+  kMaxValue = kAllowGigaAllocations,
 };
 PA_DEFINE_OPERATORS_FOR_FLAGS(AllocFlags);
 
@@ -449,6 +452,21 @@ PA_ALWAYS_INLINE constexpr size_t MaxAllocationSize() {
   // Subtract kSuperPageSize to accommodate for granularity inside
   // PartitionRoot::GetDirectMapReservationSize.
   return (1UL << 31) - internal::kSuperPageSize;
+}
+
+// Same as |MaxAllocationSize|, but for allocations with kAllowGigaAllocations,
+// which can be larger.
+PA_ALWAYS_INLINE constexpr size_t MaxGigaAllocationSize() {
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
+  return (16ULL * internal::kGiB) - internal::kSuperPageSize;
+#else
+  return MaxAllocationSize();
+#endif
+}
+
+// Same as |MaxAllocationSize|, but for ArrayBuffers, which can be larger.
+PA_ALWAYS_INLINE constexpr size_t MaxDirectMappedArrayBuffer() {
+  return MaxGigaAllocationSize();
 }
 
 // When trying to conserve memory, set the thread cache limit to this.

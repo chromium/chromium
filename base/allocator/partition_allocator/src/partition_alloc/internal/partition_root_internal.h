@@ -227,20 +227,20 @@ PartitionRoot::GetDirectMapMetadataAndGuardPagesSize() {
 
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 PartitionRoot::GetDirectMapSlotSize(size_t raw_size) {
-  // Caller must check that the size is not above the MaxAllocationSize()
-  // limit before calling. This also guards against integer overflow in the
-  // calculation here.
-  PA_DCHECK(raw_size <= MaxAllocationSize());
+  // Caller must check that the size is not above the MaxAllocationSize() /
+  // MaxGigaAllocationSize() limit before calling. This also guards against
+  // integer overflow in the calculation here.
+  PA_DCHECK(raw_size <= MaxGigaAllocationSize());
   return partition_alloc::internal::base::bits::AlignUp(
       raw_size, internal::SystemPageSize());
 }
 
 PA_ALWAYS_INLINE size_t
 PartitionRoot::GetDirectMapReservationSize(size_t padded_raw_size) {
-  // Caller must check that the size is not above the MaxAllocationSize()
-  // limit before calling. This also guards against integer overflow in the
-  // calculation here.
-  PA_DCHECK(padded_raw_size <= MaxAllocationSize());
+  // Caller must check that the size is not above the MaxAllocationSize() /
+  // MaxGigaAllocationSize() limit before calling. This also guards against
+  // integer overflow in the calculation here.
+  PA_DCHECK(padded_raw_size <= MaxGigaAllocationSize());
   return partition_alloc::internal::base::bits::AlignUp(
       padded_raw_size + GetDirectMapMetadataAndGuardPagesSize(),
       internal::DirectMapAllocationGranularity());
@@ -321,7 +321,7 @@ PA_ALWAYS_INLINE bool PartitionRoot::IsDirectMappedBucket(
 }
 template <AllocFlags flags>
 PA_ALWAYS_INLINE bool PartitionRoot::AllocWithMemoryToolProlog(size_t size) {
-  if (size > MaxAllocationSize()) {
+  if (size > GetMaxAllocationSize<flags>()) {
     if constexpr (ContainsFlags(flags, AllocFlags::kReturnNull)) {
       // Early return indicating not to proceed with allocation
       return false;
@@ -1320,7 +1320,7 @@ PartitionRoot::AllocInternal(size_t requested_size,
 
 #if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
   if constexpr (!ContainsFlags(flags, AllocFlags::kNoMemoryToolOverride)) {
-    if (!PartitionRoot::AllocWithMemoryToolProlog<flags>(requested_size)) {
+    if (!AllocWithMemoryToolProlog<flags>(requested_size)) {
       // Early return if AllocWithMemoryToolProlog returns false
       return {nullptr, std::nullopt};
     }
@@ -1659,7 +1659,9 @@ PartitionRoot::GetAdjustedSizeForAlignment(size_t alignment,
   PA_CHECK(std::has_single_bit(alignment));
   // Catch unsupported alignment requests early.
   PA_CHECK(alignment <= internal::kMaxSupportedAlignment);
-  PA_CHECK(requested_size <= MaxAllocationSize());
+  PA_CHECK(requested_size <= (settings_.allow_giga_allocations
+                                  ? MaxGigaAllocationSize()
+                                  : MaxAllocationSize()));
 
   // Memory returned by the regular allocator *always* respects |kAlignment|,
   // which is a power of two, and any valid alignment is also a power of two.
@@ -1713,7 +1715,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AlignedAllocInline(
   // platforms. Other allocation paths (Alloc, Realloc(nullptr, ...)) do not
   // perform prior size adjustment and are checked downstream in
   // PartitionDirectMap.
-  if (requested_size > MaxAllocationSize()) [[unlikely]] {
+  if (requested_size > GetMaxAllocationSize<flags>()) [[unlikely]] {
     if constexpr (ContainsFlags(flags, AllocFlags::kReturnNull)) {
       return nullptr;
     }
@@ -1755,7 +1757,7 @@ void* PartitionRoot::ReallocInline(void* ptr,
                                    const char* type_name) {
   static_assert(!ContainsFlags(alloc_flags, AllocFlags::kAlignedAlloc));
 #if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  if (!PartitionRoot::AllocWithMemoryToolProlog<alloc_flags>(new_size)) {
+  if (!AllocWithMemoryToolProlog<alloc_flags>(new_size)) {
     // Early return if AllocWithMemoryToolProlog returns false
     return nullptr;
   }
@@ -1776,7 +1778,7 @@ void* PartitionRoot::ReallocInline(void* ptr,
     return nullptr;
   }
 
-  if (new_size > MaxAllocationSize()) {
+  if (new_size > GetMaxAllocationSize<alloc_flags>()) {
     if constexpr (ContainsFlags(alloc_flags, AllocFlags::kReturnNull)) {
       return nullptr;
     }

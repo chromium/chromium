@@ -31,7 +31,7 @@ var ab1, ab2, ab3;
 try {
   ab1 = new ArrayBuffer(1000);
   ab2 = new ArrayBuffer(2000000);
-  ab3 = new ArrayBuffer(2147483640); // Too large per pdfium.
+  ab3 = new ArrayBuffer(10000000000000000); // Too large per pdfium.
 } catch (e) {
 }
 // Clumsily signal test harness if successful.

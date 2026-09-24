@@ -178,6 +178,8 @@ struct PartitionOptions {
   // without returning its slot to the freelist. Cannot be used with
   // thread_cache or backup_ref_ptr.
   EnableToggle intended_leak = kDisabled;
+
+  AllowToggle allow_giga_allocations = kDisallowed;
 };
 
 constexpr PartitionOptions::PartitionOptions() = default;
@@ -279,6 +281,7 @@ class alignas(internal::kPartitionCachelineSize)
 #endif
 
     bool use_tighter_aligned_alloc_bound = false;
+    bool allow_giga_allocations = false;
   };
 
   Settings settings_;
@@ -722,6 +725,20 @@ class alignas(internal::kPartitionCachelineSize)
 
   size_t get_max_size_of_allocated_bytes() const;
 
+  PA_ALWAYS_INLINE bool allow_giga_allocations() const {
+    return settings_.allow_giga_allocations;
+  }
+
+  template <AllocFlags flags>
+  PA_ALWAYS_INLINE size_t GetMaxAllocationSize() const {
+    if constexpr (ContainsFlags(flags, AllocFlags::kAllowGigaAllocations)) {
+      if (settings_.allow_giga_allocations) {
+        return MaxGigaAllocationSize();
+      }
+    }
+    return MaxAllocationSize();
+  }
+
   internal::pool_handle ChoosePool() const;
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   PA_ALWAYS_INLINE const internal::PoolOffsetLookup& GetOffsetLookup() const;
@@ -892,7 +909,7 @@ class alignas(internal::kPartitionCachelineSize)
   // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max
   // size as other alloc code.
   template <AllocFlags flags>
-  PA_ALWAYS_INLINE static bool AllocWithMemoryToolProlog(size_t size);
+  PA_ALWAYS_INLINE bool AllocWithMemoryToolProlog(size_t size);
 
   bool TryReallocInPlaceForNormalBuckets(void* object,
                                          SlotSpanMetadata* slot_span,
