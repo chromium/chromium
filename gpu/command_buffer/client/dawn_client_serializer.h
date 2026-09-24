@@ -37,9 +37,6 @@ class DawnClientSerializer : public dawn::wire::CommandSerializer {
   size_t GetMaximumAllocationSize() const final;
   std::optional<std::span<volatile std::byte>> GetCommandSpace(
       size_t size) final;
-#if DCHECK_IS_ON()
-  void OnSerializeError() final;
-#endif
 
   // Signal that it's important that the previously encoded commands are
   // flushed. Calling |AwaitingFlush| will return whether or not a flush still
