@@ -126,10 +126,8 @@ def GetDeveloperDirMac():
     candidate_paths.append(os.environ['DEVELOPER_DIR'])
   candidate_paths.extend([
       subprocess.check_output(['xcode-select', '-p']).decode('utf-8').strip(),
-      # Most Mac 10.1[0-2] bots have at least one Xcode installed.
+      # Most Mac bots have an Xcode installed at the default location.
       '/Applications/Xcode.app',
-      '/Applications/Xcode9.0.app',
-      '/Applications/Xcode8.0.app',
       # Mac 10.13 bots don't have any Xcode installed, but have CLI tools as a
       # temporary workaround.
       '/Library/Developer/CommandLineTools',
@@ -156,20 +154,32 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
   env = os.environ.copy()
 
   SRC_ROOT_PATH = os.path.join(os.path.dirname(__file__), '../../../..')
-  hermetic_otool_path = os.path.join(SRC_ROOT_PATH, 'build', 'mac_files',
-                                     'xcode_binaries', 'Contents', 'Developer',
-                                     'Toolchains', 'XcodeDefault.xctoolchain',
-                                     'usr', 'bin', 'otool')
-  if os.path.exists(hermetic_otool_path):
-    otool_path = hermetic_otool_path
-  else:
+  otool_path = os.path.join(SRC_ROOT_PATH, 'build', 'mac_files',
+                            'xcode_binaries', 'Contents', 'Developer',
+                            'Toolchains', 'XcodeDefault.xctoolchain', 'usr',
+                            'bin', 'otool')
+  try:
+    otool = subprocess.check_output([otool_path, '-lm', binary],
+                                    env=env).decode('utf-8').splitlines()
+  except OSError as e:
+    if e.errno not in (errno.ENOENT, errno.EBADARCH):
+      raise
+
+    # Xcode 27 and newer are ARM-only, so a hermetic toolchain staged by an
+    # arm64 builder has no x86_64 slice. Cross-compiling for x64 packages it
+    # into the test isolate anyway, where an Intel tester cannot exec it.
+    if e.errno == errno.EBADARCH:
+      print('WARNING: %s cannot run on this machine; falling back to the '
+            'otool on PATH.' % otool_path,
+            file=sys.stderr)
+
+    otool_path = 'otool'
     developer_dir = GetDeveloperDirMac()
     if developer_dir:
       env['DEVELOPER_DIR'] = developer_dir
-    otool_path = 'otool'
+    otool = subprocess.check_output([otool_path, '-lm', binary],
+                                    env=env).decode('utf-8').splitlines()
 
-  otool = subprocess.check_output([otool_path, '-lm', binary],
-                                  env=env).decode('utf-8').splitlines()
   rpaths = []
   dylib_id = None
   for idx, line in enumerate(otool):
