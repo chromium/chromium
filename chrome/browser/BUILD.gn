@@ -1214,6 +1214,7 @@ source_set("core") {
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safety_check:features",
     "//components/search",
+    "//components/search_engines/search_engine_choice:switches",
     "//components/security_state/content",
     "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/send_tab_to_self:features",

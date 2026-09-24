@@ -22,7 +22,7 @@ BASE_DECLARE_FEATURE(kChoiceScreenEligibilityCheckManagementStatus);
 
 // Enables choice of arbitrary default search engine from the prepopulated list.
 COMPONENT_EXPORT(SEARCH_ENGINE_CHOICE_SWITCHES)
-BASE_DECLARE_FEATURE(kSearchSettingsWithAllPrepopulatedEngines);
+BASE_DECLARE_FEATURE(kSearchSettingsWithMoreEngines);
 
 }  // namespace switches
 

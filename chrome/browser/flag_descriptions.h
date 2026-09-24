@@ -1166,7 +1166,6 @@ inline constexpr char kAutofillEnablePayNowPayLaterTabsDescription[] =
     "autofill when buy now pay later options are available for the merchant "
     "webpage.";
 
-
 inline constexpr char kAutofillEnableResurrectingPaymentsUsersName[] =
     "Enable resurrecting churned payments users";
 inline constexpr char kAutofillEnableResurrectingPaymentsUsersDescription[] =
@@ -3622,7 +3621,6 @@ inline constexpr char kOmniboxFuseboxPopupVariationsDescription[] =
     "Enables popup variations (with the accordion menu) for the mobile "
     "Fusebox popup.";
 
-
 inline constexpr char kOmniboxDisableTabsForCanvasName[] =
     "Omnibox Disable Tabs For Canvas";
 inline constexpr char kOmniboxDisableTabsForCanvasDescription[] =
@@ -4203,6 +4201,11 @@ inline constexpr char kSearchEngineExplicitChoiceDialogDescription[] =
     "When enabled, web searches with a newly-installed search engine-"
     "overriding extension will be deferred until a new explicit-choice dialog "
     "confirms the change is intentional.";
+
+inline constexpr char kSearchSettingsWithMoreEnginesName[] =
+    "Search Settings With More Prepopulated Engines";
+inline constexpr char kSearchSettingsWithMoreEnginesDescription[] =
+    "Populates the Search settings page with all prepopulated engines.";
 
 inline constexpr char kSearchEngineUnconditionalDialogName[] =
     "Always show confirmation dialog for new search engine overrides";
@@ -5705,9 +5708,11 @@ inline constexpr char kAutoResizeMinimumPageScaleFactorName[] =
 inline constexpr char kAutoResizeMinimumPageScaleFactorDescription[] =
     "Enables setting the minimum page scale factor to 1.0 during auto-resize.";
 
-inline constexpr char kCCTEarlyInitPowerManagerName[] = "CCT Early Init PowerManager";
+inline constexpr char kCCTEarlyInitPowerManagerName[] =
+    "CCT Early Init PowerManager";
 inline constexpr char kCCTEarlyInitPowerManagerDescription[] =
-    "Initializes PowerManager in CustomTabActivityTimeoutHandler during constructor instead of in onStop.";
+    "Initializes PowerManager in CustomTabActivityTimeoutHandler during "
+    "constructor instead of in onStop.";
 
 inline constexpr char kCctTabResumptionName[] = "Custom Tabs Tab Resumption";
 inline constexpr char kCctTabResumptionDescription[] =
@@ -7691,7 +7696,6 @@ inline constexpr char kEnableDisplayPerformanceModeDescription[] =
     "This option enables toggling different display features based on user "
     "setting and power state";
 
-
 inline constexpr char kEnableRFC8925Name[] =
     "Enable RFC8925 (prefer IPv6-only on IPv6-only-capable network)";
 inline constexpr char kEnableRFC8925Description[] =
@@ -7763,7 +7767,6 @@ inline constexpr char kEnableTouchpadsInDiagnosticsAppName[] =
 inline constexpr char kEnableTouchpadsInDiagnosticsAppDescription[] =
     "Shows touchpad cards in the Diagnostics App's input section. Requires "
     "#enable-input-in-diagnostics-app to be enabled.";
-
 
 inline constexpr char kPanelSelfRefresh2Name[] = "Enable Panel Self Refresh 2";
 inline constexpr char kPanelSelfRefresh2Description[] =

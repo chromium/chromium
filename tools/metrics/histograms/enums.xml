@@ -12694,6 +12694,7 @@ from previous Chrome versions.
   <int value="-677858590" label="cast-streaming-force-enable-hardware-av1"/>
   <int value="-676736440" label="ResetShortcutCustomizations:disabled"/>
   <int value="-676252846" label="ShimlessRMASkuDescription:disabled"/>
+  <int value="-676242810" label="SearchSettingsWithMoreEngines:disabled"/>
   <int value="-675133817"
       label="GlicHandoffButtonHideWhenModalUIShown:enabled"/>
   <int value="-674988697" label="BrowsingHistoryActorIntegrationM3:enabled"/>
@@ -14102,6 +14103,7 @@ from previous Chrome versions.
   <int value="-247542772" label="CheckOfflineCapability:enabled"/>
   <int value="-246946362"
       label="HelpAppOpensInsteadOfReleaseNotesNotification:disabled"/>
+  <int value="-245910368" label="SearchSettingsWithMoreEngines:enabled"/>
   <int value="-245813749"
       label="AutofillHighlightOnlyChangedValuesInPreviewMode:enabled"/>
   <int value="-245342115" label="PermissionChip:enabled"/>
