@@ -190,10 +190,14 @@ std::unique_ptr<content::WebContents> CreateWebContents(
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
-  // Attach the `ContextualTasksPermissionController` directly to the
-  // `WebContents`.
-  contextual_tasks::ContextualTasksPermissionController::CreateForWebContents(
-      web_contents.get(), browser_window);
+  // Register the task `WebContents` with the side panel's single location bar.
+  if (auto* coordinator =
+          contextual_tasks::ContextualTasksSidePanelCoordinator::Get(
+              browser_window->GetUnownedUserDataHost());
+      coordinator && coordinator->permission_controller()) {
+    coordinator->permission_controller()->RegisterWebContents(
+        web_contents.get());
+  }
 
   return web_contents;
 }
@@ -280,6 +284,9 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
     ActiveTaskContextProvider* active_task_context_provider,
     EntryPointEligibilityManager* eligibility_manager)
     : browser_window_(browser_window),
+      permission_controller_(
+          std::make_unique<ContextualTasksPermissionController>(
+              browser_window)),
       contextual_tasks_panel_host_(std::move(contextual_tasks_panel_host)),
       contextual_tasks_service_(ContextualTasksServiceFactory::GetForProfile(
           browser_window->GetProfile())),
@@ -599,10 +606,11 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
   // created here: this `WebContents` comes from a tab, so it already has one
   // attached via `TabHelpers::AttachTabHelpers()`.
 
-  // Attach the `ContextualTasksPermissionController` directly to the
-  // `WebContents`.
-  contextual_tasks::ContextualTasksPermissionController::CreateForWebContents(
-      web_contents.get(), browser_window_);
+  // Register the transferred `WebContents` with the side panel's single
+  // location bar.
+  if (permission_controller_) {
+    permission_controller_->RegisterWebContents(web_contents.get());
+  }
   auto it = task_id_to_web_contents_cache_.find(task_id);
   // WebContents transferred from a tab has already completed its initial paint
   // as a tab. Do not attach an FCP observer and mark FCP as already recorded
@@ -696,6 +704,9 @@ ContextualTasksSidePanelCoordinator::DetachWebContentsForTask(
     // soon be associated with a tab.
     webui::SetBrowserWindowInterface(web_contents.get(),
                                      /*browser_window_interface=*/nullptr);
+    if (permission_controller_) {
+      permission_controller_->UnregisterWebContents(web_contents.get());
+    }
     MaybeDetachWebContents(web_contents.get());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // Set ViewType to kTabContents so `ChromeSpeechRecognitionManagerDelegate`

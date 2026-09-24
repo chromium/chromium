@@ -52,6 +52,7 @@ class NavigationHandle;
 namespace contextual_tasks {
 
 class ContextualTask;
+class ContextualTasksPermissionController;
 class ContextualTasksService;
 class ContextualTasksUiService;
 class ActiveTaskContextProvider;
@@ -173,6 +174,9 @@ class ContextualTasksSidePanelCoordinator
   bool CanExpandToFullTab() const override;
   void ShowPageInfoBubble(bool is_pointer_interaction) override;
   void OnLogoPointerDown() override;
+  ContextualTasksPermissionController* permission_controller() {
+    return permission_controller_.get();
+  }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
   ContextualTasksExtensionsContainer* GetExtensionsContainerForTesting() {
     return extensions_container_.get();
@@ -305,6 +309,9 @@ class ContextualTasksSidePanelCoordinator
 
   // Browser window of the current panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
+
+  // Single permission controller and location bar for the side panel.
+  std::unique_ptr<ContextualTasksPermissionController> permission_controller_;
 
   // WebContents cache for each task.
   // Must be declared before contextual_tasks_panel_host_ so that in automated

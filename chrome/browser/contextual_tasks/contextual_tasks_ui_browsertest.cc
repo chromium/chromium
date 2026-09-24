@@ -21,6 +21,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_toolbar.mojom.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -921,9 +922,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
       web_contents->GetWebUI()->GetController());
   ASSERT_TRUE(side_panel_ui);
 
-  auto* permission_controller =
-      contextual_tasks::ContextualTasksPermissionController::FromWebContents(
-          web_contents);
+  auto* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::Get(
+          browser()->GetUnownedUserDataHost());
+  ASSERT_TRUE(coordinator);
+  auto* permission_controller = coordinator->permission_controller();
   ASSERT_TRUE(permission_controller);
 
   mojo::Remote<contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIService>

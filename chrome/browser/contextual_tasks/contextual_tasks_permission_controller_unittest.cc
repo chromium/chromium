@@ -30,25 +30,44 @@ class ContextualTasksPermissionControllerTest
     ON_CALL(mock_browser_window_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
 
-    ContextualTasksPermissionController::CreateForWebContents(
-        web_contents(), &mock_browser_window_);
+    controller_ = std::make_unique<ContextualTasksPermissionController>(
+        &mock_browser_window_);
+    controller_->RegisterWebContents(web_contents());
+  }
+
+  void TearDown() override {
+    controller_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   ContextualTasksPermissionController* controller() {
-    return ContextualTasksPermissionController::FromWebContents(web_contents());
+    return controller_.get();
   }
 
  private:
   ui::UnownedUserDataHost unowned_user_data_host_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_;
+  std::unique_ptr<ContextualTasksPermissionController> controller_;
 };
 
 TEST_F(ContextualTasksPermissionControllerTest,
-       RegistersLocationBarForWebContents) {
+       RegistersSingleLocationBarAcrossMultipleWebContents) {
   auto* location_bar = controller()->GetLocationBarForTesting();
   ASSERT_TRUE(location_bar);
   EXPECT_EQ(location_bar::GetLocationBarForWebContents(web_contents()),
             location_bar);
+
+  std::unique_ptr<content::WebContents> second_web_contents =
+      CreateTestWebContents();
+  controller()->RegisterWebContents(second_web_contents.get());
+  EXPECT_EQ(
+      location_bar::GetLocationBarForWebContents(second_web_contents.get()),
+      location_bar);
+
+  controller()->UnregisterWebContents(second_web_contents.get());
+  EXPECT_EQ(
+      location_bar::GetLocationBarForWebContents(second_web_contents.get()),
+      nullptr);
 }
 
 TEST_F(ContextualTasksPermissionControllerTest, GetStateReflectsChipChanges) {
