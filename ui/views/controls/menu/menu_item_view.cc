@@ -1305,7 +1305,8 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
     SkColor color = gfx::kPlaceholderColor;
 
     ui::ColorProvider* color_provider = GetColorProvider();
-    if (type_ == Type::kHighlighted || selected_color_id_.has_value()) {
+    if (type_ == Type::kHighlighted ||
+        (paint_as_selected && selected_color_id_.has_value())) {
       const ui::ColorId color_id = selected_color_id_.value_or(
           paint_as_selected ? ui::kColorMenuItemBackgroundSelected
                             : ui::kColorMenuItemBackgroundHighlighted);

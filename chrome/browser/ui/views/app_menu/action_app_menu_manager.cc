@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/browser/ui/views/app_menu/profile_dynamic_menu.h"
@@ -71,6 +72,8 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -84,6 +87,9 @@
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
+#include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/buildflags/buildflags.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -96,6 +102,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -148,19 +155,21 @@ class AppMenuBuilder {
   using DisplayType = AppMenuActionItem::DisplayType;
 
   AppMenuBuilder(actions::ActionItem* parent,
-                 actions::ActionItem* scope,
+                 BrowserWindowInterface* browser_window_interface,
                  std::optional<ui::ColorId> bg_color = std::nullopt,
                  DisplayType default_display_type = DisplayType::kRow)
       : AppMenuBuilder(static_cast<actions::BaseAction*>(parent),
-                       scope,
+                       browser_window_interface,
                        bg_color,
                        default_display_type) {}
   AppMenuBuilder(actions::BaseAction* parent,
-                 actions::ActionItem* scope,
+                 BrowserWindowInterface* browser_window_interface,
                  std::optional<ui::ColorId> bg_color = std::nullopt,
                  DisplayType default_display_type = DisplayType::kRow)
       : parent_(parent),
-        scope_(scope),
+        browser_window_interface_(browser_window_interface),
+        scope_(BrowserActions::From(browser_window_interface_)
+                   ->root_action_item()),
         bg_color_(bg_color),
         default_display_type_(default_display_type) {}
   AppMenuBuilder(const AppMenuBuilder&) = delete;
@@ -175,6 +184,12 @@ class AppMenuBuilder {
     }
     if (!params.display_type.has_value()) {
       params.display_type = default_display_type_;
+    }
+    if (!params.is_alerted.has_value()) {
+      params.is_alerted = IsElementIdAlerted(params.element_id);
+    }
+    if (params.is_alerted.value()) {
+      has_alerted_child_ = true;
     }
     auto item =
         AppMenuActionItem::CreateIndirect(id, scope_, std::move(params));
@@ -214,14 +229,27 @@ class AppMenuBuilder {
     if (!params.display_type.has_value()) {
       params.display_type = default_display_type_;
     }
+    if (!params.is_alerted.has_value()) {
+      params.is_alerted = IsElementIdAlerted(params.element_id);
+    }
+    const bool self_alerted = params.is_alerted.value();
     auto item =
         AppMenuActionItem::CreateIndirect(id, scope_, std::move(params));
     if (!item || !parent_) {
       return *this;
     }
     auto* item_ptr = parent_->AddChild(std::move(item));
-    AppMenuBuilder sub_builder(item_ptr, scope_);
+    AppMenuBuilder sub_builder(item_ptr, browser_window_interface_);
     build_submenu(sub_builder);
+    // If any item inside the submenu is alerted as part of a running tutorial,
+    // also alert this parent submenu row so the user knows which submenu to
+    // open, and propagate the alerted state up to any outer submenu.
+    if (sub_builder.has_alerted_child_) {
+      item_ptr->SetProperty(AppMenuActionItem::kIsAlertedKey, true);
+    }
+    if (self_alerted || sub_builder.has_alerted_child_) {
+      has_alerted_child_ = true;
+    }
     return *this;
   }
 
@@ -244,7 +272,8 @@ class AppMenuBuilder {
     }
     auto* item_ptr = parent_->AddChild(std::move(item));
     if (build_section.has_value()) {
-      AppMenuBuilder section_builder(item_ptr, scope_, section_bg_color);
+      AppMenuBuilder section_builder(item_ptr, browser_window_interface_,
+                                     section_bg_color);
       (*build_section)(section_builder);
     }
     return *this;
@@ -260,14 +289,28 @@ class AppMenuBuilder {
     if (!params.container_color.has_value()) {
       params.container_color = bg_color_;
     }
+    if (!params.is_alerted.has_value()) {
+      params.is_alerted = IsElementIdAlerted(params.element_id);
+    }
+    const bool self_alerted = params.is_alerted.value();
     auto item =
         AppMenuActionItem::CreateIndirect(id, scope_, std::move(params));
     if (!item || !parent_) {
       return *this;
     }
+    bool sub_alerted = false;
     if (build_submenu.has_value()) {
-      AppMenuBuilder sub_builder(item.get(), scope_);
+      AppMenuBuilder sub_builder(item.get(), browser_window_interface_);
       (*build_submenu)(sub_builder);
+      sub_alerted = sub_builder.has_alerted_child_;
+    }
+    // Propagate any alerted child item in `build_submenu` to this parent
+    // submenu row and to any enclosing submenu.
+    if (sub_alerted) {
+      item->SetProperty(AppMenuActionItem::kIsAlertedKey, true);
+    }
+    if (self_alerted || sub_alerted) {
+      has_alerted_child_ = true;
     }
 
     item->SetPopulateChildrenCallback(std::move(populate_callback));
@@ -286,10 +329,54 @@ class AppMenuBuilder {
   }
 
  private:
+  // Returns true if `element_id` is targeted by any step (or conditional branch
+  // step) of a currently running tutorial for this profile, so the menu item
+  // can be highlighted with a pulsing alert indicator.
+  bool IsElementIdAlerted(ui::ElementIdentifier element_id) const {
+    if (!element_id) {
+      return false;
+    }
+    auto* const user_ed_service =
+        UserEducationServiceFactory::GetForBrowserContext(
+            browser_window_interface_->GetProfile());
+    if (!user_ed_service || !user_ed_service->tutorial_service() ||
+        !user_ed_service->tutorial_service()->IsRunningTutorial()) {
+      return false;
+    }
+    const auto& registry = user_ed_service->tutorial_registry();
+    for (const auto& id : registry.GetTutorialIdentifiers()) {
+      if (!user_ed_service->tutorial_service()->IsRunningTutorial(id)) {
+        continue;
+      }
+      const auto* const desc = registry.GetTutorialDescription(id);
+      if (!desc) {
+        continue;
+      }
+      for (const auto& step : desc->steps) {
+        if (step.element_id() == element_id) {
+          return true;
+        }
+        for (const auto& branch : step.branches()) {
+          for (const auto& branch_step : branch.second) {
+            if (branch_step.element_id() == element_id) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   raw_ptr<actions::BaseAction> parent_;
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
   raw_ptr<actions::ActionItem> scope_;
   std::optional<ui::ColorId> bg_color_;
   DisplayType default_display_type_ = DisplayType::kRow;
+  // Tracks whether any action or nested submenu added by this builder is
+  // alerted, so parent submenu rows can also be highlighted when a child item
+  // inside the submenu is targeted by a tutorial.
+  bool has_alerted_child_ = false;
 };
 
 }  // namespace
@@ -333,7 +420,8 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
 void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
   actions::ActionItem* scope =
       BrowserActions::From(browser_window_interface_)->root_action_item();
-  AppMenuBuilder(root, scope, ui::kColorAppMenuUpgradeRowBackground)
+  AppMenuBuilder(root, browser_window_interface_,
+                 ui::kColorAppMenuUpgradeRowBackground)
       .AddSection(DisplayType::kSection, [this,
                                           scope](AppMenuBuilder& section) {
         bool has_notification = false;
@@ -404,16 +492,13 @@ void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
 
 void ActionAppMenuManager::AddSearchBarAction(actions::ActionItem* root) {
   if (base::FeatureList::IsEnabled(features::kChroMenuSearch)) {
-    AppMenuBuilder(
-        root,
-        BrowserActions::From(browser_window_interface_)->root_action_item())
+    AppMenuBuilder(root, browser_window_interface_)
         .AddSection(DisplayType::kSearch);
   }
 }
 
 void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
-  AppMenuBuilder(
-      root, BrowserActions::From(browser_window_interface_)->root_action_item())
+  AppMenuBuilder(root, browser_window_interface_)
       .AddSection(DisplayType::kBlock, [this](AppMenuBuilder& section) {
         Profile* profile = browser_window_interface_->GetProfile();
         std::optional<std::u16string> new_tab_text_override;
@@ -454,9 +539,8 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
 }
 
 void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
-  AppMenuBuilder(
-      root, BrowserActions::From(browser_window_interface_)->root_action_item(),
-      kColorAppMenuYourChromeBackground)
+  AppMenuBuilder(root, browser_window_interface_,
+                 kColorAppMenuYourChromeBackground)
       .AddSection(DisplayType::kSection, [this](AppMenuBuilder& section) {
         section.AddHeader(IDS_APP_MENU_YOUR_CHROME_HEADER);
 
@@ -659,9 +743,8 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
 
 void ActionAppMenuManager::AddToolsAndActionsActions(
     actions::ActionItem* root) {
-  AppMenuBuilder(
-      root, BrowserActions::From(browser_window_interface_)->root_action_item(),
-      kColorAppMenuToolsAndActionsBackground)
+  AppMenuBuilder(root, browser_window_interface_,
+                 kColorAppMenuToolsAndActionsBackground)
       .AddSection(DisplayType::kSection, [this](AppMenuBuilder& section) {
         section.AddHeader(IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER)
             .AddSubmenu(
@@ -915,8 +998,7 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
 }
 
 void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
-  AppMenuBuilder(
-      root, BrowserActions::From(browser_window_interface_)->root_action_item())
+  AppMenuBuilder(root, browser_window_interface_)
       .AddSection(DisplayType::kFooter, [browser_window_interface =
                                              browser_window_interface_.get()](
                                             AppMenuBuilder& section) {

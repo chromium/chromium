@@ -41,6 +41,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(AppMenuActionItem::ItemHeight,
 DEFINE_UI_CLASS_PROPERTY_KEY(const base::Feature*,
                              kAppMenuNewBadgeFeatureInternal,
                              nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAppMenuIsAlertedInternal, false)
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
@@ -81,6 +82,9 @@ const ui::ClassProperty<AppMenuActionItem::ItemHeight>* const
 const ui::ClassProperty<const base::Feature*>* const
     AppMenuActionItem::kNewBadgeFeatureKey = kAppMenuNewBadgeFeatureInternal;
 
+const ui::ClassProperty<bool>* const AppMenuActionItem::kIsAlertedKey =
+    kAppMenuIsAlertedInternal;
+
 std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
     actions::ActionId action_id,
     actions::ActionItem* scope,
@@ -112,6 +116,10 @@ std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
 
   if (params.element_id) {
     item->SetProperty(views::kElementIdentifierKey, params.element_id);
+  }
+
+  if (params.is_alerted.has_value()) {
+    item->SetProperty(kIsAlertedKey, params.is_alerted.value());
   }
 
   if (params.text_override.has_value()) {

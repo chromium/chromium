@@ -420,6 +420,10 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
                        : std::nullopt);
   }
 
+  if (child_base->GetProperty(AppMenuActionItem::kIsAlertedKey)) {
+    menu_item->SetAlerted();
+  }
+
   const auto* provider = ChromeLayoutProvider::Get();
 
   const auto item_height =

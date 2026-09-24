@@ -17,8 +17,11 @@
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/mock_vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -32,6 +35,7 @@
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -722,6 +726,66 @@ TEST_F(ActionAppMenuManagerTest, VerticalTabsNewBadgeProperty) {
   EXPECT_EQ(
       toggle_vertical_tabs->GetProperty(AppMenuActionItem::kNewBadgeFeatureKey),
       nullptr);
+}
+
+TEST_F(ActionAppMenuManagerTest, AlertedElementPropagatesToSubmenu) {
+  UserEducationServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<UserEducationService>(
+            Profile::FromBrowserContext(context), /*allows_promos=*/true);
+      }));
+  auto* const user_ed_service =
+      UserEducationServiceFactory::GetForBrowserContext(profile_.get());
+  user_education::TutorialDescription desc;
+  desc.steps.push_back(user_education::TutorialDescription::BubbleStep(
+                           AppMenuModel::kPasswordManagerMenuItem)
+                           .SetBubbleBodyText(IDS_OK));
+  desc.steps.push_back(
+      user_education::TutorialDescription::BubbleStep("NamedElement")
+          .SetBubbleBodyText(IDS_OK));
+  user_ed_service->tutorial_registry().AddTutorial("TestTutorial",
+                                                   std::move(desc));
+  user_ed_service->tutorial_service()->StartTutorial(
+      "TestTutorial", ui::ElementContext::CreateFakeContextForTesting(1));
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+  actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
+  ASSERT_NE(your_chrome_section, nullptr);
+
+  actions::BaseAction* passwords_submenu = nullptr;
+  actions::BaseAction* show_downloads = nullptr;
+  for (const auto& child : your_chrome_section->GetChildren().children()) {
+    if (child->GetActionItem()->GetActionId() ==
+        kActionPasswordsAndAutofillSubmenu) {
+      passwords_submenu = child.get();
+    } else if (child->GetActionItem()->GetActionId() ==
+               kActionShowDownloadsPage) {
+      show_downloads = child.get();
+    }
+  }
+  ASSERT_NE(passwords_submenu, nullptr);
+  EXPECT_TRUE(passwords_submenu->GetProperty(AppMenuActionItem::kIsAlertedKey));
+
+  actions::BaseAction* show_passwords =
+      passwords_submenu->GetChildren().children()[0].get();
+  ASSERT_NE(show_passwords, nullptr);
+  EXPECT_TRUE(show_passwords->GetProperty(AppMenuActionItem::kIsAlertedKey));
+
+  // Items without an element_id (like Payment methods) must not match tutorial
+  // steps that also have an empty element_id.
+  actions::BaseAction* show_payment_methods =
+      passwords_submenu->GetChildren().children()[1].get();
+  ASSERT_NE(show_payment_methods, nullptr);
+  EXPECT_FALSE(
+      show_payment_methods->GetProperty(AppMenuActionItem::kIsAlertedKey));
+
+  ASSERT_NE(show_downloads, nullptr);
+  EXPECT_FALSE(show_downloads->GetProperty(AppMenuActionItem::kIsAlertedKey));
 }
 
 }  // namespace

@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
@@ -49,6 +50,8 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
@@ -64,6 +67,7 @@
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/search/ntp_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -2055,6 +2059,46 @@ TEST_F(ActionAppMenuTest, MenuItemNewBadgeProperty) {
       root->GetMenuItemByID(kActionShowDownloadsPage);
   ASSERT_TRUE(downloads_item);
   EXPECT_EQ(downloads_item->new_badge_type(), std::nullopt);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, MenuItemIsAlertedProperty) {
+  UserEducationServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<UserEducationService>(
+            Profile::FromBrowserContext(context), /*allows_promos=*/true);
+      }));
+  auto* const user_ed_service =
+      UserEducationServiceFactory::GetForBrowserContext(profile_.get());
+  user_education::TutorialDescription desc;
+  desc.steps.push_back(user_education::TutorialDescription::BubbleStep(
+                           AppMenuModel::kDownloadsMenuItem)
+                           .SetBubbleBodyText(IDS_OK));
+  user_ed_service->tutorial_registry().AddTutorial("TestTutorial",
+                                                   std::move(desc));
+  user_ed_service->tutorial_service()->StartTutorial(
+      "TestTutorial", ui::ElementContext::CreateFakeContextForTesting(1));
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* downloads_item =
+      root->GetMenuItemByID(kActionShowDownloadsPage);
+  ASSERT_TRUE(downloads_item);
+  EXPECT_TRUE(downloads_item->is_alerted());
+
+  views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
+  ASSERT_TRUE(print_item);
+  EXPECT_FALSE(print_item->is_alerted());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
