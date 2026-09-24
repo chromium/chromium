@@ -65,8 +65,6 @@ tast.network.ARCEAPWifiProvisioning.eap_wifi_tls
 # b/409064294
 tast.apps.SystemWebAppsInstallGuest
 tast.peripherals.LaunchAppFromGuestSession.diagnostics
-tast.health.MonitorKeyboardDiagnosticEvent.tablet_mode_form_factors
-tast.health.MonitorKeyboardDiagnosticEvent.non_tablet_mode_form_factors
 
 # b/422132031
 tast.inputs.VirtualKeyboardHandwriting.docked
