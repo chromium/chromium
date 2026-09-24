@@ -672,24 +672,37 @@ bool AreRunsOnSameLine(const chrome_pdf::AccessibilityTextRunInfo& run1,
                                run2.bounds.y(), run2.bounds.height());
 }
 
-// Returns the header or footer role that `current_run` qualifies for, or
+const chrome_pdf::AccessibilityTextRunInfo* GetRunAfterIndex(
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
+    size_t index) {
+  return (index + 1 < text_runs.size()) ? &text_runs[index + 1] : nullptr;
+}
+
+TextRunContext GetTextRunContext(const PageLayoutData& layout,
+                                 size_t text_run_index) {
+  return {
+      .run = raw_ref(layout.text_runs[text_run_index]),
+      .next_run = GetRunAfterIndex(layout.text_runs, text_run_index),
+      .chars = GetTextRunChars(layout, text_run_index),
+  };
+}
+
+// Returns the header or footer role that `run_context.run` qualifies for, or
 // `kNone` otherwise. A run must sit inside the top or bottom margin band,
 // contain at least one alphanumeric character, and be rendered smaller than the
 // page's median font size, since running headers and copyright notices are
 // often set smaller than body text. Page numbers are exempt from the font size
 // rule and are allowed a taller bottom margin band, because they are commonly
-// set at body text size and placed higher up the page. `next_run`, the run
-// following `current_run` or null at the end of the page, tells whether other
-// text shares the same visual line, which separates a page number from a
-// footnote marker or a section number.
+// set at body text size and placed higher up the page. `run_context.next_run`,
+// the run following `run_context.run` or null at the end of the page, tells
+// whether other text shares the same visual line, which separates a page number
+// from a footnote marker or a section number.
 //
 // `out_page_number_kind` receives how the run reads as a page number, so that
 // callers can order this against heading classification without classifying the
 // run's text a second time.
 HeaderFooterRole GetHeaderFooterRole(
-    const chrome_pdf::AccessibilityTextRunInfo& current_run,
-    const chrome_pdf::AccessibilityTextRunInfo* next_run,
-    base::span<const chrome_pdf::AccessibilityCharInfo> current_run_chars,
+    const TextRunContext& run_context,
     const HeuristicPageProperties& page_properties,
     PageNumberKind* out_page_number_kind) {
   *out_page_number_kind = PageNumberKind::kNone;
@@ -701,10 +714,13 @@ HeaderFooterRole GetHeaderFooterRole(
   // Must contain at least one alphanumeric character (letter or digit) to be a
   // header or footer. This filters out isolated bullets, decorative rules, or
   // symbols.
-  std::string run_text = GetTrimmedText(current_run_chars);
+  std::string run_text = GetTrimmedText(run_context.chars);
   if (run_text.empty() || !ContainsAlphanumeric(run_text)) {
     return HeaderFooterRole::kNone;
   }
+
+  const chrome_pdf::AccessibilityTextRunInfo& current_run = *run_context.run;
+  const chrome_pdf::AccessibilityTextRunInfo* next_run = run_context.next_run;
 
   // Margin check: early return for text outside top/bottom margins.
   bool is_in_top_margin =
@@ -791,12 +807,6 @@ std::optional<ax::mojom::Role> GetAXRoleForHeaderFooterRole(
   }
 }
 
-const chrome_pdf::AccessibilityTextRunInfo* GetRunAfterIndex(
-    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
-    size_t index) {
-  return (index + 1 < text_runs.size()) ? &text_runs[index + 1] : nullptr;
-}
-
 std::string_view GetFontWithoutSubset(std::string_view font_name) {
   // As defined in ISO 32000-1:2008, section 9.6.4: "Font Subsets".
   // For a font subset, the PostScript name shall begin with 6 uppercase letters
@@ -821,12 +831,12 @@ bool AreStylesAndFontsEquivalent(
 }
 
 HeadingClassifier GetHeadingClassifier(
-    const chrome_pdf::AccessibilityTextRunInfo& current_run,
-    const chrome_pdf::AccessibilityTextRunInfo* next_run,
-    base::span<const chrome_pdf::AccessibilityCharInfo> current_run_chars,
+    const TextRunContext& run_context,
     const HeuristicPageProperties& page_properties) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
 
+  const chrome_pdf::AccessibilityTextRunInfo& current_run = *run_context.run;
+  const chrome_pdf::AccessibilityTextRunInfo* next_run = run_context.next_run;
   const chrome_pdf::AccessibilityTextStyleInfo& style = current_run.style;
   if (style.font_size < page_properties.median_font_size) {
     return HeadingClassifier::kNone;
@@ -843,7 +853,7 @@ HeadingClassifier GetHeadingClassifier(
 
   // Handle styled text that is the same size as the normal body text with more
   // caution so that stylized body text isn't mistaken as a heading.
-  bool is_run_all_uppercase = IsAllUppercase(current_run_chars);
+  bool is_run_all_uppercase = IsAllUppercase(run_context.chars);
   if (style.font_size == page_properties.median_font_size) {
     // If this is the last run of the page, label this body text.
     if (!next_run) {
@@ -910,9 +920,7 @@ void PromoteNodeToHeading(ui::AXNodeData* block_node, int heading_level) {
 // Re-evaluates the header or footer role of `block_node` for a later run on
 // the same visual line, since the first run alone may not identify the line.
 void UpdateHeaderFooterRoleForSameLineRun(
-    const chrome_pdf::AccessibilityTextRunInfo& current_run,
-    const chrome_pdf::AccessibilityTextRunInfo* next_run,
-    base::span<const chrome_pdf::AccessibilityCharInfo> current_run_chars,
+    const TextRunContext& run_context,
     const HeuristicPageProperties& page_properties,
     ui::AXNodeData* block_node) {
   if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
@@ -923,15 +931,15 @@ void UpdateHeaderFooterRoleForSameLineRun(
   // needed, since heading classification already ran when the block was
   // created.
   PageNumberKind unused_page_number_kind;
-  HeaderFooterRole role =
-      GetHeaderFooterRole(current_run, next_run, current_run_chars,
-                          page_properties, &unused_page_number_kind);
+  HeaderFooterRole role = GetHeaderFooterRole(run_context, page_properties,
+                                              &unused_page_number_kind);
 
   // Wide text that is not a page number reads as body content, so demote the
   // footer back to a paragraph.
   if (block_node->role == ax::mojom::Role::kSectionFooter &&
       role == HeaderFooterRole::kNone) {
-    if (current_run.bounds.width() > page_properties.max_page_number_width) {
+    if (run_context.run->bounds.width() >
+        page_properties.max_page_number_width) {
       block_node->role = ax::mojom::Role::kParagraph;
     }
     return;
@@ -963,13 +971,11 @@ void UpdateHeaderFooterRoleForSameLineRun(
 }
 
 // Returns whether to break the current block at the header or footer boundary
-// `next_run` crosses, or `std::nullopt` when the transition says nothing about
-// breaking. Demotes `block_node` back to a paragraph when a block already
-// classified as a header or footer turns out to be body content.
+// `next_run_context` crosses, or `std::nullopt` when the transition says
+// nothing about breaking. Demotes `block_node` back to a paragraph when a block
+// already classified as a header or footer turns out to be body content.
 std::optional<bool> BreakAtHeaderFooterBoundary(
-    const chrome_pdf::AccessibilityTextRunInfo& next_run,
-    const chrome_pdf::AccessibilityTextRunInfo* next_next_run,
-    base::span<const chrome_pdf::AccessibilityCharInfo> next_run_chars,
+    const TextRunContext& next_run_context,
     const HeuristicPageProperties& page_properties,
     bool is_large_line_spacing_break,
     ui::AXNodeData* block_node) {
@@ -982,9 +988,8 @@ std::optional<bool> BreakAtHeaderFooterBoundary(
     current_role = HeaderFooterRole::kFooter;
   }
   PageNumberKind next_page_number_kind = PageNumberKind::kNone;
-  HeaderFooterRole next_role =
-      GetHeaderFooterRole(next_run, next_next_run, next_run_chars,
-                          page_properties, &next_page_number_kind);
+  HeaderFooterRole next_role = GetHeaderFooterRole(
+      next_run_context, page_properties, &next_page_number_kind);
 
   if (current_role != HeaderFooterRole::kNone) {
     // Without a large gap, the next run continues the current line or opens one
@@ -1042,21 +1047,18 @@ bool BreakParagraph(uint32_t text_run_index,
                     const HeuristicPageProperties& page_properties) {
   const chrome_pdf::AccessibilityTextRunInfo& current_run =
       layout.text_runs[text_run_index];
-  const chrome_pdf::AccessibilityTextRunInfo& next_run =
-      layout.text_runs[text_run_index + 1];
-  const chrome_pdf::AccessibilityTextRunInfo* next_next_run =
-      GetRunAfterIndex(layout.text_runs, text_run_index + 1);
-  base::span<const chrome_pdf::AccessibilityCharInfo> next_run_chars =
-      GetTextRunChars(layout, text_run_index + 1);
+  const TextRunContext next_run_context =
+      GetTextRunContext(layout, text_run_index + 1);
+  const chrome_pdf::AccessibilityTextRunInfo& next_run = *next_run_context.run;
 
   bool is_large_line_spacing_break = BreakParagraphByLineSpacing(
       current_run, next_run, page_properties.paragraph_spacing_threshold);
 
   // Header and footer boundaries take precedence over the rules below.
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
-    std::optional<bool> header_footer_break = BreakAtHeaderFooterBoundary(
-        next_run, next_next_run, next_run_chars, page_properties,
-        is_large_line_spacing_break, block_node);
+    std::optional<bool> header_footer_break =
+        BreakAtHeaderFooterBoundary(next_run_context, page_properties,
+                                    is_large_line_spacing_break, block_node);
     if (header_footer_break.has_value()) {
       return header_footer_break.value();
     }
@@ -1085,24 +1087,21 @@ bool BreakParagraph(uint32_t text_run_index,
 
   // For styled headings (e.g. bold, uppercase, font name), break if the next
   // run has a different classifier.
-  HeadingClassifier next_classifier = GetHeadingClassifier(
-      next_run, next_next_run, next_run_chars, page_properties);
+  HeadingClassifier next_classifier =
+      GetHeadingClassifier(next_run_context, page_properties);
   return heading_classifier != next_classifier;
 }
 
-void BuildStaticNode(
-    ui::AXNodeData** static_text_node,
-    std::string* static_text,
-    std::optional<chrome_pdf::AccessibilityTextStyleInfo>* current_style) {
+void BuildStaticNode(StaticTextState* static_text_state) {
   // If a static text node is currently being built, finish it before
   // moving on to the next object.
-  if (*static_text_node) {
-    (*static_text_node)
-        ->AddStringAttribute(ax::mojom::StringAttribute::kName, (*static_text));
-    static_text->clear();
+  if (static_text_state->node) {
+    static_text_state->node->AddStringAttribute(
+        ax::mojom::StringAttribute::kName, static_text_state->text);
+    static_text_state->text.clear();
   }
-  *static_text_node = nullptr;
-  current_style->reset();
+  static_text_state->node = nullptr;
+  static_text_state->style.reset();
 }
 
 void ConnectPreviousAndNextOnLine(ui::AXNodeData* previous_on_line_node,
@@ -1114,6 +1113,9 @@ void ConnectPreviousAndNextOnLine(ui::AXNodeData* previous_on_line_node,
 }
 
 }  // namespace
+
+StaticTextState::StaticTextState() = default;
+StaticTextState::~StaticTextState() = default;
 
 PdfAccessibilityTreeBuilderHeuristic::PdfAccessibilityTreeBuilderHeuristic(
     PdfAccessibilityTreeBuilder& builder)
@@ -1150,10 +1152,8 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   };
 
   ui::AXNodeData* block_node = nullptr;
-  ui::AXNodeData* static_text_node = nullptr;
   ui::AXNodeData* previous_on_line_node = nullptr;
-  std::string static_text;
-  std::optional<chrome_pdf::AccessibilityTextStyleInfo> current_style;
+  StaticTextState static_text_state;
   HeadingClassifier current_heading_classifier = HeadingClassifier::kNone;
   LineHelper line_helper(builder_->text_runs());
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -1163,8 +1163,9 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
 
   for (size_t text_run_index = 0; text_run_index < builder_->text_runs().size();
        ++text_run_index) {
-    const chrome_pdf::AccessibilityTextRunInfo& text_run =
-        (builder_->text_runs())[text_run_index];
+    const TextRunContext run_context =
+        GetTextRunContext(page_layout, text_run_index);
+    const chrome_pdf::AccessibilityTextRunInfo& text_run = *run_context.run;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     // OCR text should be marked by nodes before and after it.
@@ -1175,7 +1176,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       // PDF searchifier only processes pages that have no text, hence OCR text
       // is never added in the middle of a paragraph.
       if (block_node) {
-        BuildStaticNode(&static_text_node, &static_text, &current_style);
+        BuildStaticNode(&static_text_state);
         block_node = nullptr;
       }
       CHECK(ocr_block_start || text_run_index);
@@ -1191,11 +1192,8 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     // If we don't have a block level node, create one.
     if (!block_node) {
-      const chrome_pdf::AccessibilityTextRunInfo* next_run =
-          GetRunAfterIndex(page_layout.text_runs, text_run_index);
-      block_node = CreateBlockLevelNode(
-          text_run, next_run, GetTextRunChars(page_layout, text_run_index),
-          page_properties, &current_heading_classifier);
+      block_node = CreateBlockLevelNode(run_context, page_properties,
+                                        &current_heading_classifier);
       builder_->page_node()->child_ids.push_back(block_node->id);
 
       if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
@@ -1218,7 +1216,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     // `text_run_index`, then push the link node in the block.
     if (IsObjectWithRangeInTextRun(builder_->links(), current_link_index_,
                                    text_run_index)) {
-      BuildStaticNode(&static_text_node, &static_text, &current_style);
+      BuildStaticNode(&static_text_state);
       const chrome_pdf::AccessibilityLinkInfo& link =
           (builder_->links())[current_link_index_++];
       AddLinkToParaNode(link, block_node, &previous_on_line_node,
@@ -1230,14 +1228,14 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
 
     } else if (IsObjectInTextRun(builder_->images(), current_image_index_,
                                  text_run_index)) {
-      BuildStaticNode(&static_text_node, &static_text, &current_style);
+      BuildStaticNode(&static_text_state);
       AddImageToParaNode((builder_->images())[current_image_index_++],
                          block_node, &text_run_index);
       continue;
     } else if (IsObjectWithRangeInTextRun(builder_->highlights(),
                                           current_highlight_index_,
                                           text_run_index)) {
-      BuildStaticNode(&static_text_node, &static_text, &current_style);
+      BuildStaticNode(&static_text_state);
       AddHighlightToParaNode(
           (builder_->highlights())[current_highlight_index_++], block_node,
           &previous_on_line_node, &text_run_index);
@@ -1250,44 +1248,43 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       // the style changes. This prevents text runs of different styles (e.g.
       // bold vs regular) from being merged into a single static text node.
       if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
-          static_text_node && current_style &&
-          !PdfAccessibilityTreeBuilder::AreStylesEquivalent(*current_style,
-                                                            text_run.style)) {
-        BuildStaticNode(&static_text_node, &static_text, &current_style);
+          static_text_state.node && static_text_state.style &&
+          !PdfAccessibilityTreeBuilder::AreStylesEquivalent(
+              *static_text_state.style, text_run.style)) {
+        BuildStaticNode(&static_text_state);
         current_heading_classifier = HeadingClassifier::kNone;
       }
 
       // This node is for the text inside the block, it includes the text of all
       // of the text runs.
-      if (!static_text_node) {
+      if (!static_text_state.node) {
         // No need to add text styling to the node if it's a heading because the
         // heading has its own styling.
         if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
             (block_node->role != ax::mojom::Role::kHeading)) {
-          static_text_node = builder_->CreateStaticTextNodeWithStyle(
+          static_text_state.node = builder_->CreateStaticTextNodeWithStyle(
               page_char_index, text_run.style);
-          current_style = text_run.style;
+          static_text_state.style = text_run.style;
         } else {
-          static_text_node = builder_->CreateStaticTextNode(page_char_index);
+          static_text_state.node =
+              builder_->CreateStaticTextNode(page_char_index);
         }
-        block_node->child_ids.push_back(static_text_node->id);
+        block_node->child_ids.push_back(static_text_state.node->id);
       }
 
       // Add this text run to the current static text node.
       ui::AXNodeData* inline_text_box_node =
           builder_->CreateInlineTextBoxNode(text_run, page_char_index);
-      static_text_node->child_ids.push_back(inline_text_box_node->id);
+      static_text_state.node->child_ids.push_back(inline_text_box_node->id);
 
-      static_text += inline_text_box_node->GetStringAttribute(
+      static_text_state.text += inline_text_box_node->GetStringAttribute(
           ax::mojom::StringAttribute::kName);
 
       if (previous_on_line_node) {
         ConnectPreviousAndNextOnLine(previous_on_line_node,
                                      inline_text_box_node);
-        UpdateHeaderFooterRoleForSameLineRun(
-            text_run, GetRunAfterIndex(page_layout.text_runs, text_run_index),
-            GetTextRunChars(page_layout, text_run_index), page_properties,
-            block_node);
+        UpdateHeaderFooterRoleForSameLineRun(run_context, page_properties,
+                                             block_node);
       } else {
         line_helper.StartNewLine(text_run_index);
       }
@@ -1299,7 +1296,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       // too wide to promote.
       block_node->relative_bounds.bounds.Union(
           inline_text_box_node->relative_bounds.bounds);
-      static_text_node->relative_bounds.bounds.Union(
+      static_text_state.node->relative_bounds.bounds.Union(
           inline_text_box_node->relative_bounds.bounds);
 
       if (text_run_index < builder_->text_runs().size() - 1) {
@@ -1314,14 +1311,14 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     }
 
     if (text_run_index == builder_->text_runs().size() - 1) {
-      BuildStaticNode(&static_text_node, &static_text, &current_style);
+      BuildStaticNode(&static_text_state);
       break;
     }
 
     if (!previous_on_line_node) {
       if (BreakParagraph(text_run_index, block_node, current_heading_classifier,
                          page_layout, page_properties)) {
-        BuildStaticNode(&static_text_node, &static_text, &current_style);
+        BuildStaticNode(&static_text_state);
         block_node = nullptr;
         current_heading_classifier = HeadingClassifier::kNone;
       }
@@ -1346,9 +1343,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
 }
 
 ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
-    const chrome_pdf::AccessibilityTextRunInfo& current_run,
-    const chrome_pdf::AccessibilityTextRunInfo* next_run,
-    base::span<const chrome_pdf::AccessibilityCharInfo> current_run_chars,
+    const TextRunContext& run_context,
     const HeuristicPageProperties& page_properties,
     HeadingClassifier* out_heading_classifier) {
   ui::AXNodeData* block_node = builder_->CreateAndAppendNode(
@@ -1367,8 +1362,7 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
   PageNumberKind page_number_kind = PageNumberKind::kNone;
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     header_footer_ax_role = GetAXRoleForHeaderFooterRole(
-        GetHeaderFooterRole(current_run, next_run, current_run_chars,
-                            page_properties, &page_number_kind));
+        GetHeaderFooterRole(run_context, page_properties, &page_number_kind));
   }
 
   // A bare digit in a margin is normally a page number, so skip heading
@@ -1379,7 +1373,7 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
       header_footer_ax_role.has_value();
 
   if (!is_page_number_in_margin) {
-    float font_size = current_run.style.font_size;
+    float font_size = run_context.run->style.font_size;
     if (page_properties.heading_font_size_threshold > 0 &&
         font_size > page_properties.heading_font_size_threshold) {
       int heading_level = kDefaultHeadingLevel;
@@ -1398,8 +1392,8 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     // Use other styling information to classify headings for text that is
     // smaller than the heading_font_size_threshold.
     if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
-      HeadingClassifier classifier = GetHeadingClassifier(
-          current_run, next_run, current_run_chars, page_properties);
+      HeadingClassifier classifier =
+          GetHeadingClassifier(run_context, page_properties);
 
       if (classifier != HeadingClassifier::kNone) {
         int heading_level = kLargestStyledHeadingLevel;

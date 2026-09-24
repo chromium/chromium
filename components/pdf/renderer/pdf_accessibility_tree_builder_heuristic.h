@@ -9,9 +9,11 @@
 #include <cstdint>
 #include <map>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/raw_span.h"
 #include "pdf/accessibility_structs.h"
@@ -58,6 +60,36 @@ struct PageLayoutData {
 
   // The starting character index for each text run on the page.
   base::raw_span<const uint32_t> text_run_start_indices;
+};
+
+// Bundles a single text run with its character span and the following run on
+// the page.
+struct TextRunContext {
+  // The text run being evaluated.
+  const raw_ref<const chrome_pdf::AccessibilityTextRunInfo> run;
+
+  // The immediately following text run on the page, or nullptr if `run` is the
+  // last run.
+  raw_ptr<const chrome_pdf::AccessibilityTextRunInfo> next_run = nullptr;
+
+  // The characters belonging to `run`.
+  base::raw_span<const chrome_pdf::AccessibilityCharInfo> chars;
+};
+
+// Tracks the in-progress static text node being accumulated across consecutive
+// text runs with matching style.
+struct StaticTextState {
+  StaticTextState();
+  ~StaticTextState();
+
+  // The static text node currently being built, or nullptr if none is active.
+  raw_ptr<ui::AXNodeData> node = nullptr;
+
+  // The accumulated UTF-8 text of all inline text boxes added to `node` so far.
+  std::string text;
+
+  // The text style of `node` when style tracking is active.
+  std::optional<chrome_pdf::AccessibilityTextStyleInfo> style;
 };
 
 // Computed page-specific metrics, styling properties, and classification
@@ -130,9 +162,7 @@ class PdfAccessibilityTreeBuilderHeuristic {
 
  private:
   ui::AXNodeData* CreateBlockLevelNode(
-      const chrome_pdf::AccessibilityTextRunInfo& current_run,
-      const chrome_pdf::AccessibilityTextRunInfo* next_run,
-      base::span<const chrome_pdf::AccessibilityCharInfo> current_run_chars,
+      const TextRunContext& run_context,
       const HeuristicPageProperties& page_properties,
       HeadingClassifier* out_heading_classifier);
 
