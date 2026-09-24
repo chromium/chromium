@@ -1161,6 +1161,13 @@ export const ComposeboxEmbedderMixin =
           if (this.getActiveElement() === this.getDropdownElement() ||
               !e.shiftKey) {
             e.preventDefault();
+            if (this.selectedMatchIndex >= 0) {
+              const match = this.result!.matches[this.selectedMatchIndex];
+              assert(match);
+              if (this.maybeHandleSuggestionFuseboxAction_(match)) {
+                return;
+              }
+            }
             if (this.canSubmitFilesAndInput) {
               this.submitQuery(e);
             }
@@ -1555,14 +1562,25 @@ export const ComposeboxEmbedderMixin =
 
         async handleFuseboxAction(request: ComposeboxFuseboxActionRequest) {
           const action = request.fuseboxAction;
-          const isHint =
-              action?.queryActionOverride === QueryActionOverride.kHint;
-          if (isHint) {
-            this.fuseboxChipHint_ = request.suggestion;
-            this.updateInputPlaceholder();
+          let text = request.suggestion;
+          let selectAllInput = false;
+          if (action?.queryActionOverride) {
+            switch (action.queryActionOverride) {
+              case QueryActionOverride.kHint:
+                this.fuseboxChipHint_ = request.suggestion;
+                this.updateInputPlaceholder();
+                text = '';
+                break;
+              case QueryActionOverride.kPaste:
+                this.focusInput();
+                selectAllInput = true;
+                break;
+              default:
+                break;
+            }
           }
-          this.state = {
-            text: isHint ? '' : request.suggestion,
+          const fuseboxActionState: ComposeboxState = {
+            text,
             files: request.files,
             mode: action?.preselectedTool ?? ToolMode.kUnspecified,
             model: action?.preselectedModel ?? ModelMode.kUnspecified,
@@ -1571,6 +1589,7 @@ export const ComposeboxEmbedderMixin =
             smartTabSharingActive: false,
             // </if>
           };
+          this.state = fuseboxActionState;
           if (action?.preselectedInputSource) {
             switch (action.preselectedInputSource) {
               case InputSource.kInputSourceGallery:
@@ -1587,6 +1606,21 @@ export const ComposeboxEmbedderMixin =
                 break;
               default:
                 break;
+            }
+          }
+          // TODO(crbug.com/565508610): Handle state updates in a more robust
+          // way to avoid this race condition.
+          if (selectAllInput) {
+            // The pasted text is applied by updateState(), which runs from
+            // updated(), and only shows up in the input after the following
+            // render. Selecting any earlier would be undone when the input is
+            // updated.
+            await this.updateComplete;
+            await this.updateStateComplete_;
+            await this.updateComplete;
+            // Bail out if a newer action has replaced this one.
+            if (this.state === fuseboxActionState) {
+              this.getInputElement().selectAll();
             }
           }
         }
@@ -2190,6 +2224,7 @@ export const ComposeboxEmbedderMixin =
             assert(match);
             this.getSearchboxHandler().setSmartComposeStats(
                 this.smartComposeStats);
+
             const viaKeyboard = !!e && e instanceof KeyboardEvent;
             this.getSearchboxHandler().openAutocompleteMatch(
                 this.result!.sequenceId, this.selectedMatchIndex,

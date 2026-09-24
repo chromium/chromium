@@ -669,7 +669,7 @@ suite('ComposeboxMixinTest', () => {
         assertTrue(event.defaultPrevented);
       });
 
-  test('routes suggestion actions on click only', async () => {
+  test('routes suggestion actions on click and keyboard submit', async () => {
     const makeAction = (overrides: Partial<FuseboxAction> = {}) =>
         createFuseboxActionRequest(overrides).fuseboxAction;
     const originalHandler = element.handleFuseboxAction;
@@ -706,6 +706,29 @@ suite('ComposeboxMixinTest', () => {
           {button: 0, bubbles: true, cancelable: true, composed: true}));
     }
 
+    // Selects the match at `index` via the keyboard. In production, selecting
+    // a match focuses it, which makes the dropdown the active element from the
+    // composebox's perspective (the match itself lives in the dropdown's
+    // shadow root).
+    function selectMatch(index: number) {
+      dropdown.selectIndex(index);
+      dropdown.focusSelected();
+      element.setActiveElement(dropdown);
+    }
+
+    // Simulates pressing Enter while a match is selected. The event is
+    // dispatched on the wrapper so it routes through onKeydown() and
+    // handleEnter_(), which is where suggestion fusebox actions are
+    // intercepted before the query is submitted.
+    function pressEnter() {
+      element.getWrapperElement().dispatchEvent(new KeyboardEvent('keydown', {
+        key: 'Enter',
+        shiftKey: false,
+        bubbles: true,
+        cancelable: true,
+      }));
+    }
+
     try {
       // 1. When suggestion fusebox actions are disabled (default), clicking an
       // action match falls back to standard match opening instead of calling
@@ -722,22 +745,26 @@ suite('ComposeboxMixinTest', () => {
       assertTrue(element.submitting);
 
       // 2. When suggestion fusebox actions are enabled, selecting an action
-      // match via keyboard and pressing Enter does not trigger
-      // handleFuseboxAction; it submits the query as normal.
+      // match via keyboard and pressing Enter routes the action to
+      // handleFuseboxAction instead of submitting the query.
       element.submitting = false;
       element.suggestionFuseboxActionsEnabled = true;
       await showFuseboxMatches(makeAction({
         queryActionOverride: QueryActionOverride.kPaste,
       }));
-      dropdown.selectIndex(1);
+      selectMatch(1);
       await microtasksFinished();
-      element.submitQuery(new KeyboardEvent('keydown', {key: 'Enter'}));
+      pressEnter();
       await microtasksFinished();
 
-      assertEquals(0, requests.length);
-      assertDeepEquals(['open', 'stats', 'open'], effects);
+      assertEquals(1, requests.length);
+      assertEquals('action suggestion', requests[0]!.suggestion);
+      // The action is intercepted before the query is submitted, so neither
+      // setSmartComposeStats() nor openAutocompleteMatch() is called.
+      assertDeepEquals(['open'], effects);
       assertEquals(1, matchClickCount);
-      assertTrue(element.submitting);
+      assertFalse(element.submitting);
+      assertEquals(null, element.result);
 
       // 3. Clicking a fusebox action match routes the action to
       // handleFuseboxAction with the action payload, preserves existing files,
@@ -758,11 +785,11 @@ suite('ComposeboxMixinTest', () => {
       await microtasksFinished();
       await element.updateComplete;
 
-      assertEquals(1, requests.length);
-      assertEquals('action suggestion', requests[0]!.suggestion);
-      assertEquals(0, requests[0]!.files.length);
-      assertEquals(action, requests[0]!.fuseboxAction);
-      assertDeepEquals(['open', 'stats', 'open'], effects);
+      assertEquals(2, requests.length);
+      assertEquals('action suggestion', requests[1]!.suggestion);
+      assertEquals(0, requests[1]!.files.length);
+      assertEquals(action, requests[1]!.fuseboxAction);
+      assertDeepEquals(['open'], effects);
       assertTrue(element.files.has(file.uuid));
       assertFalse(element.submitting);
       assertEquals(1, matchClickCount);
@@ -787,8 +814,8 @@ suite('ComposeboxMixinTest', () => {
       clickActionMatch();
       await microtasksFinished();
 
-      assertEquals(2, requests.length);
-      assertDeepEquals(['open', 'stats', 'open'], effects);
+      assertEquals(3, requests.length);
+      assertDeepEquals(['open'], effects);
       assertEquals(originalInput, element.input);
       assertEquals(
           initialQueryCount + 1,
@@ -823,8 +850,24 @@ suite('ComposeboxMixinTest', () => {
       clickActionMatch();
       await microtasksFinished();
 
-      assertEquals(2, requests.length);
-      assertDeepEquals(['open', 'stats', 'open', 'open'], effects);
+      assertEquals(3, requests.length);
+      assertDeepEquals(['open', 'open'], effects);
+      assertEquals(2, matchClickCount);
+      assertTrue(element.submitting);
+
+      // 6. Pressing Enter on a kDefault action match is not intercepted
+      // either; the query is submitted and the selected match is opened.
+      element.submitting = false;
+      await showFuseboxMatches(makeAction({
+        queryActionOverride: QueryActionOverride.kDefault,
+      }));
+      selectMatch(1);
+      await microtasksFinished();
+      pressEnter();
+      await microtasksFinished();
+
+      assertEquals(3, requests.length);
+      assertDeepEquals(['open', 'open', 'stats', 'open'], effects);
       assertEquals(2, matchClickCount);
       assertTrue(element.submitting);
     } finally {
@@ -2039,6 +2082,29 @@ suite('ComposeboxMixinTest', () => {
     await microtasksFinished();
     await element.updateComplete;
     assertEquals('action hint', element.inputPlaceholder);
+  });
+
+  test('handleFuseboxAction focuses the input for paste actions', async () => {
+    const inputComponent = element.getInputElement();
+    const isInputFocused = () =>
+        inputComponent.shadowRoot.activeElement === inputComponent.inputElement;
+
+    // Hint actions only update the placeholder, so they leave focus alone.
+    inputComponent.inputElement.blur();
+    await element.handleFuseboxAction(createFuseboxActionRequest(
+        {queryActionOverride: QueryActionOverride.kHint}, 'action hint'));
+    await microtasksFinished();
+    await element.updateComplete;
+    assertFalse(isInputFocused());
+
+    // Paste actions prefill the input, so it is focused to let the user edit
+    // the pasted text right away.
+    await element.handleFuseboxAction(createFuseboxActionRequest(
+        {queryActionOverride: QueryActionOverride.kPaste}, 'pasted text'));
+    await microtasksFinished();
+    await element.updateComplete;
+    assertTrue(isInputFocused());
+    assertEquals('pasted text', element.state!.text);
   });
 
   test('handleFuseboxAction dispatches input sources', async () => {
