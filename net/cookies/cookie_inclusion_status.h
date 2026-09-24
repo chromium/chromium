@@ -195,22 +195,15 @@ class NET_EXPORT CookieInclusionStatus {
     // included, or blocked due to 3pcd-unrelated reasons.
     kNone = 0,
     // For user explicit settings, including User bypass.
-    kUserSetting = 1,
-    // k3PCDMetadata = 2,  // Deprecated
-    // k3PCDDeprecationTrial = 3,  // Deprecated
-    // kTopLevel3PCDDeprecationTrial = 4,  // Deprecated
-    // k3PCDHeuristics = 5,  // Deprecated
+    kUserSetting,
     // For Enterprise Policy : CookieAllowedForUrls and BlockThirdPartyCookies.
-    kEnterprisePolicy = 6,
-    kStorageAccess = 7,
-    kTopLevelStorageAccess = 8,
+    kEnterprisePolicy,
+    kStorageAccess,
+    kTopLevelStorageAccess,
     // Allowed by the scheme.
-    kScheme = 9,
+    kScheme,
     // Allowed by the sandbox 'allow-same-site-none-cookies' value.
-    kSameSiteNoneCookiesInSandbox = 10,
-
-    // Keep last.
-    kMaxValue = kSameSiteNoneCookiesInSandbox
+    kSameSiteNoneCookiesInSandbox,
   };
 
   using ExclusionReasonBitset =

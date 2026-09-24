@@ -101,16 +101,12 @@ enum CookieEffectiveSameSite {
 // Defined in net::CookieInclusionStatus::ExemptionReason.
 enum CookieExemptionReason {
     kNone = 0,
-    kUserSetting = 1,
-    // k3PCDMetadata = 2,  // Deprecated
-    // k3PCDDeprecationTrial = 3,  // Deprecated
-    // kTopLevel3PCDDeprecationTrial = 4,  // Deprecated
-    // k3PCDHeuristics = 5,  // Deprecated
-    kEnterprisePolicy = 6,
-    kStorageAccess = 7,
-    kTopLevelStorageAccess = 8,
-    kScheme = 9,
-    kSameSiteNoneCookiesInSandbox = 10,
+    kUserSetting,
+    kEnterprisePolicy,
+    kStorageAccess,
+    kTopLevelStorageAccess,
+    kScheme,
+    kSameSiteNoneCookiesInSandbox,
 };
 
 enum ContextType {
