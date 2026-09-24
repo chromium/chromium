@@ -4479,11 +4479,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateOriginTrialsTest,
 class ChromeBrowsingDataRemoverDelegateMediaDeviceSaltTest
     : public ChromeBrowsingDataRemoverDelegateTest {
  public:
-  ChromeBrowsingDataRemoverDelegateMediaDeviceSaltTest() {
-    feature_list_.InitWithFeatures(
-        {media_device_salt::kMediaDeviceIdPartitioning}, {});
-  }
-
   void SetUp() override {
     ChromeBrowsingDataRemoverDelegateTest::SetUp();
     media_device_salt_service_ =

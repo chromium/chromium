@@ -24,8 +24,6 @@ class PrefService;
 
 namespace media_device_salt {
 
-BASE_DECLARE_FEATURE(kMediaDeviceIdPartitioning);
-
 class MediaDeviceIDSalt;
 
 // Service that manages salts used to generate media device IDs.

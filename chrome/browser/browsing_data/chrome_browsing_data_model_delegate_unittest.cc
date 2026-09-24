@@ -62,8 +62,7 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
   ChromeBrowsingDataModelDelegateTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {media_device_salt::kMediaDeviceIdPartitioning,
-         net::features::kEnablePrivateVerificationTokens},
+        {net::features::kEnablePrivateVerificationTokens},
         /*disabled_features=*/{});
   }
 

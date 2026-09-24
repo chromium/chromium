@@ -21,8 +21,6 @@
 
 namespace media_device_salt {
 
-BASE_FEATURE(kMediaDeviceIdPartitioning, base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 scoped_refptr<base::SequencedTaskRunner> CreateDatabaseTaskRunner() {
@@ -44,11 +42,9 @@ MediaDeviceSaltService::MediaDeviceSaltService(PrefService* pref_service,
       media_device_id_salt_(
           base::MakeRefCounted<MediaDeviceIDSalt>(pref_service)),
       pref_service_(pref_service),
-      db_(base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)
-              ? base::SequenceBound<MediaDeviceSaltDatabase>(
-                    CreateDatabaseTaskRunner(),
-                    path)
-              : base::SequenceBound<MediaDeviceSaltDatabase>()) {}
+      db_(base::SequenceBound<MediaDeviceSaltDatabase>(
+          CreateDatabaseTaskRunner(),
+          path)) {}
 
 MediaDeviceSaltService::~MediaDeviceSaltService() = default;
 
@@ -56,11 +52,6 @@ void MediaDeviceSaltService::GetSalt(
     const blink::StorageKey& storage_key,
     base::OnceCallback<void(const std::string&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
-    std::move(callback).Run(GetGlobalSalt());
-    return;
-  }
-
   if (storage_key.origin().opaque()) {
     std::move(callback).Run(fallback_salt_);
     return;
@@ -85,20 +76,7 @@ void MediaDeviceSaltService::DeleteSalts(
     content::StoragePartition::StorageKeyMatcherFunction matcher,
     base::OnceClosure done_closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (matcher) {
-    if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
-      std::move(done_closure).Run();
-      return;
-    }
-  } else {
-    if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
-      ResetGlobalSalt();
-    }
-    if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
-      FinalizeDeleteSalts(std::move(done_closure));
-      return;
-    }
-
+  if (!matcher) {
     // Reset the fallback key if the deletion period includes its creation time.
     if (delete_begin <= fallback_salt_creation_time_ &&
         fallback_salt_creation_time_ <= delete_end) {
@@ -129,10 +107,6 @@ void MediaDeviceSaltService::FinalizeDeleteSalts(
 void MediaDeviceSaltService::DeleteSalt(const blink::StorageKey& storage_key,
                                         base::OnceClosure done_closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
-    std::move(done_closure).Run();
-    return;
-  }
   db_.AsyncCall(&MediaDeviceSaltDatabase::DeleteEntry)
       .WithArgs(storage_key)
       .Then(base::BindOnce(&MediaDeviceSaltService::FinalizeDeleteSalts,
@@ -143,10 +117,6 @@ void MediaDeviceSaltService::DeleteSalt(const blink::StorageKey& storage_key,
 void MediaDeviceSaltService::GetAllStorageKeys(
     base::OnceCallback<void(std::vector<blink::StorageKey>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::FeatureList::IsEnabled(kMediaDeviceIdPartitioning)) {
-    std::move(callback).Run({});
-    return;
-  }
   db_.AsyncCall(&MediaDeviceSaltDatabase::GetAllStorageKeys)
       .Then(base::BindOnce(&MediaDeviceSaltService::FinalizeGetAllStorageKeys,
                            weak_factory_.GetWeakPtr(), std::move(callback)));
