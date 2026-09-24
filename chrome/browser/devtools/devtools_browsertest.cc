@@ -4496,6 +4496,112 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyBFCacheTest,
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
 
+// This test relies on DeveloperToolsAvailability policies which are
+// not supported on Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+class DevToolsPolicyExtensionTest : public extensions::ExtensionApiTest {
+ protected:
+  DevToolsPolicyExtensionTest() {
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    extensions::ExtensionApiTest::SetUpOnMainThread();
+  }
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyExtensionTest,
+                       CannotAttachToBlocklistedIframe) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL main_url =
+      embedded_test_server()->GetURL("/devtools/page_with_two_iframes.html");
+  GURL iframe_url =
+      embedded_test_server()->GetURL("a.com", "/devtools/iframe.html");
+  GURL allowed_iframe_url =
+      embedded_test_server()->GetURL("b.com", "/devtools/empty.html");
+
+  base::ListValue allowlist;
+  allowlist.Append(main_url.spec());
+  allowlist.Append(allowed_iframe_url.spec());
+
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDeveloperToolsAvailability,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(2), nullptr);
+  policies.Set(policy::key::kDeveloperToolsAvailabilityAllowlist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(allowlist)),
+               nullptr);
+  provider_.UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  ASSERT_TRUE(content::ExecJs(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::JsReplace(
+          "let f1 = document.createElement('iframe'); f1.src = $1; "
+          "document.body.appendChild(f1);"
+          "let f2 = document.createElement('iframe'); f2.src = $2; "
+          "document.body.appendChild(f2);",
+          iframe_url, allowed_iframe_url)));
+
+  extensions::TestExtensionDir dir;
+  dir.WriteManifest(R"({
+    "name": "Debugger Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["debugger", "tabs"],
+    "host_permissions": ["http://*/*"],
+    "background": {
+      "service_worker": "background.js"
+    }
+  })");
+
+  std::string background_js = base::StringPrintf(R"(
+    chrome.test.runTests([
+      async function testAttach() {
+        let tabs = await chrome.tabs.query({url: "%s"});
+        let tab = tabs[0];
+
+        let gotIframe = false;
+        let gotAllowedIframe = new Promise(resolve => {
+          chrome.debugger.onEvent.addListener((source, method, params) => {
+            if (method === "Target.attachedToTarget") {
+              if (params.targetInfo.url.endsWith("/iframe.html")) {
+                gotIframe = true;
+              } else if (params.targetInfo.url.endsWith("/empty.html")) {
+                resolve();
+              }
+            }
+          });
+        });
+
+        await chrome.debugger.attach({tabId: tab.id}, "1.3");
+
+        await chrome.debugger.sendCommand(
+            {tabId: tab.id}, "Target.setAutoAttach",
+            {autoAttach: true, waitForDebuggerOnStart: false});
+        await gotAllowedIframe;
+
+        chrome.test.assertFalse(
+            gotIframe,
+            "Should not auto-attach or directly attach to blocked iframe");
+        chrome.test.succeed();
+      }
+    ]);
+  )",
+                                                 main_url.spec().c_str());
+
+  dir.WriteFile(FILE_PATH_LITERAL("background.js"), background_js);
+
+  ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {}, {}));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 class DevToolsExtensionHostsPolicyTest : public DevToolsExtensionTest {
  protected:
