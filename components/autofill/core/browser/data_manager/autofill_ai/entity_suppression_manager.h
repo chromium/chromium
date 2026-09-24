@@ -40,6 +40,10 @@ class EntitySuppressionManager : public KeyedService {
   // Returns true if suppression status was modified.
   virtual bool UnsuppressEntity(const EntityInstance& entity) = 0;
 
+  // Removes all recorded entity suppressions.
+  // Returns true if any suppression was removed.
+  virtual bool ClearAllSuppressions() = 0;
+
   // Returns true if the entity matches at least one suppressed merge
   // constraint.
   virtual bool IsSuppressed(const EntityInstance& entity) const = 0;

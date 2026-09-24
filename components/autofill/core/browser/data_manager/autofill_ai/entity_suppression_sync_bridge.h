@@ -72,6 +72,10 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
   // if suppression status was modified.
   bool Unsuppress(const EntitySuppressionEntry& entry);
 
+  // Deletes all suppression records. Returns `false` if no entries were
+  // suppressed. Returns `true` if suppression status was modified.
+  bool ClearAllSuppressions();
+
   // Returns all currently active suppression entries.
   base::flat_set<EntitySuppressionEntry> GetSuppressions() const;
 

@@ -35,6 +35,7 @@ class EntitySuppressionManagerImpl
   void RemoveObserver(EntitySuppressionManager::Observer* observer) override;
   bool SuppressEntity(const EntityInstance& entity) override;
   bool UnsuppressEntity(const EntityInstance& entity) override;
+  bool ClearAllSuppressions() override;
   bool IsSuppressed(const EntityInstance& entity) const override;
 
   // EntitySuppressionSyncBridge::Observer:

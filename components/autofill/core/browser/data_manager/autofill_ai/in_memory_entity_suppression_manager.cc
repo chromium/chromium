@@ -53,6 +53,15 @@ bool InMemoryEntitySuppressionManager::UnsuppressEntity(
   return modified;
 }
 
+bool InMemoryEntitySuppressionManager::ClearAllSuppressions() {
+  if (suppressed_entries_.empty()) {
+    return false;
+  }
+  suppressed_entries_.clear();
+  observers_.Notify(&Observer::OnEntitySuppressionsChanged);
+  return true;
+}
+
 bool InMemoryEntitySuppressionManager::IsSuppressed(
     const EntityInstance& entity) const {
   std::vector<EntitySuppressionEntry> entries =

@@ -172,6 +172,32 @@ bool EntitySuppressionSyncBridge::Unsuppress(
   return true;
 }
 
+bool EntitySuppressionSyncBridge::ClearAllSuppressions() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(IsLoaded());
+
+  if (guids_by_entry_.empty()) {
+    return false;
+  }
+
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      store_->CreateWriteBatch();
+  for (const auto& [entry, guid] : guids_by_entry_) {
+    batch->DeleteData(guid);
+    change_processor()->Delete(guid, syncer::DeletionOrigin::Unspecified(),
+                               batch->GetMetadataChangeList());
+  }
+  guids_by_entry_.clear();
+
+  store_->CommitWriteBatch(
+      std::move(batch),
+      base::BindOnce(&EntitySuppressionSyncBridge::ReportErrorIfSet,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  NotifySuppressionsChanged();
+  return true;
+}
+
 base::flat_set<EntitySuppressionEntry>
 EntitySuppressionSyncBridge::GetSuppressions() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

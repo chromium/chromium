@@ -259,5 +259,33 @@ TEST_F(EntitySuppressionManagerImplTest, GetSyncControllerDelegate) {
   manager().GetSyncControllerDelegate();
 }
 
+// Tests that ClearAllSuppressions removes all suppressed entities and notifies
+// observers.
+TEST_F(EntitySuppressionManagerImplTest, ClearAllSuppressions) {
+  EntityInstance passport = test::GetPassportEntityInstance();
+  EntityInstance vehicle = test::GetVehicleEntityInstance();
+  ASSERT_TRUE(manager().SuppressEntity(passport));
+  ASSERT_TRUE(manager().SuppressEntity(vehicle));
+
+  MockEntitySuppressionManagerObserver observer;
+  manager().AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(1);
+  EXPECT_TRUE(manager().ClearAllSuppressions());
+
+  EXPECT_FALSE(manager().IsSuppressed(passport));
+  EXPECT_FALSE(manager().IsSuppressed(vehicle));
+}
+
+// Tests that ClearAllSuppressions returns false and does not notify observers
+// when nothing is suppressed.
+TEST_F(EntitySuppressionManagerImplTest, ClearAllSuppressions_Empty) {
+  MockEntitySuppressionManagerObserver observer;
+  manager().AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(0);
+  EXPECT_FALSE(manager().ClearAllSuppressions());
+}
+
 }  // namespace
 }  // namespace autofill

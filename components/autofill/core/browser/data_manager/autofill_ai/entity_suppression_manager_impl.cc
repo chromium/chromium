@@ -56,6 +56,10 @@ bool EntitySuppressionManagerImpl::UnsuppressEntity(
   return modified;
 }
 
+bool EntitySuppressionManagerImpl::ClearAllSuppressions() {
+  return sync_bridge_->ClearAllSuppressions();
+}
+
 bool EntitySuppressionManagerImpl::IsSuppressed(
     const EntityInstance& entity) const {
   return std::ranges::any_of(GetEntitySuppressionEntries(entity),

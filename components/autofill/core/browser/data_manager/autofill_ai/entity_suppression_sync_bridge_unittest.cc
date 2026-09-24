@@ -511,6 +511,34 @@ TEST_F(EntitySuppressionSyncBridgeTest,
   EXPECT_EQ(GetFirstGuid(), "guid1");
 }
 
+// Tests that ClearAllSuppressions deletes all entries from local state and
+// store, commits deletions to Sync, and notifies observers once.
+TEST_F(EntitySuppressionSyncBridgeTest, ClearAllSuppressions) {
+  WriteToStore("guid1", CreatePassportEntry());
+  WriteToStore("guid2", CreateDriversLicenseEntry());
+  CreateBridge();
+  ASSERT_EQ(bridge().GetSuppressions().size(), 2u);
+
+  EXPECT_CALL(mock_processor(), Delete("guid1", _, _));
+  EXPECT_CALL(mock_processor(), Delete("guid2", _, _));
+  EXPECT_CALL(observer(), OnSuppressionsChanged()).Times(1);
+  EXPECT_TRUE(bridge().ClearAllSuppressions());
+
+  EXPECT_TRUE(bridge().GetSuppressions().empty());
+  EXPECT_TRUE(ReadAllRecordsFromStore().empty());
+}
+
+// Tests that ClearAllSuppressions returns false and does not notify observers
+// when there are no suppressions.
+TEST_F(EntitySuppressionSyncBridgeTest, ClearAllSuppressions_Empty) {
+  CreateBridge();
+  ASSERT_TRUE(bridge().GetSuppressions().empty());
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(observer(), OnSuppressionsChanged()).Times(0);
+  EXPECT_FALSE(bridge().ClearAllSuppressions());
+}
+
 }  // namespace
 
 }  // namespace autofill
