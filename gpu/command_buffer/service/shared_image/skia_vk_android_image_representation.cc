@@ -20,6 +20,7 @@
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -209,6 +210,15 @@ bool SkiaVkAndroidImageRepresentation::BeginAccess(
       return false;
   }
 
+  // Ensure any failure after BeginRead/BeginWrite unwinds the backing state.
+  absl::Cleanup end_access_helper = [this, readonly]() {
+    if (readonly) {
+      android_backing()->EndRead(this, base::ScopedFD());
+    } else {
+      android_backing()->EndWrite(base::ScopedFD());
+    }
+  };
+
   sync_fd = gl::MergeFDs(std::move(sync_fd), std::move(init_read_fence));
   DCHECK(begin_access_semaphore_ == VK_NULL_HANDLE);
   if (sync_fd.is_valid()) {
@@ -246,6 +256,7 @@ bool SkiaVkAndroidImageRepresentation::BeginAccess(
         GrBackendSemaphores::MakeVk(end_access_semaphore_));
   }
 
+  std::move(end_access_helper).Cancel();
   mode_ = readonly ? RepresentationAccessMode::kRead
                    : RepresentationAccessMode::kWrite;
   return true;

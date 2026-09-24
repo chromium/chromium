@@ -20,6 +20,7 @@
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/graphite/BackendSemaphore.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
@@ -161,6 +162,15 @@ bool SkiaGraphiteVkAndroidImageRepresentation::BeginAccessInternal(
   begin_access_fd =
       gl::MergeFDs(std::move(begin_access_fd), std::move(initial_fence_));
 
+  // Ensure any failure after BeginRead/BeginWrite unwinds the backing state.
+  absl::Cleanup end_access_helper = [this, readonly]() {
+    if (readonly) {
+      android_backing()->EndRead(this, base::ScopedFD());
+    } else {
+      android_backing()->EndWrite(base::ScopedFD());
+    }
+  };
+
   DCHECK(begin_access_semaphore_ == VK_NULL_HANDLE);
   if (begin_access_fd.is_valid()) {
     begin_access_semaphore_ = GetVulkanImplementation()->ImportSemaphoreHandle(
@@ -179,6 +189,7 @@ bool SkiaGraphiteVkAndroidImageRepresentation::BeginAccessInternal(
   // TODO(crbug.com/55295190): Create `end_access_semaphore_`, if necessary,
   // and pass to Skia to signal after work is completed.
 
+  std::move(end_access_helper).Cancel();
   mode_ = readonly ? RepresentationAccessMode::kRead
                    : RepresentationAccessMode::kWrite;
   return true;
