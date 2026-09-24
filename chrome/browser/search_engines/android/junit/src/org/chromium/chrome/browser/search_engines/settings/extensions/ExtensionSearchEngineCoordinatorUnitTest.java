@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.TemplateUrlService;
 
 /** Unit tests for {@link ExtensionSearchEngineCoordinatorImpl}. */
@@ -42,6 +43,7 @@ public class ExtensionSearchEngineCoordinatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private ExtensionControlHandler mMockExtensionControlHandler;
+    @Mock private SearchEngineSettingsDataProvider mSettingsDataProvider;
 
     private ExtensionSearchEngineCoordinatorImpl mCoordinator;
 
@@ -66,13 +68,15 @@ public class ExtensionSearchEngineCoordinatorUnitTest {
 
     @Test
     public void testInitialization() {
-        mCoordinator.initialize(mContext, mProfile, mPreference, mSettingsCustomTabLauncher);
+        mCoordinator.initialize(
+                mContext, mProfile, mPreference, mSettingsCustomTabLauncher, mSettingsDataProvider);
         verify(mPreference).setAdapter(any(ExtensionSearchEngineAdapter.class));
     }
 
     @Test
     public void testDestroy() {
-        mCoordinator.initialize(mContext, mProfile, mPreference, mSettingsCustomTabLauncher);
+        mCoordinator.initialize(
+                mContext, mProfile, mPreference, mSettingsCustomTabLauncher, mSettingsDataProvider);
         mCoordinator.destroy();
 
         verify(mPreference).setAdapter(eq(null));

@@ -15,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.custom_site_search.CustomSiteSearchCoordinator;
@@ -28,6 +29,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.PreferenceParser;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -58,6 +60,13 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
     private @Nullable InactiveShortcutCoordinator mInactiveShortcutCoordinator;
     private @Nullable ExtensionSearchEngineCoordinator mExtensionSearchEngineCoordinator;
 
+    /**
+     * Shared by every section of this page. Owned here rather than by the individual coordinators
+     * so that the page is backed by a single provider instance and they share the same scope for
+     * metrics purposes.
+     */
+    private @Nullable SearchEngineSettingsDataProvider mSettingsDataProvider;
+
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.manage_search_engines_and_site_search));
@@ -66,6 +75,8 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
         Profile profile = getProfile();
         ModalDialogManager modalDialogManager =
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager();
+        mSettingsDataProvider =
+                TemplateUrlServiceFactory.getForProfile(profile).createSettingsDataProvider();
 
         // Keyboard Shortcut
         SettingsUtils.addPreferencesFromResource(this, R.xml.keyboard_shortcut_preferences);
@@ -79,7 +90,11 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
                 findPreference(CUSTOM_SEARCH_ENGINE_LIST_PREF);
         mSearchEngineCoordinator =
                 new CustomSearchEngineCoordinator(
-                        context, profile, customSearchEnginePref, modalDialogManager);
+                        context,
+                        profile,
+                        customSearchEnginePref,
+                        modalDialogManager,
+                        mSettingsDataProvider);
 
         // Site Search
         SettingsUtils.addPreferencesFromResource(this, R.xml.custom_site_search_preferences);
@@ -87,7 +102,11 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
                 findPreference(CUSTOM_SITE_SEARCH_LIST_PREF);
         mSiteSearchCoordinator =
                 new CustomSiteSearchCoordinator(
-                        context, profile, customSiteSearchPref, modalDialogManager);
+                        context,
+                        profile,
+                        customSiteSearchPref,
+                        modalDialogManager,
+                        mSettingsDataProvider);
 
         // Inactive Shortcuts
         SettingsUtils.addPreferencesFromResource(this, R.xml.inactive_shortcut_preferences);
@@ -95,7 +114,11 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
                 findPreference(INACTIVE_SHORTCUT_LIST_PREF);
         mInactiveShortcutCoordinator =
                 new InactiveShortcutCoordinator(
-                        context, profile, inactiveShortcutPref, modalDialogManager);
+                        context,
+                        profile,
+                        inactiveShortcutPref,
+                        modalDialogManager,
+                        mSettingsDataProvider);
 
         // Extensions
         if (ExtensionUi.isEnabled(profile)) {
@@ -105,7 +128,11 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
                 SettingsUtils.addPreferencesFromResource(this, R.xml.extensions_preferences);
                 SearchEngineListPreference extensionsPref = findPreference(EXTENSIONS_PREF_KEY);
                 mExtensionSearchEngineCoordinator.initialize(
-                        context, profile, extensionsPref, getCustomTabLauncher());
+                        context,
+                        profile,
+                        extensionsPref,
+                        getCustomTabLauncher(),
+                        mSettingsDataProvider);
             }
         }
     }
@@ -137,6 +164,12 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
         if (mExtensionSearchEngineCoordinator != null) {
             mExtensionSearchEngineCoordinator.destroy();
             mExtensionSearchEngineCoordinator = null;
+        }
+        // Closed last: the coordinators and their mediators hold a reference to it and must all be
+        // torn down before the native object goes away.
+        if (mSettingsDataProvider != null) {
+            mSettingsDataProvider.close();
+            mSettingsDataProvider = null;
         }
         super.onDestroy();
     }

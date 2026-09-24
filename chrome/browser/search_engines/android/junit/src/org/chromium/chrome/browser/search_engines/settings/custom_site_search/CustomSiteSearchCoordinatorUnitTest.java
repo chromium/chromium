@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlCategory;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -57,6 +58,7 @@ public class CustomSiteSearchCoordinatorUnitTest {
     @Mock private SearchEngineListPreference mPreference;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private SearchEngineSettingsDataProvider mSettingsDataProvider;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private AimEligibilityServiceFactory.Natives mAimEligibilityNativesMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
@@ -89,12 +91,17 @@ public class CustomSiteSearchCoordinatorUnitTest {
 
         List<TemplateUrl> urls = new ArrayList<>();
         urls.add(mTemplateUrl);
-        when(mTemplateUrlService.getTemplateUrlsByCategory(TemplateUrlCategory.ACTIVE_SITE_SEARCH))
+        when(mSettingsDataProvider.getTemplateUrlsByCategory(
+                        TemplateUrlCategory.ACTIVE_SITE_SEARCH))
                 .thenReturn(urls);
 
         mCoordinator =
                 new CustomSiteSearchCoordinator(
-                        mContext, mProfile, mPreference, mModalDialogManager);
+                        mContext,
+                        mProfile,
+                        mPreference,
+                        mModalDialogManager,
+                        mSettingsDataProvider);
     }
 
     @Test
@@ -119,7 +126,8 @@ public class CustomSiteSearchCoordinatorUnitTest {
         List<TemplateUrl> newUrls = new ArrayList<>();
         newUrls.add(mTemplateUrl);
         newUrls.add(secondTemplateUrl);
-        when(mTemplateUrlService.getTemplateUrlsByCategory(TemplateUrlCategory.ACTIVE_SITE_SEARCH))
+        when(mSettingsDataProvider.getTemplateUrlsByCategory(
+                        TemplateUrlCategory.ACTIVE_SITE_SEARCH))
                 .thenReturn(newUrls);
 
         observer.onTemplateURLServiceChanged();

@@ -10,10 +10,6 @@ java_group("delegate_java") {
   public_deps = [ ":java" ]
 }
 
-java_cpp_enum("template_url_category_enum") {
-  sources = [ "template_url_service_android.h" ]
-}
-
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/ic_logo_googleg_20dp.xml",
@@ -41,7 +37,6 @@ android_library("java") {
 
   srcjar_deps = [
     ":jni_headers",
-    ":template_url_category_enum",
     "//components/search_engines:search_engine_enums_java",
   ]
   sources = [
@@ -52,6 +47,7 @@ android_library("java") {
     "java/src/org/chromium/components/search_engines/SearchEngineAssets.java",
     "java/src/org/chromium/components/search_engines/SearchEngineChoiceService.java",
     "java/src/org/chromium/components/search_engines/SearchEngineCountryDelegate.java",
+    "java/src/org/chromium/components/search_engines/SearchEngineSettingsDataProvider.java",
     "java/src/org/chromium/components/search_engines/SearchEnginesFeatureUtils.java",
     "java/src/org/chromium/components/search_engines/TemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlService.java",
@@ -62,6 +58,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/search_engines/AiModeButtonUiConfig.java",
     "java/src/org/chromium/components/search_engines/PrepopulatedAndRecentlyVisitedTemplateURLs.java",
+    "java/src/org/chromium/components/search_engines/SearchEngineSettingsDataProvider.java",
     "java/src/org/chromium/components/search_engines/TemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlService.java",
   ]
@@ -90,6 +87,7 @@ android_library("junit") {
     "java/src/org/chromium/components/search_engines/PrepopulatedAndRecentlyVisitedTemplateURLsUnitTest.java",
     "java/src/org/chromium/components/search_engines/SearchEngineAssetsUnitTest.java",
     "java/src/org/chromium/components/search_engines/SearchEngineChoiceServiceUnitTest.java",
+    "java/src/org/chromium/components/search_engines/SearchEngineSettingsDataProviderUnitTest.java",
     "java/src/org/chromium/components/search_engines/SearchEnginesFeatureUtilsUnitTest.java",
   ]
   deps = [

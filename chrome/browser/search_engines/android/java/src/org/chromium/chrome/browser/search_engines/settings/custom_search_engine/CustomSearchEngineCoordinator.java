@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineLi
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
 import org.chromium.chrome.browser.search_engines.settings.dialog.SiteSearchDialogCoordinator;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -36,7 +37,8 @@ public class CustomSearchEngineCoordinator {
             Context context,
             Profile profile,
             SearchEngineListPreference pref,
-            ModalDialogManager modalDialogManager) {
+            ModalDialogManager modalDialogManager,
+            SearchEngineSettingsDataProvider settingsDataProvider) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mSiteSearchDialogCoordinator =
@@ -52,6 +54,7 @@ public class CustomSearchEngineCoordinator {
                         context,
                         mModelList,
                         profile,
+                        settingsDataProvider,
                         /* onEditSearchEngine= */ mSiteSearchDialogCoordinator::showEditDialog,
                         /* onRemoveSearchEngine= */ mSiteSearchDialogCoordinator
                                 ::removeTemplateUrl);

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineLi
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlCategory;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -67,6 +68,7 @@ public class InactiveShortcutCoordinatorUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
     @Mock private TemplateUrl mTemplateUrl;
+    @Mock private SearchEngineSettingsDataProvider mSettingsDataProvider;
 
     @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mObserverCaptor;
 
@@ -94,13 +96,17 @@ public class InactiveShortcutCoordinatorUnitTest {
 
         List<TemplateUrl> urls = new ArrayList<>();
         urls.add(mTemplateUrl);
-        when(mTemplateUrlService.getTemplateUrlsByCategory(
+        when(mSettingsDataProvider.getTemplateUrlsByCategory(
                         TemplateUrlCategory.INACTIVE_SITE_SEARCH))
                 .thenReturn(urls);
 
         mCoordinator =
                 new InactiveShortcutCoordinator(
-                        mContext, mProfile, mPreference, mModalDialogManager);
+                        mContext,
+                        mProfile,
+                        mPreference,
+                        mModalDialogManager,
+                        mSettingsDataProvider);
     }
 
     @Test
@@ -125,7 +131,7 @@ public class InactiveShortcutCoordinatorUnitTest {
         List<TemplateUrl> newUrls = new ArrayList<>();
         newUrls.add(mTemplateUrl);
         newUrls.add(secondTemplateUrl);
-        when(mTemplateUrlService.getTemplateUrlsByCategory(
+        when(mSettingsDataProvider.getTemplateUrlsByCategory(
                         TemplateUrlCategory.INACTIVE_SITE_SEARCH))
                 .thenReturn(newUrls);
 

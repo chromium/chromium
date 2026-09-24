@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.settings.common.BaseSiteSearchMediator;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlCategory;
 import org.chromium.ui.listmenu.ListMenuDelegate;
@@ -33,9 +34,10 @@ public class CustomSearchEngineMediator extends BaseSiteSearchMediator {
             Context context,
             ModelList modelList,
             Profile profile,
+            SearchEngineSettingsDataProvider settingsDataProvider,
             Callback<TemplateUrl> onEditSearchEngine,
             Callback<TemplateUrl> onRemoveSearchEngine) {
-        super(context, modelList, profile);
+        super(context, modelList, profile, settingsDataProvider);
         mOnEditSearchEngine = onEditSearchEngine;
         mOnRemoveSearchEngine = onRemoveSearchEngine;
 
@@ -47,7 +49,7 @@ public class CustomSearchEngineMediator extends BaseSiteSearchMediator {
         mModelList.clear();
 
         List<TemplateUrl> urls =
-                mTemplateUrlService.getTemplateUrlsByCategory(TemplateUrlCategory.DEFAULT);
+                mSettingsDataProvider.getTemplateUrlsByCategory(TemplateUrlCategory.DEFAULT);
         for (TemplateUrl url : urls) {
             mModelList.add(createListItem(url));
         }

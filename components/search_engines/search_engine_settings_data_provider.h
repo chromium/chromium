@@ -6,8 +6,13 @@
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_SETTINGS_DATA_PROVIDER_H_
 
 #include "base/memory/raw_ref.h"
+#include "build/build_config.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include <jni.h>
+#endif
 
 class TemplateURLService;
 
@@ -51,25 +56,42 @@ struct CategorizedTemplateUrls {
   TemplateURL::TemplateURLVector inactive_feature_shortcuts;
 };
 
-// Prepares search engine data for the settings screens, and owns the
-// once-per-page-load settings telemetry for those screens.
+// Defines the category of template URLs to be displayed in different UI
+// sections.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.search_engines
+enum class TemplateUrlCategory {
+  kDefault = 0,
+  kActiveSiteSearch = 1,
+  kInactiveSiteSearch = 2,
+  kExtension = 3,
+};
+
+// Prepares and dispenses TemplateURL data for search engine settings screens,
+// and owns the once-per-page-load settings telemetry for those screens.
 //
 // Instances are created through
 // `TemplateURLService::CreateSearchEngineSettingsDataProvider()` and are owned
-// 1:1 by a settings UI controller. An instance is expected to live for that
-// controller's entire lifetime: one instance represents one settings page
-// load, which is the granularity at which page load metrics are reported.
+// by a settings screen (e.g. `SearchEngineAdapter` on Android, or the fragment
+// backing the site search page) and destroyed when that screen is dismissed.
+// Exactly one provider backs a screen, even when the screen is composed of
+// several sub-components, so that the telemetry below is emitted once per page
+// load. Multiple provider instances may still exist concurrently when one
+// settings screen is opened on top of another, which counts as two page loads.
+//
+// The dependencies passed to the constructor (`TemplateURLService`,
+// `RegionalCapabilitiesService`, etc.) are profile-keyed services whose
+// lifetimes exceed that of this provider and the settings UI.
 //
 // Data extraction methods are const and free of side effects. Telemetry is
-// only emitted through `MaybeRecordSettingsPageLoadMetrics()`, which the UI
-// calls once it knows which engines it is actually displaying. Callers may
-// call it on every refresh: it records at most once per provider instance, so
-// the engine list changing while the page is open does not record again. Only
-// a new page load, which constructs a new provider, records again.
+// only emitted through `MaybeRecordSettingsPageLoadMetrics()`, which the
+// primary UI controller calls once it knows which engines it is actually
+// displaying. Callers may call it on every refresh: it records at most once
+// per provider instance, so the engine list changing while the page is open
+// does not record again. Only a new page load, which constructs a new
+// provider, records again.
 class SearchEngineSettingsDataProvider {
  public:
-  using CategorizedTemplateUrls = search_engines::CategorizedTemplateUrls;
-
   SearchEngineSettingsDataProvider(
       TemplateURLService& template_url_service,
       const TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
@@ -98,8 +120,14 @@ class SearchEngineSettingsDataProvider {
   // be included in either of the lists.
   CategorizedTemplateUrls GetCategorizedTemplateURLs(
       template_url_starter_pack_data::StarterPackIdSet
-          disabled_starter_pack_ids =
-              template_url_starter_pack_data::StarterPackIdSet()) const;
+          disabled_starter_pack_ids = {}) const;
+
+  // Returns template URLs filtered by `category` and sorted appropriately
+  // (managed first, then alphabetically for site search).
+  std::vector<const TemplateURL*> GetTemplateUrlsByCategory(
+      TemplateUrlCategory category,
+      template_url_starter_pack_data::StarterPackIdSet
+          disabled_starter_pack_ids = {}) const;
 
   // Records the `Search.OseSplitYahooJapan.*` settings page load metrics for
   // `displayed_engines`, which must be the set of engines the settings screen
@@ -112,6 +140,18 @@ class SearchEngineSettingsDataProvider {
       TemplateURL::TemplateURLVectorSpan displayed_engines);
   void MaybeRecordSettingsPageLoadMetrics(
       const CategorizedTemplateUrls& displayed_engines);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Computes the set of disabled starter pack IDs specific to Android.
+  static template_url_starter_pack_data::StarterPackIdSet
+  GetDisabledStarterPackIdsForAndroid();
+
+  void Destroy(JNIEnv* env);
+
+  std::vector<const TemplateURL*> GetTemplateUrlsByCategory(
+      JNIEnv* env,
+      TemplateUrlCategory category) const;
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   bool CanRecordSettingsPageLoadMetrics() const;

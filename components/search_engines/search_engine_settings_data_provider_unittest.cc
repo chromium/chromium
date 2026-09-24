@@ -25,6 +25,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
+#endif
+
 namespace search_engines {
 
 namespace {
@@ -444,5 +449,115 @@ TEST_F(SearchEngineSettingsDataProviderTest,
                   HasShortName("V Managed"), HasShortName("W Managed"),
                   HasShortName("X Unmanaged"), HasShortName("Y Unmanaged")));
 }
+
+TEST_F(SearchEngineSettingsDataProviderTest,
+       GetTemplateUrlsByCategory_Filtering) {
+  TemplateURL* prepop =
+      AddTemplateURL(u"Prepop Engine", u"pe", /*prepopulate_id=*/1);
+  template_url_service().SetUserSelectedDefaultSearchProvider(prepop);
+
+  TemplateURL* active_site = AddTemplateURL(
+      u"Active Site", u"as", /*prepopulate_id=*/0,
+      /*created_by_policy=*/false, TemplateURLData::ActiveStatus::kTrue);
+  TemplateURL* inactive_site = AddTemplateURL(
+      u"Inactive Site", u"is", /*prepopulate_id=*/0,
+      /*created_by_policy=*/false, TemplateURLData::ActiveStatus::kFalse);
+  TemplateURL* ext = AddExtension(u"Extension Engine", u"ee",
+                                  TemplateURLData::ActiveStatus::kTrue);
+  TemplateURL* starter_pack = AddTemplateURL(
+      u"Starter Pack", u"sp", /*prepopulate_id=*/0,
+      /*created_by_policy=*/false, TemplateURLData::ActiveStatus::kTrue,
+      template_url_starter_pack_data::StarterPackId::kBookmarks);
+
+  auto provider = CreateProvider();
+
+  auto default_urls =
+      provider->GetTemplateUrlsByCategory(TemplateUrlCategory::kDefault);
+  EXPECT_THAT(default_urls, testing::ElementsAre(prepop));
+
+  auto active_urls = provider->GetTemplateUrlsByCategory(
+      TemplateUrlCategory::kActiveSiteSearch,
+      {template_url_starter_pack_data::StarterPackId::kBookmarks});
+  EXPECT_THAT(active_urls, testing::ElementsAre(active_site));
+  EXPECT_THAT(provider->GetTemplateUrlsByCategory(
+                  TemplateUrlCategory::kActiveSiteSearch),
+              testing::UnorderedElementsAre(active_site, starter_pack));
+
+  auto inactive_urls = provider->GetTemplateUrlsByCategory(
+      TemplateUrlCategory::kInactiveSiteSearch);
+  EXPECT_THAT(inactive_urls, testing::ElementsAre(inactive_site));
+
+  auto ext_urls =
+      provider->GetTemplateUrlsByCategory(TemplateUrlCategory::kExtension);
+  EXPECT_THAT(ext_urls, testing::ElementsAre(ext));
+}
+
+TEST_F(SearchEngineSettingsDataProviderTest,
+       GetTemplateUrlsByCategory_Sorting) {
+  AddTemplateURL(u"B Unmanaged", u"bu", /*prepopulate_id=*/0,
+                 /*created_by_policy=*/false);
+  AddTemplateURL(u"A Unmanaged", u"au", /*prepopulate_id=*/0,
+                 /*created_by_policy=*/false);
+  AddTemplateURL(u"C Managed", u"cu", /*prepopulate_id=*/0,
+                 /*created_by_policy=*/true);
+  AddTemplateURL(u"D Managed", u"dm", /*prepopulate_id=*/0,
+                 /*created_by_policy=*/true);
+
+  auto provider = CreateProvider();
+  auto urls = provider->GetTemplateUrlsByCategory(
+      TemplateUrlCategory::kActiveSiteSearch);
+
+  EXPECT_THAT(urls, testing::ElementsAre(HasShortName("C Managed"),
+                                         HasShortName("D Managed"),
+                                         HasShortName("A Unmanaged"),
+                                         HasShortName("B Unmanaged")));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(SearchEngineSettingsDataProviderTest,
+       GetDisabledStarterPackIdsForAndroid) {
+  // Enable features
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::ContextualSearch>
+        scoped_config;
+    scoped_config.Get().starter_pack_page = true;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kStarterPackExpansion);
+
+    auto disabled_ids =
+        SearchEngineSettingsDataProvider::GetDisabledStarterPackIdsForAndroid();
+    EXPECT_FALSE(
+        disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kPage));
+    EXPECT_FALSE(disabled_ids.Has(
+        template_url_starter_pack_data::StarterPackId::kGemini));
+
+    // @bookmarks is disabled by default.
+    EXPECT_TRUE(disabled_ids.Has(
+        template_url_starter_pack_data::StarterPackId::kBookmarks));
+  }
+
+  // Disable features
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::ContextualSearch>
+        scoped_config;
+    scoped_config.Get().starter_pack_page = false;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(omnibox::kStarterPackExpansion);
+
+    auto disabled_ids =
+        SearchEngineSettingsDataProvider::GetDisabledStarterPackIdsForAndroid();
+    EXPECT_TRUE(
+        disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kPage));
+    EXPECT_TRUE(disabled_ids.Has(
+        template_url_starter_pack_data::StarterPackId::kGemini));
+
+    // @bookmarks is disabled by default.
+    EXPECT_TRUE(disabled_ids.Has(
+        template_url_starter_pack_data::StarterPackId::kBookmarks));
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace search_engines

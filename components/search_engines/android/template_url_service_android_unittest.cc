@@ -17,6 +17,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_settings_data_provider.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -278,111 +279,14 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, FilterUserSelectableTemplateUrls) {
   }
 }
 
-TEST_F(TemplateUrlServiceAndroidUnitTest, FilterTemplateUrlsByCategory) {
-  using Category = TemplateUrlServiceAndroid::TemplateUrlCategory;
-
-  TemplateURLData dse_data;
-  dse_data.SetShortName(u"dse");
-  dse_data.SetKeyword(u"dse");
-  dse_data.SetURL("http://dse.com/q={searchTerms}");
-  dse_data.is_active = TemplateURLData::ActiveStatus::kTrue;
-  dse_data.safe_for_autoreplace = false;
-  TemplateURL* t_dse =
-      template_url_service().Add(std::make_unique<TemplateURL>(dse_data));
-  template_url_service().SetUserSelectedDefaultSearchProvider(t_dse);
-
-  TemplateURLData prepop_data;
-  prepop_data.SetShortName(u"prepop");
-  prepop_data.SetKeyword(u"prepop");
-  prepop_data.SetURL("http://prepop.com/q={searchTerms}");
-  prepop_data.prepopulate_id = 1;
-  TemplateURL* t_prepop =
-      template_url_service().Add(std::make_unique<TemplateURL>(prepop_data));
-
-  TemplateURLData active_data;
-  active_data.SetShortName(u"active");
-  active_data.SetKeyword(u"active");
-  active_data.SetURL("http://active.com/q={searchTerms}");
-  active_data.is_active = TemplateURLData::ActiveStatus::kTrue;
-  active_data.safe_for_autoreplace = false;
-  TemplateURL* t_active =
-      template_url_service().Add(std::make_unique<TemplateURL>(active_data));
-
-  TemplateURLData inactive_data;
-  inactive_data.SetShortName(u"inactive");
-  inactive_data.SetKeyword(u"inactive");
-  inactive_data.SetURL("http://inactive.com/q={searchTerms}");
-  inactive_data.is_active = TemplateURLData::ActiveStatus::kFalse;
-  inactive_data.safe_for_autoreplace = false;
-  TemplateURL* t_inactive =
-      template_url_service().Add(std::make_unique<TemplateURL>(inactive_data));
-
-  TemplateURLData extension_data;
-  extension_data.SetShortName(u"extension");
-  extension_data.SetKeyword(u"extension");
-  extension_data.SetURL("http://extension.com/q={searchTerms}");
-  TemplateURL* t_extension =
-      template_url_service().Add(std::make_unique<TemplateURL>(
-          extension_data, TemplateURL::OMNIBOX_API_EXTENSION));
-
-  // Create two engines with the same keyword. One will be hidden.
-  TemplateURLData visible_data;
-  visible_data.SetShortName(u"visible");
-  visible_data.SetKeyword(u"duplicate");
-  visible_data.SetURL("http://visible.com/q={searchTerms}");
-  visible_data.safe_for_autoreplace = false;
-  TemplateURL* t_visible =
-      template_url_service().Add(std::make_unique<TemplateURL>(visible_data));
-
-  TemplateURLData hidden_data;
-  hidden_data.SetShortName(u"hidden");
-  hidden_data.SetKeyword(u"duplicate");
-  hidden_data.SetURL("http://hidden.com/q={searchTerms}");
-  hidden_data.safe_for_autoreplace = false;
-  TemplateURL* t_hidden_candidate =
-      template_url_service().Add(std::make_unique<TemplateURL>(hidden_data));
-  TemplateURL* t_best =
-      template_url_service().GetTemplateURLForKeyword(u"duplicate");
-
-  TemplateURL* t_hidden =
-      (t_best == t_visible) ? t_hidden_candidate : t_visible;
-
-  std::vector<raw_ptr<TemplateURL, VectorExperimental>> input_urls;
-  input_urls.push_back(t_dse);
-  input_urls.push_back(t_prepop);
-  input_urls.push_back(t_active);
-  input_urls.push_back(t_inactive);
-  input_urls.push_back(t_extension);
-  input_urls.push_back(t_hidden);
-
-  {
-    auto result = template_url_service_android().FilterTemplateUrlsByCategory(
-        input_urls, Category::kDefault);
-    EXPECT_EQ(result.size(), 2u);
-    EXPECT_EQ(result[0], t_dse);
-    EXPECT_EQ(result[1], t_prepop);
-  }
-
-  {
-    auto result = template_url_service_android().FilterTemplateUrlsByCategory(
-        input_urls, Category::kActiveSiteSearch);
-    EXPECT_EQ(result.size(), 1u);
-    EXPECT_EQ(result[0], t_active);
-  }
-
-  {
-    auto result = template_url_service_android().FilterTemplateUrlsByCategory(
-        input_urls, Category::kInactiveSiteSearch);
-    EXPECT_EQ(result.size(), 1u);
-    EXPECT_EQ(result[0], t_inactive);
-  }
-
-  {
-    auto result = template_url_service_android().FilterTemplateUrlsByCategory(
-        input_urls, Category::kExtension);
-    EXPECT_EQ(result.size(), 1u);
-    EXPECT_EQ(result[0], t_extension);
-  }
+TEST_F(TemplateUrlServiceAndroidUnitTest, CreateSettingsDataProvider) {
+  int64_t provider_ptr =
+      template_url_service_android().CreateSettingsDataProvider(env());
+  EXPECT_NE(provider_ptr, 0);
+  auto provider = base::WrapUnique(
+      reinterpret_cast<search_engines::SearchEngineSettingsDataProvider*>(
+          provider_ptr));
+  EXPECT_NE(provider, nullptr);
 }
 
 TEST_F(TemplateUrlServiceAndroidUnitTest, ActivateAndDeactivateSearchEngine) {
@@ -425,110 +329,3 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, GetDisplayUrl) {
   EXPECT_EQ(display_url, u"http://chromium.org/search?q=%s");
 }
 
-TEST_F(TemplateUrlServiceAndroidUnitTest, GetTemplateUrlsByCategory_Sorting) {
-  using Category = TemplateUrlServiceAndroid::TemplateUrlCategory;
-
-  // Create engines in a non-sorted order.
-  // a: Non-managed
-  TemplateURLData data_a;
-  data_a.SetShortName(u"a");
-  data_a.SetKeyword(u"a");
-  data_a.SetURL("http://a.com/q={searchTerms}");
-  data_a.is_active = TemplateURLData::ActiveStatus::kTrue;
-  data_a.safe_for_autoreplace = false;
-  TemplateURL* t_a =
-      template_url_service().Add(std::make_unique<TemplateURL>(data_a));
-
-  // b: Managed
-  TemplateURLData data_b;
-  data_b.SetShortName(u"b");
-  data_b.SetKeyword(u"b");
-  data_b.SetURL("http://b.com/q={searchTerms}");
-  data_b.is_active = TemplateURLData::ActiveStatus::kTrue;
-  data_b.safe_for_autoreplace = false;
-  data_b.policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
-  TemplateURL* t_b =
-      template_url_service().Add(std::make_unique<TemplateURL>(data_b));
-
-  // c: Non-managed
-  TemplateURLData data_c;
-  data_c.SetShortName(u"c");
-  data_c.SetKeyword(u"c");
-  data_c.SetURL("http://c.com/q={searchTerms}");
-  data_c.is_active = TemplateURLData::ActiveStatus::kTrue;
-  data_c.safe_for_autoreplace = false;
-  TemplateURL* t_c =
-      template_url_service().Add(std::make_unique<TemplateURL>(data_c));
-
-  // d: Managed
-  TemplateURLData data_d;
-  data_d.SetShortName(u"d");
-  data_d.SetKeyword(u"d");
-  data_d.SetURL("http://d.com/q={searchTerms}");
-  data_d.is_active = TemplateURLData::ActiveStatus::kTrue;
-  data_d.safe_for_autoreplace = false;
-  data_d.policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
-  TemplateURL* t_d =
-      template_url_service().Add(std::make_unique<TemplateURL>(data_d));
-
-  auto result = template_url_service_android().GetTemplateUrlsByCategory(
-      env(), Category::kActiveSiteSearch);
-
-  // Result contains other engines from setup so filter them out.
-  std::vector<const TemplateURL*> filtered_result;
-  for (const auto* turl : result) {
-    if (turl == t_a || turl == t_b || turl == t_c || turl == t_d) {
-      filtered_result.push_back(turl);
-    }
-  }
-
-  ASSERT_EQ(filtered_result.size(), 4u);
-  EXPECT_EQ(filtered_result[0], t_b);
-  EXPECT_EQ(filtered_result[1], t_d);
-  EXPECT_EQ(filtered_result[2], t_a);
-  EXPECT_EQ(filtered_result[3], t_c);
-}
-
-TEST_F(TemplateUrlServiceAndroidUnitTest, GetDisabledStarterPackIds) {
-  // Enable features
-  {
-    omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::ContextualSearch>
-        scoped_config;
-    scoped_config.Get().starter_pack_page = true;
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(omnibox::kStarterPackExpansion);
-
-    auto disabled_ids =
-        template_url_service_android().GetDisabledStarterPackIds();
-    EXPECT_FALSE(
-        disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kPage));
-    EXPECT_FALSE(disabled_ids.Has(
-        template_url_starter_pack_data::StarterPackId::kGemini));
-
-    // @bookmarks is disabled by default.
-    EXPECT_TRUE(disabled_ids.Has(
-        template_url_starter_pack_data::StarterPackId::kBookmarks));
-  }
-
-  // Disable features
-  {
-    omnibox_feature_configs::ScopedConfigForTesting<
-        omnibox_feature_configs::ContextualSearch>
-        scoped_config;
-    scoped_config.Get().starter_pack_page = false;
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(omnibox::kStarterPackExpansion);
-
-    auto disabled_ids =
-        template_url_service_android().GetDisabledStarterPackIds();
-    EXPECT_TRUE(
-        disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kPage));
-    EXPECT_TRUE(disabled_ids.Has(
-        template_url_starter_pack_data::StarterPackId::kGemini));
-
-    // @bookmarks is disabled by default.
-    EXPECT_TRUE(disabled_ids.Has(
-        template_url_starter_pack_data::StarterPackId::kBookmarks));
-  }
-}

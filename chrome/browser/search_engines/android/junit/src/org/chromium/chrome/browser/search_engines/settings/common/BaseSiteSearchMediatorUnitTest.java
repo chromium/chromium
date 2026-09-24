@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
 
@@ -43,6 +44,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -69,6 +71,7 @@ public class BaseSiteSearchMediatorUnitTest {
     @Mock private AimEligibilityServiceFactory.Natives mAimEligibilityNativesMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
+    @Mock private SearchEngineSettingsDataProvider mSettingsDataProvider;
 
     private Context mContext;
     private ModelList mModelList;
@@ -95,7 +98,8 @@ public class BaseSiteSearchMediatorUnitTest {
                 mock(
                         BaseSiteSearchMediator.class,
                         withSettings()
-                                .useConstructor(mContext, mModelList, mProfile)
+                                .useConstructor(
+                                        mContext, mModelList, mProfile, mSettingsDataProvider)
                                 .defaultAnswer(Mockito.CALLS_REAL_METHODS));
     }
 
@@ -117,6 +121,9 @@ public class BaseSiteSearchMediatorUnitTest {
         mMediator.destroy();
 
         verify(mTemplateUrlService).removeObserver(mMediator);
+        // The provider is owned by the settings fragment and shared with the other sections, so
+        // the mediator must leave it open.
+        verify(mSettingsDataProvider, never()).close();
     }
 
     @Test

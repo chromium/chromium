@@ -14,6 +14,17 @@
 #include "components/search_engines/ui_utils.h"
 #include "components/search_engines/util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/feature_list.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/android/template_url_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/search_engines/android/jni_headers/SearchEngineSettingsDataProvider_jni.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace search_engines {
 
 CategorizedTemplateUrls::CategorizedTemplateUrls() = default;
@@ -85,6 +96,56 @@ SearchEngineSettingsDataProvider::GetCategorizedTemplateURLs(
   return data;
 }
 
+std::vector<const TemplateURL*>
+SearchEngineSettingsDataProvider::GetTemplateUrlsByCategory(
+    TemplateUrlCategory category,
+    template_url_starter_pack_data::StarterPackIdSet disabled_starter_pack_ids)
+    const {
+  std::vector<const TemplateURL*> result;
+
+  for (TemplateURL* turl : template_url_service_->GetTemplateURLs()) {
+    if (disabled_starter_pack_ids.Has(turl->starter_pack_id())) {
+      continue;
+    }
+
+    bool is_default = template_url_service_->ShowInDefaultList(turl);
+    bool is_extension = turl->type() == TemplateURL::OMNIBOX_API_EXTENSION;
+    bool is_active = template_url_service_->ShowInActivesList(turl);
+    bool is_hidden = template_url_service_->HiddenFromLists(turl);
+
+    switch (category) {
+      case TemplateUrlCategory::kDefault:
+        if (is_default) {
+          result.push_back(turl);
+        }
+        break;
+      case TemplateUrlCategory::kActiveSiteSearch:
+        if (!is_default && !is_hidden && !is_extension && is_active) {
+          result.push_back(turl);
+        }
+        break;
+      case TemplateUrlCategory::kInactiveSiteSearch:
+        if (!is_default && !is_hidden && !is_extension && !is_active) {
+          result.push_back(turl);
+        }
+        break;
+      case TemplateUrlCategory::kExtension:
+        if (!is_default && !is_hidden && is_extension) {
+          result.push_back(turl);
+        }
+        break;
+    }
+  }
+
+  if (category == TemplateUrlCategory::kActiveSiteSearch ||
+      category == TemplateUrlCategory::kInactiveSiteSearch) {
+    std::ranges::sort(
+        result, ::internal::OrderTemplateUrlsByManagedAndAlphabetically());
+  }
+
+  return result;
+}
+
 bool SearchEngineSettingsDataProvider::CanRecordSettingsPageLoadMetrics()
     const {
   return !has_recorded_metrics_ &&
@@ -124,4 +185,40 @@ void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
   MaybeRecordSettingsPageLoadMetrics(all_engines);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void SearchEngineSettingsDataProvider::Destroy(JNIEnv* env) {
+  delete this;
+}
+
+// static
+template_url_starter_pack_data::StarterPackIdSet
+SearchEngineSettingsDataProvider::GetDisabledStarterPackIdsForAndroid() {
+  template_url_starter_pack_data::StarterPackIdSet disabled_ids;
+  if (!omnibox_feature_configs::ContextualSearch::Get().starter_pack_page) {
+    disabled_ids.Put(template_url_starter_pack_data::StarterPackId::kPage);
+  }
+  // TODO(crbug.com/512766345): Add profile check for aimode and gemini.
+  if (!base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion)) {
+    disabled_ids.Put(template_url_starter_pack_data::StarterPackId::kGemini);
+  }
+  disabled_ids.Put(template_url_starter_pack_data::StarterPackId::kBookmarks);
+  return disabled_ids;
+}
+
+std::vector<const TemplateURL*>
+SearchEngineSettingsDataProvider::GetTemplateUrlsByCategory(
+    JNIEnv* env,
+    TemplateUrlCategory category) const {
+  CHECK(category >= TemplateUrlCategory::kDefault &&
+        category <= TemplateUrlCategory::kExtension);
+  return GetTemplateUrlsByCategory(category,
+                                   GetDisabledStarterPackIdsForAndroid());
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace search_engines
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(SearchEngineSettingsDataProvider)
+#endif

@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.search_engines.settings.common.BaseSiteSearch
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlCategory;
 import org.chromium.ui.listmenu.ListMenuDelegate;
@@ -36,8 +37,9 @@ public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
             Context context,
             ModelList modelList,
             Profile profile,
+            SearchEngineSettingsDataProvider settingsDataProvider,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
-        super(context, modelList, profile);
+        super(context, modelList, profile, settingsDataProvider);
         mSettingsCustomTabLauncher = settingsCustomTabLauncher;
         mExtensionControlHandler = ExtensionControlHandler.createForProfile(profile);
 
@@ -49,7 +51,7 @@ public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
         mModelList.clear();
 
         List<TemplateUrl> urls =
-                mTemplateUrlService.getTemplateUrlsByCategory(TemplateUrlCategory.EXTENSION);
+                mSettingsDataProvider.getTemplateUrlsByCategory(TemplateUrlCategory.EXTENSION);
 
         for (TemplateUrl url : urls) {
             mModelList.add(createListItem(url));

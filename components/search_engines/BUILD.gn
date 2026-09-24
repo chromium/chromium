@@ -316,6 +316,7 @@ if (is_android) {
   java_cpp_enum("search_engine_enums_java") {
     sources = [
       "choice_made_location.h",
+      "search_engine_settings_data_provider.h",
       "search_engine_type.h",
       "template_url_starter_pack_data.h",
     ]

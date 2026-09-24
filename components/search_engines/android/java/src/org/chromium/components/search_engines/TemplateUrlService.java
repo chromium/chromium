@@ -4,6 +4,8 @@
 
 package org.chromium.components.search_engines;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -52,7 +54,8 @@ public class TemplateUrlService {
     }
 
     @CalledByNative
-    private static TemplateUrlService create(long nativeTemplateUrlServiceAndroid) {
+    @VisibleForTesting
+    static TemplateUrlService create(long nativeTemplateUrlServiceAndroid) {
         return new TemplateUrlService(nativeTemplateUrlServiceAndroid);
     }
 
@@ -108,12 +111,34 @@ public class TemplateUrlService {
     /**
      * Returns two lists: The first including prepopulated and policy enforced engines and the
      * default engine, the second one recently visited sites.
+     *
+     * <p>TODO(crbug.com/545131041): Migrate callers to {@link
+     * SearchEngineSettingsDataProvider#getPrepopulatedAndRecentlyVisitedTemplateURLs()} and remove
+     * this method. It is retained here only so this CL does not also have to move the prepopulated
+     * engine logic; that happens in the follow-up.
      */
     public PrepopulatedAndRecentlyVisitedTemplateURLs
             getPrepopulatedAndRecentlyVisitedTemplateURLs() {
         ThreadUtils.assertOnUiThread();
         return TemplateUrlServiceJni.get()
                 .getPrepopulatedAndRecentlyVisitedTemplateURLs(mNativeTemplateUrlServiceAndroid);
+    }
+
+    /**
+     * Creates a {@link SearchEngineSettingsDataProvider} instance to prepare data for settings
+     * screens. The caller is responsible for calling {@link
+     * SearchEngineSettingsDataProvider#close()} when done.
+     *
+     * <p>Create at most one per settings screen and share it across the screen's sections: the
+     * provider records its page load metrics at most once per instance, so a screen backed by
+     * several providers would over-report.
+     */
+    public SearchEngineSettingsDataProvider createSettingsDataProvider() {
+        ThreadUtils.assertOnUiThread();
+        long nativeProvider =
+                TemplateUrlServiceJni.get()
+                        .createSettingsDataProvider(mNativeTemplateUrlServiceAndroid);
+        return new SearchEngineSettingsDataProvider(nativeProvider);
     }
 
     /**
@@ -406,18 +431,6 @@ public class TemplateUrlService {
                 TemplateUrlServiceJni.get()
                         .getFullNameFromTemplateUrl(mNativeTemplateUrlServiceAndroid, keyword);
         return fullName.isEmpty() ? null : fullName;
-    }
-
-    /**
-     * Returns a list of template URLs filtered by the specified category.
-     *
-     * @param category The category of template URLs to retrieve.
-     */
-    public List<TemplateUrl> getTemplateUrlsByCategory(
-            @JniType("TemplateUrlServiceAndroid::TemplateUrlCategory") int category) {
-        ThreadUtils.assertOnUiThread();
-        return TemplateUrlServiceJni.get()
-                .getTemplateUrlsByCategory(mNativeTemplateUrlServiceAndroid, category);
     }
 
     /**
@@ -729,10 +742,7 @@ public class TemplateUrlService {
         PrepopulatedAndRecentlyVisitedTemplateURLs getPrepopulatedAndRecentlyVisitedTemplateURLs(
                 long nativeTemplateUrlServiceAndroid);
 
-        @JniType("std::vector<const TemplateURL*>")
-        List<TemplateUrl> getTemplateUrlsByCategory(
-                long nativeTemplateUrlServiceAndroid,
-                @JniType("TemplateUrlServiceAndroid::TemplateUrlCategory") int category);
+        long createSettingsDataProvider(long nativeTemplateUrlServiceAndroid);
 
         TemplateUrl getDefaultSearchEngine(long nativeTemplateUrlServiceAndroid);
 

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUiBackend;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -48,10 +50,12 @@ public class SiteSearchSettingsUnitTest {
     private @Mock LargeIconBridge.Natives mLargeIconBridgeJni;
     private @Mock ExtensionUiBackend mExtensionUiBackend;
     private @Mock ExtensionSearchEngineCoordinator mExtensionSearchEngineCoordinator;
+    private @Mock SearchEngineSettingsDataProvider mSettingsDataProvider;
 
     @Before
     public void setUp() {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        when(mTemplateUrlService.createSettingsDataProvider()).thenReturn(mSettingsDataProvider);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
         ExtensionUi.setBackendForTesting(mExtensionUiBackend);
         ServiceLoaderUtil.setInstanceForTesting(
@@ -86,7 +90,8 @@ public class SiteSearchSettingsUnitTest {
         assertNotNull(mFragment.findPreference("custom_site_search_item_list"));
         assertNotNull(mFragment.findPreference("inactive_shortcut_list"));
         assertNotNull(mFragment.findPreference("extension_item_list"));
-        verify(mExtensionSearchEngineCoordinator).initialize(any(), eq(mProfile), any(), any());
+        verify(mExtensionSearchEngineCoordinator)
+                .initialize(any(), eq(mProfile), any(), any(), eq(mSettingsDataProvider));
     }
 
     @Test
@@ -103,6 +108,28 @@ public class SiteSearchSettingsUnitTest {
         // implementation. Here we only test the pref is not created and the initialize method
         // will not be called.
         assertNull(mFragment.findPreference("extension_item_list"));
-        verify(mExtensionSearchEngineCoordinator, never()).initialize(any(), any(), any(), any());
+        verify(mExtensionSearchEngineCoordinator, never())
+                .initialize(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    public void testSettingsDataProvider_createdOncePerPageLoad() {
+        when(mExtensionUiBackend.isEnabled(mProfile)).thenReturn(true);
+
+        launchFragment();
+
+        // All sections share the fragment's provider. Creating one per section would make the
+        // provider's once-per-page-load metrics fire several times for a single page load.
+        verify(mTemplateUrlService, times(1)).createSettingsDataProvider();
+    }
+
+    @Test
+    public void testSettingsDataProvider_closedOnDestroy() {
+        launchFragment();
+        verify(mSettingsDataProvider, never()).close();
+
+        mActivity.getSupportFragmentManager().beginTransaction().remove(mFragment).commitNow();
+
+        verify(mSettingsDataProvider).close();
     }
 }

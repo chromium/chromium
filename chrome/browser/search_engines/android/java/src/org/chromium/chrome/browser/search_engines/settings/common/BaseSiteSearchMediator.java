@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.search_engines.settings.SearchEngineIconUtils
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -49,6 +50,7 @@ public abstract class BaseSiteSearchMediator
     protected final LargeIconBridge mLargeIconBridge;
     protected final int mFaviconSize;
     protected final Map<GURL, Bitmap> mIconCache = new HashMap<>();
+    protected final SearchEngineSettingsDataProvider mSettingsDataProvider;
 
     /**
      * Constructs the base mediator and initializes core dependencies.
@@ -56,12 +58,19 @@ public abstract class BaseSiteSearchMediator
      * @param context The current context.
      * @param modelList The modelList representing the UI list to be populated.
      * @param profile The current user profile.
+     * @param settingsDataProvider The provider supplying the search engine lists. Owned by the
+     *     settings fragment and shared by all of its sections, so this mediator must not close it.
      */
-    public BaseSiteSearchMediator(Context context, ModelList modelList, Profile profile) {
+    public BaseSiteSearchMediator(
+            Context context,
+            ModelList modelList,
+            Profile profile,
+            SearchEngineSettingsDataProvider settingsDataProvider) {
         mContext = context;
         mModelList = modelList;
         mProfile = profile;
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
+        mSettingsDataProvider = settingsDataProvider;
         mLargeIconBridge = new LargeIconBridge(profile);
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
     }
@@ -84,6 +93,7 @@ public abstract class BaseSiteSearchMediator
     public void destroy() {
         mTemplateUrlService.removeObserver(this);
         mLargeIconBridge.destroy();
+        // mSettingsDataProvider is owned and closed by the settings fragment.
     }
 
     @Override
@@ -207,6 +217,9 @@ public abstract class BaseSiteSearchMediator
 
     /**
      * Filters the list of search engines to exclude disabled starter pack engines.
+     *
+     * <p>TODO(crbug.com/512766345): Remove duplication with native
+     * SearchEngineSettingsDataProvider::GetDisabledStarterPackIdsForAndroid.
      *
      * @param urls The original list of TemplateUrls.
      * @return The filtered list of TemplateUrls.

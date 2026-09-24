@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.settings.common.ExpandableSiteSearchMediator;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlCategory;
@@ -32,8 +33,9 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
             Context context,
             ModelList modelList,
             Profile profile,
+            SearchEngineSettingsDataProvider settingsDataProvider,
             Callback<TemplateUrl> onRemoveSearchEngine) {
-        super(context, modelList, profile);
+        super(context, modelList, profile, settingsDataProvider);
         mOnRemoveSearchEngine = onRemoveSearchEngine;
 
         initializeTemplateUrlService();
@@ -44,7 +46,7 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
         clearAllItems();
 
         List<TemplateUrl> urls =
-                mTemplateUrlService.getTemplateUrlsByCategory(
+                mSettingsDataProvider.getTemplateUrlsByCategory(
                         TemplateUrlCategory.INACTIVE_SITE_SEARCH);
 
         populateTemplateUrls(filterTemplateUrls(urls));

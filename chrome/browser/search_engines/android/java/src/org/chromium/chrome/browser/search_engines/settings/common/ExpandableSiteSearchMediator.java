@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -45,9 +46,15 @@ public abstract class ExpandableSiteSearchMediator extends BaseSiteSearchMediato
      * @param context The current context.
      * @param modelList The UI {@link ModelList}.
      * @param profile The current user {@link Profile}.
+     * @param settingsDataProvider The provider supplying the search engine lists, owned by the
+     *     settings fragment.
      */
-    public ExpandableSiteSearchMediator(Context context, ModelList modelList, Profile profile) {
-        super(context, modelList, profile);
+    public ExpandableSiteSearchMediator(
+            Context context,
+            ModelList modelList,
+            Profile profile,
+            SearchEngineSettingsDataProvider settingsDataProvider) {
+        super(context, modelList, profile, settingsDataProvider);
     }
 
     public boolean isExpandedForTesting() {
