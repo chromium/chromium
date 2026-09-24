@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/blink_buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -34,7 +35,6 @@
 #include "ios/web/public/navigation/web_state_policy_decider.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
 #include "net/base/apple/url_conversions.h"
 #include "net/cookies/cookie_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,6 +42,12 @@
 #include "testing/platform_test.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
+
+#if BUILDFLAG(USE_BLINK)
+#include "content/public/test/browser_task_environment.h"
+#else
+#include "ios/web/public/test/web_task_environment.h"
+#endif
 
 using testing::NiceMock;
 
@@ -342,7 +348,11 @@ class AccountConsistencyServiceTest : public PlatformTest {
   }
 
   // Properties available for tests.
+#if BUILDFLAG(USE_BLINK)
+  content::BrowserTaskEnvironment task_environment_{
+#else
   web::WebTaskEnvironment task_environment_{
+#endif
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::FakeBrowserState browser_state_;
   sync_preferences::TestingPrefServiceSyncable prefs_;

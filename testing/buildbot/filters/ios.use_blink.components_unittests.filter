@@ -191,30 +191,6 @@
 -SecurityStateUtilsTest.GetMaliciousContentStatus
 -SecurityStateUtilsTest.GetSecurityLevelForWebStateMaliciousContent
 
-# TODO(crbug.com/40945952): Test currently fails on iOS blink.
--AccountConsistencyServiceTest.SigninAddCookieOnMainDomains
--AccountConsistencyServiceTest.AddChromeConnectedCookiesOnCookiesRemoved
--AccountConsistencyServiceTest.ChromeManageAccountsDefault
--AccountConsistencyServiceTest.ChromeManageAccountsIgnoredInSubframe
--AccountConsistencyServiceTest.ChromeManageAccountsNoHeader
--AccountConsistencyServiceTest.ChromeManageAccountsNotOnGaia
--AccountConsistencyServiceTest.ChromeManageAccountsShowAddAccount
--AccountConsistencyServiceTest.ChromeNotShowConsistencyPromoOnPageLoadFailure
--AccountConsistencyServiceTest.ChromeNotShowConsistencyPromoOnPageLoadFailureRedirect
--AccountConsistencyServiceTest.ChromeShowConsistencyPromo
--AccountConsistencyServiceTest.DeleteChromeConnectedCookiesAfterSet
--AccountConsistencyServiceTest.DomainsClearedOnBrowsingDataRemoved
--AccountConsistencyServiceTest.DomainsWithCookieLoadedFromPrefs
--AccountConsistencyServiceTest.GAIACookieMissingOnSignin
--AccountConsistencyServiceTest.SetChromeConnectedCookie
--AccountConsistencyServiceTest.SetChromeConnectedCookiesAfterDelete
--AccountConsistencyServiceTest.SetChromeConnectedCookiesSignedOutGaiaVisitor
--AccountConsistencyServiceTest.SetChromeConnectedCookiesSignedOutGoogleVisitor
--AccountConsistencyServiceTest.SetGaiaCookieUpdateAfterDelay
--AccountConsistencyServiceTest.SetGaiaCookieUpdateBeforeDelay
--AccountConsistencyServiceTest.SignInSignOut
--AccountConsistencyServiceTest.SignOutWithoutDomains
-
 # TODO(crbug.com/40945961): Test currently fails on iOS blink.
 -TranslateControllerTest.OnTranslateSendRequestWithValidCommand
 -TranslateControllerTest.OnTranslateSendRequestWithBadURL
@@ -313,10 +289,6 @@
 -LocalStorageImplTest.StorageKeysAreIndependent
 -LocalStorageImplTest.WrapperOutlivesMojoConnection
 -LocalStorageImplTest.MetaDataClearedOnDeleteAll
-
-# TODO(crbug.com/440947113): This test has been failing since
-# https://crrev.com/c/6862660.
--AccountConsistencyServiceTest.ChromeAddSessionWithEmail
 
 # TODO(crbug.com/473587148): These tests have failed with use_blink due to spinning up on
 # an unknown thread since https://crrev.com/c/7275448.
