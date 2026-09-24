@@ -115,15 +115,25 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
                       std::nullopt);
   GetSyncService()->AddGroup(group);
 
-  // Pin/unpin should be present when the projects panel is disabled.
-  STGTabsMenuModel model(
+  // Pin/unpin should be present for button context menu.
+  STGTabsMenuModel button_model(
       browser(), TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU);
-  model.Build(group,
-              base::BindRepeating(
-                  &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
-                  base::Unretained(this)));
+  button_model.Build(
+      group, base::BindRepeating(
+                 &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                 base::Unretained(this)));
 
-  EXPECT_TRUE(IsPinItemPresent(&model));
+  EXPECT_TRUE(IsPinItemPresent(&button_model));
+
+  // Pin/unpin should be hidden for organizer panel.
+  STGTabsMenuModel organizer_model(browser(),
+                                   TabGroupMenuContext::ORGANIZER_PANEL);
+  organizer_model.Build(
+      group, base::BindRepeating(
+                 &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                 base::Unretained(this)));
+
+  EXPECT_FALSE(IsPinItemPresent(&organizer_model));
 }
 
 }  // namespace tab_groups
