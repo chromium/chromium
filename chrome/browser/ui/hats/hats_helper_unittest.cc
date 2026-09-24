@@ -35,7 +35,7 @@ class HatsHelperTest : public testing::Test {
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-    HatsHelper::CreateForWebContents(web_contents_.get());
+    hats_helper_ = std::make_unique<HatsHelper>(web_contents_.get());
   }
 
  protected:
@@ -57,6 +57,7 @@ class HatsHelperTest : public testing::Test {
   TestingProfile profile_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<HatsHelper> hats_helper_;
   raw_ptr<MockHatsService> mock_hats_service_;
   raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
 };

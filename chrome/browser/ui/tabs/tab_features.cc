@@ -178,6 +178,12 @@
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/hats/hats_helper.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_hats_service_factory.h"
+#endif
+
 namespace tabs {
 
 TabFeatures::TabFeatures() = default;
@@ -702,6 +708,13 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<enterprise_reporting::SaasUsageNavigationObserver>(
             tab.GetContents());
   }
+  if (base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopDemo) ||
+      base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurvey) ||
+      base::FeatureList::IsEnabled(features::kTrustSafetySentimentSurveyV2) ||
+      PerformanceControlsHatsServiceFactory::IsAnySurveyFeatureEnabled()) {
+    hats_helper_ = std::make_unique<HatsHelper>(tab.GetContents());
+  }
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
@@ -938,6 +951,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     web_payments_observer_ =
         std::make_unique<payments::WebPaymentsObserver>(new_contents);
   }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (hats_helper_) {
+    hats_helper_ = std::make_unique<HatsHelper>(new_contents);
+  }
+#endif
 }
 
 customize_chrome::SidePanelController*

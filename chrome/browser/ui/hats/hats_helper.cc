@@ -22,8 +22,7 @@
 HatsHelper::~HatsHelper() = default;
 
 HatsHelper::HatsHelper(content::WebContents* web_contents)
-    : WebContentsObserver(web_contents),
-      content::WebContentsUserData<HatsHelper>(*web_contents) {
+    : WebContentsObserver(web_contents) {
   // Construct PerformanceControlsHatsService immediately to register pref
   // listeners.
   performance_controls_hats_service_ =
@@ -74,5 +73,3 @@ void HatsHelper::PrimaryPageChanged(content::Page& page) {
 Profile* HatsHelper::profile() const {
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HatsHelper);

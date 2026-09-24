@@ -669,6 +669,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/multistep_filter",
         "//chrome/browser/multistep_filter/ui",
+        "//chrome/browser/ui/hats",
         "//chrome/browser/wallet",
       ]
     }

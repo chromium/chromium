@@ -48,6 +48,7 @@ class FramebustBlockTabHelper;
 
 class FormInteractionTabHelper;
 class FromGWSNavigationAndKeepAliveRequestObserver;
+class HatsHelper;
 class HttpAuthCacheStatus;
 class IntentPickerTabHelper;
 class IntentPickerViewPageActionController;
@@ -703,6 +704,7 @@ class TabFeatures {
     BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<enterprise_reporting::SaasUsageNavigationObserver>
       saas_usage_navigation_observer_;
+  std::unique_ptr<HatsHelper> hats_helper_;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)
