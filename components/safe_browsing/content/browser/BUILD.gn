@@ -275,6 +275,7 @@ if (safe_browsing_mode != 0) {
       "//services/network/public/cpp",
       "//third_party/tflite_support",
       "//third_party/tflite_support:tflite_support_proto",
+      "//third_party/zlib/google:compression_utils",
       "//url",
     ]
   }
