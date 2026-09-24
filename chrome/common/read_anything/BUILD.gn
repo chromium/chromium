@@ -14,7 +14,6 @@ mojom("mojo_bindings") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
-    "//ui/accessibility:ax_features_mojo",
     "//ui/accessibility/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
