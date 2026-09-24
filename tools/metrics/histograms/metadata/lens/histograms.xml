@@ -541,6 +541,26 @@ chromium-metrics-reviews@google.com.
   <token key="PageContentType" variants="MimeTypes"/>
 </histogram>
 
+<histogram name="Lens.Overlay.ClusterInfo.ResponseTime" units="ms"
+    expires_after="2027-03-21">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a Lens Overlay ClusterInfo response is received. Measures the
+    time elapsed between when the ClusterInfo fetch was initiated and when the
+    response was received.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.ClusterInfo.Status"
+    enum="LensOverlayClusterInfoStatus" expires_after="2027-03-21">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a Lens Overlay ClusterInfo fetch request completes or fails.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.ContextMenuOption.Shown"
     enum="LensOverlayContextMenuOption" expires_after="2027-02-28">
   <owner>hujasonx@chromium.org</owner>

@@ -189,6 +189,27 @@ void RecordUKMSessionEndMetrics(
     std::optional<base::TimeDelta> session_foreground_duration = std::nullopt,
     std::optional<int> generated_tab_count = std::nullopt);
 
+// LINT.IfChange(LensOverlayClusterInfoStatus)
+enum class LensOverlayClusterInfoStatus {
+  // The cluster info was fetched and parsed successfully.
+  kSuccess = 0,
+
+  // The request failed with an HTTP error.
+  kHttpError = 1,
+
+  // The response failed to parse as proto.
+  kProtoParseError = 2,
+
+  kMaxValue = kProtoParseError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayClusterInfoStatus)
+
+// Records the status of a Lens Overlay cluster info fetch request.
+void RecordClusterInfoFetchStatus(LensOverlayClusterInfoStatus status);
+
+// Records the response time of a Lens Overlay cluster info fetch request.
+void RecordClusterInfoResponseTime(base::TimeDelta response_time);
+
 // Records the duration between the time a lens request is started and the time
 // a response is generated.
 void RecordLensResponseTime(base::TimeDelta response_time);

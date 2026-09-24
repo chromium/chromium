@@ -227,6 +227,15 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     num_cluster_info_fetch_requests_sent_++;
     fake_server_response_string =
         fake_cluster_info_response_.SerializeAsString();
+    if (next_cluster_info_request_should_return_error_) {
+      fake_server_response_code =
+          google_apis::ApiErrorCode::HTTP_INTERNAL_SERVER_ERROR;
+      next_cluster_info_request_should_return_error_ = false;
+    }
+    if (next_cluster_info_request_should_return_parse_error_) {
+      fake_server_response_string = "invalid proto response";
+      next_cluster_info_request_should_return_parse_error_ = false;
+    }
     if (!request_string.empty()) {
       lens::LensOverlayServerClusterInfoRequest cluster_info_request;
       cluster_info_request.ParseFromString(request_string);

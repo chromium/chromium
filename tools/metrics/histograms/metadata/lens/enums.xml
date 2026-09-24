@@ -102,6 +102,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_identity_delegation_helper.h:LensIdentityDelegationFetchStatus) -->
 
+<!-- LINT.IfChange(LensOverlayClusterInfoStatus) -->
+
+<enum name="LensOverlayClusterInfoStatus">
+  <summary>Status of the Lens Overlay ClusterInfo fetch request.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="HTTP Error"/>
+  <int value="2" label="Proto Parse Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_metrics.h:LensOverlayClusterInfoStatus) -->
+
 <!-- LINT.IfChange(LensOverlayContextMenuOption) -->
 
 <enum name="LensOverlayContextMenuOption">

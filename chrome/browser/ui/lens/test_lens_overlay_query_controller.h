@@ -148,6 +148,18 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     fake_cluster_info_response_ = response;
   }
 
+  void set_next_cluster_info_request_should_return_error(
+      bool next_cluster_info_request_should_return_error) {
+    next_cluster_info_request_should_return_error_ =
+        next_cluster_info_request_should_return_error;
+  }
+
+  void set_next_cluster_info_request_should_return_parse_error(
+      bool next_cluster_info_request_should_return_parse_error) {
+    next_cluster_info_request_should_return_parse_error_ =
+        next_cluster_info_request_should_return_parse_error;
+  }
+
   void set_fake_objects_response(lens::LensOverlayObjectsResponse response) {
     fake_objects_response_ = response;
   }
@@ -411,6 +423,12 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // The fake response to return for cluster info requests.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;
+
+  // If true, the next cluster info request will return an error.
+  bool next_cluster_info_request_should_return_error_ = false;
+
+  // If true, the next cluster info request will return invalid proto data.
+  bool next_cluster_info_request_should_return_parse_error_ = false;
 
   // The fake response to return for objects requests.
   lens::LensOverlayObjectsResponse fake_objects_response_;

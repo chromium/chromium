@@ -40,6 +40,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_identity_delegation_helper.h"
+#include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_payload_construction.h"
@@ -864,7 +865,13 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
   cluster_info_endpoint_fetcher_.reset();
   query_controller_state_ = QueryControllerState::kReceivedClusterInfoResponse;
 
+  const base::TimeDelta elapsed_time =
+      base::TimeTicks::Now() - query_start_time;
+  lens::RecordClusterInfoResponseTime(elapsed_time);
+
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    lens::RecordClusterInfoFetchStatus(
+        lens::LensOverlayClusterInfoStatus::kHttpError);
     // If there was an error with the cluster info request, we should still try
     // and send the full image request as a fallback.
     PrepareAndFetchFullImageRequest();
@@ -880,11 +887,16 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
     }
   }
   if (!server_response.ParseFromString(response_string)) {
+    lens::RecordClusterInfoFetchStatus(
+        lens::LensOverlayClusterInfoStatus::kProtoParseError);
     // If there was an error with the cluster info request, we should still try
     // and send the full image request as a fallback.
     PrepareAndFetchFullImageRequest();
     return;
   }
+
+  lens::RecordClusterInfoFetchStatus(
+      lens::LensOverlayClusterInfoStatus::kSuccess);
 
   // Store the cluster info.
   cluster_info_ = std::make_optional<lens::LensOverlayClusterInfo>();
@@ -913,7 +925,7 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
           lens::features::GetLensOverlayClusterInfoLifetimeSeconds()));
 
   // Store the fetch response time.
-  cluster_info_fetch_response_time_ = base::TimeTicks::Now() - query_start_time;
+  cluster_info_fetch_response_time_ = elapsed_time;
 
   // Continue with the full image request which will use the session id from the
   // cluster info we just received.
@@ -945,6 +957,8 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   // flow since the request flow for contextual searchbox will fail without the
   // cluster info handshake.
   if (!cluster_info_ &&
+      query_controller_state_ !=
+          QueryControllerState::kReceivedClusterInfoResponse &&
       (lens::features::IsLensOverlayClusterInfoOptimizationEnabled() ||
        lens::IsLensOverlayContextualSearchboxEnabled(profile_))) {
     FetchClusterInfoRequest();

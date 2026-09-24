@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,6 +33,7 @@
 #include "components/base32/base32.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
@@ -5377,6 +5379,123 @@ TEST_F(LensOverlayQueryControllerTest, MethodsNoOpWhenQueryControllerIsOff) {
   query_controller.ResetPageContentData();
 
   EXPECT_TRUE(query_controller.IsOff());
+}
+
+TEST_F(LensOverlayQueryControllerTest, ClusterInfoMetricsRecordedOnSuccess) {
+  base::HistogramTester histogram_tester;
+  InitFeaturesWithClusterInfoOptimization();
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
+      base::NullCallback(), base::NullCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(
+      bitmap, bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_page_contents=*/{},
+      /*primary_content_type=*/lens::MimeType::kUnknown,
+      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
+
+  ASSERT_TRUE(full_image_response_future.Wait());
+  query_controller.EndQuery();
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ClusterInfo.Status",
+      lens::LensOverlayClusterInfoStatus::kSuccess, 1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.ClusterInfo.ResponseTime", 1);
+}
+
+TEST_F(LensOverlayQueryControllerTest, ClusterInfoMetricsRecordedOnHttpError) {
+  base::HistogramTester histogram_tester;
+  InitFeaturesWithClusterInfoOptimization();
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
+      base::NullCallback(), base::NullCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  query_controller.set_next_cluster_info_request_should_return_error(true);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(
+      bitmap, bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_page_contents=*/{},
+      /*primary_content_type=*/lens::MimeType::kUnknown,
+      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
+
+  ASSERT_TRUE(full_image_response_future.Wait());
+  query_controller.EndQuery();
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ClusterInfo.Status",
+      lens::LensOverlayClusterInfoStatus::kHttpError, 1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.ClusterInfo.ResponseTime", 1);
+}
+
+TEST_F(LensOverlayQueryControllerTest, ClusterInfoMetricsRecordedOnParseError) {
+  base::HistogramTester histogram_tester;
+  InitFeaturesWithClusterInfoOptimization();
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
+      base::NullCallback(), base::NullCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  query_controller.set_next_cluster_info_request_should_return_parse_error(
+      true);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(
+      bitmap, bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_page_contents=*/{},
+      /*primary_content_type=*/lens::MimeType::kUnknown,
+      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
+
+  ASSERT_TRUE(full_image_response_future.Wait());
+  query_controller.EndQuery();
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ClusterInfo.Status",
+      lens::LensOverlayClusterInfoStatus::kProtoParseError, 1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.ClusterInfo.ResponseTime", 1);
 }
 
 }  // namespace lens

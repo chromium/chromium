@@ -563,6 +563,15 @@ void RecordUKMSessionEndMetrics(
       .Record(ukm::UkmRecorder::Get());
 }
 
+void RecordClusterInfoFetchStatus(LensOverlayClusterInfoStatus status) {
+  base::UmaHistogramEnumeration("Lens.Overlay.ClusterInfo.Status", status);
+}
+
+void RecordClusterInfoResponseTime(base::TimeDelta response_time) {
+  base::UmaHistogramTimes("Lens.Overlay.ClusterInfo.ResponseTime",
+                          response_time);
+}
+
 void RecordLensResponseTime(base::TimeDelta response_time) {
   base::UmaHistogramTimes("Lens.Overlay.LensResponseTime", response_time);
 }
