@@ -4147,6 +4147,9 @@ crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-001.svg [
 crbug.com/535451658 http/tests/devtools/console-xhr-logging-async.js [ Failure Pass ]
 crbug.com/535451658 http/tests/devtools/console-xhr-logging.js [ Failure Pass ]
 
+## Temporarily disable to land https://crrev.com/c/8448437
+crbug.com/559556949 http/tests/devtools/a11y-axe-core/sources/source-navigator-overrides-a11y-test.js [ Failure Pass ]
+
 
 # See also crbug.com/920100 (sheriff 2019-01-09).
 crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/external-stylesheet.html [ Failure Timeout ]
