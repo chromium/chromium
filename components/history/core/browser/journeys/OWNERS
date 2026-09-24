@@ -1,6 +1,7 @@
 engedy@chromium.org
 saeideid@google.com
 hempjudith@google.com
+antoniosartori@chromium.org
 
 per-file *sync_bridge*=file://components/sync/OWNERS
 per-file journey_data_type_controller*=file://components/sync/OWNERS
