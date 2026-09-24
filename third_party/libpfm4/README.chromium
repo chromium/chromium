@@ -1,8 +1,8 @@
 Name: libpfm4
 Short Name: libpfm4
 URL: https://sourceforge.net/p/perfmon2/libpfm4/ci/master/tree/
-Date: 2026-09-21
-Revision: ed044eef71fcaba5308ee93ff755584c208601f5
+Date: 2026-09-24
+Revision: 995ad37079531b7c3a98cbd164b7619f3b0adc0d
 Version: N/A
 Update Mechanism: Autoroll
 License: MIT
