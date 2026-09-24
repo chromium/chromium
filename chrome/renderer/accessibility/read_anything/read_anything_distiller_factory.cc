@@ -10,7 +10,7 @@
 #include "base/notreached.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller.h"
-#include "chrome/renderer/accessibility/read_anything/screen2x_distiller.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_screen2x_distiller.h"
 
 ReadAnythingDistillerFactory::ReadAnythingDistillerFactory(
     content::RenderFrame* render_frame,

@@ -4,6 +4,7 @@ kristislee@google.com
 lwinston@google.com
 eitang@google.com
 trewin@google.com
+per-file BUILD.gn,read_anything.ts,app/*,content/*,menus/*,shared/*=gusmartin@google.com
 
 # Backup.
 abigailbklein@google.com
