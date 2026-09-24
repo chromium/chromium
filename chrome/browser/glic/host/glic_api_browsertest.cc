@@ -2689,7 +2689,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithNewTabDaisyChain,
       },
       1));
 }
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithNewTabDaisyChain, testNewTabMetrics) {
+
+// TODO(b/565497972): Re-enable once crash during teardown is resolved on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_testNewTabMetrics DISABLED_testNewTabMetrics
+#else
+#define MAYBE_testNewTabMetrics testNewTabMetrics
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithNewTabDaisyChain,
+                       MAYBE_testNewTabMetrics) {
   // 1. Open Glic in first tab.
   ASSERT_OK(OpenGlicForActiveTab());
   base::HistogramTester histogram_tester;
