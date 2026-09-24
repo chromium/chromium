@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_blob_client_list.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_error.h"
@@ -58,6 +60,27 @@
 namespace blink {
 
 namespace {
+
+String NonOkResponseReason(const Response* response) {
+  switch (response->GetResponse()->GetType()) {
+    case network::mojom::FetchResponseType::kOpaque:
+      return "An opaque response cannot be added because its status is not "
+             "exposed. Use Cache.put() to cache opaque responses.";
+    case network::mojom::FetchResponseType::kOpaqueRedirect:
+      return "An opaque-redirect response cannot be added because its status "
+             "is not exposed. Use Cache.put() to cache opaque-redirect "
+             "responses.";
+    case network::mojom::FetchResponseType::kError:
+      // Fetch normally rejects before this handler receives an error response.
+      return "The request failed with a network error.";
+    case network::mojom::FetchResponseType::kBasic:
+    case network::mojom::FetchResponseType::kCors:
+    case network::mojom::FetchResponseType::kDefault:
+      return StrCat({"Response status ", String::Number(response->status()),
+                     " is not a successful status (200-299)."});
+  }
+  NOTREACHED();
+}
 
 bool VaryHeaderContainsAsterisk(const Response* response) {
   const FetchHeaderList* headers = response->headers()->HeaderList();
@@ -254,6 +277,22 @@ class Cache::BarrierCallbackForPutResponse final
     Stop();
   }
 
+  void OnNonOkResponse(int index, const Response* response) {
+    ScriptState* script_state = resolver_->GetScriptState();
+    // Suppress duplicate diagnostics without changing the existing error path.
+    if (!stopped_ && script_state->ContextIsValid()) {
+      ExecutionContext::From(script_state)
+          ->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kError,
+              StrCat({method_name_, " failed for '",
+                      request_list_[index]->url().GetString(),
+                      "': ", NonOkResponseReason(response)})));
+    }
+    // Keep response details out of the script-visible exception.
+    OnError("Request failed");
+  }
+
   void Trace(Visitor* visitor) const {
     visitor->Trace(resolver_);
     visitor->Trace(abort_controller_);
@@ -311,7 +350,7 @@ class Cache::ResponseBodyLoader final
                 perfetto::Flow::Global(trace_id_));
 
     if (require_ok_response_ && !response->ok()) {
-      barrier_callback_->OnError("Request failed");
+      barrier_callback_->OnNonOkResponse(index_, response);
       return;
     }
 

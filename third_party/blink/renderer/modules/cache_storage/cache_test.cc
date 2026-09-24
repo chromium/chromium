@@ -39,11 +39,15 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
+#include "third_party/blink/renderer/core/fetch/fetch_response_data.h"
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/console_message_storage.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_blob_client_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -81,6 +85,10 @@ class ScopedFetcherForTests final : public GlobalFetch::ScopedFetcher {
       }
     }
 
+    if (fetch_count_ <= responses_.size()) {
+      return ToResolvedPromise<Response>(script_state,
+                                         responses_[fetch_count_ - 1].Get());
+    }
     if (response_) {
       return ToResolvedPromise<Response>(script_state, response_);
     }
@@ -95,11 +103,15 @@ class ScopedFetcherForTests final : public GlobalFetch::ScopedFetcher {
     expected_url_ = expected_url;
   }
   void SetResponse(Response* response) { response_ = response; }
+  void SetResponses(const HeapVector<Member<Response>>& responses) {
+    responses_ = responses;
+  }
 
   uint32_t FetchCount() const override { return fetch_count_; }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(response_);
+    visitor->Trace(responses_);
     GlobalFetch::ScopedFetcher::Trace(visitor);
   }
 
@@ -107,6 +119,7 @@ class ScopedFetcherForTests final : public GlobalFetch::ScopedFetcher {
   uint32_t fetch_count_ = 0;
   raw_ptr<const String> expected_url_ = nullptr;
   Member<Response> response_;
+  HeapVector<Member<Response>> responses_;
 };
 
 // A test implementation of the CacheStorageCache interface which returns a
@@ -386,6 +399,140 @@ V8RequestInfo* RequestToRequestInfo(Request* value) {
 V8RequestInfo* StringToRequestInfo(const String& value) {
   return MakeGarbageCollected<V8RequestInfo>(value);
 }
+
+class CacheStorageAddTest : public CacheStorageTest,
+                            public testing::WithParamInterface<bool> {
+ public:
+  ScriptPromise<IDLUndefined> AddResponse(const String& url,
+                                          Response* response) {
+    auto* fetcher =
+        MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
+    fetcher->SetResponse(response);
+    Cache* cache =
+        CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
+    NonThrowableExceptionState exception_state;
+    auto* request = StringToRequestInfo(url);
+    if (GetParam()) {
+      HeapVector<Member<V8RequestInfo>> requests;
+      requests.push_back(request);
+      return cache->addAll(GetScriptState(), requests, exception_state);
+    }
+    return cache->add(GetScriptState(), request, exception_state);
+  }
+
+  String MethodName() const {
+    return GetParam() ? "Cache.addAll()" : "Cache.add()";
+  }
+};
+
+TEST_P(CacheStorageAddTest, NonOkResponseLogsStatusAndRequestUrl) {
+  ScriptState::Scope scope(GetScriptState());
+  auto& messages = GetPage().GetConsoleMessageStorage();
+  for (auto type : {network::mojom::FetchResponseType::kDefault,
+                    network::mojom::FetchResponseType::kBasic,
+                    network::mojom::FetchResponseType::kCors}) {
+    SCOPED_TRACE(static_cast<int>(type));
+    for (uint16_t status : {404, 500}) {
+      SCOPED_TRACE(status);
+      messages.Clear();
+      auto* data = FetchResponseData::Create();
+      data->SetStatus(status);
+      data->SetURLList({KURL("https://www.cacheadd.test/redirected")});
+      if (type == network::mojom::FetchResponseType::kBasic) {
+        data = data->CreateBasicFilteredResponse();
+      } else if (type == network::mojom::FetchResponseType::kCors) {
+        data = data->CreateCorsFilteredResponse({});
+      }
+      auto* response =
+          MakeGarbageCollected<Response>(GetExecutionContext(), data);
+      auto promise = AddResponse("https://www.cacheadd.test/request", response);
+
+      // Detailed diagnostics belong in the console, not in the JS exception.
+      EXPECT_EQ("TypeError: Request failed", GetRejectString(promise));
+      ASSERT_EQ(1u, messages.size());
+      EXPECT_EQ(mojom::blink::ConsoleMessageLevel::kError,
+                messages.at(0)->GetLevel());
+      EXPECT_EQ(
+          MethodName() + " failed for 'https://www.cacheadd.test/request': " +
+              (status == 404 ? "Response status 404" : "Response status 500") +
+              " is not a successful status (200-299).",
+          messages.at(0)->Message());
+    }
+  }
+}
+
+TEST_P(CacheStorageAddTest, OpaqueResponseLogsReasonWithoutExposingDetails) {
+  ScriptState::Scope scope(GetScriptState());
+  auto* data = FetchResponseData::Create();
+  data->SetStatus(200);
+  data->SetURLList({KURL("https://other.test/private-redirect")});
+  auto* response = MakeGarbageCollected<Response>(
+      GetExecutionContext(), data->CreateOpaqueFilteredResponse());
+  auto promise = AddResponse("https://other.test/request", response);
+
+  EXPECT_EQ("TypeError: Request failed", GetRejectString(promise));
+  auto& messages = GetPage().GetConsoleMessageStorage();
+  ASSERT_EQ(1u, messages.size());
+  EXPECT_EQ(MethodName() +
+                " failed for 'https://other.test/request': An opaque response "
+                "cannot be added because its status is not exposed. "
+                "Use Cache.put() to cache opaque responses.",
+            messages.at(0)->Message());
+}
+
+TEST_P(CacheStorageAddTest,
+       OpaqueRedirectResponseLogsReasonWithoutExposingDetails) {
+  ScriptState::Scope scope(GetScriptState());
+  auto* data = FetchResponseData::Create();
+  data->SetStatus(302);
+  data->SetURLList({KURL("https://other.test/private-redirect")});
+  auto* response = MakeGarbageCollected<Response>(
+      GetExecutionContext(), data->CreateOpaqueRedirectFilteredResponse());
+  auto promise = AddResponse("https://other.test/request", response);
+
+  EXPECT_EQ("TypeError: Request failed", GetRejectString(promise));
+  auto& messages = GetPage().GetConsoleMessageStorage();
+  ASSERT_EQ(1u, messages.size());
+  EXPECT_EQ(MethodName() +
+                " failed for 'https://other.test/request': An opaque-redirect "
+                "response cannot be added because its status is not exposed. "
+                "Use Cache.put() to cache opaque-redirect responses.",
+            messages.at(0)->Message());
+}
+
+TEST_P(CacheStorageAddTest, ErrorResponseLogsNetworkError) {
+  ScriptState::Scope scope(GetScriptState());
+  // Real fetches reject rather than resolve with an error response. The mock
+  // fetcher can supply one, as it does in the AddAllAbort tests below.
+  auto promise = AddResponse("https://www.cacheadd.test/request",
+                             Response::error(GetScriptState()));
+
+  EXPECT_EQ("TypeError: Request failed", GetRejectString(promise));
+  auto& messages = GetPage().GetConsoleMessageStorage();
+  ASSERT_EQ(1u, messages.size());
+  EXPECT_EQ(MethodName() +
+                " failed for 'https://www.cacheadd.test/request': "
+                "The request failed with a network error.",
+            messages.at(0)->Message());
+}
+
+TEST_P(CacheStorageAddTest, SuccessfulStatusDoesNotLogAnError) {
+  ScriptState::Scope scope(GetScriptState());
+  for (uint16_t status : {200, 201, 204}) {
+    SCOPED_TRACE(status);
+    auto* data = FetchResponseData::Create();
+    data->SetStatus(status);
+    auto* response =
+        MakeGarbageCollected<Response>(GetExecutionContext(), data);
+    auto promise = AddResponse("https://www.cacheadd.test/request", response);
+
+    // Reaching the cache backend means response validation succeeded.
+    EXPECT_EQ(kNotImplementedString, GetRejectString(promise));
+    EXPECT_EQ(0u, GetPage().GetConsoleMessageStorage().size());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(AddAndAddAll, CacheStorageAddTest, testing::Bool());
 
 TEST_F(CacheStorageTest, Basics) {
   ScriptState::Scope scope(GetScriptState());
@@ -853,6 +1000,38 @@ TEST_F(CacheStorageTest, AddIsolatedApp) {
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
 }
 
+TEST_F(CacheStorageTest, AddAllLogsOnlyTheFirstFailingRequest) {
+  ScriptState::Scope scope(GetScriptState());
+  NonThrowableExceptionState exception_state;
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
+  HeapVector<Member<Response>> responses;
+  for (uint16_t status : {200, 404, 500}) {
+    auto* data = FetchResponseData::Create();
+    data->SetStatus(status);
+    responses.push_back(
+        MakeGarbageCollected<Response>(GetExecutionContext(), data));
+  }
+  fetcher->SetResponses(responses);
+  TestCache* cache =
+      CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
+  HeapVector<Member<V8RequestInfo>> requests;
+  requests.push_back(StringToRequestInfo("https://www.cacheadd.test/ok"));
+  requests.push_back(StringToRequestInfo("https://www.cacheadd.test/missing"));
+  requests.push_back(StringToRequestInfo("https://www.cacheadd.test/error"));
+  auto promise = cache->addAll(GetScriptState(), requests, exception_state);
+
+  EXPECT_EQ("TypeError: Request failed", GetRejectString(promise));
+  EXPECT_TRUE(cache->IsAborted());
+  EXPECT_EQ("", test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
+  auto& messages = GetPage().GetConsoleMessageStorage();
+  ASSERT_EQ(1u, messages.size());
+  EXPECT_EQ(
+      "Cache.addAll() failed for 'https://www.cacheadd.test/missing': "
+      "Response status 404 is not a successful status (200-299).",
+      messages.at(0)->Message());
+}
+
 // Verify we don't create and trigger the AbortController when a single request
 // to add() addAll() fails.
 TEST_F(CacheStorageTest, AddAllAbortOne) {
@@ -910,6 +1089,8 @@ TEST_F(CacheStorageTest, AddAllAbortMany) {
 
   EXPECT_EQ("TypeError: Request failed", GetRejectString(promise));
   EXPECT_TRUE(cache->IsAborted());
+  // A batch logs only the first failure, even if other responses arrive later.
+  EXPECT_EQ(1u, GetPage().GetConsoleMessageStorage().size());
 }
 
 }  // namespace
