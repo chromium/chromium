@@ -20,10 +20,16 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
           m: function() { }
       }
 
+      class D1 {}
+      class D2 extends D1 {}
+      class D3 extends D2 {}
+      class D4 extends D3 {}
+      class D5 extends D4 {}
+
       function testFunction()
       {
           var o = new C();
-          var d = document.documentElement;
+          var d = new D5();
           debugger;
       }
   `);

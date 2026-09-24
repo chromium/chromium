@@ -9207,4 +9207,3 @@ crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_with_auth/invalid.py [ Failure Pass ]
 crbug.com/559885106 [ Linux ] external/wpt/webdriver/tests/classic/new_session/unhandled_prompt_behavior.py [ Failure Pass ]
 crbug.com/560754596 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py [ Failure Pass ]
-crbug.com/565369215 [ Linux ] http/tests/devtools/sources/debugger/debugger-prototype-property.js [ Failure Pass ]
