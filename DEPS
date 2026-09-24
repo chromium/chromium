@@ -934,6 +934,13 @@ deps = {
         'condition': 'checkout_android and non_git_source',
       },
       {
+        'object_name': 'Linux_x64/clang-linux-runtime-library-llvmorg-24-init-7747-g62397f8b-31.tar.xz',
+        'sha256sum': 'b7e6ad9867f1f1987f617ff394f700a85fd295b14f434b045f22394e27b2c99d',
+        'size_bytes': 3104512,
+        'generation': 1790206322880013,
+        'condition': 'checkout_linux and not host_os == "linux"',
+      },
+      {
         'object_name': 'Linux_x64/clang-llvmorg-24-init-7747-g62397f8b-31.tar.xz',
         'sha256sum': 'f74db0e15c4f93e6cd4e46e4ff285c9e49b6bc84c8f629d83fe7c52f7d36e728',
         'size_bytes': 57255496,
