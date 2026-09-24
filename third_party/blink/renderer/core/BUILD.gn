@@ -1669,6 +1669,8 @@ source_set("unit_tests") {
 
 group("unit_tests_data") {
   data = [
+    # Used by core/loader/resource/font_resource_test.cc.
+    "//third_party/blink/renderer/platform/testing/data/roboto-ift.woff2",
     "//third_party/blink/web_tests/svg/animations/path-animation.svg",
     "//third_party/blink/web_tests/svg/stroke/zero-length-path-linecap-rendering.svg",
     "//third_party/blink/web_tests/svg/foreignObject/fixed-position.svg",
