@@ -143,8 +143,9 @@ suite('FeatureShowcaseAppTest', function() {
 
     const firstStep = appElement.shadowRoot.querySelector(
         'feature-showcase-default-browser-step');
+    testHandler.resetResolver('nextStepShown');
     firstStep!.dispatchEvent(new CustomEvent('step-completed'));
-    await microtasksFinished();
+    await testHandler.whenCalled('nextStepShown');
 
     // Trigger another theme change
     mockMediaQueryList.matches = false;
@@ -154,6 +155,52 @@ suite('FeatureShowcaseAppTest', function() {
     assertDeepEquals([120, 121], rightSegments);
     assertDeepEquals([120, 121], bottomSegments);
   });
+
+  test(
+      'waits for last stepper animation before finishing feature showcase',
+      async function() {
+        await microtasksFinished();
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        testHandler.reset();
+
+        const url = new URL(window.location.href);
+        url.searchParams.set(
+            'steps',
+            'default-browser,themes-and-customization,password-manager');
+        window.history.replaceState({}, '', url.toString());
+
+        appElement = document.createElement('feature-showcase-app');
+        document.body.appendChild(appElement);
+        await testHandler.whenCalled('nextStepShown');
+
+        // Advance through the first two steps to reach the last step.
+        for (const selector
+                 of ['feature-showcase-default-browser-step',
+                     'feature-showcase-themes-and-customization-step']) {
+          testHandler.resetResolver('nextStepShown');
+          appElement.shadowRoot.querySelector(selector)!.dispatchEvent(
+              new CustomEvent('step-completed'));
+          await testHandler.whenCalled('nextStepShown');
+        }
+
+        // Complete the last step; finishFeatureShowcase must wait for the
+        // stepper's checkmark animation to finish.
+        const lastStep = appElement.shadowRoot.querySelector(
+            'feature-showcase-password-manager-step');
+        lastStep!.dispatchEvent(new CustomEvent('step-completed'));
+        await microtasksFinished();
+
+        assertEquals(0, testHandler.getCallCount('finishFeatureShowcase'));
+
+        const stepper = lastStep!.querySelector('feature-showcase-stepper');
+        const animation =
+            stepper?.shadowRoot.querySelectorAll('.step')[2]?.querySelector(
+                'cr-lottie');
+        assertTrue(!!animation);
+
+        animation.dispatchEvent(new CustomEvent('cr-lottie-completed'));
+        await testHandler.whenCalled('finishFeatureShowcase');
+      });
 });
 
 suite('FeatureShowcaseStepperTest', function() {
@@ -304,6 +351,23 @@ suite('FeatureShowcaseStepperTest', function() {
     assertFalse(!!step?.querySelector('cr-lottie'));
     assertTrue(!!step?.querySelector('cr-icon'));
   });
+
+  test(
+      'waitForAnimationComplete resolves when forced colors turns on',
+      async function() {
+        const stepperElement = createStepper(['step1', 'step2', 'step3'], 1);
+        await microtasksFinished();
+
+        const completed = stepperElement.waitForAnimationComplete();
+        await microtasksFinished();
+
+        fakeMediaQueryList.matches = true;
+        await completed;
+
+        const step = stepperElement.shadowRoot.querySelectorAll('.step')[0];
+        assertFalse(!!step?.querySelector('cr-lottie'));
+        assertTrue(!!step?.querySelector('cr-icon'));
+      });
 });
 
 suite('FeatureShowcaseDefaultBrowserStepTest', function() {

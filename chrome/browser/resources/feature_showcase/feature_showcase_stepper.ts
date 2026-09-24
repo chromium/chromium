@@ -85,8 +85,29 @@ export class FeatureShowcaseStepperElement extends
         index <= this.completedAnimationIndex_;
   }
 
-  // TODO(crbug.com/553315776): Proceed to the next view once last animation
-  // finishes.
+  async waitForAnimationComplete(): Promise<void> {
+    await this.updateComplete;
+    const animation = this.shadowRoot.querySelector('cr-lottie');
+    if (this.useStaticCheck_ || !animation) {
+      return;
+    }
+
+    await new Promise<void>(resolve => {
+      const controller = new AbortController();
+      const finish = () => {
+        clearTimeout(timeoutId);
+        controller.abort();
+        resolve();
+      };
+
+      const timeoutId = setTimeout(finish, 1000);
+      animation.addEventListener(
+          'cr-lottie-completed', finish, {signal: controller.signal});
+      this.forcedColorsQuery_.addEventListener(
+          'change', finish, {signal: controller.signal});
+    });
+  }
+
   protected onCrLottieCompleted_(e: Event) {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     if (Number.isNaN(index)) {

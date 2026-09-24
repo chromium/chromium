@@ -121,7 +121,7 @@ export class FeatureShowcaseAppElement extends CrLitElement {
     return this.steps.includes(stepId);
   }
 
-  protected onStepCompleted_() {
+  protected onStepCompleted_(e: Event) {
     assert(!this.areButtonsDisabled_, 'Buttons should not be disabled.');
     this.areButtonsDisabled_ = true;
     this.activeStepIndex++;
@@ -136,7 +136,13 @@ export class FeatureShowcaseAppElement extends CrLitElement {
       return;
     }
 
-    browserProxyFactory.getInstance().handler.finishFeatureShowcase();
+    const stepper = (e.currentTarget as HTMLElement)
+                        .querySelector('feature-showcase-stepper');
+    assert(stepper);
+    this.updateComplete.then(() => stepper.waitForAnimationComplete())
+        .then(() => {
+          browserProxyFactory.getInstance().handler.finishFeatureShowcase();
+        });
   }
 
   private notifyStepShown_() {
