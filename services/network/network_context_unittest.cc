@@ -9979,6 +9979,16 @@ TEST_F(NetworkContextTest, EnableTrustTokens) {
   EXPECT_TRUE(success);
 }
 
+TEST_F(NetworkContextTest, ClearTrustTokenSessionOnlyDataNoSessionOnlyRules) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  ASSERT_TRUE(network_context->trust_token_store());
+
+  base::test::TestFuture<bool> future;
+  network_context->ClearTrustTokenSessionOnlyData(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
 // NotifyExternalCacheHit currently assumes that the cache hits are for
 // resources, so ensure that entries corresponding to subframe navigations don't
 // get updated unexpectedly.

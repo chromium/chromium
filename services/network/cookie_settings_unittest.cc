@@ -861,6 +861,29 @@ TEST_F(CookieSettingsTest, CreateDeleteCookieOnExitPredicateAllow) {
       "foo.com", net::CookieSourceScheme::kNonSecure));
 }
 
+TEST_F(CookieSettingsTest, CreateDeleteCookieOnExitPredicateOwnsSnapshot) {
+  auto settings = std::make_unique<CookieSettings>();
+  settings->set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting("https://foo.com", "*", CONTENT_SETTING_SESSION_ONLY)});
+
+  DeleteCookiePredicate predicate =
+      settings->CreateDeleteCookieOnExitPredicate();
+  ASSERT_TRUE(predicate);
+
+  // Replace the live settings so "https://foo.com" is now ALLOW.
+  settings->set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting("https://foo.com", "*", CONTENT_SETTING_ALLOW)});
+  EXPECT_TRUE(predicate.Run("foo.com", net::CookieSourceScheme::kSecure));
+
+  // Destroy the original CookieSettings instance entirely; the predicate
+  // must still safely evaluate the snapshot.
+  settings.reset();
+  EXPECT_TRUE(predicate.Run("foo.com", net::CookieSourceScheme::kSecure));
+  EXPECT_FALSE(predicate.Run("other.com", net::CookieSourceScheme::kSecure));
+}
+
 TEST_F(CookieSettingsTest, GetCookieSettingSecureOriginCookiesAllowed) {
   CookieSettings settings;
   settings.set_secure_origin_cookies_allowed_schemes({"chrome"});

@@ -1409,6 +1409,10 @@ void NetworkContext::ClearTrustTokenSessionOnlyData(
 
   DeleteCookiePredicate cookie_predicate =
       cookie_manager_->cookie_settings().CreateDeleteCookieOnExitPredicate();
+  if (!cookie_predicate) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   auto store_predicate = base::BindRepeating(
       [](DeleteCookiePredicate predicate, const std::string& origin) {
