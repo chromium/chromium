@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
@@ -27,13 +28,40 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace personal_context {
 
 namespace {
 
+using ::base::test::EqualsProto;
 using ::base::test::TestMessage;
+
+proto::Timestamp CreateTimestamp(int64_t seconds, int32_t nanos = 0) {
+  proto::Timestamp timestamp;
+  timestamp.set_seconds(seconds);
+  timestamp.set_nanos(nanos);
+  return timestamp;
+}
+
+proto::DateTime CreateDateTime(int year,
+                               int month,
+                               int day,
+                               int hours,
+                               int minutes,
+                               int seconds,
+                               int nanos = 0) {
+  proto::DateTime date_time;
+  date_time.set_year(year);
+  date_time.set_month(month);
+  date_time.set_day(day);
+  date_time.set_hours(hours);
+  date_time.set_minutes(minutes);
+  date_time.set_seconds(seconds);
+  date_time.set_nanos(nanos);
+  return date_time;
+}
 
 proto::FetchContextResponse BuildFetchContextResponse(std::string_view output) {
   proto::FetchContextResponse fetch_response;
@@ -154,10 +182,13 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_Passport) {
   decrypted_entity.mutable_passport()->mutable_expiration_date()->set_month(1);
   decrypted_entity.mutable_passport()->mutable_expiration_date()->set_day(15);
 
+  // 1780605015s = 2026-06-04T20:30:15Z.
   proto::DecryptedReference* gmail_ref = decrypted_entity.add_references();
   gmail_ref->mutable_gmail_message()->set_subject("Your Passport Application");
   gmail_ref->mutable_gmail_message()->set_message_url(
       "https://mail.google.com/mail/u/0/#inbox/123");
+  *gmail_ref->mutable_gmail_message()->mutable_timestamp() =
+      CreateTimestamp(1780605015, 123456789);
 
   proto::DecryptedReference* drive_ref = decrypted_entity.add_references();
   drive_ref->mutable_drive_file()->set_name("passport_scan.pdf");
@@ -193,6 +224,8 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_Passport) {
             "Your Passport Application");
   EXPECT_EQ(result->source_references(0).gmail().message_url(),
             "https://mail.google.com/mail/u/0/#inbox/123");
+  EXPECT_THAT(result->source_references(0).gmail().timestamp(),
+              EqualsProto(CreateDateTime(2026, 6, 4, 20, 30, 15, 123456789)));
   EXPECT_EQ(result->source_references(1).drive().name(), "passport_scan.pdf");
   EXPECT_EQ(result->source_references(1).drive().url(),
             "https://drive.google.com/file/d/456");
@@ -221,17 +254,26 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_DriversLicense) {
   decrypted_entity.mutable_drivers_license()->mutable_expiration_date()->set_month(6);
   decrypted_entity.mutable_drivers_license()->mutable_expiration_date()->set_day(1);
 
+  // 1780605015s = 2026-06-04T20:30:15Z.
   proto::DecryptedReference* photo_ref = decrypted_entity.add_references();
   photo_ref->mutable_photo()->set_deeplink_url(
       "https://photos.google.com/photo/123");
+  *photo_ref->mutable_photo()->mutable_timestamp() =
+      CreateTimestamp(1780605015, 123456789);
 
+  // 1780691415s = 2026-06-05T20:30:15Z.
   proto::DecryptedReference* video_ref = decrypted_entity.add_references();
   video_ref->mutable_video()->set_deeplink_url(
       "https://photos.google.com/video/456");
+  *video_ref->mutable_video()->mutable_timestamp() =
+      CreateTimestamp(1780691415, 500);
 
+  // 1780777815s = 2026-06-06T20:30:15Z.
   proto::DecryptedReference* album_ref = decrypted_entity.add_references();
   album_ref->mutable_photos_album()->set_deeplink_url(
       "https://photos.google.com/album/789");
+  *album_ref->mutable_photos_album()->mutable_start_time() =
+      CreateTimestamp(1780777815);
 
   std::string serialized_entity = decrypted_entity.SerializeAsString();
   std::optional<std::vector<uint8_t>> ciphertext = key_manager.Seal(
@@ -260,10 +302,18 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_DriversLicense) {
   ASSERT_EQ(result->source_references_size(), 3);
   EXPECT_EQ(result->source_references(0).photos().photos_url(),
             "https://photos.google.com/photo/123");
+  EXPECT_THAT(result->source_references(0).photos().timestamp(),
+              EqualsProto(CreateDateTime(2026, 6, 4, 20, 30, 15, 123456789)));
+
   EXPECT_EQ(result->source_references(1).photos().photos_url(),
             "https://photos.google.com/video/456");
+  EXPECT_THAT(result->source_references(1).photos().timestamp(),
+              EqualsProto(CreateDateTime(2026, 6, 5, 20, 30, 15, 500)));
+
   EXPECT_EQ(result->source_references(2).photos().photos_url(),
             "https://photos.google.com/album/789");
+  EXPECT_THAT(result->source_references(2).photos().timestamp(),
+              EqualsProto(CreateDateTime(2026, 6, 6, 20, 30, 15)));
 
   histogram_tester.ExpectUniqueSample("PersonalContext.DecryptEntity.Result",
                                       /*sample=*/true,

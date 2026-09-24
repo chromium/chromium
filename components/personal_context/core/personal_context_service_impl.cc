@@ -41,8 +41,43 @@ void RecordDecryptionMetrics(PersonalContextDecryptionStatus status,
                                       latency);
 }
 
+std::optional<proto::DateTime> ToChromeDateTime(
+    const proto::Timestamp& timestamp) {
+  // See the description for `proto::Timestamp` on the numberic boundaries.
+  if (timestamp.seconds() < -62135596800 ||
+      timestamp.seconds() > 253402300799 || timestamp.nanos() < 0 ||
+      timestamp.nanos() > 999999999) {
+    return std::nullopt;
+  }
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(timestamp.seconds());
+  base::Time::Exploded exploded = {};
+  time.UTCExplode(&exploded);
+  if (!exploded.HasValidValues()) {
+    return std::nullopt;
+  }
+  proto::DateTime date_time;
+  date_time.set_year(exploded.year);
+  date_time.set_month(exploded.month);
+  date_time.set_day(exploded.day_of_month);
+  date_time.set_hours(exploded.hour);
+  date_time.set_minutes(exploded.minute);
+  date_time.set_seconds(exploded.second);
+  date_time.set_nanos(timestamp.nanos());
+  return date_time;
+}
+
 std::optional<proto::SourceReference> ToChromeSourceReference(
     const proto::DecryptedReference& decrypted_ref) {
+  // Local helper to safely extract and set the timestamp.
+  auto set_timestamp = [](const auto& source, auto* target_proto) {
+    if (source.has_timestamp()) {
+      if (std::optional<proto::DateTime> date_time =
+              ToChromeDateTime(source.timestamp())) {
+        *target_proto->mutable_timestamp() = std::move(*date_time);
+      }
+    }
+  };
+
   switch (decrypted_ref.reference_case()) {
     case proto::DecryptedReference::kGmailMessage: {
       const proto::DecryptedGmailMessage& gmail_msg =
@@ -56,24 +91,36 @@ std::optional<proto::SourceReference> ToChromeSourceReference(
       if (IsSpecified(gmail_msg.subject())) {
         gmail->set_subject(gmail_msg.subject());
       }
+      set_timestamp(gmail_msg, gmail);
       return source_ref;
     }
     case proto::DecryptedReference::kPhoto: {
+      const proto::DecryptedPhotosPhoto& photo = decrypted_ref.photo();
       proto::SourceReference source_ref;
-      source_ref.mutable_photos()->set_photos_url(
-          decrypted_ref.photo().deeplink_url());
+      proto::PhotosReference* photos = source_ref.mutable_photos();
+      photos->set_photos_url(photo.deeplink_url());
+      set_timestamp(photo, photos);
       return source_ref;
     }
     case proto::DecryptedReference::kVideo: {
+      const proto::DecryptedPhotosVideo& video = decrypted_ref.video();
       proto::SourceReference source_ref;
-      source_ref.mutable_photos()->set_photos_url(
-          decrypted_ref.video().deeplink_url());
+      proto::PhotosReference* photos = source_ref.mutable_photos();
+      photos->set_photos_url(video.deeplink_url());
+      set_timestamp(video, photos);
       return source_ref;
     }
     case proto::DecryptedReference::kPhotosAlbum: {
+      const proto::DecryptedPhotosAlbum& album = decrypted_ref.photos_album();
       proto::SourceReference source_ref;
-      source_ref.mutable_photos()->set_photos_url(
-          decrypted_ref.photos_album().deeplink_url());
+      proto::PhotosReference* photos = source_ref.mutable_photos();
+      photos->set_photos_url(album.deeplink_url());
+      if (album.has_start_time()) {
+        if (std::optional<proto::DateTime> timestamp =
+                ToChromeDateTime(album.start_time())) {
+          *photos->mutable_timestamp() = std::move(*timestamp);
+        }
+      }
       return source_ref;
     }
     case proto::DecryptedReference::kDriveFile: {
