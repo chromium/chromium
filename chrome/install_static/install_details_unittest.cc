@@ -101,4 +101,34 @@ TEST(InstallDetailsTest, VersionMismatch) {
   }
 }
 
+TEST(InstallDetailsTest, VersionMismatchWithExpectedVersion) {
+  EXPECT_TRUE(FakeInstallDetails().VersionMismatch("9999.0.0.1"));
+
+  // Patched module with matching expected_version succeeds even when primary
+  // module payload has a different product_version, but still fails on wrong
+  // expected_version or struct size mismatch.
+  {
+    FakeInstallDetails details;
+    details.set_product_version("0.1.2.3");
+    EXPECT_FALSE(details.VersionMismatch(PRODUCT_VERSION));
+    EXPECT_TRUE(details.VersionMismatch("9999.0.0.1"));
+  }
+
+  // Bad Payload size.
+  {
+    FakeInstallDetails details;
+    details.set_product_version("0.1.2.3");
+    details.set_payload_size(sizeof(InstallDetails::Payload) + 1);
+    EXPECT_TRUE(details.VersionMismatch(PRODUCT_VERSION));
+  }
+
+  // Bad InstallConstants size.
+  {
+    FakeInstallDetails details;
+    details.set_product_version("0.1.2.3");
+    details.set_mode_size(sizeof(InstallConstants) + 1);
+    EXPECT_TRUE(details.VersionMismatch(PRODUCT_VERSION));
+  }
+}
+
 }  // namespace install_static

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/win/windows_types.h"
@@ -232,8 +233,11 @@ class InstallDetails {
   std::wstring GetClientStateMediumKeyPath() const;
 
   // Returns true if there is an indication of a mismatch between the primary
-  // module and this module.
-  bool VersionMismatch() const;
+  // module and this module. If `expected_version` is non-empty, verifies that
+  // this module's version matches `expected_version` instead of the primary
+  // module's product version (used when loading a dynamically patched module
+  // whose version intentionally differs from the primary module).
+  bool VersionMismatch(std::string_view expected_version = {}) const;
 
   // Sets the instance for the process. This must be called only once per
   // process during startup.

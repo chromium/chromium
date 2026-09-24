@@ -12,6 +12,8 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_main_delegate.h"
 #include "chrome/app/llvm_profile_util.h"
+#include "chrome/common/chrome_constants.h"
+#include "components/crash/core/common/crash_key.h"
 #include "content/public/app/content_main.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -19,6 +21,9 @@
 
 #include <timeapi.h>
 
+#include <string>
+
+#include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/debug/handle_hooks_win.h"
@@ -28,11 +33,18 @@
 #include "base/win/win_util.h"
 #include "chrome/app/startup_timestamps.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/initialize_from_primary_module.h"
 #include "chrome/install_static/install_details.h"
 #include "content/public/common/content_switches.h"
 #define DLLEXPORT __declspec(dllexport)
 #endif
+
+namespace {
+
+constexpr char kChildModuleVersionCrashKey[] = "child-module-version";
+
+}  // namespace
 
 extern "C" {
 
@@ -45,6 +57,9 @@ DLLEXPORT int __cdecl ChromeRendererMain(
     int64_t preread_end_ticks) {
   SetLLVMProfileProcessType(ProfileProcessType::kRenderer);
   install_static::InitializeFromPrimaryModule();
+  static crash_reporter::CrashKeyString<32> child_module_version(
+      kChildModuleVersionCrashKey);
+  child_module_version.Set(chrome::kChromeVersion);
 
 #if !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
   // Patch the main EXE on non-component builds when DCHECKs are enabled.
@@ -78,12 +93,20 @@ DLLEXPORT int __cdecl ChromeRendererMain(
   // dynamic linking.
   base::debug::SetDumpWithoutCrashingFunction(&DumpProcessWithoutCrash);
 
+  base::CommandLine::Init(0, nullptr);
+
   // Verify that chrome_elf and this module (chrome_renderer.dll) have the same
-  // version.
-  if (install_static::InstallDetails::Get().VersionMismatch()) {
+  // version, or match the expected patched module version when dynamically
+  // patched.
+  const std::string expected_version =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kChildModuleVersion);
+  if (!expected_version.empty()) {
+    CHECK(!install_static::InstallDetails::Get().VersionMismatch(
+        expected_version));
+  } else if (install_static::InstallDetails::Get().VersionMismatch()) {
     base::debug::DumpWithoutCrashing();
   }
-  base::CommandLine::Init(0, nullptr);
   base::PoissonAllocationSampler::Init();
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -98,6 +121,9 @@ DLLEXPORT int __cdecl ChromeRendererMain(
 [[gnu::visibility("default")]] int ChromeRendererMain(int argc,
                                                       const char** argv) {
   SetLLVMProfileProcessType(ProfileProcessType::kRenderer);
+  static crash_reporter::CrashKeyString<32> child_module_version(
+      kChildModuleVersionCrashKey);
+  child_module_version.Set(chrome::kChromeVersion);
   ChromeMainDelegate chrome_main_delegate(
       {.exe_entry_point_ticks = base::TimeTicks::Now()});
   content::ContentMainParams params(&chrome_main_delegate);

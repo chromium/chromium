@@ -219,6 +219,7 @@ if (!is_android && !is_mac) {
         "//chrome/browser/win:chrome_process_finder",
         "//chrome/chrome_elf",
         "//chrome/common:constants",
+        "//chrome/common/child_module",
         "//chrome/common/win:delay_load_failure_support",
         "//chrome/install_static:install_static_util",
         "//chrome/install_static:secondary_module",

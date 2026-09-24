@@ -17,6 +17,7 @@
 
 #include "base/base_switches.h"
 #include "base/byte_size.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -565,12 +566,15 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/version.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/child_module/child_module_manager.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/loader/features.h"
 #include "chrome/browser/loader/fetch_keepalive_process_manager.h"
@@ -2983,6 +2987,16 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     if (!login_profile.empty()) {
       command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
                                       login_profile);
+    }
+#endif
+
+#if BUILDFLAG(IS_WIN)
+    if (auto* child_module_manager =
+            g_browser_process->GetFeatures()->child_module_manager()) {
+      if (auto patch_version = child_module_manager->GetLatestVersion()) {
+        command_line->AppendSwitchASCII(switches::kChildModuleVersion,
+                                        patch_version->GetString());
+      }
     }
 #endif
 
@@ -8872,21 +8886,36 @@ bool ChromeContentBrowserClient::
 }
 
 base::FilePath ChromeContentBrowserClient::GetChildProcessPath(int flags) {
-#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY) && BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/558598893): Support launching patched renderer binaries on
+  // macOS.
+#if BUILDFLAG(IS_LINUX)
   if (flags & content::ChildProcessHost::CHILD_RENDERER) {
-    // TODO(crbug.com/552312254): Dedicated zygote for separate renderer binary
-    // on Linux is not yet supported. Until supported, launching chrome_renderer
-    // requires --no-zygote.
-    CHECK(
-        base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoZygote))
+    // TODO(crbug.com/552312254): Dedicated zygote for separate renderer
+    // binary is not yet supported. Until supported, launching
+    // chrome_renderer requires --no-zygote.
+    const bool no_zygote =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kNoZygote);
+    if (no_zygote) {
+      if (auto* child_module_manager =
+              g_browser_process->GetFeatures()->child_module_manager()) {
+        if (auto patch_version = child_module_manager->GetLatestVersion()) {
+          // TODO(crbug.com/558598893): If a dynamic patch updates preloaded
+          // assets (such as v8_context_snapshot.bin), resolve them from the
+          // patched module directory instead of the browser's DIR_ASSETS.
+          return child_module_manager->GetRendererBinaryPath(*patch_version);
+        }
+      }
+    }
+#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
+    CHECK(no_zygote)
         << "--no-zygote is required when running separate renderer binary";
-
     base::FilePath child_path;
     if (base::PathService::Get(base::DIR_EXE, &child_path)) {
-      return child_path.Append(FILE_PATH_LITERAL("chrome_renderer"));
+      return child_path.Append(chrome::kRendererProcessExecutableName);
     }
+#endif  // BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
   }
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_MAC)
   if (flags ==

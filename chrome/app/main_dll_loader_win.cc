@@ -34,6 +34,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/shlwapi.h"
@@ -43,6 +44,7 @@
 #include "chrome/browser/active_use_util.h"
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/child_module/child_module_helper.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_result_codes.h"
@@ -100,21 +102,33 @@ struct ModuleProperties {
   std::optional<ProfileProcessType> profile_type;
 };
 
+// Returns the path to the patched renderer DLL if a valid version string is
+// specified on the command line, or an empty FilePath otherwise. Does not
+// validate whether the binary exists or is readable on disk.
+base::FilePath GetPatchedRendererPath() {
+  return child_module::GetRendererBinaryPath(
+      base::Version(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kChildModuleVersion)));
+}
+
 // Returns the properties for the module to be loaded in `process_type`.
 const ModuleProperties& ModulePropertiesFromProcessType(
     std::string_view process_type) {
   // Most process types load chrome.dll and run `ChromeMain`.
   static constexpr ModuleProperties kOtherProperties = {
       installer::kChromeDll, "ChromeMain", std::nullopt};
-#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
   // Renderers load chrome_renderer.dll and run `ChromeRendererMain`.
   static constexpr ModuleProperties kRendererProperties = {
       chrome::kRendererDll, "ChromeRendererMain",
       ProfileProcessType::kRenderer};
-  return process_type == "renderer" ? kRendererProperties : kOtherProperties;
-#else
+
+  if (process_type == switches::kRendererProcess &&
+      (BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY) ||
+       !GetPatchedRendererPath().empty())) {
+    return kRendererProperties;
+  }
+
   return kOtherProperties;
-#endif
 }
 
 std::wstring GetMachineGuid() {
@@ -171,6 +185,13 @@ bool ModuleCanBeRead(const base::FilePath& file_path) {
 // |module_name| is in a versioned sub-directory of the current executable's
 // directory) are supported. The identified file is not guaranteed to exist.
 base::FilePath GetModulePath(std::wstring_view module_name) {
+  if (module_name == chrome::kRendererDll) {
+    base::FilePath patched_path = GetPatchedRendererPath();
+    if (!patched_path.empty()) {
+      return patched_path;
+    }
+  }
+
   base::FilePath exe_dir;
   const bool has_path = base::PathService::Get(base::DIR_EXE, &exe_dir);
   DCHECK(has_path);

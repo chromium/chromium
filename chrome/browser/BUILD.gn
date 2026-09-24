@@ -4162,6 +4162,11 @@ source_set("core_unit_tests") {
     if (enable_guest_view && !enable_extensions_core) {
       deps += [ "//chrome/browser/android/guest_view" ]
     }
+  } else {
+    deps += [
+      "//chrome/browser/child_module",
+      "//chrome/common/child_module",
+    ]
   }
 
   if (enable_captive_portal_detection) {

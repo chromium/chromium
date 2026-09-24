@@ -36,10 +36,15 @@ std::wstring InstallDetails::GetClientStateMediumKeyPath() const {
   return install_static::GetClientStateMediumKeyPath(app_guid());
 }
 
-bool InstallDetails::VersionMismatch() const {
+bool InstallDetails::VersionMismatch(std::string_view expected_version) const {
+  if (payload_->size != sizeof(Payload)) {
+    return true;
+  }
+  const std::string_view version_to_match =
+      expected_version.empty() ? std::string_view(payload_->product_version)
+                               : expected_version;
   // Check the product version and the size of the mode structure.
-  return payload_->size != sizeof(Payload) ||
-         std::string_view(payload_->product_version) != kProductVersion ||
+  return version_to_match != kProductVersion ||
          payload_->mode->size != sizeof(InstallConstants);
 }
 

@@ -938,6 +938,9 @@ inline constexpr char kNoOpForTestingProcess[] = "no-op-for-testing";
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
+// The version for the staged child module.
+inline constexpr char kChildModuleVersion[] = "child-module-version";
+
 // Force-enables the profile shortcut manager. This is needed for tests since
 // they use a custom-user-data-dir which disables this.
 inline constexpr char kEnableProfileShortcutManager[] =

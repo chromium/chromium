@@ -139,6 +139,13 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/base_paths.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
+#include "base/test/scoped_path_override.h"
+#include "base/version.h"
+#include "chrome/browser/child_module/child_module_manager.h"
+#include "chrome/browser/child_module/features.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -146,8 +153,12 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/child_module/child_module_helper.h"
+#include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "content/public/browser/child_process_host.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -2937,3 +2948,192 @@ TEST_F(ChromeContentBrowserClientHandleExternalProtocolTest,
   EXPECT_EQ(1, process()->bad_msg_count());
 }
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+class ChromeContentBrowserClientDynamicPatchTest : public testing::Test {
+ public:
+  void SetUp() override {
+#if BUILDFLAG(IS_LINUX)
+    // TODO(crbug.com/552312254): Remove once dedicated zygote for separate
+    // renderer binary is supported.
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kNoZygote);
+#endif
+    ASSERT_TRUE(base::CreateDirectory(child_module::GetModulesDir()));
+    TestingBrowserProcess::GetGlobal()->GetFeatures()->PreMainMessageLoopRun();
+    auto* manager = TestingBrowserProcess::GetGlobal()
+                        ->GetFeatures()
+                        ->child_module_manager();
+    ASSERT_NE(manager, nullptr);
+    manager->WaitForInitialScanForTesting();
+  }
+
+  void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+  }
+
+  // Writes the directory and manifest sentinel file for `version` under
+  // `GetModulesDir()`.
+  void WritePatchFiles(const base::Version& version) {
+    base::FilePath version_dir =
+        child_module::GetModulesDir().AppendASCII(version.GetString());
+    EXPECT_TRUE(base::CreateDirectory(version_dir));
+    EXPECT_TRUE(
+        base::WriteFile(child_module::GetManifestPath(version_dir), ""));
+  }
+
+  // Creates a ready child module directory with a manifest sentinel for
+  // `version`, re-runs the initial scan so `ChildModuleManager` observes
+  // `version` synchronously as the latest available version, and returns the
+  // expected renderer binary path.
+  base::FilePath StagePatch(const base::Version& version) {
+    auto* features = TestingBrowserProcess::GetGlobal()->GetFeatures();
+    features->PostMainMessageLoopRun();
+    WritePatchFiles(version);
+    features->PreMainMessageLoopRun();
+    auto* manager = features->child_module_manager();
+    EXPECT_NE(manager, nullptr);
+    if (manager) {
+      manager->WaitForInitialScanForTesting();
+      EXPECT_EQ(manager->GetLatestVersion(), version);
+    }
+    return child_module::GetRendererBinaryPath(version);
+  }
+
+  // TODO(crbug.com/558598893): Enable GetChildProcessPath tests on macOS once
+  // macOS dynamic patching launcher is implemented.
+#if BUILDFLAG(IS_LINUX)
+  // Returns the expected renderer binary path when no dynamic patch is staged.
+  base::FilePath GetUnpatchedRendererPath() const {
+#if BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
+    base::FilePath child_path;
+    EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &child_path));
+    return child_path.Append(chrome::kRendererProcessExecutableName);
+#else
+    return base::FilePath();
+#endif
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
+ protected:
+  base::ScopedPathOverride path_override_{
+#if BUILDFLAG(IS_WIN)
+      base::DIR_EXE
+#else
+      chrome::DIR_USER_DATA
+#endif
+  };
+  base::test::ScopedCommandLine scoped_command_line_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      child_module::features::kDynamicPatching};
+  content::BrowserTaskEnvironment task_environment_;
+};
+
+// TODO(crbug.com/558598893): Enable GetChildProcessPath tests on macOS once
+// macOS dynamic patching launcher is implemented.
+#if BUILDFLAG(IS_LINUX)
+TEST_F(ChromeContentBrowserClientDynamicPatchTest,
+       GetChildProcessPathReturnsPatchedBinary) {
+  ChromeContentBrowserClient client;
+  EXPECT_EQ(
+      client.GetChildProcessPath(content::ChildProcessHost::CHILD_RENDERER),
+      GetUnpatchedRendererPath());
+
+  base::FilePath patched_binary = StagePatch(base::Version("9999.0.0.1"));
+  EXPECT_EQ(
+      client.GetChildProcessPath(content::ChildProcessHost::CHILD_RENDERER),
+      patched_binary);
+  EXPECT_EQ(
+      client.GetChildProcessPath(content::ChildProcessHost::CHILD_ALLOW_SELF |
+                                 content::ChildProcessHost::CHILD_RENDERER),
+      patched_binary);
+}
+
+TEST_F(ChromeContentBrowserClientDynamicPatchTest,
+       GetChildProcessPathIgnoresNonRendererProcess) {
+  ChromeContentBrowserClient client;
+  StagePatch(base::Version("9999.0.0.1"));
+
+  EXPECT_EQ(client.GetChildProcessPath(content::ChildProcessHost::CHILD_NORMAL),
+            base::FilePath());
+  EXPECT_EQ(
+      client.GetChildProcessPath(content::ChildProcessHost::CHILD_ALLOW_SELF),
+      base::FilePath());
+}
+
+#if !BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
+TEST_F(ChromeContentBrowserClientDynamicPatchTest,
+       GetChildProcessPathRequiresNoZygote) {
+  ChromeContentBrowserClient client;
+  StagePatch(base::Version("9999.0.0.1"));
+  scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
+      switches::kNoZygote);
+
+  EXPECT_EQ(
+      client.GetChildProcessPath(content::ChildProcessHost::CHILD_RENDERER),
+      base::FilePath());
+}
+#endif  // !BUILDFLAG(ENABLE_SEPARATE_RENDERER_BINARY)
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(ChromeContentBrowserClientDynamicPatchTest,
+       AppendChildModuleVersionSwitch) {
+  ChromeContentBrowserClient client;
+  base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+  cmd.AppendSwitchASCII(switches::kProcessType, switches::kRendererProcess);
+
+  client.AppendExtraCommandLineSwitches(&cmd, /*child_process_id=*/1);
+  EXPECT_FALSE(cmd.HasSwitch(switches::kChildModuleVersion));
+
+  StagePatch(base::Version("9999.0.0.1"));
+  base::CommandLine patched_cmd(base::CommandLine::NO_PROGRAM);
+  patched_cmd.AppendSwitchASCII(switches::kProcessType,
+                                switches::kRendererProcess);
+  client.AppendExtraCommandLineSwitches(&patched_cmd, /*child_process_id=*/1);
+  EXPECT_EQ(patched_cmd.GetSwitchValueASCII(switches::kChildModuleVersion),
+            "9999.0.0.1");
+}
+
+TEST_F(ChromeContentBrowserClientDynamicPatchTest,
+       DoNotAppendSwitchForNonRendererProcess) {
+  ChromeContentBrowserClient client;
+  StagePatch(base::Version("9999.0.0.1"));
+
+  base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+  cmd.AppendSwitchASCII(switches::kProcessType, switches::kUtilityProcess);
+  client.AppendExtraCommandLineSwitches(&cmd, /*child_process_id=*/1);
+  EXPECT_FALSE(cmd.HasSwitch(switches::kChildModuleVersion));
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(ChromeContentBrowserClientDynamicPatchTest,
+       DoesNotQueryOrAppendWhenDisabled) {
+  auto* features = TestingBrowserProcess::GetGlobal()->GetFeatures();
+  features->PostMainMessageLoopRun();
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      child_module::features::kDynamicPatching);
+
+  WritePatchFiles(base::Version("9999.0.0.1"));
+
+  features->PreMainMessageLoopRun();
+  EXPECT_EQ(features->child_module_manager(), nullptr);
+
+  // TODO(crbug.com/558598893): Add macOS assertion once macOS dynamic patching
+  // launcher is implemented.
+#if BUILDFLAG(IS_LINUX)
+  ChromeContentBrowserClient client;
+  EXPECT_EQ(
+      client.GetChildProcessPath(content::ChildProcessHost::CHILD_RENDERER),
+      GetUnpatchedRendererPath());
+#elif BUILDFLAG(IS_WIN)
+  ChromeContentBrowserClient client;
+  base::CommandLine cmd(base::CommandLine::NO_PROGRAM);
+  cmd.AppendSwitchASCII(switches::kProcessType, switches::kRendererProcess);
+  client.AppendExtraCommandLineSwitches(&cmd, /*child_process_id=*/1);
+  EXPECT_FALSE(cmd.HasSwitch(switches::kChildModuleVersion));
+#endif
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
