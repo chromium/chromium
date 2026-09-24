@@ -27,7 +27,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOKIE_CONTROLS_OPENED;
 import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
@@ -742,7 +741,6 @@ public class PageInfoViewTest {
     /** Tests clicking "Mark as safe" button on suspicious site warning. */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/564369756")
     public void testSuspiciousSiteMarkAsSafeButtonClick() throws IOException {
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         ThreadUtils.runOnUiThreadBlocking(
@@ -772,7 +770,16 @@ public class PageInfoViewTest {
                                 .findViewById(R.id.page_info_mark_as_safe_button)
                                 .performClick());
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
-        waitForNoView(withId(R.id.page_info_mark_as_safe_button));
+        // The PageInfo popup dismisses asynchronously (it plays an exit animation), so asserting on
+        // the view hierarchy with Espresso races with the window teardown and intermittently still
+        // sees the button (crbug.com/563720805). Poll the controller's own dialog state on the UI
+        // thread instead, which is only cleared once the dialog has been fully destroyed.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PageInfoController controller = PageInfoController.getLastPageInfoController();
+                    return controller == null || !controller.isDialogShowing();
+                },
+                "PageInfo dialog was not dismissed after clicking \"Mark as safe\"");
     }
 
     /** Tests dismissing suspicious site warning without explicit action. */
