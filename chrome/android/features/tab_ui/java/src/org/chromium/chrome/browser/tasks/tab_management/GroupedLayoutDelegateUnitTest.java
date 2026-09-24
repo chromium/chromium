@@ -124,73 +124,56 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testGetAlertState_NotInGroup() {
-        when(mTab1.getId()).thenReturn(1);
+    public void testGetAlertStateForTab() {
         when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
-        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
 
-        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
-        @TabAlert int state = mDelegate.getAlertState(mTab1, model);
+        @TabAlert int state = mDelegate.getAlertStateForTab(mTab1);
         assertEquals(TabAlert.AUDIO_PLAYING, state);
     }
 
     @Test
-    public void testGetAlertState_InGroup() {
-        when(mTab1.getId()).thenReturn(1);
+    public void testGetAlertStateForGroupHeader() {
         when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
         when(mTab2.getAlertState()).thenReturn(TabAlert.MEDIA_RECORDING);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
 
-        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
-        when(mMediator.getRelatedTabsForId(1)).thenReturn(List.of(mTab1, mTab2));
-
-        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
-        @TabAlert int state = mDelegate.getAlertState(mTab1, model);
+        @TabAlert int state = mDelegate.getAlertStateForGroupHeader(TAB_GROUP_ID);
         assertEquals(TabAlert.MEDIA_RECORDING, state);
     }
 
     @Test
-    public void testGetAlertState_InGroup_RepTabHasMaxPriority() {
-        when(mTab1.getId()).thenReturn(1);
+    public void testGetAlertStateForGroupHeader_ShortCircuitsAtMaxPriority() {
         when(mTab1.getAlertState()).thenReturn(TabAlert.DESKTOP_CAPTURING);
-        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
 
-        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
-        @TabAlert int state = mDelegate.getAlertState(mTab1, model);
+        @TabAlert int state = mDelegate.getAlertStateForGroupHeader(TAB_GROUP_ID);
         assertEquals(TabAlert.DESKTOP_CAPTURING, state);
-
-        // Fast exit should mean getRelatedTabsForId is never called.
-        verify(mMediator, never()).getRelatedTabsForId(1);
+        verify(mTab2, never()).getAlertState();
     }
 
     @Test
-    public void testGetAlertState_InGroup_RepTabHasHigherPriority() {
-        when(mTab1.getId()).thenReturn(1);
+    public void testGetAlertStateForGroupHeader_FirstTabHasHigherPriority() {
         when(mTab1.getAlertState()).thenReturn(TabAlert.MEDIA_RECORDING);
         when(mTab2.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
 
-        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
-        when(mMediator.getRelatedTabsForId(1)).thenReturn(List.of(mTab1, mTab2));
-
-        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
-        @TabAlert int state = mDelegate.getAlertState(mTab1, model);
+        @TabAlert int state = mDelegate.getAlertStateForGroupHeader(TAB_GROUP_ID);
         assertEquals(TabAlert.MEDIA_RECORDING, state);
     }
 
     @Test
     public void testGetAlertState_SuppressesGlicAlerts() {
-        when(mTab1.getId()).thenReturn(1);
         when(mTab1.getAlertState()).thenReturn(TabAlert.GLIC_SHARING);
         when(mTab2.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
 
-        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
-        when(mMediator.getRelatedTabsForId(1)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
 
-        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
-        assertEquals(TabAlert.AUDIO_PLAYING, mDelegate.getAlertState(mTab1, model));
+        PropertyModel groupModel = createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
+        assertEquals(TabAlert.AUDIO_PLAYING, mDelegate.getAlertState(mTab1, groupModel));
 
-        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
         when(mTab1.getAlertState()).thenReturn(TabAlert.GLIC_ACCESSING);
-        assertEquals(TabAlert.NONE, mDelegate.getAlertState(mTab1, model));
+        PropertyModel tabModel = createAndAddPropertyModel(TAB1_ID);
+        assertEquals(TabAlert.NONE, mDelegate.getAlertState(mTab1, tabModel));
     }
 
     @Test
@@ -411,22 +394,22 @@ public class GroupedLayoutDelegateUnitTest {
 
     @Test
     public void testOnFaviconUpdated_InTabGroup() {
-        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
-        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
-        setupGetIndexAndTabForTabGroupId(TAB_GROUP_ID, 0, mTab1);
+        when(mMediator.isTabInTabGroup(mTab2)).thenReturn(true);
+        when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        PropertyModel groupModel = createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
 
-        mDelegate.onFaviconUpdated(mTab1, null, null);
+        mDelegate.onFaviconUpdated(mTab2, null, null);
 
-        verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
-        verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
+        verify(mMediator).updateThumbnailFetcher(groupModel, TAB2_ID);
+        verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
     }
 
     @Test
     public void testOnFaviconUpdated_InTabGroup_NotFound() {
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        setupGetIndexAndTabForTabGroupIdNotFound(TAB_GROUP_ID);
 
         mDelegate.onFaviconUpdated(mTab1, null, null);
 
@@ -456,22 +439,22 @@ public class GroupedLayoutDelegateUnitTest {
 
     @Test
     public void testOnUrlUpdated_InTabGroup() {
-        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
-        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
-        setupGetIndexAndTabForTabGroupId(TAB_GROUP_ID, 0, mTab1);
+        when(mMediator.isTabInTabGroup(mTab2)).thenReturn(true);
+        when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        PropertyModel groupModel = createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
 
-        mDelegate.onUrlUpdated(mTab1);
+        mDelegate.onUrlUpdated(mTab2);
 
-        verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
-        verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
+        verify(mMediator).updateThumbnailFetcher(groupModel, TAB2_ID);
+        verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
     }
 
     @Test
     public void testOnUrlUpdated_InTabGroup_NotFound() {
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        setupGetIndexAndTabForTabGroupIdNotFound(TAB_GROUP_ID);
 
         mDelegate.onUrlUpdated(mTab1);
 
@@ -505,26 +488,26 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTab1.getId()).thenReturn(TAB1_ID);
         when(mTab2.getId()).thenReturn(TAB2_ID);
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
         when(mTab2.getAlertState()).thenReturn(TabAlert.MEDIA_RECORDING);
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
-        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
-        setupGetIndexAndTabForTabGroupId(TAB_GROUP_ID, 0, mTab1);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        PropertyModel groupModel = createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
 
         mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
 
-        assertEquals(TabAlert.MEDIA_RECORDING, model.get(TabProperties.ALERT_STATE));
-        verify(mMediator).updateDescriptionString(model);
+        assertEquals(TabAlert.MEDIA_RECORDING, groupModel.get(TabProperties.ALERT_STATE));
+        verify(mMediator).updateDescriptionString(groupModel);
     }
 
     @Test
     public void testOnAlertStateChanged_InTabGroup_UseShrinkCloseAnimation() {
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
-        model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
-        setupGetIndexAndTabForTabGroupId(TAB_GROUP_ID, 0, mTab1);
+        PropertyModel groupModel = createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
+        groupModel.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
 
         mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
 
@@ -534,8 +517,8 @@ public class GroupedLayoutDelegateUnitTest {
     @Test
     public void testOnAlertStateChanged_InTabGroup_NotFound() {
         when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        setupGetIndexAndTabForTabGroupIdNotFound(TAB_GROUP_ID);
 
         mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
 
@@ -713,10 +696,10 @@ public class GroupedLayoutDelegateUnitTest {
 
     @Test
     public void testIsChildTabRepresentedByGroupCard() {
-        when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
         assertTrue(mDelegate.isChildTabRepresentedByGroupCard(mTab1));
 
-        when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(false);
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
         assertFalse(mDelegate.isChildTabRepresentedByGroupCard(mTab1));
     }
 

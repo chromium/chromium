@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
-import android.graphics.Bitmap;
 import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
@@ -16,7 +15,6 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -30,7 +28,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardPropert
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -69,31 +66,26 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     boolean isChildTabRepresentedByGroupCard(Tab tab) {
-        return mMediator.getCurrentTabModelChecked().isTabInTabGroup(tab);
+        return mMediator.isTabInTabGroup(tab);
     }
 
     @Override
     @TabAlert
-    int getAlertState(Tab representativeTab, PropertyModel model) {
-        @TabAlert int stateToReturn = super.getAlertState(representativeTab, model);
+    int getAlertStateForGroupHeader(Token tabGroupId) {
+        @TabAlert int stateToReturn = TabAlert.NONE;
         int statePriority = TabUtils.getTabAlertPriority(stateToReturn);
-        // Fast exit if not in a group or already at maximum priority state.
-        if (!mMediator.isTabInTabGroup(representativeTab)
-                || statePriority == TabUtils.MAX_TAB_ALERT_PRIORITY) {
-            return stateToReturn;
-        }
-
-        // Check all tabs in the group to surface the highest priority alert state onto the group
-        // card.
-        List<Tab> relatedTabs = mMediator.getRelatedTabsForId(representativeTab.getId());
-        for (Tab tab : relatedTabs) {
-            @TabAlert int currentState = super.getAlertState(tab, model);
+        TabModel tabModel = mMediator.getCurrentTabModelChecked();
+        List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
+        for (Tab tab : groupTabs) {
+            @TabAlert int currentState = getAlertStateForTab(tab);
             int currentPriority = TabUtils.getTabAlertPriority(currentState);
             if (currentPriority > statePriority) {
                 statePriority = currentPriority;
                 stateToReturn = currentState;
             }
-            if (statePriority == TabUtils.MAX_TAB_ALERT_PRIORITY) return stateToReturn;
+            if (statePriority == TabUtils.MAX_TAB_ALERT_PRIORITY) {
+                break;
+            }
         }
         return stateToReturn;
     }
@@ -281,89 +273,6 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         // same tab as before entering the switcher), which is not tracked at this level.
     }
 
-    // TabObserver implementation.
-
-    @Override
-    public void onFaviconUpdated(Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
-        if (!mMediator.isTrackingTabs()) return;
-
-        if (mMediator.isTabInTabGroup(updatedTab)) {
-            Pair<Integer, Tab> indexAndTab =
-                    getIndexAndTabForTabGroupId(updatedTab.getTabGroupId());
-            if (indexAndTab == null) return;
-
-            PropertyModel model = mModelList.get(indexAndTab.first).model;
-            Tab representativeTab = indexAndTab.second;
-
-            mMediator.updateThumbnailFetcher(model, representativeTab.getId());
-            mMediator.updateFaviconForTab(model, representativeTab, icon, iconUrl);
-        } else {
-            super.onFaviconUpdated(updatedTab, icon, iconUrl);
-        }
-    }
-
-    @Override
-    public void onUrlUpdated(Tab updatedTab) {
-        if (!mMediator.isTrackingTabs()) return;
-
-        if (mMediator.isTabInTabGroup(updatedTab)) {
-            Pair<Integer, Tab> indexAndTab =
-                    getIndexAndTabForTabGroupId(updatedTab.getTabGroupId());
-            if (indexAndTab == null) return;
-
-            PropertyModel model = mModelList.get(indexAndTab.first).model;
-            Tab representativeTab = indexAndTab.second;
-            if (!TabUtils.isValid(representativeTab) || model == null) return;
-
-            mMediator.updateThumbnailFetcher(model, representativeTab.getId());
-            mMediator.updateFaviconForTab(model, representativeTab, null, null);
-        } else {
-            super.onUrlUpdated(updatedTab);
-        }
-    }
-
-    @Override
-    public void onAlertStateChanged(Tab updatedTab, @TabAlert int alertState) {
-        if (!mMediator.isTrackingTabs()) return;
-
-        if (mMediator.isTabInTabGroup(updatedTab)) {
-            Token tabGroupId = updatedTab.getTabGroupId();
-            assumeNonNull(tabGroupId);
-            Pair<Integer, Tab> indexAndTab = getIndexAndTabForTabGroupId(tabGroupId);
-            if (indexAndTab == null) return;
-
-            PropertyModel model = mModelList.get(indexAndTab.first).model;
-            if (model == null || model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION)) {
-                return;
-            }
-            Tab representativeTab = indexAndTab.second;
-            @TabAlert int alertStateToSet = getAlertState(representativeTab, model);
-            model.set(TabProperties.ALERT_STATE, alertStateToSet);
-            mMediator.updateDescriptionString(model);
-        } else {
-            super.onAlertStateChanged(updatedTab, alertState);
-        }
-    }
-
-    /**
-     * When a tab in a tab group changes Actor UI state, refresh the group card thumbnail to reflect
-     * the update.
-     */
-    @Override
-    void onUiTabStateChanged(Tab updatedTab, UiTabState state) {
-        if (!mMediator.isTrackingTabs()) return;
-
-        if (mMediator.isTabInTabGroup(updatedTab)) {
-            int tabId = updatedTab.getId();
-            int index = getUiIndexForTab(tabId);
-            if (index != TabModel.INVALID_TAB_INDEX) {
-                mMediator.updateThumbnailFetcher(mModelList.get(index).model, tabId);
-            }
-        } else {
-            super.onUiTabStateChanged(updatedTab, state);
-        }
-    }
-
     @Override
     void onTabClose(Tab tab) {
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
@@ -416,12 +325,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     @Override
     public void didMoveWithinGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
         if (tabModelNewIndex == tabModelOldIndex || mThumbnailProvider == null) return;
-
-        int indexInModel = getUiIndexForTab(movedTab.getId());
-        if (indexInModel == TabModel.INVALID_TAB_INDEX) return;
-
-        PropertyModel model = mModelList.get(indexInModel).model;
-        mMediator.updateThumbnailFetcher(model, movedTab.getId());
+        updateGroupThumbnailForTab(movedTab);
     }
 
     @Override

@@ -1287,7 +1287,7 @@ public class TabListMediator implements TabListNotificationHandler {
                 TabProperties.TITLE,
                 getLatestTitleForTabOrGroup(tab, model, /* useDefault= */ true));
         model.set(TabProperties.IS_PINNED, tab.getIsPinned());
-        @TabAlert int alertState = getTabGridAlertState(tab, model);
+        @TabAlert int alertState = mTabListLayoutDelegate.getAlertState(tab, model);
         model.set(TabProperties.ALERT_STATE, alertState);
 
         bindTabActionStateProperties(model.get(TabProperties.TAB_ACTION_STATE), tab, model);
@@ -1331,12 +1331,6 @@ public class TabListMediator implements TabListNotificationHandler {
         assert tabModel.isTabModelRestored();
 
         return tabModel.isTabInTabGroup(tab);
-    }
-
-    private @TabAlert int getTabGridAlertState(Tab representativeTab, PropertyModel model) {
-        if (!TabProperties.isTabOrTabGroup(model)) return TabAlert.NONE;
-
-        return mTabListLayoutDelegate.getAlertState(representativeTab, model);
     }
 
     /**
@@ -1858,7 +1852,7 @@ public class TabListMediator implements TabListNotificationHandler {
         tabInfo.set(
                 TabProperties.TITLE,
                 getLatestTitleForTabOrGroup(tab, tabInfo, /* useDefault= */ false));
-        @TabAlert int alertState = getTabGridAlertState(tab, tabInfo);
+        @TabAlert int alertState = mTabListLayoutDelegate.getAlertStateForTab(tab);
         tabInfo.set(TabProperties.ALERT_STATE, alertState);
         tabInfo.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         tabInfo.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false);
@@ -1912,7 +1906,7 @@ public class TabListMediator implements TabListNotificationHandler {
                 getLatestTitleForTabOrGroup(tab, groupInfo, /* useDefault= */ true));
         groupInfo.set(TabProperties.IS_COLLAPSED, isCollapsed);
         groupInfo.set(TabProperties.FAVICON_FETCHER, null);
-        @TabAlert int alertState = getTabGridAlertState(tab, groupInfo);
+        @TabAlert int alertState = mTabListLayoutDelegate.getAlertStateForGroupHeader(tabGroupId);
         groupInfo.set(TabProperties.ALERT_STATE, alertState);
 
         bindTabActionStateProperties(mTabActionState, tab, groupInfo);

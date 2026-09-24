@@ -92,13 +92,29 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      * Resolves the visual alert state indicator (e.g. playing audio) for a tab card or group
      * header.
      *
-     * @param representativeTab The representative tab for the card.
+     * @param tab The tab being evaluated for the card.
      * @param model The property model associated with the tab or group header.
      * @return The {@link TabAlert} that should be displayed, or {@link TabAlert#NONE} if none.
      */
     @TabAlert
-    int getAlertState(Tab representativeTab, PropertyModel model) {
-        @TabAlert int alertState = representativeTab.getAlertState();
+    int getAlertState(Tab tab, PropertyModel model) {
+        if (!TabProperties.isTabOrTabGroup(model)) return TabAlert.NONE;
+        if (TabProperties.isTabGroupHeader(model)) {
+            Token tabGroupHeaderId = assumeNonNull(model.get(TabProperties.TAB_GROUP_HEADER_ID));
+            return getAlertStateForGroupHeader(tabGroupHeaderId);
+        }
+        return getAlertStateForTab(tab);
+    }
+
+    /**
+     * Resolves the visual alert state indicator (e.g. playing audio) for a single tab card.
+     *
+     * @param tab The tab being evaluated for the card.
+     * @return The {@link TabAlert} that should be displayed, or {@link TabAlert#NONE} if none.
+     */
+    @TabAlert
+    int getAlertStateForTab(Tab tab) {
+        @TabAlert int alertState = tab.getAlertState();
         if (alertState == TabAlert.GLIC_ACCESSING || alertState == TabAlert.GLIC_SHARING) {
             // Glic accessing and sharing states use dedicated tab underlines on the vertical tab
             // strip and are not shown in the grid tab switcher.
@@ -112,6 +128,19 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
             return TabAlert.NONE;
         }
         return alertState;
+    }
+
+    /**
+     * Resolves the visual alert state indicator for a tab group card or header. Defaults to {@link
+     * TabAlert#NONE} for layouts where group headers do not display alert indicators.
+     *
+     * @param tabGroupId The {@link Token} identifying the tab group.
+     * @return The {@link TabAlert} that should be displayed on the group card, or {@link
+     *     TabAlert#NONE} if none.
+     */
+    @TabAlert
+    int getAlertStateForGroupHeader(Token tabGroupId) {
+        return TabAlert.NONE;
     }
 
     /** Returns the insertion index for a new tab card. */
@@ -330,6 +359,10 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     @Override
     public void onFaviconUpdated(Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
         if (!mMediator.isTrackingTabs()) return;
+        if (isChildTabRepresentedByGroupCard(updatedTab)) {
+            updateGroupThumbnailForTab(updatedTab);
+            return;
+        }
 
         PropertyModel model = getModelFromTabId(updatedTab.getId());
         if (model == null) return;
@@ -343,10 +376,14 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      */
     @Override
     public void onUrlUpdated(Tab updatedTab) {
-        if (!mMediator.isTrackingTabs()) return;
+        if (!mMediator.isTrackingTabs() || !TabUtils.isValid(updatedTab)) return;
+        if (isChildTabRepresentedByGroupCard(updatedTab)) {
+            updateGroupThumbnailForTab(updatedTab);
+            return;
+        }
 
         PropertyModel model = getModelFromTabId(updatedTab.getId());
-        if (!TabUtils.isValid(updatedTab) || model == null) return;
+        if (model == null) return;
 
         mMediator.updateThumbnailFetcher(model, updatedTab.getId());
         mMediator.updateFaviconForTab(model, updatedTab, null, null);
@@ -363,12 +400,17 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     public void onAlertStateChanged(Tab updatedTab, @TabAlert int alertState) {
         if (!mMediator.isTrackingTabs()) return;
 
-        PropertyModel model = getModelFromTabId(updatedTab.getId());
-        if (model == null || model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION)) {
+        int index = getUiIndexForTab(updatedTab.getId());
+        if (index == TabModel.INVALID_TAB_INDEX) return;
+
+        PropertyModel model = mModelList.get(index).model;
+        if (model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION)) {
             return;
         }
-        @TabAlert int alertStateToSet = getAlertState(updatedTab, model);
-        model.set(TabProperties.ALERT_STATE, alertStateToSet);
+        model.set(TabProperties.ALERT_STATE, getAlertState(updatedTab, model));
+        if (isChildTabRepresentedByGroupCard(updatedTab)) {
+            mMediator.updateDescriptionString(model);
+        }
     }
 
     @Override
@@ -412,6 +454,10 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      */
     void onUiTabStateChanged(Tab updatedTab, UiTabState state) {
         if (!mMediator.isTrackingTabs()) return;
+        if (isChildTabRepresentedByGroupCard(updatedTab)) {
+            updateGroupThumbnailForTab(updatedTab);
+            return;
+        }
 
         PropertyModel model = getModelFromTabId(updatedTab.getId());
         if (model != null) {
@@ -692,6 +738,16 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
             return false;
         }
         return TabProperties.isPinnedTab(sourceModel) == TabProperties.isPinnedTab(targetModel);
+    }
+
+    void updateGroupThumbnailForTab(Tab tab) {
+        // Tab group headers do not display a header favicon; mini-favicons, thumbnails, and
+        // Actor UI states inside the 2x2 group card are refreshed by updateThumbnailFetcher.
+        int tabId = tab.getId();
+        int index = getUiIndexForTab(tabId);
+        if (index != TabModel.INVALID_TAB_INDEX) {
+            mMediator.updateThumbnailFetcher(mModelList.get(index).model, tabId);
+        }
     }
 
     private void updateLoadingState(Tab tab, boolean isLoading) {

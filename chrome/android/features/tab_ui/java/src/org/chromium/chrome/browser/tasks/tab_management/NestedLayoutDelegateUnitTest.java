@@ -131,18 +131,23 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testGetAlertState_Tab() {
-        PropertyModel tabModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID).build();
+    public void testGetAlertStateForTab() {
         when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
-        @TabAlert int state = mDelegate.getAlertState(mTab1, tabModel);
+        @TabAlert int state = mDelegate.getAlertStateForTab(mTab1);
         assertEquals(TabAlert.AUDIO_PLAYING, state);
+    }
+
+    @Test
+    public void testGetAlertStateForGroupHeader() {
+        @TabAlert int state = mDelegate.getAlertStateForGroupHeader(TAB_GROUP_ID);
+        assertEquals(TabAlert.NONE, state);
     }
 
     @Test
     public void testGetAlertState_GroupHeader() {
         PropertyModel headerModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                        .with(TabProperties.TAB_GROUP_HEADER_ID, new Token(1, 2))
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, TAB_GROUP_ID)
                         .build();
         when(mTab1.getAlertState()).thenReturn(TabAlert.AUDIO_PLAYING);
         @TabAlert int state = mDelegate.getAlertState(mTab1, headerModel);

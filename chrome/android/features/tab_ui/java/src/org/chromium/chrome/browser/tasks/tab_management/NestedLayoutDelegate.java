@@ -30,7 +30,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_groups.TabGroupColorId;
-import org.chromium.components.tabs.TabAlert;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -69,13 +68,6 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     @Override
     boolean supportsActorTabAlerts() {
         return true;
-    }
-
-    @Override
-    @TabAlert
-    int getAlertState(Tab representativeTab, PropertyModel model) {
-        if (TabProperties.isTabGroupHeader(model)) return TabAlert.NONE;
-        return super.getAlertState(representativeTab, model);
     }
 
     /**
