@@ -20,14 +20,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resources_util.h"
-#include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/webui/current_channel_logo.h"
-#include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
-#include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/theme_resources.h"
@@ -54,6 +49,10 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/search/instant_service.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
+#include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
