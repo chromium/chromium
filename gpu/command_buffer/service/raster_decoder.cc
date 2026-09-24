@@ -1985,6 +1985,15 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     return;
   }
 
+  const bool check_gl_upload_errors = !dest_shared_image->IsCleared() &&
+                                      shared_context_state_->GrContextIsGL() &&
+                                      !WasContextLost();
+  gl::GLApi* const gl_api =
+      check_gl_upload_errors ? gl::g_current_gl_context : nullptr;
+  if (gl_api) {
+    DrainGLErrors(gl_api);
+  }
+
   // Try a direct texture upload without using SkSurface.
   if (gfx::Size(src_width, src_height) == dest_shared_image->size() &&
       x_offset == 0 && y_offset == 0 &&
@@ -1996,10 +2005,25 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
       DoWritePixelsINTERNALDirectTextureUpload(
           dest_shared_image.get(), src_info, pixel_data, row_bytes)) {
     if (!dest_shared_image->IsCleared()) {
+      if (gl_api) {
+        GLenum error = DrainGLErrors(gl_api);
+        if (error != GL_NO_ERROR) {
+          LOCAL_SET_GL_ERROR(
+              error, "glWritePixels",
+              "GL driver reported an error during texture upload");
+          return;
+        }
+      }
       dest_shared_image->SetClearedRect(
           gfx::Rect(src_info.width(), src_info.height()));
     }
     return;
+  }
+
+  // If direct upload was skipped or failed, drain any errors from the attempt
+  // before proceeding with the SkSurface fallback.
+  if (gl_api) {
+    DrainGLErrors(gl_api);
   }
 
   std::vector<GrBackendSemaphore> begin_semaphores;
@@ -2046,6 +2070,14 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
       dest_scoped_access->NeedGraphiteContextSubmit());
 
   if (success && !dest_shared_image->IsCleared()) {
+    if (gl_api) {
+      GLenum error = DrainGLErrors(gl_api);
+      if (error != GL_NO_ERROR) {
+        LOCAL_SET_GL_ERROR(error, "glWritePixels",
+                           "GL driver reported an error during texture upload");
+        return;
+      }
+    }
     dest_shared_image->SetClearedRect(
         gfx::Rect(x_offset, y_offset, src_width, src_height));
   }
