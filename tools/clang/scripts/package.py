@@ -329,6 +329,9 @@ def main():
   runtime_packages = None
   runtime_package_name = None
 
+  android_runtime_packages = None
+  android_runtime_package_name = None
+
   # Copy a list of files to the directory we're going to tar up.
   # This supports the same patterns that the fnmatch module understands.
   # '$V' is replaced by RELEASE_VERSION further down.
@@ -341,8 +344,8 @@ def main():
       'bin/llvm-undname' + exe_ext,
       # Copy built-in headers (lib/clang/3.x.y/include).
       'lib/clang/$V/include/*',
-      'lib/clang/$V/share/asan_*list.txt',
-      'lib/clang/$V/share/cfi_*list.txt',
+      'lib/clang/$V/share/asan_ignorelist.txt',
+      'lib/clang/$V/share/cfi_ignorelist.txt',
     ]
   )
   if sys.platform == 'win32':
@@ -413,15 +416,10 @@ def main():
       ]
     )
   elif sys.platform.startswith('linux'):
-    want.update(
+    runtime_package_name = 'clang-linux-runtime-library'
+    runtime_packages = set(
       [
         # pylint: disable=line-too-long
-        # Required for use_debug_fissions=true to not break symbolization on swarming.
-        'bin/llvm-dwp',
-        # Add llvm-objcopy for partition extraction on Android.
-        'bin/llvm-objcopy',
-        # Add llvm-nm.
-        'bin/llvm-nm',
         # AddressSanitizer C runtime (pure C won't link with *_cxx).
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan.a',
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan.a.syms',
@@ -501,16 +499,27 @@ def main():
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a.syms',
         # Ignorelist for MemorySanitizer (used on Linux only).
-        'lib/clang/$V/share/msan_*list.txt',
+        'lib/clang/$V/share/msan_ignorelist.txt',
         # pylint: enable=line-too-long
+      ]
+    )
+    want.update(runtime_packages)
+    want.update(
+      [
+        # Required for use_debug_fissions=true to not break symbolization on swarming.
+        'bin/llvm-dwp',
+        # Add llvm-objcopy for partition extraction on Android.
+        'bin/llvm-objcopy',
+        # Add llvm-nm.
+        'bin/llvm-nm',
       ]
     )
     # The Android compiler-rt runtimes are cross-compiled target libraries
     # (host-independent). Ship them only as a standalone package that every
     # host building for Android (Linux included) overlays onto its host clang,
     # rather than bundling them into each host's clang package.
-    runtime_package_name = 'clang-android-runtime-library'
-    runtime_packages = set(
+    android_runtime_package_name = 'clang-android-runtime-library'
+    android_runtime_packages = set(
       [
         # pylint: disable=line-too-long
         # AddressSanitizer Android runtime.
@@ -592,10 +601,9 @@ def main():
   reclient_inputs = {
     'clang': set(
       [
-        # Note: These have to match the `want` list exactly. `want` uses
-        # a glob, so these must too.
-        'lib/clang/$V/share/asan_*list.txt',
-        'lib/clang/$V/share/cfi_*list.txt',
+        # Note: These have to match the `want` list exactly.
+        'lib/clang/$V/share/asan_ignorelist.txt',
+        'lib/clang/$V/share/cfi_ignorelist.txt',
       ]
     ),
   }
@@ -740,13 +748,25 @@ def main():
     shutil.rmtree(runtime_dir, ignore_errors=True)
     for f in sorted(replace_version(runtime_packages, RELEASE_VERSION)):
       os.makedirs(os.path.dirname(os.path.join(runtime_dir, f)), exist_ok=True)
-      # Prefer the staged package dir, but fall back to the build output for
-      # runtimes that are not bundled into the host package (e.g. the Android
-      # target runtimes, which ship only in this standalone package).
-      src = os.path.join(pdir, f)
-      if not os.path.exists(src):
-        src = os.path.join(LLVM_RELEASE_DIR, f)
-      shutil.copy(src, os.path.join(runtime_dir, f))
+      shutil.copy(
+        os.path.join(pdir, f),
+        os.path.join(runtime_dir, f),
+      )
+    PackageInArchive(runtime_dir, runtime_dir)
+    MaybeUpload(args.upload, args.bucket, f'{runtime_dir}.tar.xz', gcs_platform)
+
+  if android_runtime_package_name and len(android_runtime_packages) > 0:
+    runtime_dir = f'{android_runtime_package_name}-{stamp}'
+    shutil.rmtree(runtime_dir, ignore_errors=True)
+    for f in sorted(replace_version(android_runtime_packages, RELEASE_VERSION)):
+      os.makedirs(os.path.dirname(os.path.join(runtime_dir, f)), exist_ok=True)
+      # Use the build output for runtimes that are not bundled into the
+      # host package (i.e. the Android target runtimes, which ship only
+      # in this standalone package).
+      shutil.copy(
+        os.path.join(LLVM_RELEASE_DIR, f),
+        os.path.join(runtime_dir, f),
+      )
     PackageInArchive(runtime_dir, runtime_dir)
     MaybeUpload(args.upload, args.bucket, f'{runtime_dir}.tar.xz', gcs_platform)
 

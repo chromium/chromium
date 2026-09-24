@@ -1172,8 +1172,14 @@ def main():
     isysroot = subprocess.check_output(
       ['xcrun', '--show-sdk-path'], universal_newlines=True
     ).rstrip()
+
+    # Maps to -Wl,-no_exported_symbols which only exists on darwin.
+    # Not exporting symbols speeds up executable startup a bit.
+    base_cmake_args.append('-DLLVM_ENABLE_EXPORTED_SYMBOLS_IN_EXECUTABLES=OFF')
+
     # TODO(crbug.com/522267458): Remove this when class stub is implemented for lld.
     base_cmake_args.append('-DHOST_LINK_VERSION=1249')
+
   base_cmake_args += ['-DLLVM_ENABLE_UNWIND_TABLES=OFF']
 
   compiler_wrapper_cmake_args = []
