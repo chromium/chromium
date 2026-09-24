@@ -4,14 +4,21 @@
 
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 
+#include <optional>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,6 +31,7 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::Message;
 using ::testing::Ne;
 
 // Tests that `ToPersonalContextEntity` correctly converts individual memory
@@ -279,6 +287,87 @@ TEST(MemoryDataTypeUtilTest, ToAttributeType) {
   EXPECT_EQ(ToAttributeType(MemoryDataType::kPassportNumber),
             AttributeType(AttributeTypeName::kPassportNumber));
   EXPECT_EQ(ToAttributeType(MemoryDataType::kIban), std::nullopt);
+}
+
+TEST(MemoryDataTypeUtilTest, ToEntityType) {
+  EXPECT_EQ(ToEntityType(MemoryDataType::kPassportNumber),
+            EntityType(EntityTypeName::kPassport));
+  EXPECT_EQ(ToEntityType(MemoryDataType::kDriversLicenseNumber),
+            EntityType(EntityTypeName::kDriversLicense));
+  EXPECT_EQ(ToEntityType(MemoryDataType::kNationalIdCardNumber),
+            EntityType(EntityTypeName::kNationalIdCard));
+  EXPECT_EQ(ToEntityType(MemoryDataType::kFlightReservationArrivalDate),
+            EntityType(EntityTypeName::kFlightReservation));
+  EXPECT_EQ(ToEntityType(MemoryDataType::kKnownTravelerNumberNumber),
+            EntityType(EntityTypeName::kKnownTravelerNumber));
+  EXPECT_EQ(ToEntityType(MemoryDataType::kRedressNumberNumber),
+            EntityType(EntityTypeName::kRedressNumber));
+  EXPECT_EQ(ToEntityType(MemoryDataType::kVehicleMake),
+            EntityType(EntityTypeName::kVehicle));
+  EXPECT_EQ(ToEntityType(MemoryDataType::kOrderGrandTotal),
+            EntityType(EntityTypeName::kOrder));
+  EXPECT_EQ(ToEntityType(MemoryDataType::kShipmentDeliveryAddress),
+            EntityType(EntityTypeName::kShipment));
+  EXPECT_EQ(ToEntityType(MemoryDataType::kShipmentAssociatedOrderId),
+            EntityType(EntityTypeName::kShipment));
+  EXPECT_EQ(ToEntityType(MemoryDataType::kShipmentEstimatedDeliveryDate),
+            EntityType(EntityTypeName::kShipment));
+  EXPECT_EQ(ToEntityType(MemoryDataType::kNameFull), std::nullopt);
+  EXPECT_EQ(ToEntityType(MemoryDataType::kCreditCardNumber), std::nullopt);
+  EXPECT_EQ(ToEntityType(MemoryDataType::kIban), std::nullopt);
+  EXPECT_EQ(ToEntityType(MemoryDataType::kUnknown), std::nullopt);
+}
+
+// Values that were removed from the `MemoryDataType` enum.
+constexpr auto kDeprecatedMemoryDataTypeValues =
+    base::MakeFixedFlatSet<std::underlying_type_t<MemoryDataType>>(
+        {13, 21, 27, 36, 45, 51, 54, 58, 64});
+
+// Tests that the per-type `ToAttributeType()` mapping and the per-category
+// `ToEntityType()` mapping cannot drift apart. Every attribute of every entity
+// must resolve to that same entity.
+TEST(MemoryDataTypeUtilTest, ToEntityTypeIsConsistentWithToAttributeType) {
+  for (EntityType entity_type : DenseSet<EntityType>::all()) {
+    for (AttributeType attribute_type : entity_type.attributes()) {
+      MemoryDataType type = AttributeTypeToMemoryDataType(attribute_type);
+      if (type == MemoryDataType::kUnknown) {
+        // Not every `AttributeType` has a `MemoryDataType` counterpart.
+        continue;
+      }
+      SCOPED_TRACE(Message() << attribute_type);
+      EXPECT_EQ(ToEntityType(type), entity_type);
+      EXPECT_EQ(ToAttributeType(type), attribute_type);
+    }
+  }
+
+  for (std::underlying_type_t<MemoryDataType> value = 1;
+       value <= std::to_underlying(MemoryDataType::kMaxValue); ++value) {
+    if (kDeprecatedMemoryDataTypeValues.contains(value)) {
+      continue;
+    }
+    const auto type = static_cast<MemoryDataType>(value);
+    if (std::optional<AttributeType> mapped_attribute = ToAttributeType(type)) {
+      SCOPED_TRACE(Message() << MemoryDataTypeToStringView(type));
+      EXPECT_EQ(ToEntityType(type), mapped_attribute->entity_type());
+    }
+  }
+}
+
+// Tests that no `MemoryDataType` renders as an empty string. Types that are
+// absent from `entity_schema.json` cannot be resolved via `ToAttributeType()`
+// and need their own string.
+TEST(MemoryDataTypeUtilTest, EveryTypeHasANonEmptyNameForI18n) {
+  // `kUnknown` is 0 and intentionally has no name: such entries carry a
+  // free-form `MemorySearchResult::type_name` instead.
+  for (std::underlying_type_t<MemoryDataType> value = 1;
+       value <= std::to_underlying(MemoryDataType::kMaxValue); ++value) {
+    if (kDeprecatedMemoryDataTypeValues.contains(value)) {
+      continue;
+    }
+    const auto type = static_cast<MemoryDataType>(value);
+    SCOPED_TRACE(Message() << MemoryDataTypeToStringView(type));
+    EXPECT_FALSE(GetMemoryDataTypeNameForI18n(type).empty());
+  }
 }
 
 TEST(MemoryDataTypeUtilTest, GetMemoryDataTypeCategory) {

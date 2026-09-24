@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_DATA_TYPE_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_DATA_TYPE_UTIL_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -53,6 +54,9 @@ std::optional<FieldType> ToFieldType(MemoryDataType type);
 
 // Translates a MemoryDataType to an AttributeType, if applicable.
 std::optional<AttributeType> ToAttributeType(MemoryDataType type);
+
+// Translates a MemoryDataType to an EntityType, if applicable.
+std::optional<EntityType> ToEntityType(MemoryDataType type);
 
 // Maps MemoryDataType to AutofillPolicyDataCategory directly.
 std::optional<AutofillClient::AutofillPolicyDataCategory>

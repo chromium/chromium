@@ -82,14 +82,15 @@ constexpr std::array<int, 3> kFetchingStringIds = std::to_array<int>({
 
 // Returns the primary type name label for `entry`. For AutofillAi
 // entities and attributes, this resolves to the Entity name.
-std::u16string GetSuggestionLabelTypeName(const MemorySearchResult& entry) {
-  if (std::optional<AttributeType> attribute_type =
-          ToAttributeType(entry.type)) {
-    return attribute_type->entity_type().GetNameForI18n();
+std::u16string GetSuggestionPrimaryTypeName(const MemorySearchResult& entry) {
+  // Schemaless entries carry their name in `type_name`.
+  if (entry.type == MemoryDataType::kUnknown) {
+    return entry.type_name;
   }
-  return entry.type == MemoryDataType::kUnknown
-             ? entry.type_name
-             : GetMemoryDataTypeNameForI18n(entry.type);
+  if (std::optional<EntityType> entity_type = ToEntityType(entry.type)) {
+    return entity_type->GetNameForI18n();
+  }
+  return GetMemoryDataTypeNameForI18n(entry.type);
 }
 
 Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
@@ -323,7 +324,7 @@ Suggestion AtMemoryManager::TransformResultIntoSuggestion(
 
   // Label row: [type_name, metadata[0].value, ...]
   std::vector<Suggestion::Text> label_row;
-  std::u16string type_name = GetSuggestionLabelTypeName(entry);
+  std::u16string type_name = GetSuggestionPrimaryTypeName(entry);
   if (!type_name.empty()) {
     label_row.emplace_back(type_name);
   }

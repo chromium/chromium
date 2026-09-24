@@ -290,6 +290,10 @@ class AtMemoryQueryServiceTest : public testing::Test,
         proto_type = personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL;
       } else if (local_result.type == MemoryDataType::kIban) {
         proto_type = personal_context::proto::MEMORY_DATA_TYPE_IBAN;
+      } else if (local_result.type ==
+                 MemoryDataType::kShipmentDeliveryAddress) {
+        proto_type =
+            personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_DELIVERY_ADDRESS;
       }
       plan->add_fetch_specifications()->set_data_type(proto_type);
     }
@@ -792,7 +796,7 @@ TEST_F(AtMemoryQueryServiceTest,
   // Insert remote first to test tiebreaker overriding the first entry.
   const MemorySearchResults& result =
       RunDeduplicationQueryWithLocalResults({remote_result, local_result});
-  EXPECT_THAT(result.entries, testing::ElementsAre(local_result));
+  EXPECT_THAT(result.entries, ElementsAre(local_result));
 }
 
 // Tests that deduplication prefers results with more non-empty metadata fields.
@@ -812,7 +816,7 @@ TEST_F(AtMemoryQueryServiceTest,
 
   const MemorySearchResults& result =
       RunDeduplicationQueryWithLocalResults({less_meta, more_meta});
-  EXPECT_THAT(result.entries, testing::ElementsAre(more_meta));
+  EXPECT_THAT(result.entries, ElementsAre(more_meta));
 }
 
 // Tests that deduplication prefers results sourced from Autofill.
@@ -829,7 +833,7 @@ TEST_F(AtMemoryQueryServiceTest,
   // We check the entry was replaced based on confidence score changing to 0.5.
   const MemorySearchResults& result =
       RunDeduplicationQueryWithLocalResults({gmail_result, autofill_result});
-  EXPECT_THAT(result.entries, testing::ElementsAre(autofill_result));
+  EXPECT_THAT(result.entries, ElementsAre(autofill_result));
 }
 
 // Tests that deduplication for Autofill AI entities is determined by merge
@@ -852,6 +856,80 @@ TEST_F(AtMemoryQueryServiceTest,
   const MemorySearchResults& result =
       RunDeduplicationQueryWithLocalResults({result1, result2});
   EXPECT_EQ(result.entries.size(), 1u);
+}
+
+// Tests that deduplication resolves `EntityType` merge constraints even for
+// entity-backed `MemoryDataType` values without a 1:1 `AttributeType` mapping
+// (such as `kShipmentDeliveryAddress`).
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_ShipmentMergeConstraints) {
+  MemorySearchResult result1(MemoryDataType::kShipmentDeliveryAddress, u"",
+                             u"1600 Amphitheatre Pkwy");
+  result1.metadata_list.emplace_back(MemoryDataType::kShipmentTrackingNumber,
+                                     u"Tracking number", u"1Z999AA10123456784");
+  result1.metadata_list.emplace_back(MemoryDataType::kShipmentCarrierName,
+                                     u"Carrier", u"UPS");
+
+  MemorySearchResult result2(MemoryDataType::kShipmentDeliveryAddress, u"",
+                             u"1600 Amphitheatre Pkwy");
+  result2.metadata_list.emplace_back(MemoryDataType::kShipmentTrackingNumber,
+                                     u"Tracking number", u"1Z999AA10123456784");
+  result2.metadata_list.emplace_back(MemoryDataType::kShipmentCarrierName,
+                                     u"Carrier", u"UPS Ground");
+
+  // The merge constraint for Shipment is `kShipmentTrackingNumber`. Both
+  // results share the same tracking number and delivery address, so they
+  // deduplicate despite the differing carrier strings. `result1` is kept
+  // because it comes first among otherwise equally preferable results.
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_THAT(result.entries, ElementsAre(result1));
+}
+
+// Tests that results of an entity-backed `MemoryDataType` without a 1:1
+// `AttributeType` mapping are not merged if the merge constraints contradict
+// each other.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_ShipmentMergeConstraintsContradict) {
+  MemorySearchResult result1(MemoryDataType::kShipmentDeliveryAddress, u"",
+                             u"1600 Amphitheatre Pkwy");
+  result1.metadata_list.emplace_back(MemoryDataType::kShipmentTrackingNumber,
+                                     u"Tracking number", u"1Z999AA10123456784");
+
+  MemorySearchResult result2(MemoryDataType::kShipmentDeliveryAddress, u"",
+                             u"1600 Amphitheatre Pkwy");
+  result2.metadata_list.emplace_back(MemoryDataType::kShipmentTrackingNumber,
+                                     u"Tracking number", u"1Z999AA10199999999");
+
+  // Two shipments to the same address with different tracking numbers are
+  // different real-world entities.
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_EQ(result.entries.size(), 2u);
+}
+
+// Tests that results of an entity-backed `MemoryDataType` without a 1:1
+// `AttributeType` mapping fall back to the contradicting metadata check if the
+// merge constraint attribute is missing.
+TEST_F(AtMemoryQueryServiceTest,
+       Query_DeduplicatesResults_ShipmentMergeConstraintsMissing) {
+  MemorySearchResult result1(MemoryDataType::kShipmentDeliveryAddress, u"",
+                             u"1600 Amphitheatre Pkwy");
+  result1.metadata_list.emplace_back(MemoryDataType::kShipmentTrackingNumber,
+                                     u"Tracking number", u"1Z999AA10123456784");
+  result1.metadata_list.emplace_back(MemoryDataType::kShipmentCarrierName,
+                                     u"Carrier", u"UPS");
+
+  MemorySearchResult result2(MemoryDataType::kShipmentDeliveryAddress, u"",
+                             u"1600 Amphitheatre Pkwy");
+  result2.metadata_list.emplace_back(MemoryDataType::kShipmentCarrierName,
+                                     u"Carrier", u"UPS Ground");
+
+  // Without a tracking number on `result2`, the merge constraints cannot be
+  // evaluated and the contradicting carrier names keep both results.
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_EQ(result.entries.size(), 2u);
 }
 
 // Tests that deduplication works when the local Autofill data is obfuscated

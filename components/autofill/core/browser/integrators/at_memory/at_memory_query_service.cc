@@ -196,12 +196,7 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
     return false;
   }
 
-  std::optional<EntityType> entity_type;
-  if (std::optional<AttributeType> attribute_type = ToAttributeType(a.type)) {
-    entity_type = attribute_type->entity_type();
-  }
-
-  if (entity_type) {
+  if (std::optional<EntityType> entity_type = ToEntityType(a.type)) {
     // For Autofill AI entities, we can use merge constraints to evaluate if
     // `a` and `b` correspond to the same entity.
     for (const DenseSet<AttributeType>& constraint :

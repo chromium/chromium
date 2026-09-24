@@ -3031,6 +3031,99 @@ TEST_F(
   ASSERT_EQ(empty_suggestions[1].children.size(), 1u);
 }
 
+// Tests that `TransformResultIntoSuggestion` resolves the primary suggestion
+// label to the entity name even for `MemoryDataType` values without a 1:1
+// `AttributeType` mapping (e.g. `kShipmentDeliveryAddress`).
+TEST_F(AtMemoryManagerTestBase,
+       TransformResultIntoSuggestion_EntityLabelWithoutAttributeType) {
+  auto create_suggestion = [](MemoryDataType type,
+                              MemoryDataType metadata_type) {
+    MemorySearchResult entry(type,
+                             /*type_name=*/u"", u"1600 Amphitheatre Pkwy",
+                             /*confidence_score=*/1.0);
+    entry.metadata_list = {EntryMetadata(metadata_type, u"Metadata", u"Value")};
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
+    return AtMemoryManager::TransformResultIntoSuggestion(entry, "en-US");
+  };
+
+  const std::u16string shipment_name =
+      EntityType(EntityTypeName::kShipment).GetNameForI18n();
+  ASSERT_FALSE(shipment_name.empty());
+  const std::u16string order_name =
+      EntityType(EntityTypeName::kOrder).GetNameForI18n();
+  ASSERT_FALSE(order_name.empty());
+
+  Suggestion delivery_address =
+      create_suggestion(MemoryDataType::kShipmentDeliveryAddress,
+                        MemoryDataType::kShipmentCarrierName);
+  EXPECT_THAT(delivery_address.labels,
+              ElementsAre(ElementsAre(Suggestion::Text(shipment_name),
+                                      Suggestion::Text(u"\u2022"),
+                                      Suggestion::Text(u"Value"))));
+  EXPECT_EQ(
+      delivery_address.GetPayload<Suggestion::AtMemoryPayload>().type_name,
+      shipment_name);
+
+  Suggestion estimated_delivery_date =
+      create_suggestion(MemoryDataType::kShipmentEstimatedDeliveryDate,
+                        MemoryDataType::kShipmentCarrierName);
+  EXPECT_THAT(estimated_delivery_date.labels,
+              ElementsAre(ElementsAre(Suggestion::Text(shipment_name),
+                                      Suggestion::Text(u"\u2022"),
+                                      Suggestion::Text(u"Value"))));
+  EXPECT_EQ(estimated_delivery_date.GetPayload<Suggestion::AtMemoryPayload>()
+                .type_name,
+            shipment_name);
+
+  Suggestion associated_order_id =
+      create_suggestion(MemoryDataType::kShipmentAssociatedOrderId,
+                        MemoryDataType::kShipmentCarrierName);
+  EXPECT_THAT(associated_order_id.labels,
+              ElementsAre(ElementsAre(Suggestion::Text(shipment_name),
+                                      Suggestion::Text(u"\u2022"),
+                                      Suggestion::Text(u"Value"))));
+  EXPECT_EQ(
+      associated_order_id.GetPayload<Suggestion::AtMemoryPayload>().type_name,
+      shipment_name);
+
+  Suggestion order_grand_total = create_suggestion(
+      MemoryDataType::kOrderGrandTotal, MemoryDataType::kOrderMerchantName);
+  EXPECT_THAT(order_grand_total.labels,
+              ElementsAre(ElementsAre(Suggestion::Text(order_name),
+                                      Suggestion::Text(u"\u2022"),
+                                      Suggestion::Text(u"Value"))));
+  EXPECT_EQ(
+      order_grand_total.GetPayload<Suggestion::AtMemoryPayload>().type_name,
+      order_name);
+}
+
+// Tests that metadata rows are labelled with the `MemoryDataType` name even for
+// `MemoryDataType` values without a 1:1 `AttributeType` mapping. Unlike the
+// primary label, these do not resolve to the entity name.
+TEST_F(AtMemoryManagerTestBase,
+       TransformResultIntoSuggestion_ChildLabelWithoutAttributeType) {
+  MemorySearchResult entry(MemoryDataType::kShipmentTrackingNumber,
+                           /*type_name=*/u"", u"1Z999AA10123456784",
+                           /*confidence_score=*/1.0);
+  entry.metadata_list = {EntryMetadata(MemoryDataType::kShipmentDeliveryAddress,
+                                       /*type_name=*/u"",
+                                       u"1600 Amphitheatre Pkwy")};
+  entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
+
+  Suggestion suggestion =
+      AtMemoryManager::TransformResultIntoSuggestion(entry, "en-US");
+
+  const std::u16string expected_field_name = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_AI_SHIPMENT_DELIVERY_ADDRESS_ATTRIBUTE_NAME);
+  ASSERT_FALSE(suggestion.children.empty());
+  const Suggestion& child = suggestion.children[0];
+  EXPECT_EQ(child.main_text.value, u"1600 Amphitheatre Pkwy");
+  EXPECT_THAT(child.labels,
+              ElementsAre(ElementsAre(Suggestion::Text(expected_field_name))));
+  EXPECT_EQ(child.GetPayload<Suggestion::AtMemoryPayload>().type_name,
+            expected_field_name);
+}
+
 }  // namespace
 
 }  // namespace autofill

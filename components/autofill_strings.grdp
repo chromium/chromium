@@ -1212,6 +1212,9 @@
   <message name="IDS_AUTOFILL_AI_ORDER_PRODUCT_NAMES_ATTRIBUTE_NAME" desc="Used as a general label for the order product names attribute.">
     Product names
   </message>
+  <message name="IDS_AUTOFILL_AI_ORDER_GRAND_TOTAL_ATTRIBUTE_NAME" desc="Used as a general label for the total amount of money paid for an order, including taxes and shipping costs.">
+    Total
+  </message>
 
   <!-- Attributes of the shipment entity -->
   <message name="IDS_AUTOFILL_AI_SHIPMENT_TRACKING_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the shipment tracking number attribute.">
@@ -1234,6 +1237,15 @@
   </message>
   <message name="IDS_AUTOFILL_AI_SHIPMENT_PRODUCT_NAMES_ATTRIBUTE_NAME" desc="Used as a general label for the shipment product names attribute.">
     Product names
+  </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_DELIVERY_ADDRESS_ATTRIBUTE_NAME" desc="Used as a general label for the address a shipment is delivered to.">
+    Delivery address
+  </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_ESTIMATED_DELIVERY_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the date a shipment is expected to be delivered on.">
+    Estimated delivery date
+  </message>
+  <message name="IDS_AUTOFILL_AI_SHIPMENT_ASSOCIATED_ORDER_ID_ATTRIBUTE_NAME" desc="Used as a general label for the id of the order that a shipment belongs to. The id of the order itself is IDS_AUTOFILL_AI_ORDER_ID_ATTRIBUTE_NAME.">
+    Order ID
   </message>
 
   <!-- Attributes of the flight reservation entity -->

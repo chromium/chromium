@@ -747,12 +747,23 @@ std::u16string GetMemoryDataTypeNameForI18n(MemoryDataType type) {
       return u"Name on card";
     case MemoryDataType::kCreditCardNickname:
       return u"Card Nickname";
-    // Special handling for arrival date because it is present in
-    // `MemoryDataType` but does not have a corresponding AutofillAi
-    // `AttributeType`.
+    // Special handling for types that are present in `MemoryDataType` but do
+    // not have a corresponding AutofillAi `AttributeType`.
     case MemoryDataType::kFlightReservationArrivalDate:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ARRIVAL_DATE_ATTRIBUTE_NAME);
+    case MemoryDataType::kShipmentDeliveryAddress:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_DELIVERY_ADDRESS_ATTRIBUTE_NAME);
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_ESTIMATED_DELIVERY_DATE_ATTRIBUTE_NAME);
+    case MemoryDataType::kShipmentAssociatedOrderId:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SHIPMENT_ASSOCIATED_ORDER_ID_ATTRIBUTE_NAME);
+    case MemoryDataType::kOrderGrandTotal:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_ORDER_GRAND_TOTAL_ATTRIBUTE_NAME);
     // Attribute types:
     case MemoryDataType::kVehicleMake:
     case MemoryDataType::kVehicleModel:
@@ -794,19 +805,16 @@ std::u16string GetMemoryDataTypeNameForI18n(MemoryDataType type) {
     case MemoryDataType::kOrderMerchantName:
     case MemoryDataType::kOrderMerchantDomain:
     case MemoryDataType::kOrderProductNames:
-    case MemoryDataType::kOrderGrandTotal:
     case MemoryDataType::kShipmentTrackingNumber:
-    case MemoryDataType::kShipmentAssociatedOrderId:
-    case MemoryDataType::kShipmentDeliveryAddress:
     case MemoryDataType::kShipmentDeliveryZipCode:
     case MemoryDataType::kShipmentCarrierName:
     case MemoryDataType::kShipmentCarrierDomain:
-    case MemoryDataType::kShipmentEstimatedDeliveryDate:
     case MemoryDataType::kShipmentShippedDate: {
       std::optional<AttributeType> attribute_type = ToAttributeType(type);
       return attribute_type ? attribute_type->GetNameForI18n() : u"";
     }
   }
+  NOTREACHED();
 }
 
 std::string_view MemoryDataTypeToStringView(MemoryDataType type) {
@@ -1665,6 +1673,35 @@ MemoryDataTypeCategory GetMemoryDataTypeCategory(MemoryDataType type) {
     case MemoryDataType::kShipmentEstimatedDeliveryDate:
     case MemoryDataType::kShipmentShippedDate:
       return MemoryDataTypeCategory::kShipment;
+  }
+  NOTREACHED();
+}
+
+std::optional<EntityType> ToEntityType(MemoryDataType type) {
+  switch (GetMemoryDataTypeCategory(type)) {
+    case MemoryDataTypeCategory::kPassport:
+      return EntityType(EntityTypeName::kPassport);
+    case MemoryDataTypeCategory::kDriversLicense:
+      return EntityType(EntityTypeName::kDriversLicense);
+    case MemoryDataTypeCategory::kNationalIdCard:
+      return EntityType(EntityTypeName::kNationalIdCard);
+    case MemoryDataTypeCategory::kFlightReservation:
+      return EntityType(EntityTypeName::kFlightReservation);
+    case MemoryDataTypeCategory::kKnownTravelerNumber:
+      return EntityType(EntityTypeName::kKnownTravelerNumber);
+    case MemoryDataTypeCategory::kRedressNumber:
+      return EntityType(EntityTypeName::kRedressNumber);
+    case MemoryDataTypeCategory::kVehicle:
+      return EntityType(EntityTypeName::kVehicle);
+    case MemoryDataTypeCategory::kOrder:
+      return EntityType(EntityTypeName::kOrder);
+    case MemoryDataTypeCategory::kShipment:
+      return EntityType(EntityTypeName::kShipment);
+    case MemoryDataTypeCategory::kContactInfo:
+    case MemoryDataTypeCategory::kCreditCard:
+    case MemoryDataTypeCategory::kIban:
+    case MemoryDataTypeCategory::kUnknown:
+      return std::nullopt;
   }
   NOTREACHED();
 }
