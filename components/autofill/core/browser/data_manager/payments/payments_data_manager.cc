@@ -593,7 +593,7 @@ const Iban* PaymentsDataManager::GetIbanByGUID(const std::string& guid) const {
 }
 
 const AutofillOfferData* PaymentsDataManager::GetMerchantPromoCodeByOfferId(
-    const int64_t offer_id) const {
+    std::string_view offer_id) const {
   auto iter = std::ranges::find_if(
       autofill_offer_data_,
       [&offer_id](const std::unique_ptr<AutofillOfferData>& offer_data) {

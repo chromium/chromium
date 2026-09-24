@@ -356,6 +356,19 @@ TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataValid) {
                          /*offer_title_image_url=*/"invalid_url"))));
 }
 
+// The server is not required to send numeric offer ids, so ids that cannot be
+// parsed as an int64 must still be accepted.
+TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataValid_NonNumericId) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
+  for (const char* id :
+       {"offer-abc", "0123", "9223372036854775808", "-1", "  ", "a1b2c3"}) {
+    SCOPED_TRACE(id);
+    EXPECT_TRUE(bridge().IsEntityDataValid(
+        *CreateEntityDataFromSpecifics(TestOfferSpecifics(id))));
+  }
+}
+
 TEST_F(ValuableSyncBridgeTest, IsOfferEntityDataInvalid) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableWalletDirectOffers};
@@ -484,8 +497,8 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_Offers) {
 
   const std::vector<AutofillOfferData> offers = GetAllOffersFromTable();
   ASSERT_EQ(offers.size(), 2u);
-  EXPECT_EQ(offers[0].GetOfferId(), 1);
-  EXPECT_EQ(offers[1].GetOfferId(), 2);
+  EXPECT_EQ(offers[0].GetOfferId(), "1");
+  EXPECT_EQ(offers[1].GetOfferId(), "2");
   EXPECT_EQ(offers[0].GetPromoCode(), "SAFEWAY50");
   EXPECT_EQ(offers[0].GetOfferDetailsUrl(),
             GURL("https://safeway.com/offer-details"));
@@ -1244,8 +1257,8 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
 
   EXPECT_THAT(
       GetAllOffersFromTable(),
-      UnorderedElementsAre(Property(&AutofillOfferData::GetOfferId, 1),
-                           Property(&AutofillOfferData::GetOfferId, 2)));
+      UnorderedElementsAre(Property(&AutofillOfferData::GetOfferId, "1"),
+                           Property(&AutofillOfferData::GetOfferId, "2")));
 }
 
 // Tests that an updated offer replaces the stored offer with the same id
@@ -1271,7 +1284,7 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
 
   const std::vector<AutofillOfferData> offers = GetAllOffersFromTable();
   ASSERT_EQ(offers.size(), 1u);
-  EXPECT_EQ(offers[0].GetOfferId(), 1);
+  EXPECT_EQ(offers[0].GetOfferId(), "1");
   EXPECT_EQ(offers[0].GetPromoCode(), "SAFEWAY75");
 }
 
@@ -1293,7 +1306,7 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
 
   const std::vector<AutofillOfferData> offers = GetAllOffersFromTable();
   ASSERT_EQ(offers.size(), 1u);
-  EXPECT_EQ(offers[0].GetOfferId(), 2);
+  EXPECT_EQ(offers[0].GetOfferId(), "2");
 }
 
 // Tests that a deletion whose storage key doesn't belong to any offer leaves
@@ -1315,7 +1328,7 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
 
   const std::vector<AutofillOfferData> offers = GetAllOffersFromTable();
   ASSERT_EQ(offers.size(), 1u);
-  EXPECT_EQ(offers[0].GetOfferId(), 1);
+  EXPECT_EQ(offers[0].GetOfferId(), "1");
 }
 #endif  // !BUILDFLAG(IS_IOS)
 

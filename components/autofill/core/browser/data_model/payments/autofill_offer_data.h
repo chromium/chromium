@@ -52,7 +52,7 @@ class AutofillOfferData {
   // constructor.
   // Returns an AutofillOfferData for a GPay card-linked offer.
   static AutofillOfferData GPayCardLinkedOffer(
-      int64_t offer_id,
+      std::string offer_id,
       base::Time expiry,
       const std::vector<GURL>& merchant_origins,
       const GURL& offer_details_url,
@@ -61,7 +61,7 @@ class AutofillOfferData {
       const std::string& offer_reward_amount);
   // Returns an AutofillOfferData for a GPay promo code offer.
   static AutofillOfferData GPayPromoCodeOffer(
-      int64_t offer_id,
+      std::string offer_id,
       base::Time expiry,
       const std::vector<GURL>& merchant_origins,
       const GURL& offer_details_url,
@@ -69,14 +69,14 @@ class AutofillOfferData {
       const std::string& promo_code);
   // Returns an AutofillOfferData for a Google Wallet direct offer.
   static AutofillOfferData WalletDirectOffer(
-      int64_t offer_id,
+      std::string offer_id,
       base::Time expiry,
       const std::vector<GURL>& merchant_origins,
       const GURL& offer_details_url,
       const DisplayStrings& display_strings,
       const std::string& promo_code);
 
-  AutofillOfferData(int64_t offer_id,
+  AutofillOfferData(std::string offer_id,
                     base::Time expiry,
                     std::vector<GURL> merchant_origins,
                     GURL offer_details_url,
@@ -102,7 +102,7 @@ class AutofillOfferData {
   bool IsActiveAndEligibleForOrigin(const GURL& origin) const;
 
   OfferType GetOfferType() const { return offer_type_; }
-  int64_t GetOfferId() const { return offer_id_; }
+  const std::string& GetOfferId() const { return offer_id_; }
   base::Time GetExpiry() const { return expiry_; }
   const std::vector<GURL>& GetMerchantOrigins() const {
     return merchant_origins_;
@@ -118,7 +118,9 @@ class AutofillOfferData {
   const std::string& GetPromoCode() const { return promo_code_; }
 
 #ifdef UNIT_TEST
-  void SetOfferIdForTesting(int64_t offer_id) { offer_id_ = offer_id; }
+  void SetOfferIdForTesting(std::string offer_id) {
+    offer_id_ = std::move(offer_id);
+  }
   void SetMerchantOriginForTesting(const std::vector<GURL>& merchant_origins) {
     merchant_origins_ = merchant_origins;
   }
@@ -142,7 +144,7 @@ class AutofillOfferData {
   // TODO(crbug.com/546252995): Remove these constructors along with the static
   // factory methods above once `OfferType` is deprecated.
   // Constructs an AutofillOfferData for a card-linked offer.
-  AutofillOfferData(int64_t offer_id,
+  AutofillOfferData(std::string offer_id,
                     base::Time expiry,
                     const std::vector<GURL>& merchant_origins,
                     const GURL& offer_details_url,
@@ -152,7 +154,7 @@ class AutofillOfferData {
   // Constructs an AutofillOfferData for a GPay promo code offer or Wallet
   // direct offer.
   AutofillOfferData(OfferType offer_type,
-                    int64_t offer_id,
+                    std::string offer_id,
                     base::Time expiry,
                     const std::vector<GURL>& merchant_origins,
                     const GURL& offer_details_url,
@@ -164,7 +166,7 @@ class AutofillOfferData {
   OfferType offer_type_ = OfferType::UNKNOWN;
 
   // The unique server ID for this offer data.
-  int64_t offer_id_;
+  std::string offer_id_;
 
   // The timestamp when the offer will expire. Expired offers will not be shown
   // in the frontend.

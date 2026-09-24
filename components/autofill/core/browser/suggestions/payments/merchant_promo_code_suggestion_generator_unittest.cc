@@ -96,7 +96,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
   DisplayStrings display_strings;
   display_strings.value_prop_text = "5% off (€10 max)";
   AutofillOfferData wallet_direct_offer = AutofillOfferData::WalletDirectOffer(
-      /*offer_id=*/2, base::Time::Now() + base::Days(2),
+      /*offer_id=*/"2", base::Time::Now() + base::Days(2),
       {GURL("https://www.example.com")},
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings, "test_promo_code_1");
@@ -138,7 +138,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
   DisplayStrings display_strings;
   display_strings.value_prop_text = "5% off (€10 max)";
   AutofillOfferData wallet_direct_offer = AutofillOfferData::WalletDirectOffer(
-      /*offer_id=*/2, base::Time::Now() + base::Days(2),
+      /*offer_id=*/"2", base::Time::Now() + base::Days(2),
       {GURL("https://www.example.com")},
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings, "test_promo_code_1");
@@ -172,7 +172,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
   display_strings.value_prop_text = "test_value_prop_text_1";
   std::string promo_code = "test_promo_code_1";
   AutofillOfferData offer1 = AutofillOfferData::WalletDirectOffer(
-      /*offer_id=*/1, expiry, merchant_origins,
+      /*offer_id=*/"1", expiry, merchant_origins,
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings, promo_code);
 
@@ -180,7 +180,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
   display_strings2.value_prop_text = "test_value_prop_text_2";
   std::string promo_code2 = "test_promo_code_2";
   AutofillOfferData offer2 = AutofillOfferData::WalletDirectOffer(
-      /*offer_id=*/2, expiry, merchant_origins,
+      /*offer_id=*/"2", expiry, merchant_origins,
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings2, promo_code2);
 

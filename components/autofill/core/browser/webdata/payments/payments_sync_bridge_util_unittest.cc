@@ -725,7 +725,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   EXPECT_FALSE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
 
   new_offer_data.front().SetOfferIdForTesting(
-      new_offer_data.at(0).GetOfferId() + 456);
+      new_offer_data.at(0).GetOfferId() + "456");
   EXPECT_TRUE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
 
   CreditCardBenefit merchant_benefit =

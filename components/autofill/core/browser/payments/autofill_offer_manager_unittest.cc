@@ -73,7 +73,7 @@ class AutofillOfferManagerTest : public testing::Test {
       std::string offer_reward_amount,
       bool expired = false,
       std::vector<GURL> merchant_origins = {GURL(kTestUrl)}) {
-    int64_t offer_id = 4444;
+    std::string offer_id = "4444";
     base::Time expiry = expired ? AutofillClock::Now() - base::Days(2)
                                 : AutofillClock::Now() + base::Days(2);
     std::vector<int64_t> eligible_instrument_id = {card.instrument_id()};
@@ -94,7 +94,7 @@ class AutofillOfferManagerTest : public testing::Test {
   // autofill_test_util instead of this helper.
   AutofillOfferData CreatePromoCodeOffer(std::vector<GURL> merchant_origins = {
                                              GURL(kTestUrl)}) {
-    int64_t offer_id = 5555;
+    std::string offer_id = "5555";
     base::Time expiry = AutofillClock::Now() + base::Days(2);
     GURL offer_details_url = GURL(kOfferDetailsUrl);
     std::string promo_code = "5PCTOFFSHOES";

@@ -1390,7 +1390,7 @@ TEST_F(PaymentsAutofillTableTest, GetCreditCardCloudData_NoData) {
 TEST_F(PaymentsAutofillTableTest, SetAndGetOfferData) {
   std::vector<AutofillOfferData> autofill_offer_data;
   autofill_offer_data.emplace_back(
-      /*offer_id=*/1,
+      /*offer_id=*/"1",
       /*expiry=*/base::Time::FromSecondsSinceUnixEpoch(1000),
       /*merchant_origins=*/
       std::vector<GURL>{GURL("http://www.merchant_domain_1_1.com/")},
@@ -1405,7 +1405,7 @@ TEST_F(PaymentsAutofillTableTest, SetAndGetOfferData) {
       /*offer_reward_amount=*/"$5");
   // An offer redeemable at several merchants.
   autofill_offer_data.emplace_back(
-      /*offer_id=*/2,
+      /*offer_id=*/"2",
       /*expiry=*/base::Time::FromSecondsSinceUnixEpoch(2000),
       /*merchant_origins=*/
       std::vector<GURL>{GURL("http://www.merchant_domain_1_2.com/"),
@@ -1449,11 +1449,55 @@ TEST_F(PaymentsAutofillTableTest, SetAndGetOfferData) {
   }
 }
 
+// Offer ids are opaque strings that the server does not guarantee to be
+// numeric. They must round-trip through the database unchanged, including
+// numeric-looking ids that SQLite's column affinity could otherwise coerce
+// into integers.
+TEST_F(PaymentsAutofillTableTest, SetAndGetOfferData_OpaqueOfferIds) {
+  const std::vector<std::string> kOfferIds = {
+      "offer-abc", "0123", "9223372036854775808", "-1", "1e5", "a1b2c3"};
+
+  std::vector<AutofillOfferData> autofill_offer_data;
+  for (const std::string& offer_id : kOfferIds) {
+    autofill_offer_data.emplace_back(
+        offer_id,
+        /*expiry=*/base::Time::FromSecondsSinceUnixEpoch(1000),
+        /*merchant_origins=*/
+        std::vector<GURL>{GURL("http://www.merchant_domain.com/")},
+        /*offer_details_url=*/GURL("https://www.offer_example.com/"),
+        /*display_strings=*/DisplayStrings{},
+        /*promo_code=*/"5DOLLARSOFF",
+        /*offer_reward_amount=*/"$5");
+  }
+
+  table_->SetAutofillOffers(autofill_offer_data);
+
+  std::vector<std::unique_ptr<AutofillOfferData>> output_offer_data;
+  ASSERT_TRUE(table_->GetAutofillOffers(&output_offer_data));
+  std::vector<std::string> output_offer_ids;
+  for (const std::unique_ptr<AutofillOfferData>& offer : output_offer_data) {
+    output_offer_ids.push_back(offer->GetOfferId());
+  }
+  EXPECT_THAT(output_offer_ids, testing::UnorderedElementsAreArray(kOfferIds));
+
+  // Each id is individually addressable, i.e. lookups and deletions are not
+  // confused by ids that only differ once coerced to a number.
+  for (const std::string& offer_id : kOfferIds) {
+    SCOPED_TRACE(offer_id);
+    EXPECT_TRUE(table_->AutofillOfferExists(offer_id));
+  }
+  EXPECT_TRUE(table_->RemoveAutofillOffer("0123"));
+  EXPECT_FALSE(table_->AutofillOfferExists("0123"));
+  EXPECT_TRUE(table_->AutofillOfferExists("offer-abc"));
+}
+
 TEST_F(PaymentsAutofillTableTest, AddOrUpdateAutofillOffer) {
-  const AutofillOfferData offer1 = test::GetPromoCodeOfferData(
-      GURL("http://www.merchant_1.com/"), /*is_expired=*/false, /*offer_id=*/1);
-  const AutofillOfferData offer2 = test::GetPromoCodeOfferData(
-      GURL("http://www.merchant_2.com/"), /*is_expired=*/false, /*offer_id=*/2);
+  const AutofillOfferData offer1 =
+      test::GetPromoCodeOfferData(GURL("http://www.merchant_1.com/"),
+                                  /*is_expired=*/false, /*offer_id=*/"1");
+  const AutofillOfferData offer2 =
+      test::GetPromoCodeOfferData(GURL("http://www.merchant_2.com/"),
+                                  /*is_expired=*/false, /*offer_id=*/"2");
   ASSERT_TRUE(table_->AddOrUpdateAutofillOffer(offer1));
   ASSERT_TRUE(table_->AddOrUpdateAutofillOffer(offer2));
 
@@ -1467,8 +1511,9 @@ TEST_F(PaymentsAutofillTableTest, AddOrUpdateAutofillOffer) {
   // the previous version are removed from the child tables rather than
   // accumulating. The updated offer deliberately has a different merchant
   // origin, which is stored in a separate table.
-  const AutofillOfferData updated_offer1 = test::GetPromoCodeOfferData(
-      GURL("http://www.merchant_3.com/"), /*is_expired=*/true, /*offer_id=*/1);
+  const AutofillOfferData updated_offer1 =
+      test::GetPromoCodeOfferData(GURL("http://www.merchant_3.com/"),
+                                  /*is_expired=*/true, /*offer_id=*/"1");
   ASSERT_TRUE(table_->AddOrUpdateAutofillOffer(updated_offer1));
 
   ASSERT_TRUE(table_->GetAutofillOffers(&offers));
@@ -1478,26 +1523,28 @@ TEST_F(PaymentsAutofillTableTest, AddOrUpdateAutofillOffer) {
 }
 
 TEST_F(PaymentsAutofillTableTest, RemoveAutofillOffer) {
-  const AutofillOfferData offer1 = test::GetPromoCodeOfferData(
-      GURL("http://www.merchant_1.com/"), /*is_expired=*/false, /*offer_id=*/1);
-  const AutofillOfferData offer2 = test::GetPromoCodeOfferData(
-      GURL("http://www.merchant_2.com/"), /*is_expired=*/false, /*offer_id=*/2);
+  const AutofillOfferData offer1 =
+      test::GetPromoCodeOfferData(GURL("http://www.merchant_1.com/"),
+                                  /*is_expired=*/false, /*offer_id=*/"1");
+  const AutofillOfferData offer2 =
+      test::GetPromoCodeOfferData(GURL("http://www.merchant_2.com/"),
+                                  /*is_expired=*/false, /*offer_id=*/"2");
 
   ASSERT_TRUE(table_->AddOrUpdateAutofillOffer(offer1));
   ASSERT_TRUE(table_->AddOrUpdateAutofillOffer(offer2));
-  ASSERT_TRUE(table_->AutofillOfferExists(1));
-  ASSERT_TRUE(table_->AutofillOfferExists(2));
+  ASSERT_TRUE(table_->AutofillOfferExists("1"));
+  ASSERT_TRUE(table_->AutofillOfferExists("2"));
 
-  EXPECT_TRUE(table_->RemoveAutofillOffer(1));
-  EXPECT_FALSE(table_->AutofillOfferExists(1));
-  EXPECT_TRUE(table_->AutofillOfferExists(2));
+  EXPECT_TRUE(table_->RemoveAutofillOffer("1"));
+  EXPECT_FALSE(table_->AutofillOfferExists("1"));
+  EXPECT_TRUE(table_->AutofillOfferExists("2"));
 
   std::vector<std::unique_ptr<AutofillOfferData>> offers;
   ASSERT_TRUE(table_->GetAutofillOffers(&offers));
   EXPECT_THAT(offers, testing::ElementsAre(testing::Pointee(offer2)));
 
   // Removing an offer that doesn't exist succeeds and is a no-op.
-  EXPECT_TRUE(table_->RemoveAutofillOffer(1));
+  EXPECT_TRUE(table_->RemoveAutofillOffer("1"));
   ASSERT_TRUE(table_->GetAutofillOffers(&offers));
   EXPECT_THAT(offers, testing::ElementsAre(testing::Pointee(offer2)));
 }

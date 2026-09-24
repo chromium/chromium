@@ -159,7 +159,7 @@ class OfferNotificationBubbleControllerImplTest
   AutofillOfferData CreateTestCardLinkedOffer(
       const std::vector<GURL>& merchant_origins,
       const std::vector<int64_t>& eligible_instrument_ids = {}) {
-    int64_t offer_id = 1357;
+    std::string offer_id = "1357";
     base::Time expiry = base::Time::Now() + base::Days(2);
     GURL offer_details_url("https://www.google.com/");
     std::string offer_reward_amount = "5%";
@@ -171,7 +171,7 @@ class OfferNotificationBubbleControllerImplTest
   AutofillOfferData CreateTestGPayPromoCodeOffer(
       const std::vector<GURL>& merchant_origins,
       const std::string& promo_code) {
-    int64_t offer_id = 2468;
+    std::string offer_id = "2468";
     base::Time expiry = base::Time::Now() + base::Days(2);
     DisplayStrings display_strings;
     display_strings.value_prop_text = "5% off on shoes. Up to $50.";
@@ -187,7 +187,7 @@ class OfferNotificationBubbleControllerImplTest
   AutofillOfferData CreateTestWalletDirectOffer(
       const std::vector<GURL>& merchant_origins,
       const std::string& offer_reward_amount = "5% off") {
-    int64_t offer_id = 3579;
+    std::string offer_id = "3579";
     base::Time expiry = base::Time::Now() + base::Days(2);
     GURL offer_details_url = GURL("https://pay.google.com");
     // TODO(crbug.com/546252995): Use `test::GetPromoCodeOfferData()` instead

@@ -5,7 +5,9 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 
 #include <memory>
+#include <string>
 
+#include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -400,7 +402,7 @@ void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(
   personal_data().test_payments_data_manager().AddServerCreditCard(
       masked_server_credit_card);
 
-  int64_t offer_id = id;
+  std::string offer_id = base::NumberToString(id);
   base::Time expiry = offer_expired ? AutofillClock::Now() - base::Days(2)
                                     : AutofillClock::Now() + base::Days(2);
   std::vector<GURL> merchant_origins = {GURL{url}};

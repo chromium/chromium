@@ -1197,32 +1197,32 @@ TEST_P(PaymentsDataManagerServerTest,
 
   // Expired wallet direct offers should not be returned.
   AddOfferDataForTest(AutofillOfferData::WalletDirectOffer(
-      /*offer_id=*/111, AutofillClock::Now() - base::Days(1),
+      /*offer_id=*/"111", AutofillClock::Now() - base::Days(1),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
       display_strings, "CODE111"));
 
   // Active wallet direct offers for a different site should not be returned.
   AddOfferDataForTest(AutofillOfferData::WalletDirectOffer(
-      /*offer_id=*/222, AutofillClock::Now() + base::Days(35),
+      /*offer_id=*/"222", AutofillClock::Now() + base::Days(35),
       {GURL("http://www.some-other-merchant.com")},
       GURL("https://pay.google.com"), display_strings, "CODE222"));
 
   // Invalid wallet direct offers (empty value prop) should not be returned.
   DisplayStrings empty_display_strings;
   AddOfferDataForTest(AutofillOfferData::WalletDirectOffer(
-      /*offer_id=*/333, AutofillClock::Now() + base::Days(35),
+      /*offer_id=*/"333", AutofillClock::Now() + base::Days(35),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
       empty_display_strings, "CODE333"));
 
   // Invalid wallet direct offers (empty promo code) should not be returned.
   AddOfferDataForTest(AutofillOfferData::WalletDirectOffer(
-      /*offer_id=*/444, AutofillClock::Now() + base::Days(35),
+      /*offer_id=*/"444", AutofillClock::Now() + base::Days(35),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
       display_strings, ""));
 
   // Active wallet direct offers for example.com should be returned.
   AddOfferDataForTest(AutofillOfferData::WalletDirectOffer(
-      /*offer_id=*/555, AutofillClock::Now() + base::Days(35),
+      /*offer_id=*/"555", AutofillClock::Now() + base::Days(35),
       {GURL("http://www.example.com")}, GURL("https://pay.google.com"),
       display_strings, "CODE555"));
 
@@ -1231,7 +1231,7 @@ TEST_P(PaymentsDataManagerServerTest,
       payments_data_manager().GetActiveAutofillPromoCodeOffersForOrigin(
           GURL("http://www.example.com"));
   ASSERT_EQ(offers.size(), 1U);
-  EXPECT_EQ(offers[0]->GetOfferId(), 555);
+  EXPECT_EQ(offers[0]->GetOfferId(), "555");
 }
 
 // Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any

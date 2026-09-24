@@ -37,9 +37,12 @@
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::testing::HasSubstr;
 
 // To make the comparison with golden files less whitespace sensitive:
 // - Remove SQLite quotes: http://www.sqlite.org/lang_keywords.html.
@@ -2188,10 +2191,8 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion155ToCurrent) {
     ASSERT_TRUE(offer_data_stmt.Step());
     EXPECT_EQ(0, offer_data_stmt.ColumnInt(0));
 
-    sql::Statement eligible_stmt(connection.GetUniqueStatement(
-        "SELECT COUNT(*) FROM offer_eligible_instrument"));
-    ASSERT_TRUE(eligible_stmt.Step());
-    EXPECT_EQ(0, eligible_stmt.ColumnInt(0));
+    // `offer_eligible_instrument` is dropped entirely by version 158.
+    EXPECT_FALSE(connection.DoesTableExist("offer_eligible_instrument"));
 
     sql::Statement domain_stmt(connection.GetUniqueStatement(
         "SELECT COUNT(*) FROM offer_merchant_domain"));
@@ -2270,6 +2271,74 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion156ToCurrent) {
         "entity_guid = 'orphan-guid'"));
     ASSERT_TRUE(s_orphan_meta.Step());
     EXPECT_EQ(0, s_orphan_meta.ColumnInt(0));
+  }
+}
+
+// Version 158 changes the type of the `offer_id` columns from an integer to a
+// string, which requires the offer tables to be recreated.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion157ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_157.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(157, VersionFromConnection(&connection));
+
+    // The offer tables declare `offer_id` as an integer column.
+    const std::string schema = connection.GetSchema();
+    EXPECT_THAT(schema,
+                HasSubstr("CREATE TABLE offer_data (offer_id UNSIGNED LONG"));
+    EXPECT_THAT(schema, HasSubstr("CREATE TABLE offer_eligible_instrument "
+                                  "(offer_id UNSIGNED LONG"));
+    EXPECT_THAT(schema, HasSubstr("CREATE TABLE offer_merchant_domain "
+                                  "(offer_id UNSIGNED LONG"));
+
+    // Offers stored by an older client are not carried over by the migration.
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO offer_data (offer_id, offer_reward_amount, expiry, "
+        "offer_details_url, promo_code) VALUES (123, '5%', 100, "
+        "'https://example.com', 'PROMO');"));
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO offer_merchant_domain (offer_id, merchant_domain) VALUES "
+        "(123, 'https://example.com');"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+
+    // Expect that the compatible version number increased: older clients read
+    // `offer_id` as an integer, so they must not be allowed to open the
+    // migrated database.
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, WebDatabase::kCurrentVersionNumber,
+                                WebDatabase::kCurrentVersionNumber));
+    EXPECT_EQ(158, meta_table.GetCompatibleVersionNumber());
+
+    // The remaining offer tables now declare `offer_id` as a string column.
+    const std::string schema = connection.GetSchema();
+    EXPECT_THAT(schema, HasSubstr("CREATE TABLE offer_data (offer_id VARCHAR"));
+    EXPECT_THAT(
+        schema,
+        HasSubstr("CREATE TABLE offer_merchant_domain (offer_id VARCHAR"));
+
+    // `offer_eligible_instrument` is dropped without being recreated.
+    EXPECT_FALSE(connection.DoesTableExist("offer_eligible_instrument"));
+
+    // The rows written by the older client are gone; offers are server-provided
+    // data that the next sync repopulates.
+    for (const char* table : {"offer_data", "offer_merchant_domain"}) {
+      sql::Statement s(connection.GetUniqueStatement(
+          base::StrCat({"SELECT COUNT(*) FROM ", table})));
+      ASSERT_TRUE(s.Step());
+      EXPECT_EQ(0, s.ColumnInt(0)) << table;
+    }
   }
 }
 }  // anonymous namespace

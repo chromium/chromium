@@ -208,11 +208,11 @@ CreditCardCloudTokenData GetCreditCardCloudTokenData2();
 
 // Returns an Autofill card-linked offer data full of dummy info. Use
 // |offer_id| to optionally set the offer id.
-AutofillOfferData GetCardLinkedOfferData1(int64_t offer_id = 111);
+AutofillOfferData GetCardLinkedOfferData1(std::string offer_id = "111");
 
 // Returns an Autofill card-linked offer data full of dummy info, different from
 // the one above. Use |offer_id| to optionally set the offer id.
-AutofillOfferData GetCardLinkedOfferData2(int64_t offer_id = 222);
+AutofillOfferData GetCardLinkedOfferData2(std::string offer_id = "222");
 
 // Returns an Autofill promo code offer data full of dummy info, using |origin|
 // if provided and expired if |is_expired| is true. Use |offer_id| to optionally
@@ -220,7 +220,7 @@ AutofillOfferData GetCardLinkedOfferData2(int64_t offer_id = 222);
 AutofillOfferData GetPromoCodeOfferData(
     GURL origin = GURL("http://www.example.com"),
     bool is_expired = false,
-    int64_t offer_id = 333);
+    std::string offer_id = "333");
 
 // Return an Usage Data with dummy info specifically for a Virtual Card.
 VirtualCardUsageData GetVirtualCardUsageData1();

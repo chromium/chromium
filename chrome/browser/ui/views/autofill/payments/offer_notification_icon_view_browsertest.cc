@@ -34,7 +34,7 @@ std::string GetTestName(const ::testing::TestParamInfo<UiTestData>& info) {
 
 AutofillOfferData CreateTestOffer(const std::vector<GURL>& merchant_origins,
                                   const std::string& promo_code) {
-  int64_t offer_id = 2468;
+  std::string offer_id = "2468";
   base::Time expiry = base::Time::Now() + base::Days(2);
   DisplayStrings display_strings;
   display_strings.value_prop_text = "5% off on shoes. Up to $50";

@@ -114,7 +114,7 @@ OfferNotificationBubbleViewsTestBase::CreateCardLinkedOfferDataWithDomains(
   personal_data_->payments_data_manager().AddServerCreditCardForTest(
       std::move(card));
   test_api(personal_data_->payments_data_manager()).NotifyObservers();
-  int64_t offer_id = 4444;
+  std::string offer_id = "4444";
   base::Time expiry = AutofillClock::Now() + base::Days(2);
   std::vector<GURL> merchant_origins;
   for (auto url : domains) {
@@ -133,7 +133,7 @@ OfferNotificationBubbleViewsTestBase::CreateCardLinkedOfferDataWithDomains(
 std::unique_ptr<AutofillOfferData>
 OfferNotificationBubbleViewsTestBase::CreateGPayPromoCodeOfferDataWithDomains(
     const std::vector<GURL>& domains) {
-  int64_t offer_id = 5555;
+  std::string offer_id = "5555";
   base::Time expiry = AutofillClock::Now() + base::Days(2);
   std::vector<GURL> merchant_origins;
   for (auto url : domains) {
@@ -155,7 +155,7 @@ OfferNotificationBubbleViewsTestBase::CreateGPayPromoCodeOfferDataWithDomains(
 std::unique_ptr<AutofillOfferData>
 OfferNotificationBubbleViewsTestBase::CreateWalletDirectOfferDataWithDomains(
     const std::vector<GURL>& domains) {
-  int64_t offer_id = 6666;
+  std::string offer_id = "6666";
   base::Time expiry = AutofillClock::Now() + base::Days(2);
   std::vector<GURL> merchant_origins;
   for (auto url : domains) {

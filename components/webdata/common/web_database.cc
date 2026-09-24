@@ -38,10 +38,11 @@ void LogInitResult(WebDatabase::InitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 151 writes tuples to one of `autofill::EntityTable`'s tables that
-// are not processed correctly by clients with version 150. As a result,
-// some `autofill::EntityInstance`s on these old clients would be incomplete.
-constexpr int kCompatibleVersionNumber = 151;
+// Version 158 changes the type of the `offer_id` columns from an integer to a
+// string. Clients with version 157 and below read those columns as integers,
+// which silently yields 0 for any non-numeric id, so they cannot operate on a
+// version 158 database.
+constexpr int kCompatibleVersionNumber = 158;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.

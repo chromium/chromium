@@ -19,45 +19,45 @@ namespace autofill {
 // constructors that are specific to each offer.
 // static
 AutofillOfferData AutofillOfferData::GPayCardLinkedOffer(
-    int64_t offer_id,
+    std::string offer_id,
     base::Time expiry,
     const std::vector<GURL>& merchant_origins,
     const GURL& offer_details_url,
     const DisplayStrings& display_strings,
     const std::vector<int64_t>& eligible_instrument_id,
     const std::string& offer_reward_amount) {
-  return AutofillOfferData(offer_id, expiry, merchant_origins,
+  return AutofillOfferData(std::move(offer_id), expiry, merchant_origins,
                            offer_details_url, display_strings,
                            eligible_instrument_id, offer_reward_amount);
 }
 
 // static
 AutofillOfferData AutofillOfferData::GPayPromoCodeOffer(
-    int64_t offer_id,
+    std::string offer_id,
     base::Time expiry,
     const std::vector<GURL>& merchant_origins,
     const GURL& offer_details_url,
     const DisplayStrings& display_strings,
     const std::string& promo_code) {
-  return AutofillOfferData(OfferType::GPAY_PROMO_CODE_OFFER, offer_id, expiry,
-                           merchant_origins, offer_details_url, display_strings,
-                           promo_code);
+  return AutofillOfferData(OfferType::GPAY_PROMO_CODE_OFFER,
+                           std::move(offer_id), expiry, merchant_origins,
+                           offer_details_url, display_strings, promo_code);
 }
 
 // static
 AutofillOfferData AutofillOfferData::WalletDirectOffer(
-    int64_t offer_id,
+    std::string offer_id,
     base::Time expiry,
     const std::vector<GURL>& merchant_origins,
     const GURL& offer_details_url,
     const DisplayStrings& display_strings,
     const std::string& promo_code) {
-  return AutofillOfferData(OfferType::WALLET_DIRECT_OFFER, offer_id, expiry,
-                           merchant_origins, offer_details_url, display_strings,
-                           promo_code);
+  return AutofillOfferData(OfferType::WALLET_DIRECT_OFFER, std::move(offer_id),
+                           expiry, merchant_origins, offer_details_url,
+                           display_strings, promo_code);
 }
 
-AutofillOfferData::AutofillOfferData(int64_t offer_id,
+AutofillOfferData::AutofillOfferData(std::string offer_id,
                                      base::Time expiry,
                                      std::vector<GURL> merchant_origins,
                                      GURL offer_details_url,
@@ -65,7 +65,7 @@ AutofillOfferData::AutofillOfferData(int64_t offer_id,
                                      std::string promo_code,
                                      std::string offer_reward_amount)
     : offer_type_(OfferType::WALLET_DIRECT_OFFER),
-      offer_id_(offer_id),
+      offer_id_(std::move(offer_id)),
       expiry_(expiry),
       offer_details_url_(std::move(offer_details_url)),
       merchant_origins_(std::move(merchant_origins)),
@@ -89,12 +89,12 @@ bool AutofillOfferData::operator==(
 
 int AutofillOfferData::Compare(
     const AutofillOfferData& other_offer_data) const {
-  // Note that the difference of two int64 ids does not fit into an int.
-  if (offer_id_ != other_offer_data.offer_id_) {
-    return offer_id_ < other_offer_data.offer_id_ ? -1 : 1;
+  int comparison = offer_id_.compare(other_offer_data.offer_id_);
+  if (comparison != 0) {
+    return comparison;
   }
 
-  int comparison =
+  comparison =
       offer_reward_amount_.compare(other_offer_data.offer_reward_amount_);
   if (comparison != 0) {
     return comparison;
@@ -172,7 +172,7 @@ bool AutofillOfferData::IsActiveAndEligibleForOrigin(const GURL& origin) const {
 }
 
 AutofillOfferData::AutofillOfferData(
-    int64_t offer_id,
+    std::string offer_id,
     base::Time expiry,
     const std::vector<GURL>& merchant_origins,
     const GURL& offer_details_url,
@@ -180,7 +180,7 @@ AutofillOfferData::AutofillOfferData(
     const std::vector<int64_t>& eligible_instrument_id,
     const std::string& offer_reward_amount)
     : offer_type_(OfferType::GPAY_CARD_LINKED_OFFER),
-      offer_id_(offer_id),
+      offer_id_(std::move(offer_id)),
       expiry_(expiry),
       offer_details_url_(offer_details_url),
       merchant_origins_(merchant_origins),
@@ -189,14 +189,14 @@ AutofillOfferData::AutofillOfferData(
       eligible_instrument_id_(eligible_instrument_id) {}
 
 AutofillOfferData::AutofillOfferData(OfferType offer_type,
-                                     int64_t offer_id,
+                                     std::string offer_id,
                                      base::Time expiry,
                                      const std::vector<GURL>& merchant_origins,
                                      const GURL& offer_details_url,
                                      const DisplayStrings& display_strings,
                                      const std::string& promo_code)
     : offer_type_(offer_type),
-      offer_id_(offer_id),
+      offer_id_(std::move(offer_id)),
       expiry_(expiry),
       offer_details_url_(offer_details_url),
       merchant_origins_(merchant_origins),

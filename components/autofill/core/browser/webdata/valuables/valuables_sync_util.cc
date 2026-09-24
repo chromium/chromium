@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
@@ -158,8 +157,6 @@ void TrimOffer(sync_pb::Offer& offer) {
 AutofillOfferData CreateOfferDataFromValuableSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics) {
   const sync_pb::Offer& offer_proto = specifics.offer();
-  int64_t offer_id = 0;
-  base::StringToInt64(specifics.id(), &offer_id);
   // `PaymentsAutofillTable` persists the expiry with millisecond precision.
   // Truncate here so that an offer read back from the database compares equal
   // to the one built from the specifics. Otherwise every full sync would
@@ -179,7 +176,7 @@ AutofillOfferData CreateOfferDataFromValuableSpecifics(
   display_strings.value_prop_text = offer_proto.description();
 
   return AutofillOfferData(
-      offer_id, expiry, std::move(merchant_origins),
+      specifics.id(), expiry, std::move(merchant_origins),
       /*offer_details_url=*/GURL(specifics.pass_view_url()),
       std::move(display_strings),
       /*promo_code=*/offer_proto.offer_code(),

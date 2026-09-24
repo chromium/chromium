@@ -176,7 +176,7 @@ TEST(OfferSyncUtilTest, CreateOfferDataFromValuableSpecifics) {
   specifics.set_pass_view_url("https://safeway.com/offer-details");
 
   AutofillOfferData offer = CreateOfferDataFromValuableSpecifics(specifics);
-  EXPECT_EQ(999, offer.GetOfferId());
+  EXPECT_EQ("999", offer.GetOfferId());
   // The expiry is truncated to millisecond precision, matching the precision
   // `PaymentsAutofillTable` persists.
   EXPECT_EQ(base::Time::UnixEpoch() + base::Milliseconds(123456),

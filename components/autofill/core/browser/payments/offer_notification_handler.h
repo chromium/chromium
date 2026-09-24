@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "url/gurl.h"
@@ -30,7 +32,7 @@ class OfferNotificationHandler {
 
   // Clears and set the |shown_notification_ids_| set. Only for tests.
   void ClearShownNotificationIdForTesting();
-  void AddShownNotificationIdForTesting(int64_t shown_notification_id);
+  void AddShownNotificationIdForTesting(std::string shown_notification_id);
 
  private:
   bool ValidOfferExistsForUrl(const GURL& url);
@@ -41,7 +43,7 @@ class OfferNotificationHandler {
   // This set includes the unique id of shown offer notifications in the
   // current browser context. It serves as a cross-tab status tracker for the
   // notification UI.
-  base::flat_set<int64_t> shown_notification_ids_;
+  base::flat_set<std::string> shown_notification_ids_;
 };
 
 }  // namespace autofill

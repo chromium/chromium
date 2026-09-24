@@ -22,7 +22,6 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -106,12 +105,8 @@ bool AreAutofillOfferSpecificsValid(
                           [](const std::string& domain) {
                             return !domain.empty() && GURL(domain).is_valid();
                           });
-  // `AutofillOfferData` identifies offers by an int64. Offers whose id cannot
-  // be represented as a positive int64 are dropped.
-  int64_t offer_id = 0;
-  return base::StringToInt64(specifics.id(), &offer_id) && offer_id > 0 &&
-         !offer.offer_code().empty() && !offer.description().empty() &&
-         !offer.offer_short_title().empty() &&
+  return !specifics.id().empty() && !offer.offer_code().empty() &&
+         !offer.description().empty() && !offer.offer_short_title().empty() &&
          offer.expiration_time_unix_epoch_micros() > 0 &&
          GURL(specifics.pass_view_url()).is_valid() && has_valid_issuer_domains;
 }
@@ -378,11 +373,9 @@ ValuableDatabaseOperationResult ValuableSyncBridge::HandleDeleteRequest(
   }
 
   if (IsSyncWalletDirectOffersEnabled(app_locale_)) {
-    int64_t offer_id = 0;
     PaymentsAutofillTable* payments_table = GetPaymentsAutofillTable();
-    if (base::StringToInt64(storage_key, &offer_id) &&
-        payments_table->AutofillOfferExists(offer_id)) {
-      if (!payments_table->RemoveAutofillOffer(offer_id)) {
+    if (payments_table->AutofillOfferExists(storage_key)) {
+      if (!payments_table->RemoveAutofillOffer(storage_key)) {
         return ValuableDatabaseOperationResult::kDatabaseError;
       }
       return ValuableDatabaseOperationResult::kDataChanged;
