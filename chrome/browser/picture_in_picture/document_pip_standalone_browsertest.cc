@@ -23,7 +23,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/display/screen.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -68,21 +67,6 @@ class DocumentPipStandaloneBrowserTestBase : public InProcessBrowserTest {
   }
 };
 
-// Fixture with the standalone Document PiP path enabled.
-class DocumentPipStandaloneEnabledBrowserTest
-    : public DocumentPipStandaloneBrowserTestBase {
- public:
-  DocumentPipStandaloneEnabledBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kDocumentPictureInPictureAPI,
-         features::kDocumentPipStandaloneWindow},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class DocumentPipLifecycleBrowserTest
     : public DocumentPipStandaloneBrowserTestBase,
       public testing::WithParamInterface<bool> {
@@ -103,36 +87,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "Standalone" : "BrowserBacked";
                          });
-
-// The standalone PiP widget should be placed on the same display as its
-// opener (regression guard for: the widget is given only a size, so the origin
-// defaults to the primary display's top-left).
-//
-// LIMITATION: browser_tests run with a single display (Xvfb on Linux, the host
-// display on Mac), so the opener display is the primary the perhaps the only
-// display and this assertion is trivially true even in the regressed state. It
-// therefore cannot actually catch the regression it guards against in CI.
-// TODO(crbug.com/515252142): Migrate to interactive_ui_tests and use
-// display::test::VirtualDisplayUtil to place the opener on a non-primary
-// display, then assert the PiP window lands there rather than on the primary
-// display.
-IN_PROC_BROWSER_TEST_F(DocumentPipStandaloneEnabledBrowserTest,
-                       OpensOnSameDisplayAsOpener) {
-  OpenDocumentPipWindow();
-
-  auto* host = GetDocumentPipHost();
-  ASSERT_NE(nullptr, host);
-  ASSERT_NE(nullptr, host->GetWidget());
-  ASSERT_TRUE(host->GetWidget()->IsVisible());
-
-  const display::Screen* const screen = display::Screen::Get();
-  const display::Display opener_display = screen->GetDisplayNearestView(
-      OpenerWebContents()->GetContentNativeView());
-  const display::Display pip_display =
-      screen->GetDisplayNearestWindow(host->GetWidget()->GetNativeWindow());
-
-  EXPECT_EQ(opener_display.id(), pip_display.id());
-}
 
 IN_PROC_BROWSER_TEST_P(DocumentPipLifecycleBrowserTest, ExitClosesWindow) {
   const bool is_standalone = GetParam();
