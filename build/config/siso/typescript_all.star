@@ -41,6 +41,7 @@ def __step_config(ctx, step_config):
 
     # TODO: crbug.com/1478909 - Specify typescript inputs in GN config.
     step_config["input_deps"].update({
+        "components/variations/proto/devtools/update_client_variations.py": ts_compiler_deps,
         "tools/typescript/ts_definitions.py": ts_compiler_deps,
         "tools/typescript/ts_library.py": ts_compiler_deps,
         "ui/webui/resources/tools/minify_js.py": [

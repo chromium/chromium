@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/node/node.gni")
+
 # This target generates the ClientVariations proto parser for Dev Tools.
-action("client_variations_js") {
+node("client_variations_js") {
   script = "update_client_variations.py"
 
   # The generated TS proto file
@@ -11,6 +13,9 @@ action("client_variations_js") {
       "$root_gen_dir/tsproto/components/variations/proto/client_variations.ts"
 
   inputs = [
+    "//third_party/node/node_modules/@rollup/wasm-node/dist/bin/rollup",
+    "//third_party/node/node_modules/@rollup/wasm-node/dist/wasm-node/bindings_wasm_bg.wasm",
+    "//third_party/node/node_modules/terser/bin/terser",
     "client_variations_uncompiled.ts",
     "rollup_plugin.mjs",
     proto_ts_file,
