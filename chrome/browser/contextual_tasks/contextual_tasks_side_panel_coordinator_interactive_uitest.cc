@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -965,6 +966,43 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   ASSERT_TRUE(task1);
   ASSERT_TRUE(task1_2);
   ASSERT_EQ(task1->GetTaskId(), task1_2->GetTaskId());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+    OpenUrlFromOmniboxEverywhere_DoesNotInheritOpenerTask) {
+  SetUpTasks();
+  // Set tab1 (which is associated with a contextual task and open side panel)
+  // as the active tab.
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
+  ASSERT_EQ(4, tab_list->GetTabCount());
+
+  OmniboxEverywhereService omnibox_everywhere_service(browser()->GetProfile());
+  omnibox_everywhere_service.OpenUrl(GURL(chrome::kChromeUISettingsURL),
+                                     WindowOpenDisposition::CURRENT_TAB,
+                                     ui::PAGE_TRANSITION_GENERATED);
+  EXPECT_EQ(5, tab_list->GetTabCount());
+
+  tabs::TabInterface* new_tab = tab_list->GetActiveTab();
+  ASSERT_TRUE(new_tab);
+  EXPECT_NE(tab_list->GetTab(1), new_tab);
+
+  // Because the navigation uses PAGE_TRANSITION_GENERATED rather than
+  // PAGE_TRANSITION_LINK, the newly opened tab must not inherit the previous
+  // tab's contextual task or side panel.
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  std::optional<ContextualTask> opener_task =
+      contextual_tasks_service->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(
+              tab_list->GetTab(1)->GetContents()));
+  std::optional<ContextualTask> new_tab_task =
+      contextual_tasks_service->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(new_tab->GetContents()));
+  EXPECT_TRUE(opener_task.has_value());
+  EXPECT_FALSE(new_tab_task.has_value());
+  EXPECT_FALSE(GetCoordinator()->IsPanelOpenForContextualTask());
 }
 
 class ContextualTasksSidePanelCoordinatorFeatureDisabledInteractiveUiTest

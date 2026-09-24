@@ -624,8 +624,21 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
           base::BindRepeating(
               &ContextualSearchboxHandler::CreateImageEncodingOptions),
           contextual_tasks_context_service_,
-          base::BindRepeating(&webui::GetBrowserWindowInterface,
-                              web_contents_.get()));
+          base::BindRepeating(
+              [](ContextualSearchboxHandler* handler,
+                 content::WebContents* web_contents)
+                  -> BrowserWindowInterface* {
+                if (handler->omnibox_controller() &&
+                    handler->omnibox_controller()->client() &&
+                    handler->omnibox_controller()
+                            ->client()
+                            ->GetPageClassification(/*is_prefetch=*/false) ==
+                        metrics::OmniboxEventProto::COMPOSEBOX_EVERYWHERE) {
+                  return nullptr;
+                }
+                return webui::GetBrowserWindowInterface(web_contents);
+              },
+              base::Unretained(this), web_contents_.get()));
   query_contextualizer_ =
       std::make_unique<contextual_tasks::QueryContextualizer>(
           contextual_tasks_service_, desktop_delegate_.get());

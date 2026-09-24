@@ -124,7 +124,7 @@ void ComposeboxEverywhereHandler::OpenUrl(
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   if (service_) {
-    service_->OpenUrl(url, disposition, ui::PAGE_TRANSITION_LINK,
+    service_->OpenUrl(url, disposition, ui::PAGE_TRANSITION_GENERATED,
                       std::move(navigation_handle_callback));
   }
 }

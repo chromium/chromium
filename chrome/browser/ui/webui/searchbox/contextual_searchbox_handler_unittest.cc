@@ -1940,6 +1940,24 @@ TEST_F(SmartTabSharingTest, SubmitQuery_PersistsSmartTabSharingInactive) {
   EXPECT_FALSE(*new_session_handle->smart_tab_sharing_active());
 }
 
+TEST_F(SmartTabSharingTest,
+       SubmitQuery_ComposeboxEverywhereDoesNotUseBrowserWindowContext) {
+  static_cast<TestOmniboxClient*>(handler().client())
+      ->location_bar_model()
+      ->set_page_classification(
+          metrics::OmniboxEventProto::COMPOSEBOX_EVERYWHERE);
+  handler().SetSmartTabSharingActive(true);
+  EXPECT_TRUE(handler().IsSmartTabSharingActive());
+
+  ASSERT_TRUE(mock_service_);
+  EXPECT_CALL(*mock_service_,
+              GetRelevantTabsForConversationThread(testing::_, testing::_,
+                                                   testing::_, testing::_))
+      .Times(0);
+
+  SubmitQueryAndWaitForNavigation();
+}
+
 TEST_F(SmartTabSharingTest, LogMenuOptionClickedMetrics) {
   ASSERT_TRUE(contextual_tasks::ContextualTasksContextService::
                   GetIsSmartTabSharingEnabled(profile()));
