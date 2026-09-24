@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [maxPool2d] Test maxPool2d with data type int32
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'maxPool2d' on 'MLGraphBuilder': Unsupported data type int32 for argument input, must be one of [float32, float16]."
 [FAIL] [maxPool2d] Test maxPool2d with data type uint32
