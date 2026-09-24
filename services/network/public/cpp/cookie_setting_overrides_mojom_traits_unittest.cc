@@ -14,7 +14,9 @@ namespace network {
 TEST(CookieSettingOverridesMojomTraitsTest, SerializeAndDeserialize) {
   const net::CookieSettingOverrides keys[] = {
       {},
-      {},
+      {net::CookieSettingOverride::kStorageAccessGrantEligible},
+      {net::CookieSettingOverride::kForceEnableThirdPartyCookies},
+      net::CookieSettingOverrides::All(),
   };
 
   for (auto original : keys) {

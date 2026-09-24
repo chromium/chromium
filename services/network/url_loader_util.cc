@@ -17,6 +17,7 @@
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
 #include "net/base/upload_file_element_reader.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/device_bound_sessions/session_usage.h"
 #include "net/http/http_connection_info.h"
@@ -54,9 +55,8 @@ namespace {
 
 // TODO(https://crbug.com/375352611): add the check for enabling third-party
 // cookies.
-constexpr uint64_t kAllowedDevToolsCookieSettingOverrides =
-    1u << static_cast<int>(
-        net::CookieSettingOverride::kForceDisableThirdPartyCookies);
+constexpr net::CookieSettingOverrides kAllowedDevToolsCookieSettingOverrides = {
+    net::CookieSettingOverride::kForceDisableThirdPartyCookies};
 
 const char* GetDestinationTypePartString(
     network::mojom::RequestDestination destination) {
@@ -409,9 +409,7 @@ net::CookieSettingOverrides CalculateCookieSettingOverrides(
   // Only apply the DevTools overrides if the request is from devtools enabled
   // context.
   if (request.devtools_request_id.has_value()) {
-    CHECK_EQ(devtools_overrides.ToEnumBitmask() &
-                 ~kAllowedDevToolsCookieSettingOverrides,
-             0u);
+    CHECK(kAllowedDevToolsCookieSettingOverrides.HasAll(devtools_overrides));
     overrides = base::Union(overrides, devtools_overrides);
   }
 

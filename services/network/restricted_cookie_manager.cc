@@ -67,9 +67,8 @@ constexpr size_t kMaxCookieCacheCount = 32u;
 
 // TODO(https://crbug.com/375352611): add the check for enabling third-party
 // cookies.
-constexpr uint64_t kAllowedDevToolsCookieSettingOverrides =
-    1u << static_cast<int>(
-        net::CookieSettingOverride::kForceDisableThirdPartyCookies);
+constexpr net::CookieSettingOverrides kAllowedDevToolsCookieSettingOverrides = {
+    net::CookieSettingOverride::kForceDisableThirdPartyCookies};
 
 net::CookieOptions MakeOptionsForSet(
     mojom::RestrictedCookieManagerRole role,
@@ -411,9 +410,8 @@ RestrictedCookieManager::RestrictedCookieManager(
   DCHECK(!cookie_setting_overrides_.Has(
       net::CookieSettingOverride::kStorageAccessGrantEligible));
   // Make sure there are not any disallowed devtool cookie setting overrides.
-  CHECK_EQ(devtools_cookie_setting_overrides_.ToEnumBitmask() &
-               ~kAllowedDevToolsCookieSettingOverrides,
-           0u);
+  CHECK(kAllowedDevToolsCookieSettingOverrides.HasAll(
+      devtools_cookie_setting_overrides_));
   if (role == mojom::RestrictedCookieManagerRole::SCRIPT) {
       CHECK(origin_.IsSameOriginWith(isolation_info_.frame_origin().value()));
   }
