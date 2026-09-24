@@ -122,7 +122,6 @@ public class ContextMenuCoordinatorTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/40912149")
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     @Config(qualifiers = "mdpi")
     @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
@@ -213,7 +212,6 @@ public class ContextMenuCoordinatorTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/40912149")
     @DisableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
     @Config(qualifiers = "mdpi")
     public void testDisplayMenu() {
