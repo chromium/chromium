@@ -320,18 +320,22 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         if (!mCollapseButton.isEnabled()) return;
 
         int action = event.getActionMasked();
+        if (mCollapseState == RailCollapseState.EXPANDED_FOR_HOVERING
+                && action == MotionEvent.ACTION_HOVER_MOVE) {
+            return;
+        }
 
-        int[] location = new int[2];
-        getLocationOnScreen(location);
-        int left = location[0];
-        int top = location[1];
         float rawX = event.getRawX();
         float rawY = event.getRawY();
+        boolean isInside = containsRawPoint(this, rawX, rawY);
 
-        boolean isInside =
-                rawX >= left && rawX < left + getWidth() && rawY >= top && rawY < top + getHeight();
+        // Do not hover-expand over the collapse button so clicking it triggers a full
+        // collapsed-to-expanded animation instead of cutting an in-flight hover animation short.
+        boolean isOverCollapseButton = containsRawPoint(mCollapseButton, rawX, rawY);
+        boolean isHoverEnterOrMove =
+                action == MotionEvent.ACTION_HOVER_ENTER || action == MotionEvent.ACTION_HOVER_MOVE;
 
-        if (isInside && action == MotionEvent.ACTION_HOVER_ENTER) {
+        if (isInside && !isOverCollapseButton && isHoverEnterOrMove) {
             mExpandOrCollapseOnHoverListener.onResult(RailCollapseState.EXPANDED_FOR_HOVERING);
         } else if (!isInside && action == MotionEvent.ACTION_HOVER_EXIT) {
             mExpandOrCollapseOnHoverListener.onResult(RailCollapseState.COLLAPSED);
@@ -435,6 +439,16 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         incognitoParams.setMarginStart(
                 (!isCollapsed && isIncognitoVisible) ? mFooterButtonGapPx : 0);
         mIncognitoButton.setLayoutParams(incognitoParams);
+    }
+
+    /** Returns whether the given screen coordinates fall inside {@code view}'s bounds. */
+    private static boolean containsRawPoint(View view, float rawX, float rawY) {
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        return rawX >= location[0]
+                && rawX < location[0] + view.getWidth()
+                && rawY >= location[1]
+                && rawY < location[1] + view.getHeight();
     }
 
     @Px

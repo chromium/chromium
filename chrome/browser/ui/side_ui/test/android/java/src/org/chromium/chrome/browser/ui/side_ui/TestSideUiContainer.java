@@ -60,6 +60,12 @@ public final class TestSideUiContainer implements SideUiContainer {
     /** Minimum width for this {@link SideUiContainer}. */
     public int mMinWidthDp;
 
+    /**
+     * How much wider than its reserved width this container renders, i.e. how much of the web
+     * contents it overlays. 0 for a container that doesn't overlay them.
+     */
+    public @Px int mOverlayWidth;
+
     /** Number of times {@link #onWillAutoClose} is called. */
     public int mNumOnWillAutoCloseReceived;
 
@@ -160,7 +166,8 @@ public final class TestSideUiContainer implements SideUiContainer {
             return new SideUiSize(0, HeightType.NOT_APPLICABLE);
         }
 
-        return new SideUiSize(availableWidth < maxWidth ? availableWidth : maxWidth, mHeightType);
+        @Px int reservedWidth = availableWidth < maxWidth ? availableWidth : maxWidth;
+        return new SideUiSize(reservedWidth, reservedWidth + mOverlayWidth, mHeightType);
     }
 
     @Override

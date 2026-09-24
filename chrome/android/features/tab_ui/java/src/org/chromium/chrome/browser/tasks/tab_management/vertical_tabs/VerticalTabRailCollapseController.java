@@ -45,12 +45,8 @@ class VerticalTabRailCollapseController {
          * Called when the user requested a change that moves the effective rail state. The delegate
          * is responsible for driving the resulting Side UI update, which ends up calling {@link
          * #applyEffectiveState()}.
-         *
-         * @param currentState The current {@link RailCollapseState}.
-         * @param targetState The target {@link RailCollapseState}.
          */
-        void handleUserRequestedStateChange(
-                @RailCollapseState int currentState, @RailCollapseState int targetState);
+        void handleUserRequestedStateChange();
     }
 
     private final Callback<@RailCollapseState Integer> mSetRailCollapseStateCallback;
@@ -175,6 +171,15 @@ class VerticalTabRailCollapseController {
     }
 
     /**
+     * Returns whether the rail is currently expanded only because the pointer is hovering it. The
+     * rail renders expanded over the web contents in this state, but keeps reserving its collapsed
+     * width, so the web contents are neither resized nor repositioned.
+     */
+    boolean isHoverExpanded() {
+        return getEffectiveRailCollapseState() == RailCollapseState.EXPANDED_FOR_HOVERING;
+    }
+
+    /**
      * Returns whether the window is too narrow to host an expanded rail. While this is true the
      * rail stays collapsed regardless of the other inputs, so the collapse button is disabled and
      * the rail cannot be resized.
@@ -206,12 +211,6 @@ class VerticalTabRailCollapseController {
         return mRailCollapseStateSupplier;
     }
 
-    /** Returns whether the given state is an expanded state. */
-    static boolean isExpanded(@RailCollapseState int state) {
-        return state == RailCollapseState.EXPANDED
-                || state == RailCollapseState.EXPANDED_FOR_HOVERING;
-    }
-
     /**
      * Propagates a user-driven input change, if it moved the effective state.
      *
@@ -225,7 +224,7 @@ class VerticalTabRailCollapseController {
         // transition, which ends up applying the effective state. Otherwise, fall back to applying
         // the effective state directly.
         if (mRailStateChangeDelegate != null) {
-            mRailStateChangeDelegate.handleUserRequestedStateChange(previousState, targetState);
+            mRailStateChangeDelegate.handleUserRequestedStateChange();
         } else {
             applyEffectiveState();
         }

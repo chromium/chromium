@@ -84,18 +84,28 @@ final class SideUiCoordinatorImpl
     private final Map<@AnchorSide Integer, ViewGroup> mAnchorContainers = new ArrayMap<>();
 
     /**
-     * Maps {@link AnchorSide} to the currently committed {@link HeightType}.
+     * The {@link SideUiSpecs} that were last committed, i.e. the specs the browser UI is currently
+     * laid out with.
      *
-     * <p>This explicit tracking is necessary because the current {@link HeightType} cannot be
-     * reliably inferred from the anchor container's {@code topMargin} and {@link
-     * TopControlsStacker}. External events (e.g. switching between horizontal and vertical tabs)
-     * can update top control heights before {@link #updateUi} is invoked. Inferring {@link
-     * HeightType} dynamically would compare the container's existing {@code topMargin} against the
-     * newly updated top control heights, causing it to misidentify the current {@link HeightType}
-     * and fail to notify {@link SideUiContainer}s of height type transitions.
+     * <p>This explicit tracking is necessary because the current specs cannot be reliably inferred
+     * from the view hierarchy:
+     *
+     * <ul>
+     *   <li>An anchor container is laid out at its rendered width, so the width it reserves for the
+     *       rest of the browser UI is unknown while the container overlays the web contents.
+     *   <li>The {@link HeightType} cannot be recovered from the anchor container's {@code
+     *       topMargin} and {@link TopControlsStacker}, because external events (e.g. switching
+     *       between horizontal and vertical tabs) can update top control heights before {@link
+     *       #updateUi} is invoked. Inferring it dynamically would compare the container's existing
+     *       {@code topMargin} against the newly updated top control heights, causing it to
+     *       misidentify the current {@link HeightType} and fail to notify {@link SideUiContainer}s
+     *       of height type transitions.
+     * </ul>
+     *
+     * <p>This is updated when specs are committed, which for an animated update is when the
+     * transition ends. It therefore holds the pre-transition specs while an update is animating.
      */
-    private final Map<@AnchorSide Integer, @HeightType Integer> mCurrentHeightTypes =
-            new ArrayMap<>();
+    private SideUiSpecs mCurrentSideUiSpecs;
 
     /** Maps {@link AnchorSide} to the {@link SideUiResizeHandler} owning that side's handle. */
     private final Map<@AnchorSide Integer, SideUiResizeHandler> mResizeHandlers = new ArrayMap<>();
@@ -170,8 +180,13 @@ final class SideUiCoordinatorImpl
         assert mAnchorContainerParent == rightAnchorContainer.getParent();
         mAnchorContainers.put(AnchorSide.LEFT, leftAnchorContainer);
         mAnchorContainers.put(AnchorSide.RIGHT, rightAnchorContainer);
-        mCurrentHeightTypes.put(AnchorSide.LEFT, HeightType.NOT_APPLICABLE);
-        mCurrentHeightTypes.put(AnchorSide.RIGHT, HeightType.NOT_APPLICABLE);
+        mCurrentSideUiSpecs =
+                new SideUiSpecs(
+                        Map.of(
+                                AnchorSide.LEFT,
+                                new SideUiSize(/* width= */ 0, HeightType.NOT_APPLICABLE),
+                                AnchorSide.RIGHT,
+                                new SideUiSize(/* width= */ 0, HeightType.NOT_APPLICABLE)));
 
         webContentHairlineContainerStub.setLayoutResource(
                 R.layout.side_ui_web_content_hairline_container);
@@ -276,7 +291,7 @@ final class SideUiCoordinatorImpl
         mCallbackController.destroy();
         mSideUiContainers.clear();
         mResizeHandlers.clear();
-        mCurrentHeightTypes.clear();
+        mCurrentSideUiSpecs = new SideUiSpecs(Map.of());
         mBrowserControlsVisibilityManager.removeObserver(this);
         mFullscreenManager.removeObserver(this);
         mWebContentsHairlineManager.destroy();
@@ -585,24 +600,7 @@ final class SideUiCoordinatorImpl
     }
 
     private SideUiSpecs getCurrentSideUiSpecsInternal() {
-        // Note: When a View's visibility is changed to View.GONE, it won't be laid out so Android
-        // won't update the View's internal states tracking its size. This means View.getWidth() can
-        // return a stale value when the visibility is View.GONE.
-        //
-        // Therefore, we need to explicitly check if the visibility is View.GONE, and if so, return
-        // 0.
-        Map<@AnchorSide Integer, SideUiSize> anchorContainerSpecs = new ArrayMap<>();
-        for (Map.Entry<@AnchorSide Integer, ViewGroup> entry : mAnchorContainers.entrySet()) {
-            @AnchorSide int anchorSide = entry.getKey();
-            ViewGroup anchorContainer = entry.getValue();
-            @Px
-            int anchorContainerWidth =
-                    anchorContainer.getVisibility() == View.GONE ? 0 : anchorContainer.getWidth();
-            @HeightType int heightType = getCurrentHeightType(anchorSide);
-            anchorContainerSpecs.put(anchorSide, new SideUiSize(anchorContainerWidth, heightType));
-        }
-
-        return new SideUiSpecs(anchorContainerSpecs);
+        return mCurrentSideUiSpecs;
     }
 
     private @Px int getTopMarginForHeightType(@HeightType int heightType) {
@@ -639,17 +637,6 @@ final class SideUiCoordinatorImpl
             totalHeight = Math.max(0, totalHeight - hairlineHeight);
         }
         return totalHeight;
-    }
-
-    private @HeightType int getCurrentHeightType(@AnchorSide int anchorSide) {
-        ViewGroup anchorContainer = mAnchorContainers.get(anchorSide);
-        if (anchorContainer == null
-                || anchorContainer.getVisibility() == View.GONE
-                || anchorContainer.getWidth() == 0) {
-            return HeightType.NOT_APPLICABLE;
-        }
-
-        return mCurrentHeightTypes.getOrDefault(anchorSide, HeightType.NOT_APPLICABLE);
     }
 
     private AnchorContainerTopMargins getCurrentAnchorContainerTopMargins() {
@@ -803,8 +790,10 @@ final class SideUiCoordinatorImpl
         for (Map.Entry<@AnchorSide Integer, SideUiSize> entry :
                 uiUpdateSpecs.mSpecsDiff.entrySet()) {
             int side = entry.getKey();
-            int newWidth = entry.getValue().mWidth;
-            int oldWidth = uiUpdateSpecs.mCurrentSpecs.getWidth(side);
+            // The anchor container is animated between rendered widths, which is what it is laid
+            // out at.
+            int newWidth = entry.getValue().mRenderedWidth;
+            int oldWidth = uiUpdateSpecs.mCurrentSpecs.getRenderedWidth(side);
             // Add transitions for the side UI containers.
             ViewGroup anchorContainer = assumeNonNull(mAnchorContainers.get(side));
             transitionSet.addTransition(
@@ -859,8 +848,8 @@ final class SideUiCoordinatorImpl
             }
 
             boolean willUpdateWidth =
-                    (uiUpdateSpecs.mCurrentSpecs.getWidth(side)
-                            != uiUpdateSpecs.mNewSpecs.getWidth(side));
+                    (uiUpdateSpecs.mCurrentSpecs.getRenderedWidth(side)
+                            != uiUpdateSpecs.mNewSpecs.getRenderedWidth(side));
 
             // HeightType update from/to NOT_APPLICABLE means the SideUiContainer is
             // opened/closed, which has animation support. Only a change between
@@ -896,8 +885,8 @@ final class SideUiCoordinatorImpl
 
         for (Map.Entry<@AnchorSide Integer, SideUiSize> entry : sideUiSpecsDiff.entrySet()) {
             @AnchorSide int anchorSide = entry.getKey();
-            int newWidth = entry.getValue().mWidth;
-            int oldWidth = currentSideUiSpecs.getWidth(anchorSide);
+            int newWidth = entry.getValue().mRenderedWidth;
+            int oldWidth = currentSideUiSpecs.getRenderedWidth(anchorSide);
             SideUiContainer sideUiContainer = assumeNonNull(getSideUiContainerBySide(anchorSide));
             // Ensure side UI container is attached.
             attachSideUiContainerView(sideUiContainer, anchorSide);
@@ -930,10 +919,7 @@ final class SideUiCoordinatorImpl
                             }
                         }
 
-                        for (Map.Entry<@AnchorSide Integer, SideUiSize> entry :
-                                uiUpdateSpecs.mNewSpecs.entrySet()) {
-                            mCurrentHeightTypes.put(entry.getKey(), entry.getValue().mHeightType);
-                        }
+                        mCurrentSideUiSpecs = uiUpdateSpecs.mNewSpecs;
 
                         notifyContainersOnUiUpdateCompleted(
                                 uiUpdateSpecs.mCurrentSpecs, uiUpdateSpecs.mNewSpecs);
@@ -955,8 +941,8 @@ final class SideUiCoordinatorImpl
         // capturing the starting state with beginDelayedTransition.
         for (Map.Entry<@AnchorSide Integer, SideUiSize> entry : sideUiSpecsDiff.entrySet()) {
             @AnchorSide int anchorSide = entry.getKey();
-            int newWidth = entry.getValue().mWidth;
-            int oldWidth = currentSideUiSpecs.getWidth(anchorSide);
+            int newWidth = entry.getValue().mRenderedWidth;
+            int oldWidth = currentSideUiSpecs.getRenderedWidth(anchorSide);
             ViewGroup anchorContainer = assumeNonNull(mAnchorContainers.get(anchorSide));
             SideUiContainer sideUiContainer = assumeNonNull(getSideUiContainerBySide(anchorSide));
             SideUiContainerTransition.triggerContainerTransition(
@@ -987,7 +973,7 @@ final class SideUiCoordinatorImpl
             } else {
                 detachSideUiContainerView(sideUiContainer);
             }
-            sideUiContainer.setWidth(newSideUiWidth);
+            sideUiContainer.setWidth(entry.getValue().mRenderedWidth);
         }
 
         // Trigger a synchronous measure and layout pass to apply the new SideUiSpecs to the layout
@@ -1014,9 +1000,7 @@ final class SideUiCoordinatorImpl
         // Android framework will skip this subtree.
         ViewUtils.triggerSynchronousMeasureAndLayout(mAnchorContainerParent);
 
-        for (Map.Entry<@AnchorSide Integer, SideUiSize> entry : newSideUiSpecs.entrySet()) {
-            mCurrentHeightTypes.put(entry.getKey(), entry.getValue().mHeightType);
-        }
+        mCurrentSideUiSpecs = newSideUiSpecs;
 
         notifyContainersOnUiUpdateCompleted(currentSideUiSpecs, newSideUiSpecs);
         mSideUiObserverNotifier.notifySideUiSpecsChanged(newSideUiSpecs, uiUpdateSpecs.mRequest);

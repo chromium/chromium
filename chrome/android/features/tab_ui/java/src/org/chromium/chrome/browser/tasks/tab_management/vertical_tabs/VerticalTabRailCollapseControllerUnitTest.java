@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.After;
@@ -97,9 +98,7 @@ public class VerticalTabRailCollapseControllerUnitTest {
         mController.toggleCollapseState();
         watcher.assertExpected();
 
-        verify(mMockDelegate)
-                .handleUserRequestedStateChange(
-                        RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
+        verify(mMockDelegate).handleUserRequestedStateChange();
         verify(mMockSetRailStateCallback, never()).onResult(anyInt());
     }
 
@@ -119,15 +118,11 @@ public class VerticalTabRailCollapseControllerUnitTest {
 
         mController.toggleCollapseState();
         assertTrue(mController.isCollapsedByUserForTesting());
-        verify(mMockDelegate)
-                .handleUserRequestedStateChange(
-                        RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
+        verify(mMockDelegate).handleUserRequestedStateChange();
 
         mController.toggleCollapseState();
         assertFalse(mController.isCollapsedByUserForTesting());
-        verify(mMockDelegate)
-                .handleUserRequestedStateChange(
-                        RailCollapseState.COLLAPSED, RailCollapseState.EXPANDED);
+        verify(mMockDelegate, times(2)).handleUserRequestedStateChange();
     }
 
     @Test
@@ -181,7 +176,7 @@ public class VerticalTabRailCollapseControllerUnitTest {
         mController.toggleCollapseState();
         watcher.assertExpected();
 
-        verify(mMockDelegate, never()).handleUserRequestedStateChange(anyInt(), anyInt());
+        verify(mMockDelegate, never()).handleUserRequestedStateChange();
         verify(mMockSetRailStateCallback, never()).onResult(anyInt());
     }
 
@@ -193,15 +188,15 @@ public class VerticalTabRailCollapseControllerUnitTest {
 
         // Hover enter: COLLAPSED -> EXPANDED_FOR_HOVERING
         mController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
-        verify(mMockDelegate)
-                .handleUserRequestedStateChange(
-                        RailCollapseState.COLLAPSED, RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertEquals(
+                RailCollapseState.EXPANDED_FOR_HOVERING,
+                mController.getEffectiveRailCollapseState());
+        verify(mMockDelegate).handleUserRequestedStateChange();
 
         // Hover exit: EXPANDED_FOR_HOVERING -> COLLAPSED
         mController.expandOrCollapseOnHover(RailCollapseState.COLLAPSED);
-        verify(mMockDelegate)
-                .handleUserRequestedStateChange(
-                        RailCollapseState.EXPANDED_FOR_HOVERING, RailCollapseState.COLLAPSED);
+        assertEquals(RailCollapseState.COLLAPSED, mController.getEffectiveRailCollapseState());
+        verify(mMockDelegate, times(2)).handleUserRequestedStateChange();
     }
 
     @Test
@@ -211,7 +206,7 @@ public class VerticalTabRailCollapseControllerUnitTest {
 
         // Hover request when user preference is EXPANDED should be ignored
         mController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
-        verify(mMockDelegate, never()).handleUserRequestedStateChange(anyInt(), anyInt());
+        verify(mMockDelegate, never()).handleUserRequestedStateChange();
     }
 
     @Test
@@ -226,7 +221,7 @@ public class VerticalTabRailCollapseControllerUnitTest {
         // The rail cannot expand in a narrow window, so the hover enter changes nothing yet.
         mController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
         assertEquals(RailCollapseState.COLLAPSED, mController.getEffectiveRailCollapseState());
-        verify(mMockDelegate, never()).handleUserRequestedStateChange(anyInt(), anyInt());
+        verify(mMockDelegate, never()).handleUserRequestedStateChange();
         verify(mMockSetRailStateCallback, never()).onResult(anyInt());
 
         // The hover was still recorded: widening the window expands the rail for hovering.
@@ -296,12 +291,25 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    public void testIsExpanded() {
-        assertTrue(VerticalTabRailCollapseController.isExpanded(RailCollapseState.EXPANDED));
-        assertTrue(
-                VerticalTabRailCollapseController.isExpanded(
-                        RailCollapseState.EXPANDED_FOR_HOVERING));
-        assertFalse(VerticalTabRailCollapseController.isExpanded(RailCollapseState.COLLAPSED));
+    public void testIsHoverExpanded() {
+        // The user preference is EXPANDED, so hovering changes nothing.
+        mController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertFalse(mController.isHoverExpanded());
+
+        mController.toggleCollapseState();
+        assertFalse(mController.isHoverExpanded());
+
+        mController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertTrue(mController.isHoverExpanded());
+
+        // A narrow window keeps the rail collapsed, hover or not.
+        mController.setWindowWidthBoundary(WindowWidthBoundary.FORCED_COLLAPSED);
+        assertFalse(mController.isHoverExpanded());
+        mController.setWindowWidthBoundary(WindowWidthBoundary.FULLY_EXPANDABLE);
+        assertTrue(mController.isHoverExpanded());
+
+        mController.expandOrCollapseOnHover(RailCollapseState.COLLAPSED);
+        assertFalse(mController.isHoverExpanded());
     }
 
     @Test
@@ -325,7 +333,7 @@ public class VerticalTabRailCollapseControllerUnitTest {
 
         mController.toggleCollapseState();
 
-        verify(mMockDelegate, never()).handleUserRequestedStateChange(anyInt(), anyInt());
+        verify(mMockDelegate, never()).handleUserRequestedStateChange();
         verify(mMockSetRailStateCallback).onResult(RailCollapseState.COLLAPSED);
     }
 }

@@ -91,7 +91,11 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         mCollapsedViewWidth = ViewUtils.dpToPx(activity, COLLAPSED_WIDTH_DP);
         mMinManualWidth = ViewUtils.dpToPx(activity, VerticalTabUtils.MIN_EXPANDED_WIDTH_DP);
         mMaxManualWidth = ViewUtils.dpToPx(activity, VerticalTabUtils.MAX_EXPANDED_WIDTH_DP);
-        mCollapseController.setRailStateChangeDelegate(this::handleUserRequestedStateChange);
+        mCollapseController.setRailStateChangeDelegate(
+                () ->
+                        mSideUiCoordinator.updateUi(
+                                new UiUpdateRequest(
+                                        getSideUiId(), /* suppressAnimations= */ false)));
     }
 
     public NonNullObservableSupplier<Boolean> getIsAutoHiddenSupplier() {
@@ -182,19 +186,24 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         // synchronize it here or handle the state transition explicitly.
         mCollapseController.setWindowWidthBoundary(boundary);
 
-        int targetWidth =
-                calculateWidthPx(
-                        boundary,
-                        mCollapseController.getEffectiveRailCollapseState(),
-                        windowWidth,
-                        availableWidth);
+        @RailCollapseState int effectiveState = mCollapseController.getEffectiveRailCollapseState();
+        @Px
+        int renderedWidth = calculateWidthPx(boundary, effectiveState, windowWidth, availableWidth);
+        // Expanding on hover is a transient preview, so it must not resize or reposition anything
+        // outside the rail: the rail keeps reserving its collapsed width and renders the expanded
+        // width over the web contents and the toolbar.
+        @Px
+        int reservedWidth =
+                effectiveState == RailCollapseState.EXPANDED_FOR_HOVERING
+                        ? mCollapsedViewWidth
+                        : renderedWidth;
         boolean shouldHide = boundary == WindowWidthBoundary.NOT_SHOWABLE;
 
         updateAutoHiddenState(mManualVisible && shouldHide);
         if (isFullscreen || shouldHide) {
             return new SideUiSize(0, HeightType.NOT_APPLICABLE);
         }
-        return new SideUiSize(targetWidth, HeightType.TOOLBAR);
+        return new SideUiSize(reservedWidth, renderedWidth, HeightType.TOOLBAR);
     }
 
     private void updateAutoHiddenState(boolean isHiddenDueToNarrowWidth) {
@@ -236,7 +245,11 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
 
     @Override
     public boolean supportsManualResize() {
-        return VerticalTabUtils.isManualResizeEnabled() && !mCollapseController.isForcedCollapsed();
+        // The hover expansion is transient and only overlays the web contents, so there is no
+        // stable edge to drag while it is showing.
+        return VerticalTabUtils.isManualResizeEnabled()
+                && !mCollapseController.isForcedCollapsed()
+                && !mCollapseController.isHoverExpanded();
     }
 
     @Override
@@ -267,8 +280,10 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     public @Nullable Transition onPreSideUiSpecsChange(
             SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         int side = getAnchorSide();
-        int newWidth = sideUiSpecs.getWidth(side);
-        int oldWidth = mSideUiCoordinator.getCurrentSideUiSpecs().getWidth(side);
+        // The rail's contents follow the width the rail is rendered at, which is wider than the
+        // width it reserves while it is expanded on hover.
+        int newWidth = sideUiSpecs.getRenderedWidth(side);
+        int oldWidth = mSideUiCoordinator.getCurrentSideUiSpecs().getRenderedWidth(side);
 
         if (oldWidth > 0 && newWidth > 0 && oldWidth != newWidth) {
             mTabListCoordinator.setInTransition(true);
@@ -292,26 +307,6 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     @Override
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
         mCollapseController.applyEffectiveState();
-    }
-
-    // Sequence when user requests state change:
-    // 1. handleUserRequestedStateChange: the controller has already updated the user
-    // preference; this triggers the Side UI update.
-    // 2. determineShowableSize: SideUiCoordinator queries target width for transition bounds.
-    // 3. onSideUiSpecsChanged: fired post-specs change (only if width/specs changed) to sync button
-    // and rail model state.
-    private void handleUserRequestedStateChange(
-            @RailCollapseState int currentState, @RailCollapseState int targetState) {
-        // TODO(crbug.com/527641177): Remove this if check after expand on hovering UI is done.
-        if (VerticalTabRailCollapseController.isExpanded(currentState)
-                && VerticalTabRailCollapseController.isExpanded(targetState)) {
-            // Rail width is unchanged, so no Side UI update (and therefore no
-            // onSideUiSpecsChanged()) will happen. Apply the new state directly.
-            mCollapseController.applyEffectiveState();
-        } else {
-            mSideUiCoordinator.updateUi(
-                    new UiUpdateRequest(getSideUiId(), /* suppressAnimations= */ false));
-        }
     }
 
     private @Px int calculateWidthPx(

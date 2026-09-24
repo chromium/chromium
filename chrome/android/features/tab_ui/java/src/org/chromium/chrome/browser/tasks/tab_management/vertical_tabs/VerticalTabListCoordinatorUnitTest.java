@@ -1755,9 +1755,7 @@ public class VerticalTabListCoordinatorUnitTest {
         histogramWatcher.assertExpected();
 
         // Verify listener requested collapse, but model is NOT updated yet (deferred).
-        verify(mMockRailStateChangeDelegate)
-                .handleUserRequestedStateChange(
-                        RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED);
+        verify(mMockRailStateChangeDelegate).handleUserRequestedStateChange();
         assertEquals(
                 RailCollapseState.EXPANDED,
                 mCoordinator
@@ -1786,9 +1784,7 @@ public class VerticalTabListCoordinatorUnitTest {
         histogramWatcher.assertExpected();
 
         // Verify listener requested expand, but model is still collapsed.
-        verify(mMockRailStateChangeDelegate)
-                .handleUserRequestedStateChange(
-                        RailCollapseState.COLLAPSED, RailCollapseState.EXPANDED);
+        verify(mMockRailStateChangeDelegate, times(2)).handleUserRequestedStateChange();
         assertEquals(
                 RailCollapseState.COLLAPSED,
                 mCoordinator
@@ -1832,8 +1828,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // Attempting click when disabled should be ignored.
         collapseButton.performClick();
-        verify(mMockRailStateChangeDelegate, never())
-                .handleUserRequestedStateChange(anyInt(), anyInt());
+        verify(mMockRailStateChangeDelegate, never()).handleUserRequestedStateChange();
 
         mCoordinator
                 .getCollapseController()
@@ -1862,18 +1857,56 @@ public class VerticalTabListCoordinatorUnitTest {
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 50f, 50f, 0);
         hoverEnter.setSource(InputDevice.SOURCE_MOUSE);
         containerView.dispatchGenericMotionEvent(hoverEnter);
-        verify(mMockRailStateChangeDelegate)
-                .handleUserRequestedStateChange(
-                        RailCollapseState.COLLAPSED, RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertEquals(
+                RailCollapseState.EXPANDED_FOR_HOVERING,
+                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+        // The collapse toggle above already notified the delegate once.
+        verify(mMockRailStateChangeDelegate, times(2)).handleUserRequestedStateChange();
 
         // 2. Mouse hover exit (outside container bounds) -> requests COLLAPSED.
         MotionEvent hoverExit =
                 MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 500f, 50f, 0);
         hoverExit.setSource(InputDevice.SOURCE_MOUSE);
         containerView.dispatchGenericMotionEvent(hoverExit);
-        verify(mMockRailStateChangeDelegate)
-                .handleUserRequestedStateChange(
-                        RailCollapseState.EXPANDED_FOR_HOVERING, RailCollapseState.COLLAPSED);
+        assertEquals(
+                RailCollapseState.COLLAPSED,
+                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+        verify(mMockRailStateChangeDelegate, times(3)).handleUserRequestedStateChange();
+    }
+
+    @Test
+    public void testExpandOrCollapseOnHover_IgnoresHoverOverCollapseButton() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
+        createCoordinator();
+        mCoordinator.getCollapseController().toggleCollapseState();
+        clearInvocations(mMockRailStateChangeDelegate);
+
+        View containerView = mCoordinator.getView();
+        containerView.layout(0, 0, 200, 500);
+        View collapseButton = containerView.findViewById(R.id.collapse_button);
+        collapseButton.layout(0, 0, 200, 60);
+
+        // Hovering the collapse button must not expand the rail, so that the click it is about to
+        // receive stays a plain collapsed -> expanded transition.
+        MotionEvent hoverEnterOnButton =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 50f, 30f, 0);
+        hoverEnterOnButton.setSource(InputDevice.SOURCE_MOUSE);
+        containerView.dispatchGenericMotionEvent(hoverEnterOnButton);
+        assertEquals(
+                RailCollapseState.COLLAPSED,
+                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+        verify(mMockRailStateChangeDelegate, never()).handleUserRequestedStateChange();
+
+        // Moving off the button without leaving the rail expands it.
+        MotionEvent hoverMoveOffButton =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_MOVE, 50f, 300f, 0);
+        hoverMoveOffButton.setSource(InputDevice.SOURCE_MOUSE);
+        containerView.dispatchGenericMotionEvent(hoverMoveOffButton);
+        assertEquals(
+                RailCollapseState.EXPANDED_FOR_HOVERING,
+                mCoordinator.getCollapseController().getEffectiveRailCollapseState());
+        verify(mMockRailStateChangeDelegate).handleUserRequestedStateChange();
     }
 
     @Test

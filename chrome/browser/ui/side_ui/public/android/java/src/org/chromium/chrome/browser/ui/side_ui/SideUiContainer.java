@@ -93,8 +93,13 @@ public interface SideUiContainer {
      * Sets the new width. <strong>Important:</strong> this should only be called by the {@link
      * SideUiCoordinator} that this container is registered to.
      *
+     * <p>This is the <i>rendered</i> width, i.e. {@link SideUiSize#mRenderedWidth}, which is larger
+     * than the reserved width while the container overlays other browser UI.
+     *
      * @param width The new width in px.
      */
+    // TODO(crbug.com/542280452): Rename setWidth(@Px int width) to setRenderedWidth(@Px int
+    // renderedWidth).
     void setWidth(@Px int width);
 
     /**

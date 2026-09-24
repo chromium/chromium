@@ -59,6 +59,8 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.ui.base.ViewUtils;
 
+import java.util.Map;
+
 /** Unit tests for {@link VerticalTabsSideUiCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class VerticalTabsSideUiCoordinatorUnitTest {
@@ -318,19 +320,20 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockSideUiCoordinator).updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
-        // Hover enter: rail expands for hovering
+        // Hover enter: the rail renders expanded over the web contents, but keeps reserving its
+        // collapsed width so nothing outside the rail moves.
         mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
                 mCoordinator.getRailCollapseStateForTesting());
-        assertShowableWidth(mExpandedRailWidth, mWideWindowWidth);
+        assertShowableSize(mCollapsedRailWidth, mExpandedRailWidth, mWideWindowWidth);
         verify(mMockSideUiCoordinator, times(2))
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Hover exit: rail collapses back
         mCollapseController.expandOrCollapseOnHover(RailCollapseState.COLLAPSED);
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
-        assertShowableWidth(mCollapsedRailWidth, mWideWindowWidth);
+        assertShowableSize(mCollapsedRailWidth, mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockSideUiCoordinator, times(3))
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
     }
@@ -351,13 +354,45 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         verify(mMockSideUiCoordinator, times(2))
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
-        // User clicks expand chevron button to open pinned rail.
+        // User clicks expand chevron button to open pinned rail. The rail keeps the same rendered
+        // width, but now reserves it, so the web contents shrink for the first time.
         mCollapseController.toggleCollapseState();
         assertEquals(RailCollapseState.EXPANDED, mCoordinator.getRailCollapseStateForTesting());
-        verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
-        // updateUi() is not called when transitioning from EXPANDED_FOR_HOVERING to EXPANDED
-        verify(mMockSideUiCoordinator, times(2))
+        assertShowableSize(mExpandedRailWidth, mExpandedRailWidth, mWideWindowWidth);
+        verify(mMockSideUiCoordinator, times(3))
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
+
+        // The new state reaches the rail only once that Side UI update is applied.
+        verify(mMockTabListCoordinator, never()).setRailCollapseState(RailCollapseState.EXPANDED);
+        mCoordinator.onSideUiSpecsChanged(
+                specs(mExpandedRailWidth, mExpandedRailWidth),
+                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ false));
+        verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
+    }
+
+    @Test
+    public void testHoverExpanded_DoesNotSupportManualResize() {
+        enableManualResize();
+        mCollapseController.toggleCollapseState();
+        assertTrue(mCoordinator.supportsManualResize());
+
+        mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertFalse(mCoordinator.supportsManualResize());
+
+        mCollapseController.expandOrCollapseOnHover(RailCollapseState.COLLAPSED);
+        assertTrue(mCoordinator.supportsManualResize());
+    }
+
+    @Test
+    public void testHoverExpanded_RendersUserResizedWidth() {
+        enableManualResize();
+        mCoordinator.onResizeCommitted(ViewUtils.dpToPx(mActivity, 300));
+        mCollapseController.toggleCollapseState();
+        assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
+
+        // The hover overlay previews the width the rail would be pinned at.
+        mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertShowableSize(mCollapsedRailWidth, ViewUtils.dpToPx(mActivity, 300), mWideWindowWidth);
     }
 
     @Test
@@ -377,6 +412,40 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertTrue(transitionSet.getTransitionAt(0) instanceof ChangeBounds);
         assertTrue(transitionSet.getTransitionAt(1) instanceof Fade);
         verify(mMockTabListCoordinator).setInTransition(true);
+    }
+
+    @Test
+    public void testOnPreSideUiSpecsChange_HoverEnterFollowsRenderedWidth() {
+        // Collapsed and not overlaying anything yet.
+        when(mMockSideUiCoordinator.getCurrentSideUiSpecs())
+                .thenReturn(specs(mCollapsedRailWidth, mCollapsedRailWidth));
+
+        // Hover enter: the reserved width is unchanged, only the rendered width grows, and the
+        // rail's contents must still animate to it.
+        Transition transition =
+                mCoordinator.onPreSideUiSpecsChange(
+                        specs(mCollapsedRailWidth, mExpandedRailWidth),
+                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+
+        assertNotNull(transition);
+        verify(mMockTabListCoordinator).setInTransition(true);
+    }
+
+    // TODO(crbug.com/542280452): The rail should animate when it is pinned from hover, as the
+    // pinned UI will differ from the hover overlay. Update this test once it does.
+    @Test
+    public void testOnPreSideUiSpecsChange_PinningHoverExpandedRailKeepsRailStill() {
+        // Expanded on hover over the web contents.
+        when(mMockSideUiCoordinator.getCurrentSideUiSpecs())
+                .thenReturn(specs(mCollapsedRailWidth, mExpandedRailWidth));
+
+        // Pinning it only reserves what is already rendered, so the rail itself does not move. The
+        // web contents and the toolbar still animate, driven by their own Side UI observers.
+        assertNull(
+                mCoordinator.onPreSideUiSpecsChange(
+                        specs(mExpandedRailWidth, mExpandedRailWidth),
+                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true)));
+        verify(mMockTabListCoordinator, never()).setInTransition(true);
     }
 
     @Test
@@ -669,16 +738,30 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     }
 
     private void assertShowableWidth(@Px int expectedWidth, @Px int windowWidth) {
+        assertEquals(expectedWidth, determineShowableSize(windowWidth).mWidth);
+    }
+
+    private void assertShowableSize(
+            @Px int expectedReservedWidth, @Px int expectedRenderedWidth, @Px int windowWidth) {
+        assertEquals(
+                new SideUiSize(expectedReservedWidth, expectedRenderedWidth, HeightType.TOOLBAR),
+                determineShowableSize(windowWidth));
+    }
+
+    private SideUiSize determineShowableSize(@Px int windowWidth) {
         int minWebContentsWidthPx =
                 ViewUtils.dpToPx(mActivity, SideUiCoordinator.MIN_WEB_CONTENTS_WIDTH_DP);
         int availableWidth = windowWidth - minWebContentsWidthPx;
-        assertEquals(
-                expectedWidth,
-                mCoordinator.determineShowableSize(
-                                /* availableWidth= */ availableWidth,
-                                windowWidth,
-                                /* isFullscreen= */ false)
-                        .mWidth);
+        return mCoordinator.determineShowableSize(
+                /* availableWidth= */ availableWidth, windowWidth, /* isFullscreen= */ false);
+    }
+
+    /** Returns specs for the rail, which is anchored to the left, with no other container. */
+    private SideUiSpecs specs(@Px int reservedWidth, @Px int renderedWidth) {
+        return new SideUiSpecs(
+                Map.of(
+                        AnchorSide.LEFT,
+                        new SideUiSize(reservedWidth, renderedWidth, HeightType.TOOLBAR)));
     }
 
     private void setWindowWidthPx(@Px int widthPx) {
