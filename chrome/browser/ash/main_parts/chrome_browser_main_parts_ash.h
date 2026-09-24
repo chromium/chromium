@@ -85,6 +85,7 @@ class HistoryServiceProvider;
 class IdentityManagerProvider;
 class SyncServiceProvider;
 class TemplateURLServiceProvider;
+class TrustedVaultServiceProvider;
 class WifiConfigurationSyncServiceProvider;
 class IdleActionWarningObserver;
 class KioskController;
@@ -237,6 +238,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<IdentityManagerProvider> identity_manager_provider_;
   std::unique_ptr<SyncServiceProvider> sync_service_provider_;
   std::unique_ptr<TemplateURLServiceProvider> template_url_service_provider_;
+  std::unique_ptr<TrustedVaultServiceProvider> trusted_vault_service_provider_;
   std::unique_ptr<WifiConfigurationSyncServiceProvider>
       wifi_configuration_sync_service_provider_;
 
