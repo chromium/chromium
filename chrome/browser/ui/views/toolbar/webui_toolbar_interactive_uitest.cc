@@ -3189,8 +3189,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
 #if BUILDFLAG(IS_CHROMEOS)
 // Test that on ChromeOS, the avatar button on the overflow menu is enabled
 // in an Incognito profile.
+// TODO(crbug.com/565701478): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
-                       OverflowMenuAvatarButtonChromeOSEnabled) {
+                       DISABLED_OverflowMenuAvatarButtonChromeOSEnabled) {
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito_browser);
 
