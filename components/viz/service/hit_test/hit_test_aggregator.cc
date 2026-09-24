@@ -5,7 +5,6 @@
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
 
 #include "base/feature.h"
-#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
@@ -16,10 +15,6 @@
 #include "ui/gfx/geometry/rrect_f.h"
 
 namespace viz {
-namespace {
-// TODO (crbug.com/495852034): Remove once M150 hits Stable.
-BASE_FEATURE(kRejectInvalidChildRegions, base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace
 
 HitTestAggregator::HitTestAggregator(
     const HitTestManager* hit_test_manager,
@@ -162,8 +157,7 @@ HitTestAggregator::AppendRegion(size_t region_index,
     }
 
     // Verify that the child is actually a child of the submitting frame sink.
-    if (base::FeatureList::IsEnabled(kRejectInvalidChildRegions) &&
-        !delegate_->IsChildOf(submitting_frame_sink_id, region.frame_sink_id)) {
+    if (!delegate_->IsChildOf(submitting_frame_sink_id, region.frame_sink_id)) {
       return base::unexpected(AggregationError::INVALID_CHILD_REGION);
     }
 
