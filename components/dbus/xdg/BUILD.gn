@@ -27,8 +27,6 @@ source_set("xdg") {
     "//components/dbus/thread_linux",
     "//components/dbus/utils",
     "//dbus",
-    "//net",
-    "//url",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

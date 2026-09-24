@@ -3169,6 +3169,7 @@ static_library("ui") {
         "//chrome/browser/ui/views/frame:dbus_appmenu_impl",
         "//chrome/browser/ui/views/frame:dbus_appmenu_registrar",
         "//components/dbus",
+        "//components/dbus/menu",
       ]
       allow_circular_includes_from +=
           [ "//chrome/browser/ui/views/frame:dbus_appmenu_impl" ]

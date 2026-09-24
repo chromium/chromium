@@ -1887,7 +1887,7 @@ if (is_linux) {
         "//chrome/browser:command_updater_impl",
         "//chrome/browser/profiles:misc",
         "//chrome/browser/ui/browser_window",
-        "//components/dbus",
+        "//components/dbus/menu",
         "//components/history/core/browser",
         "//components/prefs",
         "//components/sessions",

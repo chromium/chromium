@@ -9,7 +9,6 @@ component("dbus") {
   ]
   if (is_linux) {
     public_deps += [
-      "//components/dbus/menu",
       "//components/dbus/thread_linux",
       "//components/dbus/xdg",
     ]

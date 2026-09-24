@@ -3,19 +3,16 @@
 # found in the LICENSE file.
 
 source_set("menu") {
-  visibility = [ "//components/dbus/*" ]
   sources = [
     "menu.cc",
     "menu.h",
     "menu_property_list.cc",
     "menu_property_list.h",
   ]
-  defines = [ "IS_COMPONENTS_DBUS_IMPL" ]
   deps = [
     "//base",
     "//base:i18n",
-    "//components/dbus/properties",
-    "//components/dbus/utils",
+    "//components/dbus",
   ]
   public_deps = [
     "//dbus",
@@ -34,8 +31,7 @@ source_set("unit_tests") {
     ":menu",
     "//base",
     "//build:chromecast_buildflags",
-    "//components/dbus/properties",
-    "//components/dbus/utils",
+    "//components/dbus",
     "//testing/gtest",
     "//ui/events:test_support",
   ]

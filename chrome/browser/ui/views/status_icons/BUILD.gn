@@ -42,7 +42,10 @@ source_set("status_icons") {
         "status_icon_linux_dbus.h",
       ]
       public_deps += [ "//components/dbus" ]
-      deps += [ "//content/public/browser" ]
+      deps += [
+        "//components/dbus/menu",
+        "//content/public/browser",
+      ]
     }
   }
 

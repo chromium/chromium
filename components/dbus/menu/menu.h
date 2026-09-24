@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -27,7 +26,7 @@ class MenuModel;
 class DbusProperties;
 
 // Implements the com.canonical.dbusmenu interface.
-class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusMenu {
+class DbusMenu {
  public:
   using InitializedCallback = base::OnceCallback<void(bool success)>;
   using MenuItemReference = std::pair<ui::MenuModel*, size_t>;
