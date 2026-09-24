@@ -18,6 +18,8 @@ source_set("model") {
     "actor_service_factory.mm",
     "actor_task.h",
     "actor_task.mm",
+    "actor_web_state_policy_decider.h",
+    "actor_web_state_policy_decider.mm",
   ]
   public_deps = [ "//components/sessions:session_id" ]
   deps = [
@@ -97,6 +99,7 @@ source_set("unit_tests") {
     "actor_service_unittest.mm",
     "actor_tab_helper_unittest.mm",
     "actor_task_unittest.mm",
+    "actor_web_state_policy_decider_unittest.mm",
   ]
   deps = [
     ":model",

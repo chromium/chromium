@@ -25,6 +25,7 @@
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
@@ -839,6 +840,9 @@ class ActorServiceOriginGatingTest : public ActorServiceTest {
  public:
   void SetUp() override {
     ActorServiceTest::SetUp();
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures({kActorTools, kActorOriginGating},
+                                          {});
     service_ = ActorServiceFactory::GetForProfile(profile_.get());
     ASSERT_NE(service_, nullptr);
     checker_ = service_->GetOriginGatingChecker();
@@ -978,9 +982,6 @@ TEST_F(ActorServiceOriginGatingTest, HandlesEmptySourceUrl) {
 // disallowed by the OriginGatingChecker safety list.
 TEST_F(ActorServiceOriginGatingTest,
        PerformActions_NavigationBlockedByOriginGating) {
-  // Enable the Actor Origin Gating feature flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorOriginGatingForNavigation);
 
   // Configure the SafetyListManager with a blocked navigation rule.
   const std::string mock_rules_json = R"json({
@@ -1031,11 +1032,9 @@ TEST_F(ActorServiceOriginGatingTest,
 
 // Test that a NavigateAction executed through ActorService succeeds when
 // allowed by the OriginGatingChecker
+
 TEST_F(ActorServiceOriginGatingTest,
        PerformActions_NavigationAllowedByOriginGating) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorOriginGatingForNavigation);
-
   const std::string mock_rules_json = R"json({
     "navigation_allowed": [
       {"from": "https://safe.com", "to": "https://trusted.com"}
@@ -1077,5 +1076,131 @@ TEST_F(ActorServiceOriginGatingTest,
   EXPECT_TRUE(fake_navigation_manager_ptr->LoadURLWithParamsWasCalled());
   EXPECT_EQ(GURL("https://trusted.com"),
             fake_navigation_manager_ptr->GetLastLoadURLWithParams()->url);
+}
+
+// Test that an implicit navigation (e.g. link click / redirect) on a controlled
+// WebState is cancelled by origin gating and does not termintae the ActorTask.
+TEST_F(
+    ActorServiceOriginGatingTest,
+    ImplicitNavigation_BlockedByOriginGating_CancelsNavigationWithoutStoppingTask) {
+  // Configure safety list rules.
+  const std::string mock_rules_json = R"json({
+    "navigation_blocked": [
+      {"from": "https://safe.com", "to": "https://malicious.com"}
+    ]
+  })json";
+  actor::ParseSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                    mock_rules_json);
+
+  // Create the task and observe its lifecycle.
+  ActorTaskId task_id = service_->CreateTask(
+      "Implicit Navigation Task", /*allow_incognito_web_states=*/false);
+
+  FakeActorServiceTaskUpdatesObserver* observer =
+      [[FakeActorServiceTaskUpdatesObserver alloc] init];
+  service_->AddTaskUpdatesObserver(observer);
+
+  // Set up browser and WebState.
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetBrowserState(profile_.get());
+  fake_web_state->SetCurrentURL(GURL("https://safe.com"));
+  web::FakeWebState* web_state_ptr = fake_web_state.get();
+
+  test_browser->GetWebStateList()->InsertWebState(
+      std::move(fake_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // Register the WebState as controlled by the task.
+  // This instantiates ActorWebStatePolicyDecider and attaches it to the
+  // WebState.
+  service_->AddControlledWebState(task_id, web_state_ptr);
+
+  // Simulate an implicit main-frame navigation request (e.g. link click).
+  NSURLRequest* request = [NSURLRequest
+      requestWithURL:[NSURL URLWithString:@"https://malicious.com"]];
+  const web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PageTransition::PAGE_TRANSITION_LINK,
+      /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
+      /*is_user_initiated=*/false,
+      /*user_tapped_recently*/ false);
+
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      decision_future;
+  web_state_ptr->ShouldAllowRequest(request, request_info,
+                                    decision_future.GetCallback());
+
+  // Verify that the navigation was cancelled.
+  EXPECT_TRUE(decision_future.Get().ShouldCancelNavigation());
+
+  // Verify that the task was not stopped; it remains alive so Gemini can handle
+  // the block.
+  EXPECT_EQ(observer.stoppedCount, 0);
+
+  service_->RemoveTaskUpdatesObserver(observer);
+}
+
+// Test that an implicit navigation (e.g. link click) to an allowed destination
+// is permitted by origin gating and does not stop the ActorTask.
+TEST_F(ActorServiceOriginGatingTest,
+       ImplicitNavigation_AllowedByOriginGating_PermitsNavigation) {
+  const std::string mock_rules_json = R"json({
+    "navigation_allowed": [
+      {"from": "https://safe.com", "to": "https://trusted.com"}
+    ]
+  })json";
+  actor::ParseSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                    mock_rules_json);
+
+  ActorTaskId task_id =
+      service_->CreateTask("Allowed Navigation Task",
+                           /*allow_incognito_web_states=*/false);
+
+  FakeActorServiceTaskUpdatesObserver* observer =
+      [[FakeActorServiceTaskUpdatesObserver alloc] init];
+  service_->AddTaskUpdatesObserver(observer);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  fake_web_state->SetBrowserState(profile_.get());
+  fake_web_state->SetCurrentURL(GURL("https://safe.com"));
+  web::FakeWebState* web_state_ptr = fake_web_state.get();
+
+  test_browser->GetWebStateList()->InsertWebState(
+      std::move(fake_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  service_->AddControlledWebState(task_id, web_state_ptr);
+
+  NSURLRequest* request = [NSURLRequest
+      requestWithURL:[NSURL URLWithString:@"https://trusted.com"]];
+  const web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PageTransition::PAGE_TRANSITION_LINK,
+      /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
+      /*is_user_initiated=*/false,
+      /*user_tapped_recently*/ false);
+
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      decision_future;
+  web_state_ptr->ShouldAllowRequest(request, request_info,
+                                    decision_future.GetCallback());
+
+  // Verify that the navigation was allowed.
+  EXPECT_TRUE(decision_future.Get().ShouldAllowNavigation());
+
+  // Verify that the task was not stopped.
+  EXPECT_EQ(0, observer.stoppedCount);
+
+  service_->RemoveTaskUpdatesObserver(observer);
 }
 }  // namespace actor

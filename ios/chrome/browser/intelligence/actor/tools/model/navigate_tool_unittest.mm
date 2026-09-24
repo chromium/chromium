@@ -95,6 +95,7 @@ class TestOriginGatingCheckerDelegate
 class NavigateToolTest : public PlatformTest {
  public:
   NavigateToolTest() {
+    scoped_feature_list_.InitAndEnableFeature(kActorOriginGating);
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     BrowserList* browser_list =
@@ -118,6 +119,7 @@ class NavigateToolTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   TestUrlLoadingObserver url_loading_observer_;
@@ -373,9 +375,6 @@ TEST_F(NavigateToolTest, GetToolType) {
 
 // Test that navigation is blocked when origin gating policy denies it.
 TEST_F(NavigateToolTest, Execute_OriginGatingBlocksNavigation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorOriginGatingForNavigation);
-
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_ptr = web_state.get();
   web_state->SetNavigationManager(
@@ -414,9 +413,6 @@ TEST_F(NavigateToolTest, Execute_OriginGatingBlocksNavigation) {
 
 // Test that navigation succeeds when origin gating policy allows it.
 TEST_F(NavigateToolTest, Execute_OriginGatingAllowsNavigation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorOriginGatingForNavigation);
-
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_ptr = web_state.get();
   web_state->SetNavigationManager(
@@ -452,6 +448,8 @@ TEST_F(NavigateToolTest, Execute_OriginGatingAllowsNavigation) {
 // Test that when the feature flag is disabled (default), origin gating is
 // bypassed.
 TEST_F(NavigateToolTest, Execute_OriginGatingFeatureDisabled_BypassesCheck) {
+  scoped_feature_list_.Reset();
+
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_ptr = web_state.get();
   web_state->SetNavigationManager(
@@ -488,9 +486,6 @@ TEST_F(NavigateToolTest, Execute_OriginGatingFeatureDisabled_BypassesCheck) {
 // Test that navigation CHECK crashes when the feature is enabled but no
 // gating checker is provided.
 TEST_F(NavigateToolTest, Execute_MissingChecker_Crashes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kActorOriginGatingForNavigation);
-
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_ptr = web_state.get();
   web_state->SetNavigationManager(

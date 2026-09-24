@@ -7,6 +7,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "base/values.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -1550,4 +1552,44 @@ TEST_F(ActorTaskTest, HeartbeatMultipleWebStates) {
 
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
+// Tests that AddControlledWebState attaches the policy decider to the WebState
+// and cancels navigation requests when the policy decider blocks the request.
+TEST_F(ActorTaskTest,
+       Test_AddControlledWebState_Attaches_PolicyDecider_And_Cancels) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorOriginGating);
+
+  // Configure the delegate to reject the navigation as a fallback since no
+  // predicates are configured.
+  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  origin_gating::OriginGatingChecker checker(
+      delegate.GetWeakPtr(),
+      origin_gating::OriginGatingConfiguration(
+          /*predicates=*/{}, /*use_site_keyed_cache=*/false));
+
+  auto task = std::make_unique<ActorTask>(
+      ActorTaskId(1), "Test Task",
+      /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
+      BrowserListFactory::GetForProfile(profile_.get()), &checker);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  task->AddControlledWebState(web_state.get());
+
+  NSURLRequest* request = [NSURLRequest
+      requestWithURL:[NSURL URLWithString:@"https://malicious.com"]];
+  const web::WebStatePolicyDecider::RequestInfo request_info(
+      ui::PageTransition::PAGE_TRANSITION_LINK,
+      /*target_frame_is_main=*/true,
+      /*target_frame_is_cross_origin=*/false,
+      /*target_window_is_cross_origin=*/false,
+      /*is_user_initiated=*/false,
+      /*user_tapped_recently=*/false);
+
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision>
+      decision_future;
+  web_state->ShouldAllowRequest(request, request_info,
+                                decision_future.GetCallback());
+
+  EXPECT_TRUE(decision_future.Get().ShouldCancelNavigation());
+}
 }  // namespace actor

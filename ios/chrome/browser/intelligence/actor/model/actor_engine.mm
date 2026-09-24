@@ -128,6 +128,14 @@ void ActorEngine::CancelOngoingAndPendingActions(
   }
 }
 
+void ActorEngine::FailCurrentTool(mojom::ActionResultCode reason) {
+  if (state_ != State::kToolInvoke || !tool_controller_) {
+    return;
+  }
+
+  tool_controller_->FailCurrentTool(reason);
+}
+
 #pragma mark - ToolDelegate
 
 ActorTaskId ActorEngine::GetTaskId() const {

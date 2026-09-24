@@ -222,6 +222,16 @@ void ToolController::Cancel() {
   }
 }
 
+void ToolController::FailCurrentTool(mojom::ActionResultCode code) {
+  if (state_ != State::kInvoking) {
+    return;
+  }
+
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  observation_delayer_.reset();
+  PostInvokeTool(ToolExecutionResult(code));
+}
+
 void ToolController::DidFinishToolExecution(ToolExecutionResult result) {
   CHECK(active_state_);
 

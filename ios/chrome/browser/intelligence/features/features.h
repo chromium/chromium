@@ -243,8 +243,17 @@ base::TimeDelta GetActorPageStabilityAutofillPredictionsTimeout();
 // feature parameter of the `kActorTools` feature.
 bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool);
 
-// Feature flag for Actor origin gating on navigation.
-BASE_DECLARE_FEATURE(kActorOriginGatingForNavigation);
+// Feature flag controlling Actor origin gating.
+BASE_DECLARE_FEATURE(kActorOriginGating);
+
+extern const char kActorOriginGatingExplicitParam[];
+extern const char kActorOriginGatingImplicitParam[];
+
+// Returns true if origin gating is enabled for explicit navigations.
+bool IsActorOriginGatingForExplicitNavigationEnabled();
+
+// Returns true if origin gating is enabled for implicit navigations.
+bool IsActorOriginGatingForImplicitNavigationEnabled();
 
 // Feature flag for Model based page classification experiment.
 BASE_DECLARE_FEATURE(kModelBasedPageClassification);

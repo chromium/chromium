@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 
 #import "base/run_loop.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/actor/core/aggregated_journal.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/tool_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -146,6 +148,10 @@ class ActorEngineTest : public PlatformTest {
   }
 
   ActorEngine::State GetState() const { return engine_->state_; }
+
+  ToolController* GetToolController() const {
+    return engine_->tool_controller_.get();
+  }
 
   void CompleteActions(ActionResult&& result) {
     engine_->CompleteActions(std::move(result));
@@ -432,6 +438,49 @@ TEST_F(ActorEngineTest, ActWithNullTool) {
   EXPECT_FALSE(results[0].tool_result.IsOk());
   EXPECT_EQ(results[0].tool_result.code(),
             mojom::ActionResultCode::kToolUnknown);
+}
+
+// Test that FailCurrentTool is a safe no-op when the engine is not in the
+// kToolInvoke state.
+TEST_F(ActorEngineTest, FailCurrentToolWhenNotInToolInvoke) {
+  EXPECT_EQ(GetState(), ActorEngine::State::kInit);
+  engine_->FailCurrentTool(
+      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  EXPECT_EQ(GetState(), ActorEngine::State::kInit);
+}
+
+// Test that calling FailCurrentTool while a tool is in-flight aborts the tool,
+// transitions the engine to kFailed, and reports the error code.
+TEST_F(ActorEngineTest, FailCurrentToolMidExecution) {
+  // Create a WaitAction with a 10-second duration so it stays in-flight.
+  optimization_guide::proto::Action action;
+  auto* wait = action.mutable_wait();
+  wait->set_wait_time_ms(10000);
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(std::make_unique<ActorToolRequest>(action));
+
+  base::test::TestFuture<std::vector<ActionResult>> future;
+  engine_->Act(std::move(actions), future.GetCallback());
+
+  // Wait until tool validation completes and the tool starts executing.
+  ASSERT_TRUE(base::test::RunUntil([this]() {
+    ToolController* controller = GetToolController();
+    return controller &&
+           controller->state() == ToolController::State::kInvoking;
+  }));
+  ASSERT_EQ(GetState(), ActorEngine::State::kToolInvoke);
+
+  // Preemptively fail the in-flight tool.
+  engine_->FailCurrentTool(
+      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+
+  std::vector<ActionResult> results = future.Take();
+  ASSERT_EQ(results.size(), 1U);
+  EXPECT_FALSE(results[0].tool_result.IsOk());
+  EXPECT_EQ(results[0].tool_result.code(),
+            mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
 }
 
 }  // namespace actor

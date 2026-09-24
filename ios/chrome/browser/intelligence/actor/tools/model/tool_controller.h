@@ -56,6 +56,11 @@ class ToolController {
   // delays.
   void Invoke(ResultCallback result_callback);
   void Cancel();
+  // Fails the currently executing tool with `code`.
+  void FailCurrentTool(mojom::ActionResultCode code);
+
+  // Returns the current state of the controller.
+  State state() const { return state_; }
 
  private:
   // This state is non-null whenever a tool invocation is in progress.

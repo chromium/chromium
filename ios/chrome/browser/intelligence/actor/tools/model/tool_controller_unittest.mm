@@ -425,5 +425,27 @@ TEST_F(ToolControllerTest, DeletingControllerInValidationCallbackDoesNotUAF) {
   EXPECT_EQ(controller_, nullptr);
 }
 
+// Tests that a tool can be failed during execution with an error code.
+TEST_F(ToolControllerTest, FailCurrentToolMidExecution) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  tool_factory_ = std::make_unique<AsyncActorToolFactory>(profile_.get());
+
+  std::unique_ptr<ActorToolRequest> request = MakeSuccessfulActorToolRequest();
+
+  base::test::TestFuture<ToolExecutionResult> validation_future;
+  controller_->CreateToolAndValidate(*request, validation_future.GetCallback());
+  EXPECT_TRUE(validation_future.Get().IsOk());
+
+  base::test::TestFuture<ToolExecutionResult> invoke_future;
+  controller_->Invoke(invoke_future.GetCallback());
+  controller_->FailCurrentTool(
+      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  ToolExecutionResult result = invoke_future.Get();
+  EXPECT_FALSE(result.IsOk());
+  EXPECT_EQ(result.code(),
+            mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
 }  // namespace
 }  // namespace actor

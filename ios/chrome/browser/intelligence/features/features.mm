@@ -544,8 +544,32 @@ bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool) {
   return false;
 }
 
-BASE_FEATURE(kActorOriginGatingForNavigation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kActorOriginGating, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kActorOriginGatingExplicitParam[] = "gate_explicit_navigation";
+const char kActorOriginGatingImplicitParam[] = "gate_implicit_navigation";
+
+BASE_FEATURE_PARAM(bool,
+                   kActorOriginGatingExplicitFeatureParam,
+                   &kActorOriginGating,
+                   kActorOriginGatingExplicitParam,
+                   true);  // Default to true when kActorOriginGating is enabled
+
+BASE_FEATURE_PARAM(bool,
+                   kActorOriginGatingImplicitFeatureParam,
+                   &kActorOriginGating,
+                   kActorOriginGatingImplicitParam,
+                   true);  // Default to true when kActorOriginGating is enabled
+
+bool IsActorOriginGatingForExplicitNavigationEnabled() {
+  return base::FeatureList::IsEnabled(kActorOriginGating) &&
+         kActorOriginGatingExplicitFeatureParam.Get();
+}
+
+bool IsActorOriginGatingForImplicitNavigationEnabled() {
+  return base::FeatureList::IsEnabled(kActorOriginGating) &&
+         kActorOriginGatingImplicitFeatureParam.Get();
+}
 
 BASE_FEATURE(kModelBasedPageClassification, base::FEATURE_DISABLED_BY_DEFAULT);
 

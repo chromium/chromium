@@ -8,6 +8,7 @@
 #import <string>
 #import <vector>
 
+#import "base/containers/flat_map.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -15,6 +16,7 @@
 #import "base/timer/timer.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -47,6 +49,7 @@ namespace actor {
 class ActorToolFactory;
 class ActorToolRequest;
 class AggregatedJournal;
+class ActorWebStatePolicyDecider;
 
 // A class representing a task managed by `ActorService`. A task should live for
 // a whole Actor journey and be passed multiple sets of actions to execute
@@ -203,6 +206,10 @@ class ActorTask : public web::WebStateObserver,
   // `destroying_web_state` is provided, also prunes the matching entry.
   void PruneDestroyedWebStates(web::WebState* destroying_web_state = nullptr);
 
+  // Handles an implicit navigation on a controlled WebState being
+  // blocked by origin gating policy.
+  void OnNavigationBlocked(mojom::ActionResultCode code);
+
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   // Updates the subtitle of the background continued processing task to match
   // `task_update`. Does nothing if `task_update` is empty or identical to the
@@ -272,6 +279,11 @@ class ActorTask : public web::WebStateObserver,
   // Set of web states actively controlled (observed and/or being actuated on)
   // by this task.
   std::vector<base::WeakPtr<web::WebState>> controlled_web_states_;
+
+  // Navigation policy deciders attached to each controlled WebState to gate
+  // implicit navigations.
+  base::flat_map<web::WebStateID, std::unique_ptr<ActorWebStatePolicyDecider>>
+      policy_deciders_;
 
   // Scoped observation to safely observe events of controlled WebStates.
   base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>

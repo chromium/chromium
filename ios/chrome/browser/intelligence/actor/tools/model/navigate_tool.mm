@@ -79,7 +79,7 @@ void NavigateTool::Execute(ToolExecutionCallback callback) {
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(kActorOriginGatingForNavigation)) {
+  if (!IsActorOriginGatingForExplicitNavigationEnabled()) {
     // If the feature is disabled, bypass origin gating.
     LoadUrl(destination_url, std::move(callback));
     return;

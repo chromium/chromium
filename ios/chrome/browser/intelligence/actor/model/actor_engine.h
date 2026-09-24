@@ -10,6 +10,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "components/actor/public/mojom/actor_types.mojom-forward.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -106,6 +107,9 @@ class ActorEngine : public ToolDelegate {
 
   // Cancels any ongoing and pending actions.
   void CancelOngoingAndPendingActions(EngineResult reason);
+
+  // Fails the current in-flight tool with `reason` and completes the action.
+  void FailCurrentTool(mojom::ActionResultCode reason);
 
   // ToolDelegate:
   ActorTaskId GetTaskId() const override;

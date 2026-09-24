@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -208,6 +209,17 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
     if (!IsTerminalState(state_)) {
       web_state->SetKeepRenderProcessAlive(/*keep_alive=*/true);
     }
+
+    // Attach a policy decider to intercept and gate implicit navigations
+    // (e.g., link clicks, redirects) against origin policies.
+    if (gating_checker_) {
+      policy_deciders_[web_state->GetUniqueIdentifier()] =
+          std::make_unique<ActorWebStatePolicyDecider>(
+              web_state, gating_checker_, task_id_,
+              base::BindRepeating(&ActorTask::OnNavigationBlocked,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    }
+
     if (ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state)) {
       const bool is_actuating = IsActuatingState(state_);
       tab_helper->SetActuating(is_actuating);
@@ -366,6 +378,7 @@ void ActorTask::DidStopLoading(web::WebState* web_state) {
 }
 
 void ActorTask::WebStateDestroyed(web::WebState* web_state) {
+  policy_deciders_.erase(web_state->GetUniqueIdentifier());
   OnWebStateFinishedLoading(web_state);
   if (ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state)) {
     tab_helper->SetActuating(false);
@@ -526,6 +539,12 @@ void ActorTask::PruneDestroyedWebStates(web::WebState* destroying_web_state) {
                   return !weak_web_state ||
                          weak_web_state.get() == destroying_web_state;
                 });
+}
+
+void ActorTask::OnNavigationBlocked(mojom::ActionResultCode code) {
+  if (engine_) {
+    engine_->FailCurrentTool(code);
+  }
 }
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
