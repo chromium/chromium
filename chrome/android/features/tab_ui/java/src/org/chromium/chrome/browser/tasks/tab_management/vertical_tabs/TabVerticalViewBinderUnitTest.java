@@ -97,7 +97,7 @@ public class TabVerticalViewBinderUnitTest {
     @Mock private TabFaviconFetcher mFaviconFetcher2;
     @Mock private TabHoverListener mTabHoverListener;
 
-    private ViewGroup mItemView;
+    private VerticalTabItemLayout mItemView;
     private TextView mTitleView;
     private ImageView mFaviconView;
     private ImageView mCloseButton;
@@ -118,7 +118,7 @@ public class TabVerticalViewBinderUnitTest {
                 .updateConfiguration(config, mActivity.getResources().getDisplayMetrics());
 
         mItemView =
-                (ViewGroup)
+                (VerticalTabItemLayout)
                         LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_item, null, false);
         mActivity.setContentView(mItemView);
@@ -883,8 +883,8 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     public void testActionButtonTouchDelegate_UnattachedToWindow() {
-        ViewGroup unattachedView =
-                (ViewGroup)
+        VerticalTabItemLayout unattachedView =
+                (VerticalTabItemLayout)
                         LayoutInflater.from(mActivity)
                                 .inflate(R.layout.vertical_tab_item, null, false);
         View closeButton = unattachedView.findViewById(R.id.action_button);

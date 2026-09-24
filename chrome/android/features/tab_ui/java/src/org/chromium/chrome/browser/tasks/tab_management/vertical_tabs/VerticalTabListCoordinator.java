@@ -408,7 +408,7 @@ public class VerticalTabListCoordinator {
         adapter.registerType(
                 UiType.TAB,
                 parent ->
-                        (ViewGroup)
+                        (VerticalTabItemLayout)
                                 LayoutInflater.from(activity)
                                         .inflate(
                                                 R.layout.vertical_tab_item,
