@@ -3207,6 +3207,13 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(item->GetTargetFilePath().empty());
   ASSERT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
 
+  // Calling getFileIcon before the target filename has been determined
+  // (e.g. right after onCreated) yields kEmptyFile.
+  EXPECT_EQ(RunFunctionAndReturnError(
+                base::MakeRefCounted<DownloadsGetFileIconFunction>(),
+                base::StringPrintf("[%d, {}]", result_id)),
+            errors::kEmptyFile);
+
   // Respond to the onDeterminingFilename.
   std::string error;
   ASSERT_TRUE(ExtensionDownloadsEventRouter::DetermineFilename(

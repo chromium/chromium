@@ -440,10 +440,10 @@ dictionary DownloadDelta {
 };
 
 dictionary GetFileIconOptions {
-  // The size of the returned icon. The icon will be square with dimensions
-  // size * size pixels. The default and largest size for the icon is 32x32
-  // pixels. The only supported sizes are 16 and 32. It is an error to specify
-  // any other size.
+  // The size of the returned icon in density-independent pixels (DIPs). Must
+  // be either 16 or 32 (defaults to 32). On high-DPI displays, the returned
+  // image scales with the device scale factor (e.g., 64x64 px for size 32 on a
+  // 2x display). Calls from background service workers default to 1x scale.
   long size;
 };
 
@@ -547,14 +547,18 @@ interface Downloads {
   static Promise<undefined> cancel(long downloadId);
 
   // Retrieve an icon for the specified download. For new downloads, file
-  // icons are available after the $(ref:onCreated) event has been received. The
-  // image returned by this function while a download is in progress may be
-  // different from the image returned after the download is complete. Icon
-  // retrieval is done by querying the underlying operating system or toolkit
-  // depending on the platform. The icon that is returned will therefore
-  // depend on a number of factors including state of the download, platform,
-  // registered file types and visual theme. If a file icon cannot be
-  // determined, $(ref:runtime.lastError) will contain an error message.
+  // icons are available after the download's target filename has been
+  // determined (for example, when $(ref:onChanged) fires with a
+  // <code>filename</code> change). Attempting to retrieve the icon before the
+  // filename is determined will result in an error through
+  // $(ref:runtime.lastError). The image returned by this function while a
+  // download is in progress may be different from the image returned after the
+  // download is complete. Icon retrieval is done by querying the underlying
+  // operating system or toolkit depending on the platform. The icon that is
+  // returned will therefore depend on a number of factors including state of
+  // the download, platform, registered file types and visual theme. If a file
+  // icon cannot be determined, $(ref:runtime.lastError) will contain an error
+  // message.
   // |downloadId|: The identifier for the download.
   // |Returns|: Returns a Promise which resolves with a URL to an image that
   // represents the download.
