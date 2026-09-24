@@ -45,7 +45,7 @@ namespace {
 
 constexpr int kZoomCircularButtonSize = 28;
 constexpr int kZoomSeparatorPreferredLength = 24;
-constexpr int kZoomButtonHorizontalInset = 9;
+constexpr int kZoomButtonHorizontalInset = 16;
 
 std::unique_ptr<views::Background> CreateZoomButtonBackground() {
   return views::CreatePillBackground(kColorAppMenuZoomButtonBackground);
