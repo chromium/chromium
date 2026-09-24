@@ -613,4 +613,38 @@ TEST_F(ExtensionScriptTrackerTest,
   dest_resource.Complete("<body></body>");
 }
 
+TEST_F(ExtensionScriptTrackerTest,
+       FormSubmissionTriggeredByMainWorldContentScript_IsTracked) {
+  main_resource_->Complete(
+      "<head></head><body><form id=\"f\" method=\"POST\" "
+      "action=\"https://example.com/dest.html\"></form></body>");
+  EnableNavigationProtection();
+  SimRequest dest_resource("https://example.com/dest.html", "text/html");
+
+  ExecuteContentScriptInMainWorld("abcdefghijklmnop",
+                                  "document.getElementById('f').submit();");
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(last_script_injector_host(), "abcdefghijklmnop");
+  dest_resource.Complete("<body></body>");
+}
+
+TEST_F(ExtensionScriptTrackerTest,
+       FormSubmissionTriggeredByVanillaScript_IsNotTracked) {
+  main_resource_->Complete(
+      "<head></head><body><form id=\"f\" method=\"POST\" "
+      "action=\"https://example.com/dest.html\"></form></body>");
+  EnableNavigationProtection();
+  SimRequest dest_resource("https://example.com/dest.html", "text/html");
+
+  MainFrame().ExecuteScript(
+      WebScriptSource("document.getElementById('f').submit();"));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(last_script_injector_host().empty());
+  dest_resource.Complete("<body></body>");
+}
+
 }  // namespace blink

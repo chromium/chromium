@@ -438,6 +438,11 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       }
     }
   }
+
+  form_submission->async_task_context_.Schedule(
+      form->GetExecutionContext(), "formSubmission",
+      probe::AsyncTaskContext::StackOptions::kScan);
+
   return form_submission;
 }
 
@@ -460,6 +465,8 @@ void FormSubmission::NotifyInspector() {
 }
 
 void FormSubmission::Navigate() {
+  probe::AsyncTask async_task(origin_window_.Get(), &async_task_context_);
+
   FrameLoadRequest frame_request(origin_window_.Get(), *resource_request_);
   frame_request.SetNavigationPolicy(navigation_policy_);
   frame_request.SetClientNavigationReason(reason_);
