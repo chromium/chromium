@@ -417,6 +417,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onLinksToggle_() {
+    this.settingsPrefs_ = {
+      ...this.settingsPrefs_,
+      linksEnabled: this.visualBrowserProxy_.isLinksEnabled(),
+    };
     this.updateLinks_();
   }
 
@@ -425,6 +429,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onImagesToggle_() {
+    this.settingsPrefs_ = {
+      ...this.settingsPrefs_,
+      imagesEnabled: this.visualBrowserProxy_.isImagesEnabled(),
+    };
     this.updateImages_();
   }
 
@@ -680,6 +688,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onSpeechRateChange_() {
+    // TODO(crbug.com/564638585): Replace manual settingsPrefs_ updates for each
+    // onChange_ method with automated updates.
+    this.settingsPrefs_ = {
+      ...this.settingsPrefs_,
+      speechRate: this.audioBrowserProxy_.getSpeechRate(),
+    };
     this.speechController_.onSpeechSettingsChange();
   }
 
@@ -754,6 +768,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
   }
 
   protected onHighlightChange_(event: CustomEvent<{data: number}>) {
+    this.settingsPrefs_ = {
+      ...this.settingsPrefs_,
+      highlightGranularity: event.detail.data,
+    };
     this.speechController_.onHighlightGranularityChange(event.detail.data);
     // Apply highlighting changes to the DOM.
     this.styleUpdater_.setHighlight();
