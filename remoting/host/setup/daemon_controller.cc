@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
@@ -34,15 +33,6 @@ const char* const kReadonlyKeys[] = {
     kDeprecatedXmppLoginConfigPath, kDeprecatedHostOwnerEmailConfigPath};
 
 }  // namespace
-
-// static
-const base::flat_set<std::string_view>&
-DaemonController::GetUnprivilegedConfigKeys() {
-  static base::NoDestructor<base::flat_set<std::string_view>> unprivileged_keys(
-      {kHostIdConfigPath, kServiceAccountConfigPath,
-       kDeprecatedXmppLoginConfigPath, kUsageStatsConsentConfigPath});
-  return *unprivileged_keys;
-}
 
 DaemonController::DaemonController(std::unique_ptr<Delegate> delegate)
     : caller_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
@@ -163,7 +153,7 @@ void DaemonController::DoGetConfig(GetConfigCallback done) {
   if (config.has_value()) {
     for (auto it = config->begin(); it != config->end();) {
       // Do not include other keys since they may contain sensitive information.
-      if (!GetUnprivilegedConfigKeys().contains(it->first)) {
+      if (!kUnprivilegedConfigKeys.contains(it->first)) {
         LOG(ERROR) << "Removed unknown key: " << it->first;
         it = config->erase(it);
       } else {

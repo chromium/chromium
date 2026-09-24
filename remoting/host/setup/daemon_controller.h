@@ -10,11 +10,12 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
+#include "remoting/host/host_config.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -96,7 +97,10 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
       GetUsageStatsConsentCallback;
 
   // The configuration keys whose values may be read by GetConfig().
-  static const base::flat_set<std::string_view>& GetUnprivilegedConfigKeys();
+  static constexpr auto kUnprivilegedConfigKeys =
+      base::MakeFixedFlatSet<std::string_view>(
+          {kHostIdConfigPath, kServiceAccountConfigPath,
+           kDeprecatedXmppLoginConfigPath, kUsageStatsConsentConfigPath});
 
   // Interface representing the platform-spacific back-end. Most of its methods
   // are blocking and should be called on a background thread. There are two

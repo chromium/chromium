@@ -97,7 +97,7 @@ bool WriteConfigs(const base::DictValue& full_config) {
 
   // Sync unprivileged config.
   base::DictValue unprivileged_config;
-  for (const auto& key : DaemonController::GetUnprivilegedConfigKeys()) {
+  for (const auto& key : DaemonController::kUnprivilegedConfigKeys) {
     if (const base::Value* value = full_config.Find(key)) {
       unprivileged_config.Set(key, value->Clone());
     }

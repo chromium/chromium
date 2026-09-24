@@ -15,25 +15,6 @@
 
 namespace remoting {
 
-// Current values.
-const char kHostOwnerConfigPath[] = "host_owner";
-const char kServiceAccountConfigPath[] = "service_account";
-const char kOAuthRefreshTokenConfigPath[] = "oauth_refresh_token";
-const char kHostIdConfigPath[] = "host_id";
-const char kHostNameConfigPath[] = "host_name";
-const char kHostSecretHashConfigPath[] = "host_secret_hash";
-const char kPrivateKeyConfigPath[] = "private_key";
-const char kUsageStatsConsentConfigPath[] = "usage_stats_consent";
-const char kRequireSessionAuthorizationPath[] = "require_session_authz";
-const char kHostTypeHintPath[] = "host_type_hint";
-const char kCorpHostTypeHint[] = "corp";
-const char kCloudHostTypeHint[] = "cloud";
-const char kMe2MeHostTypeHint[] = "me2me";
-
-// Deprecated values.
-const char kDeprecatedHostOwnerEmailConfigPath[] = "host_owner_email";
-const char kDeprecatedXmppLoginConfigPath[] = "xmpp_login";
-
 std::optional<base::DictValue> HostConfigFromJson(const std::string& json) {
   std::optional<base::DictValue> config =
       base::JSONReader::ReadDict(json, base::JSON_ALLOW_TRAILING_COMMAS);

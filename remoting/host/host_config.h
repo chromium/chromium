@@ -22,39 +22,40 @@ namespace remoting {
 // The email address of the account which owns this remote access host instance.
 // The value of `kDeprecatedHostOwnerEmailConfigPath` will be used if both keys
 // exist in the config for backward compatibility.
-extern const char kHostOwnerConfigPath[];
+inline constexpr char kHostOwnerConfigPath[] = "host_owner";
 // Service account used to make web service requests and communicate over the
 // signaling channel. Prefer reading this value, over
 // `kDeprecatedXmppLoginConfigPath` if both exist.
-extern const char kServiceAccountConfigPath[];
+inline constexpr char kServiceAccountConfigPath[] = "service_account";
 // OAuth refresh token which is associated with the host service account. This
 // token is exchanged for an access token which is used for web service
 // authentication.
-extern const char kOAuthRefreshTokenConfigPath[];
+inline constexpr char kOAuthRefreshTokenConfigPath[] = "oauth_refresh_token";
 // Unique identifier of the host used to register the host in directory.
 // Normally a random UUID.
-extern const char kHostIdConfigPath[];
+inline constexpr char kHostIdConfigPath[] = "host_id";
 // Readable host name.
-extern const char kHostNameConfigPath[];
+inline constexpr char kHostNameConfigPath[] = "host_name";
 // Hash of the host secret used for authentication.
-extern const char kHostSecretHashConfigPath[];
+inline constexpr char kHostSecretHashConfigPath[] = "host_secret_hash";
 // Private key used for host authentication.
-extern const char kPrivateKeyConfigPath[];
+inline constexpr char kPrivateKeyConfigPath[] = "private_key";
 // Whether consent is given for usage stats reporting.
-extern const char kUsageStatsConsentConfigPath[];
+inline constexpr char kUsageStatsConsentConfigPath[] = "usage_stats_consent";
 // Indicates whether the machine is configured for session authorization.
-extern const char kRequireSessionAuthorizationPath[];
+inline constexpr char kRequireSessionAuthorizationPath[] =
+    "require_session_authz";
 // A hint used when initializing the host before it comes online. Several
 // actions, such as validating the host config itself, require knowing the
 // context in which the host is being run. An example is whether a PIN secret
 // should exist in the config or not. This value should match the scopes stored
 // in the refresh token, otherwise the host will appear to come online but will
 // not be connectable.
-extern const char kHostTypeHintPath[];
+inline constexpr char kHostTypeHintPath[] = "host_type_hint";
 // Supported Host type hint values stored in |kHostTypeHintPath|.
-extern const char kCorpHostTypeHint[];
-extern const char kCloudHostTypeHint[];
-extern const char kMe2MeHostTypeHint[];
+inline constexpr char kCorpHostTypeHint[] = "corp";
+inline constexpr char kCloudHostTypeHint[] = "cloud";
+inline constexpr char kMe2MeHostTypeHint[] = "me2me";
 
 // Deprecated keys. These keys were used in pre-M120 host versions and are being
 // kept around for backward compatibility. We should consider rewriting the
@@ -64,12 +65,13 @@ extern const char kMe2MeHostTypeHint[];
 // Talk for signaling as these fields did not match for some account types.
 // Though we no longer rely on that service, existing hosts may still have a
 // config which uses this key so we read from it as needed.
-extern const char kDeprecatedHostOwnerEmailConfigPath[];
+inline constexpr char kDeprecatedHostOwnerEmailConfigPath[] =
+    "host_owner_email";
 // xmpp_login is a legacy term which was used with Google Talk. Though we no
 // longer rely on that service, existing hosts may still have this key in their
 // configuration file so we read from it as needed.
 // This key was replaced by `kServiceAccountConfigPath` in M120.
-extern const char kDeprecatedXmppLoginConfigPath[];
+inline constexpr char kDeprecatedXmppLoginConfigPath[] = "xmpp_login";
 
 // Helpers for serializing/deserializing Host configuration dictionaries.
 std::optional<base::DictValue> HostConfigFromJson(
