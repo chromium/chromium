@@ -61,7 +61,7 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
 
 TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
        ComponentReady_NonexistentFile) {
-  base::test::TestFuture<const std::optional<std::string>&> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   ActorSafetyListsComponentInstallerPolicy policy(
       future.GetRepeatingCallback());
 
@@ -79,7 +79,7 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest, ComponentReady_ValidFile) {
           component_install_dir_.GetPath()),
       expectation));
 
-  base::test::TestFuture<const std::optional<std::string>&> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   ActorSafetyListsComponentInstallerPolicy policy(
       future.GetRepeatingCallback());
 
@@ -102,7 +102,7 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
           dir_v1.GetPath()),
       expectation_v1));
 
-  base::test::TestFuture<const std::optional<std::string>&> future;
+  base::test::TestFuture<std::optional<std::string>> future;
   ActorSafetyListsComponentInstallerPolicy policy(
       future.GetRepeatingCallback());
 

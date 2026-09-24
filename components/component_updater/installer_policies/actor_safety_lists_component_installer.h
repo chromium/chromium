@@ -23,7 +23,7 @@ class ActorSafetyListsComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
   using OnActorSafetyListsComponentReadyCallback =
-      base::RepeatingCallback<void(const std::optional<std::string>&)>;
+      base::RepeatingCallback<void(std::optional<std::string>)>;
 
   explicit ActorSafetyListsComponentInstallerPolicy(
       OnActorSafetyListsComponentReadyCallback on_component_ready_cb);

@@ -141,18 +141,17 @@ void RegisterActorSafetyListsComponent(
   VLOG(1) << "Registering Actor Safety Lists Component.";
   auto policy = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<ActorSafetyListsComponentInstallerPolicy>(
-          base::BindRepeating(
-              [](const std::optional<std::string>& raw_metadata) {
-                if (raw_metadata.has_value()) {
-                  // The safety lists are used by the actor component which will
-                  // not need them until long after startup completes. So we are
-                  // fine passing NullCallback and having
-                  // SafetyListManager::Find return kNone in the time before the
-                  // list is parsed.
-                  actor::SafetyListManager::GetInstance()->ParseSafetyLists(
-                      *raw_metadata, base::NullCallback());
-                }
-              })));
+          base::BindRepeating([](std::optional<std::string> raw_metadata) {
+            if (raw_metadata.has_value()) {
+              // The safety lists are used by the actor component which will
+              // not need them until long after startup completes. So we are
+              // fine passing NullCallback and having
+              // SafetyListManager::Find return kNone in the time before the
+              // list is parsed.
+              actor::SafetyListManager::GetInstance()->ParseSafetyLists(
+                  std::move(raw_metadata).value(), base::NullCallback());
+            }
+          })));
   policy->Register(cus, std::move(callback));
 }
 
