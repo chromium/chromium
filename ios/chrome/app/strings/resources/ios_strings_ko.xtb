@@ -74,7 +74,7 @@
 <translation id="1218730690561976633">향상된 자동 완성 사용자 인증을 전환합니다.</translation>
 <translation id="1219674500290482172">인터넷에 연결할 수 없습니다.</translation>
 <translation id="1223498995510244364">요약해 보세요</translation>
-<translation id="1227113644794103810">비활성된 탭</translation>
+<translation id="1227113644794103810">비활성 탭</translation>
 <translation id="1231733316453485619">동기화를 사용하시겠습니까?</translation>
 <translation id="1238794841176717085">이 페이지 공유</translation>
 <translation id="1248901457873510750">결제 열기</translation>
@@ -1674,7 +1674,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6404511346730675251">북마크 수정</translation>
 <translation id="6406506848690869874">동기화</translation>
 <translation id="6410390304316730527">세이프 브라우징을 사용하면 악성 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드 정보)를 공개하는 등의 위험한 행동을 하도록 사용자를 속이는 공격자를 차단합니다. 이 기능을 사용 중지하는 경우 익숙하지 않거나 평판이 좋지 않은 사이트를 탐색할 때 주의하시기 바랍니다.</translation>
-<translation id="6410883413783534063">탭을 열어 동시에 여러 페이지를 방문할 수 있습니다.</translation>
+<translation id="6410883413783534063">탭을 열어 동시에 여러 페이지를 방문할 수 있습니다</translation>
 <translation id="6412195388778525440">탭 삭제</translation>
 <translation id="6418346271604475326">PDF 준비 중</translation>
 <translation id="6420292512900923139">데이터를 가져오는 중에 문제 발생</translation>
@@ -2038,7 +2038,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7582666837709186351">카메라를 사용하여 사진 또는 주변에 있는 텍스트를 번역하세요.</translation>
 <translation id="7582857256643797524">기기에서 사용 설정된 설정입니다</translation>
 <translation id="7583004045319035904">시크릿 탭을 잠금 해제하려면 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 인증을 사용하세요.</translation>
-<translation id="7596103009408415410">{COUNT,plural, =1{비활성 탭 {COUNT}개를 닫으시겠습니까?}other{비활성 탭 {COUNT}개를 닫으시겠습니까?}}</translation>
+<translation id="7596103009408415410">{COUNT,plural, =1{비활성 탭 {COUNT}개를 닫으시겠어요?}other{비활성 탭 {COUNT}개를 닫으시겠어요?}}</translation>
 <translation id="7598439272585186139">보안 강화</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> 번역 안함</translation>
 <translation id="7603308509262646847">카드 소지자 <ph name="NAME" /> 자동 완성</translation>
