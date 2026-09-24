@@ -535,6 +535,59 @@ TEST_F(PeerConnectionTrackerTest, ModifyTransceiver) {
   EXPECT_EQ(expected_value, update_value);
 }
 
+TEST_F(PeerConnectionTrackerTest, OnTrack) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  PeerConnectionTracker::TrackInfo track;
+  track.kind = "audio";
+  track.id = "remoteTrackId";
+  track.stream_ids = {"remoteStreamIdA", "remoteStreamIdB"};
+  String update_value;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_host_, UpdatePeerConnection(_, String("ontrack"), _))
+      .WillOnce([&](int, const String&, const String& value) {
+        update_value = value;
+        run_loop.Quit();
+      });
+  tracker_->TrackOnTrack(mock_handler_.get(), track);
+  run_loop.Run();
+  // The label is derived from the kind, remote tracks do not carry one of
+  // their own. See RemoteMediaStreamTrackAdapter.
+  String expected_value(
+      "{\"kind\":\"audio\","
+      "\"id\":\"remoteTrackId\","
+      "\"label\":\"remote audio\","
+      "\"streams\":[\"remoteStreamIdA\",\"remoteStreamIdB\"]"
+      "}");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+// A remote track does not have to belong to any stream, e.g. if the remote
+// description does not contain an "a=msid" line.
+TEST_F(PeerConnectionTrackerTest, OnTrackWithoutStreams) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  PeerConnectionTracker::TrackInfo track;
+  track.kind = "video";
+  track.id = "remoteTrackId";
+  String update_value;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_host_, UpdatePeerConnection(_, String("ontrack"), _))
+      .WillOnce([&](int, const String&, const String& value) {
+        update_value = value;
+        run_loop.Quit();
+      });
+  tracker_->TrackOnTrack(mock_handler_.get(), track);
+  run_loop.Run();
+  String expected_value(
+      "{\"kind\":\"video\","
+      "\"id\":\"remoteTrackId\","
+      "\"label\":\"remote video\","
+      "\"streams\":[]"
+      "}");
+  EXPECT_EQ(expected_value, update_value);
+}
+
 TEST_F(PeerConnectionTrackerTest, OnSignalingStateChange) {
   CreateTrackerWithMocks();
   CreateAndRegisterPeerConnectionHandler();
