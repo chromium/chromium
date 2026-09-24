@@ -87,3 +87,19 @@ action("make_real_time_url_allowlist_protobuf_for_gcs") {
     rebase_path(python_path_safe_browsing, root_build_dir),
   ]
 }
+
+# Command line tool for decoding Safe Browsing v5 256-bit Rice deltas.
+if (current_toolchain == host_toolchain) {
+  executable("v5_rice_decoder_tool") {
+    sources = [ "v5_rice_decoder_tool.cc" ]
+    deps = [
+      "//base",
+      "//components/safe_browsing/core/browser/db:v5_rice",
+      "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
+    ]
+  }
+} else {
+  group("v5_rice_decoder_tool") {
+    public_deps = [ ":v5_rice_decoder_tool($host_toolchain)" ]
+  }
+}
