@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/callback_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
@@ -41,6 +44,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/decoration/shadow.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/view_shadow.h"
@@ -216,8 +220,9 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
                         }),
               InstrumentNonTabWebView(kWebContentsId,
                                       OrganizerPanelView::kWebViewElementId),
-              WaitForWebContentsReady(
-                  kWebContentsId, GURL(chrome::kChromeUIOrganizerPanelURL)));
+              WaitForWebContentsReady(kWebContentsId,
+                                      GURL(chrome::kChromeUIOrganizerPanelURL)),
+              WaitForWebContentsPainted(kWebContentsId));
     AddDescriptionPrefix(steps, "WaitForPanelLoad()");
     return steps;
   }
@@ -567,4 +572,69 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelAnimationUiTest,
             return organizer_panel_bounds.right() > region_bounds.right();
           },
           "Tab strip is clipped on the left."));
+}
+
+class OrganizerPanelPixelTest : public OrganizerPanelUiTest {
+ public:
+  OrganizerPanelPixelTest() = default;
+  ~OrganizerPanelPixelTest() override = default;
+
+  // Screenshots segments of the panel top and bottom to ensure visual
+  // consistency. Remember to add any tests which use this to the file
+  // `pixel_tests.filter`.
+  auto ScreenshotPanel() {
+    constexpr std::string kBaselineCL = "8451947";
+    auto steps = Steps(
+        WaitForPanelLoad(),
+        SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                "Screenshot not supported on all platforms."),
+        Screenshot(kBrowserViewElementId, "panel_top", kBaselineCL,
+                   [this]() {
+                     auto rect = GetPanelRectInBrowser();
+                     rect.set_height(1);
+                     rect.Outset(gfx::Outsets::TLBR(16, 8, 8, 8));
+                     return rect;
+                   }),
+        Screenshot(kBrowserViewElementId, "panel_bottom", kBaselineCL,
+                   [this]() {
+                     auto rect = GetPanelRectInBrowser();
+                     rect.set_y(rect.bottom() - 1);
+                     rect.set_height(1);
+                     rect.Outset(gfx::Outsets::TLBR(8, 8, 16, 8));
+                     return rect;
+                   }),
+        SetOnIncompatibleAction(OnIncompatibleAction::kFailTest,
+                                "Restoring default state."));
+
+    AddDescriptionPrefix(steps, "MaybeScreenshotPanel()");
+    return steps;
+  }
+
+ private:
+  gfx::Rect GetPanelRectInBrowser() const {
+    auto* const elements = BrowserElementsViews::From(browser());
+    auto* const browser_view = elements->GetView(kBrowserViewElementId);
+    auto* const panel_view = elements->GetView(kOrganizerPanelElementId);
+    return views::View::ConvertRectToTarget(panel_view, browser_view,
+                                            panel_view->GetLocalBounds());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPixelTest, HorizontalTabs) {
+  RunTestSequence(SetVerticalTabsEnabled(false), OpenOrganizerPanel(),
+                  ScreenshotPanel());
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPixelTest, VerticalTabsEmbedded) {
+  RunTestSequence(SetVerticalTabsEnabled(true), OpenOrganizerPanel(),
+                  ScreenshotPanel());
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPixelTest, VerticalTabsWithTray) {
+  constexpr int kVerticalTabsRegionWidth =
+      organizer_panel::kOrganizerPanelMinWidth -
+      organizer_panel::kOrganizerPanelMinOverlap;
+  RunTestSequence(SetVerticalTabsEnabled(true),
+                  ResizeVerticalTabsRegionToWidth(kVerticalTabsRegionWidth),
+                  OpenOrganizerPanel(), ScreenshotPanel());
 }
