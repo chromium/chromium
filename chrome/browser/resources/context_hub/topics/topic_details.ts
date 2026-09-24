@@ -273,13 +273,16 @@ export class TopicDetailsElement extends CrLitElement {
     return this.topic?.longDescription || this.topic?.description || '';
   }
 
+  // Only web pages are openable, matching the browser-side filter in
+  // `PageHandler::OpenUrlsInTabGroup()`. This also covers the `window.open`
+  // fallback, which would otherwise bypass that filter.
   protected isValidUrl_(urlStr: string): boolean {
     if (!urlStr) {
       return false;
     }
     try {
-      new URL(urlStr);
-      return true;
+      const {protocol} = new URL(urlStr);
+      return protocol === 'https:' || protocol === 'http:';
     } catch {
       return false;
     }

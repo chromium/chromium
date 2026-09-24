@@ -807,10 +807,29 @@ void ContextHubPageHandler::OpenUrlsInTabGroup(
     std::move(callback).Run(false);
     return;
   }
+
+  // Only open web pages. These URLs come from the renderer, and ultimately
+  // from browsing history, so they can carry schemes such as file:, chrome:
+  // or javascript: that must not be opened without an explicit user
+  // navigation. They are dropped rather than reported as a bad message, since
+  // a history-derived list can legitimately contain them. Filtering happens
+  // before capping so that rejected URLs don't count towards the limit.
   constexpr size_t kMaxUrlsToOpen = 10;
-  base::span<const GURL> capped_urls =
-      base::span(urls).first(std::min(urls.size(), kMaxUrlsToOpen));
-  bool success = tab_provider_->OpenUrlsInTabGroup(group_label, capped_urls);
+  std::vector<GURL> web_urls;
+  for (const GURL& url : urls) {
+    if (web_urls.size() == kMaxUrlsToOpen) {
+      break;
+    }
+    if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
+      web_urls.push_back(url);
+    }
+  }
+  if (web_urls.empty()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bool success = tab_provider_->OpenUrlsInTabGroup(group_label, web_urls);
   std::move(callback).Run(success);
 }
 

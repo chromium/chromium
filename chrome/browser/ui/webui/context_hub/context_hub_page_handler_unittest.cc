@@ -8,7 +8,9 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -104,6 +106,10 @@ class MockTabProvider : public ContextHubPageHandler::TabProvider {
   MOCK_METHOD(void,
               UngroupGroupFromTabstripIfOpen,
               (const base::Uuid&),
+              (override));
+  MOCK_METHOD(bool,
+              OpenUrlsInTabGroup,
+              (const std::string&, base::span<const GURL>),
               (override));
   MOCK_METHOD(void,
               OpenTopic,
@@ -2415,6 +2421,68 @@ TEST_F(ContextHubPageHandlerTest, GetTopics_NoJourneys) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextHubPageHandlerTest, OpenUrlsInTabGroup_OnlyOpensWebUrls) {
+  std::vector<GURL> opened_urls;
+  EXPECT_CALL(*mock_tab_provider_, OpenUrlsInTabGroup("Topic", _))
+      .WillOnce([&](const std::string&, base::span<const GURL> urls) {
+        opened_urls.assign(urls.begin(), urls.end());
+        return true;
+      });
+
+  base::test::TestFuture<bool> future;
+  handler_->OpenUrlsInTabGroup(
+      "Topic",
+      {GURL("https://example.com/a"), GURL("file:///etc/passwd"),
+       GURL("chrome://settings"), GURL("javascript:alert(1)"),
+       GURL("data:text/html,hi"), GURL("not a url"),
+       GURL("http://example.com/b")},
+      future.GetCallback());
+
+  EXPECT_TRUE(future.Get());
+  EXPECT_THAT(opened_urls, testing::ElementsAre(GURL("https://example.com/a"),
+                                                GURL("http://example.com/b")));
+}
+
+TEST_F(ContextHubPageHandlerTest, OpenUrlsInTabGroup_CapsAfterFiltering) {
+  // Rejected URLs come first, so capping before filtering would leave fewer
+  // than the maximum number of openable URLs.
+  std::vector<GURL> input = {GURL("chrome://settings"), GURL("file:///a"),
+                             GURL("javascript:void(0)")};
+  std::vector<GURL> expected;
+  for (int i = 0; i < 12; ++i) {
+    GURL url("https://example.com/" + base::NumberToString(i));
+    input.push_back(url);
+    if (i < 10) {
+      expected.push_back(url);
+    }
+  }
+
+  std::vector<GURL> opened_urls;
+  EXPECT_CALL(*mock_tab_provider_, OpenUrlsInTabGroup(_, _))
+      .WillOnce([&](const std::string&, base::span<const GURL> urls) {
+        opened_urls.assign(urls.begin(), urls.end());
+        return true;
+      });
+
+  base::test::TestFuture<bool> future;
+  handler_->OpenUrlsInTabGroup("Topic", input, future.GetCallback());
+
+  EXPECT_TRUE(future.Get());
+  EXPECT_EQ(opened_urls, expected);
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       OpenUrlsInTabGroup_NoWebUrls_DoesNotCallTabProvider) {
+  EXPECT_CALL(*mock_tab_provider_, OpenUrlsInTabGroup(_, _)).Times(0);
+
+  base::test::TestFuture<bool> future;
+  handler_->OpenUrlsInTabGroup(
+      "Topic", {GURL("chrome://settings"), GURL("file:///etc/passwd")},
+      future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
 TEST_F(ContextHubPageHandlerTest, OpenTopic_TopicId) {
   auto topic =
       browser::context_hub::mojom::TopicIdOrUrl::NewTopicId("topic_123");
