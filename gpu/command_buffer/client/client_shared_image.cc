@@ -1210,7 +1210,11 @@ SharedImageExportResult ClientSharedImage::EndImport(
     }
     return SharedImageExportResult{std::move(verified_sync_tokens)};
   } else {
-    return SharedImageExportResult{sync_tokens};
+    if (sync_tokens.empty()) {
+      return SharedImageExportResult{SyncToken()};
+    } else {
+      return SharedImageExportResult{sync_tokens};
+    }
   }
 }
 

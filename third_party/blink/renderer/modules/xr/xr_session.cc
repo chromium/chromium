@@ -2356,7 +2356,7 @@ void XRSession::OnFrame(double timestamp,
 
     auto shared_image =
         LayerSharedImageManager().CameraSharedImage().shared_image;
-    if (shared_image && !camera_sync_tokens.empty()) {
+    if (shared_image) {
       gpu::SharedImageExportResult camera_export_result =
           shared_image->EndImport(std::move(camera_sync_tokens));
       // Submit frame with cached layers data.
