@@ -6,6 +6,9 @@
 
 #if PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
+// TODO(crbug.com/565331388): Enable the tests.
+#if !PA_BUILDFLAG(IS_CHROMEOS)
+
 #include <sanitizer/asan_interface.h>
 
 #include <thread>
@@ -825,5 +828,7 @@ TEST(AsanBackupRefPtrImpl, RawRefOperatorStar) {
   // dereference, then this test will crash.
   [[maybe_unused]] volatile int& ref = *safe_ref;
 }
+
+#endif  // !PA_BUILDFLAG(IS_CHROMEOS)
 
 #endif  // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
