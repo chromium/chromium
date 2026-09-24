@@ -5,14 +5,14 @@
 #include "ui/gfx/vector_icon_utils.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
-#include "base/no_destructor.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace gfx {
@@ -90,12 +90,13 @@ int GetDefaultSizeOfVectorIcon(const VectorIcon& icon) {
 #define DECLARE_VECTOR_COMMAND(x) {#x, gfx::x},
 
 PathElement ParsePathElement(std::string_view s) {
-  static base::NoDestructor<absl::flat_hash_map<std::string_view, CommandType>>
-      kCommandMap({DECLARE_VECTOR_COMMANDS});
+  static constexpr auto kCommandMap =
+      base::MakeFixedFlatMap<std::string_view, CommandType>(
+          {DECLARE_VECTOR_COMMANDS});
 
   // Attempt to parse as a command.
-  auto it = kCommandMap->find(s);
-  if (it != kCommandMap->end()) {
+  auto it = kCommandMap.find(s);
+  if (it != kCommandMap.end()) {
     return PathElement(it->second);
   }
 
@@ -120,15 +121,15 @@ PathElement ParsePathElement(std::string_view s) {
 
 void ParsePathElements(std::string_view s,
                        std::vector<std::vector<PathElement>>& path_elements) {
-  auto lines = base::SplitString(s, "\n", base::TRIM_WHITESPACE,
-                                 base::SPLIT_WANT_NONEMPTY);
-  for (const auto& line : lines) {
+  std::vector<std::string_view> lines = base::SplitStringPiece(
+      s, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (std::string_view line : lines) {
     if (base::StartsWith(line, "//")) {
       continue;
     }
-    auto elements = base::SplitString(line, ", ", base::TRIM_WHITESPACE,
-                                      base::SPLIT_WANT_NONEMPTY);
-    for (const auto& element : elements) {
+    std::vector<std::string_view> elements = base::SplitStringPiece(
+        line, ", ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    for (std::string_view element : elements) {
       if (element == kCanvasDimensions || path_elements.empty()) {
         path_elements.emplace_back();
       }
