@@ -249,11 +249,14 @@ Vector<std::unique_ptr<IDBKey>> IDBKey::ToMultiEntryArray(
   std::sort(
       result.begin(), result.end(),
       [](const std::unique_ptr<IDBKey>& a, const std::unique_ptr<IDBKey>& b) {
-        return (a)->IsLessThan(b.get());
+        return a->IsLessThan(b.get());
       });
-  auto end = std::unique(result.begin(), result.end());
-  DCHECK_LE(static_cast<wtf_size_t>(end - result.begin()), result.size());
-  result.resize(static_cast<wtf_size_t>(end - result.begin()));
+  auto end = std::unique(
+      result.begin(), result.end(),
+      [](const std::unique_ptr<IDBKey>& a, const std::unique_ptr<IDBKey>& b) {
+        return a->IsEqual(b.get());
+      });
+  result.erase(end, result.end());
 
   return result;
 }

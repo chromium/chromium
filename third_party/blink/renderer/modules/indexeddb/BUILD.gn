@@ -78,6 +78,7 @@ source_set("unit_tests") {
   sources = [
     "idb_cursor_unittest.cc",
     "idb_key_path_test.cc",
+    "idb_key_test.cc",
     "idb_request_test.cc",
     "idb_test_helper.cc",
     "idb_transaction_test.cc",
