@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.grouped_affiliations;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.text.SpannableString;
@@ -144,11 +143,6 @@ class AcknowledgeGroupedCredentialSheetView implements BottomSheetContent {
     @Override
     public boolean swipeToDismissEnabled() {
         return false;
-    }
-
-    @Override
-    public String getSheetContentDescription(Context context) {
-        return context.getString(R.string.ack_grouped_cred_sheet_title, mCredentialHostname);
     }
 
     @Override

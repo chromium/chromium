@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
-import android.content.Context;
 import android.view.View;
 import android.view.View.MeasureSpec;
 
@@ -95,12 +94,6 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
     @Override
     public float getFullHeightRatio() {
         return 1.0f;
-    }
-
-    @Override
-    public String getSheetContentDescription(Context context) {
-        // TODO(crbug.com/502801668): Implement a string.
-        return "";
     }
 
     @Override

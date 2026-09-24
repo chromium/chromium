@@ -203,11 +203,6 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public String getSheetContentDescription(Context context) {
-        return context.getString(R.string.all_passwords_bottom_sheet_content_description);
-    }
-
-    @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.all_passwords_bottom_sheet_half_height;
     }

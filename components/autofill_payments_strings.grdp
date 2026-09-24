@@ -169,9 +169,6 @@
     <ph name="CARD_NICKNAME">$1<ex>Groceries</ex></ph>, <ph name="CARD_NETWORK_NAME">$2<ex>Visa</ex></ph>, <ph name="CARD_LAST_FOUR_DIGITS">$3<ex>4444</ex></ph>, expires <ph name="CARD_EXPIRATION">$4<ex>01/2025</ex></ph>
   </message>
   <if expr="is_android">
-    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The description of the Autofill save card prompt bottom sheet. 'Swipe down to close.' will automatically by appended." formatter_data="android_java">
-      Save card
-    </message>
     <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_BOTTOM_SHEET_FULL_HEIGHT" desc="The announcement when the Autofill save card prompt bottom sheet is opened." formatter_data="android_java">
       Save card opened at full height.
     </message>
@@ -733,9 +730,6 @@
   </message>
   <!-- Autofill save IBAN bottom sheet prompt -->
   <if expr="is_android">
-    <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The description of the Autofill save IBAN bottom sheet. 'Swipe down to close.' will automatically be appended." formatter_data="android_java">
-      Save IBAN
-    </message>
     <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_BOTTOM_SHEET_FULL_HEIGHT" desc="The announcement when the Autofill save IBAN bottom sheet is opened." formatter_data="android_java">
       Save IBAN opened at full height.
     </message>
@@ -903,9 +897,6 @@
   <if expr="is_android">
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION" desc="The accessibility description for a UI element that contains the credit card icon, the card name and last four digits (in placeholder), and the text 'Virtual card'. This UI element is in the dialog that lets users enroll their credit card into the virtual card number feature." formatter_data="android_java">
       <ph name="IDS_AUTOFILL_VIRTUAL_CARD_NAME_AND_LAST_FOUR_DIGITS">%1$s<ex>Visa **** 1234</ex></ph>, virtual card
-    </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONTENT_DESCRIPTION" desc="The description of the virtual card enrollment dialog for the accessbility screen reader." formatter_data="android_java">
-      Virtual card enrollment
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_FULL_HEIGHT_CONTENT_DESCRIPTION" desc="The description of the full height virtual card enrollment dialog for the accessbility screen reader." formatter_data="android_java">
       Virtual card enrollment opened at full height

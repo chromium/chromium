@@ -88,11 +88,6 @@ class TouchToFillPasswordManagerView extends BottomSheetListViewBase {
     }
 
     @Override
-    public String getSheetContentDescription(Context context) {
-        return context.getString(R.string.touch_to_fill_content_description);
-    }
-
-    @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.touch_to_fill_sheet_half_height;
     }

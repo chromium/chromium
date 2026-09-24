@@ -159,11 +159,6 @@ class NoPasskeysBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public String getSheetContentDescription(Context context) {
-        return context.getString(R.string.no_passkeys_sheet_content_description);
-    }
-
-    @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         assert false;
         return Resources.ID_NULL;

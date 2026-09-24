@@ -188,12 +188,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
         FacilitatedPaymentsPaymentMethodsView content = contentCaptor.getValue();
         assertThat(content.getContentView(), notNullValue());
         assertThat(
-                content.getSheetContentDescription(mApplicationContext),
-                equalTo(
-                        mApplicationContext.getString(
-                                R.string
-                                        .facilitated_payments_payment_methods_bottom_sheet_content_description)));
-        assertThat(
                 content.getSheetFullHeightAccessibilityStringId(),
                 equalTo(R.string.facilitated_payments_payment_methods_bottom_sheet_full_height));
         assertThat(
@@ -233,12 +227,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
         FacilitatedPaymentsPaymentMethodsView content = contentCaptor.getValue();
 
         assertThat(content.getContentView(), notNullValue());
-        assertThat(
-                content.getSheetContentDescription(mApplicationContext),
-                equalTo(
-                        mApplicationContext.getString(
-                                R.string
-                                        .facilitated_payments_payment_methods_bottom_sheet_content_description)));
         assertThat(
                 content.getSheetFullHeightAccessibilityStringId(),
                 equalTo(R.string.facilitated_payments_payment_methods_bottom_sheet_full_height));

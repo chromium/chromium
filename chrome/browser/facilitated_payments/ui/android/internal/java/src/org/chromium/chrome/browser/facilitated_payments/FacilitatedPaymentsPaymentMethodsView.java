@@ -220,12 +220,6 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
     }
 
     @Override
-    public String getSheetContentDescription(Context context) {
-        return context.getString(
-                R.string.facilitated_payments_payment_methods_bottom_sheet_content_description);
-    }
-
-    @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         // Half-height is disabled so no need for an accessibility string.
         assert false : "This method should not be called";

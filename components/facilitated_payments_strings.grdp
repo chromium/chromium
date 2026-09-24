@@ -102,9 +102,6 @@
   <message name="IDS_PIX_PAYMENT_PRODUCT_ICON_CONTENT_DESCRIPTION" desc="Accessibility string for the Google Pay + Pix product icon." formatter_data="android_java">
     Google Pay, Pix
   </message>
-  <message name="IDS_FACILITATED_PAYMENTS_PAYMENT_METHODS_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet showing a list of the user's payment methods is opened." formatter_data="android_java">
-    Payment methods available to be selected for proceeding with the payment. Keyboard hidden.
-  </message>
   <message name="IDS_FACILITATED_PAYMENTS_PAYMENT_METHODS_BOTTOM_SHEET_FULL_HEIGHT" desc="Accessibility string read when the bottom sheet showing a list of the user's payment methods is opened at full height. The sheet will occupy the entire screen." formatter_data="android_java">
     Payment methods available to be selected for proceeding with the payment opened at full height.
   </message>

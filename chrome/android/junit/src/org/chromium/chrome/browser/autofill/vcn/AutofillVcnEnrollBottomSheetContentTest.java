@@ -110,15 +110,6 @@ public final class AutofillVcnEnrollBottomSheetContentTest {
     }
 
     @Test
-    public void testBottomSheetAccessibilityContentDescription() {
-        assertThat(
-                mContent.getSheetContentDescription(mActivity),
-                equalTo(
-                        mActivity.getString(
-                                R.string.autofill_virtual_card_enroll_content_description)));
-    }
-
-    @Test
     public void testBottomSheetFullHeightAccessibilityDescription() {
         assertThat(
                 mContent.getSheetFullHeightAccessibilityStringId(),

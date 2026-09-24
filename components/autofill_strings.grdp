@@ -181,7 +181,7 @@
     Test address from <ph name="ENTRY_VOICEOVER">$1<ex>United states</ex></ph> selected.
   </message>
 
-  <message name="IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_TITLE" desc="Title of the prompt asking user to verify their email." formatter_data="android_java">
+  <message name="IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_TITLE" desc="Title of the prompt asking user to verify their email.">
     Verify this email automatically?
   </message>
   <message name="IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_BODY" desc="Body of the prompt asking user to verify their email. $1 is the issuer domain (e.g., gmail.com) and $2 is the email address.">
@@ -2063,9 +2063,6 @@ You can remove this suggestion from Chrome. Your original source won't be delete
   </if>
 
   <!-- Personal Context Notice in Autofill Bottomsheet -->
-  <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the autofill personal context notice sheet is opened." formatter_data="android_java">
-    Autofill from Gmail and more notice opened
-  </message>
   <message name="IDS_AUTOFILL_PERSONAL_CONTEXT_NOTICE_SHEET_FULL_HEIGHT" desc="Accessibility string read upon opening the autofill personal context notice sheet." formatter_data="android_java">
     Autofill from Gmail and more notice opened at full height
   </message>

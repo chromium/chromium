@@ -123,14 +123,6 @@ public class AutofillSaveCardBottomSheetContentTest {
     }
 
     @Test
-    public void testSheetContentDescription() {
-        assertEquals(
-                mActivity.getString(
-                        R.string.autofill_save_card_prompt_bottom_sheet_content_description),
-                mContent.getSheetContentDescription(mActivity));
-    }
-
-    @Test
     public void testSheetFullHeightAccessibilityString() {
         assertEquals(
                 R.string.autofill_save_card_prompt_bottom_sheet_full_height,

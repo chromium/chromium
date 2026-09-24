@@ -143,12 +143,6 @@ class TouchToFillAutofillView implements BottomSheetContent {
     }
 
     @Override
-    public String getSheetContentDescription(Context context) {
-        return context.getString(
-                R.string.autofill_personal_context_notice_sheet_content_description);
-    }
-
-    @Override
     public int getSheetFullHeightAccessibilityStringId() {
         return R.string.autofill_personal_context_notice_sheet_full_height;
     }

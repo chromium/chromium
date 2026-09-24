@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.iban;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.ScrollView;
 
@@ -85,12 +84,6 @@ import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
     @Override
     public float getFullHeightRatio() {
         return HeightMode.WRAP_CONTENT;
-    }
-
-    @Override
-    public String getSheetContentDescription(Context context) {
-        return context.getString(
-                R.string.autofill_save_iban_prompt_bottom_sheet_content_description);
     }
 
     @Override

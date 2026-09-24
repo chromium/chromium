@@ -7253,9 +7253,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Touch To Fill No Passkeys Sheet -->
-      <message name="IDS_NO_PASSKEYS_SHEET_CONTENT_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Accessibility string read when the no passkeys sheet is opened. It describes the bottom sheet informing users that no passkeys are available.">
-        No passkeys sheet
-      </message>
       <message name="IDS_NO_PASSKEYS_SHEET_FULL_HEIGHT" is_accessibility_with_no_ui="true" desc="Accessibility string read upon opening the bottom sheet that informs users that no passkeys are available. Even at full height, the sheet will occupy the bottom half of the screen.">
         No passkeys sheet opened at full height
       </message>

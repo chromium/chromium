@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.email_verification;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 import android.widget.ScrollView;
@@ -76,11 +75,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     @Override
     public boolean hideOnScroll() {
         return true;
-    }
-
-    @Override
-    public String getSheetContentDescription(Context context) {
-        return context.getString(R.string.autofill_email_verifier_prompt_title);
     }
 
     @Override

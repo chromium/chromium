@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.ScrollView;
 
@@ -90,14 +89,9 @@ import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
     }
 
     @Override
-    public String getSheetContentDescription(Context context) {
-        return context.getString(R.string.autofill_virtual_card_enroll_content_description);
-    }
-
-    @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         assert false : "Half height is disabled for virtual card enrollment bottom sheet";
-        return R.string.autofill_virtual_card_enroll_content_description;
+        return R.string.ok;
     }
 
     @Override
