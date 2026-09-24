@@ -586,6 +586,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       }
 
       const KEYDOWN_HANDLED_KEYS = [
+        ' ',
         'ArrowDown',
         'ArrowUp',
         'Backspace',
@@ -692,6 +693,29 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       return false;
     }
 
+    /**
+     * Handles Space key presses on virtually focused buttons (Action, Remove
+     * Suggestion, Context Entrypoint, etc.). Unlike Enter, Space does not
+     * activate the AIM button or intercept Keyword Mode, allowing a space
+     * character to be typed into the input instead.
+     */
+    handleVirtualFocusSpace(e: KeyboardEvent): boolean {
+      if (this.selection.state === SelectionLineState.kFocusedButtonAim) {
+        this.setSelection({
+          line: this.selection.line,
+          state: SelectionLineState.kNormal,
+          actionIndex: 0,
+        });
+        return false;
+      }
+
+      if (this.selection.state === SelectionLineState.kKeywordMode) {
+        return false;
+      }
+
+      return this.handleVirtualFocusEnter(e);
+    }
+
     private updateInputForSelection_(
         nextSelection: OmniboxPopupSelection, key: string) {
       if (this.selectedMatch) {
@@ -772,6 +796,14 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         const inputEl = this.getInputElement().inputElement;
         if (inputEl && this.keywordModeManager_.handleBackspace(inputEl)) {
           e.preventDefault();
+        }
+        return;
+      }
+
+      if (e.key === ' ' || e.key === '\u3000') {
+        if (this.virtualFocusEnabled && this.dropdownIsVisible &&
+            !e.isComposing && !hasKeyModifiers(e)) {
+          this.handleVirtualFocusSpace(e);
         }
         return;
       }
@@ -1132,6 +1164,7 @@ export interface SearchboxMixinInterface extends
   getWrapperElement(): HTMLElement;
   handleKeyNavigation(e: KeyboardEvent): void;
   handleVirtualFocusEnter(e: KeyboardEvent): boolean;
+  handleVirtualFocusSpace(e: KeyboardEvent): boolean;
   hasMatches(): boolean;
   isAutocompleteResultStale(result: AutocompleteResult): boolean;
   isBackgroundTabNavigation(e: KeyboardEvent|MouseEvent): boolean;

@@ -2757,6 +2757,63 @@ suite('SearchboxMixinVirtualFocusTest', () => {
       });
 
   test(
+      'Space activates focused buttons except AIM and keyword mode',
+      async () => {
+        element.virtualFocusEnabledOverride = true;
+        const mockInput = element.getInputElement();
+        await simulateUserTextInput(mockInput, 'query');
+
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'query',
+          matches: [createSearchMatchForTesting({
+            fillIntoEdit: 'query',
+            supportsDeletion: true,
+            destinationUrl: 'https://example.com/delete',
+          })],
+        }));
+        await microtasksFinished();
+
+        // 1. Space on kNormal or kKeywordMode does not prevent default.
+        for (const state
+                 of [SelectionLineState.kNormal,
+                     SelectionLineState.kKeywordMode]) {
+          element.setSelection({line: 0, state, actionIndex: 0});
+          const event = createKeyboardEvent(' ');
+          mockInput.inputElement.dispatchEvent(event);
+          await microtasksFinished();
+          assertFalse(event.defaultPrevented);
+        }
+
+        // 2. Space on kFocusedButtonAim resets selection to kNormal without
+        // preventing default.
+        element.setSelection({
+          line: 0,
+          state: SelectionLineState.kFocusedButtonAim,
+          actionIndex: 0,
+        });
+        const aimSpace = createKeyboardEvent(' ');
+        mockInput.inputElement.dispatchEvent(aimSpace);
+        await microtasksFinished();
+        assertFalse(aimSpace.defaultPrevented);
+        assertEquals(SelectionLineState.kNormal, element.selection.state);
+
+        // 3. Space on kFocusedButtonRemoveSuggestion prevents default and
+        // deletes the match via handleVirtualFocusEnter.
+        element.setSelection({
+          line: 0,
+          state: SelectionLineState.kFocusedButtonRemoveSuggestion,
+          actionIndex: 0,
+        });
+        const removeSpace = createKeyboardEvent(' ');
+        mockInput.inputElement.dispatchEvent(removeSpace);
+        await microtasksFinished();
+        assertTrue(removeSpace.defaultPrevented);
+        assertEquals(
+            1, testProxy.handler.getCallCount('deleteAutocompleteMatch'));
+      });
+
+  test(
       'Shift + Arrow keys do not trigger virtual focus navigation',
       async () => {
         element.virtualFocusEnabledOverride = true;
