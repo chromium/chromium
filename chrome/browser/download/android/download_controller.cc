@@ -495,8 +495,7 @@ bool DownloadController::OnDangerousDownload(download::DownloadItem* item) {
   }
 
   ui::WindowAndroid* window_android =
-      GetWindowHelper(item, /*should_schedule_removal=*/true,
-                      /*fallback_to_current_window=*/false);
+      GetWindowHelper(item, /*should_schedule_removal=*/true);
 
   if (!dangerous_download_bridge_) {
     dangerous_download_bridge_ =
@@ -508,8 +507,7 @@ bool DownloadController::OnDangerousDownload(download::DownloadItem* item) {
 
 bool DownloadController::OnSensitiveDownload(download::DownloadItem* item) {
   ui::WindowAndroid* window_android =
-      GetWindowHelper(item, /*should_schedule_removal=*/true,
-                      /*fallback_to_current_window=*/false);
+      GetWindowHelper(item, /*should_schedule_removal=*/true);
 
   if (!policy_warning_download_bridge_) {
     policy_warning_download_bridge_ =
@@ -525,12 +523,12 @@ bool DownloadController::ShowDangerousDownloadDialog(
     return false;
   }
 
-  // Reached post-download (unlike OnDangerousDownload). If the original
-  // WebContents is missing, keep the download and fallback to showing the
-  // dialog in the current window.
-  ui::WindowAndroid* window_android =
-      GetWindowHelper(item, /*should_schedule_removal=*/false,
-                      /*fallback_to_current_window=*/true);
+  // Check the current active window first (or if the originating tab is
+  // inactive).
+  ui::WindowAndroid* window_android = GetCurrentWindow();
+  if (!window_android) {
+    window_android = GetWindowHelper(item, /*should_schedule_removal=*/false);
+  }
   if (!window_android) {
     return false;
   }
@@ -633,8 +631,7 @@ bool DownloadController::ShouldShowAppVerificationPrompt(
 
 ui::WindowAndroid* DownloadController::GetWindowHelper(
     download::DownloadItem* item,
-    bool should_schedule_removal,
-    bool fallback_to_current_window) {
+    bool should_schedule_removal) {
   WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
   if (should_schedule_removal && !web_contents) {
     ScheduleRemoveDownloadItem(item);
@@ -644,13 +641,7 @@ ui::WindowAndroid* DownloadController::GetWindowHelper(
 
   ui::ViewAndroid* view_android =
       web_contents ? web_contents->GetNativeView() : nullptr;
-  ui::WindowAndroid* window_android =
-      view_android ? view_android->GetWindowAndroid() : nullptr;
-
-  if (fallback_to_current_window && !window_android) {
-    window_android = GetCurrentWindow();
-  }
-  return window_android;
+  return view_android ? view_android->GetWindowAndroid() : nullptr;
 }
 
 DEFINE_JNI(DownloadController)

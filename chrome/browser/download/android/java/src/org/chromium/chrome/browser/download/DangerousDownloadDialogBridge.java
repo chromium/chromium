@@ -98,6 +98,35 @@ public class DangerousDownloadDialogBridge {
             @JniType("std::u16string") String downloadDomain,
             int iconId,
             boolean isDangerous) {
+        if (!ChromeFeatureList.sMaliciousApkDownloadCheck.isEnabled()) {
+            Activity activity =
+                    windowAndroid.getActivity() != null ? windowAndroid.getActivity().get() : null;
+            if (!(activity instanceof ModalDialogManagerHolder)) {
+                onCancel(guid, windowAndroid);
+                return;
+            }
+
+            new DangerousDownloadDialog()
+                    .show(
+                            activity,
+                            ((ModalDialogManagerHolder) activity).getModalDialogManager(),
+                            fileName,
+                            totalBytes,
+                            downloadDomain,
+                            iconId,
+                            (result) -> {
+                                if (result
+                                        == DangerousDownloadDialogEvent
+                                                .DANGEROUS_DOWNLOAD_DIALOG_CONFIRM) {
+                                    onAccepted(guid);
+                                } else {
+                                    onCancel(guid, windowAndroid);
+                                }
+                            },
+                            isDangerous);
+            return;
+        }
+
         PendingDialog pending =
                 new PendingDialog(
                         windowAndroid,
@@ -117,15 +146,21 @@ public class DangerousDownloadDialogBridge {
         }
     }
 
-    private static @Nullable Activity getValidResumedActivity(WindowAndroid windowAndroid) {
-        Activity activity =
-                windowAndroid.getActivity() != null ? windowAndroid.getActivity().get() : null;
+    private @Nullable Activity getValidResumedActivity(@Nullable WindowAndroid windowAndroid) {
+        Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         if (activity != null && isValidResumedActivity(activity)) {
             return activity;
         }
-        Activity focusedActivity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (focusedActivity != null && isValidResumedActivity(focusedActivity)) {
-            return focusedActivity;
+        if (windowAndroid != null && windowAndroid.getActivity() != null) {
+            Activity windowActivity = windowAndroid.getActivity().get();
+            if (windowActivity != null && isValidResumedActivity(windowActivity)) {
+                return windowActivity;
+            }
+        }
+        for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
+            if (isValidResumedActivity(runningActivity)) {
+                return runningActivity;
+            }
         }
         return null;
     }
