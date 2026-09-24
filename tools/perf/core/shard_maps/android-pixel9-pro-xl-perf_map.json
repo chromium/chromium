@@ -171,7 +171,8 @@
                 "crossbench_name": "web-power",
                 "arguments": [
                     "--disable-field-trials",
-                    "--required-device-config-mode=warn"
+                    "--required-device-config-mode=warn",
+                    "--cool-down-threshold=moderate"
                 ]
             }
         }
