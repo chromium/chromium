@@ -73,6 +73,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/blink_test_browser_support.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -112,9 +113,6 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
-#include "ui/shell_dialogs/select_file_dialog_factory.h"
-#include "ui/shell_dialogs/select_file_policy.h"
-#include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -1605,63 +1603,12 @@ void WebTestControlHost::GetWritableDirectory(
   std::move(reply).Run(writable_directory_for_tests_.GetPath());
 }
 
-namespace {
-
-// A fake ui::SelectFileDialog, which will select a single pre-determined path.
-class FakeSelectFileDialog : public ui::SelectFileDialog {
- public:
-  FakeSelectFileDialog(base::FilePath result,
-                       Listener* listener,
-                       std::unique_ptr<ui::SelectFilePolicy> policy)
-      : ui::SelectFileDialog(listener, std::move(policy)),
-        result_(std::move(result)) {}
-
- protected:
-  ~FakeSelectFileDialog() override = default;
-
-  void SelectFileImpl(Type type,
-                      const std::u16string& title,
-                      const base::FilePath& default_path,
-                      const FileTypeInfo* file_types,
-                      int file_type_index,
-                      const base::FilePath::StringType& default_extension,
-                      gfx::NativeWindow owning_window,
-                      const GURL* caller) override {
-    listener_->FileSelected(ui::SelectedFileInfo(result_), 0);
-  }
-
-  bool IsRunning(gfx::NativeWindow owning_window) const override {
-    return false;
-  }
-  void ListenerDestroyed() override { listener_ = nullptr; }
-  bool HasMultipleFileTypeChoicesImpl() override { return false; }
-
- private:
-  base::FilePath result_;
-};
-
-class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
- public:
-  explicit FakeSelectFileDialogFactory(base::FilePath result)
-      : result_(std::move(result)) {}
-  ~FakeSelectFileDialogFactory() override = default;
-
-  ui::SelectFileDialog* Create(
-      ui::SelectFileDialog::Listener* listener,
-      std::unique_ptr<ui::SelectFilePolicy> policy) override {
-    return new FakeSelectFileDialog(result_, listener, std::move(policy));
-  }
-
- private:
-  base::FilePath result_;
-};
-
-}  // namespace
 
 void WebTestControlHost::SetFilePathForMockFileDialog(
     const base::FilePath& path) {
   ui::SelectFileDialog::SetFactory(
-      std::make_unique<FakeSelectFileDialogFactory>(path));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{path}));
 }
 
 void WebTestControlHost::CreateSubresourceFilterRulesetFile(
