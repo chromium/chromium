@@ -348,7 +348,7 @@ bool AreWindowServerEffectsDisabled() {
   };
 
   CGFloat scale = 1;
-  for (int i = std::size(frames) - 1; i >= 0; --i) {
+  for (int i = std::size(frames) - 2; i >= 0; --i) {
     if (value >= UNSAFE_TODO(frames[i]).value) {
       CGFloat delta =
           UNSAFE_TODO(frames[i + 1]).value - UNSAFE_TODO(frames[i]).value;
