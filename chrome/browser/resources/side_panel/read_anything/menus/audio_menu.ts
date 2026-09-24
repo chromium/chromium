@@ -16,7 +16,7 @@ import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_ty
 import type {AccentMenuElement} from '../read_aloud/accent_menu.js';
 import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
-import {getVoiceTitle} from '../read_aloud/voice_menu_display.js';
+import {getVoiceDisplayName, getVoiceTitleAndNatureNaming} from '../read_aloud/voice_menu_display.js';
 import type {VoiceSelectionDialogElement} from '../read_aloud/voice_selection_dialog.js';
 import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
@@ -210,9 +210,10 @@ export class AudioMenuElement extends AudioMenuElementBase implements
     if (!voiceGroup || !voiceGroup.items[0]) {
       return;
     }
+    const naming = getVoiceTitleAndNatureNaming(this.selectedVoice);
     voiceGroup.items[0] = {
       ...voiceGroup.items[0],
-      title: getVoiceTitle(this.selectedVoice),
+      title: getVoiceDisplayName(naming),
     };
     voiceGroup.items = [...voiceGroup.items];
   }

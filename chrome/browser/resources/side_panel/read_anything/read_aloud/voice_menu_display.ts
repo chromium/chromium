@@ -12,10 +12,18 @@ import {hasGoogleIdentifier} from './voice_language_conversions.js';
 // clang-format on
 import {getDisplayNameForLocale} from './language_display.js';
 import {areVoicesEqual, hasNaturalIdentifier, NotificationType} from './voice_language_conversions.js';
+import type {VoiceNatureNaming} from './voice_nature_naming.js';
+import {getVoiceNatureNaming} from './voice_nature_naming.js';
+
+// Both display fields for one voice.
+export interface VoiceDisplayNaming {
+  // The TTS engine name or the system-voice string.
+  title: string;
+  natureNaming: VoiceNatureNaming|null;
+}
 
 // Represents an individual voice entry displayed in the voice selection menu.
-export interface VoiceDropdownItem {
-  title: string;
+export interface VoiceDropdownItem extends VoiceDisplayNaming {
   voice: SpeechSynthesisVoice;
   selected: boolean;
   // If a preview has been initiated on a voice. This may be true before
@@ -65,6 +73,23 @@ export function getVoiceTitle(voice?: SpeechSynthesisVoice|null): string {
   }
   // </if>
   return title;
+}
+
+// Returns both title and nature naming display fields for one voice
+export function getVoiceTitleAndNatureNaming(
+    voice?: SpeechSynthesisVoice|null): VoiceDisplayNaming {
+  const title = getVoiceTitle(voice);
+  // Off ChromeOS, getVoiceTitle collapses non-Google voices to the generic
+  // system label; a mapping hit must not undo that collapse.
+  const natureNaming = (voice && title === voice.name) ?
+      getVoiceNatureNaming(voice.name) :
+      null;
+  return {title, natureNaming};
+}
+
+// The display name for a voice (nature name when mapped, otherwise the title).
+export function getVoiceDisplayName(naming: VoiceDisplayNaming): string {
+  return naming.natureNaming ? naming.natureNaming.natureName : naming.title;
 }
 
 // Sanitizes voice names for use in HTML data-test-id attributes and CSS
@@ -129,8 +154,11 @@ export function computeVoiceDropdown(params: BuildVoiceDropdownGroupsParams):
           hasSelectedVoice = true;
         }
 
+        const {title, natureNaming} = getVoiceTitleAndNatureNaming(voice);
+
         const dropdownItem: VoiceDropdownItem = {
-          title: getVoiceTitle(voice),
+          title,
+          natureNaming,
           voice,
           id: stringToHtmlTestId(voice.name),
           selected: isSelected,

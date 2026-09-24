@@ -80,7 +80,7 @@ export {VoiceLanguageController} from './read_aloud/voice_language_controller.js
 export {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getNotification, getNotificationFor, getVoicePackConvertedLangIfExists, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './read_aloud/voice_language_conversions.js';
 export {VoiceLanguageModel} from './read_aloud/voice_language_model.js';
 export type {BuildVoiceDropdownGroupsParams, BuildVoiceDropdownGroupsResult, VoiceDropdownGroup, VoiceDropdownItem} from './read_aloud/voice_menu_display.js';
-export {computeDownloadingMessages, computeErrorMessages, computeVoiceDropdown, getVoiceTitle, isVoicePreviewSpinning, stringToHtmlTestId, voiceQualityRankComparator} from './read_aloud/voice_menu_display.js';
+export {computeDownloadingMessages, computeErrorMessages, computeVoiceDropdown, getVoiceDisplayName, getVoiceTitle, getVoiceTitleAndNatureNaming, isVoicePreviewSpinning, stringToHtmlTestId, voiceQualityRankComparator} from './read_aloud/voice_menu_display.js';
 export type {VoiceNatureNaming} from './read_aloud/voice_nature_naming.js';
 export {getVoiceNatureNaming, VOICE_NATURE_NAMING_BY_LOCALE} from './read_aloud/voice_nature_naming.js';
 export type {VoiceNotificationListener} from './read_aloud/voice_notification_manager.js';

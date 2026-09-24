@@ -6,8 +6,8 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {VoiceDropdownItem} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {computeDownloadingMessages, computeErrorMessages, computeVoiceDropdown, getVoiceTitle, isVoicePreviewSpinning, NotificationType, stringToHtmlTestId, voiceQualityRankComparator} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {computeDownloadingMessages, computeErrorMessages, computeVoiceDropdown, getVoiceDisplayName, getVoiceNatureNaming, getVoiceTitle, getVoiceTitleAndNatureNaming, isVoicePreviewSpinning, NotificationType, stringToHtmlTestId, voiceQualityRankComparator} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
 import type {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
@@ -21,6 +21,12 @@ suite('VoiceMenuDisplay', () => {
       createSpeechSynthesisVoice({name: 'Google US English', lang: 'en-US'});
   const italianVoice =
       createSpeechSynthesisVoice({name: 'Google Italian', lang: 'it-IT'});
+  // Key for getVoiceNatureNaming. googleNaturalVoice can't be used as key
+  // due to the missing voice number.
+  const mappedVoice = createSpeechSynthesisVoice(
+      {name: 'Google US English 1 (Natural)', lang: 'en-US'});
+  const mappedSpanishVoice = createSpeechSynthesisVoice(
+      {name: 'Google español de Estados Unidos 1 (Natural)', lang: 'es-US'});
 
   setup(() => {
     const result = setupTestEnvironment();
@@ -46,6 +52,45 @@ suite('VoiceMenuDisplay', () => {
     assertEquals('Google US English', getVoiceTitle(googleStandardVoice));
     assertEquals(
         'Google US English (Natural)', getVoiceTitle(googleNaturalVoice));
+  });
+
+  test('getVoiceTitleAndNatureNaming resolves both display fields', () => {
+    for (const voice of [mappedVoice, mappedSpanishVoice]) {
+      const mapped = getVoiceTitleAndNatureNaming(voice);
+
+      assertEquals(voice.name, mapped.title);
+      assertDeepEquals(getVoiceNatureNaming(voice.name), mapped.natureNaming);
+    }
+
+    const unmapped = getVoiceTitleAndNatureNaming(googleNaturalVoice);
+
+    assertEquals(googleNaturalVoice.name, unmapped.title);
+    assertEquals(null, unmapped.natureNaming);
+  });
+
+  test('getVoiceTitleAndNatureNaming handles no selected voice', () => {
+    // The point here is that the naming lookup is skipped rather than called
+    // with a placeholder string.
+    const none = getVoiceTitleAndNatureNaming(null);
+
+    assertEquals('Voice', none.title);
+    assertEquals(null, none.natureNaming);
+  });
+
+  test('getVoiceDisplayName prefers the nature name', () => {
+    for (const voice of [mappedVoice, mappedSpanishVoice]) {
+      const mapped = getVoiceTitleAndNatureNaming(voice);
+
+      assertEquals(
+          getVoiceNatureNaming(voice.name)!.natureName,
+          getVoiceDisplayName(mapped));
+    }
+  });
+
+  test('getVoiceDisplayName falls back to the title', () => {
+    const unmapped = getVoiceTitleAndNatureNaming(googleNaturalVoice);
+
+    assertEquals(googleNaturalVoice.name, getVoiceDisplayName(unmapped));
   });
 
   test('stringToHtmlTestId removes spaces and parentheses', () => {
@@ -98,6 +143,7 @@ suite('VoiceMenuDisplay', () => {
       () => {
         const spinningItem: VoiceDropdownItem = {
           title: 'Voice',
+          natureNaming: null,
           voice: googleNaturalVoice,
           id: 'voice-id',
           selected: false,
@@ -224,6 +270,78 @@ suite('VoiceMenuDisplay', () => {
         assertFalse(result.groups[0]!.voices[0]!.selected);
       });
 
+  test('computeVoiceDropdown maps a voice with a nature naming entry', () => {
+    for (const voice of [mappedVoice, mappedSpanishVoice]) {
+      const result = computeVoiceDropdown({
+        availableVoices: [voice],
+        enabledLangs: [voice.lang.toLowerCase()],
+      });
+
+      const item = result.groups[0]!.voices[0]!;
+
+      assertDeepEquals(getVoiceNatureNaming(voice.name), item.natureNaming);
+      assertEquals(voice.name, item.title);
+    }
+  });
+
+  test(
+      'computeVoiceDropdown leaves natureNaming null for an unmapped voice',
+      () => {
+        const result = computeVoiceDropdown({
+          availableVoices: [googleNaturalVoice],
+          enabledLangs: ['en-us'],
+        });
+
+        const item = result.groups[0]!.voices[0]!;
+
+        assertEquals(null, item.natureNaming);
+        assertEquals(googleNaturalVoice.name, item.title);
+      });
+
+  // "computeVoiceDropdown lets the system voice collapse outrank a mapping" and
+  // "computeVoiceDropdown maps a voice with no Google identifier" are
+  // complementary tests based on platform (ChromeOS vs other desktops).
+  // <if expr="not is_chromeos">
+  test(
+      'computeVoiceDropdown lets the system voice collapse outrank a mapping',
+      () => {
+        const mappedSystemVoice = createSpeechSynthesisVoice(
+            {name: 'Chrome OS 粵語 1', lang: 'yue-HK'});
+
+        assertTrue(getVoiceNatureNaming(mappedSystemVoice.name) !== null);
+
+        const result = computeVoiceDropdown({
+          availableVoices: [mappedSystemVoice],
+          enabledLangs: ['yue-hk'],
+        });
+
+        // The name is a table key, but getVoiceTitle hid it behind the generic
+        // system-voice label.
+        const item = result.groups[0]!.voices[0]!;
+
+        assertEquals('System default voice', item.title);
+        assertEquals(null, item.natureNaming);
+      });
+  // </if>
+
+  // <if expr="is_chromeos">
+  test('computeVoiceDropdown maps a voice with no Google identifier', () => {
+    const mappedSystemVoice = createSpeechSynthesisVoice(
+        {name: 'Chrome OS 粵語 1', lang: 'yue-HK'});
+
+    const result = computeVoiceDropdown({
+      availableVoices: [mappedSystemVoice],
+      enabledLangs: ['yue-hk'],
+    });
+
+    const item = result.groups[0]!.voices[0]!;
+
+    assertEquals(mappedSystemVoice.name, item.title);
+    assertDeepEquals(
+        getVoiceNatureNaming(mappedSystemVoice.name), item.natureNaming);
+  });
+  // </if>
+
   test(
       'computeErrorMessages returns empty array when notifications is' +
           ' undefined or empty',
@@ -263,10 +381,10 @@ suite('VoiceMenuDisplay', () => {
 
         const errors = computeErrorMessages(notifications, audioBrowserProxy);
 
-        assertEquals(0, errors.length);
-        assertEquals(
+    assertEquals(0, errors.length);
+    assertEquals(
             0, audioBrowserProxy.getCallCount('getDisplayNameForLocale'));
-      });
+  });
 
   test(
       'computeDownloadingMessages returns empty array when notifications is' +

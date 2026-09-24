@@ -12,7 +12,7 @@ import '../app/icons.html.js';
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrRadioGroupElement} from '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ToolbarEvent} from '../content/read_anything_types.js';
@@ -25,7 +25,7 @@ import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import {areVoicesEqual} from './voice_language_conversions.js';
 import type {NotificationType} from './voice_language_conversions.js';
 import type {VoiceDropdownGroup, VoiceDropdownItem} from './voice_menu_display.js';
-import {computeDownloadingMessages, computeErrorMessages, computeVoiceDropdown, isVoicePreviewSpinning} from './voice_menu_display.js';
+import {computeDownloadingMessages, computeErrorMessages, computeVoiceDropdown, getVoiceDisplayName, isVoicePreviewSpinning} from './voice_menu_display.js';
 import type {VoiceNotificationListener} from './voice_notification_manager.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 import {getCss} from './voice_selection_dialog.css.js';
@@ -284,6 +284,18 @@ export class VoiceSelectionDialogElement extends CrLitElement implements
     return !isVoicePreviewSpinning(voiceDropdown);
   }
 
+  protected voiceDisplayName_(voiceItem: VoiceDropdownItem): string {
+    return getVoiceDisplayName(voiceItem);
+  }
+
+  protected voiceLang_(voiceItem: VoiceDropdownItem): string|typeof nothing {
+    return voiceItem.natureNaming ? voiceItem.voice.lang : nothing;
+  }
+
+  // TODO(crbug.com/565495310): Trigger voice preview on right arrow key within
+  // the voice selection dialog menu. Screen readers currently play "use right
+  // arrow key to preview voice" which isn't accurate within the voice selection
+  // dialog menu.
   protected voiceLabel_(voiceName: string): string {
     return loadTimeData.getStringF(
         'readingModeLanguageMenuItemLabel', voiceName);
