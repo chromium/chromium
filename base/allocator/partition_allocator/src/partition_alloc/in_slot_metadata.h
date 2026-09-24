@@ -231,7 +231,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 
     CountType old_count = count_.fetch_sub(kPtrInc, std::memory_order_release);
     // Check underflow.
-    PA_DCHECK(old_count & kPtrCountMask);
+    PA_CHECK(old_count & kPtrCountMask);
 
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     // If a dangling raw_ptr<> was detected, report it.
@@ -254,7 +254,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     CountType old_count =
         count_.fetch_sub(kUnprotectedPtrInc, std::memory_order_release);
     // Check underflow.
-    PA_DCHECK(old_count & kUnprotectedPtrCountMask);
+    PA_CHECK(old_count & kUnprotectedPtrCountMask);
 
     return ReleaseCommon(old_count - kUnprotectedPtrInc);
 #else
