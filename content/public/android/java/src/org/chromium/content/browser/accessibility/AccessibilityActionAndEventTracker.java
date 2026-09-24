@@ -462,6 +462,16 @@ public class AccessibilityActionAndEventTracker {
         if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_ENABLED) != 0) {
             types.add("ENABLED");
         }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_CHECKED) != 0) {
+            types.add("CHECKED");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_EXPANDED) != 0) {
+            types.add("EXPANDED");
+        }
+        if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_SUPPLEMENTAL_DESCRIPTION)
+                != 0) {
+            types.add("SUPPLEMENTAL_DESCRIPTION");
+        }
         if ((contentChangeTypes & CONTENT_CHANGE_TYPE_SORT_DIRECTION) != 0) {
             types.add("SORT_DIRECTION");
         }
