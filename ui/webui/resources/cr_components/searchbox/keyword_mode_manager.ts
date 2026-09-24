@@ -224,18 +224,26 @@ export class KeywordModeManager {
     }
     return this.acceptSpaceAtEnd_(input, cursorPosition, event) ||
         this.acceptSpaceInMiddle_(input, cursorPosition, event) ||
-        this.acceptQuestionMark_(input, cursorPosition);
+        this.acceptQuestionMark_(input, cursorPosition, event);
   }
 
-  private isSpaceEvent_(event: Event|null): boolean {
+  /**
+   * Returns true if the event represents one of the specified characters being
+   * typed (not pasted or backspaced to).
+   */
+  private isTypedCharacterEvent_(event: Event|null, chars: string[]): boolean {
     if (event instanceof KeyboardEvent) {
-      return event.key === ' ' || event.key === '\u3000';
+      return chars.includes(event.key);
     }
     if (event instanceof InputEvent) {
-      return (event.data === ' ' || event.data === '\u3000') &&
+      return event.data !== null && chars.includes(event.data) &&
           event.inputType !== 'insertFromPaste';
     }
     return false;
+  }
+
+  private isSpaceEvent_(event: Event|null): boolean {
+    return this.isTypedCharacterEvent_(event, [' ', '\u3000']);
   }
 
   private acceptSpaceAtEnd_(
@@ -359,7 +367,8 @@ export class KeywordModeManager {
     return true;
   }
 
-  private acceptQuestionMark_(input: string, cursorPosition: number): boolean {
+  private acceptQuestionMark_(
+      input: string, cursorPosition: number, event: Event|null): boolean {
     // Cursor must be after '?'.
     if (cursorPosition !== 1) {
       return false;
@@ -375,12 +384,10 @@ export class KeywordModeManager {
       return false;
     }
 
-    // Input must have been typed, not backspaced to '?'. E.g. '?q<backspace>'
-    // should not enter keyword mode.
-    // TODO(b/504669216): this isn't handled yet.
-
-    // Input must have been typed, not pasted.
-    // TODO(b/504669216): webUI doesn't track paste state yet.
+    // Question mark must have been typed, not backspaced to '?' or pasted.
+    if (!this.isTypedCharacterEvent_(event, ['?'])) {
+      return false;
+    }
 
     return this.enterDefaultSearchEngineKeywordMode(
         KeywordModeEntryMethod.QUESTION_MARK);

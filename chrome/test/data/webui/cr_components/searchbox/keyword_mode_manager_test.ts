@@ -23,6 +23,10 @@ suite('KeywordModeManagerTest', () => {
   const questionMarkEvent = new KeyboardEvent('keydown', {key: '?'});
   const spaceInputEvent =
       new InputEvent('input', {inputType: 'insertText', data: ' '});
+  const backspaceInputEvent =
+      new InputEvent('input', {inputType: 'deleteContentBackward'});
+  const pasteInputEvent =
+      new InputEvent('input', {inputType: 'insertFromPaste', data: ' '});
 
   setup(() => {
     modelChangedCount = 0;
@@ -257,14 +261,10 @@ suite('KeywordModeManagerTest', () => {
     assertFalse(manager.acceptInputTrigger('@history ', 9, backspaceEvent));
     assertFalse(manager.isInKeywordMode);
 
-    const backspaceInputEvent =
-        new InputEvent('input', {inputType: 'deleteContentBackward'});
     assertFalse(
         manager.acceptInputTrigger('@history ', 9, backspaceInputEvent));
     assertFalse(manager.isInKeywordMode);
 
-    const pasteInputEvent =
-        new InputEvent('input', {inputType: 'insertFromPaste', data: ' '});
     assertFalse(manager.acceptInputTrigger('@history ', 9, pasteInputEvent));
     assertFalse(manager.isInKeywordMode);
 
@@ -483,6 +483,27 @@ suite('KeywordModeManagerTest', () => {
       placeholder: 'Search Google',
     }];
     manager.defaultSearchEngineKeyword = 'google.com';
+
+    // Backspacing or pasting to '?' does not trigger keyword mode (verify
+    // isInKeywordMode remains false after each attempt).
+    assertFalse(manager.acceptInputTrigger('?', 1, backspaceEvent));
+    assertFalse(manager.isInKeywordMode);
+    assertFalse(manager.acceptInputTrigger('?', 1, backspaceInputEvent));
+    assertFalse(manager.isInKeywordMode);
+    assertFalse(manager.acceptInputTrigger('?', 1, pasteInputEvent));
+    assertFalse(manager.isInKeywordMode);
+
+    // Typing '?' via InputEvent triggers keyword mode.
+    const questionMarkInputEvent =
+        new InputEvent('input', {inputType: 'insertText', data: '?'});
+    assertTrue(manager.acceptInputTrigger('?', 1, questionMarkInputEvent));
+    assertTrue(manager.isInKeywordMode);
+    assertEquals('google.com', manager.activeKeyword);
+    assertEquals('Search Google', manager.inputKeywordModel?.displayText);
+
+    manager.exit();
+
+    // Typing '?' via KeyboardEvent triggers keyword mode.
     assertTrue(manager.acceptInputTrigger('?', 1, questionMarkEvent));
     assertTrue(manager.isInKeywordMode);
     assertEquals('google.com', manager.activeKeyword);
