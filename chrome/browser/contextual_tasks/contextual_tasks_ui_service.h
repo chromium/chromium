@@ -405,6 +405,17 @@ class ContextualTasksUiService : public KeyedService {
   // credentials (aka, an OAuth token can be obtained).
   virtual bool IsSignedInToBrowserWithValidCredentials();
 
+  // Returns whether the user was signed in with valid credentials when the
+  // ContextualTasksUI for `web_contents` was initialized, falling back to
+  // `IsSignedInToBrowserWithValidCredentials()` if no ContextualTasksUI is
+  // attached.
+  virtual bool IsSignedInForWebContentsOnInit(
+      content::WebContents* web_contents);
+
+  // Shows the OAuth error dialog for the given `web_contents`.
+  virtual void ShowOauthErrorDialogForWebContents(
+      base::WeakPtr<content::WebContents> web_contents);
+
   // Return whether the cookie jar contains the primary account.
   virtual bool CookieJarContainsPrimaryAccount();
 
@@ -462,6 +473,11 @@ class ContextualTasksUiService : public KeyedService {
                          const blink::mojom::WindowFeatures& window_features,
                          BrowserWindowInterface* browser) {
     OpenUrl(url_params, window_features, browser);
+  }
+
+  bool ShouldShowOauthErrorDialogForTesting(
+      content::WebContents* web_contents) {
+    return ShouldShowOauthErrorDialog(web_contents);
   }
 
   // Applies required side panel URL modifications (e.g. forced host override,
@@ -645,9 +661,9 @@ class ContextualTasksUiService : public KeyedService {
   void OnOAuthTokenReceived(GoogleServiceAuthError error,
                             signin::AccessTokenInfo access_token_info);
 
-  // Shows the OAuth error dialog for the given `web_contents`.
-  void ShowOauthErrorDialogForWebContents(
-      base::WeakPtr<content::WebContents> web_contents);
+  // Returns whether an OAuth error dialog should be shown for the given
+  // `web_contents`.
+  bool ShouldShowOauthErrorDialog(content::WebContents* web_contents);
 
   // Runs all pending access token callbacks with the provided token.
   void RunPendingAccessTokenCallbacks(const std::string& token);

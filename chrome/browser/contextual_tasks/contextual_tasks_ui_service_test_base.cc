@@ -140,6 +140,8 @@ void ContextualTasksUiServiceTestBase::SetUp() {
                 ON_CALL(*mock_service,
                         IsSignedInToBrowserWithValidCredentials())
                     .WillByDefault(Return(true));
+                ON_CALL(*mock_service, IsSignedInForWebContentsOnInit(_))
+                    .WillByDefault(Return(true));
                 return mock_service;
               },
               contextual_tasks_service_.get(), aim_eligibility_service_.get(),

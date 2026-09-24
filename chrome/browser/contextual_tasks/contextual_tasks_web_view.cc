@@ -289,6 +289,16 @@ content::WebContents* ContextualTasksWebView::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
+  if (source && params.disposition == WindowOpenDisposition::CURRENT_TAB &&
+      ContextualTasksUiService::IsContextualTasksUrl(params.url)) {
+    content::NavigationController::LoadURLParams load_url_params(params);
+    base::WeakPtr<content::NavigationHandle> navigation_handle =
+        source->GetController().LoadURLWithParams(load_url_params);
+    if (navigation_handle_callback && navigation_handle) {
+      std::move(navigation_handle_callback).Run(*navigation_handle);
+    }
+    return source;
+  }
   BrowserWindowInterface* browser = webui::GetBrowserWindowInterface(source);
   if (browser) {
     return browser->OpenURL(params, std::move(navigation_handle_callback));
