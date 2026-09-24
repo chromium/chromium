@@ -34,6 +34,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** Tests for {@link ScopedBatchUpdate}. */
@@ -51,21 +52,27 @@ public class ScopedServiceBindingBatchImplTest {
     private static class FakeBindingRequestQueue implements BindingRequestQueue {
         private final List<ServiceConnection> mRebinds = new ArrayList<>();
         private final List<ServiceConnection> mUnbinds = new ArrayList<>();
+        // Ordered log of the calls made on this queue, used to assert that an urgent request is
+        // enqueued before the queue is flushed.
+        private final List<String> mEvents = new ArrayList<>();
         private int mFlushCount;
 
         @Override
         public void rebind(ServiceConnection connection, Context.BindServiceFlags flags) {
             mRebinds.add(connection);
+            mEvents.add("rebind");
         }
 
         @Override
         public void unbind(ServiceConnection connection) {
             mUnbinds.add(connection);
+            mEvents.add("unbind");
         }
 
         @Override
         public void flush() {
             mFlushCount++;
+            mEvents.add("flush");
         }
 
         List<ServiceConnection> getRebinds() {
@@ -78,6 +85,14 @@ public class ScopedServiceBindingBatchImplTest {
 
         int getFlushCount() {
             return mFlushCount;
+        }
+
+        List<String> getEvents() {
+            return mEvents;
+        }
+
+        void clearEvents() {
+            mEvents.clear();
         }
     }
 
@@ -113,7 +128,8 @@ public class ScopedServiceBindingBatchImplTest {
             assertNotNull(batch);
             mLauncherLooper.runToEndOfTasks(); // Process beginOnLauncherThread
 
-            BindService.doRebindService(ContextUtils.getApplicationContext(), conn, 0);
+            BindService.doRebindService(
+                    ContextUtils.getApplicationContext(), conn, 0, /* urgent= */ false);
 
             // The request should be queued and not flushed.
             assertEquals(1, mFakeBindingRequestQueue.getRebinds().size());
@@ -124,6 +140,73 @@ public class ScopedServiceBindingBatchImplTest {
 
         mLauncherLooper.runToEndOfTasks(); // Process endOnLauncherThread
         assertEquals(lastFlushCount + 1, mFakeBindingRequestQueue.getFlushCount());
+    }
+
+    @Test
+    @MinAndroidSdkLevel(VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @RequiresApi(VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testRebindService_urgentRequestIsFlushedWithinScope() {
+        assertTrue(ScopedServiceBindingBatchImpl.tryActivate(mLauncherHandler));
+        ServiceConnection conn = mock(ServiceConnection.class);
+        try (ScopedServiceBindingBatchImpl batch = ScopedServiceBindingBatchImpl.scoped()) {
+            assertNotNull(batch);
+            mLauncherLooper.runToEndOfTasks(); // Process beginOnLauncherThread
+            int flushCountBefore = mFakeBindingRequestQueue.getFlushCount();
+
+            BindService.doRebindService(
+                    ContextUtils.getApplicationContext(), conn, 0, /* urgent= */ true);
+
+            // An urgent request raises the priority of a process which is about to paint, so it
+            // must not wait for the scope to be closed.
+            assertEquals(1, mFakeBindingRequestQueue.getRebinds().size());
+            assertEquals(conn, mFakeBindingRequestQueue.getRebinds().get(0));
+            assertEquals(flushCountBefore + 1, mFakeBindingRequestQueue.getFlushCount());
+        }
+    }
+
+    @Test
+    @MinAndroidSdkLevel(VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @RequiresApi(VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testRebindService_urgentRequestIsEnqueuedBeforeFlushing() {
+        assertTrue(ScopedServiceBindingBatchImpl.tryActivate(mLauncherHandler));
+        ServiceConnection conn = mock(ServiceConnection.class);
+        try (ScopedServiceBindingBatchImpl batch = ScopedServiceBindingBatchImpl.scoped()) {
+            assertNotNull(batch);
+            mLauncherLooper.runToEndOfTasks(); // Process beginOnLauncherThread
+            mFakeBindingRequestQueue.clearEvents();
+
+            BindService.doRebindService(
+                    ContextUtils.getApplicationContext(), conn, 0, /* urgent= */ false);
+            BindService.doRebindService(
+                    ContextUtils.getApplicationContext(), conn, 0, /* urgent= */ true);
+
+            // The queue is keyed by ServiceConnection. Sending the urgent request directly instead
+            // of enqueueing it would leave the earlier request for the same connection in the
+            // queue, and that stale request would overwrite the urgent flags on the next flush.
+            assertEquals(
+                    Arrays.asList("rebind", "rebind", "flush"),
+                    mFakeBindingRequestQueue.getEvents());
+        }
+    }
+
+    @Test
+    @MinAndroidSdkLevel(VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @RequiresApi(VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Features.EnableFeatures({BaseFeatures.REBIND_SERVICE_BATCH_API + ":flush-on-upgrade/false"})
+    public void testRebindService_urgentRequestStaysQueuedWhenParamDisabled() {
+        assertTrue(ScopedServiceBindingBatchImpl.tryActivate(mLauncherHandler));
+        ServiceConnection conn = mock(ServiceConnection.class);
+        try (ScopedServiceBindingBatchImpl batch = ScopedServiceBindingBatchImpl.scoped()) {
+            assertNotNull(batch);
+            mLauncherLooper.runToEndOfTasks(); // Process beginOnLauncherThread
+            int flushCountBefore = mFakeBindingRequestQueue.getFlushCount();
+
+            BindService.doRebindService(
+                    ContextUtils.getApplicationContext(), conn, 0, /* urgent= */ true);
+
+            assertEquals(1, mFakeBindingRequestQueue.getRebinds().size());
+            assertEquals(flushCountBefore, mFakeBindingRequestQueue.getFlushCount());
+        }
     }
 
     @Test
@@ -162,7 +245,8 @@ public class ScopedServiceBindingBatchImplTest {
             assertNotNull(batch1);
             mLauncherLooper.runToEndOfTasks(); // Process beginOnLauncherThread for batch1
 
-            BindService.doRebindService(ContextUtils.getApplicationContext(), conn1, 0);
+            BindService.doRebindService(
+                    ContextUtils.getApplicationContext(), conn1, 0, /* urgent= */ false);
 
             try (ScopedServiceBindingBatchImpl batch2 = ScopedServiceBindingBatchImpl.scoped()) {
                 assertNotNull(batch2);
@@ -175,7 +259,8 @@ public class ScopedServiceBindingBatchImplTest {
             assertEquals(1, mFakeBindingRequestQueue.getRebinds().size());
             assertEquals(1, mFakeBindingRequestQueue.getUnbinds().size());
 
-            BindService.doRebindService(ContextUtils.getApplicationContext(), conn3, 0);
+            BindService.doRebindService(
+                    ContextUtils.getApplicationContext(), conn3, 0, /* urgent= */ false);
             mLauncherLooper.runToEndOfTasks();
             lastFlushCount = mFakeBindingRequestQueue.getFlushCount();
         } // batch1 closed, endOnLauncherThread for batch1 is posted.

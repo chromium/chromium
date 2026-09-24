@@ -33,5 +33,13 @@ import org.chromium.build.annotations.Nullable;
 
     void retire();
 
-    void rebindService(int bindFlags);
+    /**
+     * Calls `Context.rebindService()` to update the flags of this connection.
+     *
+     * @param bindFlags The flags to use for the rebind.
+     * @param urgent Whether the updated flags must reach the system as soon as possible, forcing an
+     *     immediate flush of batched binding requests. This should be set when the new flags raise
+     *     the priority of the process.
+     */
+    void rebindService(int bindFlags, boolean urgent);
 }

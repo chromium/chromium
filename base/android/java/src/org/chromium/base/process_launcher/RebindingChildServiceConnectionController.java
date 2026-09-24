@@ -25,6 +25,16 @@ import javax.annotation.concurrent.GuardedBy;
 /* package */ class RebindingChildServiceConnectionController
         implements ChildServiceConnectionController {
 
+    // Upgrades to this binding state or above are sent to the system immediately instead of being
+    // deferred by an enclosing ScopedServiceBindingBatch. A process bound at VISIBLE or STRONG is
+    // expected to produce content the user can see, so keeping it on its previous binding flags -
+    // and therefore its previous oom_score_adj and scheduler group - directly delays painting.
+    // Upgrades to WAIVED and NOT_PERCEPTIBLE are not user visible and stay batched, which keeps
+    // the bulk of the batching win (e.g. the many demotions issued during a tab switch).
+    // See crbug.com/465607095.
+    private static final @ChildBindingState int MIN_URGENT_BINDING_STATE =
+            ChildBindingState.VISIBLE;
+
     private final ChildServiceConnectionFactory mConnectionFactory;
     // The service binding flags for the default binding (i.e. visible binding).
     private final int mDefaultBindFlags;
@@ -106,7 +116,9 @@ import javax.annotation.concurrent.GuardedBy;
         if (bindingState == ChildBindingState.UNBOUND) {
             return;
         }
-        mConnection.rebindService(getBindFlags(bindingState));
+        // This re-applies the flags of the current binding state rather than raising it, so it is
+        // not latency sensitive and can stay batched.
+        mConnection.rebindService(getBindFlags(bindingState), /* urgent= */ false);
     }
 
     @Override
@@ -159,7 +171,8 @@ import javax.annotation.concurrent.GuardedBy;
         if (!isUpgrading) {
             updateBindingState(effectiveBindingState);
         }
-        mConnection.rebindService(getBindFlags(effectiveBindingState));
+        final boolean urgent = isUpgrading && effectiveBindingState >= MIN_URGENT_BINDING_STATE;
+        mConnection.rebindService(getBindFlags(effectiveBindingState), urgent);
         if (isUpgrading) {
             updateBindingState(effectiveBindingState);
         }

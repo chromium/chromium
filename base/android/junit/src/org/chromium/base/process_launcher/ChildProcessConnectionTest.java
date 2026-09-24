@@ -99,7 +99,7 @@ public class ChildProcessConnectionTest {
         }
 
         @Override
-        public void rebindService(int bindFlags) {}
+        public void rebindService(int bindFlags, boolean urgent) {}
 
         public void setBindResult(boolean result) {
             mBindResult = result;

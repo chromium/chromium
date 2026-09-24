@@ -30,6 +30,14 @@ public class BaseFeatureList {
     public static final MutableBooleanParamWithSafeDefault sRebindServiceBatchApiFlushOnIdle =
             sRebindServiceBatchApi.newBooleanParam("flush-on-idle", true);
 
+    // Whether a rebind request which raises the priority of a process is sent immediately instead
+    // of waiting for the enclosing ScopedServiceBindingBatch to be closed. Deferring an upgrade
+    // keeps the process on its previous (lower) binding flags, and therefore its previous
+    // oom_score_adj and scheduler group, while it is already expected to produce visible content.
+    // See crbug.com/562252127.
+    public static final MutableBooleanParamWithSafeDefault sRebindServiceBatchApiFlushOnUpgrade =
+            sRebindServiceBatchApi.newBooleanParam("flush-on-upgrade", true);
+
     public static final MutableIntParamWithSafeDefault sRebindServiceBatchApiBatchSize =
             sRebindServiceBatchApi.newIntParam("batch-size", 300);
 
