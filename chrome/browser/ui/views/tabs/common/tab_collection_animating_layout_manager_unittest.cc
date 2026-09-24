@@ -255,9 +255,10 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   widget()->LayoutRootViewIfNecessary();
 
   // Ensures preferred size remains stable during the swap animation.
-  // The animation duration is typically 200ms, so we poll 20 times in 10ms
-  // steps.
-  for (int i = 0; i < 20; ++i) {
+  // The animation duration is 200ms, so we poll 19 times in 10ms steps (up to
+  // 190ms) to observe in-progress frames before the animation completes at
+  // 200ms.
+  for (int i = 0; i < 19; ++i) {
     task_environment()->FastForwardBy(base::Milliseconds(10));
     widget()->LayoutRootViewIfNecessary();
 

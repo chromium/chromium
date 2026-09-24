@@ -31,6 +31,8 @@ class VIEWS_EXPORT AnimationDelegateViews
                                   const base::Location& location = FROM_HERE);
   ~AnimationDelegateViews() override;
 
+  void SetView(View* view);
+
   // gfx::AnimationDelegate:
   void AnimationContainerWasSet(gfx::AnimationContainer* container) override;
 

@@ -33,6 +33,18 @@ AnimationDelegateViews::~AnimationDelegateViews() {
   }
 }
 
+void AnimationDelegateViews::SetView(View* view) {
+  if (view_ == view) {
+    return;
+  }
+  scoped_observation_.Reset();
+  view_ = view;
+  if (view_) {
+    scoped_observation_.Observe(view_);
+  }
+  UpdateAnimationRunner(location_);
+}
+
 void AnimationDelegateViews::AnimationContainerWasSet(
     gfx::AnimationContainer* container) {
   if (container_ == container) {

@@ -249,6 +249,7 @@ void TabCollectionAnimatingLayoutManager::LayoutImpl() {
 
 void TabCollectionAnimatingLayoutManager::OnInstalled(views::View* host) {
   LayoutManagerBase::OnInstalled(host);
+  views::AnimationDelegateViews::SetView(host);
   host->SetProperty(kHasAnimatingLayoutManagerKey, true);
   RecalculateTarget();
 }
