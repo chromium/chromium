@@ -473,7 +473,13 @@ assert_eq!(
         let colon_index = self.index - 1;
 
         if !self.lenient {
-            return match base64::Engine::decode(&utils::BASE64, &self.input[start..colon_index]) {
+            let b64_bytes = &self.input[start..colon_index];
+            let engine = if b64_bytes.ends_with(b"=") {
+                &utils::BASE64_CANONICAL
+            } else {
+                &utils::BASE64_NO_PADDING
+            };
+            return match base64::Engine::decode(engine, b64_bytes) {
                 Ok(content) => Ok(content),
                 Err(err) => {
                     let index = match err {

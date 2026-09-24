@@ -8,6 +8,22 @@ pub(crate) const BASE64: engine::GeneralPurpose = engine::GeneralPurpose::new(
         .with_encode_padding(true),
 );
 
+pub(crate) const BASE64_CANONICAL: engine::GeneralPurpose = engine::GeneralPurpose::new(
+    &base64::alphabet::STANDARD,
+    engine::GeneralPurposeConfig::new()
+        .with_decode_allow_trailing_bits(true)
+        .with_decode_padding_mode(engine::DecodePaddingMode::RequireCanonical)
+        .with_encode_padding(true),
+);
+
+pub(crate) const BASE64_NO_PADDING: engine::GeneralPurpose = engine::GeneralPurpose::new(
+    &base64::alphabet::STANDARD,
+    engine::GeneralPurposeConfig::new()
+        .with_decode_allow_trailing_bits(true)
+        .with_decode_padding_mode(engine::DecodePaddingMode::RequireNone)
+        .with_encode_padding(true),
+);
+
 const fn is_tchar(c: u8) -> bool {
     // See tchar values list in https://tools.ietf.org/html/rfc7230#section-3.2.6
     matches!(

@@ -1,0 +1,62 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Andrew Paseltiner <apaseltiner@chromium.org>
+Date: Thu, 17 Sep 2026 09:35:00 -0400
+Subject: [PATCH] sfv v0.15 strict base64 padding
+
+This patch is needed because sfv's behavior, while spec-compliant, differs from the current C++
+Quiche code, which is also spec-compliant. It's not clear at this point if either implementation
+should actually be modified. See https://github.com/httpwg/structured-field-tests/issues/116 for
+the discrepancy.
+
+---
+ .../vendor/sfv-v0_15/src/parser.rs            |  8 +++++++-
+ .../vendor/sfv-v0_15/src/utils.rs             | 16 ++++++++++++++++
+ 2 files changed, 23 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/parser.rs b/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/parser.rs
+index fd788bcebe568..c82d9dccbe0bc 100644
+--- a/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/parser.rs
++++ b/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/parser.rs
+@@ -473,7 +473,13 @@ assert_eq!(
+         let colon_index = self.index - 1;
+ 
+         if !self.lenient {
+-            return match base64::Engine::decode(&utils::BASE64, &self.input[start..colon_index]) {
++            let b64_bytes = &self.input[start..colon_index];
++            let engine = if b64_bytes.ends_with(b"=") {
++                &utils::BASE64_CANONICAL
++            } else {
++                &utils::BASE64_NO_PADDING
++            };
++            return match base64::Engine::decode(engine, b64_bytes) {
+                 Ok(content) => Ok(content),
+                 Err(err) => {
+                     let index = match err {
+diff --git a/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/utils.rs b/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/utils.rs
+index 249be7e1a4fc5..664ff1665d20a 100644
+--- a/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/utils.rs
++++ b/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/utils.rs
+@@ -8,6 +8,22 @@ pub(crate) const BASE64: engine::GeneralPurpose = engine::GeneralPurpose::new(
+         .with_encode_padding(true),
+ );
+ 
++pub(crate) const BASE64_CANONICAL: engine::GeneralPurpose = engine::GeneralPurpose::new(
++    &base64::alphabet::STANDARD,
++    engine::GeneralPurposeConfig::new()
++        .with_decode_allow_trailing_bits(true)
++        .with_decode_padding_mode(engine::DecodePaddingMode::RequireCanonical)
++        .with_encode_padding(true),
++);
++
++pub(crate) const BASE64_NO_PADDING: engine::GeneralPurpose = engine::GeneralPurpose::new(
++    &base64::alphabet::STANDARD,
++    engine::GeneralPurposeConfig::new()
++        .with_decode_allow_trailing_bits(true)
++        .with_decode_padding_mode(engine::DecodePaddingMode::RequireNone)
++        .with_encode_padding(true),
++);
++
+ const fn is_tchar(c: u8) -> bool {
+     // See tchar values list in https://tools.ietf.org/html/rfc7230#section-3.2.6
+     matches!(
+-- 

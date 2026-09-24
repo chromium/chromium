@@ -47,11 +47,11 @@ mod ffi {
     }
 
     extern "Rust" {
-        fn decode_item(input: &[u8], item: Pin<&mut Item>) -> bool;
+        fn decode_item(input: &[u8], item: Pin<&mut Item>, strict: bool) -> bool;
 
-        fn decode_list(input: &[u8], ctx: Pin<&mut List>) -> bool;
+        fn decode_list(input: &[u8], ctx: Pin<&mut List>, strict: bool) -> bool;
 
-        fn decode_dictionary(input: &[u8], ctx: Pin<&mut Dictionary>) -> bool;
+        fn decode_dictionary(input: &[u8], ctx: Pin<&mut Dictionary>, strict: bool) -> bool;
     }
 }
 
@@ -194,10 +194,10 @@ impl<'de> sfv::visitor::DictionaryVisitor<'de> for Pin<&mut ffi::Dictionary> {
 ///
 /// Returns true if decoding was successful, and false otherwise.
 /// On success, the result is stored in the provided `Item`.
-pub fn decode_item(input: &[u8], item: Pin<&mut ffi::Item>) -> bool {
+pub fn decode_item(input: &[u8], item: Pin<&mut ffi::Item>, strict: bool) -> bool {
     sfv::Parser::new(input)
         .with_version(sfv::Version::Rfc8941)
-        .with_lenient_mode(true)
+        .with_lenient_mode(!strict)
         .parse_item_with_visitor(item)
         .is_ok()
 }
@@ -206,10 +206,10 @@ pub fn decode_item(input: &[u8], item: Pin<&mut ffi::Item>) -> bool {
 ///
 /// Returns true if decoding was successful, and false otherwise.
 /// On success, the result is stored in the provided `List`.
-pub fn decode_list(input: &[u8], list: Pin<&mut ffi::List>) -> bool {
+pub fn decode_list(input: &[u8], list: Pin<&mut ffi::List>, strict: bool) -> bool {
     sfv::Parser::new(input)
         .with_version(sfv::Version::Rfc8941)
-        .with_lenient_mode(true)
+        .with_lenient_mode(!strict)
         .parse_list_with_visitor(list)
         .is_ok()
 }
@@ -218,10 +218,14 @@ pub fn decode_list(input: &[u8], list: Pin<&mut ffi::List>) -> bool {
 ///
 /// Returns true if decoding was successful, and false otherwise.
 /// On success, the result is stored in the provided `Dictionary`.
-pub fn decode_dictionary(input: &[u8], dictionary: Pin<&mut ffi::Dictionary>) -> bool {
+pub fn decode_dictionary(
+    input: &[u8],
+    dictionary: Pin<&mut ffi::Dictionary>,
+    strict: bool,
+) -> bool {
     sfv::Parser::new(input)
         .with_version(sfv::Version::Rfc8941)
-        .with_lenient_mode(true)
+        .with_lenient_mode(!strict)
         .parse_dictionary_with_visitor(dictionary)
         .is_ok()
 }
