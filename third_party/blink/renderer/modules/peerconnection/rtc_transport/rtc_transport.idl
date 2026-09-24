@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-enum RtcTransportWireProtocol {"dtls", "dtls-srtp"};
+enum RtcTransportWireProtocol {"dtls", "dtls-srtp", "dtls-with-feedback"};
 
 dictionary RtcTransportConfig {
   DOMString name;

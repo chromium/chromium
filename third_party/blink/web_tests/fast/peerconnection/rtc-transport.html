@@ -173,4 +173,64 @@ promise_test(async t => {
 
   assert_equals(result, undefined, 'Connection should not become writable when both are ICE controlling');
 }, 'RtcTransport connection fails when both peers are ICE controlling');
+
+promise_test(async t => {
+  const transport1 = new RtcTransport({
+    name: 'transport1',
+    iceServers: [],
+    iceControlling: true,
+    wireProtocol: 'dtls-with-feedback',
+  });
+  const transport2 = new RtcTransport({
+    name: 'transport2',
+    iceServers: [],
+    iceControlling: false,
+    wireProtocol: 'dtls-with-feedback',
+  });
+
+  transport1.onicecandidate = e => {
+    if (e.candidate) {
+      transport2.addRemoteCandidate(e.candidate);
+    }
+  };
+  transport2.onicecandidate = e => {
+    if (e.candidate) {
+      transport1.addRemoteCandidate(e.candidate);
+    }
+  };
+
+  transport2.setRemoteDtlsParameters({
+    sslRole: 'client',
+    fingerprintDigestAlgorithm: transport1.fingerprintDigestAlgorithm,
+    fingerprint: transport1.fingerprint,
+  });
+  transport1.setRemoteDtlsParameters({
+    sslRole: 'server',
+    fingerprintDigestAlgorithm: transport2.fingerprintDigestAlgorithm,
+    fingerprint: transport2.fingerprint,
+  });
+
+  await Promise.all([
+    t.step_wait(() => transport1.writable(), 'transport1 should become writable'),
+    t.step_wait(() => transport2.writable(), 'transport2 should become writable')
+  ]);
+
+  const messages = ['one', 'two', 'three'];
+  for (const msg of messages) {
+    transport1.sendPackets([{id: 0, data: new TextEncoder().encode(msg).buffer}]);
+  }
+
+  const received = [];
+  while (received.length < messages.length) {
+    for (const packet of transport2.getReceivedPackets()) {
+      const receivedData = new ArrayBuffer(packet.payloadByteLength);
+      packet.copyPayloadTo(receivedData);
+      received.push(new TextDecoder().decode(receivedData));
+    }
+    await new Promise(resolve => t.step_timeout(resolve, 100));
+  }
+
+  assert_array_equals(received.sort(), messages.sort(),
+                      'transport2 received all messages unmodified');
+}, 'RtcTransport supports the dtls-with-feedback wire protocol');
 </script>

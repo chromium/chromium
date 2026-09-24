@@ -261,6 +261,8 @@ webrtc::DatagramConnection::WireProtocol ToWebrtcWireProtocol(
       return webrtc::DatagramConnection::WireProtocol::kDtls;
     case V8RtcTransportWireProtocol::Enum::kDtlsSrtp:
       return webrtc::DatagramConnection::WireProtocol::kDtlsSrtp;
+    case V8RtcTransportWireProtocol::Enum::kDtlsWithFeedback:
+      return webrtc::DatagramConnection::WireProtocol::kDtlsWithFeedback;
   }
 }
 
