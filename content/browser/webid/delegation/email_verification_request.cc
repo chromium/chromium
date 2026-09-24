@@ -52,8 +52,17 @@ std::string CreateContentDigestHeader(const std::string& post_data) {
   dict["sha-256"] = net::structured_headers::ParameterizedMember(
       net::structured_headers::Item(
           net::structured_headers::Item::byte_sequence,
-          base::as_string_view(digest)),
-      {});
+          base::as_string_view(digest)));
+  std::optional<std::string> val =
+      net::structured_headers::SerializeDictionary(dict);
+  CHECK(val);
+  return *std::move(val);
+}
+
+std::string SerializeSigDictionary(
+    net::structured_headers::ParameterizedMember member) {
+  net::structured_headers::Dictionary dict;
+  dict["sig"] = std::move(member);
   std::optional<std::string> val =
       net::structured_headers::SerializeDictionary(dict);
   CHECK(val);
@@ -75,16 +84,10 @@ std::string CreateMessageSignatureKey(const sdjwt::Jwk& public_key) {
                  net::structured_headers::Item::string, std::move(*str)));
   }
 
-  net::structured_headers::Dictionary dict;
-  dict["sig"] = net::structured_headers::ParameterizedMember(
+  return SerializeSigDictionary(net::structured_headers::ParameterizedMember(
       net::structured_headers::Item(net::structured_headers::Item::token,
                                     "hwk"),
-      std::move(params));
-
-  std::optional<std::string> signature_key_val_opt =
-      net::structured_headers::SerializeDictionary(dict);
-  CHECK(signature_key_val_opt);
-  return *std::move(signature_key_val_opt);
+      std::move(params)));
 }
 
 net::structured_headers::ParameterizedMember CreateMessageSignatureParams(
@@ -116,16 +119,6 @@ net::structured_headers::ParameterizedMember CreateMessageSignatureParams(
 
   return net::structured_headers::ParameterizedMember(std::move(list_items),
                                                       std::move(params_input));
-}
-
-std::string SerializeSignatureInput(
-    const net::structured_headers::ParameterizedMember& params) {
-  net::structured_headers::Dictionary dict_input;
-  dict_input["sig"] = params;
-  std::optional<std::string> signature_input_val_opt =
-      net::structured_headers::SerializeDictionary(dict_input);
-  CHECK(signature_input_val_opt);
-  return *signature_input_val_opt;
 }
 
 std::string CreateMessageSignature(
@@ -191,16 +184,10 @@ std::string CreateMessageSignature(
       std::move(http_signer).Run(signature_base);
   CHECK(signature_opt);
 
-  net::structured_headers::Dictionary dict;
-  dict["sig"] = net::structured_headers::ParameterizedMember(
+  return SerializeSigDictionary(net::structured_headers::ParameterizedMember(
       net::structured_headers::Item(
           net::structured_headers::Item::byte_sequence,
-          base::as_string_view(*signature_opt)),
-      net::structured_headers::Parameters());
-  std::optional<std::string> signature_val_opt =
-      net::structured_headers::SerializeDictionary(dict);
-  CHECK(signature_val_opt);
-  return *std::move(signature_val_opt);
+          base::as_string_view(*signature_opt))));
 }
 
 net::HttpRequestHeaders CreateMessageSignatureHeaders(
@@ -216,7 +203,7 @@ net::HttpRequestHeaders CreateMessageSignatureHeaders(
   std::string signature_key_val = CreateMessageSignatureKey(*public_key);
   net::structured_headers::ParameterizedMember signature_params =
       CreateMessageSignatureParams(created_time);
-  std::string signature_input_val = SerializeSignatureInput(signature_params);
+  std::string signature_input_val = SerializeSigDictionary(signature_params);
   std::string signature_val = CreateMessageSignature(
       issuance_endpoint, content_digest_val, signature_key_val,
       std::move(signature_params), private_key);
