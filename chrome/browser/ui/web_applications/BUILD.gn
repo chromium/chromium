@@ -311,6 +311,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/browser_web_contents_delegate",
     "//chrome/browser/ui/page_info",
     "//chrome/browser/ui/startup",
+    "//chrome/browser/ui/views/picture_in_picture",
     "//chrome/browser/ui/web_applications/test:test_support_ui",
     "//chrome/browser/ui/window_metadata",
     "//chrome/browser/ui/window_sizer",

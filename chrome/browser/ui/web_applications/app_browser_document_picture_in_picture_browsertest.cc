@@ -6,6 +6,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -13,16 +14,20 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "ui/base/base_window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace {
@@ -76,7 +81,51 @@ class AppBrowserDocumentPictureInPictureBrowserTest
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
-IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
+// Runs Document PiP from a web app with either the Browser-backed or the
+// standalone PiP window.
+class AppBrowserDocumentPictureInPictureBackendTest
+    : public AppBrowserDocumentPictureInPictureBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  AppBrowserDocumentPictureInPictureBackendTest() {
+    feature_list_.InitWithFeatureState(features::kDocumentPipStandaloneWindow,
+                                       standalone_enabled());
+  }
+
+ protected:
+  bool standalone_enabled() const { return GetParam(); }
+
+  void ExpectPipBackend(content::WebContents* pip_web_contents) {
+    auto* host = DocumentPipHost::FromChildWebContents(pip_web_contents);
+    auto* pip_browser_view = BrowserView::GetBrowserViewForNativeWindow(
+        pip_web_contents->GetTopLevelNativeWindow());
+    if (standalone_enabled()) {
+      EXPECT_NE(nullptr, host);
+      EXPECT_EQ(nullptr, pip_browser_view);
+    } else {
+      EXPECT_EQ(nullptr, host);
+      ASSERT_NE(nullptr, pip_browser_view);
+      EXPECT_TRUE(pip_browser_view->GetIsPictureInPictureType());
+    }
+  }
+
+  views::Widget* GetPipWidget(content::WebContents* pip_web_contents) {
+    return views::Widget::GetWidgetForNativeWindow(
+        pip_web_contents->GetTopLevelNativeWindow());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppBrowserDocumentPictureInPictureBackendTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+IN_PROC_BROWSER_TEST_P(AppBrowserDocumentPictureInPictureBackendTest,
                        InnerBoundsMatchRequest) {
   const webapps::AppId app_id =
       InstallPWA(picture_in_picture_mixin_test_base_.GetPictureInPictureURL());
@@ -93,15 +142,12 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
           ->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents);
   picture_in_picture_mixin_test_base_.WaitForPageLoad(pip_web_contents);
+  ExpectPipBackend(pip_web_contents);
 
-  auto* pip_browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          pip_web_contents);
-  auto* pip_browser_view = BrowserView::GetBrowserViewForBrowser(pip_browser);
-  EXPECT_EQ(kInitialPipSize, pip_browser_view->GetContentsSize());
+  EXPECT_EQ(kInitialPipSize, pip_web_contents->GetContainerBounds().size());
 }
 
-IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
+IN_PROC_BROWSER_TEST_P(AppBrowserDocumentPictureInPictureBackendTest,
                        AppWindowWebContentsSizeUnchangedAfterExitPip) {
   const webapps::AppId app_id =
       InstallPWA(picture_in_picture_mixin_test_base_.GetPictureInPictureURL());
@@ -122,14 +168,17 @@ IN_PROC_BROWSER_TEST_F(AppBrowserDocumentPictureInPictureBrowserTest,
           ->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents);
   picture_in_picture_mixin_test_base_.WaitForPageLoad(pip_web_contents);
+  ExpectPipBackend(pip_web_contents);
 
-  // Exit Picture-in-Picture.
-  auto* pip_browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          pip_web_contents);
-  ui_test_utils::BrowserDestroyedObserver observer(pip_browser);
-  pip_browser->GetWindow()->Close();
-  observer.Wait();
+  // Exit Picture-in-Picture by closing the PiP window.
+  views::Widget* pip_widget = GetPipWidget(pip_web_contents);
+  ASSERT_NE(nullptr, pip_widget);
+  content::WebContentsDestroyedWatcher pip_web_contents_destroyed_watcher(
+      pip_web_contents);
+  views::test::WidgetDestroyedWaiter pip_widget_destroyed_waiter(pip_widget);
+  pip_widget->Close();
+  pip_web_contents_destroyed_watcher.Wait();
+  pip_widget_destroyed_waiter.Wait();
   EXPECT_FALSE(picture_in_picture_mixin_test_base_.window_controller()
                    ->GetChildWebContents());
 
