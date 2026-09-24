@@ -54,6 +54,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
 import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -123,8 +124,16 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof FragmentSettingsNavigation) {
             FragmentSettingsNavigation fragmentSettingsNavigation =
                     (FragmentSettingsNavigation) fragment;
-            fragmentSettingsNavigation.setSettingsNavigation(
-                    SettingsNavigationFactory.createSettingsNavigation(mActivity));
+            SettingsHostFragment hostFragment = SettingsHostFragment.get(fragment);
+            SettingsNavigation hostNavigation =
+                    hostFragment != null ? hostFragment.getSettingsNavigation() : null;
+            // The host only has a navigation under URL navigation in a tab. Everywhere else the
+            // factory supplies the global instance, so a fragment is never left without one.
+            SettingsNavigation settingsNavigation =
+                    hostNavigation != null
+                            ? hostNavigation
+                            : SettingsNavigationFactory.createSettingsNavigation(mActivity);
+            fragmentSettingsNavigation.setSettingsNavigation(settingsNavigation);
         }
         if (fragment instanceof SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) {
             ((SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) fragment)

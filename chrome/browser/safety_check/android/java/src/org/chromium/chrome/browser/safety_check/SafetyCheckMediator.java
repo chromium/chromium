@@ -233,14 +233,13 @@ class SafetyCheckMediator {
                                     SafetyCheckInteractions.SAFE_BROWSING_MANAGE,
                                     SafetyCheckInteractions.MAX_VALUE + 1);
                             // Open the Safe Browsing settings.
-                            Intent intent =
-                                    SettingsNavigationFactory.createSettingsNavigation()
-                                            .createSettingsIntent(
-                                                    p.getContext(),
-                                                    SafeBrowsingSettingsFragment.class,
-                                                    SafeBrowsingSettingsFragment.createArguments(
-                                                            SettingsAccessPoint.SAFETY_CHECK));
-                            p.getContext().startActivity(intent);
+                            SettingsNavigationFactory.createSettingsNavigation(p.getContext())
+                                    .startSettings(
+                                            p.getContext(),
+                                            SafeBrowsingSettingsFragment.class,
+                                            SafeBrowsingSettingsFragment.createArguments(
+                                                    SettingsAccessPoint.SAFETY_CHECK),
+                                            /* addToBackStack= */ true);
                             return true;
                         });
         // Set the listener for clicking the passwords element.

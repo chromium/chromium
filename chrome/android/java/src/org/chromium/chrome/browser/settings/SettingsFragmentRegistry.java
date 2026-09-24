@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.privacy.settings.DoNotTrackSettings;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy.settings.UniversalOptOutSettings;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
+import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.EnhancedProtectionSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.StandardProtectionSettingsFragment;
@@ -417,6 +418,10 @@ public class SettingsFragmentRegistry {
                 "categoryType",
                 TracingCategoriesSettings.EXTRA_CATEGORY_TYPE,
                 /* defaultValue= */ TracingSettings.CategoryType.DEFAULT);
+        registerIntParameterMapping(
+                "accessPoint",
+                SafeBrowsingSettingsFragment.ACCESS_POINT,
+                /* defaultValue= */ SettingsAccessPoint.DEFAULT);
     }
 
     /**
@@ -776,6 +781,47 @@ public class SettingsFragmentRegistry {
             }
         }
         return builder.build().toString();
+    }
+
+    /**
+     * Returns whether {@code url} carries every argument in {@code args} back with the same key,
+     * type and value.
+     *
+     * <p>Under URL navigation the URL is the source of truth: the page is rebuilt from it when the
+     * tab is restored, when the user walks back to it, and whenever it is replayed from history. An
+     * argument the URL cannot carry is therefore not merely absent from the first navigation, it is
+     * absent from every later one. A caller holding both a URL and the {@link Bundle} it was built
+     * from must ask this before treating the URL as a replacement for the Bundle.
+     *
+     * <p>{@link #createUrlForFragment} is deliberately permissive: an argument whose key has no
+     * registered query parameter is still written out, under its raw key, as long as its value is a
+     * CharSequence, Number or Boolean. {@link #parseUrlArguments} is permissive in the same way,
+     * but it has no type information to restore with, so it puts the value back as a String. An int
+     * or boolean argument therefore survives the round trip in name only, and the page reads 0 or
+     * false from it. Registering the argument with {@link #registerIntParameterMapping} and its
+     * siblings is what makes the round trip typed; this method is how a caller - and the next
+     * engineer to add a page - finds out that it has not been done.
+     */
+    public static boolean urlPreservesArgs(String url, @Nullable Bundle args) {
+        if (args == null || args.isEmpty()) return true;
+
+        Bundle parsed = parseUrlArguments(url);
+        for (String key : args.keySet()) {
+            Object original = args.get(key);
+            // A null value carries no information, so nothing is lost by not carrying it.
+            if (original == null) continue;
+
+            Object restored = parsed.get(key);
+            if (restored == null) return false;
+
+            // Compare types as well as values: an int written as "3" comes back as the String "3"
+            // unless the argument has a registered typed parser, and Bundle#getInt would then
+            // silently return 0 rather than 3.
+            if (original.getClass() != restored.getClass()) return false;
+
+            if (!original.equals(restored)) return false;
+        }
+        return true;
     }
 
     private static @Nullable UrlParam extractQueryParam(String key, Object val) {

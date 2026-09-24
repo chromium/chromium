@@ -198,7 +198,7 @@ public class PrivacyGuideFragment extends Fragment
         mDoneButton.setOnClickListener(
                 (View v) -> {
                     PrivacyGuideMetricsDelegate.recordMetricsForDoneButton();
-                    SettingsNavigationFactory.createSettingsNavigation()
+                    SettingsNavigationFactory.createSettingsNavigation(requireActivity())
                             .finishCurrentSettings(this);
                 });
 
@@ -338,7 +338,8 @@ public class PrivacyGuideFragment extends Fragment
         if (item.getItemId() == R.id.close_menu_id
                 || (ChromeFeatureList.sSettingsMultiColumn.isEnabled()
                         && item.getItemId() == android.R.id.home)) {
-            SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
+            SettingsNavigationFactory.createSettingsNavigation(requireActivity())
+                    .finishCurrentSettings(this);
             return true;
         }
 

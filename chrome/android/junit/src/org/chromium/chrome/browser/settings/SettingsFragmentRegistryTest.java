@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragmen
 import org.chromium.chrome.browser.prefetch.settings.StandardPreloadingSettingsFragment;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy.settings.UniversalOptOutSettings;
+import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.EnhancedProtectionSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.StandardProtectionSettingsFragment;
@@ -320,6 +321,88 @@ public class SettingsFragmentRegistryTest {
                 SettingsFragmentRegistry.createUrlForFragment(
                         GroupedWebsitesSettings.class, stringGroupArgs);
         assertEquals("chrome://settings/allSites/group?group=example.com", groupUrl);
+    }
+
+    @Test
+    public void testUrlPreservesArgs_noArgs() {
+        assertTrue(SettingsFragmentRegistry.urlPreservesArgs("chrome://settings/privacy", null));
+        assertTrue(
+                SettingsFragmentRegistry.urlPreservesArgs(
+                        "chrome://settings/privacy", new Bundle()));
+    }
+
+    @Test
+    public void testUrlPreservesArgs_registeredArgsRoundTrip() {
+        // A String argument under its raw key is written and read back as a String.
+        Bundle stringArgs = new Bundle();
+        stringArgs.putString(SingleCategorySettings.EXTRA_CATEGORY, "cookies");
+        String categoryUrl =
+                SettingsFragmentRegistry.createUrlForFragment(
+                        SingleCategorySettings.class, stringArgs);
+        assertTrue(SettingsFragmentRegistry.urlPreservesArgs(categoryUrl, stringArgs));
+
+        // An int argument with a registered typed parser comes back as an int.
+        Bundle intArgs = new Bundle();
+        intArgs.putInt(
+                AutofillAndPasswordsFragment.EXTRA_REFERRER,
+                AutofillSettingsReferrer.SETTINGS_SEARCH);
+        String referrerUrl =
+                SettingsFragmentRegistry.createUrlForFragment(
+                        AutofillAndPasswordsFragment.class, intArgs);
+        assertTrue(SettingsFragmentRegistry.urlPreservesArgs(referrerUrl, intArgs));
+
+        // A WebsiteAddress is rebuilt from its origin by the registered parser.
+        Bundle addressArgs = new Bundle();
+        addressArgs.putSerializable(
+                SingleWebsiteSettings.EXTRA_SITE_ADDRESS,
+                WebsiteAddress.create("https://example.com"));
+        String siteUrl =
+                SettingsFragmentRegistry.createUrlForFragment(
+                        SingleWebsiteSettings.class, addressArgs);
+        assertTrue(SettingsFragmentRegistry.urlPreservesArgs(siteUrl, addressArgs));
+    }
+
+    @Test
+    public void testUrlPreservesArgs_safeBrowsingAccessPointRoundTrips() {
+        // SafeBrowsingSettingsFragment's access point is an int, so it only survives the round
+        // trip because "accessPoint" is registered with a typed parser.
+        Bundle args =
+                SafeBrowsingSettingsFragment.createArguments(SettingsAccessPoint.SAFETY_CHECK);
+        String url =
+                SettingsFragmentRegistry.createUrlForFragment(
+                        SafeBrowsingSettingsFragment.class, args);
+        assertEquals(
+                "chrome://settings/safeBrowsing?accessPoint=" + SettingsAccessPoint.SAFETY_CHECK,
+                url);
+        assertTrue(SettingsFragmentRegistry.urlPreservesArgs(url, args));
+        assertEquals(
+                SettingsAccessPoint.SAFETY_CHECK,
+                SettingsFragmentRegistry.parseUrlArguments(url)
+                        .getInt(SafeBrowsingSettingsFragment.ACCESS_POINT));
+    }
+
+    @Test
+    public void testUrlPreservesArgs_unregisteredIntLosesItsType() {
+        // An int argument whose key has no registered query parameter is still written out, under
+        // its raw key, but it is read back as the String "3" because there is no type information
+        // to restore it with. The page would call Bundle#getInt and silently get 0, so the URL is
+        // not a substitute for the Bundle here.
+        Bundle args = new Bundle();
+        args.putInt("UnregisteredFragment.SomeInt", 3);
+        String url = SettingsFragmentRegistry.createUrlForFragment(PrivacySettings.class, args);
+        assertEquals("chrome://settings/privacy?UnregisteredFragment.SomeInt=3", url);
+        assertFalse(SettingsFragmentRegistry.urlPreservesArgs(url, args));
+    }
+
+    @Test
+    public void testUrlPreservesArgs_uncarriableArgIsDropped() {
+        // A value that is neither a CharSequence, Number, Boolean nor one of the site settings
+        // types the registry knows how to spell is not written to the URL at all.
+        Bundle args = new Bundle();
+        args.putParcelable("uncarriable", new Bundle());
+        String url = SettingsFragmentRegistry.createUrlForFragment(PrivacySettings.class, args);
+        assertEquals("chrome://settings/privacy", url);
+        assertFalse(SettingsFragmentRegistry.urlPreservesArgs(url, args));
     }
 
     @Test

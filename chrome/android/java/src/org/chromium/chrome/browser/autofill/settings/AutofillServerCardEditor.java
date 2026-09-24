@@ -165,7 +165,8 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
         }
         final View v = super.onCreateView(localInflater, container, savedInstanceState);
         if (mCard == null) {
-            SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
+            SettingsNavigationFactory.createSettingsNavigation(requireActivity())
+                    .finishCurrentSettings(this);
             return v;
         }
 

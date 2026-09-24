@@ -38,6 +38,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -211,7 +212,8 @@ public class SettingsInTabNavigationDelegateTest {
     }
 
     @Test
-    public void testCreateSettingsIntent_WithEnum() {
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testCreateSettingsIntent_WithEnum_UrlNavDisabled() {
         Context context = ContextUtils.getApplicationContext();
 
         Intent intent =
@@ -227,13 +229,46 @@ public class SettingsInTabNavigationDelegateTest {
     }
 
     @Test
-    public void testCreateSettingsIntent_WithFragmentClass() {
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testCreateSettingsIntent_WithEnum_UrlNavEnabled() {
+        Context context = ContextUtils.getApplicationContext();
+
+        Intent intent =
+                mDelegate.createSettingsIntent(
+                        context, SettingsFragment.PRIVACY, /* fragmentArgs= */ null);
+
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals("chrome://settings/privacy", intent.getDataString());
+        assertEquals(ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
+        assertEquals(
+                PrivacySettings.class.getName(),
+                intent.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testCreateSettingsIntent_WithFragmentClass_UrlNavDisabled() {
         Context context = ContextUtils.getApplicationContext();
 
         Intent intent = mDelegate.createSettingsIntent(context, ThemeSettingsFragment.class);
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
         assertEquals(UrlConstants.SETTINGS_URL, intent.getDataString());
+        assertEquals(ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
+        assertEquals(
+                ThemeSettingsFragment.class.getName(),
+                intent.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testCreateSettingsIntent_WithFragmentClass_UrlNavEnabled() {
+        Context context = ContextUtils.getApplicationContext();
+
+        Intent intent = mDelegate.createSettingsIntent(context, ThemeSettingsFragment.class);
+
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals("chrome://settings/theme", intent.getDataString());
         assertEquals(ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
         assertEquals(
                 ThemeSettingsFragment.class.getName(),

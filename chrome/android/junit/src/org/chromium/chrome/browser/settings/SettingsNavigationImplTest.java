@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.settings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -299,6 +302,7 @@ public class SettingsNavigationImplTest {
     /** Regression test for https://crbug.com/559534170. */
     @Test
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
     @Config(qualifiers = "sw600dp")
     public void testStartSettings_SettingsInTab_downloads_savesLastIntent() {
         var scenario = Robolectric.buildActivity(TestActivity.class).setup();
@@ -311,6 +315,56 @@ public class SettingsNavigationImplTest {
         assertEquals(
                 DownloadSettings.class.getName(),
                 lastIntent.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
+    @Config(qualifiers = "sw600dp")
+    public void testStartSettings_SettingsInTabUrlNav_downloads_setsIntentUrl() {
+        var scenario = Robolectric.buildActivity(TestActivity.class).setup();
+        TestActivity activity = scenario.get();
+
+        mSettingsNavigationImpl.startSettings(activity, DownloadSettings.class);
+
+        Intent started = shadowOf(activity).getNextStartedActivity();
+        assertNotNull(started);
+        assertEquals("chrome://settings/downloads", started.getDataString());
+        assertEquals(
+                DownloadSettings.class.getName(),
+                started.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT));
+        assertNull(SettingsIntentUtil.takeLastIntent());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
+    @Config(qualifiers = "sw600dp")
+    public void testSettingsInTabUrlNav_DelegatesToHostFragmentNavigation() {
+        var scenario = Robolectric.buildActivity(TestActivity.class).setup();
+        TestActivity activity = scenario.get();
+        TestSettingsHostFragment hostFragment = new TestSettingsHostFragment();
+        SettingsNavigation mockHostNav = mock(SettingsNavigation.class);
+        hostFragment.setSettingsNavigation(mockHostNav);
+        activity.getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        hostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        mSettingsNavigationImpl.startSettings(activity, DownloadSettings.class);
+        verify(mockHostNav)
+                .startSettings(
+                        activity,
+                        DownloadSettings.class,
+                        /* fragmentArgs= */ null,
+                        /* addToBackStack= */ false,
+                        /* tag= */ null);
+
+        Fragment active = hostFragment.getActiveFragment();
+        mSettingsNavigationImpl.finishCurrentSettings(active);
+        verify(mockHostNav)
+                .finishCurrentSettings(active, /* parentFragment= */ null, /* parentArgs= */ null);
     }
 
     /**

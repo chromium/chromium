@@ -178,6 +178,7 @@ public abstract class AutofillEditorBase extends Fragment
 
     /** Finishes the current page. */
     protected void finishPage() {
-        SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
+        SettingsNavigationFactory.createSettingsNavigation(requireActivity())
+                .finishCurrentSettings(this);
     }
 }

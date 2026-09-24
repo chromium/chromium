@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
@@ -116,13 +117,32 @@ public class SettingsIntentUtil {
             @Nullable String tag,
             boolean useSettingsInTab) {
         Intent intent = new Intent();
-        boolean isStandaloneFragment = isStandaloneFragment(context, fragmentName);
+        Class<?> fragmentClass = loadFragmentClass(context, fragmentName);
+        boolean isStandaloneFragment =
+                fragmentClass != null
+                        && !EmbeddableSettingsPage.class.isAssignableFrom(fragmentClass);
+        String targetUrl = null;
         if (useSettingsInTab && !isStandaloneFragment) {
             intent.setAction(Intent.ACTION_VIEW);
-            // TODO(crbug.com/521895796): When URLs for settings subpages exist (e.g.
-            // chrome://settings/appearance) use them and stop adding fragment information
-            // below.
-            intent.setData(Uri.parse(UrlConstants.SETTINGS_URL));
+            if (ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()
+                    && fragmentClass != null
+                    && Fragment.class.isAssignableFrom(fragmentClass)) {
+                targetUrl =
+                        SettingsFragmentRegistry.createUrlForFragment(
+                                fragmentClass.asSubclass(Fragment.class), fragmentArgs);
+                // A URL that cannot carry this page's arguments is not a substitute for the
+                // intent. Under URL navigation the URL is what the page is rebuilt from on tab
+                // restore, on back, and on any later replay from history, so an argument it drops
+                // - or, for an argument with no registered typed parser, silently turns into a
+                // String - is lost for good. Fall back to the intent, which carries the Bundle
+                // verbatim, and leave the page reachable until the argument is registered in
+                // SettingsFragmentRegistry.
+                if (targetUrl != null
+                        && !SettingsFragmentRegistry.urlPreservesArgs(targetUrl, fragmentArgs)) {
+                    targetUrl = null;
+                }
+            }
+            intent.setData(Uri.parse(targetUrl != null ? targetUrl : UrlConstants.SETTINGS_URL));
             intent.setClass(context, ChromeLauncherActivity.class);
             // Internal chrome URLs require trusted intents.
             IntentUtils.addTrustedIntentExtras(intent);
@@ -153,30 +173,33 @@ public class SettingsIntentUtil {
             if (tag != null) intent.putExtra(EXTRA_FRAGMENT_TAG, tag);
         }
         if (useSettingsInTab && !isStandaloneFragment) {
-            sLastIntent = intent;
+            // Clear rather than merely skip when the URL says everything the intent would have.
+            // sLastIntent is written when an intent is created, not when it is started, so one
+            // built for a notification that is never tapped stays behind indefinitely. The next
+            // settings tab consumes it in SettingsHostFragment#onViewCreated, where a pending
+            // intent outranks the initial URL, and would open the wrong page.
+            sLastIntent = targetUrl == null ? intent : null;
         }
         return intent;
     }
 
     /**
-     * Checks if a given fragment is a standalone fragment.
+     * Loads the fragment class named by {@code fragmentName}, or null if it names nothing.
      *
-     * <p>A fragment is standalone if it does not implement {@link EmbeddableSettingsPage}. Such
-     * fragments are shown in separate activities and have full control over the whole UI. See
-     * {@link SettingsActivity} for details.
+     * <p>Used to decide whether a fragment is standalone, i.e. whether it does not implement {@link
+     * EmbeddableSettingsPage}. Such fragments are shown in separate activities and have full
+     * control over the whole UI. See {@link SettingsActivity} for details.
      */
-    private static boolean isStandaloneFragment(Context context, @Nullable String fragmentName) {
+    private static @Nullable Class<?> loadFragmentClass(
+            Context context, @Nullable String fragmentName) {
         if (fragmentName == null) {
-            return false;
+            return null;
         }
 
-        Class<?> fragmentClass;
         try {
-            fragmentClass = context.getClassLoader().loadClass(fragmentName);
+            return context.getClassLoader().loadClass(fragmentName);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-
-        return !EmbeddableSettingsPage.class.isAssignableFrom(fragmentClass);
     }
 }

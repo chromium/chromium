@@ -92,7 +92,8 @@ public class PersonalizeGoogleServicesSettings extends ChromeBaseSettingsFragmen
             if (SettingsIndexData.getInstance() != null) {
                 SettingsIndexData.getInstance().setNeedsIndexing();
             }
-            SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
+            SettingsNavigationFactory.createSettingsNavigation(requireActivity())
+                    .finishCurrentSettings(this);
             return;
         }
 

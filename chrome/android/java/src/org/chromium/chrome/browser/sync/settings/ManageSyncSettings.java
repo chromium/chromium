@@ -949,7 +949,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
      * <p>This method is idempotent, i.e. it does nothing if it was called before.
      */
     private void finishCurrentSettings() {
-        SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
+        SettingsNavigationFactory.createSettingsNavigation(requireActivity())
+                .finishCurrentSettings(this);
     }
 
     @Override

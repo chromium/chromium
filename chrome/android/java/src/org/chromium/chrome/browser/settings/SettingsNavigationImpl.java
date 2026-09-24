@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.commerce.PriceNotificationSettingsFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicActorLoginPermissionsFragment;
 import org.chromium.chrome.browser.glic.GlicSettings;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
@@ -217,6 +218,12 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
             // SettingsHostFragment will be null if settings isn't open.
             if (settingsHostFragment != null) {
+                SettingsNavigation hostNavigation = hostNavigation(settingsHostFragment);
+                if (hostNavigation != null) {
+                    hostNavigation.startSettings(
+                            context, fragment, fragmentArgs, addToBackStack, tag);
+                    return;
+                }
                 // A null `fragment` implies the main settings page, so pass null to
                 // showFragment().
                 Fragment targetFragment =
@@ -415,8 +422,36 @@ public class SettingsNavigationImpl implements SettingsNavigation {
         return null;
     }
 
+    /**
+     * Returns the tab-scoped navigation bound to {@code settingsHostFragment}, or null when this
+     * instance should handle the call itself.
+     *
+     * <p>Under URL navigation the host fragment owns a {@link SettingsInTabNavigationDelegate}
+     * bound to its tab, which turns a navigation into a {@code Tab.loadUrl()} so the omnibox, the
+     * browser back stack and session restore all see it. This class cannot do that: it only knows
+     * how to swap fragments or fire an intent. Every entry point that can reach an open settings
+     * tab therefore has to ask the host first.
+     */
+    private @Nullable SettingsNavigation hostNavigation(SettingsHostFragment settingsHostFragment) {
+        if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) return null;
+
+        SettingsNavigation navigation = settingsHostFragment.getSettingsNavigation();
+        // Only SettingsPageFragmentDelegateImpl binds a navigation to the host, and only ever a
+        // tab-scoped delegate. Handing this instance back to itself would recurse forever.
+        assert navigation != this : "Settings host must not be bound to this SettingsNavigation";
+        return navigation;
+    }
+
     @Override
     public void finishCurrentSettings(Fragment fragment) {
+        finishCurrentSettings(fragment, /* parentFragment= */ null, /* parentArgs= */ null);
+    }
+
+    @Override
+    public void finishCurrentSettings(
+            Fragment fragment,
+            @Nullable Class<? extends Fragment> parentFragment,
+            @Nullable Bundle parentArgs) {
         // Branch on how settings is actually hosted, not on SettingsInTab, whose value depends on
         // the current screen width and can change while settings is open. Otherwise the cast to
         // SettingsActivity below can be reached for a tab-hosted fragment. See
@@ -432,6 +467,11 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             settingsHostFragment = SettingsHostFragment.get(activity);
         }
         if (settingsHostFragment != null) {
+            SettingsNavigation hostNavigation = hostNavigation(settingsHostFragment);
+            if (hostNavigation != null) {
+                hostNavigation.finishCurrentSettings(fragment, parentFragment, parentArgs);
+                return;
+            }
             settingsHostFragment.finishCurrentSettings(fragment);
             return;
         }
@@ -446,6 +486,15 @@ public class SettingsNavigationImpl implements SettingsNavigation {
         // See the comment in finishCurrentSettings() above.
         SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
         if (settingsHostFragment != null) {
+            // Ask the host for the same reason startSettings() and finishCurrentSettings() do.
+            // The tab-scoped delegate happens to flush the same fragment transactions today, but
+            // it is the one that knows what a pending navigation means for a tab, and leaving this
+            // entry point behind is how the two quietly drift apart.
+            SettingsNavigation hostNavigation = hostNavigation(settingsHostFragment);
+            if (hostNavigation != null) {
+                hostNavigation.executePendingNavigations(activity);
+                return;
+            }
             settingsHostFragment.executePendingNavigations();
             return;
         }
