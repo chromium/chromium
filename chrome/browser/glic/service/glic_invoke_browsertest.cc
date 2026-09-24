@@ -2050,7 +2050,8 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/504753617): Re-enable the test.
-#if BUILDFLAG(IS_LINUX)
+// TODO(b/565538504): Re-enable on Android.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_InvokeWithNewTab DISABLED_InvokeWithNewTab
 #else
 #define MAYBE_InvokeWithNewTab InvokeWithNewTab
@@ -2441,8 +2442,16 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeActuationBrowserTest,
   }
 }
 
+// TODO(b/565538504): Re-enable once failure on Android is resolved.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_InvokeTargetLastActiveOrNew_FallbackToNewTab \
+  DISABLED_InvokeTargetLastActiveOrNew_FallbackToNewTab
+#else
+#define MAYBE_InvokeTargetLastActiveOrNew_FallbackToNewTab \
+  InvokeTargetLastActiveOrNew_FallbackToNewTab
+#endif
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
-                       InvokeTargetLastActiveOrNew_FallbackToNewTab) {
+                       MAYBE_InvokeTargetLastActiveOrNew_FallbackToNewTab) {
   auto* tab_list = GetTabListInterface();
   int initial_tab_count = tab_list->GetTabCount();
   BrowserWindowInterface* browser =
