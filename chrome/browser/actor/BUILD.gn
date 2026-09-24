@@ -178,6 +178,8 @@ source_set("impl") {
     "tools/observation_delay_controller.cc",
     "tools/observation_delay_metrics.cc",
     "tools/observation_delay_metrics.h",
+    "tools/page_search_utils.cc",
+    "tools/page_search_utils.h",
     "tools/page_target_util.cc",
     "tools/page_target_util.h",
     "tools/page_tool.cc",
@@ -219,6 +221,7 @@ source_set("impl") {
     "//chrome/browser/favicon",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/glic",
+    "//chrome/browser/history",
     "//chrome/browser/lookalikes",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:fetcher",
@@ -247,6 +250,7 @@ source_set("impl") {
     "//components/critical_actions/core/browser",
     "//components/favicon/core",
     "//components/feature_engagement/public",
+    "//components/history/core/browser",
     "//components/lookalikes/core",
     "//components/one_time_tokens/core/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -409,6 +413,7 @@ source_set("unit_tests") {
     "tools/click_tool_request_unittest.cc",
     "tools/file_upload_tool_request_unittest.cc",
     "tools/file_upload_tool_unittest.cc",
+    "tools/page_search_utils_unittest.cc",
     "tools/type_tool_request_unittest.cc",
   ]
   deps = [
@@ -422,7 +427,9 @@ source_set("unit_tests") {
     "ui:test_support",
     "//base/test:test_support",
     "//chrome/browser/autofill/actor",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/critical_actions",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/test:test_support",
@@ -431,14 +438,29 @@ source_set("unit_tests") {
     "//components/actor/core:journal",
     "//components/affiliations/core/browser:test_support",
     "//components/affiliations/core/browser/domain_matching",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
     "//components/critical_actions/core/browser",
+    "//components/history/core/browser",
+    "//components/history/core/test",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/optimization_guide/proto:optimization_guide_proto_fuzzable",
     "//components/tabs:test_support",
     "//components/ukm:test_support",
     "//testing/gtest",
     "//third_party/fuzztest",
+    "//url",
   ]
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:test_support",
+      "//components/tabs:public",
+      "//content/public/browser",
+    ]
+  }
   data = [ "//tools/metrics/histograms/metadata/actor/histograms.xml" ]
 }
 
