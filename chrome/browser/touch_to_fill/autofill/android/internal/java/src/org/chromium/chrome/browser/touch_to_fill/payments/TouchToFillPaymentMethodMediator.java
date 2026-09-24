@@ -84,7 +84,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ProgressIconProperties.PROGRESS_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SELECTED_TAB_INDEX;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CLOSED_DESCRIPTION_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_FULL_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_HALF_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
@@ -575,9 +574,6 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
         onTabSelected(PAY_NOW);
 
         mModel.set(
-                SHEET_CONTENT_DESCRIPTION_ID,
-                R.string.autofill_payment_method_bottom_sheet_content_description);
-        mModel.set(
                 SHEET_HALF_HEIGHT_DESCRIPTION_ID,
                 R.string.autofill_payment_method_bottom_sheet_half_height);
         mModel.set(
@@ -739,9 +735,6 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
 
         mModel.set(SHEET_ITEMS, sheetItems);
         mModel.set(
-                SHEET_CONTENT_DESCRIPTION_ID,
-                R.string.autofill_payment_method_bottom_sheet_content_description);
-        mModel.set(
                 SHEET_HALF_HEIGHT_DESCRIPTION_ID,
                 R.string.autofill_payment_method_bottom_sheet_half_height);
         mModel.set(
@@ -790,9 +783,6 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
         mModel.set(
-                SHEET_CONTENT_DESCRIPTION_ID,
-                R.string.autofill_payment_method_bottom_sheet_content_description);
-        mModel.set(
                 SHEET_HALF_HEIGHT_DESCRIPTION_ID,
                 R.string.autofill_payment_method_bottom_sheet_half_height);
         mModel.set(
@@ -824,9 +814,6 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
         mModel.set(
-                SHEET_CONTENT_DESCRIPTION_ID,
-                R.string.autofill_loyalty_card_bottom_sheet_content_description);
-        mModel.set(
                 SHEET_HALF_HEIGHT_DESCRIPTION_ID,
                 R.string.autofill_loyalty_card_bottom_sheet_half_height);
         mModel.set(
@@ -855,9 +842,6 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
 
         showAllLoyaltyCardsList();
         mBottomSheetFocusHelper.registerForOneTimeUse();
-        mModel.set(
-                SHEET_CONTENT_DESCRIPTION_ID,
-                R.string.autofill_loyalty_card_bottom_sheet_content_description);
         mModel.set(
                 SHEET_HALF_HEIGHT_DESCRIPTION_ID,
                 R.string.autofill_loyalty_card_bottom_sheet_half_height);
@@ -981,9 +965,6 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
 
         mModel.set(SHEET_ITEMS, progressScreenModel);
         mModel.set(
-                SHEET_CONTENT_DESCRIPTION_ID,
-                R.string.autofill_bnpl_progress_sheet_content_description);
-        mModel.set(
                 SHEET_HALF_HEIGHT_DESCRIPTION_ID,
                 R.string.autofill_bnpl_progress_sheet_half_height);
         mModel.set(
@@ -1041,9 +1022,6 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
                         this::showPaymentMethodSettings));
 
         mModel.set(
-                SHEET_CONTENT_DESCRIPTION_ID,
-                R.string.autofill_bnpl_issuer_bottom_sheet_content_description);
-        mModel.set(
                 SHEET_HALF_HEIGHT_DESCRIPTION_ID,
                 R.string.autofill_bnpl_issuer_bottom_sheet_half_height);
         mModel.set(
@@ -1079,9 +1057,6 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
                                                         .INTERACTION_COMPLETE))));
 
         mModel.set(SHEET_ITEMS, errorScreenModel);
-        mModel.set(
-                SHEET_CONTENT_DESCRIPTION_ID,
-                R.string.autofill_bnpl_error_sheet_content_description);
         mModel.set(
                 SHEET_HALF_HEIGHT_DESCRIPTION_ID, R.string.autofill_bnpl_error_sheet_half_height);
         mModel.set(
@@ -1148,9 +1123,6 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
                                         onDismissed(
                                                 BottomSheetController.StateChangeReason
                                                         .INTERACTION_COMPLETE))));
-        mModel.set(
-                SHEET_CONTENT_DESCRIPTION_ID,
-                R.string.autofill_bnpl_issuer_tos_bottom_sheet_content_description);
         mModel.set(
                 SHEET_HALF_HEIGHT_DESCRIPTION_ID,
                 R.string.autofill_bnpl_issuer_tos_bottom_sheet_half_height);

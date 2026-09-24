@@ -93,7 +93,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.LoyaltyCardProperties.ON_LOYALTY_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ProgressIconProperties.PROGRESS_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CLOSED_DESCRIPTION_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_FULL_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_HALF_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
@@ -496,7 +495,6 @@ public class TouchToFillPaymentMethodViewTest {
                                     .with(SHEET_ITEMS, new ModelList())
                                     .with(BACK_PRESS_HANDLER, mBackPressHandler)
                                     .with(DISMISS_HANDLER, mDismissCallback)
-                                    .with(SHEET_CONTENT_DESCRIPTION_ID, R.string.ok)
                                     .with(SHEET_HALF_HEIGHT_DESCRIPTION_ID, R.string.ok)
                                     .with(SHEET_FULL_HEIGHT_DESCRIPTION_ID, R.string.ok)
                                     .with(SHEET_CLOSED_DESCRIPTION_ID, R.string.ok)

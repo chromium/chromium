@@ -44,8 +44,6 @@ final class TouchToFillPaymentMethodProperties {
             new ReadableObjectPropertyKey<>("dismiss_handler");
     static final ReadableObjectPropertyKey<Callback<Integer>> TAB_SELECTION_HANDLER =
             new ReadableObjectPropertyKey<>("tab_selection_handler");
-    static final WritableIntPropertyKey SHEET_CONTENT_DESCRIPTION_ID =
-            new WritableIntPropertyKey("sheet_content_description_id");
     static final WritableIntPropertyKey SHEET_HALF_HEIGHT_DESCRIPTION_ID =
             new WritableIntPropertyKey("sheet_half_height_description_id");
     static final WritableIntPropertyKey SHEET_FULL_HEIGHT_DESCRIPTION_ID =
@@ -67,7 +65,6 @@ final class TouchToFillPaymentMethodProperties {
         BACK_PRESS_HANDLER,
         DISMISS_HANDLER,
         TAB_SELECTION_HANDLER,
-        SHEET_CONTENT_DESCRIPTION_ID,
         SHEET_HALF_HEIGHT_DESCRIPTION_ID,
         SHEET_FULL_HEIGHT_DESCRIPTION_ID,
         SHEET_CLOSED_DESCRIPTION_ID,

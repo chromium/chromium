@@ -54,7 +54,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ProgressIconProperties.PROGRESS_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SELECTED_TAB_INDEX;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CLOSED_DESCRIPTION_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_CONTENT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_FULL_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_HALF_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
@@ -160,8 +159,6 @@ final class TouchToFillPaymentMethodViewBinder {
         } else if (propertyKey == CURRENT_SCREEN
                 || propertyKey == FOCUSED_VIEW_ID_FOR_ACCESSIBILITY) {
             // Intentionally ignored.
-        } else if (propertyKey == SHEET_CONTENT_DESCRIPTION_ID) {
-            view.setSheetContentDescriptionId(model.get(SHEET_CONTENT_DESCRIPTION_ID));
         } else if (propertyKey == SHEET_HALF_HEIGHT_DESCRIPTION_ID) {
             view.setSheetHalfHeigthDescriptionId(model.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID));
         } else if (propertyKey == SHEET_FULL_HEIGHT_DESCRIPTION_ID) {

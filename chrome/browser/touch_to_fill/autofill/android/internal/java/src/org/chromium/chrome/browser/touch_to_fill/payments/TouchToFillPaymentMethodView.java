@@ -54,7 +54,6 @@ class TouchToFillPaymentMethodView extends BottomSheetListViewBase {
                     .setUserCritical(UserCriticalFeature.TOUCH_TO_FILL_PAYMENT_METHOD)
                     .build();
 
-    private @StringRes int mSheetContentDescriptionId;
     private @StringRes int mSheetFullHeightDescriptionId;
     private @StringRes int mSheetHalfHeightDescriptionId;
     private @StringRes int mSheetClosedDescriptionId;
@@ -195,10 +194,6 @@ class TouchToFillPaymentMethodView extends BottomSheetListViewBase {
         }
     }
 
-    public void setSheetContentDescriptionId(@StringRes int sheetContentDescriptionId) {
-        mSheetContentDescriptionId = sheetContentDescriptionId;
-    }
-
     public void setSheetHalfHeigthDescriptionId(@StringRes int sheetHalfHeightDescriptionId) {
         mSheetHalfHeightDescriptionId = sheetHalfHeightDescriptionId;
     }
@@ -214,11 +209,6 @@ class TouchToFillPaymentMethodView extends BottomSheetListViewBase {
     @Override
     public int getVerticalScrollOffset() {
         return getSheetItemListView().computeVerticalScrollOffset();
-    }
-
-    @Override
-    public String getSheetContentDescription(Context context) {
-        return getContentView().getContext().getString(mSheetContentDescriptionId);
     }
 
     @Override
