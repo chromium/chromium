@@ -127,10 +127,13 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/app_restore/window_properties.h"
-#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/wm/core/scoped_animation_disabler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if defined(USE_AURA)
+#include "ui/aura/window_occlusion_tracker.h"
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
@@ -1029,6 +1032,18 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
 
     const int selected_tab_index = std::clamp(
         window.selected_tab_index, 0, static_cast<int>(window.tabs.size() - 1));
+
+#if defined(USE_AURA)
+    // Each restored tab's WebContents window is parented to the browser's
+    // root window as the tab is inserted (BrowserView::OnTabStripModelChanged),
+    // and aura::Window::AddChild() recomputes occlusion for every tracked
+    // window under that root when it finishes. With many tabs this makes the
+    // loop below quadratic. Pause occlusion tracking for the whole loop so it
+    // is recomputed once, after all of this window's tabs have been added.
+    // Nothing here depends on intermediate occlusion states: background tabs
+    // are created hidden and the selected tab starts visible.
+    aura::WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
+#endif
 
     // Capture all the splits and all tabs to split.
     std::map<split_tabs::SplitTabId, std::vector<tabs::TabInterface*>>
