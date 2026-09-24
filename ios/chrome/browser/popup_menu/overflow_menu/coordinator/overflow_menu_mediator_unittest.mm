@@ -38,6 +38,7 @@
 #import "components/send_tab_to_self/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
@@ -1008,6 +1009,32 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenInIncognitoMode) {
 
   // Create mediator in incognito mode.
   CreateMediator(/*incognito=*/YES);
+  mediator_.authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile_);
+  mediator_.model = model_;
+
+  // Check the identity item is not present.
+  EXPECT_FALSE(HasItem(kToolsMenuIdentityId, /*enabled=*/YES));
+}
+
+// Tests that the identity button is hidden when sign-in is disabled, even when
+// the user is signed in and the IdentityAwareness feature is enabled.
+TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenWhenSigninDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIdentityAwareness);
+
+  // Sign in user.
+  const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentity(identity);
+  AuthenticationServiceFactory::GetForProfile(profile_)->SignIn(
+      identity, signin_metrics::AccessPoint::kStartPage);
+
+  // Disable sign-in.
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice, false);
+
+  // Setup the mediator.
+  CreateMediator(/*incognito=*/NO);
   mediator_.authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile_);
   mediator_.model = model_;

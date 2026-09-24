@@ -2043,7 +2043,8 @@ void GetPresetNTPBackgroundPreview(
       !self.incognito) {
     NSMutableArray<OverflowMenuAction*>* identityActions =
         [NSMutableArray array];
-    if (self.authenticationService->GetPrimaryIdentity()) {
+    if (self.authenticationService->SigninEnabled() &&
+        self.authenticationService->GetPrimaryIdentity()) {
       [self updateIdentityAction];
       [identityActions addObject:self.identityAction];
     }
@@ -2153,6 +2154,7 @@ void GetPresetNTPBackgroundPreview(
 
 - (void)updateIdentityAction {
   if (self.incognito || !self.identityAction || !self.authenticationService ||
+      !self.authenticationService->SigninEnabled() ||
       !self.authenticationService->HasPrimaryIdentity()) {
     return;
   }
@@ -2930,6 +2932,13 @@ void GetPresetNTPBackgroundPreview(
 
 // Dismisses the menu and opens the account menu.
 - (void)showAccountMenu {
+  // The tap is handled asynchronously, so the user could have signed out or
+  // sign-in could have been disabled while the menu was open.
+  if (!self.authenticationService ||
+      !self.authenticationService->SigninEnabled() ||
+      !self.authenticationService->HasPrimaryIdentity()) {
+    return;
+  }
   RecordAction(UserMetricsAction("MobileMenuIdentityMenu"));
   [self dismissMenu];
   [self.sceneHandler
