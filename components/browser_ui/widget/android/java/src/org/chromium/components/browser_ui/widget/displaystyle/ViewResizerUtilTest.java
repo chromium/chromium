@@ -7,6 +7,8 @@ import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -97,6 +99,33 @@ public final class ViewResizerUtilTest {
         int res =
                 ViewResizerUtil.computePaddingForWideDisplay(
                         mContext, mockView, /* minWidePaddingPixels= */ 20);
+        assertEquals("Padding is not as expected.", expectedPadding, res);
+    }
+
+    @Test
+    @Config(qualifiers = "w700dp-h1024dp")
+    @EnableFeatures({UiAndroidFeatures.UPDATE_PADDING_FOR_DISPLAY_CALCULATION})
+    public void computePadding_withUnmeasuredView_usesAncestorWidth() {
+        // Regression test for crbug.com/565250132. Padding is often computed before the view's
+        // first layout pass, e.g. from a fragment's root view in onViewCreated. Falling back to
+        // the 700dp window width would give (700 - 600)/2 = 50, but the container the view will
+        // actually occupy is only 500dp wide, so the min padding should be used instead.
+        float density = mContext.getResources().getDisplayMetrics().density;
+        ViewGroup container = new FrameLayout(mContext);
+        int containerWidthPx = (int) (500 * density);
+        // Measure before attaching the child, so that the child itself stays unmeasured.
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(containerWidthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        View child = new View(mContext);
+        container.addView(child);
+
+        assertEquals("Child should be unmeasured for this test.", 0, child.getMeasuredWidth());
+
+        int expectedPadding = 20;
+        int res =
+                ViewResizerUtil.computePaddingForWideDisplay(
+                        mContext, child, /* minWidePaddingPixels= */ expectedPadding);
         assertEquals("Padding is not as expected.", expectedPadding, res);
     }
 }

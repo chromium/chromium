@@ -14,9 +14,11 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -42,6 +44,7 @@ import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.ui.base.ViewUtils;
 
 import java.util.function.BooleanSupplier;
 
@@ -245,6 +248,48 @@ public class WideDisplayPaddingApplierTest {
         assertTrue(
                 "Padding should be applied immediately on view created without waiting for layout",
                 view.getPaddingStart() > 0);
+    }
+
+    /**
+     * Regression test for crbug.com/565250132: settings does not always fill the window. The
+     * vertical tab strip and the side panel take horizontal space away from the tab showing
+     * settings, so padding computed from the window width over-pads the content and the page
+     * visibly shifts once a later layout pass recomputes it from the real container width.
+     */
+    @Test
+    @Config(qualifiers = "w800dp-h1280dp")
+    public void testEmbeddablePage_padsFromContainerWidthNotWindowWidth() {
+        DisplayMetrics metrics = mTestActivity.getResources().getDisplayMetrics();
+        int containerWidthPx = ViewUtils.dpToPx(metrics, 560);
+
+        FrameLayout container = new FrameLayout(mTestActivity);
+        container.setId(View.generateViewId());
+        mTestActivity.setContentView(container);
+        container.measure(
+                View.MeasureSpec.makeMeasureSpec(containerWidthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+        container.layout(0, 0, containerWidthPx, 1000);
+
+        TestEmbeddablePageFragment fragment = new TestEmbeddablePageFragment();
+        mTestActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(container.getId(), fragment, "other_tag")
+                .commitNow();
+
+        View view = fragment.getView();
+        assertNotNull(view);
+
+        // The container is narrower than WIDE_DISPLAY_STYLE_MIN_WIDTH_DP, so only the minimum
+        // padding applies. Computing from the 800dp window would give (800 - 600) / 2 = 100dp.
+        int minWidePaddingPx =
+                mTestActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.settings_wide_display_min_padding);
+        assertEquals(
+                "Padding should be derived from the settings container, not the window",
+                minWidePaddingPx,
+                view.getPaddingStart());
     }
 
     @Test

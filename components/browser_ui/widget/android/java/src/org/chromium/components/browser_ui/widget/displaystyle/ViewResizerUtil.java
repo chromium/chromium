@@ -47,7 +47,7 @@ public class ViewResizerUtil {
                 && (DisplayUtil.isUiScaled()
                         || UiAndroidFeatureList.sUpdatePaddingForDisplayCalculation.isEnabled())) {
             containerWidthDp =
-                    ViewUtils.pxToDp(resources.getDisplayMetrics(), view.getMeasuredWidth());
+                    ViewUtils.pxToDp(resources.getDisplayMetrics(), containerWidthPx(view));
         }
         // TODO(crbug.com/514439044): Clean up direct use of screen width if possible.
         // Use the screen width as a fallback if the container width is inapplicable, or unavailable
@@ -59,6 +59,25 @@ public class ViewResizerUtil {
         int excessWidthDp = containerWidthDp - WIDE_DISPLAY_STYLE_MIN_WIDTH_DP;
         int paddingPx = ViewUtils.dpToPx(resources.getDisplayMetrics(), excessWidthDp / 2.f);
         return Math.max(wideWindowMinPaddingPx, paddingPx);
+    }
+
+    /**
+     * Returns the measured width of {@code view}, or that of its nearest measured ancestor if the
+     * view itself has not been through a layout pass yet.
+     *
+     * <p>Padding is often computed from a view before its first layout pass, for example from a
+     * fragment's root view in {@code onViewCreated}. Falling straight through to the window width
+     * in that case over-pads the content whenever the view does not fill the window, such as when a
+     * vertical tab strip or a side panel is showing, and the content then visibly shifts once a
+     * later layout pass recomputes the padding. An ancestor's width is never wider than the window,
+     * so this is always at least as good an estimate. See crbug.com/565250132.
+     */
+    private static int containerWidthPx(View view) {
+        for (View current = view; current != null; ) {
+            if (current.getMeasuredWidth() > 0) return current.getMeasuredWidth();
+            current = current.getParent() instanceof View parent ? parent : null;
+        }
+        return 0;
     }
 
     /**
