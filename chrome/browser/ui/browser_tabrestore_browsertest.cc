@@ -7,6 +7,8 @@
 #include <map>
 #include <string>
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
@@ -15,16 +17,21 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_observer_test_utils.h"
+#include "third_party/blink/public/common/page_state/page_state.h"
 #include "ui/base/window_open_disposition.h"
 
 typedef InProcessBrowserTest BrowserTabRestoreTest;
@@ -172,6 +179,52 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
       /* is_active_browser=*/true);
 
   EXPECT_FALSE(web_contents->GetController().GetPendingEntry());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest,
+                       RestoredNewTabWithPageStateKeepsRewrittenUrl) {
+  const GURL virtual_url(chrome::kChromeUINewTabURL);
+  sessions::SerializedNavigationEntry navigation_entry;
+  navigation_entry.set_index(0);
+  navigation_entry.set_virtual_url(virtual_url);
+  navigation_entry.set_encoded_page_state(
+      blink::PageState::CreateFromURL(virtual_url).ToEncodedData());
+
+  content::WebContents* web_contents = chrome::AddRestoredTab(
+      browser(), {navigation_entry}, /*tab_index=*/1,
+      /*selected_navigation=*/0, /*extension_app_id=*/std::string(),
+      /*group=*/std::nullopt, /*select=*/false, /*pin=*/false,
+      /*last_active_time_ticks=*/base::TimeTicks::Now(),
+      /*last_active_time=*/base::Time::Now(),
+      /*storage_namespace=*/nullptr,
+      /*user_agent_override=*/sessions::SerializedUserAgentOverride(),
+      /*extra_data=*/std::map<std::string, std::string>(),
+      /*from_session_restore=*/true, /*is_active_browser=*/true);
+
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetActiveEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_NE(virtual_url, entry->GetURL());
+  EXPECT_EQ(virtual_url, entry->GetVirtualURL());
+
+  GURL started_url;
+  base::RunLoop navigation_started;
+  content::NavigationStartObserver observer(
+      web_contents, base::BindLambdaForTesting(
+                        [&](content::NavigationHandle* navigation_handle) {
+                          if (!navigation_handle->IsInPrimaryMainFrame()) {
+                            return;
+                          }
+                          started_url = navigation_handle->GetURL();
+                          navigation_started.Quit();
+                        }));
+  web_contents->GetController().LoadIfNecessary();
+  navigation_started.Run();
+
+  entry = web_contents->GetController().GetActiveEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetURL(), started_url);
+  EXPECT_NE(virtual_url, started_url);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {

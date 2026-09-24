@@ -45,8 +45,7 @@ class CONTENT_EXPORT BrowserURLHandlerImpl : public BrowserURLHandler {
   bool ReverseURLRewrite(GURL* url, const GURL& original,
                          BrowserContext* browser_context);
 
-  // Reverses |AddHandlerPair| for the given |handler|.
-  void RemoveHandlerForTesting(URLHandler handler);
+  void RemoveHandlerForTesting(URLHandler handler) override;
 
  private:
   // This object is a singleton:

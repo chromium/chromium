@@ -60,6 +60,9 @@ class CONTENT_EXPORT BrowserURLHandler {
   virtual void AddHandlerPair(URLHandler handler,
                               URLHandler reverse_handler) = 0;
 
+  // Removes the first handler pair whose forward handler matches `handler`.
+  virtual void RemoveHandlerForTesting(URLHandler handler) = 0;
+
  protected:
   virtual ~BrowserURLHandler() {}
 };

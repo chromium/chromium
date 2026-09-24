@@ -152,9 +152,19 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
     // URL, Referrer).  Calling SetPageState will clobber these values in
     // content::NavigationEntry (and FrameNavigationEntry(s) below), as long as
     // the PageState successfully decodes.
+    const GURL rewritten_url = entry->GetURL();
     entry->SetPageState(blink::PageState::CreateFromEncodedData(
                             navigation->encoded_page_state_),
                         restore_context);
+    // BrowserURLHandler applies the current browser and profile-specific
+    // rewrite before restoration. Preserve that decision if PageState changed
+    // the actual URL back to the virtual URL. A different PageState URL may
+    // represent a redirect and remains authoritative.
+    if (!rewritten_url.is_empty() &&
+        rewritten_url != navigation->virtual_url_ &&
+        entry->GetURL() == navigation->virtual_url_) {
+      entry->SetURL(rewritten_url);
+    }
 
     // In theory the referrer information in the PageState should exactly match
     // the `navigation`-level data, but there are sometimes discrepancies in

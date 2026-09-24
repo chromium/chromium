@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/check_is_test.h"
 #include "base/strings/string_util.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/webui/web_ui_impl.h"
@@ -171,6 +172,7 @@ bool BrowserURLHandlerImpl::ReverseURLRewrite(
 }
 
 void BrowserURLHandlerImpl::RemoveHandlerForTesting(URLHandler handler) {
+  CHECK_IS_TEST();
   const auto it =
       std::ranges::find(url_handlers_, handler, &HandlerPair::first);
   CHECK(url_handlers_.end() != it);

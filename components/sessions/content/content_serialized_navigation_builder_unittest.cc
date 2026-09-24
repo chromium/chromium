@@ -165,6 +165,34 @@ class ContentSerializedNavigationBuilderTest : public testing::Test {
   }
 };
 
+class ContentSerializedNavigationBuilderRewriteTest
+    : public ContentSerializedNavigationBuilderTest {
+ protected:
+  void SetUp() override {
+    ContentSerializedNavigationBuilderTest::SetUp();
+    content::BrowserURLHandler::GetInstance()->AddHandlerPair(
+        &RewriteSentinelUrlForTest, content::BrowserURLHandler::null_handler());
+  }
+
+  void TearDown() override {
+    content::BrowserURLHandler::GetInstance()->RemoveHandlerForTesting(
+        &RewriteSentinelUrlForTest);
+    ContentSerializedNavigationBuilderTest::TearDown();
+  }
+
+  std::unique_ptr<content::NavigationEntry> Restore(
+      const SerializedNavigationEntry& navigation) {
+    std::unique_ptr<content::NavigationEntryRestoreContext> restore_context =
+        content::NavigationEntryRestoreContext::Create();
+    return ContentSerializedNavigationBuilder::ToNavigationEntry(
+        &navigation, &browser_context_, restore_context.get());
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext browser_context_;
+};
+
 // Create a SerializedNavigationEntry from a NavigationEntry.  All its fields
 // should match the NavigationEntry's.
 TEST_F(ContentSerializedNavigationBuilderTest, FromNavigationEntry) {
@@ -413,24 +441,14 @@ TEST_F(ContentSerializedNavigationBuilderTest, SetPasswordState) {
 // BrowserURLHandler rewrote it to, rather than reverting to the virtual URL.
 // Otherwise the entry navigates to the unrewritten URL, and re-serializes that
 // state into the next session. See https://crbug.com/40244589.
-TEST_F(ContentSerializedNavigationBuilderTest,
+TEST_F(ContentSerializedNavigationBuilderRewriteTest,
        ToNavigationEntryWithoutPageStateKeepsRewrittenUrl) {
-  content::BrowserTaskEnvironment test_environment;
-  content::TestBrowserContext browser_context;
-
-  content::BrowserURLHandler::GetInstance()->AddHandlerPair(
-      &RewriteSentinelUrlForTest, content::BrowserURLHandler::null_handler());
-
   SerializedNavigationEntry navigation =
       SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   navigation.set_virtual_url(GURL(kRewriteFromUrl));
   navigation.set_encoded_page_state(std::string());
 
-  std::unique_ptr<content::NavigationEntryRestoreContext> restore_context =
-      content::NavigationEntryRestoreContext::Create();
-  const std::unique_ptr<content::NavigationEntry> entry(
-      ContentSerializedNavigationBuilder::ToNavigationEntry(
-          &navigation, &browser_context, restore_context.get()));
+  const std::unique_ptr<content::NavigationEntry> entry = Restore(navigation);
 
   // The rewritten URL is what the entry navigates to; the virtual URL is what
   // the user sees.
@@ -438,28 +456,70 @@ TEST_F(ContentSerializedNavigationBuilderTest,
   EXPECT_EQ(GURL(kRewriteFromUrl), entry->GetVirtualURL());
 }
 
+TEST_F(ContentSerializedNavigationBuilderRewriteTest,
+       ToNavigationEntryWithPageStateKeepsRewrittenUrl) {
+  SerializedNavigationEntry navigation =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  navigation.set_virtual_url(GURL(kRewriteFromUrl));
+  navigation.set_encoded_page_state(
+      blink::PageState::CreateFromURL(GURL(kRewriteFromUrl)).ToEncodedData());
+
+  const std::unique_ptr<content::NavigationEntry> entry = Restore(navigation);
+
+  EXPECT_EQ(GURL(kRewriteToUrl), entry->GetURL());
+  EXPECT_EQ(GURL(kRewriteFromUrl), entry->GetVirtualURL());
+
+  const SerializedNavigationEntry reserialized_navigation =
+      ContentSerializedNavigationBuilder::FromNavigationEntry(0, entry.get());
+  const std::unique_ptr<content::NavigationEntry> restored_again_entry(
+      Restore(reserialized_navigation));
+
+  EXPECT_EQ(GURL(kRewriteToUrl), restored_again_entry->GetURL());
+  EXPECT_EQ(GURL(kRewriteFromUrl), restored_again_entry->GetVirtualURL());
+}
+
+TEST_F(ContentSerializedNavigationBuilderRewriteTest,
+       ToNavigationEntryPreservesDifferentPageStateUrl) {
+  const GURL persisted_url("https://persisted.example.test/");
+
+  SerializedNavigationEntry navigation =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  navigation.set_virtual_url(GURL(kRewriteFromUrl));
+  navigation.set_encoded_page_state(
+      blink::PageState::CreateFromURL(persisted_url).ToEncodedData());
+
+  const std::unique_ptr<content::NavigationEntry> entry = Restore(navigation);
+
+  EXPECT_EQ(persisted_url, entry->GetURL());
+  EXPECT_EQ(GURL(kRewriteFromUrl), entry->GetVirtualURL());
+}
+
+TEST_F(ContentSerializedNavigationBuilderRewriteTest,
+       ToNavigationEntryWithPageStateFallsBackWhenRewriteIsEmpty) {
+  SerializedNavigationEntry navigation =
+      SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  navigation.set_virtual_url(GURL(kRewriteToEmptyFromUrl));
+  navigation.set_encoded_page_state(
+      blink::PageState::CreateFromURL(GURL(kRewriteToEmptyFromUrl))
+          .ToEncodedData());
+
+  const std::unique_ptr<content::NavigationEntry> entry = Restore(navigation);
+
+  EXPECT_EQ(GURL(kRewriteToEmptyFromUrl), entry->GetURL());
+}
+
 // If a handler rewrites to an empty URL, the virtual URL is still used. Nothing
 // is expected to do this; the fallback exists so that synthesizing from the
 // entry's URL can never produce a less valid PageState than synthesizing from
 // the virtual URL would have.
-TEST_F(ContentSerializedNavigationBuilderTest,
+TEST_F(ContentSerializedNavigationBuilderRewriteTest,
        ToNavigationEntryWithoutPageStateFallsBackWhenRewriteIsEmpty) {
-  content::BrowserTaskEnvironment test_environment;
-  content::TestBrowserContext browser_context;
-
-  content::BrowserURLHandler::GetInstance()->AddHandlerPair(
-      &RewriteSentinelUrlForTest, content::BrowserURLHandler::null_handler());
-
   SerializedNavigationEntry navigation =
       SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   navigation.set_virtual_url(GURL(kRewriteToEmptyFromUrl));
   navigation.set_encoded_page_state(std::string());
 
-  std::unique_ptr<content::NavigationEntryRestoreContext> restore_context =
-      content::NavigationEntryRestoreContext::Create();
-  const std::unique_ptr<content::NavigationEntry> entry(
-      ContentSerializedNavigationBuilder::ToNavigationEntry(
-          &navigation, &browser_context, restore_context.get()));
+  const std::unique_ptr<content::NavigationEntry> entry = Restore(navigation);
 
   EXPECT_EQ(GURL(kRewriteToEmptyFromUrl), entry->GetURL());
 }
