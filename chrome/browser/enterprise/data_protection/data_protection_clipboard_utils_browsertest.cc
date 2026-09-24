@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto source = content::ClipboardEndpoint::ForOutsideChrome(std::nullopt);
   auto destination = CreateURLClipboardEndpoint("https://google.com");
   ui::ClipboardMetadata metadata = {
       .size = 1234,
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto source = content::ClipboardEndpoint::ForOutsideChrome(std::nullopt);
   auto destination = CreateURLClipboardEndpoint(test_url_1());
   ui::ClipboardMetadata metadata = {
       .size = 1234,
@@ -589,7 +589,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto source = content::ClipboardEndpoint::ForOutsideChrome(std::nullopt);
   auto destination = CreateURLClipboardEndpoint(test_url_0());
   ui::ClipboardMetadata metadata = {
       .size = 1234,
@@ -705,7 +705,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto source = content::ClipboardEndpoint::ForOutsideChrome(std::nullopt);
   auto destination = CreateURLClipboardEndpoint(test_url_1());
   ui::ClipboardMetadata metadata = {
       .size = 1234,
@@ -804,7 +804,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsDismissTest,
           : data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto source = content::ClipboardEndpoint::ForOutsideChrome(std::nullopt);
   auto destination = CreateURLClipboardEndpoint(test_url_1());
   ui::ClipboardMetadata metadata = {
       .size = 1234,
@@ -1213,7 +1213,7 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
-  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto source = content::ClipboardEndpoint::ForOutsideChrome(std::nullopt);
   auto destination = CreateURLClipboardEndpoint(test_url_0());
   ui::ClipboardMetadata metadata = {
       .size = 1234,

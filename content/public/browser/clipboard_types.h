@@ -79,14 +79,12 @@ struct CONTENT_EXPORT ClipboardPasteData {
 // represent either a source or destination.
 class CONTENT_EXPORT ClipboardEndpoint {
  public:
-  // This constructor should be called when the endpoint represents something
-  // from outside of Chrome's control, such as copying from a different
-  // application. On CrOS, `data_transfer_endpoint` might still be populated
-  // with relevant information.
-  // TODO(crbug.com/556407207): Nothing in production constructs one of these.
-  // Name it like the others or drop it once the tests no longer need it.
-  explicit ClipboardEndpoint(base::optional_ref<const ui::DataTransferEndpoint>
-                                 data_transfer_endpoint);
+  // Endpoint for something outside of Chrome's control, such as a copy from a
+  // different application. On CrOS, `data_transfer_endpoint` might still be
+  // populated with relevant information.
+  static ClipboardEndpoint ForOutsideChrome(
+      base::optional_ref<const ui::DataTransferEndpoint>
+          data_transfer_endpoint);
 
   // Endpoint for a Chrome tab that has yet to be loaded (i.e., has no render
   // frame host or web contents, but may have a URL or profile).
@@ -99,6 +97,13 @@ class CONTENT_EXPORT ClipboardEndpoint {
       base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
       base::RepeatingCallback<BrowserContext*()> browser_context_fetcher,
       RenderFrameHost& rfh);
+
+  // Endpoint for a service worker. Like ForUnloadedTab(), but marks the
+  // endpoint so policy checks that would otherwise be skipped for lack of a
+  // tab can still run.
+  static ClipboardEndpoint ForServiceWorker(
+      base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
+      base::RepeatingCallback<BrowserContext*()> browser_context_fetcher);
 
   ClipboardEndpoint(const ClipboardEndpoint&);
   ClipboardEndpoint& operator=(const ClipboardEndpoint&);
@@ -128,21 +133,26 @@ class CONTENT_EXPORT ClipboardEndpoint {
   // Chrome tab, or if the frame has since been destroyed.
   RenderFrameHost* render_frame_host() const;
 
+  // True when this endpoint is a service worker, which never has a tab.
+  bool is_service_worker() const { return is_service_worker_; }
+
  private:
-  // Reached through ForUnloadedTab() and ForFrame(), so callers have to say
-  // which kind of endpoint they mean.
-  ClipboardEndpoint(
-      base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
-      base::RepeatingCallback<BrowserContext*()> browser_context_fetcher);
+  // The only constructor. Every caller goes through one of the ForXxx()
+  // factories above and so has to say which kind of endpoint it means, and
+  // cannot pick the service worker flag's value itself. `rfh` is null for
+  // everything that has no live tab.
   ClipboardEndpoint(
       base::optional_ref<const ui::DataTransferEndpoint> data_transfer_endpoint,
       base::RepeatingCallback<BrowserContext*()> browser_context_fetcher,
-      RenderFrameHost& rfh);
+      RenderFrameHost* rfh,
+      bool is_service_worker);
 
   // The `ui::DataTransferEndpoint` corresponding to the clipboard interaction.
   // An empty value represents a copy from Chrome's omnibox, a copy from a
   // different desktop application (outside of CrOS), etc.
   std::optional<ui::DataTransferEndpoint> data_transfer_endpoint_;
+
+  bool is_service_worker_ = false;
 
   // Fetcher method to provide a `BrowserContext` if the endpoint has one. This
   // is done so code that instantiates this class can bind a function with

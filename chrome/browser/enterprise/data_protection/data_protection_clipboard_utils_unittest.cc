@@ -131,7 +131,7 @@ class DataProtectionClipboardTest : public testing::Test {
   }
 
   content::ClipboardEndpoint NoBrowserContextSourceEndpoint() {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForOutsideChrome(
         ui::DataTransferEndpoint(GURL("https://source.com")));
   }
 
@@ -370,7 +370,7 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, Default) {
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoEndpoint) {
-  auto source = content::ClipboardEndpoint(std::nullopt);
+  auto source = content::ClipboardEndpoint::ForOutsideChrome(std::nullopt);
   auto metadata = CopyMetadata();
   EXPECT_FALSE(IsCopyPolicyCheckRequired(source, metadata));
 

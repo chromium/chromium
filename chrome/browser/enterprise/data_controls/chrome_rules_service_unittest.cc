@@ -81,7 +81,7 @@ class DataControlsRulesServiceTest : public testing::Test {
   }
 
   content::ClipboardEndpoint empty_endpoint() const {
-    return content::ClipboardEndpoint(std::nullopt);
+    return content::ClipboardEndpoint::ForOutsideChrome(std::nullopt);
   }
 
   content::ClipboardEndpoint incognito_endpoint() {

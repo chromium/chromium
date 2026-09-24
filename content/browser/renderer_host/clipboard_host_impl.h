@@ -41,6 +41,7 @@ namespace content {
 class BrowserContext;
 class ClipboardHostImplTest;
 class RenderFrameHost;
+class ServiceWorkerHost;
 class StoragePartitionImpl;
 
 class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
@@ -50,14 +51,15 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
   using IsClipboardPasteAllowedCallback =
       ContentBrowserClient::IsClipboardPasteAllowedCallback;
 
-  // The execution context a host serves. The host body reaches its context
-  // only through this.
+  // The execution context a host serves, a document or a service worker. The
+  // host body reaches its context only through this, so the two differ only
+  // in what they answer here.
   class CONTENT_EXPORT Context {
    public:
     virtual ~Context() = default;
 
-    // False for a document that may not use the clipboard right now. A
-    // document that is in the back/forward cache
+    // False for a document that may not use the clipboard right now and for a
+    // worker that is not running. A document that is in the back/forward cache
     // or prerendering is evicted or cancelled by the question, which is why
     // every request starts here and OnClipboardDataChanged() does not.
     virtual bool IsActive() = 0;
@@ -66,9 +68,16 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
     // listener is registered. No side effects, unlike IsActive().
     virtual bool CanObserveChanges() = 0;
 
-    // The embedder's per-request paste check: transient user activation or
-    // the clipboard-read permission.
+    // A worker only writes. It has no focus or visibility to read with, and
+    // the Data Controls type replacement is keyed on a frame.
+    virtual bool CanRead() = 0;
+
+    // The embedder's per-request paste check: for a document, transient user
+    // activation or the clipboard-read permission.
     virtual bool IsPasteAllowed() = 0;
+
+    // The embedder's per-request write check. A document has none.
+    virtual bool CanWrite() = 0;
 
     virtual BrowserContext* GetBrowserContext() = 0;
     virtual StoragePartitionImpl* GetStoragePartition() = 0;
@@ -80,7 +89,9 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
     virtual void AddSourceDataToClipboardWriter(
         ui::ScopedClipboardWriter& clipboard_writer) = 0;
 
-    // The enterprise policy hooks a document forwards to its WebContents.
+    // The enterprise policy hooks a document forwards to its WebContents. A
+    // worker has no tab: no replaced types, every paste denied, no copy
+    // notification.
     virtual std::optional<std::vector<std::u16string>>
     GetClipboardTypesIfPolicyApplied(
         const ui::ClipboardSequenceNumberToken& seqno) = 0;
@@ -101,6 +112,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
 
   explicit ClipboardHostImpl(std::unique_ptr<Context> context);
   explicit ClipboardHostImpl(RenderFrameHost& render_frame_host);
+  explicit ClipboardHostImpl(ServiceWorkerHost& service_worker_host);
   ~ClipboardHostImpl() override;
 
   // Override for ui::ClipboardObserver
@@ -358,7 +370,8 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost,
   void StopObservingClipboard();
 
   // The owner of this host also owns, and may be, what `context_` points at:
-  // the DocumentService for a document. The destructor must not touch it.
+  // the DocumentService for a document, the ServiceWorkerHost for a worker.
+  // The destructor must not touch it.
   const std::unique_ptr<Context> context_;
 
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;

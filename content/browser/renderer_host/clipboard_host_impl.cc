@@ -85,10 +85,12 @@ class FrameClipboardContext : public ClipboardHostImpl::Context {
         DisallowActivationReasonId::kClipboard);
   }
   bool CanObserveChanges() override { return render_frame_host_->IsActive(); }
+  bool CanRead() override { return true; }
   bool IsPasteAllowed() override {
     return GetContentClient()->browser()->IsClipboardPasteAllowed(
         &*render_frame_host_);
   }
+  bool CanWrite() override { return true; }
 
   BrowserContext* GetBrowserContext() override {
     return render_frame_host_->GetBrowserContext();
@@ -144,6 +146,90 @@ class FrameClipboardContext : public ClipboardHostImpl::Context {
  private:
   // The DocumentService that owns the host dies with the document.
   const raw_ref<RenderFrameHostImpl> render_frame_host_;
+};
+
+BrowserContext* BrowserContextForWorker(ServiceWorkerHost& host) {
+  RenderProcessHost* process = host.GetProcessHost();
+  return process ? process->GetBrowserContext() : nullptr;
+}
+
+class ServiceWorkerClipboardContext : public ClipboardHostImpl::Context {
+ public:
+  explicit ServiceWorkerClipboardContext(ServiceWorkerHost& host)
+      : host_(host) {}
+  ~ServiceWorkerClipboardContext() override = default;
+
+  bool IsActive() override {
+    return host_->GetProcessHost() && host_->version()->running_status() ==
+                                          blink::EmbeddedWorkerStatus::kRunning;
+  }
+  bool CanObserveChanges() override { return false; }
+  bool CanRead() override { return false; }
+  bool IsPasteAllowed() override { return false; }
+  bool CanWrite() override { return false; }
+
+  BrowserContext* GetBrowserContext() override {
+    return BrowserContextForWorker(*host_);
+  }
+  StoragePartitionImpl* GetStoragePartition() override {
+    return static_cast<StoragePartitionImpl*>(host_->GetStoragePartition());
+  }
+  ChildProcessId GetChildProcessId() override {
+    return host_->worker_process_id();
+  }
+  blink::StorageKey GetStorageKey() override { return host_->version()->key(); }
+
+  std::optional<ui::DataTransferEndpoint> CreateDataEndpoint() override {
+    // The scope identifies the extension. script_url() is the background
+    // script's filename, which policy rules must not depend on. A worker has
+    // no transient user activation.
+    BrowserContext* browser_context = GetBrowserContext();
+    return ui::DataTransferEndpoint(
+        host_->version()->scope(),
+        ui::DataTransferEndpointOptions{
+            .notify_if_restricted = false,
+            .off_the_record =
+                browser_context && browser_context->IsOffTheRecord(),
+        });
+  }
+  ClipboardEndpoint CreateClipboardEndpoint() override {
+    // A worker has no WebContents, so the endpoint carries only the data
+    // endpoint and a BrowserContext fetcher.
+    return ClipboardEndpoint::ForServiceWorker(
+        CreateDataEndpoint(),
+        base::BindRepeating(
+            [](base::WeakPtr<ServiceWorkerHost> host) -> BrowserContext* {
+              return host ? BrowserContextForWorker(*host) : nullptr;
+            },
+            host_->GetWeakPtr()));
+  }
+  void AddSourceDataToClipboardWriter(
+      ui::ScopedClipboardWriter& clipboard_writer) override {
+    clipboard_writer.SetDataSourceURL(host_->version()->scope(),
+                                      host_->version()->scope());
+  }
+
+  std::optional<std::vector<std::u16string>> GetClipboardTypesIfPolicyApplied(
+      const ui::ClipboardSequenceNumberToken&) override {
+    return std::nullopt;
+  }
+  void IsClipboardPasteAllowedByPolicy(
+      const ClipboardEndpoint&,
+      const ClipboardEndpoint&,
+      const ui::ClipboardMetadata&,
+      ClipboardPasteData,
+      ClipboardHostImpl::IsClipboardPasteAllowedCallback callback) override {
+    std::move(callback).Run(std::nullopt);
+  }
+  void OnTextCopiedToClipboard(const std::u16string&) override {}
+
+#if BUILDFLAG(IS_CHROMEOS)
+  bool IncludeAllTypesWhenFilesPresent() override { return false; }
+#endif
+
+ private:
+  // Only a ServiceWorkerHost constructs a worker host, and it owns it.
+  const raw_ref<ServiceWorkerHost> host_;
 };
 
 // Deletes the ClipboardHostImpl when the connected document is destroyed.
@@ -265,6 +351,10 @@ ClipboardHostImpl::ClipboardHostImpl(RenderFrameHost& render_frame_host)
     : ClipboardHostImpl(
           std::make_unique<FrameClipboardContext>(render_frame_host)) {}
 
+ClipboardHostImpl::ClipboardHostImpl(ServiceWorkerHost& service_worker_host)
+    : ClipboardHostImpl(std::make_unique<ServiceWorkerClipboardContext>(
+          service_worker_host)) {}
+
 void ClipboardHostImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver) {
@@ -306,7 +396,9 @@ absl::uint128 ClipboardHostImpl::GetSequenceNumberImpl(
 
 void ClipboardHostImpl::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
                                           GetSequenceNumberCallback callback) {
-  if (!context_->IsActive()) {
+  // The number changes whenever the clipboard does, so answering a context
+  // that cannot read tells it when a copy happened.
+  if (!context_->IsActive() || !context_->CanRead()) {
     std::move(callback).Run(absl::uint128());
     return;
   }
@@ -930,11 +1022,12 @@ void ClipboardHostImpl::CommitWrite() {
 }
 
 bool ClipboardHostImpl::IsPasteAllowed() {
-  return context_->IsActive() && context_->IsPasteAllowed();
+  return context_->IsActive() && context_->CanRead() &&
+         context_->IsPasteAllowed();
 }
 
 bool ClipboardHostImpl::IsWriteAllowed() {
-  return context_->IsActive();
+  return context_->IsActive() && context_->CanWrite();
 }
 
 void ClipboardHostImpl::ReadAvailableCustomAndStandardFormats(

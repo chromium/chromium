@@ -1436,7 +1436,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, BitmapAllowed) {
   clipboard_paste_data.png = StringToVector("allowed");
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1463,7 +1463,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, BitmapBlocked) {
   clipboard_paste_data.png = StringToVector("blocked");
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1497,7 +1497,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, TextAllowed) {
   clipboard_paste_data.text = u"allowed";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1524,7 +1524,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, TextBlocked) {
   clipboard_paste_data.text = u"blocked";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1558,7 +1558,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, HtmlAllowed) {
   clipboard_paste_data.html = u"allowed";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1585,7 +1585,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, HtmlBlocked) {
   clipboard_paste_data.html = u"blocked";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1619,7 +1619,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, SvgAllowed) {
   clipboard_paste_data.svg = u"allowed";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1646,7 +1646,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, SvgBlocked) {
   clipboard_paste_data.svg = u"blocked";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1679,7 +1679,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, RtfAllowed) {
   clipboard_paste_data.rtf = "allowed";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1706,7 +1706,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, RtfBlocked) {
   clipboard_paste_data.rtf = "blocked";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1740,7 +1740,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, CustomDataAllowed) {
   clipboard_paste_data.custom_data[u"custom/data"] = u"allowed";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1771,7 +1771,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, CustomDataBlocked) {
   clipboard_paste_data.custom_data[u"custom/data"] = u"blocked";
 
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1813,7 +1813,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, DISABLED_AllFilesAllowed) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1845,7 +1845,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, DISABLED_AllFilesBlocked) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),
@@ -1883,7 +1883,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest, DISABLED_SomeFilesBlocked) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   client()->IsClipboardPasteAllowedByPolicy(
-      content::ClipboardEndpoint(
+      content::ClipboardEndpoint::ForOutsideChrome(
           ui::DataTransferEndpoint(GURL("https://google.com"))),
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(GURL("https://google.com")),

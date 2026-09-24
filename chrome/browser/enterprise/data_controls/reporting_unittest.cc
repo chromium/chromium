@@ -151,7 +151,7 @@ class DataControlsReportingTest : public testing::Test {
 
   content::ClipboardEndpoint os_clipboard_endpoint(GURL url,
                                                    bool off_the_record) {
-    return content::ClipboardEndpoint(
+    return content::ClipboardEndpoint::ForOutsideChrome(
         ui::DataTransferEndpoint(url, ui::DataTransferEndpointOptions{
                                           .off_the_record = off_the_record,
                                       }));

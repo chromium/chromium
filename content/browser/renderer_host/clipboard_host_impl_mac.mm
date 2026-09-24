@@ -24,7 +24,9 @@ static constexpr size_t kMaxFindPboardStringLength = 4096;
 }  // namespace
 
 void ClipboardHostImpl::WriteStringToFindPboard(const std::u16string& text) {
-  if (!IsWriteAllowed()) {
+  // The find pasteboard feeds a window's find bar. A worker has no window,
+  // the same reason it cannot read.
+  if (!context_->CanRead() || !IsWriteAllowed()) {
     return;
   }
   if (text.length() <= kMaxFindPboardStringLength) {
@@ -37,6 +39,12 @@ void ClipboardHostImpl::WriteStringToFindPboard(const std::u16string& text) {
 
 void ClipboardHostImpl::GetPlatformPermissionState(
     GetPlatformPermissionStateCallback callback) {
+  if (!context_->CanRead()) {
+    std::move(callback).Run(
+        blink::mojom::PlatformClipboardPermissionState::kDeny);
+    return;
+  }
+
   // Check macOS system privacy settings for programmatic clipboard access using
   // the accessBehavior property available in macOS 15.4+. These settings only
   // affect programmatic access - direct user actions like ⌘V always work.

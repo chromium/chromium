@@ -24,6 +24,12 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
+#include "content/browser/service_worker/embedded_worker_test_helper.h"
+#include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_registration.h"
+#include "content/browser/service_worker/service_worker_registry.h"
+#include "content/browser/service_worker/service_worker_test_utils.h"
+#include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
@@ -2115,7 +2121,7 @@ TEST_F(ClipboardHostImplRaceConditionTest,
 }
 
 // A Context whose answers the test sets, so the host body is exercised
-// against the seam rather than against a frame.
+// against the seam rather than against a frame or a worker.
 class FakeClipboardContext : public ClipboardHostImpl::Context {
  public:
   explicit FakeClipboardContext(BrowserContext& browser_context)
@@ -2123,13 +2129,17 @@ class FakeClipboardContext : public ClipboardHostImpl::Context {
   ~FakeClipboardContext() override = default;
 
   void set_active(bool active) { active_ = active; }
+  void set_can_read(bool can_read) { can_read_ = can_read; }
+  void set_can_write(bool can_write) { can_write_ = can_write; }
   void set_can_observe_changes(bool can_observe_changes) {
     can_observe_changes_ = can_observe_changes;
   }
 
   bool IsActive() override { return active_; }
   bool CanObserveChanges() override { return can_observe_changes_; }
+  bool CanRead() override { return can_read_; }
   bool IsPasteAllowed() override { return true; }
+  bool CanWrite() override { return can_write_; }
 
   BrowserContext* GetBrowserContext() override { return &*browser_context_; }
   StoragePartitionImpl* GetStoragePartition() override {
@@ -2145,7 +2155,7 @@ class FakeClipboardContext : public ClipboardHostImpl::Context {
     return std::nullopt;
   }
   ClipboardEndpoint CreateClipboardEndpoint() override {
-    return ClipboardEndpoint(std::nullopt);
+    return ClipboardEndpoint::ForOutsideChrome(std::nullopt);
   }
   void AddSourceDataToClipboardWriter(ui::ScopedClipboardWriter&) override {}
 
@@ -2170,6 +2180,8 @@ class FakeClipboardContext : public ClipboardHostImpl::Context {
  private:
   const raw_ref<BrowserContext> browser_context_;
   bool active_ = true;
+  bool can_read_ = true;
+  bool can_write_ = true;
   bool can_observe_changes_ = true;
 };
 
@@ -2244,6 +2256,39 @@ TEST_F(ClipboardHostImplContextTest, InactiveContextIsIgnored) {
   EXPECT_FALSE(available);
 }
 
+TEST_F(ClipboardHostImplContextTest, ContextWithoutReadGetsNothing) {
+  WriteTextToSystemClipboard(u"clipboard-text");
+  context().set_can_read(false);
+
+  std::u16string text = u"non-empty";
+  mojo_clipboard()->ReadText(ui::ClipboardBuffer::kCopyPaste, &text);
+  EXPECT_TRUE(text.empty());
+
+  std::vector<std::u16string> types = {u"non-empty"};
+  mojo_clipboard()->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &types);
+  EXPECT_TRUE(types.empty());
+
+  context().set_can_read(true);
+  mojo_clipboard()->ReadText(ui::ClipboardBuffer::kCopyPaste, &text);
+  EXPECT_EQ(u"clipboard-text", text);
+}
+
+TEST_F(ClipboardHostImplContextTest, WriteGatedOnContext) {
+  WriteTextToSystemClipboard(u"initial");
+  context().set_can_write(false);
+
+  mojo_clipboard()->WriteText(u"denied");
+  mojo_clipboard()->CommitWrite();
+  mojo_clipboard().FlushForTesting();
+  EXPECT_EQ(u"initial", ReadTextFromSystemClipboard());
+
+  context().set_can_write(true);
+  mojo_clipboard()->WriteText(u"allowed");
+  mojo_clipboard()->CommitWrite();
+  mojo_clipboard().FlushForTesting();
+  EXPECT_EQ(u"allowed", ReadTextFromSystemClipboard());
+}
+
 TEST_F(ClipboardHostImplContextTest, ListenerGatedOnContext) {
   MockClipboardListener ignored_listener;
   EXPECT_CALL(ignored_listener, OnClipboardDataChanged).Times(0);
@@ -2263,6 +2308,72 @@ TEST_F(ClipboardHostImplContextTest, ListenerGatedOnContext) {
   mojo_clipboard().FlushForTesting();
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   run_loop.Run();
+}
+
+class ClipboardHostImplServiceWorkerTest : public ClipboardHostImplTest {
+ protected:
+  static constexpr char kScope[] = "https://example.com/";
+
+  void SetUp() override {
+    ClipboardHostImplTest::SetUp();
+    helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
+    auto [registration, version] = helper_->PrepareRegistrationAndVersion(
+        GURL(kScope), GURL(kScope).Resolve("sw.js"));
+    std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
+    records.push_back(WriteToDiskCacheWithIdSync(
+        helper_->context()->GetStorageControl(), version->script_url(), 10,
+        /*headers=*/{}, "I'm a body", "I'm a meta data"));
+    version->script_cache_map()->SetResources(records);
+    version->SetMainScriptResponse(
+        EmbeddedWorkerTestHelper::CreateMainScriptResponse());
+    version->set_fetch_handler_type(
+        ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+    version->SetStatus(ServiceWorkerVersion::Status::ACTIVATED);
+    registration->SetActiveVersion(version);
+    base::test::TestFuture<blink::ServiceWorkerStatusCode> stored;
+    helper_->context()->registry().StoreRegistration(
+        registration.get(), version.get(), stored.GetCallback());
+    ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, stored.Get());
+    ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
+              StartServiceWorker(version.get()));
+    registration_ = std::move(registration);
+    version_ = std::move(version);
+  }
+
+  void TearDown() override {
+    version_ = nullptr;
+    registration_ = nullptr;
+    helper_.reset();
+    ClipboardHostImplTest::TearDown();
+  }
+
+  EmbeddedWorkerTestHelper& helper() { return *helper_; }
+  ServiceWorkerVersion& version() { return *version_; }
+
+ private:
+  std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
+  scoped_refptr<ServiceWorkerRegistration> registration_;
+  scoped_refptr<ServiceWorkerVersion> version_;
+};
+
+TEST_F(ClipboardHostImplServiceWorkerTest, CannotWriteOrRead) {
+  ClipboardHostImpl host(*version().worker_host());
+  mojo::Remote<blink::mojom::ClipboardHost> remote;
+  mojo::Receiver<blink::mojom::ClipboardHost> receiver(
+      &host, remote.BindNewPipeAndPassReceiver());
+
+  remote->WriteText(u"from-worker");
+  remote->CommitWrite();
+  remote.FlushForTesting();
+
+  base::test::TestFuture<std::u16string> future;
+  system_clipboard()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                               /*data_dst=*/std::nullopt, future.GetCallback());
+  EXPECT_TRUE(future.Take().empty());
+
+  std::u16string text = u"non-empty";
+  remote->ReadText(ui::ClipboardBuffer::kCopyPaste, &text);
+  EXPECT_TRUE(text.empty());
 }
 
 }  // namespace content

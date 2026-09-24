@@ -233,8 +233,9 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest, AllowPasteFromOS) {
   // WebContents), it should be allowed anyway because we
   // don't block OS copies.
   const GURL ineligible_url("https://ineligible.example.com/path");
-  content::ClipboardEndpoint source_os{
-      ui::DataTransferEndpoint(ineligible_url)};
+  content::ClipboardEndpoint source_os =
+      content::ClipboardEndpoint::ForOutsideChrome(
+          ui::DataTransferEndpoint(ineligible_url));
   glic::OnBeforeClipboardCopy(source_os);
 
   base::HistogramTester histogram_tester;

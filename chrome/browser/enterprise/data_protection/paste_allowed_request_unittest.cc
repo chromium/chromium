@@ -495,7 +495,7 @@ TEST_F(PasteAllowedRequestTest, UnknownSource) {
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteAllowedRequest::StartPasteAllowedRequest(
-      /*source*/ content::ClipboardEndpoint(std::nullopt),
+      /*source*/ content::ClipboardEndpoint::ForOutsideChrome(std::nullopt),
       /*destination*/ main_endpoint(), {.seqno = seqno}, clipboard_paste_data,
       future.GetCallback());
 
