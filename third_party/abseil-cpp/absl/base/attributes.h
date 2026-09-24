@@ -668,7 +668,25 @@
 // turns this warning off by default, instead relying on clang-tidy to report
 // new uses of deprecated code.
 #if ABSL_HAVE_ATTRIBUTE(deprecated)
+#if defined(__cplusplus) && defined(__clang__) && \
+    ABSL_HAVE_ATTRIBUTE(diagnose_if) && !defined(SWIG)
+struct [[deprecated(
+    "Use [[deprecated(...)]] instead.")]] _absl_deprecated_macro;
+// Trick: We use __attribute__((diagnose_if(...))) to refer to our own
+// deprecated symbol, which then causes a deprecation message to be emitted when
+// the macro is used. Since diagnose_if() isn't valid on every declaration, we
+// also suppress the warning regarding that.
+#define ABSL_DEPRECATED(message)                                             \
+  _Pragma("clang diagnostic push") /*                                     */ \
+      _Pragma("clang diagnostic ignored \"-Wignored-attributes\"")           \
+          __attribute__((diagnose_if(                                        \
+              sizeof(_absl_deprecated_macro*) == 0, "",                      \
+              "warning"))) /*                                             */ \
+          _Pragma("clang diagnostic pop") /*                              */ \
+      __attribute__((deprecated(message)))
+#else
 #define ABSL_DEPRECATED(message) __attribute__((deprecated(message)))
+#endif
 #else
 #define ABSL_DEPRECATED(message)
 #endif
