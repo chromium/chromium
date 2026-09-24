@@ -77,6 +77,9 @@
 #       List of additional configs to be applied to the generated target.
 #
 #   deps  (optional)
+#       Dependencies for the action that runs grit.
+#   public_deps (optional)
+#       Dependencies for the linkable target that compiles generated code.
 #   testonly (optional)
 #   visibility  (optional)
 #       Normal meaning.
@@ -391,6 +394,9 @@ template("grit") {
     # action publicly so other scripts can take the outputs from the grit
     # script as inputs.
     public_deps = [ ":$_grit_custom_target" ]
+    if (defined(invoker.public_deps)) {
+      public_deps += invoker.public_deps
+    }
 
     if (defined(invoker.public_configs)) {
       public_configs = invoker.public_configs

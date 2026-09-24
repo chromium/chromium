@@ -146,6 +146,7 @@ grit("resources") {
   enable_input_discovery_for_gn_analyze = false
   source = "$target_gen_dir/webui_resources.grd"
   deps = [ ":build_grd" ]
+  public_deps = [ "//ui/base:webui_resource_path" ]
 
   outputs = [
     "grit/webui_resources.h",
@@ -197,6 +198,7 @@ if (enable_webui_generate_code_cache) {
     enable_input_discovery_for_gn_analyze = false
     source = "$target_gen_dir/webui_code_cache_resources.grd"
     deps = [ ":build_code_cache_grd" ]
+    public_deps = [ "//ui/base:webui_resource_path" ]
 
     outputs = [
       "grit/webui_code_cache_resources.h",
