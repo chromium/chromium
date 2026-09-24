@@ -365,6 +365,7 @@ source_set("browser_tests") {
     "crash_restore_browsertest.cc",
     "debug_overlay_browsertest.cc",
     "device_family_link_allowed_policy_browsertest.cc",
+    "device_max_user_profiles_browsertest.cc",
     "enable_debugging_browsertest.cc",
     "encryption_migration_browsertest.cc",
     "enrollment_nudge_browsertest.cc",
