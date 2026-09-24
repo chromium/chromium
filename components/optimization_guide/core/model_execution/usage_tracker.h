@@ -34,6 +34,10 @@ extern const base::FeatureParam<base::TimeDelta> kRecentUsePeriod;
 // before it is eligible for eviction.
 extern const base::FeatureParam<base::TimeDelta> kRetentionPeriod;
 
+// The amount of time since last usage that usage timestamps are retained in
+// prefs before being pruned.
+extern const base::FeatureParam<base::TimeDelta> kTrackingPeriod;
+
 // Tracks usage of on-device model eligible features.
 class UsageTracker {
  public:

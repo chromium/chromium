@@ -223,33 +223,50 @@ TEST_F(UsageTrackerTest, RetentionPeriodPriorityRetain) {
   usage_tracker().RemoveObserver(&observer);
 }
 
-TEST_F(UsageTrackerTest, PrefPruningAfterRetentionPeriod) {
+TEST_F(UsageTrackerTest, PrefPruningAfterTrackingPeriod) {
   usage_tracker().RaisePriority("use_case_1", Priority::kBestEffort);
   task_environment().FastForwardBy(base::Days(31));
   usage_tracker().RaisePriority("use_case_2", Priority::kBestEffort);
 
-  // Advance another 60 days: use_case_1 is 91 days old (>90 days),
-  // use_case_2 is 60 days old (30 < age <= 90 days).
+  // Advance another 60 days: use_case_1 is 91 days old (>90 days retention,
+  // <=180 days tracking), use_case_2 is 60 days old (30 < age <= 90 days).
   task_environment().FastForwardBy(base::Days(60));
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kEvictable);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kRetain);
 
-  // On restart, UsageTracker prunes prefs older than 90 days.
+  // On restart at 91 days, prefs within the 180-day tracking period are not
+  // pruned yet.
   ResetUsageTracker();
-  const auto& dict = local_state().GetDict(
-      model_execution::prefs::localstate::kLastUsageByFeature);
-  EXPECT_EQ(dict.Find("use_case_1"), nullptr);
-  EXPECT_NE(dict.Find("use_case_2"), nullptr);
+  {
+    const auto& dict = local_state().GetDict(
+        model_execution::prefs::localstate::kLastUsageByFeature);
+    EXPECT_NE(dict.Find("use_case_1"), nullptr);
+    EXPECT_NE(dict.Find("use_case_2"), nullptr);
+  }
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kEvictable);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kRetain);
+
+  // Advance another 90 days: use_case_1 is 181 days old (>180 days tracking),
+  // use_case_2 is 150 days old (90 < age <= 180 days).
+  task_environment().FastForwardBy(base::Days(90));
+  ResetUsageTracker();
+  {
+    const auto& dict = local_state().GetDict(
+        model_execution::prefs::localstate::kLastUsageByFeature);
+    EXPECT_EQ(dict.Find("use_case_1"), nullptr);
+    EXPECT_NE(dict.Find("use_case_2"), nullptr);
+  }
+  EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kEvictable);
+  EXPECT_EQ(usage_tracker().GetPriority("use_case_2"), Priority::kEvictable);
 }
 
 TEST_F(UsageTrackerTest, CustomFeatureParams) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{kOnDeviceModelUsageTracking,
-        {{"recent_use_period", "10d"}, {"retention_period", "20d"}}}},
-      {});
+  feature_list.InitWithFeaturesAndParameters({{kOnDeviceModelUsageTracking,
+                                               {{"recent_use_period", "10d"},
+                                                {"retention_period", "20d"},
+                                                {"tracking_period", "30d"}}}},
+                                             {});
 
   usage_tracker().RaisePriority("use_case_1", Priority::kBestEffort);
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kBestEffort);
@@ -261,9 +278,19 @@ TEST_F(UsageTrackerTest, CustomFeatureParams) {
   EXPECT_EQ(usage_tracker().GetPriority("use_case_1"), Priority::kEvictable);
 
   ResetUsageTracker();
-  const auto& dict = local_state().GetDict(
-      model_execution::prefs::localstate::kLastUsageByFeature);
-  EXPECT_EQ(dict.Find("use_case_1"), nullptr);
+  {
+    const auto& dict = local_state().GetDict(
+        model_execution::prefs::localstate::kLastUsageByFeature);
+    EXPECT_NE(dict.Find("use_case_1"), nullptr);
+  }
+
+  task_environment().FastForwardBy(base::Days(10));
+  ResetUsageTracker();
+  {
+    const auto& dict = local_state().GetDict(
+        model_execution::prefs::localstate::kLastUsageByFeature);
+    EXPECT_EQ(dict.Find("use_case_1"), nullptr);
+  }
 }
 
 }  // namespace

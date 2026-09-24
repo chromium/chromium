@@ -49,6 +49,9 @@ const base::FeatureParam<base::TimeDelta> kRecentUsePeriod{
 const base::FeatureParam<base::TimeDelta> kRetentionPeriod{
     &kOnDeviceModelUsageTracking, "retention_period", base::Days(90)};
 
+const base::FeatureParam<base::TimeDelta> kTrackingPeriod{
+    &kOnDeviceModelUsageTracking, "tracking_period", base::Days(180)};
+
 UsageTracker::UsageTracker(PrefService* local_state)
     : local_state_(local_state) {
   DCHECK(local_state_);
@@ -140,7 +143,7 @@ void UsageTracker::PruneOldUsagePrefs() {
       local_state_, model_execution::prefs::localstate::kLastUsageByFeature);
   std::vector<std::string> keys_to_prune;  // Avoid iterator invalidation.
   for (auto kv : *update->AsConstDict()) {
-    if (!WasUsedWithin(base::ValueToTime(kv.second), kRetentionPeriod.Get())) {
+    if (!WasUsedWithin(base::ValueToTime(kv.second), kTrackingPeriod.Get())) {
       keys_to_prune.emplace_back(kv.first);
     }
   }
