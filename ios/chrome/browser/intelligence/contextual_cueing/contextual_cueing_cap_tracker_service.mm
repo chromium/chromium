@@ -49,9 +49,11 @@ ContextualCueingCapTrackerService::Config::Config()
       dismiss_backoff_multiplier_base(kDismissBackoffMultiplierBase.Get()),
       click_backoff_time(kClickBackoffTime.Get()),
       disable_frequency_capping_and_backoff(
-          kDisableFrequencyCappingAndBackoff.Get()),
+          kDisableFrequencyCappingAndBackoff.Get() ||
+          IsIgnoreContextualCueingThresholdsEnabled()),
       max_consecutive_message_ignores(kMaxConsecutiveMessageIgnores.Get()),
-      force_message_ui_only(kForceMessageUiOnly.Get()),
+      force_message_ui_only(kForceMessageUiOnly.Get() ||
+                            IsIgnoreContextualCueingThresholdsEnabled()),
       force_omnibox_chip_ui_only(kForceOmniboxChipUiOnly.Get()) {}
 ContextualCueingCapTrackerService::Config::~Config() = default;
 ContextualCueingCapTrackerService::Config::Config(const Config&) = default;

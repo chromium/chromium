@@ -1424,4 +1424,81 @@ TEST_F(ContextualCueingTabHelperTest, TestMode_VerticalsOnly) {
   tab_helper->RemoveObserver(&observer);
 }
 
+// Tests that enabling kGeminiContextualSuggestionsCuesIgnoreThresholdsParam
+// forces on-device classification (even when kPageClassification is set to
+// verticals_only), bypasses FET and CapTracker limits, and always returns
+// Message UI.
+TEST_F(ContextualCueingTabHelperTest,
+       IgnoreContextualCueingThresholdsForcesOnDeviceAndMessageUi) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kGeminiContextualSuggestionsCues,
+        {{kGeminiContextualSuggestionsCuesIgnoreThresholdsParam, "true"}}},
+       {kPageClassification,
+        {{kPageClassificationModeParam, "verticals_only"}}},
+       {kPageActionMenu, {}}},
+      {});
+
+  // Verify that core eligibility gates (Gemini eligibility and History Sync)
+  // are also bypassed when thresholds are ignored.
+  auto* gemini_service = static_cast<FakeGeminiService*>(
+      GeminiServiceFactory::GetForProfile(profile_.get()));
+  gemini_service->SetIsEligible(false);
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile_.get()));
+  sync_service->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+
+  // Verify that FET methods are completely bypassed and never invoked.
+  EXPECT_CALL(*mock_tracker_,
+              WouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::kIPHiOSGeminiContextualCueChip)))
+      .Times(0);
+  EXPECT_CALL(*mock_tracker_,
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::kIPHiOSGeminiContextualCueChip)))
+      .Times(0);
+
+  const GURL test_url("https://example.com/shop/shoes");
+  web_state_->SetCurrentURL(test_url);
+
+  std::vector<page_content_annotations::Category> categories = {
+      {.category_type = page_content_annotations::CategoryType::kShopping,
+       .score = 0.55f},
+  };
+  fake_page_classification_service_->SetCannedCategories(categories);
+
+  auto response = CreateTestCueResponse("Compare Prices", "Find Deals");
+  fake_opt_guide_service_->SetResponse(
+      optimization_guide::ModelBasedCapabilityKey::kContextualCueing, response,
+      "optimization_guide.proto.ContextualCueingResponse");
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+
+  tab_helper->PageLoaded(web_state_.get(),
+                         web::PageLoadCompletionStatus::SUCCESS);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_helper->GetContextualCue().has_value(); }));
+
+  // On-device classification service WAS forced despite verticals_only config.
+  EXPECT_EQ(fake_page_classification_service_->last_classified_web_state_id_,
+            web_state_->GetUniqueIdentifier());
+
+  // Cue was received with Message UI and RecordCueShown succeeds despite FET
+  // returning false.
+  EXPECT_EQ(tab_helper->GetContextualCueUiType(),
+            ContextualCueUiType::kMessage);
+  EXPECT_TRUE(tab_helper->RecordCueShown());
+  tab_helper->RecordCueDismissed();
+
+  // Even after dismissal, Message UI is still forced.
+  EXPECT_EQ(
+      ContextualCueingCapTrackerServiceFactory::GetForProfile(profile_.get())
+          ->GetCueUiTypeForCategory(
+              page_content_annotations::CategoryType::kShopping),
+      ContextualCueUiType::kMessage);
+}
+
 }  // namespace contextual_cueing

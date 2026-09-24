@@ -60,4 +60,20 @@ TEST_F(ContextualCueingFeaturesTest,
   }
 }
 
+TEST_F(
+    ContextualCueingFeaturesTest,
+    IgnoreContextualCueingThresholdsForcesOnDeviceClassifierAndServerExecution) {
+  base::FieldTrialParams params;
+  params[kGeminiContextualSuggestionsCuesIgnoreThresholdsParam] = "true";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kPageActionMenu, {}}, {kGeminiContextualSuggestionsCues, params}}, {});
+
+  EXPECT_TRUE(IsIgnoreContextualCueingThresholdsEnabled());
+  EXPECT_TRUE(IsGeminiContextualSuggestionsCuesEnabled());
+  EXPECT_TRUE(IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled());
+  EXPECT_TRUE(IsGeminiContextualSuggestionsCuesServerModelExecutionEnabled());
+}
+
 }  // namespace contextual_cueing

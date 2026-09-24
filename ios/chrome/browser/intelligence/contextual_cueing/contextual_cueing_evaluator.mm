@@ -90,9 +90,11 @@ ContextualCueingDecision ContextualCueingEvaluator::EvaluatePageEligibility(
     }
   }
 
-  // Feature Engagement Tracker eligibility check.
-  if (tracker_ && !tracker_->WouldTriggerHelpUI(
-                      feature_engagement::kIPHiOSGeminiContextualCueChip)) {
+  // Feature Engagement Tracker eligibility check (bypassed when contextual cue
+  // thresholds/caps are ignored).
+  if (tracker_ && !IsIgnoreContextualCueingThresholdsEnabled() &&
+      !tracker_->WouldTriggerHelpUI(
+          feature_engagement::kIPHiOSGeminiContextualCueChip)) {
     return ContextualCueingDecision::kTargetFeatureNotEligible;
   }
 

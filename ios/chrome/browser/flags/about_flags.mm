@@ -1274,6 +1274,11 @@ const FeatureEntry::FeatureParam
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam,
          "false"}};
+const FeatureEntry::FeatureParam
+    kGeminiContextualSuggestionsCuesIgnoreThresholds[] = {
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesIgnoreThresholdsParam,
+         "true"}};
 
 const FeatureEntry::FeatureVariation
     kGeminiContextualSuggestionsCuesVariations[] = {
@@ -1284,8 +1289,9 @@ const FeatureEntry::FeatureVariation
         {"with on-device classifier (CPU - APC and Passages)",
          kGeminiContextualSuggestionsCuesWithOnDeviceClassifierApcCPU, nullptr},
         {"with on-device classifier (GPU / ANE - APC and Passages)",
-         kGeminiContextualSuggestionsCuesWithOnDeviceClassifierApcGPU,
-         nullptr}};
+         kGeminiContextualSuggestionsCuesWithOnDeviceClassifierApcGPU, nullptr},
+        {"with thresholds ignored",
+         kGeminiContextualSuggestionsCuesIgnoreThresholds, nullptr}};
 
 constexpr FeatureEntry::FeatureParam kClientSideDetectionWithoutEnforcement[] =
     {{"CsdEnforceIos", "false"}};

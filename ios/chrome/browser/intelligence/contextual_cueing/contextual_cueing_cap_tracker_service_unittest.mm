@@ -8,6 +8,7 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service_factory.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -755,6 +756,37 @@ TEST_F(ContextualCueingCapTrackerServiceTest, ForceUiTypeFinchFlags) {
     ContextualCueingCapTrackerService service(config);
     EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
               ContextualCueUiType::kOmniboxChip);
+  }
+}
+
+TEST_F(ContextualCueingCapTrackerServiceTest,
+       IgnoreContextualCueingThresholdsFlagBypassesAllCapsAndForcesMessageUi) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kPageActionMenu, {}},
+       {kGeminiContextualSuggestionsCues,
+        {{kGeminiContextualSuggestionsCuesIgnoreThresholdsParam, "true"}}}},
+      {});
+
+  ContextualCueingCapTrackerService service;
+  const GURL url("https://example.com");
+  const auto kEdu = page_content_annotations::CategoryType::kEducation;
+  const auto kShop = page_content_annotations::CategoryType::kShopping;
+
+  EXPECT_TRUE(service.config().disable_frequency_capping_and_backoff);
+  EXPECT_TRUE(service.config().force_message_ui_only);
+
+  // Even after repeated impressions, ignores, and explicit dismissals on the
+  // same origin without page navigations or time advancing, CanShowNudge
+  // succeeds and GetCueUiTypeForCategory always returns kMessage.
+  for (int i = 0; i < 10; ++i) {
+    EXPECT_EQ(service.CanShowNudge(url), ContextualCueingDecision::kSuccess);
+    service.RecordCueShown(url, kEdu);
+    service.RecordCueDismissed(url, kEdu);
+    EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+              ContextualCueUiType::kMessage);
+    EXPECT_EQ(service.GetCueUiTypeForCategory(kShop),
+              ContextualCueUiType::kMessage);
   }
 }
 

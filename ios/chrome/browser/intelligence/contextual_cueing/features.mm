@@ -11,6 +11,15 @@ namespace contextual_cueing {
 BASE_FEATURE(kGeminiContextualSuggestionsCues,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kGeminiContextualSuggestionsCuesIgnoreThresholdsParam[] =
+    "ignore_contextual_cueing_thresholds";
+
+BASE_FEATURE_PARAM(bool,
+                   kGeminiContextualSuggestionsCuesIgnoreThresholds,
+                   &kGeminiContextualSuggestionsCues,
+                   kGeminiContextualSuggestionsCuesIgnoreThresholdsParam,
+                   false);
+
 const char kGeminiContextualSuggestionsCuesOnDeviceClassifierParam[] =
     "enable_on_device_classifier";
 
@@ -54,7 +63,15 @@ bool IsGeminiContextualSuggestionsCuesEnabled() {
   return base::FeatureList::IsEnabled(kGeminiContextualSuggestionsCues);
 }
 
+bool IsIgnoreContextualCueingThresholdsEnabled() {
+  return IsGeminiContextualSuggestionsCuesEnabled() &&
+         kGeminiContextualSuggestionsCuesIgnoreThresholds.Get();
+}
+
 bool IsGeminiContextualSuggestionsCuesOnDeviceClassifierEnabled() {
+  if (IsIgnoreContextualCueingThresholdsEnabled()) {
+    return true;
+  }
   return IsGeminiContextualSuggestionsCuesEnabled() &&
          kGeminiContextualSuggestionsCuesOnDeviceClassifier.Get();
 }
@@ -65,11 +82,17 @@ bool IsGeminiContextualSuggestionsCuesAllowGpuExecutionEnabled() {
 }
 
 bool IsGeminiContextualSuggestionsCuesTitleAndUrlOnlyEnabled() {
+  if (IsIgnoreContextualCueingThresholdsEnabled()) {
+    return true;
+  }
   return IsGeminiContextualSuggestionsCuesEnabled() &&
          kGeminiContextualSuggestionsCuesTitleAndUrlOnly.Get();
 }
 
 bool IsGeminiContextualSuggestionsCuesServerModelExecutionEnabled() {
+  if (IsIgnoreContextualCueingThresholdsEnabled()) {
+    return true;
+  }
   return IsGeminiContextualSuggestionsCuesEnabled() &&
          kGeminiContextualSuggestionsCuesServerModelExecution.Get();
 }

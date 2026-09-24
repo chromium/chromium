@@ -19,6 +19,15 @@ BASE_DECLARE_FEATURE(kGeminiContextualSuggestionsCues);
 // Returns true if Gemini contextual suggestions cues framework is enabled.
 bool IsGeminiContextualSuggestionsCuesEnabled();
 
+// Feature parameter that forces on-device page classification and server model
+// execution, bypasses all contextual cueing frequency caps, backoff cooldowns,
+// and Feature Engagement Tracker limits, and always presents the Message UI.
+extern const char kGeminiContextualSuggestionsCuesIgnoreThresholdsParam[];
+
+// Returns true if contextual cueing thresholds/caps should be ignored,
+// on-device classification forced, and Message UI always returned.
+bool IsIgnoreContextualCueingThresholdsEnabled();
+
 // Feature parameter for enabling on-device category classifier in Gemini
 // contextual suggestions cues.
 extern const char kGeminiContextualSuggestionsCuesOnDeviceClassifierParam[];

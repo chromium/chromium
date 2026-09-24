@@ -93,7 +93,7 @@ ContextualCueingTabHelper::GetActiveCategoryType() const {
 bool ContextualCueingTabHelper::RecordCueShown() {
   CHECK(!fet_dismiss_runner_);
   feature_engagement::Tracker* tracker = GetFeatureEngagementTracker();
-  if (tracker) {
+  if (tracker && !IsIgnoreContextualCueingThresholdsEnabled()) {
     if (!tracker->ShouldTriggerHelpUI(
             feature_engagement::kIPHiOSGeminiContextualCueChip)) {
       RecordContextualCueingDecision(
@@ -247,15 +247,17 @@ void ContextualCueingTabHelper::StartClassification() {
     return;
   }
 
-  if (!IsUserEligibleForGemini(profile)) {
-    RecordContextualCueingDecision(
-        ContextualCueingDecision::kTargetFeatureNotEligible);
-    return;
-  }
+  if (!IsIgnoreContextualCueingThresholdsEnabled()) {
+    if (!IsUserEligibleForGemini(profile)) {
+      RecordContextualCueingDecision(
+          ContextualCueingDecision::kTargetFeatureNotEligible);
+      return;
+    }
 
-  if (!IsHistorySyncEnabled(profile)) {
-    RecordContextualCueingDecision(ContextualCueingDecision::kHistorySyncOff);
-    return;
+    if (!IsHistorySyncEnabled(profile)) {
+      RecordContextualCueingDecision(ContextualCueingDecision::kHistorySyncOff);
+      return;
+    }
   }
 
   const GURL& url = web_state_->GetLastCommittedURL();
@@ -273,7 +275,9 @@ void ContextualCueingTabHelper::StartClassification() {
     return;
   }
 
-  PageClassificationMode mode = GetPageClassificationMode();
+  PageClassificationMode mode = IsIgnoreContextualCueingThresholdsEnabled()
+                                    ? PageClassificationMode::kOnDeviceOnly
+                                    : GetPageClassificationMode();
 
   if (mode == PageClassificationMode::kVerticalsOnly) {
     RequestPageClassificationService(url);
@@ -321,7 +325,7 @@ void ContextualCueingTabHelper::OnPageClassified(
 
   // If OnDevice model was unavailable / returned std::nullopt and fallback is
   // enabled, trigger PageClassificationService.
-  if (!categories.has_value() &&
+  if (!categories.has_value() && !IsIgnoreContextualCueingThresholdsEnabled() &&
       GetPageClassificationMode() ==
           PageClassificationMode::kOnDeviceWithVerticalsFallback) {
     RequestPageClassificationService(expected_url);
@@ -499,8 +503,9 @@ void ContextualCueingTabHelper::OnModelExecutionResponseReceived(
   }
 
   feature_engagement::Tracker* tracker = GetFeatureEngagementTracker();
-  if (tracker && !tracker->WouldTriggerHelpUI(
-                     feature_engagement::kIPHiOSGeminiContextualCueChip)) {
+  if (tracker && !IsIgnoreContextualCueingThresholdsEnabled() &&
+      !tracker->WouldTriggerHelpUI(
+          feature_engagement::kIPHiOSGeminiContextualCueChip)) {
     RecordContextualCueingDecision(
         ContextualCueingDecision::kTargetFeatureNotEligible);
     NotifyContextualCueReceived(std::nullopt);
