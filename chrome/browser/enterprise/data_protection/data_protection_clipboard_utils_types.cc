@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils_types.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/clipboard_types.h"
@@ -87,6 +88,15 @@ BasicPasteSource CacheBasicPasteSource(
     const content::ClipboardEndpoint& source) {
   BasicPasteSource cached;
   cached.data_transfer_endpoint = source.data_transfer_endpoint();
+  if (!cached.data_transfer_endpoint && source.render_frame_host()) {
+    cached.data_transfer_endpoint = ui::DataTransferEndpoint(
+        GetUrlFromRenderFrameHost(source.render_frame_host()),
+        {
+            .off_the_record = source.render_frame_host()
+                                  ->GetBrowserContext()
+                                  ->IsOffTheRecord(),
+        });
+  }
   if (source.browser_context()) {
     cached.browser_context = source.browser_context()->GetWeakPtr();
   }

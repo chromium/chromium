@@ -24,9 +24,9 @@
 #include "chrome/browser/enterprise/data_controls/chrome_clipboard_context.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog_factory.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_utils.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -56,6 +56,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
@@ -95,17 +96,12 @@ GURL GetUrlFromEndpoint(const content::ClipboardEndpoint& endpoint) {
   if (!endpoint.data_transfer_endpoint() ||
       !endpoint.data_transfer_endpoint()->IsUrlType() ||
       !endpoint.data_transfer_endpoint()->GetURL()) {
+    if (endpoint.render_frame_host()) {
+      return GetUrlFromRenderFrameHost(endpoint.render_frame_host());
+    }
     return GURL();
   }
   return *endpoint.data_transfer_endpoint()->GetURL();
-}
-
-GURL GetSourceURL(content::RenderFrameHost* rfh) {
-  auto url = rfh->GetMainFrame()->GetLastCommittedURL();
-  if (dom_distiller::url_utils::IsDistilledPage(url)) {
-    url = dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url);
-  }
-  return url;
 }
 
 bool SkipDataControlOrContentAnalysisChecks(
@@ -405,11 +401,11 @@ void MaybeReportDataControlsPasteFromGemini(
           Profile::FromBrowserContext(destination->GetBrowserContext())) {
     email = enterprise_connectors::ContentAreaUserProvider::GetUser(
         profile, content::WebContents::FromRenderFrameHost(destination),
-        GetSourceURL(destination));
+        GetUrlFromRenderFrameHost(destination));
   }
 
-  router->ReportPasteFromGemini(GetSourceURL(destination), email, verdict,
-                                content_size, bypassed);
+  router->ReportPasteFromGemini(GetUrlFromRenderFrameHost(destination), email,
+                                verdict, content_size, bypassed);
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
 
@@ -876,7 +872,7 @@ std::optional<content::ClipboardEndpoint> GetValidURLEndpoint(
   }
 
   content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-  auto url = GetSourceURL(rfh);
+  auto url = GetUrlFromRenderFrameHost(rfh);
   if (!url.is_valid()) {
     return std::nullopt;
   }
@@ -907,7 +903,7 @@ void PasteFromGeminiIfAllowedByContentAnalysis(
     // inside a cross-origin iframe.
     if (profile &&
         enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-            profile, GetSourceURL(destination), &dialog_data,
+            profile, GetUrlFromRenderFrameHost(destination), &dialog_data,
             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY)) {
       dialog_data.text.push_back(std::move(data));
       dialog_data.reason =
@@ -1456,7 +1452,7 @@ void CopyTextToClipboard(content::RenderFrameHost* rfh,
   }
 
   ui::DataTransferEndpoint dte(
-      GetSourceURL(rfh),
+      GetUrlFromRenderFrameHost(rfh),
       {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
   content::ClipboardEndpoint clipboard_endpoint =
       content::ClipboardEndpoint::ForFrame(
@@ -1511,7 +1507,7 @@ void PasteFromGeminiIfAllowedByPolicy(content::RenderFrameHost* destination,
     if (rules_service) {
       base::ElapsedTimer timer;
       auto verdict = rules_service->GetPasteFromGeminiInChromeVerdict(
-          GetSourceURL(destination));
+          GetUrlFromRenderFrameHost(destination));
       base::UmaHistogramTimes(
           "Enterprise.DataControls.GlicPaste.EvaluationLatency",
           timer.Elapsed());
@@ -1586,20 +1582,39 @@ void PasteFromGeminiIfAllowedByPolicy(content::RenderFrameHost* destination,
                                             std::move(callback));
 }
 
+GURL GetUrlFromRenderFrameHost(content::RenderFrameHost* rfh) {
+  if (!rfh) {
+    return GURL();
+  }
+  auto* main_frame = rfh->GetMainFrame();
+  auto url = main_frame->GetLastCommittedURL();
+  if (!url.is_valid() || url.IsAboutBlank() || url.IsAboutSrcdoc()) {
+    auto origin_url = main_frame->GetLastCommittedOrigin()
+                          .GetTupleOrPrecursorTupleIfOpaque()
+                          .GetURL();
+    if (origin_url.is_valid()) {
+      url = std::move(origin_url);
+    } else if (!url.is_valid()) {
+      url = GURL(url::kAboutBlankURL);
+    }
+  }
+  return GetOriginalUrl(url);
+}
+
 std::optional<GURL> MaybeOverrideSourceURLForClipboardAccess(
     content::RenderFrameHost* render_frame_host,
     const GURL& original_url) {
   DCHECK(render_frame_host);
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   if (printing::PrintPreviewDialogController::IsPrintPreviewURL(original_url)) {
-    return printing::PrintPreviewDialogController::GetInstance()
-        ->GetInitiator(
-            content::WebContents::FromRenderFrameHost(render_frame_host))
-        ->GetPrimaryMainFrame()
-        ->GetLastCommittedURL();
+    return GetUrlFromRenderFrameHost(
+        printing::PrintPreviewDialogController::GetInstance()
+            ->GetInitiator(
+                content::WebContents::FromRenderFrameHost(render_frame_host))
+            ->GetPrimaryMainFrame());
   }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  return std::nullopt;
+  return GetUrlFromRenderFrameHost(render_frame_host);
 }
 
 }  // namespace enterprise_data_protection

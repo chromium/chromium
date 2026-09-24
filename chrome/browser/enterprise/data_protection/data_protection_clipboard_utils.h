@@ -208,8 +208,15 @@ bool IsClipboardCopyAllowedByPolicyForUI(content::WebContents* web_contents);
 void CopyTextToClipboard(content::RenderFrameHost* rfh,
                          const std::u16string& text);
 
-// Returns the initiator main frame's last committed URL if the `original_url`
-// is a Print Preview URL. Returns std::nullopt otherwise.
+// Returns the URL to use for data protection checks for `rfh`. If the main
+// frame's last committed URL is invalid, about:blank, or about:srcdoc, this
+// falls back to the main frame's precursor/tuple origin URL (or about:blank if
+// no valid origin tuple exists), and unwraps distilled page URLs.
+GURL GetUrlFromRenderFrameHost(content::RenderFrameHost* rfh);
+
+// Returns the desired URL for clipboard source/destination reporting for
+// `render_frame_host`, including resolving the initiator URL when
+// `original_url` is a Print Preview URL.
 std::optional<GURL> MaybeOverrideSourceURLForClipboardAccess(
     content::RenderFrameHost* render_frame_host,
     const GURL& original_url);

@@ -237,15 +237,15 @@ std::optional<ui::DataTransferEndpoint> CreateDataEndpoint(
     RenderFrameHost& rfh) {
   auto* render_frame_host_main_frame = rfh.GetMainFrame();
   auto source_url = render_frame_host_main_frame->GetLastCommittedURL();
-  if (!source_url.is_valid()) {
-    return std::nullopt;
-  }
-
   if (auto maybe_url = GetContentClient()
                            ->browser()
                            ->MaybeOverrideSourceURLForClipboardAccess(
                                render_frame_host_main_frame, source_url)) {
     source_url = *maybe_url;
+  }
+
+  if (!source_url.is_valid()) {
+    return std::nullopt;
   }
 
   return ui::DataTransferEndpoint(

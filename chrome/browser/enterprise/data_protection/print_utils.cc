@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -149,7 +150,8 @@ GetPrintAnalysisData(content::WebContents* web_contents,
 
   bool enabled = enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-      web_contents->GetOutermostWebContents()->GetLastCommittedURL(),
+      GetUrlFromRenderFrameHost(
+          web_contents->GetOutermostWebContents()->GetPrimaryMainFrame()),
       &scanning_data, enterprise_connectors::AnalysisConnector::PRINT);
 
   if (enabled && ShouldScan(context)) {

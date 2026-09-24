@@ -15,14 +15,14 @@
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_url_lookup_service_factory.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_utils.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/dom_distiller/core/url_constants.h"
-#include "components/dom_distiller/core/url_utils.h"
 #include "components/enterprise/data_protection/data_protection_url_lookup_service.h"
 #include "components/enterprise/data_protection/utils.h"
 #include "components/safe_browsing/buildflags.h"
@@ -97,17 +97,6 @@ bool ShouldReportSafeUrlFilteringEvents(DataProtectionPageUserData* user_data) {
   return ShouldReportSafeUrlFilteringEvents(user_data->rt_lookup_response());
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-GURL GetOriginalUrl(const GURL& url) {
-  if (GURL got_url =
-          dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url);
-      got_url.is_valid()) {
-    return got_url;
-  } else {
-    VLOG(1) << __func__ << " got a invalid url: " << got_url;
-  }
-  return url;
-}
 
 void RunPendingNavigationCallback(
     content::WebContents* web_contents,
@@ -313,14 +302,15 @@ void DataProtectionNavigationObserver::ApplyDataProtectionSettings(
     return;
   }
 
-  if (!web_contents->GetLastCommittedURL().is_valid()) {
+  const GURL original_url =
+      GetUrlFromRenderFrameHost(web_contents->GetPrimaryMainFrame());
+  if (!original_url.is_valid()) {
     std::move(callback).Run(UrlSettings::None());
     return;
   }
 
   std::string identifier = GetIdentifier(profile);
 
-  const GURL original_url = GetOriginalUrl(web_contents->GetLastCommittedURL());
   DataProtectionPageUserData::UpdateDataControlsScreenshotState(
       GetPageFromWebContents(web_contents), identifier,
       IsScreenshotAllowedByDataControls(profile, original_url));

@@ -28,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1548,6 +1549,118 @@ TEST_F(DataProtectionClipboardTest, PrepopulateFindBarTextAllowed) {
 
   EXPECT_TRUE(PrepopulateFindBarTextAllowed(source, destination_allowed));
   EXPECT_FALSE(PrepopulateFindBarTextAllowed(source, destination_blocked));
+}
+
+class DataProtectionClipboardInitialEmptyDocumentPopupTest
+    : public DataProtectionClipboardTest {
+ public:
+  void SetUp() override {
+    DataProtectionClipboardTest::SetUp();
+    scoped_features_.InitWithFeatures(
+        {data_controls::kDataControlsSearchWith,
+         enterprise_connectors::kContentAnalysisClipboardCopy},
+        {});
+    opener_web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+    content::WebContentsTester::For(opener_web_contents_.get())
+        ->NavigateAndCommit(GURL("https://source.com/page.html"));
+
+    popup_web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_, opener_web_contents_->GetSiteInstance());
+    auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+        GURL(url::kAboutBlankURL), popup_web_contents_->GetPrimaryMainFrame());
+    simulator->SetInitiatorFrame(opener_web_contents_->GetPrimaryMainFrame());
+    simulator->Commit();
+
+    ASSERT_TRUE(popup_web_contents_->GetLastCommittedURL().IsAboutBlank());
+    ASSERT_EQ(
+        popup_web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+        url::Origin::Create(GURL("https://source.com")));
+  }
+
+  void SetBlockCopyingFromSourceURLRule() {
+    data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["source.com"]
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+    })"});
+  }
+
+  void SetBlockCopyingFromWildcardURLRule() {
+    data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["*"]
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+    })"});
+  }
+
+ protected:
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  std::unique_ptr<content::WebContents> opener_web_contents_;
+  std::unique_ptr<content::WebContents> popup_web_contents_;
+};
+
+TEST_F(DataProtectionClipboardInitialEmptyDocumentPopupTest,
+       CopyBlockedBySourceURLRule) {
+  SetBlockCopyingFromSourceURLRule();
+
+  auto endpoint = content::CreateClipboardEndpoint(
+      *popup_web_contents_->GetPrimaryMainFrame());
+  ASSERT_TRUE(endpoint.data_transfer_endpoint());
+  ASSERT_TRUE(endpoint.data_transfer_endpoint()->GetURL());
+  EXPECT_EQ(*endpoint.data_transfer_endpoint()->GetURL(),
+            GURL("https://source.com/"));
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(endpoint, CopyMetadata(),
+                                 MakeClipboardPasteData("confidential", "", {}),
+                                 future.GetCallback());
+  auto data = future.Get<1>();
+  EXPECT_TRUE(data.empty());
+  EXPECT_FALSE(IsClipboardCopyAllowedByPolicyForUI(popup_web_contents_.get()));
+  EXPECT_FALSE(IsSearchWithAllowed(popup_web_contents_.get()));
+  EXPECT_FALSE(CanPopulateFindBarFromSelection(popup_web_contents_.get()));
+}
+
+TEST_F(DataProtectionClipboardInitialEmptyDocumentPopupTest,
+       CopyBlockedByWildcardURLRuleOnUncommittedTabWithoutOpener) {
+  SetBlockCopyingFromWildcardURLRule();
+
+  std::unique_ptr<content::WebContents> uncommitted_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  ASSERT_TRUE(uncommitted_web_contents->GetLastCommittedURL().is_empty());
+  ASSERT_TRUE(uncommitted_web_contents->GetPrimaryMainFrame()
+                  ->GetLastCommittedOrigin()
+                  .opaque());
+
+  auto endpoint = content::CreateClipboardEndpoint(
+      *uncommitted_web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(endpoint.data_transfer_endpoint());
+  ASSERT_TRUE(endpoint.data_transfer_endpoint()->GetURL());
+  EXPECT_EQ(*endpoint.data_transfer_endpoint()->GetURL(),
+            GURL(url::kAboutBlankURL));
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(endpoint, CopyMetadata(),
+                                 MakeClipboardPasteData("confidential", "", {}),
+                                 future.GetCallback());
+  auto data = future.Get<1>();
+  EXPECT_TRUE(data.empty());
+  EXPECT_FALSE(
+      IsClipboardCopyAllowedByPolicyForUI(uncommitted_web_contents.get()));
+  EXPECT_FALSE(IsSearchWithAllowed(uncommitted_web_contents.get()));
 }
 
 }  // namespace enterprise_data_protection
