@@ -147,6 +147,15 @@ export class IwaDevAppElement extends CrLitElement {
     }
   }
 
+  protected async onRequestLaunch_(e: CustomEvent<{app: IwaDevModeAppInfo}>) {
+    const result =
+        await this.browserProxy_.handler.launchApp(e.detail.app.appId);
+    if (!result.success) {
+      this.toastMessage_ = 'Failed to launch app.';
+      this.$.toast.show();
+    }
+  }
+
   protected async onRequestUninstall_(
       e: CustomEvent<{app: IwaDevModeAppInfo}>) {
     const result =

@@ -59,6 +59,8 @@ class IwaDevPageHandler
       const GURL& web_bundle_url,
       iwa_dev::mojom::UpdateInfoPtr update_info,
       InstallAppFromUpdateManifestCallback callback) override;
+  void LaunchApp(const std::string& app_id,
+                 LaunchAppCallback callback) override;
   void ParseUpdateManifestFromUrl(
       const GURL& update_manifest_url,
       ParseUpdateManifestFromUrlCallback callback) override;

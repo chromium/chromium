@@ -126,6 +126,10 @@ export class InstalledAppListItemElement extends CrLitElement {
     }
   }
 
+  protected onLaunchClick() {
+    this.fire('request-launch', {app: this.app});
+  }
+
   protected onUpdateOptionsClick() {
     this.fire('request-update-options', {app: this.app});
   }

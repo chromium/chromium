@@ -9,15 +9,23 @@ import type {InstalledAppListItemElement} from './installed_app_list_item.js';
 export function getHtml(this: InstalledAppListItemElement) {
   // clang-format off
   return html`
-<div id="icon-circle">
+<div id="icon-circle" title="Launch ${this.app.name}"
+     @click="${this.onLaunchClick}">
   ${this.app.name.length > 0 ? html`
     <img id="app-icon" draggable="false"
          src="chrome://app-icon/${this.app.appId}/48" alt="">
   ` : ''}
+  <div id="launch-overlay">
+    <cr-icon icon="cr:open-in-new"></cr-icon>
+  </div>
 </div>
 <div id="details">
   <div id="header">
-    <span id="name">${this.app.name}</span>
+    <span id="name" title="Launch ${this.app.name}"
+          @click="${this.onLaunchClick}">
+      ${this.app.name}
+      <cr-icon class="icon-16" icon="cr:open-in-new"></cr-icon>
+    </span>
     <span id="version">v${this.app.installedVersion}</span>
     <span id="source-text">• ${this.sourceMetadata.label}</span>
   </div>

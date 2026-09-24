@@ -58,6 +58,7 @@ ${!this.devModeEnabled_ ? html`
               .app="${item}"
               .isUpdating="${this.updatingAppIds_.includes(item.appId)}"
               role="listitem"
+              @request-launch="${this.onRequestLaunch_}"
               @request-update="${this.onRequestUpdate_}"
               @request-update-options="${this.onRequestUpdateOptions_}"
               @request-uninstall="${this.onRequestUninstall_}">

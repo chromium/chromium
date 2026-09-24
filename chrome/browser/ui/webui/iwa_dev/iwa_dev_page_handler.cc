@@ -319,6 +319,20 @@ void IwaDevPageHandler::InstallAppFromUpdateManifest(
                                  std::move(update_channel)));
 }
 
+void IwaDevPageHandler::LaunchApp(const std::string& app_id,
+                                  LaunchAppCallback callback) {
+  RETURN_IF_ERROR(GetInstalledAppById(app_id),
+                  [&](auto) { std::move(callback).Run(false); });
+
+  provider_->scheduler().LaunchApp(
+      app_id, /*url=*/std::nullopt,
+      base::BindOnce([](base::WeakPtr<BrowserWindowInterface>,
+                        base::WeakPtr<content::WebContents> web_contents,
+                        apps::LaunchContainer) {
+        return web_contents != nullptr;
+      }).Then(std::move(callback)));
+}
+
 void IwaDevPageHandler::ParseUpdateManifestFromUrl(
     const GURL& update_manifest_url,
     ParseUpdateManifestFromUrlCallback callback) {

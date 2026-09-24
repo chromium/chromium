@@ -108,8 +108,18 @@
 
 #name {
   color: var(--cr-primary-text-color);
+  cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
+}
+
+#name:hover {
+  color: var(--cr-link-color);
+  text-decoration: underline;
+}
+
+#name cr-icon {
+  vertical-align: -2px;
 }
 
 #version {
@@ -153,11 +163,35 @@
 #icon-circle {
   align-items: center;
   border-radius: 50%;
+  cursor: pointer;
   display: flex;
   flex-shrink: 0;
   height: 48px;
   justify-content: center;
+  overflow: hidden;
+  position: relative;
   width: 48px;
+}
+
+#launch-overlay {
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.55);
+  color: white;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  opacity: 0;
+  position: absolute;
+  transition: opacity 150ms ease-in-out;
+}
+
+#launch-overlay cr-icon {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+}
+
+#icon-circle:hover #launch-overlay {
+  opacity: 1;
 }
 
 #app-icon {

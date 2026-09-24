@@ -70,6 +70,9 @@ interface PageHandler {
                                UpdateInfo update_info)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
+  // Launches an IWA with a given ID.
+  LaunchApp(string app_id) => (bool success);
+
   // Attempts to fetch and parse an IWA update manifest from the provided url.
   ParseUpdateManifestFromUrl(url.mojom.Url update_manifest_url)
       => result<UpdateManifest, mojo_base.mojom.Error>;

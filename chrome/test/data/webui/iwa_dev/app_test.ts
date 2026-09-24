@@ -137,6 +137,32 @@ suite('<iwa-dev-app>', () => {
         'installed-app-list-item');
   }
 
+  function getAppIconElement(itemIndex: number = 0): HTMLElement {
+    const items = getListItems();
+    assertTrue(items.length > itemIndex);
+    const appIcon =
+        items[itemIndex]!.shadowRoot.querySelector<HTMLElement>('#icon-circle');
+    assertTrue(!!appIcon);
+    return appIcon;
+  }
+
+  function clickAppIcon(itemIndex: number = 0) {
+    getAppIconElement(itemIndex).click();
+  }
+
+  function getAppNameElement(itemIndex: number = 0): HTMLElement {
+    const items = getListItems();
+    assertTrue(items.length > itemIndex);
+    const appName =
+        items[itemIndex]!.shadowRoot.querySelector<HTMLElement>('#name');
+    assertTrue(!!appName);
+    return appName;
+  }
+
+  function clickAppName(itemIndex: number = 0) {
+    getAppNameElement(itemIndex).click();
+  }
+
   function getUpdateButton(itemIndex: number = 0): HTMLButtonElement {
     const items = getListItems();
     assertTrue(items.length > itemIndex);
@@ -1015,6 +1041,38 @@ suite('<iwa-dev-app>', () => {
         null,
         window.localStorage.getItem(getUpdateOptionsStorageKey(appInfo.appId)));
   });
+
+  for (const [triggerName, triggerClick] of [
+           ['app icon', clickAppIcon],
+           ['app name', clickAppName],
+  ] as const) {
+    test(`calls launchApp when ${triggerName} clicked`, async () => {
+      const appInfo = await setupManifestInstalledApp();
+      handler.setResultFor('launchApp', Promise.resolve({success: true}));
+
+      triggerClick();
+
+      const appId = await handler.whenCalled('launchApp');
+      assertEquals(appInfo.appId, appId);
+      await microtasksFinished();
+      assertFalse(app.$.toast.open);
+    });
+
+    test(
+        `shows error toast when launchApp fails via ${triggerName}`,
+        async () => {
+          await setupManifestInstalledApp();
+          handler.setResultFor('launchApp', Promise.resolve({success: false}));
+
+          triggerClick();
+
+          await handler.whenCalled('launchApp');
+          await microtasksFinished();
+          assertTrue(app.$.toast.open);
+          assertEquals(
+              'Failed to launch app.', app.$.toast.textContent?.trim());
+        });
+  }
 });
 
 suite('storage helpers', () => {

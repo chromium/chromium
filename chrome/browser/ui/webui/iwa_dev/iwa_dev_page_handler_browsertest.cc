@@ -171,6 +171,12 @@ class IwaDevHandlerBrowserTest
     return future.Get();
   }
 
+  bool LaunchApp(const std::string& app_id) {
+    base::test::TestFuture<bool> future;
+    GetHandler()->LaunchApp(app_id, future.GetCallback());
+    return future.Get();
+  }
+
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
   CallInstallAppFromDevProxy(const GURL& url) {
     base::test::TestFuture<
@@ -1275,6 +1281,16 @@ IN_PROC_BROWSER_TEST_P(IwaDevHandlerAppTypeBrowserTest, UninstallApp) {
 
   auto apps_after = GetInstalledAppsInfo();
   EXPECT_TRUE(apps_after.empty());
+}
+
+IN_PROC_BROWSER_TEST_P(IwaDevHandlerAppTypeBrowserTest, LaunchApp) {
+  web_app::IsolatedWebAppUrlInfo app = (this->*GetParam().installer)();
+
+  EXPECT_TRUE(LaunchApp(app.app_id()));
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest, LaunchApp_AppNotFound) {
+  EXPECT_FALSE(LaunchApp("non-existent-app-id"));
 }
 
 INSTANTIATE_TEST_SUITE_P(
