@@ -169,6 +169,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   // should be filtered out.
   // - kLensOverlay: Tab helpers that are required for Lens UI.
   // - kReaderMode: Tab helpers that are required for Reader Mode UI.
+  // - kGeminiWebModal: Tab helpers that are required for a web modal presented
+  // over the Gemini surface.
   //
   // When a web state is presented by the BVC, AttachTabHelpers is called to
   // attach all tab helpers. (the method is idempotent, so it is okay to call it
@@ -180,7 +182,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<FindTabHelper>();
 
   bool should_create_history_tab_helper =
-      !attacher.IsForReaderMode() &&
+      !attacher.IsForReaderMode() && !attacher.IsForGeminiWebModal() &&
       (!attacher.IsForLensOverlay() ||
        base::FeatureList::IsEnabled(kLensOverlayNavigationHistory));
   attacher.CreateWhen<HistoryTabHelper>(should_create_history_tab_helper);
@@ -207,7 +209,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.CreateWhen<LensOverlayTabHelper>(attacher.IsNotInTabHelperFilter());
   attacher
       .CreateDeferredWhen<AppLauncherTabHelper>(!attacher.IsForLensOverlay() &&
-                                                !attacher.IsForPrerender())
+                                                !attacher.IsForPrerender() &&
+                                                !attacher.IsForGeminiWebModal())
       .With([&]() { return [[AppLauncherAbuseDetector alloc] init]; },
             [&]() { return attacher.IsOffTheRecord(); });
   attacher
@@ -274,14 +277,18 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   // tab helpers for historical reasons. For the moment, AttachTabHelpers
   // allows to inhibit the creation of some of them.
   attacher.CreateWhen<SadTabTabHelper>(
-      !attacher.IsForLensOverlay() && !attacher.IsForPrerender(),
+      !attacher.IsForLensOverlay() && !attacher.IsForPrerender() &&
+          !attacher.IsForGeminiWebModal(),
       SadTabTabHelper::kDefaultRepeatFailureInterval);
   attacher.CreateWhen<SnapshotTabHelper>(!attacher.IsForLensOverlay() &&
-                                         !attacher.IsForPrerender());
+                                         !attacher.IsForPrerender() &&
+                                         !attacher.IsForGeminiWebModal());
   attacher.CreateWhen<SnapshotSourceTabHelper>(!attacher.IsForLensOverlay() &&
-                                               !attacher.IsForPrerender());
-  attacher.CreateWhen<PagePlaceholderTabHelper>(!attacher.IsForLensOverlay() &&
-                                                !attacher.IsForPrerender());
+                                               !attacher.IsForPrerender() &&
+                                               !attacher.IsForGeminiWebModal());
+  attacher.CreateWhen<PagePlaceholderTabHelper>(
+      !attacher.IsForLensOverlay() && !attacher.IsForPrerender() &&
+      !attacher.IsForGeminiWebModal());
 
   // Must be attached after `SnapshotTabHelper` because `SafeBrowsingTabHelper`
   // instantiates `ClientSideDetectionHostIOS` during construction, which

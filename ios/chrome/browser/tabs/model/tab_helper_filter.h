@@ -22,6 +22,9 @@ enum class TabHelperFilter {
   // Filter out tab helpers that are not needed when the web state
   // is presented in the Assistant AIM sheet.
   kAssistantAim = 1 << 3,
+  // Filter out tab helpers that are not needed when the web state
+  // is presented in the Gemini web modal.
+  kGeminiWebModal = 1 << 4,
 };
 
 // Implementation of bitwise "or", "and" operators (as those are not

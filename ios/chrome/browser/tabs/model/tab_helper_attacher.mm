@@ -23,6 +23,9 @@ TabHelperAttacher::TabHelperAttacher(web::WebState* web_state,
           IsTabHelperFilterMaskSet(filter_flags, TabHelperFilter::kReaderMode)),
       for_assistant_aim_(
           IsTabHelperFilterMaskSet(filter_flags,
-                                   TabHelperFilter::kAssistantAim)) {}
+                                   TabHelperFilter::kAssistantAim)),
+      for_gemini_web_modal_(
+          IsTabHelperFilterMaskSet(filter_flags,
+                                   TabHelperFilter::kGeminiWebModal)) {}
 
 TabHelperAttacher::~TabHelperAttacher() = default;

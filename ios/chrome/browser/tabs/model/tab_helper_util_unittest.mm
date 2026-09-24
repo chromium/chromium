@@ -40,6 +40,8 @@ class TabHelperUtilTest : public PlatformTest,
         return "LensOverlay";
       case TabHelperFilter::kAssistantAim:
         return "AssistantAim";
+      case TabHelperFilter::kGeminiWebModal:
+        return "GeminiWebModal";
     }
   }
 
@@ -93,6 +95,7 @@ TEST_P(TabHelperUtilTest, LensTabHelper) {
     case TabHelperFilter::kReaderMode:
     case TabHelperFilter::kLensOverlay:
     case TabHelperFilter::kAssistantAim:
+    case TabHelperFilter::kGeminiWebModal:
       ASSERT_FALSE(LensTabHelper::FromWebState(&web_state_));
       break;
   }
@@ -114,6 +117,7 @@ TEST_P(TabHelperUtilTest, CobrowseTabHelper) {
     case TabHelperFilter::kReaderMode:
     case TabHelperFilter::kLensOverlay:
     case TabHelperFilter::kAssistantAim:
+    case TabHelperFilter::kGeminiWebModal:
       ASSERT_FALSE(CobrowseTabHelper::FromWebState(&web_state_));
       break;
   }
@@ -136,7 +140,8 @@ TEST_P(TabHelperUtilTest, InfobarBadgeTabHelper) {
     } break;
     case TabHelperFilter::kReaderMode:
     case TabHelperFilter::kLensOverlay:
-    case TabHelperFilter::kAssistantAim: {
+    case TabHelperFilter::kAssistantAim:
+    case TabHelperFilter::kGeminiWebModal: {
       ASSERT_FALSE(tab_helper);
     } break;
   }
@@ -148,5 +153,6 @@ INSTANTIATE_TEST_SUITE_P(,
                                          TabHelperFilter::kPrerender,
                                          TabHelperFilter::kLensOverlay,
                                          TabHelperFilter::kReaderMode,
-                                         TabHelperFilter::kAssistantAim),
+                                         TabHelperFilter::kAssistantAim,
+                                         TabHelperFilter::kGeminiWebModal),
                          TabHelperUtilTest::TabHelperFilterToString);
