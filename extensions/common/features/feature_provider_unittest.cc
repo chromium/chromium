@@ -5,6 +5,7 @@
 #include "extensions/common/features/feature_provider.h"
 
 #include <algorithm>
+#include <array>
 #include <set>
 #include <string>
 #include <string_view>
@@ -22,6 +23,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
+
+namespace {
+
+constexpr char kRegistryFeatureName[] = "feature";
+constexpr SimpleFeatureData kRegistryFeatureData = {
+    .feature = {.name = kRegistryFeatureName}};
+
+}  // namespace
 
 // Tests that a real manifest feature is available for the correct types of
 // extensions and apps.
@@ -167,7 +176,6 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 }
 
 TEST(FeatureProviderTest, GetChildren) {
-  FeatureProvider provider;
   static constexpr SimpleFeatureData kParent = {.feature = {.name = "parent"}};
   static constexpr SimpleFeatureData kChild = {
       .feature = {.name = "parent.child"}};
@@ -178,19 +186,16 @@ TEST(FeatureProviderTest, GetChildren) {
   static constexpr SimpleFeatureData kUnparentedChild = {
       .feature = {.name = "parent.unparented_child", .no_parent = true}};
 
-  provider.AddFeature(kParent.feature.name, std::make_unique<SimpleFeature>(
-                                                StaticFeatureData(kParent)));
-  provider.AddFeature(kChild.feature.name, std::make_unique<SimpleFeature>(
-                                               StaticFeatureData(kChild)));
-  provider.AddFeature(
-      kGrandchild.feature.name,
-      std::make_unique<SimpleFeature>(StaticFeatureData(kGrandchild)));
-  provider.AddFeature(
-      kOtherGrandchild.feature.name,
-      std::make_unique<SimpleFeature>(StaticFeatureData(kOtherGrandchild)));
-  provider.AddFeature(
-      kUnparentedChild.feature.name,
-      std::make_unique<SimpleFeature>(StaticFeatureData(kUnparentedChild)));
+  SimpleFeature parent_feature{StaticFeatureData(kParent)};
+  SimpleFeature child_feature{StaticFeatureData(kChild)};
+  SimpleFeature grandchild_feature{StaticFeatureData(kGrandchild)};
+  SimpleFeature other_grandchild_feature{StaticFeatureData(kOtherGrandchild)};
+  SimpleFeature unparented_child_feature{StaticFeatureData(kUnparentedChild)};
+  std::array<Feature*, 5> features = {
+      &parent_feature, &child_feature, &grandchild_feature,
+      &other_grandchild_feature, &unparented_child_feature};
+  FeatureProvider provider;
+  provider.AddStaticFeatures(features);
 
   const Feature* parent = provider.GetFeature("parent");
   ASSERT_TRUE(parent);
@@ -201,6 +206,31 @@ TEST(FeatureProviderTest, GetChildren) {
   EXPECT_THAT(children_names, testing::UnorderedElementsAre(
                                   "parent.child", "parent.child.grandchild",
                                   "parent.other_child.other_grandchild"));
+}
+
+TEST(FeatureProviderTest, StaticFeaturesAreNotOwned) {
+  SimpleFeature feature{StaticFeatureData(kRegistryFeatureData)};
+  std::array<Feature*, 1> features = {&feature};
+
+  {
+    FeatureProvider provider;
+    provider.AddStaticFeatures(features);
+    EXPECT_EQ(&feature, provider.GetFeature(kRegistryFeatureName));
+  }
+
+  EXPECT_EQ(kRegistryFeatureName, feature.name());
+}
+
+TEST(FeatureProviderTest, FeatureNamesBackRegistryKeys) {
+  SimpleFeature feature{StaticFeatureData(kRegistryFeatureData)};
+  std::array<Feature*, 1> features = {&feature};
+  FeatureProvider provider;
+  provider.AddStaticFeatures(features);
+
+  const FeatureMap& registry = provider.GetAllFeatures();
+  ASSERT_EQ(1u, registry.size());
+  const auto& [name, stored_feature] = *registry.begin();
+  EXPECT_EQ(name.data(), stored_feature->name().data());
 }
 
 }  // namespace extensions

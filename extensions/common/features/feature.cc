@@ -41,11 +41,6 @@ Feature::Availability Feature::IsAvailableToExtension(
       extension->manifest_version(), kUnspecifiedContextId);
 }
 
-Feature::Feature(const FeatureData* feature_data)
-    : feature_data_(feature_data) {
-  CHECK(feature_data_);
-}
-
 Feature::~Feature() = default;
 
 Feature::DelegatedAvailabilityCheckHandler

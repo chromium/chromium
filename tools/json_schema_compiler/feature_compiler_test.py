@@ -567,25 +567,31 @@ class FeatureCompilerTest(unittest.TestCase):
 
   def testComplexFeaturesUseStaticDescriptors(self):
     cases = [
-        ('APIFeature', {
-            'contexts': ['privileged_extension']
-        }, 'ComplexFeatureType::kSimple'),
-        ('BehaviorFeature', {}, 'ComplexFeatureType::kSimple'),
-        ('ManifestFeature', {
-            'extension_types': ['extension']
-        }, 'ComplexFeatureType::kManifest'),
-        ('PermissionFeature', {
-            'extension_types': ['extension']
-        }, 'ComplexFeatureType::kPermission'),
+      (
+        'APIFeature',
+        {'contexts': ['privileged_extension']},
+        'ComplexFeatureType::kSimple',
+      ),
+      ('BehaviorFeature', {}, 'ComplexFeatureType::kSimple'),
+      (
+        'ManifestFeature',
+        {'extension_types': ['extension']},
+        'ComplexFeatureType::kManifest',
+      ),
+      (
+        'PermissionFeature',
+        {'extension_types': ['extension']},
+        'ComplexFeatureType::kPermission',
+      ),
     ]
     for feature_type, required_values, expected_type in cases:
       with self.subTest(feature_type=feature_type):
         compiler = self._createTestFeatureCompiler(feature_type)
         compiler._json = {
-            'complex': [
-                dict(required_values, channel='beta'),
-                dict(required_values, channel='dev'),
-            ]
+          'complex': [
+            dict(required_values, channel='beta'),
+            dict(required_values, channel='dev'),
+          ]
         }
         compiler.Compile()
         cc_code = compiler.Render().Render()
@@ -593,7 +599,16 @@ class FeatureCompilerTest(unittest.TestCase):
         self.assertIn('std::to_array<SimpleFeatureData>', cc_code)
         self.assertIn('.features = StaticSpan(kFeatures),', cc_code)
         self.assertIn('.feature_type = %s,' % expected_type, cc_code)
-        self.assertIn('new ComplexFeature(StaticFeatureData(kData))', cc_code)
+        self.assertIn(
+          '[[clang::no_destroy]] static constinit const ComplexFeature '
+          'kFeature{',
+          cc_code,
+        )
+        self.assertIn(
+          'static_features[static_feature_count++] = &kFeature;', cc_code
+        )
+        self.assertIn('provider->AddStaticFeatures(', cc_code)
+        self.assertNotIn('new ComplexFeature', cc_code)
         self.assertNotIn('std::vector<Feature*>', cc_code)
         self.assertNotIn('features.push_back', cc_code)
 
@@ -632,7 +647,9 @@ class FeatureCompilerTest(unittest.TestCase):
     # The code below is formatted correctly!
     self.assertEqual(
       cc_code.Render(),
-      '''  {
+      '''  std::array<const Feature*, 1> static_features{};
+  std::size_t static_feature_count = 0;
+  {
     #if BUILDFLAG(USE_CUPS)
     static constexpr auto kContexts =
         std::to_array<mojom::ContextType>(
@@ -658,11 +675,13 @@ class FeatureCompilerTest(unittest.TestCase):
                 .channel = version_info::Channel::BETA,
             },
     };
-    SimpleFeature* feature =
-        new SimpleFeature(StaticFeatureData(kData));
-    provider->AddFeature("feature_cups", feature);
+    [[clang::no_destroy]] static constinit const SimpleFeature kFeature{
+        StaticFeatureData(kData)};
+    static_features[static_feature_count++] = &kFeature;
     #endif
-  }''',
+  }
+  provider->AddStaticFeatures(
+      base::span(static_features).first(static_feature_count));''',
     )
 
   def testFeatureIdentityStringsUseDescriptor(self):
@@ -683,7 +702,9 @@ class FeatureCompilerTest(unittest.TestCase):
     # The code below is formatted correctly!
     self.assertEqual(
       cc_code,
-      '''  {
+      '''  std::array<const Feature*, 2> static_features{};
+  std::size_t static_feature_count = 0;
+  {
     static constexpr auto kContexts =
         std::to_array<mojom::ContextType>(
             {mojom::ContextType::kPrivilegedExtension});
@@ -698,9 +719,9 @@ class FeatureCompilerTest(unittest.TestCase):
                 .contexts = StaticSpan(kContexts),
             },
     };
-    SimpleFeature* feature =
-        new SimpleFeature(StaticFeatureData(kData));
-    provider->AddFeature("feature_alpha", feature);
+    [[clang::no_destroy]] static constinit const SimpleFeature kFeature{
+        StaticFeatureData(kData)};
+    static_features[static_feature_count++] = &kFeature;
   }
   {
     static constexpr auto kContexts =
@@ -717,10 +738,12 @@ class FeatureCompilerTest(unittest.TestCase):
                 .contexts = StaticSpan(kContexts),
             },
     };
-    SimpleFeature* feature =
-        new SimpleFeature(StaticFeatureData(kData));
-    provider->AddFeature("feature_beta", feature);
-  }''',
+    [[clang::no_destroy]] static constinit const SimpleFeature kFeature{
+        StaticFeatureData(kData)};
+    static_features[static_feature_count++] = &kFeature;
+  }
+  provider->AddStaticFeatures(
+      base::span(static_features).first(static_feature_count));''',
     )
 
   def testFeatureWithEmptyMatches(self):
@@ -765,9 +788,7 @@ class FeatureCompilerTest(unittest.TestCase):
     cc_code = compiler.Render().Render()
 
     # Empty contexts means unavailable in every context, not unrestricted.
-    self.assertIn(
-      '.contexts = StaticSpan<mojom::ContextType>(),', cc_code
-    )
+    self.assertIn('.contexts = StaticSpan<mojom::ContextType>(),', cc_code)
     self.assertNotIn('kContexts', cc_code)
 
   def testEnumListEmitsStaticArray(self):
@@ -787,7 +808,9 @@ class FeatureCompilerTest(unittest.TestCase):
     # The code below is formatted correctly!
     self.assertEqual(
       compiler.Render().Render(),
-      '''  {
+      '''  std::array<const Feature*, 1> static_features{};
+  std::size_t static_feature_count = 0;
+  {
     static constexpr auto kContexts =
         std::to_array<mojom::ContextType>(
             {mojom::ContextType::kPrivilegedExtension});
@@ -814,10 +837,12 @@ class FeatureCompilerTest(unittest.TestCase):
                 .channel = version_info::Channel::BETA,
             },
     };
-    SimpleFeature* feature =
-        new SimpleFeature(StaticFeatureData(kData));
-    provider->AddFeature("enum_lists", feature);
-  }''',
+    [[clang::no_destroy]] static constinit const SimpleFeature kFeature{
+        StaticFeatureData(kData)};
+    static_features[static_feature_count++] = &kFeature;
+  }
+  provider->AddStaticFeatures(
+      base::span(static_features).first(static_feature_count));''',
     )
 
   def testEmptyNonContextEnumListsSkipDescriptorFields(self):

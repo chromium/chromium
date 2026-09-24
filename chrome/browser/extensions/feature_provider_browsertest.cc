@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(FeatureProviderBrowserTest,
   const FeatureProvider* api_provider = FeatureProvider::GetAPIFeatures();
   const FeatureMap& feature_map = api_provider->GetAllFeatures();
   for (const auto& it : feature_map) {
-    const std::string& feature_name = it.first;
+    const std::string_view feature_name = it.first;
     bool is_delegated_feature =
         std::ranges::contains(expected_delegated_features, feature_name);
     const Feature* feature = it.second.get();

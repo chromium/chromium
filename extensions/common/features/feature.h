@@ -15,6 +15,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "extensions/common/context_data.h"
@@ -32,6 +33,18 @@ inline constexpr int kUnspecifiedContextId = -1;
 class Extension;
 class FeatureTestPeer;
 
+// Descriptor invariants are checked during constant evaluation, when the
+// descriptor is wrapped. A descriptor type enforces its own by declaring an
+// overload of ValidateFeatureDescriptor() in namespace extensions; the
+// fallback below accepts anything.
+//
+// Report a violation from a consteval function named after the invariant whose
+// body calls this. The failing call appears in the diagnostic, naming the
+// invariant.
+inline void FeatureDescriptorInvariantViolated() {}
+
+consteval void ValidateFeatureDescriptor(const auto&) {}
+
 // A retained pointer to immutable descriptor data. Its consteval constructor
 // enforces static storage and compile-time-readable contents.
 template <typename T>
@@ -43,6 +56,7 @@ class StaticFeatureData {
     // Read the complete descriptor during constant evaluation to reject
     // statically stored data whose contents are dynamically initialized.
     [[maybe_unused]] T validated_data = data;
+    ValidateFeatureDescriptor(data);
   }
 
   constexpr const T* get() const { return data_; }
@@ -290,7 +304,10 @@ class Feature {
   friend class SimpleFeature;
   friend class ComplexFeature;
 
-  explicit Feature(const FeatureData* feature_data);
+  constexpr explicit Feature(const FeatureData* feature_data)
+      : feature_data_(feature_data) {
+    CHECK(feature_data_);
+  }
 
   // Parameters through `context_data` should be kept in sync with
   // DelegatedAvailabilityCheckHandler. `delegated_handler` lets temporary

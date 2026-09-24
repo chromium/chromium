@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/auto_reset.h"
-#include "base/test/gtest_util.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
@@ -127,23 +126,6 @@ TEST(ComplexFeatureTest, ConstructsEachStaticChildType) {
             availability(permission_feature, manifest_extension.get()));
   EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             availability(permission_feature, permission_extension.get()));
-}
-
-TEST(ComplexFeatureDeathTest, RequiresConsistentNoParent) {
-  // Keep the mismatch on the first child to cover the child that was
-  // previously skipped by the consistency check.
-  static constexpr SimpleFeatureData kFeatures[] = {
-      {.feature = {.no_parent = true}},
-      {},
-  };
-  static constexpr ComplexFeatureData kData = {
-      .features = StaticSpan(kFeatures),
-      .feature_type = ComplexFeatureType::kSimple,
-  };
-
-  EXPECT_DCHECK_DEATH_WITH(
-      { ComplexFeature feature{StaticFeatureData(kData)}; },
-      "no_parent across all sub features");
 }
 
 TEST(ComplexFeatureTest, MultipleRulesAllowlist) {

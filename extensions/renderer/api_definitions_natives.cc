@@ -35,7 +35,7 @@ void ApiDefinitionsNatives::GetExtensionAPIDefinitionsForTest(
   for (const auto& map_entry : feature_provider->GetAllFeatures()) {
     if (!feature_provider->GetParent(*map_entry.second) &&
         context()->GetAvailability(map_entry.first).is_available()) {
-      apis.push_back(map_entry.first);
+      apis.emplace_back(map_entry.first);
     }
   }
   args.GetReturnValue().Set(

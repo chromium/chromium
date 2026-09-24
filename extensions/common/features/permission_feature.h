@@ -14,8 +14,10 @@ class ComplexFeature;
 
 class PermissionFeature : public SimpleFeature {
  public:
-  explicit PermissionFeature(StaticFeatureData<SimpleFeatureData> data);
-  ~PermissionFeature() override;
+  constexpr explicit PermissionFeature(
+      StaticFeatureData<SimpleFeatureData> data)
+      : SimpleFeature(data) {}
+  ~PermissionFeature() override = default;
 
   // TODO(crbug.com/40689631): This should also override IsAvailableToManifest
   // so that a permission or manifest feature can declare dependency on other
@@ -34,7 +36,8 @@ class PermissionFeature : public SimpleFeature {
  private:
   friend class ComplexFeature;
 
-  explicit PermissionFeature(const SimpleFeatureData* data);
+  constexpr explicit PermissionFeature(const SimpleFeatureData* data)
+      : SimpleFeature(data) {}
 };
 
 }  // namespace extensions

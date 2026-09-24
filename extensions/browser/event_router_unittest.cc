@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -483,16 +484,16 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
       incognito_context(), base::BindRepeating(&BuildProcessMap));
 
   // Create a SimpleFeature to allow this API call to be routed to our test URL.
-  FeatureProvider provider;
   static constexpr auto kMatches =
       std::to_array<std::string_view>({"chrome://settings/*"});
   static constexpr SimpleFeatureData kFeatureData = {
       .feature = {.name = kTestEventName},
       .config = {.match_patterns = StaticSpan(kMatches)},
   };
-  auto feature =
-      std::make_unique<SimpleFeature>(StaticFeatureData(kFeatureData));
-  provider.AddFeature(kTestEventName, std::move(feature));
+  SimpleFeature feature{StaticFeatureData(kFeatureData)};
+  std::array<Feature*, 1> features = {&feature};
+  FeatureProvider provider;
+  provider.AddStaticFeatures(features);
 
   ExtensionAPI api;
   api.RegisterDependencyProvider("api", &provider);
@@ -1066,14 +1067,16 @@ class EventRouterDispatchTest : public ExtensionsTest {
 
  protected:
   void RegisterTestApiFeature(StaticFeatureData<SimpleFeatureData> data) {
-    auto feature = std::make_unique<SimpleFeature>(data);
-    provider_.AddFeature(data->feature.name, std::move(feature));
+    test_api_feature_.emplace(data);
+    std::array<Feature*, 1> features = {&*test_api_feature_};
+    provider_.AddStaticFeatures(features);
     api_.RegisterDependencyProvider("api", &provider_);
     api_scope_ =
         std::make_unique<ExtensionAPI::OverrideSharedInstanceForTest>(&api_);
   }
 
  private:
+  std::optional<SimpleFeature> test_api_feature_;
   FeatureProvider provider_;
   ExtensionAPI api_;
   std::unique_ptr<ExtensionAPI::OverrideSharedInstanceForTest> api_scope_;

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/nocompile.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -816,10 +817,21 @@ source_set("unit_tests") {
     ]
   }
 
+  if (enable_nocompile_tests) {
+    deps += [ ":features_nocompile_tests" ]
+  }
+
   data = [
     "//extensions/common/mojom/api_permission_id.mojom",
     "//tools/metrics/histograms/metadata/extensions/enums.xml",
   ]
+}
+
+if (enable_nocompile_tests) {
+  nocompile_source_set("features_nocompile_tests") {
+    sources = [ "features/complex_feature_nocompile.nc" ]
+    deps = [ ":common" ]
+  }
 }
 
 fuzzer_test("extension_fuzzer") {

@@ -7,7 +7,7 @@
 #include <optional>
 #include <utility>
 
-#include "base/check_op.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "extensions/common/features/manifest_feature.h"
 #include "extensions/common/features/permission_feature.h"
@@ -15,38 +15,15 @@
 
 namespace extensions {
 
-ComplexFeature::ComplexFeature(StaticFeatureData<ComplexFeatureData> data)
-    : ComplexFeature(data.get()) {}
-
-ComplexFeature::ComplexFeature(const ComplexFeatureData* data)
-    : Feature(&data->feature), complex_feature_data_(data) {
-  CHECK_GT(complex_feature_data_->features.span().size(), 1u);
-  for (const auto& feature : complex_feature_data_->features.span()) {
-    requires_delegated_availability_check_ |=
-        feature.config.requires_delegated_availability_check;
-  }
-
-#if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
-  const auto features = complex_feature_data_->features.span();
-  const bool first_is_internal = features.front().config.is_internal;
-  for (const auto& feature : features) {
-    DCHECK_EQ(first_is_internal, feature.config.is_internal)
-        << "Complex feature must have consistent values of "
-           "internal across all sub features.";
-    DCHECK_EQ(no_parent(), feature.feature.no_parent)
-        << "Complex feature must have consistent values of "
-           "no_parent across all sub features.";
-  }
-#endif
+const ComplexFeatureData& ComplexFeature::descriptor() const {
+  return *reinterpret_cast<const ComplexFeatureData*>(feature_data_);
 }
-
-ComplexFeature::~ComplexFeature() = default;
 
 bool ComplexFeature::VisitFeatures(
     base::FunctionRef<bool(const Feature&)> visitor) const {
-  for (const auto& data : complex_feature_data_->features.span()) {
+  for (const auto& data : descriptor().features.span()) {
     bool should_continue = false;
-    switch (complex_feature_data_->feature_type) {
+    switch (descriptor().feature_type) {
       case ComplexFeatureType::kSimple: {
         SimpleFeature feature(&data);
         should_continue = visitor(feature);
@@ -143,13 +120,21 @@ bool ComplexFeature::IsIdInAllowlist(const HashedExtensionId& hashed_id) const {
 }
 
 bool ComplexFeature::IsInternal() const {
-  // Constructor verifies that composed features are consistent, thus we can
-  // return just the first feature's value.
-  return complex_feature_data_->features.span().front().config.is_internal;
+  // Compile-time descriptor validation guarantees that composed features are
+  // consistent, so the first feature's value represents them all.
+  return descriptor().features.span().front().config.is_internal;
 }
 
 bool ComplexFeature::RequiresDelegatedAvailabilityCheck() const {
-  return requires_delegated_availability_check_;
+  // Derived from the children rather than cached, so that this feature holds
+  // no state of its own beyond the descriptor pointer. The child count is
+  // small and the descriptors are contiguous.
+  for (const auto& feature : descriptor().features.span()) {
+    if (feature.config.requires_delegated_availability_check) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace extensions

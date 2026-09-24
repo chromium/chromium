@@ -230,57 +230,52 @@ SimpleFeature::ScopedThreadUnsafeAllowlistForTest::
   GetAllowlistInfo().hashed_ids = previous_ids_;
 }
 
-SimpleFeature::SimpleFeature(StaticFeatureData<SimpleFeatureData> data)
-    : SimpleFeature(data.get()) {}
-
-SimpleFeature::SimpleFeature(const SimpleFeatureData* data)
-    : Feature(&CHECK_DEREF(data).feature),
-      simple_feature_config_(&data->config) {}
-
-SimpleFeature::~SimpleFeature() = default;
+const SimpleFeatureConfig& SimpleFeature::config() const {
+  return reinterpret_cast<const SimpleFeatureData*>(feature_data_)->config;
+}
 
 base::span<const std::string_view> SimpleFeature::blocklist() const {
-  return simple_feature_config_->blocklist.span();
+  return config().blocklist.span();
 }
 
 base::span<const std::string_view> SimpleFeature::allowlist() const {
-  return simple_feature_config_->allowlist.span();
+  return config().allowlist.span();
 }
 
 base::span<const Manifest::Type> SimpleFeature::extension_types() const {
-  return simple_feature_config_->extension_types.span();
+  return config().extension_types.span();
 }
 
 base::span<const Feature::Platform> SimpleFeature::platforms() const {
-  return simple_feature_config_->platforms.span();
+  return config().platforms.span();
 }
 
 std::optional<base::span<const mojom::ContextType>> SimpleFeature::contexts()
     const {
-  if (!simple_feature_config_->contexts) {
+  if (!config().contexts) {
     return std::nullopt;
   }
-  return simple_feature_config_->contexts->span();
+  return config().contexts->span();
 }
 
 base::span<const std::string_view> SimpleFeature::dependencies() const {
-  return simple_feature_config_->dependencies.span();
+  return config().dependencies.span();
 }
 
 std::optional<version_info::Channel> SimpleFeature::channel() const {
-  return simple_feature_config_->channel;
+  return config().channel;
 }
 
 std::optional<SimpleFeature::Location> SimpleFeature::location() const {
-  return simple_feature_config_->location;
+  return config().location;
 }
 
 std::optional<int> SimpleFeature::min_manifest_version() const {
-  return simple_feature_config_->min_manifest_version;
+  return config().min_manifest_version;
 }
 
 std::optional<int> SimpleFeature::max_manifest_version() const {
-  return simple_feature_config_->max_manifest_version;
+  return config().max_manifest_version;
 }
 
 std::optional<std::string_view> SimpleFeature::command_line_switch() const {
@@ -290,32 +285,32 @@ std::optional<std::string_view> SimpleFeature::command_line_switch() const {
 }
 
 bool SimpleFeature::component_extensions_auto_granted() const {
-  return simple_feature_config_->component_extensions_auto_granted;
+  return config().component_extensions_auto_granted;
 }
 
 base::span<const std::string_view> SimpleFeature::match_patterns() const {
-  return simple_feature_config_->match_patterns.span();
+  return config().match_patterns.span();
 }
 
 base::span<const mojom::FeatureSessionType> SimpleFeature::session_types()
     const {
-  return simple_feature_config_->session_types.span();
+  return config().session_types.span();
 }
 
 StaticCString SimpleFeature::command_line_switch_data() const {
-  return simple_feature_config_->command_line_switch;
+  return config().command_line_switch;
 }
 
 StaticCString SimpleFeature::feature_flag() const {
-  return simple_feature_config_->feature_flag;
+  return config().feature_flag;
 }
 
 bool SimpleFeature::developer_mode_only() const {
-  return simple_feature_config_->developer_mode_only;
+  return config().developer_mode_only;
 }
 
 bool SimpleFeature::disallow_for_service_workers() const {
-  return simple_feature_config_->disallow_for_service_workers;
+  return config().disallow_for_service_workers;
 }
 
 Feature::Availability SimpleFeature::IsAvailableToManifest(
@@ -591,7 +586,7 @@ Feature::Availability SimpleFeature::CreateAvailability(
 }
 
 bool SimpleFeature::IsInternal() const {
-  return simple_feature_config_->is_internal;
+  return config().is_internal;
 }
 
 bool SimpleFeature::IsIdInBlocklist(const HashedExtensionId& hashed_id) const {
@@ -653,7 +648,7 @@ bool SimpleFeature::MatchesSessionTypes(
 }
 
 bool SimpleFeature::RequiresDelegatedAvailabilityCheck() const {
-  return simple_feature_config_->requires_delegated_availability_check;
+  return config().requires_delegated_availability_check;
 }
 
 Feature::Availability SimpleFeature::CheckDependencies(

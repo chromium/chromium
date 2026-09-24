@@ -5,21 +5,22 @@
 #ifndef EXTENSIONS_COMMON_FEATURES_FEATURE_PROVIDER_H_
 #define EXTENSIONS_COMMON_FEATURES_FEATURE_PROVIDER_H_
 
-#include <functional>
-#include <map>
-#include <memory>
-#include <string>
 #include <string_view>
 #include <vector>
+
+#include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 
 namespace extensions {
 
 class Feature;
 
-// Note: Binding code (specifically native_extension_bindings_system.cc) relies
-// on this being a sorted map.
-using FeatureMap =
-    std::map<std::string, std::unique_ptr<const Feature>, std::less<>>;
+// Binding code relies on feature names remaining sorted. The keys reference the
+// static string storage that backs every feature name, so they stay valid
+// independently of the lifetime of the mapped Feature objects.
+using FeatureMap = base::flat_map<std::string_view, raw_ptr<const Feature>>;
 
 // Implemented by classes that can vend features.
 class FeatureProvider {
@@ -61,13 +62,12 @@ class FeatureProvider {
 
   // Returns a map containing all features described by this instance.
   // TODO(devlin): Rename this to be features().
-  const FeatureMap& GetAllFeatures() const;
+  const FeatureMap& GetAllFeatures() const LIFETIME_BOUND;
 
-  void AddFeature(std::string_view name, std::unique_ptr<Feature> feature);
-
-  // Takes ownership. Used in preference to unique_ptr variant to reduce size
-  // of generated code.
-  void AddFeature(std::string_view name, Feature* feature);
+  // Registers features without taking ownership. Each feature must outlive
+  // this provider. The span is consumed synchronously, and every pointer must
+  // be non-null.
+  void AddStaticFeatures(base::span<const Feature* const> features);
 
  private:
   FeatureMap features_;

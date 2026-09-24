@@ -10,14 +10,6 @@
 
 namespace extensions {
 
-ManifestFeature::ManifestFeature(StaticFeatureData<SimpleFeatureData> data)
-    : SimpleFeature(data) {}
-
-ManifestFeature::ManifestFeature(const SimpleFeatureData* data)
-    : SimpleFeature(data) {}
-
-ManifestFeature::~ManifestFeature() = default;
-
 Feature::Availability ManifestFeature::IsAvailableToContextImpl(
     const Extension* extension,
     mojom::ContextType context,

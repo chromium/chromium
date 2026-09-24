@@ -301,7 +301,7 @@ void Manifest::ValidateManifest(std::vector<InstallWarning>* warnings) const {
     Feature::Availability result = map_entry.second->IsAvailableToManifest(
         hashed_id_, type_, location_, manifest_version_, kUnspecifiedContextId);
     if (!result.is_available()) {
-      warnings->emplace_back(result.message(), map_entry.first);
+      warnings->emplace_back(result.message(), std::string(map_entry.first));
     }
   }
 

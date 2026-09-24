@@ -10,14 +10,6 @@
 
 namespace extensions {
 
-PermissionFeature::PermissionFeature(StaticFeatureData<SimpleFeatureData> data)
-    : SimpleFeature(data) {}
-
-PermissionFeature::PermissionFeature(const SimpleFeatureData* data)
-    : SimpleFeature(data) {}
-
-PermissionFeature::~PermissionFeature() = default;
-
 Feature::Availability PermissionFeature::IsAvailableToContextImpl(
     const Extension* extension,
     mojom::ContextType context,

@@ -13,7 +13,6 @@
 #include "base/debug/alias.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/span_printf.h"
 #include "base/strings/strcat.h"
@@ -159,7 +158,7 @@ const Feature* FeatureProvider::GetParent(const Feature& feature) const {
 }
 
 // Children of a given API are named starting with parent.name()+".", which
-// means they'll be contiguous in the features_ std::map.
+// means they'll be contiguous in the sorted features_ registry.
 std::vector<const Feature*> FeatureProvider::GetChildren(
     const Feature& parent) const {
   std::string prefix = base::StrCat({parent.name(), "."});
@@ -184,14 +183,20 @@ const FeatureMap& FeatureProvider::GetAllFeatures() const {
   return features_;
 }
 
-void FeatureProvider::AddFeature(std::string_view name,
-                                 std::unique_ptr<Feature> feature) {
-  DCHECK(feature);
-  features_[std::string(name)] = std::move(feature);
-}
+void FeatureProvider::AddStaticFeatures(
+    base::span<const Feature* const> features) {
+  features_.reserve(features_.size() + features.size());
 
-void FeatureProvider::AddFeature(std::string_view name, Feature* feature) {
-  AddFeature(name, base::WrapUnique(feature));
+  for (const Feature* feature : features) {
+    CHECK(feature);
+    const std::string_view feature_name = feature->name();
+    const size_t previous_size = features_.size();
+    // Generated entries arrive sorted, making end() the optimal insertion
+    // hint; batches from other providers transparently fall back to lookup.
+    features_.emplace_hint(features_.end(), feature_name, feature);
+    CHECK_EQ(features_.size(), previous_size + 1u)
+        << "Duplicate feature registration: " << feature_name;
+  }
 }
 
 }  // namespace extensions
