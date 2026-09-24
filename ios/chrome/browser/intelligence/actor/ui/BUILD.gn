@@ -15,6 +15,8 @@ source_set("ui") {
     "actor_tool_chip_view.mm",
     "actuation_header_view.h",
     "actuation_header_view.mm",
+    "actuation_intervention_view.h",
+    "actuation_intervention_view.mm",
     "actuation_task_button.h",
     "actuation_task_button.mm",
     "actuation_task_card_view.h",
@@ -62,6 +64,7 @@ source_set("unit_tests") {
   sources = [
     "actor_overlay_scrim_view_unittest.mm",
     "actor_overlay_view_controller_unittest.mm",
+    "actuation_intervention_view_unittest.mm",
     "actuation_worklog_view_controller_unittest.mm",
     "test/actor_ui_test_utils_unittest.mm",
   ]
@@ -74,6 +77,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/coordinator/scene/state:test_support",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/common/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

@@ -279,6 +279,8 @@ const NSTimeInterval kCollapseAnimationDuration = 0.45;
   _subtitleLabel.hidden = YES;
 
   _actionButton = [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+  _actionButton.accessibilityIdentifier =
+      kActuationTaskCardActionButtonAccessibilityIdentifier;
   _actionButton.translatesAutoresizingMaskIntoConstraints = NO;
   [_actionButton addTarget:self
                     action:@selector(didTapActionButton)

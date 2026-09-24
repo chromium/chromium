@@ -7,6 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+// Accessibility identifier for the card's primary action button.
+inline constexpr NSString* const
+    kActuationTaskCardActionButtonAccessibilityIdentifier =
+        @"ActuationTaskCardActionButtonAccessibilityIdentifier";
+
 @class ActuationTaskCardView;
 
 // Delegate protocol for user interaction events on ActuationTaskCardView.
