@@ -29,97 +29,105 @@ namespace ui {
 
 namespace {
 
-const wchar_t* GetCursorId(mojom::CursorType type) {
+enum class CursorSource { kSystem, kBundled };
+
+struct CursorId {
+  const wchar_t* id;
+  CursorSource source;
+};
+
+constexpr CursorId GetCursorId(mojom::CursorType type) {
   switch (type) {
     case mojom::CursorType::kNull:
     case mojom::CursorType::kPointer:
-      return IDC_ARROW;
+      return {IDC_ARROW, CursorSource::kSystem};
     case mojom::CursorType::kCross:
-      return IDC_CROSS;
+      return {IDC_CROSS, CursorSource::kSystem};
     case mojom::CursorType::kHand:
-      return IDC_HAND;
+      return {IDC_HAND, CursorSource::kSystem};
     case mojom::CursorType::kIBeam:
-      return IDC_IBEAM;
+      return {IDC_IBEAM, CursorSource::kSystem};
     case mojom::CursorType::kWait:
-      return IDC_WAIT;
+      return {IDC_WAIT, CursorSource::kSystem};
     case mojom::CursorType::kHelp:
-      return IDC_HELP;
+      return {IDC_HELP, CursorSource::kSystem};
     case mojom::CursorType::kEastResize:
     case mojom::CursorType::kWestResize:
     case mojom::CursorType::kEastWestResize:
-      return IDC_SIZEWE;
+      return {IDC_SIZEWE, CursorSource::kSystem};
     case mojom::CursorType::kNorthResize:
     case mojom::CursorType::kSouthResize:
     case mojom::CursorType::kNorthSouthResize:
-      return IDC_SIZENS;
+      return {IDC_SIZENS, CursorSource::kSystem};
     case mojom::CursorType::kNorthEastResize:
     case mojom::CursorType::kSouthWestResize:
     case mojom::CursorType::kNorthEastSouthWestResize:
-      return IDC_SIZENESW;
+      return {IDC_SIZENESW, CursorSource::kSystem};
     case mojom::CursorType::kNorthWestResize:
     case mojom::CursorType::kSouthEastResize:
     case mojom::CursorType::kNorthWestSouthEastResize:
-      return IDC_SIZENWSE;
+      return {IDC_SIZENWSE, CursorSource::kSystem};
     case mojom::CursorType::kMove:
-      return IDC_SIZEALL;
+      return {IDC_SIZEALL, CursorSource::kSystem};
     case mojom::CursorType::kProgress:
-      return IDC_APPSTARTING;
+      return {IDC_APPSTARTING, CursorSource::kSystem};
     case mojom::CursorType::kNoDrop:
     case mojom::CursorType::kNotAllowed:
     case mojom::CursorType::kEastWestNoResize:
     case mojom::CursorType::kNorthEastSouthWestNoResize:
     case mojom::CursorType::kNorthSouthNoResize:
     case mojom::CursorType::kNorthWestSouthEastNoResize:
-      return IDC_NO;
+      return {IDC_NO, CursorSource::kSystem};
     case mojom::CursorType::kColumnResize:
-      return MAKEINTRESOURCE(IDC_COLRESIZE);
+      return {MAKEINTRESOURCE(IDC_COLRESIZE), CursorSource::kBundled};
     case mojom::CursorType::kRowResize:
-      return MAKEINTRESOURCE(IDC_ROWRESIZE);
+      return {MAKEINTRESOURCE(IDC_ROWRESIZE), CursorSource::kBundled};
     case mojom::CursorType::kMiddlePanning:
-      return MAKEINTRESOURCE(IDC_PAN_MIDDLE);
+      return {MAKEINTRESOURCE(IDC_PAN_MIDDLE), CursorSource::kBundled};
     case mojom::CursorType::kMiddlePanningVertical:
-      return MAKEINTRESOURCE(IDC_PAN_MIDDLE_VERTICAL);
+      return {MAKEINTRESOURCE(IDC_PAN_MIDDLE_VERTICAL), CursorSource::kBundled};
     case mojom::CursorType::kMiddlePanningHorizontal:
-      return MAKEINTRESOURCE(IDC_PAN_MIDDLE_HORIZONTAL);
+      return {MAKEINTRESOURCE(IDC_PAN_MIDDLE_HORIZONTAL),
+              CursorSource::kBundled};
     case mojom::CursorType::kEastPanning:
-      return MAKEINTRESOURCE(IDC_PAN_EAST);
+      return {MAKEINTRESOURCE(IDC_PAN_EAST), CursorSource::kBundled};
     case mojom::CursorType::kNorthPanning:
-      return MAKEINTRESOURCE(IDC_PAN_NORTH);
+      return {MAKEINTRESOURCE(IDC_PAN_NORTH), CursorSource::kBundled};
     case mojom::CursorType::kNorthEastPanning:
-      return MAKEINTRESOURCE(IDC_PAN_NORTH_EAST);
+      return {MAKEINTRESOURCE(IDC_PAN_NORTH_EAST), CursorSource::kBundled};
     case mojom::CursorType::kNorthWestPanning:
-      return MAKEINTRESOURCE(IDC_PAN_NORTH_WEST);
+      return {MAKEINTRESOURCE(IDC_PAN_NORTH_WEST), CursorSource::kBundled};
     case mojom::CursorType::kSouthPanning:
-      return MAKEINTRESOURCE(IDC_PAN_SOUTH);
+      return {MAKEINTRESOURCE(IDC_PAN_SOUTH), CursorSource::kBundled};
     case mojom::CursorType::kSouthEastPanning:
-      return MAKEINTRESOURCE(IDC_PAN_SOUTH_EAST);
+      return {MAKEINTRESOURCE(IDC_PAN_SOUTH_EAST), CursorSource::kBundled};
     case mojom::CursorType::kSouthWestPanning:
-      return MAKEINTRESOURCE(IDC_PAN_SOUTH_WEST);
+      return {MAKEINTRESOURCE(IDC_PAN_SOUTH_WEST), CursorSource::kBundled};
     case mojom::CursorType::kWestPanning:
-      return MAKEINTRESOURCE(IDC_PAN_WEST);
+      return {MAKEINTRESOURCE(IDC_PAN_WEST), CursorSource::kBundled};
     case mojom::CursorType::kVerticalText:
-      return MAKEINTRESOURCE(IDC_VERTICALTEXT);
+      return {MAKEINTRESOURCE(IDC_VERTICALTEXT), CursorSource::kBundled};
     case mojom::CursorType::kCell:
-      return MAKEINTRESOURCE(IDC_CELL);
+      return {MAKEINTRESOURCE(IDC_CELL), CursorSource::kBundled};
     case mojom::CursorType::kZoomIn:
-      return MAKEINTRESOURCE(IDC_ZOOMIN);
+      return {MAKEINTRESOURCE(IDC_ZOOMIN), CursorSource::kBundled};
     case mojom::CursorType::kZoomOut:
-      return MAKEINTRESOURCE(IDC_ZOOMOUT);
+      return {MAKEINTRESOURCE(IDC_ZOOMOUT), CursorSource::kBundled};
     case mojom::CursorType::kGrab:
-      return MAKEINTRESOURCE(IDC_HAND_GRAB);
+      return {MAKEINTRESOURCE(IDC_HAND_GRAB), CursorSource::kBundled};
     case mojom::CursorType::kGrabbing:
-      return MAKEINTRESOURCE(IDC_HAND_GRABBING);
+      return {MAKEINTRESOURCE(IDC_HAND_GRABBING), CursorSource::kBundled};
     case mojom::CursorType::kCopy:
-      return MAKEINTRESOURCE(IDC_COPYCUR);
+      return {MAKEINTRESOURCE(IDC_COPYCUR), CursorSource::kBundled};
     case mojom::CursorType::kAlias:
-      return MAKEINTRESOURCE(IDC_ALIAS);
+      return {MAKEINTRESOURCE(IDC_ALIAS), CursorSource::kBundled};
     case mojom::CursorType::kDndCopy:
     case mojom::CursorType::kDndLink:
     case mojom::CursorType::kDndMove:
     case mojom::CursorType::kDndNone:
     case mojom::CursorType::kContextMenu:
       NOTIMPLEMENTED();
-      return IDC_ARROW;
+      return {IDC_ARROW, CursorSource::kSystem};
     case mojom::CursorType::kNone:
     case mojom::CursorType::kCustom:
       NOTREACHED();
@@ -141,13 +149,20 @@ scoped_refptr<PlatformCursor> WinCursorFactory::GetDefaultCursor(
     // screen. crbug.com/1069698
     HCURSOR hcursor = nullptr;
     if (type != mojom::CursorType::kNone) {
-      const wchar_t* id = GetCursorId(type);
-      hcursor = LoadCursor(nullptr, id);
-      // Try loading the cursor from the Chromium resources.
-      if (!hcursor)
-        hcursor = LoadCursorFromResourcesDataDLL(id);
-      if (!hcursor)
+      auto [id, source] = GetCursorId(type);
+
+      switch (source) {
+        case CursorSource::kSystem:
+          hcursor = LoadCursor(nullptr, id);
+          break;
+        case CursorSource::kBundled:
+          hcursor = LoadCursorFromResourcesDataDLL(id);
+          break;
+      }
+
+      if (!hcursor) {
         return nullptr;
+      }
     }
     default_cursors_[type] = base::MakeRefCounted<WinCursor>(hcursor);
   }
