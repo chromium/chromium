@@ -163,10 +163,9 @@ public class VerticalTabListRenderTest {
 
     @Before
     public void setUp() throws Exception {
-        // ClankGlicContextMenu is force-enabled on desktop Android (see
-        // chrome_browser_field_trials.cc), and the tab context menu tests below build the menu
-        // with a mock Profile. Short-circuit the Glic enablement checks so the menu code never
-        // calls into native with a Profile that has no native counterpart, which would crash the
+        // The tab context menu tests below build the menu with a mock Profile. Short-circuit the
+        // Glic enablement checks in case ClankGlicContextMenu is enabled via fieldtrial config so
+        // mock Profiles without a native counterpart do not call into JNI, which would crash the
         // test process.
         GlicEnabling.setEnabledForTesting(false);
         mActivityTestRule.launchActivity(null);
