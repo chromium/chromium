@@ -14658,6 +14658,7 @@ from previous Chrome versions.
   <int value="-76445689" label="WasmCodeCache:enabled"/>
   <int value="-76415619" label="NtpNextCanvasChip:disabled"/>
   <int value="-76348564" label="PointerLockOptions:enabled"/>
+  <int value="-75566566" label="EnterpriseSigninDialogsRefresh:disabled"/>
   <int value="-75418012" label="ContextualSuggestionsOptOut:disabled"/>
   <int value="-75396730" label="UseAlternateHistorySyncIllustration:disabled"/>
   <int value="-74964571" label="EcheCustomWidget:enabled"/>
@@ -17123,6 +17124,7 @@ from previous Chrome versions.
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
   <int value="691523087" label="GlicPanelResetOnStart:disabled"/>
   <int value="691982483" label="WifiConnectMacAddressRandomization:disabled"/>
+  <int value="692289282" label="EnterpriseSigninDialogsRefresh:enabled"/>
   <int value="692890016" label="GlicActorAutofillSectionLabel:enabled"/>
   <int value="693012666" label="QuickUnlockPin:disabled"/>
   <int value="693480759" label="PageInfoAboutThisSiteEn:disabled"/>

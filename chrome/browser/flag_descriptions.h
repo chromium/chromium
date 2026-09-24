@@ -2746,6 +2746,13 @@ inline constexpr char kFillOnAccountSelectDescription[] =
     "Filling of passwords when an account is explicitly selected by the user "
     "rather than autofilling credentials on page load.";
 
+inline constexpr char kEnterpriseSigninDialogsRefreshName[] =
+    "Enterprise Signin Dialogs Refresh";
+inline constexpr char kEnterpriseSigninDialogsRefreshDescription[] =
+    "Enables the visually refreshed enterprise signin dialogs (enterprise "
+    "profile welcome/creation, OIDC and the device signals disclaimer). It is "
+    "no-op if `first-run-desktop-refresh` is disabled.";
+
 inline constexpr char kFirstRunDesktopChoiceScreenRefreshName[] =
     "First Run Desktop Choice Screen Refresh";
 inline constexpr char kFirstRunDesktopChoiceScreenRefreshDescription[] =

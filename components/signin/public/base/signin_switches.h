@@ -518,6 +518,30 @@ extern const base::FeatureParam<base::TimeDelta>
     kPolicyDisclaimerRegistrationRetryDelay;
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// This feature controls showing the visually refreshed enterprise signin
+// dialogs, i.e. all the screens served by `ManagedUserProfileNoticeUI`
+// (enterprise profile welcome/creation, OIDC and the device signals
+// disclaimer). This feature is no-op if `kFirstRunDesktopRefresh` is disabled.
+//
+// This is a chained launch: these dialogs ship after the rest of the first run
+// desktop refresh, and are held back in the search engine choice screen
+// regions until `kFirstRunDesktopChoiceScreenRefresh` is enabled, so that
+// users never see them refreshed next to a non-refreshed flow.
+//
+// Clients should never use this feature directly to determine if the
+// refresh is enabled, they should use
+// `IsEnterpriseSigninDialogsRefreshEnabled()` instead.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnterpriseSigninDialogsRefresh);
+// A helper function to determine if the enterprise signin dialogs refresh is
+// enabled (see `kEnterpriseSigninDialogsRefresh`, `kFirstRunDesktopRefresh` and
+// `kFirstRunDesktopChoiceScreenRefresh` flags).
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+bool IsEnterpriseSigninDialogsRefreshEnabled(
+    bool is_in_search_engine_choice_region);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Controls whether the navigation performed by
 // `chrome.identity.launchWebAuthFlow` is attributed with the extesion's origin.

@@ -4855,6 +4855,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enterprise-signin-dialogs-refresh",
+    "owners": [ "saskekun@google.com", "chrome-signin-desktop-team@google.com" ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "enterprise-tab-title-reporting",
     "owners": ["rslan@google.com", "cbe-cep-eng@google.com" ],
     "expiry_milestone": 160

@@ -660,6 +660,16 @@ const base::FeatureParam<base::TimeDelta>
         base::Hours(8)};
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kEnterpriseSigninDialogsRefresh,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsEnterpriseSigninDialogsRefreshEnabled(
+    bool is_in_search_engine_choice_region) {
+  return IsFirstRunDesktopRefreshEnabled(is_in_search_engine_choice_region) &&
+         base::FeatureList::IsEnabled(kEnterpriseSigninDialogsRefresh);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 BASE_FEATURE(kExtensionWebAuthFlowInitiatorOrigin,
              base::FEATURE_ENABLED_BY_DEFAULT);
