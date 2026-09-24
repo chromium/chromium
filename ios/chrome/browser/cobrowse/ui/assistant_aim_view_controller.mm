@@ -647,6 +647,8 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   if (!wkWebView) {
     return;
   }
+  wkWebView.scrollView.keyboardDismissMode =
+      UIScrollViewKeyboardDismissModeOnDrag;
 
   CGFloat bottomObscured = 0;
   if (!_inputViewController.view.isHidden && !self.isMinimized) {
@@ -709,6 +711,12 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
     [_webStateView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
   ];
   [NSLayoutConstraint activateConstraints:_webStateViewConstraints];
+
+  WKWebView* wkWebView = [self findWKWebViewInView:_webStateView];
+  if (wkWebView) {
+    wkWebView.scrollView.keyboardDismissMode =
+        UIScrollViewKeyboardDismissModeOnDrag;
+  }
 }
 
 // Sets up the header view.
