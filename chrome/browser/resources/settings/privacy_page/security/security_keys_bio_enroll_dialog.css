@@ -1,0 +1,64 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_spinner_style_lit.css.js
+ * #import=../../settings_shared_lit.css.js
+ * #include=settings-shared-lit cr-spinner-style-lit
+ * #css_wrapper_metadata_end */
+
+div[slot='body'] {
+  /* Make the secondary 'Add' button in the body to align with the
+     primary 'Done' button in the body-container. */
+  padding-inline-end: 16px;
+}
+
+#header {
+  display: flex;
+}
+
+#header .header-label {
+  flex: auto;
+}
+
+h3 {
+  font-size: inherit;
+  font-weight: 500;
+  margin: 0;
+  padding-bottom: 12px;
+  padding-top: 32px;
+}
+
+cr-icon {
+  padding-inline-end: 12px;
+}
+
+.list-item .name {
+  word-break: break-word;
+}
+
+.name {
+  flex: 3;
+}
+
+#container {
+  padding-inline-start: var(--cr-section-padding);
+}
+
+.spinner {
+  padding-bottom: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #lightIcon {
+    display: none;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  #darkIcon {
+    display: none;
+  }
+}

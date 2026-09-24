@@ -4,7 +4,6 @@
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {Enrollment, EnrollmentResponse, SecurityKeysBioEnrollProxy, SensorInfo, SettingsSecurityKeysBioEnrollDialogElement} from 'chrome://settings/lazy_load.js';
 import {BioEnrollDialogPage, Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -176,7 +175,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertShown(allDivs, dialog, 'pinPrompt');
     assertEquals(currentMinPinLength, dialog.$.pin.minPinLength);
     dialog.$.pin.$.pin.value = '000000';
-    await dialog.$.pin.$.pin.updateComplete;
+    await microtasksFinished();
     dialog.$.confirmButton.click();
     const pin = await browserProxy.whenCalled('providePin');
     assertEquals(pin, '000000');
@@ -208,7 +207,7 @@ suite('SecurityKeysBioEnrollment', function() {
     enumerateResolver.resolve(enrollments);
     await uiReady;
     assertShown(allDivs, dialog, 'enrollments');
-    flush();
+    await microtasksFinished();
     assertEntries(sortedEnrollments);
 
     // Delete the second enrollments and refresh the list.
@@ -219,7 +218,6 @@ suite('SecurityKeysBioEnrollment', function() {
     enrollments.splice(1, 1);
     deleteResolver.resolve(enrollments);
     await microtasksFinished();
-    flush();
     assertEntries(sortedEnrollments);
   });
 
@@ -247,7 +245,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertShown(allDivs, dialog, 'pinPrompt');
     assertEquals(currentMinPinLength, dialog.$.pin.minPinLength);
     dialog.$.pin.$.pin.value = '000000';
-    await dialog.$.pin.$.pin.updateComplete;
+    await microtasksFinished();
     dialog.$.confirmButton.click();
     const pin = await browserProxy.whenCalled('providePin');
     assertEquals(pin, '000000');
@@ -264,7 +262,7 @@ suite('SecurityKeysBioEnrollment', function() {
     enumerateResolver.resolve([]);
     await uiReady;
     assertShown(allDivs, dialog, 'enrollments');
-    flush();
+    await microtasksFinished();
     assertEntries([]);
 
     // Simulate add enrollment.
@@ -278,7 +276,7 @@ suite('SecurityKeysBioEnrollment', function() {
     webUIListenerCallback(
         'security-keys-bio-enroll-status',
         {status: SampleStatus.OK, remaining: 1});
-    flush();
+    await microtasksFinished();
     assertFalse(dialog.$.arc.isComplete());
     assertFalse(dialog.$.cancelButton.hidden);
     assertTrue(dialog.$.confirmButton.hidden);
@@ -308,11 +306,12 @@ suite('SecurityKeysBioEnrollment', function() {
     assertEquals(dialog.$.enrollmentName.value, enrollmentName);
     const invalidNewEnrollmentName = '21 bytes long string!';
     dialog.$.enrollmentName.value = invalidNewEnrollmentName;
-    await dialog.$.enrollmentName.updateComplete;
+    await microtasksFinished();
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
     assertFalse(dialog.$.enrollmentName.invalid);
     dialog.$.confirmButton.click();
+    await microtasksFinished();
     assertTrue(dialog.$.enrollmentName.invalid);
     assertEquals(browserProxy.getCallCount('renameEnrollment'), 0);
 
@@ -320,7 +319,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertShown(allDivs, dialog, 'chooseName');
     const newEnrollmentName = '20 bytes long string';
     dialog.$.enrollmentName.value = newEnrollmentName;
-    await dialog.$.enrollmentName.updateComplete;
+    await microtasksFinished();
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
 
@@ -330,6 +329,7 @@ suite('SecurityKeysBioEnrollment', function() {
     browserProxy.setResponseFor(
         'renameEnrollment', renameEnrollmentResolver.promise);
     dialog.$.confirmButton.click();
+    await microtasksFinished();
     assertFalse(dialog.$.enrollmentName.invalid);
 
     const renameArgs = await browserProxy.whenCalled('renameEnrollment');

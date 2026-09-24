@@ -1,66 +1,10 @@
-    <style include="settings-shared cr-spinner-style">
-      div[slot='body'] {
-        /* Make the secondary 'Add' button in the body to align with the
-           primary 'Done' button in the body-container. */
-        padding-inline-end: 16px;
-      }
-
-      #header {
-        display: flex;
-      }
-
-      #header .header-label {
-        flex: auto;
-      }
-
-      h3 {
-        font-size: inherit;
-        font-weight: 500;
-        margin: 0;
-        padding-bottom: 12px;
-        padding-top: 32px;
-      }
-
-      cr-icon {
-        padding-inline-end: 12px;
-      }
-
-      .list-item .name {
-        word-break: break-word;
-      }
-
-      .name {
-        flex: 3;
-      }
-
-      #container {
-        padding-inline-start: var(--cr-section-padding);
-      }
-
-      .spinner {
-        padding-bottom: 16px;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        #lightIcon {
-          display: none;
-        }
-      }
-
-      @media (prefers-color-scheme: light) {
-        #darkIcon {
-          display: none;
-        }
-      }
-    </style>
-
     <cr-dialog id="dialog" close-text="$i18n{cancel}" ignore-popstate
-        on-close="onDialogClosed_">
-      <div slot="title">[[dialogTitle_(dialogPage_)]]</div>
+        @close="${this.onDialogClose_}">
+      <div slot="title">${this.dialogTitle_()}</div>
 
       <div slot="body">
-        <cr-page-selector attr-for-selected="id" selected="[[dialogPage_]]"
-            on-iron-select="onIronSelect_">
+        <cr-page-selector attr-for-selected="id" .selected="${this.dialogPage_}"
+            @iron-select="${this.onIronSelect_}">
           <div id="initial">
             <p>$i18n{securityKeysTouchToContinue}</p>
             <div class="spinner"></div>
@@ -68,22 +12,22 @@
 
           <div id="pinPrompt">
             <settings-security-keys-pin-field id="pin"
-                min-pin-length="[[minPinLength_]]">
+                .minPinLength="${this.minPinLength_}">
             </settings-security-keys-pin-field>
           </div>
 
           <div id="enrollments">
             <div id="header" class="list-item column-header">
-              <h3 class="header-label">[[enrollmentsHeader_(enrollments_)]]</h3>
-              <cr-button id="addButton" on-click="addButtonClick_"
+              <h3 class="header-label">${this.enrollmentsHeader_()}</h3>
+              <cr-button id="addButton" @click="${this.onAddButtonClick_}"
                   class="secondary-button header-aligned-button">
                 $i18n{add}
               </cr-button>
             </div>
 
             <div id="container" class="cr-separators" role="list">
-              <template is="dom-repeat" items="[[enrollments_]]">
-                <div class="list-item" first$="[[!index]]" role="listitem">
+              ${this.enrollments_.map((item, index) => html`
+                <div class="list-item" ?first="${!index}" role="listitem">
                   <cr-icon id="darkIcon"
                       icon="fingerprint-icon:fingerprint-scanned-dark-custom">
                   </cr-icon>
@@ -91,20 +35,21 @@
                       icon="fingerprint-icon:fingerprint-scanned-light-custom">
                   </cr-icon>
                   <div class="name">
-                    [[item.name]]
+                    ${item.name}
                   </div>
                   <cr-icon-button class="icon-clear"
                       aria-label="$i18n{securityKeysBioEnrollmentDelete}"
-                      on-click="deleteEnrollment_"
-                      disabled="[[deleteInProgress_]]">
+                      data-index="${index}"
+                      @click="${this.onDeleteEnrollmentClick_}"
+                      ?disabled="${this.deleteInProgress_}">
                   </cr-icon-button>
                 </div>
-              </template>
+              `)}
             </div>
           </div>
 
           <div id="enroll">
-            <p>[[progressArcLabel_]]</p>
+            <p>${this.progressArcLabel_}</p>
             <fingerprint-progress-arc id="arc" autoplay>
             </fingerprint-progress-arc>
           </div>
@@ -112,34 +57,36 @@
           <div id="chooseName">
             <p>$i18n{securityKeysBioEnrollmentChooseName}</p>
             <cr-input type="text" id="enrollmentName"
-                max-length="[[enrollmentNameMaxUtf8Length_]]"
-                value="{{recentEnrollmentName_}}"
+                .maxlength="${this.enrollmentNameMaxUtf8Length_}"
+                .value="${this.recentEnrollmentName_}"
+                @value-changed="${this.onRecentEnrollmentNameValueChanged_}"
                 label="$i18n{securityKeysBioEnrollmentNameLabel}"
-                on-input="onEnrollmentNameInput_"
-                error-message="[[enrollmentNameError_]]"
-                invalid="[[!isNullOrEmpty_(enrollmentNameError_)]]"
+                error-message="${this.enrollmentNameError_}"
+                ?invalid="${this.isNonEmpty_()}"
                 spellcheck="false">
             </cr-input>
           </div>
 
-          <div id="error">[[errorMsg_]]</div>
+          <div id="error">${this.errorMsg_}</div>
         </cr-page-selector>
       </div>
 
       <div slot="button-container">
-        <cr-button id="cancelButton" class="cancel-button" on-click="cancel_"
-            hidden="[[!cancelButtonVisible_]]"
-            disabled="[[cancelButtonDisabled_]]">
+        <cr-button id="cancelButton" class="cancel-button"
+            @click="${this.onCancelButtonClick_}"
+            ?hidden="${!this.cancelButtonVisible_}"
+            ?disabled="${this.cancelButtonDisabled_}">
           $i18n{cancel}
         </cr-button>
         <cr-button id="confirmButton" class="action-button"
-            hidden="[[!confirmButtonVisible_]]"
-            disabled="[[confirmButtonDisabled_]]"
-            on-click="confirmButtonClick_">
-          [[confirmButtonLabel_]]
+            ?hidden="${!this.confirmButtonVisible_}"
+            ?disabled="${this.confirmButtonDisabled_}"
+            @click="${this.onConfirmButtonClick_}">
+          ${this.confirmButtonLabel_}
         </cr-button>
         <cr-button id="doneButton" class="action-button"
-            on-click="done_" hidden="[[!doneButtonVisible_]]">
+            @click="${this.onDoneButtonClick_}"
+            ?hidden="${!this.doneButtonVisible_}">
           $i18n{done}
         </cr-button>
       </div>

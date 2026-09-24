@@ -10,13 +10,10 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import '../../settings_shared.css.js';
-import '../../site_favicon.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '../../i18n_setup.js';
 import './fingerprint_icons.html.js';
 import './fingerprint_progress_arc.js';
@@ -26,13 +23,15 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {FingerprintProgressArcElement} from './fingerprint_progress_arc.js';
-import {getTemplate} from './security_keys_bio_enroll_dialog.html.js';
+import {getCss} from './security_keys_bio_enroll_dialog.css.js';
+import {getHtml} from './security_keys_bio_enroll_dialog.html.js';
 import type {Enrollment, EnrollmentResponse, SampleResponse, SecurityKeysBioEnrollProxy} from './security_keys_browser_proxy.js';
 import {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl} from './security_keys_browser_proxy.js';
 import type {SettingsSecurityKeysPinFieldElement} from './security_keys_pin_field.js';
@@ -61,7 +60,7 @@ export interface SettingsSecurityKeysBioEnrollDialogElement {
 }
 
 const SettingsSecurityKeysBioEnrollDialogElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
 export class SettingsSecurityKeysBioEnrollDialogElement extends
     SettingsSecurityKeysBioEnrollDialogElementBase {
@@ -69,59 +68,60 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
     return 'settings-security-keys-bio-enroll-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      cancelButtonDisabled_: Boolean,
-      cancelButtonVisible_: Boolean,
-      confirmButtonDisabled_: Boolean,
-      confirmButtonVisible_: Boolean,
-      confirmButtonLabel_: String,
-      deleteInProgress_: Boolean,
+      cancelButtonDisabled_: {type: Boolean},
+      cancelButtonVisible_: {type: Boolean},
+      confirmButtonDisabled_: {type: Boolean},
+      confirmButtonVisible_: {type: Boolean},
+      confirmButtonLabel_: {type: String},
+      deleteInProgress_: {type: Boolean},
 
       /**
        * The ID of the element currently shown in the dialog.
        */
-      dialogPage_: {
-        type: String,
-        value: BioEnrollDialogPage.INITIAL,
-        observer: 'dialogPageChanged_',
-      },
+      dialogPage_: {type: String},
 
-      doneButtonVisible_: Boolean,
+      doneButtonVisible_: {type: Boolean},
 
       /**
        * The list of enrollments displayed.
        */
-      enrollments_: Array,
+      enrollments_: {type: Array},
 
-      minPinLength_: Number,
-      progressArcLabel_: String,
-      recentEnrollmentName_: String,
-      enrollmentNameError_: String,
-      enrollmentNameMaxUtf8Length_: Number,
-      errorMsg_: String,
+      minPinLength_: {type: Number},
+      progressArcLabel_: {type: String},
+      recentEnrollmentName_: {type: String},
+      enrollmentNameError_: {type: String},
+      enrollmentNameMaxUtf8Length_: {type: Number},
+      errorMsg_: {type: String},
     };
   }
 
-  declare private cancelButtonDisabled_: boolean;
-  declare private cancelButtonVisible_: boolean;
-  declare private confirmButtonDisabled_: boolean;
-  declare private confirmButtonVisible_: boolean;
-  declare private confirmButtonLabel_: string;
-  declare private deleteInProgress_: boolean;
-  declare private dialogPage_: BioEnrollDialogPage;
-  declare private doneButtonVisible_: boolean;
-  declare private enrollments_: Enrollment[];
-  declare private minPinLength_: number;
-  declare private progressArcLabel_: string;
-  declare private recentEnrollmentName_: string;
-  declare private enrollmentNameError_: string|null;
-  declare private enrollmentNameMaxUtf8Length_: number;
-  declare private errorMsg_: string;
+  protected accessor cancelButtonDisabled_: boolean = false;
+  protected accessor cancelButtonVisible_: boolean = true;
+  protected accessor confirmButtonDisabled_: boolean = false;
+  protected accessor confirmButtonVisible_: boolean = false;
+  protected accessor confirmButtonLabel_: string = '';
+  protected accessor deleteInProgress_: boolean = false;
+  protected accessor dialogPage_: BioEnrollDialogPage =
+      BioEnrollDialogPage.INITIAL;
+  protected accessor doneButtonVisible_: boolean = false;
+  protected accessor enrollments_: Enrollment[] = [];
+  protected accessor minPinLength_: number = 0;
+  protected accessor progressArcLabel_: string = '';
+  protected accessor recentEnrollmentName_: string = '';
+  protected accessor enrollmentNameError_: string = '';
+  protected accessor enrollmentNameMaxUtf8Length_: number = 0;
+  protected accessor errorMsg_: string = '';
 
   private browserProxy_: SecurityKeysBioEnrollProxy =
       SecurityKeysBioEnrollProxyImpl.getInstance();
@@ -149,9 +149,14 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
     this.dialogPage_ = page;
   }
 
-  private fire_(eventName: string, detail?: unknown) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('dialogPage_')) {
+      this.dialogPageChanged_();
+    }
   }
 
   private onError_(error: string, requiresPINChange = false) {
@@ -237,10 +242,10 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
       default:
         assertNotReached();
     }
-    this.fire_('bio-enroll-dialog-ready-for-testing');
+    this.fire('bio-enroll-dialog-ready-for-testing');
   }
 
-  private addButtonClick_() {
+  protected onAddButtonClick_() {
     assert(this.dialogPage_ === BioEnrollDialogPage.ENROLLMENTS);
 
     this.maxSamples_ = -1;  // Reset maxSamples_ before enrolling starts.
@@ -311,12 +316,12 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
         this.i18n('securityKeysBioEnrollmentEnrollingCompleteLabel');
     this.$.confirmButton.focus();
     // Make screen-readers announce enrollment completion.
-    this.fire_('iron-announce', {text: this.progressArcLabel_});
+    this.fire('iron-announce', {text: this.progressArcLabel_});
 
-    this.fire_('bio-enroll-dialog-ready-for-testing');
+    this.fire('bio-enroll-dialog-ready-for-testing');
   }
 
-  private confirmButtonClick_() {
+  protected onConfirmButtonClick_() {
     switch (this.dialogPage_) {
       case BioEnrollDialogPage.PIN_PROMPT:
         this.submitPin_();
@@ -330,7 +335,7 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
         break;
       case BioEnrollDialogPage.ERROR:
         this.$.dialog.close();
-        this.fire_('bio-enroll-set-pin');
+        this.fire('bio-enroll-set-pin');
         break;
       default:
         assertNotReached();
@@ -350,7 +355,7 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
           this.i18n('securityKeysBioEnrollmentNameLabelTooLong');
       return;
     }
-    this.enrollmentNameError_ = null;
+    this.enrollmentNameError_ = '';
 
     // Disable the confirm button to prevent concurrent submissions. It will
     // be re-enabled by dialogPageChanged_() where appropriate.
@@ -368,7 +373,7 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
     });
   }
 
-  private cancel_() {
+  protected onCancelButtonClick_() {
     if (this.dialogPage_ === BioEnrollDialogPage.ENROLL) {
       // Cancel an ongoing enrollment.  Will cause the pending
       // enumerateEnrollments() promise to be resolved and proceed to the
@@ -377,46 +382,50 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
       this.browserProxy_.cancelEnrollment();
     } else {
       // On any other screen, simply close the dialog.
-      this.done_();
+      this.onDoneButtonClick_();
     }
   }
 
-  private done_() {
+  protected onDoneButtonClick_() {
     this.$.dialog.close();
   }
 
-  private onDialogClosed_() {
+  protected onDialogClose_() {
     this.browserProxy_.close();
   }
 
-  private onIronSelect_(e: Event) {
+  protected onIronSelect_(e: Event) {
     // Prevent this event from bubbling since it is unnecessarily triggering
     // the listener within settings-animated-pages.
     e.stopPropagation();
   }
 
-  private deleteEnrollment_(event: {model: {index: number}}) {
+  protected onDeleteEnrollmentClick_(e: Event) {
     if (this.deleteInProgress_) {
       return;
     }
+    const target = e.currentTarget as HTMLElement;
+    const index = Number(target.dataset['index']);
+    const enrollment = this.enrollments_[index];
     this.deleteInProgress_ = true;
-    const enrollment = this.enrollments_[event.model.index];
     this.browserProxy_.deleteEnrollment(enrollment.id).then(enrollments => {
       this.deleteInProgress_ = false;
       this.onEnrollments_(enrollments);
     });
   }
 
-  private onEnrollmentNameInput_() {
+  protected onRecentEnrollmentNameValueChanged_(
+      e: CustomEvent<{value: string}>) {
+    this.recentEnrollmentName_ = e.detail.value;
     this.confirmButtonDisabled_ = !this.recentEnrollmentName_.length;
   }
 
   /**
    * @return The title string for the current dialog page.
    */
-  private dialogTitle_(dialogPage: BioEnrollDialogPage): string {
-    if (dialogPage === BioEnrollDialogPage.ENROLL ||
-        dialogPage === BioEnrollDialogPage.CHOOSE_NAME) {
+  protected dialogTitle_(): string {
+    if (this.dialogPage_ === BioEnrollDialogPage.ENROLL ||
+        this.dialogPage_ === BioEnrollDialogPage.CHOOSE_NAME) {
       return this.i18n('securityKeysBioEnrollmentAddTitle');
     }
     return this.i18n('securityKeysBioEnrollmentDialogTitle');
@@ -425,15 +434,15 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
   /**
    * @return The header label for the enrollments page.
    */
-  private enrollmentsHeader_(enrollments: Enrollment[]|null): string {
+  protected enrollmentsHeader_(): string {
     return this.i18n(
-        enrollments && enrollments.length ?
+        this.enrollments_ && this.enrollments_.length ?
             'securityKeysBioEnrollmentEnrollmentsLabel' :
             'securityKeysBioEnrollmentNoEnrollmentsLabel');
   }
 
-  private isNullOrEmpty_(s: string): boolean {
-    return s === '' || !s;
+  protected isNonEmpty_(): boolean {
+    return this.enrollmentNameError_ !== '';
   }
 }
 
@@ -443,6 +452,9 @@ declare global {
         SettingsSecurityKeysBioEnrollDialogElement;
   }
 }
+
+export type SecurityKeysBioEnrollDialogElement =
+    SettingsSecurityKeysBioEnrollDialogElement;
 
 customElements.define(
     SettingsSecurityKeysBioEnrollDialogElement.is,
