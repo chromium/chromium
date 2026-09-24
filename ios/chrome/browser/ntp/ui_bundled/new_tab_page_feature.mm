@@ -155,17 +155,3 @@ bool ShouldApplyFakeboxBackgroundAndShadow() {
          GetNewTabPageUICleanupVariation() ==
              NTPUICleanupVariation::kFakeboxBackgroundAndShadow;
 }
-
-NTPUICleanupVariation GetNewTabPageUICleanupPaddingVariation() {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return NTPUICleanupVariation::kDisabled;
-  }
-  return GetNewTabPageUICleanupVariation();
-}
-
-bool IsNewTabPageUICleanupPaddingEnabled() {
-  NTPUICleanupVariation variation = GetNewTabPageUICleanupPaddingVariation();
-  return variation == NTPUICleanupVariation::kTightPadding ||
-         variation == NTPUICleanupVariation::kMediumPadding ||
-         variation == NTPUICleanupVariation::kPreferredPadding;
-}
