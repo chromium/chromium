@@ -6913,6 +6913,7 @@ test("unit_tests") {
   # //chrome/browser/extensions/BUILD.gn or //chrome/common/extensions/BUILD.gn.
   if (enable_extensions_core) {
     deps += [
+      "//chrome/browser/clipboard:unit_tests",
       "//chrome/browser/extensions:unit_tests",
       "//chrome/browser/ui/webui/extensions:unit_tests",
       "//chrome/common/extensions:unit_tests",

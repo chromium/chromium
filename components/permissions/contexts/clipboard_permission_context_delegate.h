@@ -22,11 +22,19 @@ class ClipboardPermissionContextDelegate {
   virtual bool DecidePermission(const PermissionRequestData& request_data,
                                 BrowserPermissionCallback callback) = 0;
 
-  // Allows the delegate to override the context's GetPermissionStatusInternal
-  // logic. If this returns non empty ContentSetting, the base context's
-  // GetPermissionStatusInternal() will not be called.
-  virtual std::optional<ContentSetting> GetPermissionStatus(
+  // Either of these overriding the context's GetPermissionStatusInternal logic
+  // means the base context's GetPermissionStatusInternal() is not called.
+
+  // Answers for a frame, which may be inside a webview. A webview grant is not
+  // saved to ContentSettings, so the stored status would otherwise still be
+  // prompt.
+  virtual std::optional<ContentSetting> GetPermissionStatusForWebview(
       content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin) const = 0;
+
+  // Answers for a context with no frame, such as a service worker.
+  virtual std::optional<ContentSetting> GetPermissionStatusForWorker(
+      content::BrowserContext* browser_context,
       const GURL& requesting_origin) const = 0;
 };
 }  // namespace permissions

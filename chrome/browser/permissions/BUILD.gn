@@ -179,7 +179,7 @@ source_set("permissions") {
     deps += [ "//extensions/common" ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [ "//chrome/browser/clipboard" ]
   }
 

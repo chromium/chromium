@@ -21,7 +21,8 @@ namespace extensions {
 class WebViewPermissionHelper;
 }
 
-// The class adds logic to check permission for a frame inside of a WebView.
+// Checks clipboard permission for a frame inside a WebView, and for an
+// extension service worker, which has no frame to ask and cannot prompt.
 class ChromeClipboardPermissionContextDelegate
     : public permissions::ClipboardPermissionContextDelegate {
  public:
@@ -44,11 +45,14 @@ class ChromeClipboardPermissionContextDelegate
       permissions::BrowserPermissionCallback callback) override;
 
   // permissions::ClipboardPermissionContextDelegate:
-  // This method is necessary, because when permission is granted by a webview
-  // request, the result is not saved to ContentSettings and permission status
-  // still would be prompt.
-  std::optional<ContentSetting> GetPermissionStatus(
+  std::optional<ContentSetting> GetPermissionStatusForWebview(
       content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin) const override;
+
+  // Answers from the extension's API permissions, since a worker has no frame
+  // to ask and no way to prompt.
+  std::optional<ContentSetting> GetPermissionStatusForWorker(
+      content::BrowserContext* browser_context,
       const GURL& requesting_origin) const override;
 
  private:
