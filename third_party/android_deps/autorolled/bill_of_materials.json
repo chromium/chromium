@@ -2,7 +2,7 @@
     {
         "name": "activity",
         "group": "androidx.activity",
-        "version": "1.14.0-alpha02"
+        "version": "1.14.0-alpha03"
     },
     {
         "name": "activity-compose",
@@ -12,12 +12,12 @@
     {
         "name": "activity-ktx",
         "group": "androidx.activity",
-        "version": "1.14.0-alpha02"
+        "version": "1.14.0-alpha03"
     },
     {
         "name": "annotation",
         "group": "androidx.annotation",
-        "version": "1.11.0-rc01"
+        "version": "1.11.0"
     },
     {
         "name": "annotation-experimental",
@@ -27,7 +27,7 @@
     {
         "name": "annotation-jvm",
         "group": "androidx.annotation",
-        "version": "1.11.0-rc01"
+        "version": "1.11.0"
     },
     {
         "name": "appcompat",
@@ -127,17 +127,17 @@
     {
         "name": "collection",
         "group": "androidx.collection",
-        "version": "1.7.0-alpha01"
+        "version": "1.7.0-rc01"
     },
     {
         "name": "collection-jvm",
         "group": "androidx.collection",
-        "version": "1.7.0-alpha01"
+        "version": "1.7.0-rc01"
     },
     {
         "name": "collection-ktx",
         "group": "androidx.collection",
-        "version": "1.7.0-alpha01"
+        "version": "1.7.0-rc01"
     },
     {
         "name": "animation",
@@ -507,12 +507,12 @@
     {
         "name": "emoji2",
         "group": "androidx.emoji2",
-        "version": "1.7.0-rc01"
+        "version": "1.7.0"
     },
     {
         "name": "emoji2-views-helper",
         "group": "androidx.emoji2",
-        "version": "1.7.0-rc01"
+        "version": "1.7.0"
     },
     {
         "name": "emoji",
@@ -677,17 +677,17 @@
     {
         "name": "lifecycle-common",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-common-java8",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-common-jvm",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-livedata",
@@ -697,7 +697,7 @@
     {
         "name": "lifecycle-livedata-core",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-livedata-core-ktx",
@@ -712,17 +712,17 @@
     {
         "name": "lifecycle-process",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-runtime",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-runtime-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-runtime-compose",
@@ -737,12 +737,12 @@
     {
         "name": "lifecycle-runtime-ktx",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-runtime-ktx-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-service",
@@ -752,12 +752,12 @@
     {
         "name": "lifecycle-viewmodel",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-viewmodel-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-viewmodel-compose",
@@ -772,17 +772,17 @@
     {
         "name": "lifecycle-viewmodel-ktx",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-viewmodel-savedstate",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "lifecycle-viewmodel-savedstate-android",
         "group": "androidx.lifecycle",
-        "version": "2.12.0-alpha03"
+        "version": "2.12.0-alpha04"
     },
     {
         "name": "loader",
@@ -847,7 +847,7 @@
     {
         "name": "mediarouter",
         "group": "androidx.mediarouter",
-        "version": "1.9.0-alpha02"
+        "version": "1.9.0-beta01"
     },
     {
         "name": "multidex",
@@ -887,12 +887,12 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.2.0-alpha04"
+        "version": "1.2.0-rc01"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.2.0-alpha04"
+        "version": "1.2.0-rc01"
     },
     {
         "name": "navigationevent-compose",
@@ -1022,12 +1022,12 @@
     {
         "name": "savedstate",
         "group": "androidx.savedstate",
-        "version": "1.6.0-alpha03"
+        "version": "1.6.0-alpha04"
     },
     {
         "name": "savedstate-android",
         "group": "androidx.savedstate",
-        "version": "1.6.0-alpha03"
+        "version": "1.6.0-alpha04"
     },
     {
         "name": "savedstate-compose",
@@ -1042,7 +1042,7 @@
     {
         "name": "savedstate-ktx",
         "group": "androidx.savedstate",
-        "version": "1.6.0-alpha03"
+        "version": "1.6.0-alpha04"
     },
     {
         "name": "slidingpanelayout",
