@@ -348,6 +348,11 @@ void FlatRulesetIndexer::AddUrlRule(const IndexedRule& indexed_rule) {
   auto embedder_conditions_offset =
       BuildEmbedderConditionsOffset(&builder_, indexed_rule);
 
+  // TODO(crbug.com/563832248): Redirecting WebSocket or WebTransport handshakes
+  // is not supported, so `ElementType_WEBSOCKET` and `ElementType_WEBTRANSPORT`
+  // should be excluded from `element_types` for redirect rules here. This will
+  // allow lower-priority rules in the same ruleset (e.g., block rules) to
+  // match.
   FlatOffset<flat_rule::UrlRule> offset = flat_rule::CreateUrlRule(
       builder_, indexed_rule.options, indexed_rule.element_types,
       indexed_rule.request_methods, indexed_rule.activation_types,

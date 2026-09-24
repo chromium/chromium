@@ -3262,7 +3262,7 @@ int WebRequestEventRouter::ExecuteDeltas(
   if (blocked_request.event == EventTypes::kOnBeforeRequest) {
     CHECK(!blocked_request.callback.is_null());
     helpers::MergeOnBeforeRequestResponses(
-        request->url, blocked_request.response_deltas, blocked_request.new_url,
+        *request, blocked_request.response_deltas, blocked_request.new_url,
         &extension_id, &ignored_actions);
   } else if (blocked_request.event == EventTypes::kOnBeforeSendHeaders) {
     CHECK(!blocked_request.before_send_headers_callback.is_null());

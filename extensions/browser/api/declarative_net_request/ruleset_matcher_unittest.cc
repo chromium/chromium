@@ -134,6 +134,45 @@ TEST_F(RulesetMatcherTest, PreventSelfRedirect) {
       matcher->GetAction(params, RulesetMatchingStage::kOnBeforeRequest));
 }
 
+// Tests that redirect rules are not applied to WebSocket or WebTransport
+// handshakes since the underlying request stack does not support redirects for
+// these connection types.
+TEST_F(RulesetMatcherTest, RedirectIgnoredForWebSocketAndWebTransport) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("example.com");
+  rule.condition->resource_types =
+      std::vector<std::string>({"xmlhttprequest", "websocket", "webtransport"});
+  rule.priority = kMinValidPriority;
+  rule.action->type = std::string("redirect");
+  rule.action->redirect.emplace();
+  rule.action->redirect->url = std::string("https://other.com/");
+
+  std::unique_ptr<RulesetMatcher> matcher;
+  ASSERT_TRUE(CreateVerifiedMatcher({rule}, CreateTemporarySource(), &matcher));
+
+  GURL https_url("https://example.com/");
+  RequestParams params;
+  params.url = &https_url;
+  params.is_third_party = true;
+
+  // Check that the rule matches an ordinary request.
+  params.element_type = url_pattern_index::flat::ElementType_XMLHTTPREQUEST;
+  std::optional<RequestAction> action =
+      matcher->GetAction(params, RulesetMatchingStage::kOnBeforeRequest);
+  ASSERT_TRUE(action);
+  EXPECT_EQ(RequestAction::Type::REDIRECT, action->type);
+
+  params.element_type = url_pattern_index::flat::ElementType_WEBTRANSPORT;
+  EXPECT_FALSE(
+      matcher->GetAction(params, RulesetMatchingStage::kOnBeforeRequest));
+
+  GURL wss_url("wss://example.com/");
+  params.url = &wss_url;
+  params.element_type = url_pattern_index::flat::ElementType_WEBSOCKET;
+  EXPECT_FALSE(
+      matcher->GetAction(params, RulesetMatchingStage::kOnBeforeRequest));
+}
+
 // Tests a simple upgrade scheme rule.
 TEST_F(RulesetMatcherTest, UpgradeRule) {
   TestRule rule = CreateGenericRule();
@@ -1577,7 +1616,7 @@ TEST_F(RulesetMatcherResponseHeadersTest, OnHeadersReceivedAction) {
       expected_headers_received_action,
       matcher->GetAction(params, RulesetMatchingStage::kOnHeadersReceived));
 
-  // Sanity check that disabling rules works for response header rules as well.
+  // Check that disabling rules works for response header rules as well.
   EXPECT_THAT(matcher->GetDisabledRuleIdsForTesting(), testing::IsEmpty());
   matcher->SetDisabledRuleIds({*response_headers_rule.id});
   EXPECT_THAT(matcher->GetDisabledRuleIdsForTesting(),

@@ -424,7 +424,7 @@ void MergeCancelOfResponses(
 // precedence. Extensions that did not command to redirect the request are
 // ignored in this logic.
 void MergeRedirectUrlOfResponses(
-    const GURL& url,
+    const extensions::WebRequestInfo& request,
     const EventResponseDeltas& deltas,
     GURL* new_url,
     std::optional<extensions::ExtensionId>* extension_id,
@@ -433,7 +433,7 @@ void MergeRedirectUrlOfResponses(
 // precedence. Extensions that did not command to redirect the request are
 // ignored in this logic.
 void MergeOnBeforeRequestResponses(
-    const GURL& url,
+    const extensions::WebRequestInfo& request,
     const EventResponseDeltas& deltas,
     GURL* new_url,
     std::optional<extensions::ExtensionId>* extension_id,

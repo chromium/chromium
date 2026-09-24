@@ -344,7 +344,8 @@ std::optional<RequestAction> RulesetMatcherBase::CreateUpgradeAction(
     const RequestParams& params,
     const url_pattern_index::flat::UrlRule& rule) const {
   if (!IsUpgradeableUrl(*params.url)) {
-    // TODO(crbug.com/40111509): this results in counterintuitive behavior.
+    // TODO(crbug.com/40111509, crbug.com/563832248): this results in
+    // counterintuitive behavior.
     return std::nullopt;
   }
   RequestAction upgrade_action =
@@ -387,9 +388,10 @@ std::optional<RequestAction> RulesetMatcherBase::CreateRedirectAction(
     const RequestParams& params,
     const url_pattern_index::flat::UrlRule& rule,
     GURL redirect_url) const {
-  // Redirecting WebSocket handshake request is prohibited.
+  // Redirecting WebSocket and WebTransport handshake requests is prohibited.
   // TODO(crbug.com/40111509): this results in counterintuitive behavior.
-  if (params.element_type == flat_rule::ElementType_WEBSOCKET) {
+  if (params.element_type == flat_rule::ElementType_WEBSOCKET ||
+      params.element_type == flat_rule::ElementType_WEBTRANSPORT) {
     return std::nullopt;
   }
 
