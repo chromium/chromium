@@ -94,14 +94,18 @@ void RemoveAppLauncherVersionKey(const InstallerState& installer_state) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-void RemoveLegacyChromeAppCommands(const InstallerState& installer_state) {
-// These app commands were only registered for Google Chrome.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void RemoveLegacyAppCommands(const InstallerState& installer_state) {
   std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
+  // This app command was used on Chrome 110 and is no longer needed.
+  // TODO (floresa): Remove after 9/21/2027
+  AppCommand(L"rename-chrome-exe", {})
+      .AddDeleteAppCommandWorkItems(installer_state.root_key(), list.get());
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // This app command was only registered for Google Chrome.
   AppCommand(L"install-extension", {})
       .AddDeleteAppCommandWorkItems(installer_state.root_key(), list.get());
-  list->Do();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  list->Do();
 }
 
 }  // namespace
@@ -495,13 +499,14 @@ void DoLegacyCleanups(const InstallerState& installer_state,
   if (InstallUtil::GetInstallReturnCode(install_status))
     return;
 
+  RemoveLegacyAppCommands(installer_state);
+
   // The cleanups below only apply to normal Chrome, not side-by-side (canary).
   if (!install_static::InstallDetails::Get().is_primary_mode())
     return;
 
   RemoveBinariesVersionKey(installer_state);
   RemoveAppLauncherVersionKey(installer_state);
-  RemoveLegacyChromeAppCommands(installer_state);
 }
 
 std::optional<std::string> DecodeDMTokenSwitchValue(

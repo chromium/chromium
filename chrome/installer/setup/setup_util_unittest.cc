@@ -24,6 +24,7 @@
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -722,6 +723,11 @@ class LegacyCleanupsTest : public ::testing::Test {
     installer_state_ =
         std::make_unique<FakeInstallerState>(temp_dir_.GetPath());
     // Create the state to be cleared.
+    ASSERT_TRUE(
+        base::win::RegKey(HKEY_CURRENT_USER,
+                          GetAppCommandPath(L"rename-chrome-exe").c_str(),
+                          KEY_WRITE | KEY_WOW64_32KEY)
+            .Valid());
 #if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
     ASSERT_TRUE(base::win::RegKey(HKEY_CURRENT_USER, kBinariesClientsKeyPath,
                                   KEY_WRITE | KEY_WOW64_32KEY)
@@ -733,13 +739,20 @@ class LegacyCleanupsTest : public ::testing::Test {
                     .Valid());
     ASSERT_TRUE(
         base::win::RegKey(HKEY_CURRENT_USER,
-                          GetChromeAppCommandPath(L"install-extension").c_str(),
+                          GetAppCommandPath(L"install-extension").c_str(),
                           KEY_WRITE | KEY_WOW64_32KEY)
             .Valid());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   }
 
   const InstallerState& installer_state() const { return *installer_state_; }
+
+  bool HasObsoleteRenameChromeCommand() const {
+    return base::win::RegKey(HKEY_CURRENT_USER,
+                             GetAppCommandPath(L"rename-chrome-exe").c_str(),
+                             KEY_QUERY_VALUE | KEY_WOW64_32KEY)
+        .Valid();
+  }
 
 #if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   bool HasBinariesVersionKey() const {
@@ -757,10 +770,9 @@ class LegacyCleanupsTest : public ::testing::Test {
   }
 
   bool HasInstallExtensionCommand() const {
-    return base::win::RegKey(
-               HKEY_CURRENT_USER,
-               GetChromeAppCommandPath(L"install-extension").c_str(),
-               KEY_QUERY_VALUE | KEY_WOW64_32KEY)
+    return base::win::RegKey(HKEY_CURRENT_USER,
+                             GetAppCommandPath(L"install-extension").c_str(),
+                             KEY_QUERY_VALUE | KEY_WOW64_32KEY)
         .Valid();
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -778,14 +790,10 @@ class LegacyCleanupsTest : public ::testing::Test {
     }
   };
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  std::wstring GetChromeAppCommandPath(const wchar_t* command) const {
-    return std::wstring(
-               L"SOFTWARE\\Google\\Update\\Clients\\"
-               L"{8A69D345-D564-463c-AFF1-A69D9E530F96}\\Commands\\") +
-           command;
+  std::wstring GetAppCommandPath(const wchar_t* command) const {
+    return base::StrCat({install_static::GetClientsKeyPath(), L"\\",
+                         google_update::kRegCommandsKey, L"\\", command});
   }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   static const wchar_t kBinariesClientsKeyPath[];
@@ -814,6 +822,7 @@ const wchar_t LegacyCleanupsTest::kBinariesClientsKeyPath[] =
 
 TEST_F(LegacyCleanupsTest, NoOpOnFailedUpdate) {
   DoLegacyCleanups(installer_state(), INSTALL_FAILED);
+  EXPECT_TRUE(HasObsoleteRenameChromeCommand());
 #if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   EXPECT_TRUE(HasBinariesVersionKey());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -825,6 +834,7 @@ TEST_F(LegacyCleanupsTest, NoOpOnFailedUpdate) {
 
 TEST_F(LegacyCleanupsTest, Do) {
   DoLegacyCleanups(installer_state(), NEW_VERSION_UPDATED);
+  EXPECT_FALSE(HasObsoleteRenameChromeCommand());
 #if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   EXPECT_FALSE(HasBinariesVersionKey());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -385,7 +385,6 @@ inline constexpr wchar_t kChromeOldExe[] = L"old_chrome.exe";
 inline constexpr wchar_t kChromeProxyExe[] = L"chrome_proxy.exe";
 inline constexpr wchar_t kChromeProxyNewExe[] = L"new_chrome_proxy.exe";
 inline constexpr wchar_t kChromeProxyOldExe[] = L"old_chrome_proxy.exe";
-inline constexpr wchar_t kCmdAlternateRenameChromeExe[] = L"rename-chrome-exe";
 inline constexpr wchar_t kCmdRenameChromeExe[] = L"cmd";
 inline constexpr wchar_t kCmdOnOsUpgrade[] = L"on-os-upgrade";
 inline constexpr wchar_t kCmdRotateDeviceTrustKey[] = L"rotate-dtkey";
