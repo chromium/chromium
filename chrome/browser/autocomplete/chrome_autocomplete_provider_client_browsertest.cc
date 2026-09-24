@@ -115,8 +115,7 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
                               {omnibox::internal::kWebUIOmniboxAimPopup, {}},
                               {omnibox::internal::kWebUIOmniboxSimplification,
                                {}}},
-        // TODO (crbug.com/555239052) - Fix tests when AskG is launched.
-        /*disabled_features*/ {omnibox::kWebUIOmniboxAskGAboutThisPage});
+        /*disabled_features*/ {});
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -203,16 +202,6 @@ class ChromeAutocompleteProviderClientTest : public InProcessBrowserTest {
   base::CallbackListSubscription create_services_subscription_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
-                       OpenLensOverlay_Show) {
-  EXPECT_CALL(*GetLensSearchController(),
-              OpenLensOverlay(
-                  lens::LensOverlayInvocationSource::kOmniboxPageAction, true))
-      .Times(1);
-  GetAutocompleteProviderClient()->OpenLensOverlay(
-      /*show=*/true, lens::LensOverlayInvocationSource::kOmniboxPageAction);
-}
 
 IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
                        OpenLensOverlay_DontShow) {
@@ -601,8 +590,36 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGLensChipRouteTest,
   GetOmniboxEditModel()->OpenLensSearch();
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientTest,
-                       OmniboxEditModelOpenLensSearch_RoutesToAction) {
+// Tests the behavior when kAskGLensChipRoute and AskG/CoBrowse are disabled.
+// TODO(crbug.com/565520368): Delete this fixture and its tests when AskG
+// launches and the legacy routing fallback is removed.
+class ChromeAutocompleteProviderClientAskGLensChipRouteDisabledTest
+    : public ChromeAutocompleteProviderClientTest {
+ protected:
+  ChromeAutocompleteProviderClientAskGLensChipRouteDisabledTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{omnibox::kWebUIOmniboxAskGAboutThisPage});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeAutocompleteProviderClientAskGLensChipRouteDisabledTest,
+    OpenLensOverlay_Show) {
+  EXPECT_CALL(*GetLensSearchController(),
+              OpenLensOverlay(
+                  lens::LensOverlayInvocationSource::kOmniboxPageAction, true))
+      .Times(1);
+  GetAutocompleteProviderClient()->OpenLensOverlay(
+      /*show=*/true, lens::LensOverlayInvocationSource::kOmniboxPageAction);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeAutocompleteProviderClientAskGLensChipRouteDisabledTest,
+    OmniboxEditModelOpenLensSearch_RoutesToAction) {
   // When kAskGLensChipRoute is disabled (default), OpenLensSearch should route
   // to the action. Since AskG/CoBrowse are disabled by default, it eventually
   // falls back to OpenLensOverlay (showing CSB).
