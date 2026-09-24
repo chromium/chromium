@@ -14,7 +14,6 @@
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
-#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
@@ -650,8 +649,7 @@ void FixAccountConsistencyRequestHeader(
   // Google Drive.
   int profile_mode_mask = PROFILE_MODE_DEFAULT;
   if (incognito_availability ==
-          static_cast<int>(policy::IncognitoModeAvailability::kDisabled) ||
-      IncognitoModePrefs::ArePlatformParentalControlsEnabled()) {
+      static_cast<int>(policy::IncognitoModeAvailability::kDisabled)) {
     profile_mode_mask |= PROFILE_MODE_INCOGNITO_DISABLED;
   }
 

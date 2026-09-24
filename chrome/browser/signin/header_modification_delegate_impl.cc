@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
@@ -177,13 +178,12 @@ void HeaderModificationDelegateImpl::ProcessRequest(
 #endif
   }
 
-  const PrefService* prefs = profile_->GetPrefs();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool is_secondary_account_addition_allowed = true;
-  if (!prefs->GetBoolean(
+  if (!profile_->GetPrefs()->GetBoolean(
           ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed)) {
     is_secondary_account_addition_allowed = false;
   }
@@ -212,7 +212,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
       identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin);
 
   int incognito_mode_availability =
-      prefs->GetInteger(policy::policy_prefs::kIncognitoModeAvailability);
+      static_cast<int>(IncognitoModePrefs::GetAvailability(profile_));
 #if BUILDFLAG(IS_ANDROID)
   incognito_mode_availability =
       incognito_enabled_
@@ -240,7 +240,8 @@ void HeaderModificationDelegateImpl::ProcessRequest(
 #endif
       is_sync_feature_enabled,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      prefs->GetString(prefs::kGoogleServicesSigninScopedDeviceId),
+      profile_->GetPrefs()->GetString(
+          prefs::kGoogleServicesSigninScopedDeviceId),
 #endif
       cookie_settings_.get());
 }
