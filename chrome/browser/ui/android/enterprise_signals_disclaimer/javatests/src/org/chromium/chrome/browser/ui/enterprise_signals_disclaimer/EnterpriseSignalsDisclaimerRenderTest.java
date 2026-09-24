@@ -196,6 +196,7 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                                             controller,
                                             activity.getModalDialogManager(),
                                             mSigninManager,
+                                            mAccountInfo,
                                             (url) -> {},
                                             () -> {},
                                             new MetricsHelper());
@@ -229,6 +230,7 @@ public class EnterpriseSignalsDisclaimerRenderTest {
                                     createBottomSheetController(activity, mContainer),
                                     activity.getModalDialogManager(),
                                     mSigninManager,
+                                    mAccountInfo,
                                     (url) -> {},
                                     () -> {},
                                     new MetricsHelper());

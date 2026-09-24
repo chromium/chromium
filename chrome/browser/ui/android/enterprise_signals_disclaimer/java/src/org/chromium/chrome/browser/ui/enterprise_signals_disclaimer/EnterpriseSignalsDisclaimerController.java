@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -53,6 +54,7 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
                 BottomSheetController bottomSheetController,
                 ModalDialogManager modalDialogManager,
                 SigninManager signinManager,
+                CoreAccountInfo account,
                 EnterpriseSignalsDisclaimerCoordinator.Delegate delegate,
                 Runnable onDestroyCallback,
                 MetricsHelper metricsHelper);
@@ -189,6 +191,7 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
                         mBottomSheetController,
                         mModalDialogManager,
                         mSigninManager,
+                        primaryAccountInfo,
                         mDelegate,
                         this::onCoordinatorDestroyed,
                         mMetricsHelper);

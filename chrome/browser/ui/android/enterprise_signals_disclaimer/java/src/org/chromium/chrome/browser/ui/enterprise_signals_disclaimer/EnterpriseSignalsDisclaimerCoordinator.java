@@ -55,13 +55,14 @@ public class EnterpriseSignalsDisclaimerCoordinator
     /**
      * Constructs an {@link EnterpriseSignalsDisclaimerCoordinator}.
      *
-     * <p>This class should only be instantiated if the primary account is set and managed.
+     * <p>This class should only be instantiated for a managed account.
      *
      * @param context The Android {@link Context}.
      * @param bottomSheetController The {@link BottomSheetController} for showing the bottom sheet.
      * @param modalDialogManager The {@link ModalDialogManager} for showing the modal dialog.
      * @param signinManager The {@link SigninManager} for checking management status and fetching
      *     the profile picture.
+     * @param account The account the disclaimer is shown for.
      * @param delegate The {@link Delegate} for embedder interactions.
      * @param onDestroyCallback Callback to be invoked when the coordinator is destroyed.
      * @param metricsHelper The {@link MetricsHelper} for recording interaction metrics.
@@ -71,6 +72,7 @@ public class EnterpriseSignalsDisclaimerCoordinator
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
             SigninManager signinManager,
+            CoreAccountInfo account,
             Delegate delegate,
             Runnable onDestroyCallback,
             MetricsHelper metricsHelper) {
@@ -78,8 +80,6 @@ public class EnterpriseSignalsDisclaimerCoordinator
         mDelegate = delegate;
         mMetricsHelper = metricsHelper;
         final IdentityManager identityManager = signinManager.getIdentityManager();
-        final CoreAccountInfo primaryAccount =
-                assertNonNull(identityManager.getPrimaryAccountInfo());
 
         // For the large form factors a modal dialog will be displayed, while smaller screens will
         // get a bottom sheet.
@@ -100,11 +100,7 @@ public class EnterpriseSignalsDisclaimerCoordinator
 
         mMediator =
                 new EnterpriseSignalsDisclaimerMediator(
-                        context,
-                        identityManager,
-                        primaryAccount,
-                        /* delegate= */ this,
-                        signinManager);
+                        context, identityManager, account, /* delegate= */ this, signinManager);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), mView, EnterpriseSignalsDisclaimerViewBinder::bind);
