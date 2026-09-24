@@ -211,7 +211,6 @@ Canvas2DResourceProvider::WillDrawInternal() {
   // if copy-on-write is required. Note that for unaccelerated resources, this
   // does not apply: writes to the SharedImage are deferred to
   // ProduceCanvasResource and hence copy-on-write is never needed here.
-  std::unique_ptr<gpu::RasterScopedAccess> dst_access;
   if (is_accelerated_ && ShouldReplaceTargetBuffer(cached_content_id_)) {
     cached_content_id_ = PaintImage::kInvalidContentId;
     DCHECK(!current_resource_has_write_access_)
@@ -222,14 +221,15 @@ Canvas2DResourceProvider::WillDrawInternal() {
         static_cast<CanvasResourceSharedImage*>(old_resource.get());
 
     resource_ = NewOrRecycledResource();
-    dst_access = resource_->BeginAccess(/*readonly=*/false);
     if (must_preserve_content_on_copy_on_write_) {
+      auto dst_access = resource_->BeginAccess(/*readonly=*/false);
       auto old_mailbox = old_resource_shared_image->GetSharedImage()->mailbox();
       auto mailbox = resource()->GetSharedImage()->mailbox();
       auto src_access = old_resource->BeginAccess(/*readonly=*/true);
       RasterInterface()->CopySharedImage(old_mailbox, mailbox, 0, 0, 0, 0,
                                          Size().width(), Size().height());
       old_resource_shared_image->EndAccess(std::move(src_access));
+      resource_->EndAccess(std::move(dst_access));
     } else {
       // If we're not copying over the previous contents, we need to ensure
       // that the image is cleared on the next BeginRasterCHROMIUM.
@@ -241,10 +241,8 @@ Canvas2DResourceProvider::WillDrawInternal() {
     // By default, the contents of the new resource must be preserved on a
     // subsequent CopyOnWrite.
     must_preserve_content_on_copy_on_write_ = true;
-  } else {
-    dst_access = resource_->BeginAccess(/*readonly=*/false);
   }
-  return dst_access;
+  return resource_->BeginAccess(/*readonly=*/false);
 }
 
 void Canvas2DResourceProvider::WillDrawUnaccelerated() {
