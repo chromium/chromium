@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -912,14 +913,17 @@ namespace {
 class ShowPopupInterceptor
     : public blink::mojom::PopupWidgetHostInterceptorForTesting {
  public:
-  ShowPopupInterceptor(WebContentsImpl* web_contents,
-                       RenderFrameHostImpl* frame_host,
-                       const gfx::Rect& overriden_bounds)
+  ShowPopupInterceptor(
+      WebContentsImpl* web_contents,
+      RenderFrameHostImpl* frame_host,
+      const gfx::Rect& overriden_bounds,
+      const std::optional<gfx::Rect>& overriden_anchor_rect = std::nullopt)
       : create_new_popup_widget_interceptor_(
             frame_host,
             base::BindOnce(&ShowPopupInterceptor::DidCreatePopupWidget,
                            base::Unretained(this))),
-        overriden_bounds_(overriden_bounds) {}
+        overriden_bounds_(overriden_bounds),
+        overriden_anchor_rect_(overriden_anchor_rect) {}
 
   ShowPopupInterceptor(const ShowPopupInterceptor&) = delete;
   ShowPopupInterceptor& operator=(const ShowPopupInterceptor&) = delete;
@@ -943,8 +947,9 @@ class ShowPopupInterceptor
   void ShowPopup(const gfx::Rect& initial_rect,
                  const gfx::Rect& initial_anchor_rect,
                  ShowPopupCallback callback) override {
-    GetForwardingInterface()->ShowPopup(overriden_bounds_, initial_anchor_rect,
-                                        std::move(callback));
+    GetForwardingInterface()->ShowPopup(
+        overriden_bounds_, overriden_anchor_rect_.value_or(initial_anchor_rect),
+        std::move(callback));
     run_loop_.Quit();
   }
 
@@ -962,6 +967,7 @@ class ShowPopupInterceptor
   CreateNewPopupWidgetInterceptor create_new_popup_widget_interceptor_;
   base::RunLoop run_loop_;
   gfx::Rect overriden_bounds_;
+  std::optional<gfx::Rect> overriden_anchor_rect_;
   int32_t routing_id_ = IPC::mojom::kRoutingIdNone;
   int32_t process_id_ = 0;
 };
@@ -1083,6 +1089,206 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
                                show_popup_interceptor.last_routing_id()));
 #endif  // BUILDFLAG(IS_MAC)
 }
+
+// `anchor_rect`-based popup positioning (and vertical flipping via
+// `kOwnedWindowAnchor`) is only used by
+// `RenderWidgetHostViewAura::InitAsPopup`. Non-Aura platforms (e.g. macOS)
+// ignore `anchor_rect` and position popups solely using `initial_rect` (or
+// native menus via `ShowPopupMenu` for
+// `<select>`).
+#if defined(USE_AURA)
+IN_PROC_BROWSER_TEST_F(
+    RenderWidgetHostSitePerProcessTest,
+    BrowserDoesNotShowPopup_AnchorIntersectsPermissionPrompt) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/site_isolation/page-with-select.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+
+  auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents());
+  FrameTreeNode* root = web_contents_impl->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* root_frame_host = root->current_frame_host();
+
+  gfx::Rect permission_exclusion_area_bounds(100, 100, 100, 100);
+  static_cast<PermissionControllerImpl*>(
+      root_frame_host->GetBrowserContext()->GetPermissionController())
+      ->set_exclusion_area_bounds_for_tests(permission_exclusion_area_bounds);
+
+  // Initial bounds are outside the exclusion area, but the anchor rect
+  // intersects it.
+  gfx::Rect safe_initial_bounds(900, 600, 200, 200);
+  gfx::Rect intersecting_anchor_rect = permission_exclusion_area_bounds;
+  ShowPopupInterceptor show_popup_interceptor(
+      web_contents_impl, root_frame_host, safe_initial_bounds,
+      intersecting_anchor_rect);
+
+  input::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.text[0] = ' ';
+  EXPECT_TRUE(ExecJs(root_frame_host, "focusSelectMenu();"));
+  root_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
+
+  show_popup_interceptor.Wait();
+  EXPECT_FALSE(
+      RenderWidgetHost::FromID(root_frame_host->GetProcess()->GetDeprecatedID(),
+                               show_popup_interceptor.last_routing_id()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderWidgetHostSitePerProcessTest,
+    BrowserDoesNotShowPopup_EffectiveAnchorBoundsIntersectsPermissionPrompt) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/site_isolation/page-with-select.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+
+  auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents());
+  FrameTreeNode* root = web_contents_impl->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* root_frame_host = root->current_frame_host();
+
+  gfx::Rect permission_exclusion_area_bounds(100, 100, 100, 100);
+  static_cast<PermissionControllerImpl*>(
+      root_frame_host->GetBrowserContext()->GetPermissionController())
+      ->set_exclusion_area_bounds_for_tests(permission_exclusion_area_bounds);
+
+  // Initial bounds and anchor rect individually do not intersect the exclusion
+  // area, but the effective popup rectangle positioned below the anchor rect
+  // intersects it.
+  gfx::Rect safe_initial_bounds(900, 600, 200, 200);
+  gfx::Rect anchor_rect_above(100, 50, 100, 20);
+  ShowPopupInterceptor show_popup_interceptor(
+      web_contents_impl, root_frame_host, safe_initial_bounds,
+      anchor_rect_above);
+
+  input::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.text[0] = ' ';
+  EXPECT_TRUE(ExecJs(root_frame_host, "focusSelectMenu();"));
+  root_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
+
+  show_popup_interceptor.Wait();
+  EXPECT_FALSE(
+      RenderWidgetHost::FromID(root_frame_host->GetProcess()->GetDeprecatedID(),
+                               show_popup_interceptor.last_routing_id()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderWidgetHostSitePerProcessTest,
+    BrowserDoesNotShowPopup_FlippedAnchorBoundsIntersectsPermissionPrompt) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/site_isolation/page-with-select.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+
+  auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents());
+  FrameTreeNode* root = web_contents_impl->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* root_frame_host = root->current_frame_host();
+
+  gfx::Rect permission_exclusion_area_bounds(100, 100, 100, 100);
+  static_cast<PermissionControllerImpl*>(
+      root_frame_host->GetBrowserContext()->GetPermissionController())
+      ->set_exclusion_area_bounds_for_tests(permission_exclusion_area_bounds);
+
+  // Initial bounds and anchor rect individually do not intersect the exclusion
+  // area, but the vertically flipped effective popup rectangle positioned
+  // above the anchor rect intersects it.
+  gfx::Rect safe_initial_bounds(900, 600, 200, 200);
+  gfx::Rect anchor_rect_below(100, 250, 100, 20);
+  ShowPopupInterceptor show_popup_interceptor(
+      web_contents_impl, root_frame_host, safe_initial_bounds,
+      anchor_rect_below);
+
+  input::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.text[0] = ' ';
+  EXPECT_TRUE(ExecJs(root_frame_host, "focusSelectMenu();"));
+  root_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
+
+  show_popup_interceptor.Wait();
+  RenderWidgetHost* popup_widget_host =
+      RenderWidgetHost::FromID(root_frame_host->GetProcess()->GetDeprecatedID(),
+                               show_popup_interceptor.last_routing_id());
+  ASSERT_TRUE(popup_widget_host);
+  EXPECT_FALSE(popup_widget_host->GetView()->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    RenderWidgetHostSitePerProcessTest,
+    BrowserDoesNotShowPopup_EmptyAnchorIntersectsPermissionPrompt) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/site_isolation/page-with-select.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+
+  auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents());
+  FrameTreeNode* root = web_contents_impl->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* root_frame_host = root->current_frame_host();
+
+  gfx::Rect permission_exclusion_area_bounds(100, 100, 100, 100);
+  static_cast<PermissionControllerImpl*>(
+      root_frame_host->GetBrowserContext()->GetPermissionController())
+      ->set_exclusion_area_bounds_for_tests(permission_exclusion_area_bounds);
+
+  // Initial bounds are outside the exclusion area, but an empty (0x0) anchor
+  // point is within the exclusion area.
+  gfx::Rect safe_initial_bounds(900, 600, 200, 200);
+  gfx::Rect empty_anchor_point(150, 150, 0, 0);
+  ShowPopupInterceptor show_popup_interceptor(
+      web_contents_impl, root_frame_host, safe_initial_bounds,
+      empty_anchor_point);
+
+  input::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.text[0] = ' ';
+  EXPECT_TRUE(ExecJs(root_frame_host, "focusSelectMenu();"));
+  root_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
+
+  show_popup_interceptor.Wait();
+  EXPECT_FALSE(
+      RenderWidgetHost::FromID(root_frame_host->GetProcess()->GetDeprecatedID(),
+                               show_popup_interceptor.last_routing_id()));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
+                       BrowserAllowsPopupOutsidePermissionPrompt) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/site_isolation/page-with-select.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(shell()->web_contents());
+
+  auto* web_contents_impl = static_cast<WebContentsImpl*>(web_contents());
+  FrameTreeNode* root = web_contents_impl->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* root_frame_host = root->current_frame_host();
+
+  gfx::Rect permission_exclusion_area_bounds(100, 100, 100, 100);
+  static_cast<PermissionControllerImpl*>(
+      root_frame_host->GetBrowserContext()->GetPermissionController())
+      ->set_exclusion_area_bounds_for_tests(permission_exclusion_area_bounds);
+
+  // Initial bounds and anchor bounds are both well outside the exclusion area.
+  gfx::Rect safe_initial_bounds(900, 600, 200, 200);
+  gfx::Rect safe_anchor_bounds(900, 550, 200, 20);
+  ShowPopupInterceptor show_popup_interceptor(
+      web_contents_impl, root_frame_host, safe_initial_bounds,
+      safe_anchor_bounds);
+
+  input::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kChar, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  event.text[0] = ' ';
+  EXPECT_TRUE(ExecJs(root_frame_host, "focusSelectMenu();"));
+  root_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
+
+  show_popup_interceptor.Wait();
+  EXPECT_TRUE(
+      RenderWidgetHost::FromID(root_frame_host->GetProcess()->GetDeprecatedID(),
+                               show_popup_interceptor.last_routing_id()));
+}
+#endif  // defined(USE_AURA)
 
 #if BUILDFLAG(IS_MAC)
 // Variant of the above where no permission prompt is showing when the popup

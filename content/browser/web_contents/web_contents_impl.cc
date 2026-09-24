@@ -38,6 +38,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/numerics/clamped_math.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -1338,6 +1339,74 @@ Visibility FrameVisibilityToVisibility(
     case blink::mojom::FrameVisibility::kNotRendered:
       return Visibility::HIDDEN;
   }
+}
+
+// Result of checking popup and anchor bounds against the permission exclusion
+// area.
+enum class PopupExclusionAreaIntersection {
+  // Neither popup bounds, anchor bounds, nor effective placements intersect.
+  kIntersectsNone,
+  // The popup's initial rect, anchor rect, or unflipped effective placement
+  // intersects the permission exclusion area.
+  kIntersectsDirect,
+  // Only the vertically flipped effective placement intersects the permission
+  // exclusion area.
+  kIntersectsFlippedAnchor,
+};
+
+PopupExclusionAreaIntersection CheckPopupPermissionExclusionAreaIntersection(
+    const gfx::Rect& exclusion_area_bounds,
+    const gfx::Rect& popup_rect,
+    const gfx::Rect& anchor_rect) {
+  gfx::Rect normalized_rect = popup_rect;
+  if (normalized_rect.IsEmpty()) {
+    normalized_rect.set_size({std::max(1, normalized_rect.width()),
+                              std::max(1, normalized_rect.height())});
+  }
+
+  if (exclusion_area_bounds.Intersects(normalized_rect)) {
+    return PopupExclusionAreaIntersection::kIntersectsDirect;
+  }
+
+  // `anchor_rect`-based popup positioning (and vertical flipping via
+  // `kOwnedWindowAnchor`) is only used by
+  // `RenderWidgetHostViewAura::InitAsPopup`. Non-Aura platforms (e.g. macOS)
+  // ignore `anchor_rect` and position popups solely using `popup_rect`.
+#if defined(USE_AURA)
+  gfx::Rect normalized_anchor = anchor_rect;
+  if (normalized_anchor.IsEmpty()) {
+    normalized_anchor.set_size({std::max(1, normalized_anchor.width()),
+                                std::max(1, normalized_anchor.height())});
+  }
+
+  int popup_width = std::max(1, popup_rect.width());
+  int popup_height = std::max(1, popup_rect.height());
+
+  // Popups positioned using an anchor rect (such as on Wayland via
+  // xdg_positioner) use anchor_position=kBottomLeft, gravity=kBottomRight,
+  // and vertical flip constraint adjustment. Validate both unflipped and
+  // flipped placement bounds as well as anchor bounds against the exclusion
+  // area.
+  gfx::Rect anchor_effective_rect(
+      normalized_anchor.x(),
+      base::ClampAdd(normalized_anchor.y(), normalized_anchor.height()),
+      popup_width, popup_height);
+  gfx::Rect anchor_flipped_effective_rect(
+      normalized_anchor.x(),
+      base::ClampSub(normalized_anchor.y(), popup_height), popup_width,
+      popup_height);
+
+  if (exclusion_area_bounds.Intersects(normalized_anchor) ||
+      exclusion_area_bounds.Intersects(anchor_effective_rect)) {
+    return PopupExclusionAreaIntersection::kIntersectsDirect;
+  }
+
+  if (exclusion_area_bounds.Intersects(anchor_flipped_effective_rect)) {
+    return PopupExclusionAreaIntersection::kIntersectsFlippedAnchor;
+  }
+#endif  // defined(USE_AURA)
+
+  return PopupExclusionAreaIntersection::kIntersectsNone;
 }
 
 }  // namespace
@@ -6196,10 +6265,18 @@ void WebContentsImpl::ShowCreatedWidget(ChildProcessId process_id,
   auto permission_exclusion_area_bounds =
       PermissionControllerImpl::FromBrowserContext(GetBrowserContext())
           ->GetExclusionAreaBoundsInScreen(outermost_web_contents);
-  if (permission_exclusion_area_bounds &&
-      permission_exclusion_area_bounds->Intersects(transformed_rect)) {
-    render_widget_host_impl->ShutdownAndDestroyWidget(true);
-    return;
+  if (permission_exclusion_area_bounds) {
+    switch (CheckPopupPermissionExclusionAreaIntersection(
+        *permission_exclusion_area_bounds, transformed_rect,
+        transformed_anchor_rect)) {
+      case PopupExclusionAreaIntersection::kIntersectsDirect:
+        render_widget_host_impl->ShutdownAndDestroyWidget(true);
+        return;
+      case PopupExclusionAreaIntersection::kIntersectsFlippedAnchor:
+        return;
+      case PopupExclusionAreaIntersection::kIntersectsNone:
+        break;
+    }
   }
 
   widget_host_view->InitAsPopup(view, transformed_rect,
