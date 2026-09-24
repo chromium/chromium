@@ -5,10 +5,13 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_DEVTOOLS_PRERENDER_ATTEMPT_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_DEVTOOLS_PRERENDER_ATTEMPT_H_
 
+#include <optional>
+
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
 
 namespace content {
 
@@ -33,6 +36,17 @@ class CONTENT_EXPORT DevToolsPrerenderAttempt {
                         PrerenderFinalStatus prerender_status);
   void SetFailureReason(const PrerenderAttributes& attributes,
                         const PrerenderCancellationReason& reasons);
+  void SetEffectiveAction(const PrerenderAttributes& attributes,
+                          blink::mojom::SpeculationAction effective_action);
+
+ private:
+  // The latest non-failure outcome, re-emitted when the effective action
+  // changes without ending the attempt.
+  std::optional<PreloadingTriggeringOutcome> last_outcome_;
+  bool failed_ = false;
+  // Set when the browser commits to an in-place upgrade. The renderer resume
+  // message is fire-and-forget, and the original action remains immutable.
+  std::optional<blink::mojom::SpeculationAction> effective_action_;
 };
 
 }  // namespace content

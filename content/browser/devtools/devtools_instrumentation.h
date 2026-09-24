@@ -379,6 +379,7 @@ void DidUpdatePrerenderStatus(
     FrameTreeNodeId initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     blink::mojom::SpeculationAction action,
+    std::optional<blink::mojom::SpeculationAction> effective_action,
     const GURL& prerender_url,
     bool form_submission,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,

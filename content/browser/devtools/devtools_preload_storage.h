@@ -5,6 +5,12 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_PRELOAD_STORAGE_H_
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_PRELOAD_STORAGE_H_
 
+#include <map>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/unguessable_token.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
@@ -13,6 +19,7 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/headers_matcher.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -32,9 +39,10 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
 
   void UpdatePrerenderStatus(
       blink::mojom::SpeculationAction action,
+      std::optional<blink::mojom::SpeculationAction> effective_action,
       const GURL& prerender_url,
       bool form_submission,
-      std::optional<blink::mojom::SpeculationTargetHint>,
+      std::optional<blink::mojom::SpeculationTargetHint> target_hint,
       const base::UnguessableToken& preload_pipeline_id,
       PreloadingTriggeringOutcome outcome,
       std::optional<PrerenderFinalStatus> status,
@@ -65,10 +73,16 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
   struct PrerenderData {
     PrerenderData();
     PrerenderData(const PrerenderData& other);
+    PrerenderData(PrerenderData&& other);
+    PrerenderData& operator=(const PrerenderData& other);
+    PrerenderData& operator=(PrerenderData&& other);
     ~PrerenderData();
 
     base::UnguessableToken preload_pipeline_id;
     PreloadingTriggeringOutcome outcome;
+    // The action currently performed while the map key retains the immutable
+    // action that originally created the attempt.
+    std::optional<blink::mojom::SpeculationAction> effective_action;
     std::optional<PrerenderFinalStatus> status;
     std::optional<std::string> disallowed_mojo_interface;
     std::vector<network::MismatchedHttpRequestHeader> mismatched_headers;

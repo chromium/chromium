@@ -4,6 +4,10 @@
 
 #include "content/browser/devtools/devtools_preload_storage.h"
 
+#include <optional>
+#include <set>
+
+#include "base/containers/flat_set.h"
 #include "base/notimplemented.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/preload_handler.h"
@@ -14,8 +18,23 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/headers_matcher.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
+#include "url/gurl.h"
 
 namespace content {
+
+namespace {
+
+// Mirrors `PrerenderInfoComparator`, which groups candidates by URL and
+// whether they target a new browsing context. It intentionally ignores form
+// submission and treats no target hint and `_self` as equivalent.
+struct PrerenderGroupKey {
+  GURL prerender_url;
+  bool is_target_blank;
+
+  auto operator<=>(const PrerenderGroupKey&) const = default;
+};
+
+}  // namespace
 
 DOCUMENT_USER_DATA_KEY_IMPL(DevToolsPreloadStorage);
 
@@ -43,6 +62,7 @@ void DevToolsPreloadStorage::UpdatePrefetchStatus(
 
 void DevToolsPreloadStorage::UpdatePrerenderStatus(
     blink::mojom::SpeculationAction action,
+    std::optional<blink::mojom::SpeculationAction> effective_action,
     const GURL& prerender_url,
     bool form_submission,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
@@ -58,6 +78,7 @@ void DevToolsPreloadStorage::UpdatePrerenderStatus(
   PrerenderData data;
   data.preload_pipeline_id = preload_pipeline_id;
   data.outcome = outcome;
+  data.effective_action = effective_action;
   data.status = status;
   data.disallowed_mojo_interface = disallowed_mojo_interface;
   if (mismatched_headers) {
@@ -108,8 +129,38 @@ void DevToolsPreloadStorage::SpeculationCandidatesUpdated(
   std::erase_if(prerender_data_map_, [&](const auto& pair) {
     return !prerender_keys_from_candidates.contains(pair.first);
   });
+  std::optional<base::flat_set<PrerenderGroupKey>>
+      prerender_groups_from_candidates;
   std::erase_if(prerender_until_script_data_map_, [&](const auto& pair) {
-    return !prerender_until_script_keys_from_candidates.contains(pair.first);
+    if (prerender_until_script_keys_from_candidates.contains(pair.first)) {
+      return false;
+    }
+    if (pair.second.effective_action !=
+        blink::mojom::SpeculationAction::kPrerender) {
+      return true;
+    }
+    // Keep an upgraded attempt while the runtime retains its host for any
+    // candidate in the same prerender group. Otherwise, a candidate key change
+    // could make late DevTools attachment lose the upgraded attempt.
+    if (!prerender_groups_from_candidates) {
+      prerender_groups_from_candidates.emplace();
+      for (const auto& candidate_ptr : candidates) {
+        if (candidate_ptr->action ==
+                blink::mojom::SpeculationAction::kPrerender ||
+            candidate_ptr->action ==
+                blink::mojom::SpeculationAction::kPrerenderUntilScript) {
+          prerender_groups_from_candidates->insert(
+              {.prerender_url = candidate_ptr->url,
+               .is_target_blank =
+                   candidate_ptr->target_browsing_context_name_hint ==
+                   blink::mojom::SpeculationTargetHint::kBlank});
+        }
+      }
+    }
+    return !prerender_groups_from_candidates->contains(
+        {.prerender_url = pair.first.prerender_url,
+         .is_target_blank = pair.first.target_hint ==
+                            blink::mojom::SpeculationTargetHint::kBlank});
   });
 }
 
@@ -120,6 +171,17 @@ DevToolsPreloadStorage::PrerenderData::PrerenderData() = default;
 
 DevToolsPreloadStorage::PrerenderData::PrerenderData(
     const PrerenderData& other) = default;
+
+DevToolsPreloadStorage::PrerenderData::PrerenderData(PrerenderData&& other) =
+    default;
+
+DevToolsPreloadStorage::PrerenderData&
+DevToolsPreloadStorage::PrerenderData::operator=(const PrerenderData& other) =
+    default;
+
+DevToolsPreloadStorage::PrerenderData&
+DevToolsPreloadStorage::PrerenderData::operator=(PrerenderData&& other) =
+    default;
 
 DevToolsPreloadStorage::PrerenderData::~PrerenderData() = default;
 

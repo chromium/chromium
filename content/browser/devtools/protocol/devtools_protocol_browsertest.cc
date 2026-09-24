@@ -7,8 +7,10 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -22,12 +24,15 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/run_loop.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -45,6 +50,8 @@
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/host_zoom_map_impl.h"
+#include "content/browser/preloading/preloading_decider.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -84,6 +91,7 @@
 #include "content/shell/browser/shell_download_manager_delegate.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "media/media_buildflags.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "net/base/features.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -99,6 +107,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
@@ -229,6 +238,48 @@ class SyntheticKeyEventTest : public DevToolsProtocolTest {
   }
 };
 
+class SpeculationCandidatesUpdateWaiter
+    : public PreloadingDeciderObserverForTesting {
+ public:
+  explicit SpeculationCandidatesUpdateWaiter(RenderFrameHost* rfh)
+      : preloading_decider_(
+            *PreloadingDecider::GetOrCreateForCurrentDocument(rfh)),
+        old_observer_(preloading_decider_->SetObserverForTesting(this)) {}
+
+  SpeculationCandidatesUpdateWaiter(const SpeculationCandidatesUpdateWaiter&) =
+      delete;
+  SpeculationCandidatesUpdateWaiter& operator=(
+      const SpeculationCandidatesUpdateWaiter&) = delete;
+
+  ~SpeculationCandidatesUpdateWaiter() override {
+    EXPECT_EQ(this, preloading_decider_->SetObserverForTesting(old_observer_));
+  }
+
+  void UpdateSpeculationCandidates(
+      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
+      override {
+    candidates_ = mojo::Clone(candidates);
+    update_received_.SetValue();
+  }
+
+  void OnPointerDown(const GURL& url) override {}
+
+  void OnPointerHover(
+      const GURL& url,
+      blink::mojom::SpeculationEagerness target_eagerness) override {}
+
+  const std::vector<blink::mojom::SpeculationCandidatePtr>& Wait() {
+    EXPECT_TRUE(update_received_.Wait());
+    return candidates_;
+  }
+
+ private:
+  raw_ref<PreloadingDecider> preloading_decider_;
+  raw_ptr<PreloadingDeciderObserverForTesting> old_observer_;
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates_;
+  base::test::TestFuture<void> update_received_;
+};
+
 class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
  public:
   PrerenderDevToolsProtocolTest() {
@@ -248,6 +299,14 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
 
   PrerenderHostId AddPrerender(const GURL& prerendering_url) {
     return prerender_helper_->AddPrerender(prerendering_url);
+  }
+
+  void AddPrerenderAsync(const GURL& prerendering_url) {
+    prerender_helper_->AddPrerenderAsync(prerendering_url);
+  }
+
+  void AddPrerenderUntilScriptAsync(const GURL& prerendering_url) {
+    prerender_helper_->AddPrerenderUntilScriptAsync(prerendering_url);
   }
 
   RenderFrameHostImpl* GetPrerenderedMainFrameHost(PrerenderHostId host_id) {
@@ -5351,6 +5410,87 @@ IN_PROC_BROWSER_TEST_F(
     }
   }
   EXPECT_TRUE(result.Find("mismatchedHeaders"));
+}
+
+class PrerenderUntilScriptUpgradeDevToolsProtocolTest
+    : public PrerenderDevToolsProtocolTest {
+ public:
+  PrerenderUntilScriptUpgradeDevToolsProtocolTest() {
+    feature_list_.InitWithFeatures({blink::features::kPrerenderUntilScript,
+                                    features::kPrerenderUntilScriptUpgrade},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderUntilScriptUpgradeDevToolsProtocolTest,
+    PrerenderStatusUpdatedReportsAndReplaysPrerenderUntilScriptUpgrade) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Start a prerender-until-script attempt and remember its host so the test
+  // can verify that the upgrade retains it.
+  AddPrerenderUntilScriptAsync(prerendering_url);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return HasHostForUrl(prerendering_url); }));
+  const PrerenderHostId host_id = test::PrerenderTestHelper::GetHostForUrl(
+      *web_contents(), prerendering_url);
+  ASSERT_TRUE(host_id);
+
+  Attach();
+  SendCommandSync("Preload.enable");
+
+  // Adding a regular prerender candidate upgrades the existing attempt while
+  // preserving its original prerender-until-script identity.
+  AddPrerenderAsync(prerendering_url);
+  base::DictValue result;
+  while (true) {
+    result = WaitForNotification("Preload.prerenderStatusUpdated", true);
+    const std::string* action = result.FindStringByDottedPath("key.action");
+    const std::string* effective_action = result.FindString("effectiveAction");
+    if (action && effective_action && *action == "PrerenderUntilScript" &&
+        *effective_action == "Prerender") {
+      break;
+    }
+  }
+
+  // Wait until the browser processes removal of the original candidate, then
+  // verify that only the regular prerender candidate remains.
+  {
+    SpeculationCandidatesUpdateWaiter candidates_update_waiter(
+        web_contents()->GetPrimaryMainFrame());
+    ASSERT_TRUE(ExecJs(web_contents(),
+                       "document.querySelector('script[type="
+                       "\"speculationrules\"]').remove()"));
+    const auto& candidates = candidates_update_waiter.Wait();
+    ASSERT_EQ(candidates.size(), 1u);
+    EXPECT_EQ(candidates[0]->url, prerendering_url);
+    EXPECT_EQ(candidates[0]->action,
+              blink::mojom::SpeculationAction::kPrerender);
+  }
+
+  // The matching candidate group should retain the upgraded runtime host.
+  EXPECT_EQ(test::PrerenderTestHelper::GetHostForUrl(*web_contents(),
+                                                     prerendering_url),
+            host_id);
+
+  // A fresh DevTools client must receive the upgraded attempt from storage,
+  // rather than from notifications queued for the original client.
+  Detach();
+  TestDevToolsProtocolClient late_client;
+  late_client.AttachToWebContents(web_contents());
+  late_client.SendCommandSync("Preload.enable");
+  result =
+      late_client.WaitForNotification("Preload.prerenderStatusUpdated", true);
+  EXPECT_THAT(result.FindStringByDottedPath("key.action"),
+              Pointee(Eq("PrerenderUntilScript")));
+  EXPECT_THAT(result.FindString("effectiveAction"), Pointee(Eq("Prerender")));
+  late_client.DetachProtocolClient();
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,

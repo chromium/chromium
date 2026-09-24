@@ -287,6 +287,10 @@ experimental domain Preload
       PreloadingAttemptKey key
       PreloadPipelineId pipelineId
       PreloadingStatus status
+      # The action currently performed by this attempt. This differs from
+      # `key.action` after a prerender-until-script attempt is upgraded in place
+      # to a full prerender.
+      optional SpeculationAction effectiveAction
       optional PrerenderFinalStatus prerenderStatus
       # This is used to give users more information about the name of Mojo interface
       # that is incompatible with prerender and has caused the cancellation of the attempt.

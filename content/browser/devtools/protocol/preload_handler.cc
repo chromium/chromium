@@ -420,6 +420,7 @@ void PreloadHandler::DidUpdatePrefetchStatus(
 void PreloadHandler::DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     blink::mojom::SpeculationAction action,
+    std::optional<blink::mojom::SpeculationAction> effective_action,
     const GURL& prerender_url,
     bool form_submission,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
@@ -451,6 +452,11 @@ void PreloadHandler::DidUpdatePrerenderStatus(
       prerender_status.has_value()
           ? PrerenderFinalStatusToProtocol(prerender_status.value())
           : std::optional<Preload::PrerenderFinalStatus>();
+  std::optional<Preload::SpeculationAction> protocol_effective_action =
+      effective_action.has_value()
+          ? std::make_optional(
+                SpeculationActionToProtocol(effective_action.value()))
+          : std::nullopt;
   std::optional<std::string> protocol_disallowed_mojo_interface =
       disallowed_mojo_interface.has_value()
           ? std::optional<std::string>(disallowed_mojo_interface.value())
@@ -485,6 +491,7 @@ void PreloadHandler::DidUpdatePrerenderStatus(
     frontend_->PrerenderStatusUpdated(
         std::move(preloading_attempt_key), preload_pipeline_id.ToString(),
         PreloadingTriggeringOutcomeToProtocol(status),
+        std::move(protocol_effective_action),
         std::move(protocol_prerender_status),
         std::move(protocol_disallowed_mojo_interface),
         std::move(maybe_mismatched_headers));
@@ -592,7 +599,8 @@ void PreloadHandler::SendCurrentPreloadStatus() {
     for (const auto& [key, data] : preload_storage->prerender_data_map()) {
       DidUpdatePrerenderStatus(
           initiator_devtools_navigation_token,
-          blink::mojom::SpeculationAction::kPrerender, key.prerender_url,
+          blink::mojom::SpeculationAction::kPrerender,
+          /*effective_action=*/std::nullopt, key.prerender_url,
           key.form_submission, key.target_hint, data.preload_pipeline_id,
           data.outcome, data.status, data.disallowed_mojo_interface,
           data.mismatched_headers.empty() ? nullptr : &data.mismatched_headers);
@@ -602,8 +610,8 @@ void PreloadHandler::SendCurrentPreloadStatus() {
       DidUpdatePrerenderStatus(
           initiator_devtools_navigation_token,
           blink::mojom::SpeculationAction::kPrerenderUntilScript,
-          key.prerender_url, key.form_submission, key.target_hint,
-          data.preload_pipeline_id, data.outcome, data.status,
+          data.effective_action, key.prerender_url, key.form_submission,
+          key.target_hint, data.preload_pipeline_id, data.outcome, data.status,
           data.disallowed_mojo_interface,
           data.mismatched_headers.empty() ? nullptr : &data.mismatched_headers);
     }

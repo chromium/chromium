@@ -48,6 +48,7 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
   void DidUpdatePrerenderStatus(
       const base::UnguessableToken& initiator_devtools_navigation_token,
       blink::mojom::SpeculationAction action,
+      std::optional<blink::mojom::SpeculationAction> effective_action,
       const GURL& prerender_url,
       bool form_submission,
       std::optional<blink::mojom::SpeculationTargetHint> target_hint,
