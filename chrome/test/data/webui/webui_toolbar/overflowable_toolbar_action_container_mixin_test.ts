@@ -22,15 +22,21 @@ class DummyIconElement extends CrLitElement implements
   static override get properties() {
     return {
       action: {type: Number},
+      shouldPreventOverflow: {type: Boolean},
       enabled: {type: Boolean},
     };
   }
 
   accessor action: PinnedToolbarAction = PinnedToolbarAction.kPrint;
+  accessor shouldPreventOverflow: boolean = false;
   accessor enabled: boolean = true;
 
   isDivider(): boolean {
     return false;
+  }
+
+  preventOverflow(): boolean {
+    return this.shouldPreventOverflow;
   }
 
   getOverflowMenuItem(): OverflowMenuItem {
@@ -52,6 +58,10 @@ class DummyDividerElement extends CrLitElement implements
 
   isDivider(): boolean {
     return true;
+  }
+
+  preventOverflow(): boolean {
+    return false;
   }
 
   getOverflowMenuItem(): OverflowMenuItem {
@@ -154,6 +164,41 @@ suite('OverflowableToolbarActionContainerMixinTest', () => {
     }
   });
 
+  test('setToMinWidth with preventOverflow', () => {
+    const actions = control.getActions();
+    const icon1 = actions[0]! as DummyIconElement;
+    const icon2 = actions[1]! as DummyIconElement;
+    const icon3 = actions[3]! as DummyIconElement;
+
+    // If `icon3` is always visible, only `icon3` should be visible.
+    icon3.shouldPreventOverflow = true;
+    control.setToMinWidth();
+    assertTrue(actions[0]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[1]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[2]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[3]!.classList.contains('overflow-display-none'));
+
+    // If `icon2` is always visible, the divider after it should be visible as
+    // well.
+    icon2.shouldPreventOverflow = true;
+    icon3.shouldPreventOverflow = false;
+    control.setToMinWidth();
+    assertTrue(actions[0]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[1]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[2]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[3]!.classList.contains('overflow-display-none'));
+
+    // For the sake of completeness, check the case where only `icon1` is
+    // visible.
+    icon1.shouldPreventOverflow = true;
+    icon2.shouldPreventOverflow = false;
+    control.setToMinWidth();
+    assertFalse(actions[0]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[1]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[2]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[3]!.classList.contains('overflow-display-none'));
+  });
+
   test('setToPreferredWidth with enough space', () => {
     control.setToMinWidth();
     control.setToPreferredWidth();
@@ -213,6 +258,53 @@ suite('OverflowableToolbarActionContainerMixinTest', () => {
     assertFalse(actions[2]!.classList.contains('overflow-display-none'));
     assertFalse(actions[1]!.classList.contains('overflow-display-none'));
     assertTrue(actions[0]!.classList.contains('overflow-display-none'));
+  });
+
+  test('expandUpToPreferredWidth with preventOverflow', () => {
+    const actions = control.getActions();
+    const icon2 = actions[1]! as DummyIconElement;
+    icon2.shouldPreventOverflow = true;
+
+    // Simulate no available space to expand the pinned actions.
+    let mockHost = {
+      getAvailableWidth: () => -10,
+    };
+    Object.defineProperty(control, 'getRootNode', {
+      value: () => ({host: mockHost}),
+      configurable: true,
+    });
+
+    control.setToMinWidth();
+
+    // At min width, `icon2` (`actions[1]`) and its preceding divider
+    // (`actions[2]`) should be visible.
+    assertTrue(actions[0]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[1]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[2]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[3]!.classList.contains('overflow-display-none'));
+
+    control.expandUpToPreferredWidth();
+
+    // With no available space to expand, exactly the same elements as before
+    // should be visible. No elements should be hidden, no new elements should
+    // be shown.
+    assertTrue(actions[0]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[1]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[2]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[3]!.classList.contains('overflow-display-none'));
+
+    // Simulate ample available space to expand all controls.
+    mockHost = {
+      getAvailableWidth: () => 100,
+    };
+
+    control.expandUpToPreferredWidth();
+
+    // With sufficient space, all elements should be visible.
+    assertFalse(actions[0]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[1]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[2]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[3]!.classList.contains('overflow-display-none'));
   });
 
   test('controlsToAddToOverflowMenu', () => {
@@ -279,5 +371,97 @@ suite('OverflowableToolbarActionContainerMixinTest', () => {
     dynamicControl.items = ['icon3', 'divider', 'icon2'];
     await microtasksFinished();
     assertEquals(1, layoutFiredCount);
+  });
+
+  // Verifies whether a layout is requested or not on updated(), given the
+  // initial overflow state, visibility state, and new visibility state.
+  async function runshouldPreventOverflowLayoutTestCase(
+      initiallyOverflowed: boolean, oldshouldPreventOverflow: boolean,
+      newshouldPreventOverflow: boolean, expectLayout: boolean) {
+    const actions = control.getActions();
+    const icon1 = actions[0]! as DummyIconElement;
+
+    // Set initial overflow and shouldPreventOverflow states.
+    icon1.shouldPreventOverflow = oldshouldPreventOverflow;
+    if (initiallyOverflowed) {
+      control.setToMinWidth();
+    } else {
+      control.setToPreferredWidth();
+    }
+    assertEquals(
+        initiallyOverflowed, icon1.classList.contains('overflow-display-none'));
+
+    // Run initial update to populate WeakMap and state in control.
+    control.requestUpdate();
+    await microtasksFinished();
+
+    let layoutFiredCount = 0;
+    const listener = () => {
+      layoutFiredCount++;
+    };
+    control.addEventListener('request-layout', listener);
+
+    // Transition to newshouldPreventOverflow state.
+    icon1.shouldPreventOverflow = newshouldPreventOverflow;
+    control.requestUpdate();
+    await microtasksFinished();
+
+    control.removeEventListener('request-layout', listener);
+
+    assertEquals(
+        expectLayout ? 1 : 0, layoutFiredCount,
+        `Scenario failed for initiallyOverflowed=${initiallyOverflowed}, ` +
+            `oldshouldPreventOverflow=${oldshouldPreventOverflow}, ` +
+            `newshouldPreventOverflow=${newshouldPreventOverflow}`);
+  }
+
+  test('request-layout shouldPreventOverflow scenarios', async () => {
+    // 1. `shouldPreventOverflow` false -> true while overflowed => layout
+    // expected.
+    await runshouldPreventOverflowLayoutTestCase(
+        /*initiallyOverflowed=*/ true,
+        /*oldshouldPreventOverflow=*/ false,
+        /*newshouldPreventOverflow=*/ true,
+        /*expectLayout=*/ true);
+
+    // 2. `shouldPreventOverflow` false -> true while visible => no layout
+    // expected.
+    await runshouldPreventOverflowLayoutTestCase(
+        /*initiallyOverflowed=*/ false,
+        /*oldshouldPreventOverflow=*/ false,
+        /*newshouldPreventOverflow=*/ true,
+        /*expectLayout=*/ false);
+
+    // 3. `shouldPreventOverflow` true -> false while visible => layout
+    // expected.
+    await runshouldPreventOverflowLayoutTestCase(
+        /*initiallyOverflowed=*/ false,
+        /*oldshouldPreventOverflow=*/ true,
+        /*newshouldPreventOverflow=*/ false,
+        /*expectLayout=*/ true);
+
+    // 4. `shouldPreventOverflow` true -> true while visible => no layout
+    // expected.
+    await runshouldPreventOverflowLayoutTestCase(
+        /*initiallyOverflowed=*/ false,
+        /*oldshouldPreventOverflow=*/ true,
+        /*newshouldPreventOverflow=*/ true,
+        /*expectLayout=*/ false);
+
+    // 5. `shouldPreventOverflow` false -> false while overflowed => no layout
+    // expected.
+    await runshouldPreventOverflowLayoutTestCase(
+        /*initiallyOverflowed=*/ true,
+        /*oldshouldPreventOverflow=*/ false,
+        /*newshouldPreventOverflow=*/ false,
+        /*expectLayout=*/ false);
+
+    // 6. `shouldPreventOverflow` false -> false while visible => no layout
+    // expected.
+    await runshouldPreventOverflowLayoutTestCase(
+        /*initiallyOverflowed=*/ false,
+        /*oldshouldPreventOverflow=*/ false,
+        /*newshouldPreventOverflow=*/ false,
+        /*expectLayout=*/ false);
   });
 });

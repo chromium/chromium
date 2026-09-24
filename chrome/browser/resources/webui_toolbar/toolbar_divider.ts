@@ -28,8 +28,12 @@ export class ToolbarDividerElement extends CrLitElement implements
     return true;
   }
 
+  preventOverflow(): boolean {
+    assertNotReached('preventOverflow should never be called on dividers');
+  }
+
   getOverflowMenuItem(): OverflowMenuItem {
-    assertNotReached('Divider does not have overflow menu item');
+    assertNotReached('getOverflowMenuItem should never be called on dividers');
   }
 }
 

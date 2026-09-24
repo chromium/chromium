@@ -26,6 +26,14 @@ export interface OverflowableToolbarAction {
   isDivider(): boolean;
 
   /**
+   * Returns whether the element should never overflow. Implementations are
+   * responsible for requesting a new layout whenever the value of this changes.
+   * Ignored for dividers, for which the effective value of this is derived from
+   * non-divider elements.
+   */
+  preventOverflow(): boolean;
+
+  /**
    * Returns the OverflowMenuItem corresponding to the action to display on the
    * overflow menu when overflowed. Will not be invoked for dividers, which are
    * assumed not to ever appear on the overflow menu, even if hidden due to
@@ -85,6 +93,12 @@ export const OverflowableToolbarActionContainerMixin =
         private cachedActions_: Array<CrLitElement&OverflowableToolbarAction> =
             [];
 
+        // Maps actions to their last known preventOverflow() value, to detect
+        // when their always-visible status changes.
+        private lastAlwaysVisible_:
+            WeakMap<CrLitElement&OverflowableToolbarAction, boolean> =
+                new WeakMap();
+
         // See documentation in OverflowableToolbarActionContainer, above.
         // Subclasses need to override this.
         getActions(): Array<CrLitElement&OverflowableToolbarAction> {
@@ -97,8 +111,13 @@ export const OverflowableToolbarActionContainerMixin =
         }
 
         setToMinWidth() {
-          // Sets all actions as overflowed.
-          this.setOverflowed_(this.cachedActions_, true);
+          // Sets actions as overflowed, except for actions where
+          // preventOverflow() is true (and any divider associated with an
+          // always-visible action).
+          for (const group of this.getActionGroups_()) {
+            const action = group[0]!;
+            this.setOverflowed_(group, !action.preventOverflow());
+          }
         }
 
         setToPreferredWidth() {
@@ -107,36 +126,28 @@ export const OverflowableToolbarActionContainerMixin =
         }
 
         expandUpToPreferredWidth() {
-          // Expects all actions to currently be overflowed due to an earlier
-          // setToMinWidth() call. Tries to set overflowed to false for each of
-          // them, back-to-front, checking if things fit before going on to the
-          // next. If a divider is expanded, it is treated as a unit with the
-          // next action (if there is one). If they don't fit, both are hidden
-          // again, and we immediately return, leaving all subsequent actions
-          // hidden as well.
-          const actions = this.cachedActions_;
+          // Expects actions to currently be overflowed due to an earlier
+          // setToMinWidth() call. Tries to set overflowed to false for each
+          // action group, from highest priority to lowest. If an action group
+          // is expanded and doesn't fit, it is hidden again, and we immediately
+          // return, leaving all lower priority action groups hidden as well.
           const shadowRoot = this.getRootNode() as ShadowRoot;
           const toolbarApp = shadowRoot?.host as ToolbarAppElement;
           assert(toolbarApp);
 
-          for (let i = actions.length - 1; i >= 0; i--) {
-            const currentActions = [actions[i]!];
-
-            // If current action is a divider, need to consider it and the
-            // next action together.
-            if (actions[i]!.isDivider() && i > 0) {
-              // Since we are grouping the two actions together, decrement i
-              // again for the next loop iteration.
-              i--;
-              currentActions.push(actions[i]!);
+          for (const group of this.getActionGroups_()) {
+            // Skip any always visible groups, since they should already be
+            // visible.
+            if (group[0]!.preventOverflow()) {
+              continue;
             }
 
-            // Try showing all actions currently under consideration.
-            this.setOverflowed_(currentActions, false);
+            // Try showing all actions in the current group.
+            this.setOverflowed_(group, false);
 
             // If they don't fit, hide them again, and return.
             if (toolbarApp.getAvailableWidth() < 0) {
-              this.setOverflowed_(currentActions, true);
+              this.setOverflowed_(group, true);
               return;
             }
           }
@@ -159,6 +170,32 @@ export const OverflowableToolbarActionContainerMixin =
               }
             }
           }
+
+          // Check if any action's preventOverflow() status has changed in a way
+          // that doesn't match its current overflow state. If so, a layout is
+          // needed.
+          for (const action of currentActions) {
+            if (action.isDivider()) {
+              continue;
+            }
+            const alwaysVisible = action.preventOverflow();
+            const lastAlwaysVisible = this.lastAlwaysVisible_.get(action);
+            if (alwaysVisible !== lastAlwaysVisible) {
+              this.lastAlwaysVisible_.set(action, alwaysVisible);
+              const isOverflowed =
+                  action.classList.contains('overflow-display-none');
+              // If alwaysVisible is true while overflowed, or false while
+              // visible, we need a new layout. This also covers the case where
+              // an element is new to the container and its alwaysVisible state
+              // doesn't match its initial overflow state (though
+              // adding/removing elements need to trigger a layout in that case,
+              // too).
+              if (alwaysVisible === isOverflowed) {
+                layoutNeeded = true;
+              }
+            }
+          }
+
           if (layoutNeeded) {
             this.fire('request-layout');
           }
@@ -177,6 +214,30 @@ export const OverflowableToolbarActionContainerMixin =
             }
           }
           return overflowItems;
+        }
+
+        // Groups actions and dividers from highest priority (rightmost) to
+        // lowest priority (leftmost). Dividers are grouped with the action to
+        // their left: [action, divider], so that consumers can examine group[0]
+        // to check the non-divider element.
+        private getActionGroups_():
+            Array<Array<CrLitElement&OverflowableToolbarAction>> {
+          const groups: Array<Array<CrLitElement&OverflowableToolbarAction>> =
+              [];
+          const actions = this.cachedActions_;
+          for (let i = actions.length - 1; i >= 0; i--) {
+            if (actions[i]!.isDivider()) {
+              // The leftmost element being a divider is currently not
+              // supported. If we ever do add that, we'll need to figure out
+              // visibility rules for that case.
+              assert(i > 0);
+              groups.push([actions[i - 1]!, actions[i]!]);
+              i--;
+            } else {
+              groups.push([actions[i]!]);
+            }
+          }
+          return groups;
         }
 
         // Helper to hide/show actions due to overflow.

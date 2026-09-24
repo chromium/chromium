@@ -63,6 +63,11 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase
     return false;
   }
 
+  preventOverflow(): boolean {
+    // Ephemeral/popped-out actions may not be hidden due to overflow.
+    return this.poppedOut;
+  }
+
   getOverflowMenuItem(): OverflowMenuItem {
     return {
       id: {
@@ -112,8 +117,6 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase
     this.browserProxy_.toolbarUIHandler.invokePinnedToolbarAction(
         this.state.action);
   }
-
-
 
   private getContextMenuType_(): ContextMenuType {
     switch (this.state.action) {
