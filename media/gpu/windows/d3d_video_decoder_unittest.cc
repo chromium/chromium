@@ -32,7 +32,6 @@
 #include "media/base/test_helpers.h"
 #include "media/base/win/d3d11_mocks.h"
 #include "media/gpu/test/fake_command_buffer_helper.h"
-#include "media/gpu/windows/d3d11_video_decoder_backend.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
@@ -177,23 +176,19 @@ class D3DVideoDecoderTest : public ::testing::Test {
   // decoder based on the current device mock.
   void CreateDecoder(
       std::optional<D3DVideoDecoder::SupportedConfigs> supported_configs =
-          std::optional<D3DVideoDecoder::SupportedConfigs>(),
-      std::unique_ptr<D3DVideoDecoderBackend> backend = nullptr) {
+          std::optional<D3DVideoDecoder::SupportedConfigs>()) {
     auto get_device_cb = base::BindRepeating(
-        [](ComD3D11Device device, D3DVersion version) -> ComUnknown {
-          EXPECT_EQ(version, D3DVersion::kD3D11);
+        [](ComD3D11Device device,
+           D3DVideoDecoder::D3DVersion version) -> ComUnknown {
+          EXPECT_EQ(version, D3DVideoDecoder::D3DVersion::kD3D11);
           return device;
         },
         mock_d3d11_device_);
 
-    if (!backend) {
-      backend = std::make_unique<D3D11VideoDecoderBackend>();
-    }
-
     // Autodetect the supported configs, unless it's being overridden.
     if (!supported_configs) {
-      supported_configs = backend->GetSupportedVideoDecoderConfigs(
-          gpu_workarounds_, get_device_cb);
+      supported_configs = D3DVideoDecoder::GetSupportedVideoDecoderConfigs(
+          gpu_preferences_, gpu_workarounds_, get_device_cb);
     }
 
     // We store it in a std::unique_ptr<VideoDecoder> so that the default
@@ -204,7 +199,7 @@ class D3DVideoDecoderTest : public ::testing::Test {
             gpu_preferences_, gpu_workarounds_,
             base::BindRepeating(&D3DVideoDecoderTest::GetCommandBufferHelper,
                                 base::Unretained(this)),
-            get_device_cb, std::move(backend), *supported_configs));
+            get_device_cb, *supported_configs));
   }
 
   void InitializeDecoder(const VideoDecoderConfig& config,
