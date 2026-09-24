@@ -872,6 +872,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565523923
     public void
             testMixedProfileMode_openPanelInIncognitoPane_switchToRegularPaneThenBackToDifferentTab_switchToOriginalTab_restoresPanel() {
         // Arrange: Open 2 tabs in the incognito pane and show the side panel on tab1.
