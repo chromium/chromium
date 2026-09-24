@@ -18,9 +18,6 @@ const char kWidgetKitActionHistogram[] = "IOS.WidgetKit.Action";
 const char kUMAMobileSessionStartActionHistogram[] =
     "Startup.MobileSessionStartAction";
 
-// UMA histogram key for iOS.SearchExtension.Action.
-const char kSearchExtensionActionHistogram[] = "iOS.SearchExtension.Action";
-
 // Values of the UMA IOS.LaunchSource histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
