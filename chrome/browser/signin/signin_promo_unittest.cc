@@ -1266,7 +1266,6 @@ class AvatarButtonPromoManagerTest : public testing::Test {
       : identity_test_environment_(&test_url_loader_factory_) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kAvatarButtonSyncPromoForTesting,
                               switches::
                                   kSigninWindows10DepreciationStateForTesting},
         /*disabled_features=*/{});
@@ -1283,7 +1282,6 @@ class AvatarButtonPromoManagerTest : public testing::Test {
       case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
       case ProfileMenuAvatarButtonPromoInfo::Type::
           kBatchUploadWindows10DepreciationPromo:
-      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
         // Signed in.
         // Only sign in if the profile was not already signed in.
         if (!identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin)) {
@@ -1311,7 +1309,6 @@ class AvatarButtonPromoManagerTest : public testing::Test {
       case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
       case ProfileMenuAvatarButtonPromoInfo::Type::
           kBatchUploadWindows10DepreciationPromo:
-      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
         task_environment_.FastForwardBy(
@@ -1356,13 +1353,12 @@ class AvatarButtonPromoManagerTest : public testing::Test {
 };
 
 TEST_F(AvatarButtonPromoManagerTest, PromoTypesUseDifferentShownLimits) {
-  std::array<ProfileMenuAvatarButtonPromoInfo::Type, 6> promo_type_list{
+  std::array<ProfileMenuAvatarButtonPromoInfo::Type, 5> promo_type_list{
       ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
       ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo,
       ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo,
       ProfileMenuAvatarButtonPromoInfo::Type::
           kBatchUploadWindows10DepreciationPromo,
-      ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo,
       ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo,
   };
 
@@ -1385,13 +1381,12 @@ TEST_F(AvatarButtonPromoManagerTest, PromoTypesUseDifferentShownLimits) {
 }
 
 TEST_F(AvatarButtonPromoManagerTest, PromoTypesUseDifferentUsedLimits) {
-  std::array<ProfileMenuAvatarButtonPromoInfo::Type, 6> promo_type_list{
+  std::array<ProfileMenuAvatarButtonPromoInfo::Type, 5> promo_type_list{
       ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
       ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo,
       ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo,
       ProfileMenuAvatarButtonPromoInfo::Type::
           kBatchUploadWindows10DepreciationPromo,
-      ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo,
       ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo,
   };
 
@@ -1677,7 +1672,6 @@ TEST_P(AvatarButtonPromoManagerPromoTypeParamTest, ShowPromoStateIfSignedOut) {
     case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
     case ProfileMenuAvatarButtonPromoInfo::Type::
         kBatchUploadWindows10DepreciationPromo:
-    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       EXPECT_FALSE(manager.ShouldShowPromo(GetParam()));
       break;
     case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
@@ -1723,7 +1717,6 @@ TEST_P(AvatarButtonPromoManagerPromoTypeParamTest,
         kBatchUploadWindows10DepreciationPromo:
       break;
     case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
-    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
     case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
       GTEST_SKIP() << "Not a batch upload promo type.";
   }
@@ -1753,7 +1746,6 @@ INSTANTIATE_TEST_SUITE_P(
          ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo,
          ProfileMenuAvatarButtonPromoInfo::Type::
              kBatchUploadWindows10DepreciationPromo,
-         ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo,
          ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo}));
 
 // Sets up a profile with the services needed to compute the profile menu
@@ -1806,17 +1798,6 @@ class ComputeProfileMenuAvatarButtonPromoInfoTestBase : public testing::Test {
 
     UpdateAccountInfoForAccount(identity_manager, account_info);
 
-    // This simplifies the setup for tests that expect to show the SyncPromo.
-    if (switches::IsAvatarSyncPromoFeatureEnabled()) {
-      // Simulate setting enough time passing for the cookie change.
-      profile()->GetPrefs()->SetDouble(
-          prefs::kGaiaCookieChangedTime,
-          (base::Time::Now() -
-           (switches::GetAvatarSyncPromoFeatureMinimumCookeAgeParam() +
-            base::Minutes(1)))
-              .InSecondsFSinceUnixEpoch());
-    }
-
     return account_info;
   }
 
@@ -1835,7 +1816,6 @@ class ComputeProfileMenuAvatarButtonPromoInfoTestBase : public testing::Test {
   size_t GetLocalDataCount(ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
     switch (promo_type) {
       case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
-      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
         return 0u;
       case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
@@ -1873,10 +1853,6 @@ class ComputeProfileMenuAvatarButtonPromoInfoTestBase : public testing::Test {
             syncer::BOOKMARKS, GetLocalDataCount(promo_type));
         break;
       }
-      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
-        Signin();
-        ASSERT_FALSE(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
-        break;
       case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
         ASSERT_FALSE(
             identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -1897,9 +1873,6 @@ class ComputeProfileMenuAvatarButtonPromoInfoTestBase : public testing::Test {
       case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
         SetHistorySyncPreferenceState(/*is_type_on=*/true);
         batch_upload_test_helper_.ClearReturnDescriptions();
-        break;
-      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
-        Signin(ConsentLevel::kSync);
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
         Signin();
@@ -1966,39 +1939,24 @@ class ComputeProfileMenuAvatarButtonPromoInfoParamTest
       case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
       case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
         scoped_feature_list_.InitWithFeatures(
-            // Enabling both features to ensure that
-            // `syncer::kReplaceSyncPromosWithSignInPromos` takes over.
             // Enable
             // `switches::kSigninWindows10DepreciationStateBypassForTesting` to
             // allow Windows machine to test the regular flow (non-Windows10
             // specific flow).
             /*enabled_features=*/
             {syncer::kReplaceSyncPromosWithSignInPromos,
-             switches::kAvatarButtonSyncPromoForTesting,
              switches::kSigninWindows10DepreciationStateBypassForTesting},
             /*disabled_features=*/{});
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::
           kBatchUploadWindows10DepreciationPromo:
         scoped_feature_list_.InitWithFeatures(
-            // Enabling both features to ensure that
-            // `syncer::kReplaceSyncPromosWithSignInPromos` takes over. Also
-            // enabling `switches::kSigninWindows10DepreciationStateForTesting`
+            // Enabling `switches::kSigninWindows10DepreciationStateForTesting`
             // to simulate Windows10 setup.
             /*enabled_features=*/
             {syncer::kReplaceSyncPromosWithSignInPromos,
-             switches::kAvatarButtonSyncPromoForTesting,
              switches::kSigninWindows10DepreciationStateForTesting},
             /*disabled_features=*/{});
-        break;
-      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
-        scoped_feature_list_.InitWithFeatures(
-            // For the Sync promo to be shown
-            // `syncer::kReplaceSyncPromosWithSignInPromos` must be off.
-            /*enabled_features=*/{switches::kAvatarButtonSyncPromoForTesting},
-            /*disabled_features=*/{
-                syncer::kReplaceSyncPromosWithSignInPromos,
-                syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
         break;
     }
   }
@@ -2012,22 +1970,10 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
   base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
       result_callback;
 
-  ProfileMenuAvatarButtonPromoInfo expected_info;
-  switch (GetParam()) {
-    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
-    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
-    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
-    case ProfileMenuAvatarButtonPromoInfo::Type::
-        kBatchUploadWindows10DepreciationPromo:
-    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
-      expected_info.type = ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo;
-      break;
-    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
-      // When this promo is possible - the sign in promo should not be shown.
-      break;
-  }
-
-  EXPECT_CALL(result_callback, Run(expected_info));
+  EXPECT_CALL(
+      result_callback,
+      Run(ProfileMenuAvatarButtonPromoInfo{
+          .type = ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo}));
   ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get(),
                                           /*allow_batch_upload_promos=*/true);
 }
@@ -2066,7 +2012,6 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
                        .local_data_count = GetLocalDataCount(GetParam())};
       break;
     case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
-    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
     case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
       // Non-batch upload promos are unaffected by allow_batch_upload_promos.
       expected_info = {.type = GetParam(),
@@ -2106,7 +2051,6 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
                        .local_data_count = GetLocalDataCount(GetParam())};
       break;
     case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
-    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
     case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
       expected_info = {.type = GetParam(),
                        .local_data_count = GetLocalDataCount(GetParam())};
@@ -2127,7 +2071,6 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
         kBatchUploadWindows10DepreciationPromo:
       break;
     case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
-    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
     case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
       GTEST_SKIP() << "Not a batch upload promo type.";
   }
@@ -2158,7 +2101,6 @@ TEST_P(ComputeProfileMenuAvatarButtonPromoInfoParamTest,
         kBatchUploadWindows10DepreciationPromo:
       break;
     case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
-    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
     case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
       GTEST_SKIP() << "Not a batch upload promo type.";
   }
@@ -2223,7 +2165,6 @@ INSTANTIATE_TEST_SUITE_P(
          ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo,
          ProfileMenuAvatarButtonPromoInfo::Type::
              kBatchUploadWindows10DepreciationPromo,
-         ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo,
          ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo}));
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

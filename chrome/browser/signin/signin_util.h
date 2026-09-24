@@ -204,13 +204,6 @@ void EnableHistorySync(syncer::SyncService* sync_service);
 bool IsValidAccessPointForHistoryOptinScreen(
     signin_metrics::AccessPoint access_point);
 
-// The avatar sync promo is only shown to users with specific sign in states.
-// Requires the feature enabling through
-// `switches::IsAvatarSyncPromoFeatureEnabled()`.
-// This function can be deleted once
-// `syncer::kReplaceSyncPromosWithSignInPromos` fully launches.
-bool ShouldShowAvatarSyncPromo(Profile* profile);
-
 // Show a simple error message with an "OK" button to the user, displaying
 // `error_message_id`.
 void ShowErrorDialogWithMessage(BrowserWindowInterface* browser,

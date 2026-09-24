@@ -1143,8 +1143,6 @@ prefs when the profile is loaded.  -->
                  history sync on,"/>
     <variant name="Signin"
         summary="Signin Promo no the Avatar Pill, that lead to signing in,"/>
-    <variant name="Sync"
-        summary="Sync Promo on the Avatar Pill, that lead to turning Sync on,"/>
 <!-- LINT.ThenChange(//chrome/browser/signin/signin_promo_util.cc:AvatarPillPromoType) -->
 
   </token>
@@ -4499,18 +4497,6 @@ kept as long as profile signout is possible -->
     {Profile}
   </summary>
   <token key="Profile" variants="ProfileIndex"/>
-</histogram>
-
-<histogram name="Signin.SyncOptIn.IdentityPill.SyncAtShowCount"
-    units="ShowCount" expires_after="2026-11-22">
-  <owner>ernn@google.com</owner>
-  <owner>rsult@google.com</owner>
-  <owner>chrome-signin-team-desktop@google.com</owner>
-  <summary>
-    Records the count at which the Sync promo on the Identity Pill was shown
-    when the user has successfuly intereacted with it (E.g. successfully turned
-    sync). Recorded when that interaction was succesfully made.
-  </summary>
 </histogram>
 
 <histogram name="Signin.SyncOptIn.Offered" enum="SigninAccessPoint"

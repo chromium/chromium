@@ -1346,9 +1346,6 @@ class PromoStateProvider : public StateProvider {
         // Note: Sync promo does not explicitly mention "sync" but invites the
         // user to back-up their data. It is fine to be used here.
         return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
-      case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
-        CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-        return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
       case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
         return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PROMO);
     }
@@ -2466,15 +2463,11 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
             /*state_observer=*/this);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled() ||
-        switches::IsAvatarSyncPromoFeatureEnabled()) {
-      auto promo_state_provider =
-          std::make_unique<PromoStateProvider>(browser,
-                                               /*state_observer=*/this);
-      RegisterObserver(static_cast<Observer*>(
-          &PromoStateProviderCoordinator::GetOrCreateForProfile(*profile)));
-      states_[ButtonState::kPromo] = std::move(promo_state_provider);
-    }
+    RegisterObserver(static_cast<Observer*>(
+        &PromoStateProviderCoordinator::GetOrCreateForProfile(*profile)));
+    states_[ButtonState::kPromo] =
+        std::make_unique<PromoStateProvider>(browser,
+                                             /*state_observer=*/this);
 
     // Contains both Work and School.
     states_[ButtonState::kManagement] =

@@ -23,7 +23,6 @@
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/google/core/common/google_util.h"
@@ -31,10 +30,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
-#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -498,60 +495,6 @@ bool IsValidAccessPointForHistoryOptinScreen(
     case signin_metrics::AccessPoint::kOverflowMenu:
       return true;
   }
-}
-
-bool ShouldShowAvatarSyncPromo(Profile* profile) {
-  CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-
-  // Do not show the promo for users that are not signed in. (E.g. Signed out,
-  // Signin Pending or already syncing).
-  if (GetSignedInState(IdentityManagerFactory::GetForProfile(profile)) !=
-      signin_util::SignedInState::kSignedIn) {
-    return false;
-  }
-
-  // SyncService should be usable.
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  if (!sync_service) {
-    return false;
-  }
-  if (sync_service->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    return false;
-  }
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager->AreRefreshTokensLoaded());
-  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  // Do not show the promo for non signed in accounts, or managed accounts.
-  if (account_info.IsEmpty() ||
-      account_info.IsManaged() != signin::Tribool::kFalse) {
-    return false;
-  }
-
-  // Do not show the promo if there was a previously syncing account that does
-  // not match the currently signed in one.
-  PrefService* pref_service = profile->GetPrefs();
-  GaiaId previously_syncing_gaia_id =
-      GaiaId(pref_service->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
-  if (IsCrossAccountError(profile, account_info.GetGaiaId())) {
-    return false;
-  }
-
-  // Do not show the promo for users that have been signed for a short period of
-  // time.
-  const base::Time last_changed = base::Time::FromSecondsSinceUnixEpoch(
-      pref_service->GetDouble(prefs::kGaiaCookieChangedTime));
-  if (last_changed.is_null() ||
-      (base::Time::Now() - last_changed <
-       switches::GetAvatarSyncPromoFeatureMinimumCookeAgeParam())) {
-    return false;
-  }
-
-  return true;
 }
 
 void ShowErrorDialogWithMessage(BrowserWindowInterface* browser,

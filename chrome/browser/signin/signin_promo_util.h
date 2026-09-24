@@ -94,7 +94,7 @@ struct ProfileMenuAvatarButtonPromoInfo {
     kBatchUploadPromo = 1,
     kBatchUploadBookmarksPromo = 2,
     kBatchUploadWindows10DepreciationPromo = 3,
-    kSyncPromo = 4,
+    // kSyncPromo = 4,  // Deprecated, not used anymore.
     kSigninPromo = 5,
 
     kMaxValue = kSigninPromo,

@@ -740,27 +740,6 @@ TEST_F(SigninMetricsServiceTest, ErrorNotificationEmptyAccount) {
               base::HistogramTester::CountsMap());
 }
 
-TEST_F(SigninMetricsServiceTest, HistorySyncPromoMetricLogging) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kAvatarButtonSyncPromoForTesting};
-
-  CreateSigninMetricsService();
-
-  const std::string email("test@gmail.com");
-  AccountInfo account = Signin(email);
-  SigninPrefs signin_prefs(pref_service());
-  signin_prefs.IncrementSyncPromoIdentityPillShownCount(account.GetGaiaId());
-  signin_prefs.IncrementSyncPromoIdentityPillShownCount(account.GetGaiaId());
-
-  EnableSync(
-      email,
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.SyncAtShowCount",
-      signin_prefs.GetSyncPromoIdentityPillShownCount(account.GetGaiaId()), 1);
-}
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class SigninMetricsServicePromoLimitsExperimentTest
     : public SigninMetricsServiceTest {

@@ -132,17 +132,6 @@ constexpr char kExtensionsExplicitBrowserSigninEnabled[] =
 constexpr char kBookmarksExplicitBrowserSigninEnabled[] =
     "BookmarksExplicitBrowserSigninEnabled";
 
-// Sync promo on the avatar button.
-//
-// Number of times the sync promo was shown in the identity pill (avatar toolbar
-// button).
-constexpr std::string_view kSyncPromoIdentityPillShownCount =
-    "SyncPromoIdentityPillShownCount";
-// Number of times the sync promo was used (clicked) in the identity pill
-// (avatar toolbar button).
-constexpr std::string_view kSyncPromoIdentityPillUsedCount =
-    "SyncPromoIdentityPillUsedCount";
-
 // Number of times the Bookmark Batch Upload promo was dismissed.
 constexpr std::string_view kBookmarkBatchUploadPromoDismissCount =
     "BookmarkBatchUploadPromoDismissCount";
@@ -163,21 +152,6 @@ constexpr std::string_view kPolicyDisclaimerLastRegistrationFailureTime =
 constexpr std::string_view kAvatarButtonPromoCountDictionary =
     "AvatarButtonPromoCountDictionary";
 
-// DEPRECATED(10/25): Check `SigninPrefs::SigninPrefs()`.
-// Testing deprecating pref:
-constexpr std::string_view kDeprecatingTestingPref = "DeprecatingTestingPref";
-//
-// History Sync promo on the avatar button.
-//
-// Number of times the history sync promo was shown in the identity pill (avata
-// toolbar button).
-constexpr std::string_view kHistorySyncPromoIdentityPillShownCount =
-    "ChromeSigninSyncPromoIdentityPillShownCount";
-// Number of times the history sync promo was used (clicked) in the identity
-// pill (avatar toolbar button).
-constexpr std::string_view kHistorySyncPromoIdentityPillUsedCount =
-    "ChromeSigninSyncPromoIdentityPillUsedCount";
-
 // The stable account ID for metrics.
 constexpr std::string_view kAccountMetricsId = "AccountMetricsId";
 // Boolean indicating if the account is capped for metrics ID allocation.
@@ -189,6 +163,39 @@ constexpr std::string_view kAccountMetricsIdIsCapped =
 // The next unassigned ID for account metrics.
 constexpr char kAccountMetricsNextUnassignedId[] =
     "signin.account_metrics_next_unassigned_id";
+
+// -----------------------------------------------------------------------------
+// DEPRECATED prefs: Check `SigninPrefs::MigrateObsoleteSigninPrefs()`.
+//
+// Testing deprecating pref:
+constexpr std::string_view kDeprecatedTestingPref = "DeprecatingTestingPref";
+
+// DEPRECATED(10/2025):
+// History Sync promo on the avatar button.
+//
+// Number of times the history sync promo was shown in the identity pill (avatar
+// toolbar button).
+constexpr std::string_view kDeprecatedHistorySyncPromoIdentityPillShownCount =
+    "ChromeSigninSyncPromoIdentityPillShownCount";
+// Number of times the history sync promo was used (clicked) in the identity
+// pill (avatar toolbar button).
+constexpr std::string_view kDeprecatedHistorySyncPromoIdentityPillUsedCount =
+    "ChromeSigninSyncPromoIdentityPillUsedCount";
+
+// DEPRECATED(09/2026):
+// Sync promo on the avatar button.
+//
+// Number of times the sync promo was shown in the identity pill (avatar toolbar
+// button).
+constexpr std::string_view kDeprecatedSyncPromoIdentityPillShownCount =
+    "SyncPromoIdentityPillShownCount";
+// Number of times the sync promo was used (clicked) in the identity pill
+// (avatar toolbar button).
+constexpr std::string_view kDeprecatedSyncPromoIdentityPillUsedCount =
+    "SyncPromoIdentityPillUsedCount";
+//
+// End of DEPRECATED prefs.
+// -----------------------------------------------------------------------------
 
 }  // namespace
 
@@ -209,9 +216,11 @@ void SigninPrefs::MigrateObsoleteSigninPrefs() {
   // Deprecates prefs within the existing internal account dict.
   for (auto value : scoped_update.Get()) {
     base::DictValue& account_dict = value.second.GetDict();
-    account_dict.Remove(kDeprecatingTestingPref);
-    account_dict.Remove(kHistorySyncPromoIdentityPillShownCount);
-    account_dict.Remove(kHistorySyncPromoIdentityPillUsedCount);
+    account_dict.Remove(kDeprecatedTestingPref);
+    account_dict.Remove(kDeprecatedHistorySyncPromoIdentityPillShownCount);
+    account_dict.Remove(kDeprecatedHistorySyncPromoIdentityPillUsedCount);
+    account_dict.Remove(kDeprecatedSyncPromoIdentityPillShownCount);
+    account_dict.Remove(kDeprecatedSyncPromoIdentityPillUsedCount);
   }
 }
 
@@ -533,26 +542,6 @@ SigninPrefs::GetPolicyDisclaimerLastRegistrationFailureTime(
   return GetTimePref(gaia_id, kPolicyDisclaimerLastRegistrationFailureTime);
 }
 
-void SigninPrefs::IncrementSyncPromoIdentityPillShownCount(
-    const GaiaId& gaia_id) {
-  IncrementIntPrefForAccount(gaia_id, kSyncPromoIdentityPillShownCount);
-}
-
-int SigninPrefs::GetSyncPromoIdentityPillShownCount(
-    const GaiaId& gaia_id) const {
-  return GetIntPrefForAccount(gaia_id, kSyncPromoIdentityPillShownCount);
-}
-
-void SigninPrefs::IncrementSyncPromoIdentityPillUsedCount(
-    const GaiaId& gaia_id) {
-  IncrementIntPrefForAccount(gaia_id, kSyncPromoIdentityPillUsedCount);
-}
-
-int SigninPrefs::GetSyncPromoIdentityPillUsedCount(
-    const GaiaId& gaia_id) const {
-  return GetIntPrefForAccount(gaia_id, kSyncPromoIdentityPillUsedCount);
-}
-
 int SigninPrefs::GetHistoryPageHistorySyncPromoShownCount(
     const GaiaId& gaia_id) const {
   return GetIntPrefForAccount(gaia_id,
@@ -751,7 +740,7 @@ void SigninPrefs::SetDeprecatedPrefForTesting(const GaiaId& gaia_id) {
   // `EnsureDict` gets or create the dictionary.
   base::DictValue* account_dict = scoped_update->EnsureDict(gaia_id.ToString());
 
-  account_dict->Set(kDeprecatingTestingPref, 123);
+  account_dict->Set(kDeprecatedTestingPref, 123);
 }
 
 std::optional<int> SigninPrefs::GetDeprecatedPrefForTesting(
@@ -763,8 +752,7 @@ std::optional<int> SigninPrefs::GetDeprecatedPrefForTesting(
     return std::nullopt;
   }
 
-  std::optional<int> pref_value =
-      account_dict->FindInt(kDeprecatingTestingPref);
+  std::optional<int> pref_value = account_dict->FindInt(kDeprecatedTestingPref);
   return pref_value.has_value() ? pref_value.value()
                                 : std::optional<int>(std::nullopt);
 }

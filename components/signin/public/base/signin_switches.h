@@ -56,13 +56,6 @@ BASE_DECLARE_FEATURE(kAccountRetrievalWaitsForRestoration);
 #endif
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kAvatarButtonSyncPromoForTesting);
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-bool IsAvatarSyncPromoFeatureEnabled();
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-base::TimeDelta GetAvatarSyncPromoFeatureMinimumCookeAgeParam();
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kAvoidAutoTriggerListAccountsOnStale);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

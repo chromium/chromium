@@ -170,12 +170,6 @@ class SigninPrefs {
   std::optional<base::Time> GetSearchAIModeSigninPromoLastImpressionTime(
       const GaiaId& gaia_id) const;
 
-  // Sync promo on the avatar button.
-  void IncrementSyncPromoIdentityPillShownCount(const GaiaId& gaia_id);
-  int GetSyncPromoIdentityPillShownCount(const GaiaId& gaia_id) const;
-  void IncrementSyncPromoIdentityPillUsedCount(const GaiaId& gaia_id);
-  int GetSyncPromoIdentityPillUsedCount(const GaiaId& gaia_id) const;
-
   // History sync promo on the history page.
   int GetHistoryPageHistorySyncPromoShownCount(const GaiaId& gaia_id) const;
   void IncrementHistoryPageHistorySyncPromoShownCount(const GaiaId& gaia_id);

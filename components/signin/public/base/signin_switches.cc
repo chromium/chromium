@@ -58,35 +58,6 @@ BASE_FEATURE(kAccountRetrievalWaitsForRestoration,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Convenient testing flag for `kAvatarButtonSyncPromo` on all platforms.
-// Also reduces the minimum cookie age to 30 seconds.
-BASE_FEATURE(kAvatarButtonSyncPromoForTesting,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAvatarSyncPromoFeatureEnabled() {
-  if (base::FeatureList::IsEnabled(
-          switches::kAvatarButtonSyncPromoForTesting)) {
-    return true;
-  }
-#if BUILDFLAG(IS_WIN)
-  return (base::win::GetVersion() >= base::win::Version::WIN7 &&
-          base::win::GetVersion() <= base::win::Version::WIN10_22H2);
-#else
-  return false;
-#endif
-}
-base::TimeDelta GetAvatarSyncPromoFeatureMinimumCookeAgeParam() {
-  CHECK(IsAvatarSyncPromoFeatureEnabled());
-  if (base::FeatureList::IsEnabled(
-          switches::kAvatarButtonSyncPromoForTesting)) {
-    return base::Seconds(30);
-  }
-#if BUILDFLAG(IS_WIN)
-  return base::Days(14);
-#else
-  NOTREACHED();
-#endif
-}
-
 BASE_FEATURE(kAvoidAutoTriggerListAccountsOnStale,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

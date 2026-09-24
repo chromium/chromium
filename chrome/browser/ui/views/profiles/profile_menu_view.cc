@@ -903,13 +903,6 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
                 ActionableItem::
                     kBatchUploadWindows10DepreciationAsPrimaryButton);
             break;
-          case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
-            CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-            params.subtitle = l10n_util::GetStringUTF16(
-                IDS_PROFILE_MENU_DESCRIPTION_WITH_SYNC_PROMO);
-            params.button_text = l10n_util::GetStringUTF16(
-                IDS_PROFILE_MENU_BUTTON_LABEL_WITH_SYNC_PROMO);
-            break;
           case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
             NOTREACHED() << "This promo type is not possible when signed in.";
         }

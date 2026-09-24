@@ -337,20 +337,6 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
             {{switches::kSigninWindows10DepreciationStateForTesting, {}}},
     },
     {
-        .pixel_test_param = {.test_suffix = "AvatarSyncPromo"},
-        .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        // `switches::kAvatarButtonSyncPromoForTesting` and
-        // `syncer::kReplaceSyncPromosWithSignInPromos` are not compatible and
-        // cannot be activated at the same time, as
-        // `syncer::kReplaceSyncPromosWithSignInPromos` would override the
-        // behavior. Explicitly disable in this case.
-        .extra_features_and_params =
-            {{switches::kAvatarButtonSyncPromoForTesting, {}}},
-        .disabled_features =
-            {syncer::kReplaceSyncPromosWithSignInPromos,
-             syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
-    },
-    {
         .pixel_test_param = {.test_suffix = "SignedIn_HistorySyncEnabled"},
         .signin_status = SigninStatusPixelTestParam::kSignedInWithHistorySync,
     },
@@ -412,22 +398,7 @@ class ProfileMenuViewPixelTest
  public:
   ProfileMenuViewPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
-    // 1. Get default-disabled features.
-    // Disabled by default but may be overridden by `extra_features_and_params`.
-    base::flat_set<base::test::FeatureRef> disabled_features_set = {
-        // This feature is disabled by default as it is not compatible with
-        // `syncer::kReplaceSyncPromosWithSignInPromos` (enabled by default in
-        // the test suite). If this feature needs to be enabled, then
-        // `syncer::kReplaceSyncPromosWithSignInPromos` should explicitly be
-        // disabled as well.
-        switches::kAvatarButtonSyncPromoForTesting};
-
-    // 2. Remove params-enabled features from the default-disabled set.
-    for (const auto& [feature, _] : GetParam().extra_features_and_params) {
-      disabled_features_set.erase(feature.get());
-    }
-
-    // 3. Get default-enabled features.
+    // 1. Get default-enabled features.
     std::vector<base::test::FeatureRefAndParams> enabled_features_and_params = {
         {syncer::kReplaceSyncPromosWithSignInPromos, {}}};
 
@@ -440,7 +411,7 @@ class ProfileMenuViewPixelTest
           {switches::kCrossDeviceSigninFromDesktop, {}});
     }
 
-    // 4. Get default-enabled features without params-disabled.
+    // 2. Get default-enabled features without params-disabled.
     std::vector<base::test::FeatureRefAndParams>
         final_enabled_features_and_params;
     const base::flat_set<base::test::FeatureRef>& disabled_features =
@@ -451,9 +422,7 @@ class ProfileMenuViewPixelTest
       }
     }
 
-    // 5. Enrich collections with params-enabled/disabled features respectively.
-    disabled_features_set.insert(disabled_features.begin(),
-                                 disabled_features.end());
+    // 3. Enrich collections with params-enabled/disabled features respectively.
     std::move(GetParam().extra_features_and_params.begin(),
               GetParam().extra_features_and_params.end(),
               std::back_inserter(final_enabled_features_and_params));
@@ -462,8 +431,8 @@ class ProfileMenuViewPixelTest
         std::vector<base::test::FeatureRefAndParams>(
             final_enabled_features_and_params.begin(),
             final_enabled_features_and_params.end()),
-        std::vector<base::test::FeatureRef>(disabled_features_set.begin(),
-                                            disabled_features_set.end()));
+        std::vector<base::test::FeatureRef>(disabled_features.begin(),
+                                            disabled_features.end()));
 
     // The Profile menu view seems not to be resizied properly on changes which
     // causes the view to go out of bounds. This should not happen and needs to
