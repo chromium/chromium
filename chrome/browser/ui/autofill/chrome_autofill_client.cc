@@ -1408,7 +1408,11 @@ void ChromeAutofillClient::ShowEmailVerificationPopup(
 }
 
 void ChromeAutofillClient::HideEmailVerificationPopup() {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (email_verification_bottom_sheet_bridge_) {
+    email_verification_bottom_sheet_bridge_->Hide();
+  }
+#else
   if (email_verification_controller_) {
     email_verification_controller_->HidePopup();
   }

@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.autofill.email_verification.EmailVerif
 import static org.chromium.chrome.browser.autofill.email_verification.EmailVerificationBottomSheetProperties.DRAG_HANDLE_VISIBLE;
 import static org.chromium.chrome.browser.autofill.email_verification.EmailVerificationBottomSheetProperties.ON_CANCEL_CLICKED;
 import static org.chromium.chrome.browser.autofill.email_verification.EmailVerificationBottomSheetProperties.ON_CONFIRM_CLICKED;
+import static org.chromium.chrome.browser.autofill.email_verification.EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE;
 import static org.chromium.chrome.browser.autofill.email_verification.EmailVerificationBottomSheetProperties.TITLE;
 
 import android.view.View;
@@ -38,6 +39,18 @@ import org.chromium.ui.modelutil.PropertyModel;
             view.mConfirmButton.setOnClickListener(_ -> model.get(ON_CONFIRM_CLICKED).run());
         } else if (propertyKey == ON_CANCEL_CLICKED) {
             view.mCancelButton.setOnClickListener(_ -> model.get(ON_CANCEL_CLICKED).run());
+        } else if (propertyKey == SHOW_LOADING_STATE) {
+            if (model.get(SHOW_LOADING_STATE)) {
+                view.mConfirmButton.setEnabled(false);
+                view.mCancelButton.setEnabled(false);
+                view.mLoadingView.showLoadingUi(/* skipDelay= */ true);
+                view.mLoadingViewContainer.setVisibility(View.VISIBLE);
+            } else {
+                view.mLoadingViewContainer.setVisibility(View.GONE);
+                view.mLoadingView.hideLoadingUi(/* skipDelay= */ true);
+                view.mConfirmButton.setEnabled(true);
+                view.mCancelButton.setEnabled(true);
+            }
         } else {
             assert false : "Unhandled property key: " + propertyKey;
         }

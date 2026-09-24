@@ -31,6 +31,9 @@ public class EmailVerificationBottomSheetCoordinator {
 
         /** Called when a UI decision is made. */
         void onUiDecision(@EmailVerificationPermissionUiStatus int status);
+
+        /** Called when the bottom sheet has been dismissed/hidden. */
+        default void onUiDismissed() {}
     }
 
     private final EmailVerificationBottomSheetView mView;

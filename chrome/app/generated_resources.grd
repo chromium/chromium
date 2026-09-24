@@ -2488,7 +2488,7 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_EMAIL_VERIFIED" desc="Toast message to notify the user when their email is automatically verified by the browser.">
         <ph name="ISSUER">$1<ex>google.com</ex></ph> verified your email
       </message>
-      <message name="IDS_EMAIL_VERIFICATION_LOADING" desc="Accessibility announcement and toast message to notify the user that background email verification is in progress.">
+      <message name="IDS_EMAIL_VERIFICATION_LOADING" desc="Accessibility announcement and toast message to notify the user that background email verification is in progress." formatter_data="android_java">
         Verifying email
       </message>
       <message name="IDS_EMAIL_VERIFICATION_ERROR" desc="Toast message to notify the user when background email verification failed.">

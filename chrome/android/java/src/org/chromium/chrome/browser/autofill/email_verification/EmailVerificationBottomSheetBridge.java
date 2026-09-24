@@ -67,6 +67,11 @@ public class EmailVerificationBottomSheetBridge
             return;
         }
 
+        if (mCoordinator != null) {
+            mCoordinator.hide(BottomSheetController.StateChangeReason.NONE);
+            mCoordinator = null;
+        }
+
         mCoordinator =
                 new EmailVerificationBottomSheetCoordinator(
                         mContext,
@@ -99,6 +104,12 @@ public class EmailVerificationBottomSheetBridge
     public void onUiDecision(@EmailVerificationPermissionUiStatus int status) {
         if (mNativeBridge == 0) return;
         EmailVerificationBottomSheetBridgeJni.get().onUiDecision(mNativeBridge, status);
+    }
+
+    /** Called when the bottom sheet has been dismissed/hidden. */
+    @Override
+    public void onUiDismissed() {
+        mCoordinator = null;
     }
 
     @CalledByNative

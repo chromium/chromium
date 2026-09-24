@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.email_verification;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.ui.widget.LoadingView;
 
 /** View component for the email verification bottom sheet. */
 @NullMarked
@@ -42,6 +44,14 @@ import org.chromium.chrome.R;
     /** The button that declines/cancels email verification. */
     final Button mCancelButton;
 
+    /**
+     * Contains the loading view. Needed for proper a11y announcement of the content description.
+     */
+    final View mLoadingViewContainer;
+
+    /** The view shown while verification is in progress. */
+    final LoadingView mLoadingView;
+
     EmailVerificationBottomSheetView(Context context) {
         mContentView =
                 (ViewGroup)
@@ -55,5 +65,7 @@ import org.chromium.chrome.R;
         mDescription = mContentView.findViewById(R.id.email_verification_description_text);
         mConfirmButton = mContentView.findViewById(R.id.email_verification_confirm_button);
         mCancelButton = mContentView.findViewById(R.id.email_verification_cancel_button);
+        mLoadingViewContainer = mContentView.findViewById(R.id.loading_view_container);
+        mLoadingView = mContentView.findViewById(R.id.loading_view);
     }
 }

@@ -8,6 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** Property keys for the email verification bottom sheet model. */
 @NullMarked
@@ -39,6 +40,10 @@ public class EmailVerificationBottomSheetProperties {
     public static final ReadableObjectPropertyKey<Runnable> ON_CANCEL_CLICKED =
             new ReadableObjectPropertyKey<>();
 
+    /** Whether the loading state (spinner) should be shown. */
+    public static final WritableBooleanPropertyKey SHOW_LOADING_STATE =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         TITLE,
         DESCRIPTION,
@@ -46,7 +51,8 @@ public class EmailVerificationBottomSheetProperties {
         CANCEL_BUTTON_LABEL,
         DRAG_HANDLE_VISIBLE,
         ON_CONFIRM_CLICKED,
-        ON_CANCEL_CLICKED
+        ON_CANCEL_CLICKED,
+        SHOW_LOADING_STATE
     };
 
     private EmailVerificationBottomSheetProperties() {}
