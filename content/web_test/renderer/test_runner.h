@@ -100,6 +100,8 @@ class TestRunner {
   void FinishTestIfReady(WebFrameTestProxy& source);
   // Notification that another renderer has explicitly asked the test to end.
   void TestFinishedFromSecondaryRenderer(WebFrameTestProxy& source);
+  // Notification that resources needed for printing have finished loading.
+  void DidFinishLoadForPrinting(WebFrameTestProxy& source);
 
   // Track the set of all main frames in the process, which is also the set of
   // windows rooted in this process.
@@ -600,6 +602,10 @@ class TestRunner {
   // this bool tracks that NotifyDone() was called. This differentiates from a
   // test that was not waiting for NotifyDone() at all.
   bool did_notify_done_ = false;
+  // Whether print-specific resource loading has been initiated for this test.
+  bool requested_printing_resources_ = false;
+  // Whether the test is waiting for print-specific resources to finish loading.
+  bool waiting_for_printing_resources_ = false;
 
   FakeScreenOrientationImpl fake_screen_orientation_impl_;
   GamepadController gamepad_controller_;

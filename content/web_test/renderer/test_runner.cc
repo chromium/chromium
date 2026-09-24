@@ -2797,6 +2797,8 @@ void TestRunner::Reset() {
   main_frame_loaded_ = false;
   frame_will_start_load_ = false;
   did_notify_done_ = false;
+  requested_printing_resources_ = false;
+  waiting_for_printing_resources_ = false;
 
   http_headers_to_clear_.clear();
   clear_referrer_ = false;
@@ -3311,11 +3313,24 @@ void TestRunner::FinishTestIfReady(WebFrameTestProxy& source) {
     return;
   }
 
+  if (waiting_for_printing_resources_) {
+    return;
+  }
+
   FinishTest(source);
 }
 
 void TestRunner::TestFinishedFromSecondaryRenderer(WebFrameTestProxy& source) {
   NotifyDone(source);
+}
+
+void TestRunner::DidFinishLoadForPrinting(WebFrameTestProxy& source) {
+  if (!waiting_for_printing_resources_) {
+    return;
+  }
+
+  waiting_for_printing_resources_ = false;
+  FinishTestIfReady(source);
 }
 
 void TestRunner::AddMainFrame(WebFrameTestProxy& frame) {
@@ -3952,12 +3967,20 @@ void TestRunner::FinishTest(WebFrameTestProxy& source) {
   if (!test_is_running_) {
     return;
   }
-  test_is_running_ = false;
 
   // Now we know that we're in the main frame, we should generate dump results.
   // Clean out the lifecycle if needed before capturing the web tree
   // dump and pixels from the compositor.
   auto* web_frame = main_frame->GetWebFrame();
+  if (IsPrinting() && !requested_printing_resources_) {
+    requested_printing_resources_ = true;
+    waiting_for_printing_resources_ = web_frame->WillPrintSoon();
+    if (waiting_for_printing_resources_) {
+      return;
+    }
+  }
+
+  test_is_running_ = false;
   web_frame->FrameWidget()->PrepareForFinalLifecyclUpdateForTesting();
   web_frame->FrameWidget()->UpdateAllLifecyclePhases(
       blink::DocumentUpdateReason::kTest);

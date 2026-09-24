@@ -210,6 +210,10 @@ class TestRenderFrameObserver : public RenderFrameObserver {
     }
   }
 
+  void DidFinishLoadForPrinting() override {
+    test_runner_->DidFinishLoadForPrinting(*frame_proxy());
+  }
+
   void DidHandleOnloadEvents() override {
     if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
@@ -806,6 +810,10 @@ void WebFrameTestProxy::StartTest() {
 
         web_frame->ResumeParserForTesting();
 
+        // Start loading nested documents that are only displayed when
+        // printing early enough for their normal frame load to be tracked.
+        // TestRunner performs a second call before capture to discover any
+        // print resources that were not available until parsing completed.
         if (test_runner->IsPrinting()) {
           web_frame->WillPrintSoon();
         }
