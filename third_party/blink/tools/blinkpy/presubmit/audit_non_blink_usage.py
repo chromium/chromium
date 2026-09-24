@@ -590,6 +590,7 @@ _CONFIG = [
             'base::ToLowerASCII',
             'network::cors::IsCorsSafelistedResponseHeaderName',
             'network::mojom::FetchResponseType',
+            'network::ParseUnencodedDigestsFromHeaders',
         ],
     },
     {

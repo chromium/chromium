@@ -9333,6 +9333,7 @@ data/service_worker/static_router_no_handler.js
 data/service_worker/static_router_race.js
 data/service_worker/static_router_race_match_all.js
 data/service_worker/sync.js.mock-http-headers
+data/service_worker/synthetic_integrity_response_worker.js
 data/service_worker/throttling_blocking_cache_addall_sw.js
 data/service_worker/throttling_blocking_sw.js
 data/service_worker/throttling_non_blocking_cache_addall_sw.js

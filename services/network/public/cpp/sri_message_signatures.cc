@@ -14,10 +14,12 @@
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/gurl.h"
 
@@ -324,22 +326,22 @@ std::string SerializeSignatureParams(
 }
 
 std::string SerializeDerivedComponent(
-    const net::URLRequest& url_request,
+    const GURL& request_url,
+    std::string_view request_method,
     const int response_status_code,
     const mojom::SRIMessageSignatureComponentPtr& component) {
   DCHECK(std::ranges::contains(kDerivedComponents, component->name));
-  DCHECK(url_request.url().is_valid());
+  DCHECK(request_url.is_valid());
 
   if (component->name == "@authority") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-authority
-    if (url_request.url().has_port()) {
-      return base::StrCat(
-          {url_request.url().host(), ":", url_request.url().port()});
+    if (request_url.has_port()) {
+      return base::StrCat({request_url.host(), ":", request_url.port()});
     }
-    return url_request.url().GetHost();
+    return request_url.GetHost();
   } else if (component->name == "@query") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#name-query
-    return base::StrCat({"?", url_request.url().GetQuery()});
+    return base::StrCat({"?", request_url.GetQuery()});
   } else if (component->name == "@query-param") {
     DCHECK(component->params.size() == 2u);
     auto name_it =
@@ -349,19 +351,19 @@ std::string SerializeDerivedComponent(
                      });
     DCHECK(name_it != component->params.end() && (*name_it)->value.has_value());
     std::string param_value;
-    if (net::GetValueForKeyInQuery(url_request.url(), *(*name_it)->value,
+    if (net::GetValueForKeyInQuery(request_url, *(*name_it)->value,
                                    &param_value)) {
       return base::EscapeAllExceptUnreserved(param_value);
     }
     return std::string();
   } else if (component->name == "@method") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-request-method
-    return url_request.method();
+    return std::string(request_method);
   } else if (component->name == "@path") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-request-path
-    return url_request.url().GetPath();
+    return request_url.GetPath();
   } else if (component->name == "@scheme") {
-    return url_request.url().GetScheme();
+    return request_url.GetScheme();
   } else if (component->name == "@status") {
     // https://www.rfc-editor.org/rfc/rfc9421.html#content-status-code
     return base::NumberToString(response_status_code);
@@ -372,7 +374,7 @@ std::string SerializeDerivedComponent(
     // those components as well, just as we do for referrers.
     //
     // https://datatracker.ietf.org/doc/html/rfc9421#content-target-uri
-    return url_request.url().GetAsReferrer().spec();
+    return request_url.GetAsReferrer().spec();
   }
 
   // TODO(383409584): Support additional derived components.
@@ -687,11 +689,14 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
   return parsed_headers;
 }
 
+namespace {
 base::expected<std::string, mojom::SRIMessageSignatureError>
-ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
-                       const net::URLRequest& url_request,
-                       const net::HttpResponseHeaders& headers) {
-  DCHECK(url_request.url().is_valid());
+ConstructSignatureBaseImpl(const mojom::SRIMessageSignaturePtr& signature,
+                           const GURL& request_url,
+                           std::string_view request_method,
+                           const net::HttpRequestHeaders& request_headers,
+                           const net::HttpResponseHeaders& headers) {
+  DCHECK(request_url.is_valid());
 
   if (!signature) {
     return base::unexpected(
@@ -736,7 +741,7 @@ ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
                                     kSignatureBaseUnknownDerivedComponent);
       }
       component_value = SerializeDerivedComponent(
-          url_request, headers.response_code(), component);
+          request_url, request_method, headers.response_code(), component);
 
       //      *  If the component name does not start with an "at" (`@`)
       //         character, canonizalize the HTTP field value ... If the field
@@ -747,7 +752,7 @@ ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
       // out of signature base generation if the header isn't present
       std::optional<std::string> header =
           IsRequestComponent(component)
-              ? url_request.extra_request_headers().GetHeader(component->name)
+              ? request_headers.GetHeader(component->name)
               : headers.GetNormalizedHeader(component->name);
       if (!header.has_value()) {
         return base::unexpected(
@@ -803,11 +808,13 @@ ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
   return result;
 }
 
-bool ValidateSRIMessageSignaturesOverHeaders(
+bool ValidateSRIMessageSignaturesOverHeadersImpl(
     mojom::SRIMessageSignaturesPtr& message_signatures,
-    const net::URLRequest& url_request,
+    const GURL& request_url,
+    std::string_view request_method,
+    const net::HttpRequestHeaders& request_headers,
     const net::HttpResponseHeaders& headers) {
-  DCHECK(url_request.url().is_valid());
+  DCHECK(request_url.is_valid());
 
   // If no signatures are present, validation automatically succeeds.
   if (message_signatures->signatures.empty()) {
@@ -829,8 +836,9 @@ bool ValidateSRIMessageSignaturesOverHeaders(
 
     // Generate the signature base:
     base::expected<std::string, mojom::SRIMessageSignatureError>
-        signature_base_result =
-            ConstructSignatureBase(message_signature, url_request, headers);
+        signature_base_result = ConstructSignatureBaseImpl(
+            message_signature, request_url, request_method, request_headers,
+            headers);
     if (!signature_base_result.has_value()) {
       AddIssueFromErrorEnum(signature_base_result.error(),
                             message_signatures->issues);
@@ -869,23 +877,34 @@ bool ValidateSRIMessageSignaturesOverHeaders(
 }
 
 std::optional<mojom::BlockedByResponseReason>
-MaybeBlockResponseForSRIMessageSignature(
-    const net::URLRequest& url_request,
+MaybeBlockResponseForSRIMessageSignatureImpl(
+    const GURL& request_url,
+    std::string_view request_method,
+    const net::HttpRequestHeaders& request_headers,
     const network::mojom::URLResponseHead& response,
     const std::vector<std::vector<uint8_t>>& expected_public_keys,
-    const raw_ptr<mojom::DevToolsObserver> devtools_observer,
+    mojom::DevToolsObserver* devtools_observer,
     const std::string& devtools_request_id) {
-  // No headers, no URL: no blocking.
-  const GURL& request_url = url_request.url();
+  const bool integrity_required = !expected_public_keys.empty();
+
+  // If integrity verification is required, missing headers or an invalid URL
+  // must fail closed. Otherwise, there is nothing to enforce or block.
   if (!response.headers || !request_url.is_valid()) {
-    return std::nullopt;
+    return integrity_required
+               ? std::make_optional(mojom::BlockedByResponseReason::
+                                        kSRIMessageSignatureMismatch)
+               : std::nullopt;
   }
+
   auto parsed_headers = ParseSRIMessageSignaturesFromHeaders(*response.headers);
+
   bool passed_validation =
-      parsed_headers->signatures.empty() ||
-      (ValidateSRIMessageSignaturesOverHeaders(parsed_headers, url_request,
-                                               *response.headers) &&
-       MatchExpectedPublicKeys(parsed_headers, expected_public_keys));
+      (parsed_headers->signatures.empty() ||
+       (!request_method.empty() &&
+        ValidateSRIMessageSignaturesOverHeadersImpl(
+            parsed_headers, request_url, request_method, request_headers,
+            *response.headers))) &&
+      MatchExpectedPublicKeys(parsed_headers, expected_public_keys);
 
   if (devtools_observer && !devtools_request_id.empty()) {
     devtools_observer->OnSRIMessageSignatureIssue(
@@ -897,14 +916,75 @@ MaybeBlockResponseForSRIMessageSignature(
     // usable unencoded-digest. ParseSRIMessageSignaturesFromHeaders enforces
     // that all parsed signatures cover `unencoded-digest`. If we don't have
     // any supported digests, we can't verify the body, so we must fail.
-    if (!expected_public_keys.empty() && !parsed_headers->signatures.empty() &&
-        (!response.unencoded_digests ||
-         response.unencoded_digests->digests.empty())) {
+    if (integrity_required && (!response.unencoded_digests ||
+                               response.unencoded_digests->digests.empty())) {
       return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;
     }
     return std::nullopt;
   }
   return mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch;
+}
+}  // namespace
+
+base::expected<std::string, mojom::SRIMessageSignatureError>
+ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
+                       const net::URLRequest& url_request,
+                       const net::HttpResponseHeaders& headers) {
+  return ConstructSignatureBaseImpl(
+      signature, url_request.url(), url_request.method(),
+      url_request.extra_request_headers(), headers);
+}
+
+base::expected<std::string, mojom::SRIMessageSignatureError>
+ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
+                       const network::ResourceRequest& resource_request,
+                       const net::HttpResponseHeaders& headers) {
+  return ConstructSignatureBaseImpl(signature, resource_request.url,
+                                    resource_request.method,
+                                    resource_request.headers, headers);
+}
+
+bool ValidateSRIMessageSignaturesOverHeaders(
+    mojom::SRIMessageSignaturesPtr& message_signatures,
+    const net::URLRequest& url_request,
+    const net::HttpResponseHeaders& headers) {
+  return ValidateSRIMessageSignaturesOverHeadersImpl(
+      message_signatures, url_request.url(), url_request.method(),
+      url_request.extra_request_headers(), headers);
+}
+
+bool ValidateSRIMessageSignaturesOverHeaders(
+    mojom::SRIMessageSignaturesPtr& message_signatures,
+    const network::ResourceRequest& resource_request,
+    const net::HttpResponseHeaders& headers) {
+  return ValidateSRIMessageSignaturesOverHeadersImpl(
+      message_signatures, resource_request.url, resource_request.method,
+      resource_request.headers, headers);
+}
+
+std::optional<mojom::BlockedByResponseReason>
+MaybeBlockResponseForSRIMessageSignature(
+    const net::URLRequest& url_request,
+    const network::mojom::URLResponseHead& response,
+    const std::vector<std::vector<uint8_t>>& expected_public_keys,
+    const raw_ptr<mojom::DevToolsObserver> devtools_observer,
+    const std::string& devtools_request_id) {
+  return MaybeBlockResponseForSRIMessageSignatureImpl(
+      url_request.url(), url_request.method(),
+      url_request.extra_request_headers(), response, expected_public_keys,
+      devtools_observer, devtools_request_id);
+}
+
+std::optional<mojom::BlockedByResponseReason>
+MaybeBlockResponseForSRIMessageSignature(
+    const network::ResourceRequest& resource_request,
+    const network::mojom::URLResponseHead& response,
+    const std::vector<std::vector<uint8_t>>& expected_public_keys,
+    mojom::DevToolsObserver* devtools_observer,
+    const std::string& devtools_request_id) {
+  return MaybeBlockResponseForSRIMessageSignatureImpl(
+      resource_request.url, resource_request.method, resource_request.headers,
+      response, expected_public_keys, devtools_observer, devtools_request_id);
 }
 
 void MaybeSetAcceptSignatureHeader(

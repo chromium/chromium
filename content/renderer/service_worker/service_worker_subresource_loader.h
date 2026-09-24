@@ -25,6 +25,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/blocked_by_response_reason.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -154,9 +155,13 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // Sends net::ERR_INSUFFICIENT_RESOURCES when it can't be created.
   void CommitEmptyResponseAndComplete() override;
 
-  // Calls url_loader_client_->OnComplete(). Expected to be called after
-  // CommitResponseHeaders (i.e. status_ == kSentHeader).
-  void CommitCompleted(int error_code, const char* reason) override;
+  using ServiceWorkerResourceLoader::CommitCompleted;
+  // Calls url_loader_client_->OnComplete(). |reason| will be recorded as an
+  // argument of TRACE_EVENT.
+  void CommitCompleted(int error_code,
+                       const char* reason,
+                       std::optional<network::mojom::BlockedByResponseReason>
+                           blocked_by_response_reason) override;
 
   // Calls url_loader_client_->OnReceiveRedirect(). Sends too many redirects
   // error if it hits the redirect limit.

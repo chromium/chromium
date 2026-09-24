@@ -21,6 +21,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/unencoded_digests.h"
 #include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1733,6 +1734,30 @@ TEST_F(SRIMessageSignatureEnforcementTest, NoHeaders) {
   EXPECT_FALSE(result.has_value());
 }
 
+TEST_F(SRIMessageSignatureEnforcementTest,
+       MissingHeadersWithIntegrityRequirementFailsClosed) {
+  const std::vector<uint8_t> public_key = *base::Base64Decode(kPublicKey);
+
+  // Response without any SRI headers must fail closed when integrity is
+  // required.
+  mojom::URLResponseHeadPtr head = ResponseHead("", "", "");
+  std::optional<mojom::BlockedByResponseReason> result =
+      MaybeBlockResponseForSRIMessageSignature(request(), *head, {public_key});
+  EXPECT_THAT(
+      result,
+      testing::Optional(
+          mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch));
+
+  // Response with null headers must fail closed when integrity is required.
+  mojom::URLResponseHead null_headers_head;
+  result = MaybeBlockResponseForSRIMessageSignature(
+      request(), null_headers_head, {public_key});
+  EXPECT_THAT(
+      result,
+      testing::Optional(
+          mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch));
+}
+
 TEST_F(SRIMessageSignatureEnforcementTest, ValidHeaders) {
   mojom::URLResponseHeadPtr head = ResponseHead(
       kValidDigestHeader, kValidSignatureHeader, kValidSignatureInputHeader);
@@ -1927,6 +1952,114 @@ TEST_F(SRIMessageSignatureRequestHeaderTest, ValidSignatures) {
                       "sig1=(\"unencoded-digest\";sf);keyid=\"", kPublicKey,
                       "\";tag=\"ed25519-integrity\""});
     EXPECT_THAT(result, testing::Optional(expected));
+  }
+}
+
+TEST_F(SRIMessageSignatureEnforcementTest, ResourceRequestOverload) {
+  ResourceRequest resource_request;
+  resource_request.url = request().url();
+  resource_request.method = request().method();
+  resource_request.headers = request().extra_request_headers();
+
+  mojom::URLResponseHeadPtr head = ResponseHead(
+      kValidDigestHeader, kValidSignatureHeader, kValidSignatureInputHeader);
+  const std::vector<uint8_t> public_key = *base::Base64Decode(kPublicKey);
+
+  // Matching key.
+  {
+    std::optional<mojom::BlockedByResponseReason> result =
+        MaybeBlockResponseForSRIMessageSignature(resource_request, *head,
+                                                 {public_key});
+    EXPECT_EQ(result, std::nullopt);
+  }
+
+  // Non-matching key.
+  {
+    std::string wrong_key_str = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    const std::vector<uint8_t> wrong_key = *base::Base64Decode(wrong_key_str);
+    std::optional<mojom::BlockedByResponseReason> result =
+        MaybeBlockResponseForSRIMessageSignature(resource_request, *head,
+                                                 {wrong_key});
+    EXPECT_THAT(
+        result,
+        testing::Optional(
+            mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch));
+  }
+
+  // Empty method must fail closed when integrity is required.
+  {
+    ResourceRequest empty_method_request = resource_request;
+    empty_method_request.method = "";
+    std::optional<mojom::BlockedByResponseReason> result =
+        MaybeBlockResponseForSRIMessageSignature(empty_method_request, *head,
+                                                 {public_key});
+    EXPECT_THAT(
+        result,
+        testing::Optional(
+            mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch));
+  }
+
+  // Empty method must NOT block when integrity is not required and no
+  // signatures are present.
+  {
+    ResourceRequest empty_method_request = resource_request;
+    empty_method_request.method = "";
+    mojom::URLResponseHeadPtr unsigned_head =
+        ResponseHead(kValidDigestHeader, "", "");
+    std::optional<mojom::BlockedByResponseReason> result =
+        MaybeBlockResponseForSRIMessageSignature(empty_method_request,
+                                                 *unsigned_head, {});
+    EXPECT_EQ(result, std::nullopt);
+  }
+
+  // Missing signatures when integrity is required must fail closed.
+  {
+    mojom::URLResponseHeadPtr unsigned_head =
+        ResponseHead(kValidDigestHeader, "", "");
+    std::optional<mojom::BlockedByResponseReason> result =
+        MaybeBlockResponseForSRIMessageSignature(resource_request,
+                                                 *unsigned_head, {public_key});
+    EXPECT_THAT(
+        result,
+        testing::Optional(
+            mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch));
+  }
+
+  // Null headers when integrity is required must fail closed.
+  {
+    mojom::URLResponseHead null_headers_head;
+    std::optional<mojom::BlockedByResponseReason> result =
+        MaybeBlockResponseForSRIMessageSignature(
+            resource_request, null_headers_head, {public_key});
+    EXPECT_THAT(
+        result,
+        testing::Optional(
+            mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch));
+  }
+
+  // Invalid URL when integrity is required must fail closed.
+  {
+    ResourceRequest invalid_url_request = resource_request;
+    invalid_url_request.url = GURL("invalid");
+    std::optional<mojom::BlockedByResponseReason> result =
+        MaybeBlockResponseForSRIMessageSignature(invalid_url_request, *head,
+                                                 {public_key});
+    EXPECT_THAT(
+        result,
+        testing::Optional(
+            mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch));
+  }
+
+  // ConstructSignatureBase and ValidateSRIMessageSignaturesOverHeaders with
+  // ResourceRequest:
+  {
+    auto parsed = ParseSRIMessageSignaturesFromHeaders(*head->headers);
+    EXPECT_EQ(1u, parsed->signatures.size());
+    EXPECT_TRUE(ConstructSignatureBase(parsed->signatures[0], resource_request,
+                                       *head->headers)
+                    .has_value());
+    EXPECT_TRUE(ValidateSRIMessageSignaturesOverHeaders(
+        parsed, resource_request, *head->headers));
   }
 }
 

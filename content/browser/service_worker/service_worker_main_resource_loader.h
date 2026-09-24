@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_MAIN_RESOURCE_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -162,9 +163,13 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // Sends net::ERR_INSUFFICIENT_RESOURCES when it can't be created.
   void CommitEmptyResponseAndComplete() override;
 
+  using ServiceWorkerResourceLoader::CommitCompleted;
   // Calls url_loader_client_->OnComplete(). |reason| will be recorded as an
   // argument of TRACE_EVENT.
-  void CommitCompleted(int error_code, const char* reason) override;
+  void CommitCompleted(int error_code,
+                       const char* reason,
+                       std::optional<network::mojom::BlockedByResponseReason>
+                           blocked_by_response_reason) override;
 
   // Calls url_loader_client_->OnReceiveRedirect().
   void HandleRedirect(

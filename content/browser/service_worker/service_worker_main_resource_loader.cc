@@ -54,6 +54,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/document_isolation_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/sri_message_signatures.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom.h"
@@ -743,8 +744,11 @@ void ServiceWorkerMainResourceLoader::CommitEmptyResponseAndComplete() {
   CommitCompleted(net::OK, "No body exists.");
 }
 
-void ServiceWorkerMainResourceLoader::CommitCompleted(int error_code,
-                                                      const char* reason) {
+void ServiceWorkerMainResourceLoader::CommitCompleted(
+    int error_code,
+    const char* reason,
+    std::optional<network::mojom::BlockedByResponseReason>
+        blocked_by_response_reason) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerMainResourceLoader::CommitCompleted",
               perfetto::Flow::FromPointer(this), "error_code",
@@ -773,8 +777,9 @@ void ServiceWorkerMainResourceLoader::CommitCompleted(int error_code,
   // |stream_waiter_| calls this when done.
   stream_waiter_.reset();
 
-  url_loader_client_->OnComplete(
-      network::URLLoaderCompletionStatus(error_code));
+  network::URLLoaderCompletionStatus status(error_code);
+  status.blocked_by_response_reason = blocked_by_response_reason;
+  url_loader_client_->OnComplete(status);
 }
 
 void ServiceWorkerMainResourceLoader::DidPrepareFetchEvent(
@@ -1406,6 +1411,16 @@ void ServiceWorkerMainResourceLoader::StartResponse(
                 perfetto::Flow::FromPointer(this), "result", "redirect",
                 "redirect url", redirect_info->new_url.spec());
     HandleRedirect(*redirect_info, response_head_);
+    return;
+  }
+
+  // SRI verification applies to the final response, not redirect hops.
+  if (std::optional<network::mojom::BlockedByResponseReason> blocked_reason =
+          network::MaybeBlockResponseForSRIMessageSignature(
+              resource_request_, *response_head_,
+              resource_request_.expected_public_keys)) {
+    CommitCompleted(net::ERR_BLOCKED_BY_RESPONSE,
+                    "SRI message signature mismatch", blocked_reason);
     return;
   }
 

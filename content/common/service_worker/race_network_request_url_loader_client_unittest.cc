@@ -83,7 +83,11 @@ class MockServiceWorkerResourceLoader : public ServiceWorkerResourceLoader {
     }
   }
   void CommitEmptyResponseAndComplete() override {}
-  void CommitCompleted(int error_code, const char* reason) override {
+  using ServiceWorkerResourceLoader::CommitCompleted;
+  void CommitCompleted(int error_code,
+                       const char* reason,
+                       std::optional<network::mojom::BlockedByResponseReason>
+                           blocked_by_response_reason) override {
     std::move(on_commit_completed_).Run(error_code, reason);
   }
   void HandleRedirect(

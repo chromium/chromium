@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -52,6 +53,7 @@
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -60,6 +62,7 @@
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -2611,5 +2614,29 @@ INSTANTIATE_TEST_SUITE_P(
                             /*expected_timing_allow_passed=*/false,
                             /*response_timing_allow_passed=*/false}));
 
+TEST_F(ServiceWorkerMainResourceLoaderTest, SRIMessageSignatureRejected) {
+  service_worker_->RespondWithHeaders(
+      {{"Signature",
+        "sig=:"
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        "AAAAAAAAAAAAAAAAAAAA=:"},
+       {"Signature-Input",
+        "sig=(\"unencoded-digest\";sf);keyid=\"JrQLj5P/"
+        "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"ed25519-integrity\""},
+       {"Unencoded-Digest",
+        "sha-256=:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=:"}});
+
+  std::unique_ptr<network::ResourceRequest> request = CreateRequest();
+  request->expected_public_keys = {
+      *base::Base64Decode("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=")};
+  StartRequest(std::move(request));
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+            client_.completion_status().error_code);
+  EXPECT_THAT(client_.completion_status().blocked_by_response_reason,
+              testing::Optional(network::mojom::BlockedByResponseReason::
+                                    kSRIMessageSignatureMismatch));
+}
 }  // namespace service_worker_main_resource_loader_unittest
 }  // namespace content

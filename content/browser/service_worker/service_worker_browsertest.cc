@@ -701,6 +701,79 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, FetchPageWithSaveData) {
   run_loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
+                       SubresourceIntegrityRobustness) {
+  StartServerAndNavigateToSetup();
+  const char kPageUrl[] = "/service_worker/empty.html";
+  const char kWorkerUrl[] =
+      "/service_worker/synthetic_integrity_response_worker.js";
+  WorkerStateObserver observer(wrapper(), ServiceWorkerVersion::ACTIVATED);
+  blink::mojom::ServiceWorkerRegistrationOptions options(
+      embedded_test_server()->GetURL(kPageUrl),
+      blink::mojom::ScriptType::kClassic,
+      blink::mojom::ServiceWorkerUpdateViaCache::kImports);
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
+  public_context()->RegisterServiceWorker(
+      embedded_test_server()->GetURL(kWorkerUrl), key, options,
+      GlobalRenderFrameHostId(),
+      base::BindOnce(&ExpectRegisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
+  observer.Wait();
+
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(kPageUrl)));
+
+  // When requested without integrity requirements, the synthetic response
+  // loads.
+  const char kLoadWithoutIntegrityScript[] = R"(
+    new Promise(resolve => {
+      const script = document.createElement('script');
+      script.src = '/service_worker/integrity_test.js';
+      script.onload = () => resolve('loaded');
+      script.onerror = () => resolve('error');
+      document.body.appendChild(script);
+    });
+  )";
+  EXPECT_EQ("loaded", EvalJs(shell(), kLoadWithoutIntegrityScript));
+
+  // When requested with integrity attributes, invalid synthetic signatures
+  // must be rejected.
+  const char kLoadWithIntegrityScript[] = R"(
+    new Promise(resolve => {
+      const script = document.createElement('script');
+      script.src = '/service_worker/integrity_test.js?with_sri';
+      script.integrity = 'ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=';
+      script.onload = () => resolve('loaded');
+      script.onerror = () => resolve('error');
+      document.body.appendChild(script);
+    });
+  )";
+  EXPECT_EQ("error", EvalJs(shell(), kLoadWithIntegrityScript));
+
+  // When requested with matching integrity attributes, valid synthetic
+  // signatures must be accepted, and the script must execute end-to-end.
+  const char kLoadWithValidIntegrityScript[] = R"(
+    new Promise(resolve => {
+      const script = document.createElement('script');
+      script.src = '/service_worker/integrity_test.js?with_valid_sri';
+      script.integrity = 'ed25519-JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=';
+      script.onload = () => resolve('loaded');
+      script.onerror = () => resolve('error');
+      document.body.appendChild(script);
+    });
+  )";
+  EXPECT_EQ("loaded", EvalJs(shell(), kLoadWithValidIntegrityScript));
+  EXPECT_EQ(true, EvalJs(shell(), "window.__sri_service_worker_executed"));
+
+  base::RunLoop run_loop;
+  public_context()->UnregisterServiceWorker(
+      embedded_test_server()->GetURL(kPageUrl), key,
+      base::BindOnce(&ExpectUnregisterResultAndRun,
+                     blink::ServiceWorkerStatusCode::kOk,
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
 // Tests that when data saver is enabled and a cross-origin fetch by a webpage
 // is intercepted by a serviceworker, and the serviceworker does a fetch, the
 // preflight request does not have save-data in Access-Control-Request-Headers.

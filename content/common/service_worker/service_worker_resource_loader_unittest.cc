@@ -32,7 +32,11 @@ class TestServiceWorkerResourceLoader : public ServiceWorkerResourceLoader {
 
   void CommitEmptyResponseAndComplete() override {}
 
-  void CommitCompleted(int error_code, const char* reason) override {}
+  using ServiceWorkerResourceLoader::CommitCompleted;
+  void CommitCompleted(int error_code,
+                       const char* reason,
+                       std::optional<network::mojom::BlockedByResponseReason>
+                           blocked_by_response_reason) override {}
 
   void HandleRedirect(
       const net::RedirectInfo& redirect_info,

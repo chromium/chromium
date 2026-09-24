@@ -33,6 +33,7 @@
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/sri_message_signatures.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom.h"
@@ -910,6 +911,16 @@ void ServiceWorkerSubresourceLoader::StartResponse(
     return;
   }
 
+  // SRI verification applies to the final response, not redirect hops.
+  if (std::optional<network::mojom::BlockedByResponseReason> blocked_reason =
+          network::MaybeBlockResponseForSRIMessageSignature(
+              resource_request_, *response_head_,
+              resource_request_.expected_public_keys)) {
+    CommitCompleted(net::ERR_BLOCKED_BY_RESPONSE,
+                    "SRI message signature mismatch", blocked_reason);
+    return;
+  }
+
   CHECK(url_loader_client_.is_bound());
   bool body_stream_is_valid =
       !body_as_stream.is_null() && body_as_stream->stream.is_valid();
@@ -1013,8 +1024,11 @@ void ServiceWorkerSubresourceLoader::CommitEmptyResponseAndComplete() {
   CommitCompleted(net::OK, "No body exists");
 }
 
-void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code,
-                                                     const char* reason) {
+void ServiceWorkerSubresourceLoader::CommitCompleted(
+    int error_code,
+    const char* reason,
+    std::optional<network::mojom::BlockedByResponseReason>
+        blocked_by_response_reason) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSubresourceLoader::CommitCompleted",
               perfetto::TerminatingFlow::Global(
@@ -1044,6 +1058,7 @@ void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code,
   network::URLLoaderCompletionStatus status;
   status.error_code = error_code;
   status.completion_time = base::TimeTicks::Now();
+  status.blocked_by_response_reason = blocked_by_response_reason;
   url_loader_client_->OnComplete(status);
 
   // Invalidate weak pointers to prevent callbacks after commit.  This can

@@ -21,6 +21,7 @@ class URLRequest;
 }
 
 namespace network {
+struct ResourceRequest;
 
 // Parses the HTTP Message Signature response headers relevant to SRI.
 //
@@ -43,6 +44,11 @@ base::expected<std::string, mojom::SRIMessageSignatureError>
 ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
                        const net::URLRequest& url_request,
                        const net::HttpResponseHeaders& headers);
+COMPONENT_EXPORT(NETWORK_CPP)
+base::expected<std::string, mojom::SRIMessageSignatureError>
+ConstructSignatureBase(const mojom::SRIMessageSignaturePtr& signature,
+                       const network::ResourceRequest& resource_request,
+                       const net::HttpResponseHeaders& headers);
 
 // Validates a response's SRI-relevant HTTP Message Signatures.
 //
@@ -54,6 +60,11 @@ bool ValidateSRIMessageSignaturesOverHeaders(
     mojom::SRIMessageSignaturesPtr& signatures,
     const net::URLRequest& url_request,
     const net::HttpResponseHeaders& headers);
+COMPONENT_EXPORT(NETWORK_CPP)
+bool ValidateSRIMessageSignaturesOverHeaders(
+    mojom::SRIMessageSignaturesPtr& signatures,
+    const network::ResourceRequest& resource_request,
+    const net::HttpResponseHeaders& headers);
 
 // Returns `BlockedByResponseReason::kSRIMessageSignatureMismatch` if a response
 // fails validation. If validation is successful, returns `std::nullopt`.
@@ -64,6 +75,14 @@ MaybeBlockResponseForSRIMessageSignature(
     const network::mojom::URLResponseHead& response,
     const std::vector<std::vector<uint8_t>>& expected_public_keys,
     const raw_ptr<mojom::DevToolsObserver> devtools_observer = nullptr,
+    const std::string& devtools_request_id = std::string());
+COMPONENT_EXPORT(NETWORK_CPP)
+std::optional<mojom::BlockedByResponseReason>
+MaybeBlockResponseForSRIMessageSignature(
+    const network::ResourceRequest& resource_request,
+    const network::mojom::URLResponseHead& response,
+    const std::vector<std::vector<uint8_t>>& expected_public_keys,
+    mojom::DevToolsObserver* devtools_observer = nullptr,
     const std::string& devtools_request_id = std::string());
 
 // Adds an `Accept-Signature` header to outgoing requests if the request's

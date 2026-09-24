@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
@@ -35,9 +36,11 @@
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/test/test_data_pipe_getter.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
@@ -220,6 +223,15 @@ class FakeControllerServiceWorker
         blob_body_->blob.InitWithNewPipeAndPassReceiver());
   }
 
+  void RespondWithBlobAndHeaders(
+      std::optional<std::vector<uint8_t>> metadata,
+      std::string body,
+      std::vector<std::pair<std::string, std::string>> headers) {
+    RespondWithBlob(std::move(metadata), std::move(body));
+    response_mode_ = ResponseMode::kBlobWithHeaders;
+    extra_headers_ = std::move(headers);
+  }
+
   // Tells this controller to respond to fetch events with a 206 partial
   // response, returning a blob composed of the requested bytes of |body|
   // according to the request headers.
@@ -334,13 +346,22 @@ class FakeControllerServiceWorker
             blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
       case ResponseMode::kBlob:
-        response_callback->OnResponse(
+      case ResponseMode::kBlobWithHeaders: {
+        auto response =
             OkResponse(std::move(blob_body_), response_source_, response_time_,
-                       cache_storage_cache_name_, response_type_),
-            std::move(timing), /*errors=*/nullptr);
+                       cache_storage_cache_name_, response_type_,
+                       parsed_headers_ ? parsed_headers_->Clone() : nullptr);
+        if (response_mode_ == ResponseMode::kBlobWithHeaders) {
+          for (const auto& pair : extra_headers_) {
+            response->headers.emplace(pair.first, pair.second);
+          }
+        }
+        response_callback->OnResponse(std::move(response), std::move(timing),
+                                      /*errors=*/nullptr);
         std::move(callback).Run(
             blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
+      }
 
       case ResponseMode::kBlobRange: {
         // Parse the Range header.
@@ -438,10 +459,12 @@ class FakeControllerServiceWorker
     kFallbackResponse,
     kErrorResponse,
     kRedirectResponse,
-    kDontRespond
+    kDontRespond,
+    kBlobWithHeaders
   };
 
   ResponseMode response_mode_ = ResponseMode::kDefault;
+  std::vector<std::pair<std::string, std::string>> extra_headers_;
   scoped_refptr<network::ResourceRequestBody> request_body_;
 
   int fetch_event_count_ = 0;
@@ -1836,6 +1859,88 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, TimingAllowPassedByResponseType) {
     EXPECT_EQ(test_case.expected_timing_allow_passed,
               client->response_head()->timing_allow_passed);
   }
+}
+
+TEST_F(ServiceWorkerSubresourceLoaderTest, SRIMessageSignatureRejected) {
+  fake_controller_.RespondWithBlobAndHeaders(
+      std::nullopt, "sample text",
+      {{"Signature",
+        "sig=:"
+        "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        "AAAAAAAAAAAAAAAAAAAA=:"},
+       {"Signature-Input",
+        "sig=(\"unencoded-digest\";sf);keyid=\"JrQLj5P/"
+        "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"ed25519-integrity\""},
+       {"Unencoded-Digest",
+        "sha-256=:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=:"}});
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      CreateSubresourceLoaderFactory();
+
+  network::ResourceRequest request =
+      CreateRequest(GURL("https://www.example.com/foo.js"));
+  request.expected_public_keys = {
+      *base::Base64Decode("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=")};
+  mojo::Remote<network::mojom::URLLoader> loader;
+  std::unique_ptr<network::TestURLLoaderClient> client;
+  StartRequest(factory, request, &loader, &client);
+  client->RunUntilComplete();
+
+  EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
+            client->completion_status().error_code);
+  EXPECT_THAT(client->completion_status().blocked_by_response_reason,
+              testing::Optional(network::mojom::BlockedByResponseReason::
+                                    kSRIMessageSignatureMismatch));
+}
+
+TEST_F(ServiceWorkerSubresourceLoaderTest, SRIMessageSignatureAccepted) {
+  fake_controller_.RespondWithBlobAndHeaders(
+      std::nullopt, "sample text",
+      {{"Signature",
+        "signature=:SbCdPUyjc0IBJjFbVRWs81ucEUcFz87b37nQ63d6kDW+/"
+        "JvDmET6O5cSdwlddePvlwemLdaWFuY6pQGO+hrkAg==:"},
+       {"Signature-Input",
+        "signature=(\"unencoded-digest\";sf);keyid=\"JrQLj5P/"
+        "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"ed25519-integrity\""},
+       {"Unencoded-Digest",
+        "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:"}});
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      CreateSubresourceLoaderFactory();
+
+  network::ResourceRequest request =
+      CreateRequest(GURL("https://www.example.com/foo.js"));
+  request.expected_public_keys = {
+      *base::Base64Decode("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=")};
+  mojo::Remote<network::mojom::URLLoader> loader;
+  std::unique_ptr<network::TestURLLoaderClient> client;
+  StartRequest(factory, request, &loader, &client);
+  client->RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client->completion_status().error_code);
+  EXPECT_EQ(client->completion_status().blocked_by_response_reason,
+            std::nullopt);
+}
+
+TEST_F(ServiceWorkerSubresourceLoaderTest, SRIMessageSignatureAllowsRedirect) {
+  fake_controller_.RespondWithRedirect("https://www.example.com/redirected.js");
+
+  mojo::Remote<network::mojom::URLLoaderFactory> factory =
+      CreateSubresourceLoaderFactory();
+
+  network::ResourceRequest request =
+      CreateRequest(GURL("https://www.example.com/foo.js"));
+  request.expected_public_keys = {
+      *base::Base64Decode("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=")};
+  mojo::Remote<network::mojom::URLLoader> loader;
+  std::unique_ptr<network::TestURLLoaderClient> client;
+  StartRequest(factory, request, &loader, &client);
+  client->RunUntilRedirectReceived();
+
+  EXPECT_EQ(net::OK, client->completion_status().error_code);
+  EXPECT_TRUE(client->has_received_redirect());
+  EXPECT_EQ(GURL("https://www.example.com/redirected.js"),
+            client->redirect_info().new_url);
 }
 
 }  // namespace service_worker_subresource_loader_unittest

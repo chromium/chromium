@@ -135,4 +135,44 @@ TEST(ServiceWorkerLoaderHelpersTest, SaveResponseInfo_TimingAllowPassedReset) {
   EXPECT_FALSE(head->timing_allow_passed);
 }
 
+TEST(ServiceWorkerLoaderHelpersTest, SaveResponseInfo_UnencodedDigests) {
+  auto response = mojom::FetchAPIResponse::New();
+  response->status_code = 200;
+  response->status_text = "OK";
+  response->response_type = network::mojom::FetchResponseType::kBasic;
+  response->headers["Unencoded-Digest"] =
+      "sha-256=:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=:";
+
+  auto head = network::mojom::URLResponseHead::New();
+  ServiceWorkerLoaderHelpers::SaveResponseInfo(*response, head.get());
+
+  ASSERT_TRUE(head->headers);
+  ASSERT_TRUE(head->unencoded_digests);
+  EXPECT_EQ(1u, head->unencoded_digests->digests.size());
+}
+
+TEST(ServiceWorkerLoaderHelpersTest, SaveResponseInfo_CorsPreservesSRIHeaders) {
+  auto response = mojom::FetchAPIResponse::New();
+  response->status_code = 200;
+  response->status_text = "OK";
+  response->response_type = network::mojom::FetchResponseType::kCors;
+  response->headers["Unencoded-Digest"] =
+      "sha-256=:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=:";
+  response->headers["Signature"] = "sig=:AAAA==:";
+  response->headers["Signature-Input"] = "sig=(\"unencoded-digest\";sf)";
+  // Verify that an unrelated non-safelisted header is still stripped.
+  response->headers["X-Custom-Header"] = "custom";
+
+  auto head = network::mojom::URLResponseHead::New();
+  ServiceWorkerLoaderHelpers::SaveResponseInfo(*response, head.get());
+
+  ASSERT_TRUE(head->headers);
+  EXPECT_TRUE(head->headers->HasHeader("Unencoded-Digest"));
+  EXPECT_TRUE(head->headers->HasHeader("Signature"));
+  EXPECT_TRUE(head->headers->HasHeader("Signature-Input"));
+  EXPECT_FALSE(head->headers->HasHeader("X-Custom-Header"));
+  ASSERT_TRUE(head->unencoded_digests);
+  EXPECT_EQ(1u, head->unencoded_digests->digests.size());
+}
+
 }  // namespace blink
