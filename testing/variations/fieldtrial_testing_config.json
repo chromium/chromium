@@ -3394,6 +3394,22 @@
             ]
         }
     ],
+    "BrowsingHistorySimilarVisitsGroupingMobile": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BrowsingHistorySimilarVisitsGrouping"
+                    ]
+                }
+            ]
+        }
+    ],
     "BundledSecuritySettingsAskBeforeHttp": [
         {
             "platforms": [
