@@ -61,6 +61,9 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
   static uint8_t is_stateful(const base::MemoryConsumerTraits& input) {
     return std::to_underlying(input.is_stateful);
   }
+  static uint8_t recovery_behavior(const base::MemoryConsumerTraits& input) {
+    return std::to_underlying(input.recovery_behavior);
+  }
   static uint8_t consumer_type(const base::MemoryConsumerTraits& input) {
     return std::to_underlying(input.consumer_type);
   }
@@ -84,7 +87,8 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
                          &output->release_gc_references) &&
            ConvertToEnum(input.garbage_collects_v8_heap(),
                          &output->garbage_collects_v8_heap) &&
-           ConvertToEnum(input.is_stateful(), &output->is_stateful);
+           ConvertToEnum(input.is_stateful(), &output->is_stateful) &&
+           ConvertToEnum(input.recovery_behavior(), &output->recovery_behavior);
   }
 };
 

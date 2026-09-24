@@ -154,6 +154,8 @@ TEST(MemoryConsumerTraitsTest, PassiveConsumerTraitsValidation) {
             MemoryConsumerTraits::GarbageCollectsV8Heap::kNo);
   EXPECT_EQ(kDefaultPassive.is_stateful,
             MemoryConsumerTraits::IsStateful::kYes);
+  EXPECT_EQ(kDefaultPassive.recovery_behavior,
+            MemoryConsumerTraits::RecoveryBehavior::kNA);
 
   // 2. Custom passive traits
   constexpr MemoryConsumerTraits kCustomPassive(
@@ -183,6 +185,8 @@ TEST(MemoryConsumerTraitsTest, PassiveConsumerTraitsValidation) {
   EXPECT_EQ(kCustomPassive.garbage_collects_v8_heap,
             MemoryConsumerTraits::GarbageCollectsV8Heap::kNo);
   EXPECT_EQ(kCustomPassive.is_stateful, MemoryConsumerTraits::IsStateful::kYes);
+  EXPECT_EQ(kCustomPassive.recovery_behavior,
+            MemoryConsumerTraits::RecoveryBehavior::kNA);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)

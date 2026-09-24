@@ -50,6 +50,7 @@ struct MemoryConsumerTraits {
   uint8 release_gc_references;
   uint8 garbage_collects_v8_heap;
   uint8 is_stateful;
+  uint8 recovery_behavior;
 };
 
 // The registration of a single MemoryConsumer. Used by RegisterMany().

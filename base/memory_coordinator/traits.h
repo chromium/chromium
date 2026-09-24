@@ -215,6 +215,33 @@ struct BASE_EXPORT MemoryConsumerTraits {
     kDefaultValue = kYes,
   };
 
+  // Indicates whether the consumer performs a "recovery", i.e. takes an
+  // explicit action to use more memory when its memory limit is raised
+  // (typically once memory pressure is over).
+  //
+  // A consumer whose OnUpdateMemoryLimit() merely raises an internal maximum
+  // size does not recover: no memory is used as a result of the update. Such a
+  // consumer is kNone, even though normal Chrome usage may later grow its
+  // memory usage back up (e.g. a cache refilling as entries are inserted) --
+  // that growth is driven by usage, not by the limit change.
+  //
+  // kNone is the default because it is by far the common case. Consumers that
+  // explicitly allocate on a limit increase must set kImmediate.
+  enum class RecoveryBehavior : uint8_t {
+    // The consumer takes no action to use more memory when its limit is raised.
+    kNone,
+    // The consumer allocates or repopulates memory as soon as its limit is
+    // raised. This has an instant memory cost that risks re-creating the
+    // pressure that was just relieved, so the memory coordinator may restore
+    // such limits more conservatively.
+    kImmediate,
+    // Not applicable (e.g. for passive consumers).
+    kNA,
+
+    kMaxValue = kNA,
+    kDefaultValue = kNone,
+  };
+
   // ---- End of traits --------------------------------------------------------
 
   using RequiredTraitsList = base::ParameterPack<EstimatedMemoryUsage,
@@ -228,6 +255,7 @@ struct BASE_EXPORT MemoryConsumerTraits {
                                                  ReleaseGCReferences,
                                                  GarbageCollectsV8Heap,
                                                  IsStateful,
+                                                 RecoveryBehavior,
                                                  ConsumerType>;
 
   using PassiveOptionalTraitsList =
@@ -278,7 +306,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
                                               ReleaseGCReferences::kNo>(
                 args...)),
         garbage_collects_v8_heap(GarbageCollectsV8Heap::kNo),
-        is_stateful(IsStateful::kYes) {
+        is_stateful(IsStateful::kYes),
+        recovery_behavior(RecoveryBehavior::kNA) {
     CHECK_EQ(consumer_type, ConsumerType::kPassive);
   }
 
@@ -324,7 +353,9 @@ struct BASE_EXPORT MemoryConsumerTraits {
             internal::GetTraitOrDefault<ReleaseGCReferences>(args...)),
         garbage_collects_v8_heap(
             internal::GetTraitOrDefault<GarbageCollectsV8Heap>(args...)),
-        is_stateful(internal::GetTraitOrDefault<IsStateful>(args...)) {
+        is_stateful(internal::GetTraitOrDefault<IsStateful>(args...)),
+        recovery_behavior(
+            internal::GetTraitOrDefault<RecoveryBehavior>(args...)) {
     CHECK_EQ(consumer_type, ConsumerType::kActive);
   }
 
@@ -358,6 +389,7 @@ struct BASE_EXPORT MemoryConsumerTraits {
   ReleaseGCReferences release_gc_references;
   GarbageCollectsV8Heap garbage_collects_v8_heap;
   IsStateful is_stateful;
+  RecoveryBehavior recovery_behavior;
   // LINT.ThenChange(//content/common/memory_coordinator/mojom/memory_coordinator.mojom)
 };
 

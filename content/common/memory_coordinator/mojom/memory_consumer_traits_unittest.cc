@@ -27,6 +27,7 @@ using RecreateMemoryCost = base::MemoryConsumerTraits::RecreateMemoryCost;
 using ReleaseGCReferences = base::MemoryConsumerTraits::ReleaseGCReferences;
 using GarbageCollectsV8Heap = base::MemoryConsumerTraits::GarbageCollectsV8Heap;
 using IsStateful = base::MemoryConsumerTraits::IsStateful;
+using RecoveryBehavior = base::MemoryConsumerTraits::RecoveryBehavior;
 
 // Helper to determine the maximum value among all trait enums in a
 // ParameterPack.
@@ -99,7 +100,8 @@ TEST_F(MemoryConsumerTraitsTest, EchoAllTraits) {
         GenerateValue<SupportsMemoryLimit>(i), GenerateValue<InProcess>(i),
         GenerateValue<RecreateMemoryCost>(i),
         GenerateValue<ReleaseGCReferences>(i),
-        GenerateValue<GarbageCollectsV8Heap>(i), GenerateValue<IsStateful>(i));
+        GenerateValue<GarbageCollectsV8Heap>(i), GenerateValue<IsStateful>(i),
+        GenerateValue<RecoveryBehavior>(i));
 
     base::test::TestFuture<base::MemoryConsumerTraits> future;
     remote()->EchoMemoryConsumerTraits(test_case, future.GetCallback());
