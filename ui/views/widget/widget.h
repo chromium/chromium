@@ -63,7 +63,6 @@ class Rect;
 namespace ui {
 class Accelerator;
 class ColorProvider;
-class ColorProviderSourceObserver;
 class Compositor;
 class GestureRecognizer;
 class InputMethod;
@@ -1620,6 +1619,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   };
 
   class PaintAsActiveLockImpl;
+  class ParentThemeObserver;
   class ScopedCallStackLock;
 
   friend class ButtonTest;
@@ -1907,9 +1907,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // short-circuit redundant ThemeChanged() calls.
   std::optional<ui::ColorProviderKey> last_color_provider_key_;
 
+  // Updates the observation of either the parent widget's ColorProviderSource
+  // or the NativeTheme.
+  void UpdateThemeObservation();
+
   // Observes the parent widget's ColorProviderSource to propagate theme
   // changes.
-  std::unique_ptr<ui::ColorProviderSourceObserver> parent_theme_observer_;
+  std::unique_ptr<ParentThemeObserver> parent_theme_observer_;
 
   void ProcessScheduledThemeChanged();
 
