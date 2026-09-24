@@ -2282,6 +2282,7 @@ VISIT_PROTO_FIELDS(const sync_pb::Offer& proto) {
   VISIT(offer_title_image_url);
   VISIT_REP(issuer_domains);
   VISIT(description);
+  VISIT(issue_time_unix_epoch_micros);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::Order& proto) {

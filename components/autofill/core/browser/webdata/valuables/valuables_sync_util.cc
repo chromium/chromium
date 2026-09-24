@@ -149,6 +149,7 @@ void TrimOffer(sync_pb::Offer& offer) {
   offer.clear_offer_title_image_url();
   offer.clear_issuer_domains();
   offer.clear_description();
+  offer.clear_issue_time_unix_epoch_micros();
 }
 // LINT.ThenChange(//components/sync/protocol/autofill_valuable_specifics.proto:Offer)
 

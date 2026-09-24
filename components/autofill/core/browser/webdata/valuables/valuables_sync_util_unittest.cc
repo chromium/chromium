@@ -153,6 +153,7 @@ TEST(OfferSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {
       "https://image.com/logo.png");
   specifics.mutable_offer()->add_issuer_domains("safeway.com");
   specifics.mutable_offer()->set_description("50% off your next purchase");
+  specifics.mutable_offer()->set_issue_time_unix_epoch_micros(123456789);
   specifics.set_pass_view_url("https://safeway.com/offer-details");
 
   EXPECT_EQ(

@@ -347,6 +347,9 @@ message Offer {
 
   // The description of the offer, like "50% off your next purchase".
   optional string description = 8;
+
+  // The time at which the offer was issued, in unix epoch microseconds.
+  optional int64 issue_time_unix_epoch_micros = 9;
 }
 // LINT.ThenChange(//components/autofill/core/browser/webdata/valuables/valuables_sync_util.cc:TrimOffer)
 
