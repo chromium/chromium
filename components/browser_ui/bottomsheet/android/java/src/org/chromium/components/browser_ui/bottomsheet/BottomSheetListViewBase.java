@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
@@ -70,6 +71,8 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
     // the screens in the bottom sheets. For example, if the bottom sheet has multiple screens
     // (e.g. main and detail screens).
     private @Nullable RecyclerView mSheetItemListView;
+    // Location array cached to prevent allocations on every motion event.
+    private final int[] mCachedLocation = new int[2];
 
     private final BottomSheetObserver mBottomSheetObserver =
             new BottomSheetObserver() {
@@ -544,6 +547,34 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
     @Override
     public @Nullable View getToolbarView() {
         return null;
+    }
+
+    @Override
+    public boolean canDragSheet(@Nullable MotionEvent event) {
+        if (event == null) {
+            return false;
+        }
+        if (mSheetItemListView == null
+                || !mSheetItemListView.isShown()
+                || !mContentView.isShown()
+                || mContentView.getWidth() <= 0) {
+            return false;
+        }
+        mContentView.getLocationOnScreen(mCachedLocation);
+        int contentLeft = mCachedLocation[0];
+        int contentTop = mCachedLocation[1];
+        int contentRight = contentLeft + mContentView.getWidth();
+
+        float rawX = event.getRawX();
+        float rawY = event.getRawY();
+        if (rawX < contentLeft || rawX > contentRight || rawY < contentTop) {
+            return false;
+        }
+
+        mSheetItemListView.getLocationOnScreen(mCachedLocation);
+        int listTop = mCachedLocation[1];
+
+        return rawY < listTop;
     }
 
     @Override

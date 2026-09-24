@@ -601,7 +601,14 @@ class BottomSheet extends BottomSheetView
     }
 
     @Override
-    public boolean isTouchEventInToolbar(MotionEvent event) {
+    public boolean shouldDragSheet(@Nullable MotionEvent event) {
+        if (event == null) {
+            return false;
+        }
+        BottomSheetContent content = getCurrentSheetContent();
+        if (content != null && content.canDragSheet(event)) {
+            return true;
+        }
         return isEventInToolbar(event);
     }
 

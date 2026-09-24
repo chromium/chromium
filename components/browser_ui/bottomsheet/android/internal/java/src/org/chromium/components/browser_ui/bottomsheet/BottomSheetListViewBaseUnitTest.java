@@ -12,7 +12,9 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
@@ -453,5 +455,90 @@ public class BottomSheetListViewBaseUnitTest {
         assertEquals(600, mListViewBase.getCachedMaximumSheetHeightPxForTesting());
         assertEquals(0, mListViewBase.mLastContainerWidth);
         assertEquals(0, mListViewBase.mLastContainerHeight);
+    }
+
+    /**
+     * Test that `canDragSheet` safely returns false for null events, returns false when the list
+     * view has not been initialized, is hidden, or when content view is hidden or has non-positive
+     * width, and returns true only for touch coordinates strictly within the content view bounds
+     * and above the list view.
+     */
+    @Test
+    public void testCanDragSheet() {
+        // When motion event is null, canDragSheet should safely return false.
+        assertFalse(mListViewBase.canDragSheet(null));
+
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 500, 250, 0);
+
+        // When the list view has not been initialized, canDragSheet should return false.
+        assertFalse(mListViewBase.canDragSheet(event));
+
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        FrameLayout contentView = new FrameLayout(activity);
+        RecyclerView recyclerView = new RecyclerView(activity);
+        contentView.addView(recyclerView);
+
+        TestBottomSheetListView listViewBase =
+                new TestBottomSheetListView(mMockBottomSheetController, contentView);
+        listViewBase.setSheetItemListView(recyclerView);
+
+        // Attach contentView to the activity.
+        activity.setContentView(contentView);
+
+        // Layout contentView from x=[100, 900], y=[200, 1000].
+        contentView.layout(100, 200, 900, 1000);
+        // Layout recyclerView inside contentView below header from x=[0, 800], y=[150, 800].
+        recyclerView.layout(0, 150, 800, 800);
+
+        int[] listLocation = new int[2];
+        recyclerView.getLocationOnScreen(listLocation);
+        int listTop = listLocation[1];
+
+        int[] contentLocation = new int[2];
+        contentView.getLocationOnScreen(contentLocation);
+        int contentLeft = contentLocation[0];
+        int contentTop = contentLocation[1];
+        int contentRight = contentLeft + contentView.getWidth();
+
+        // Coordinates above contentView (e.g. in scrim area) should return false.
+        MotionEvent eventAbove =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 500, contentTop - 10, 0);
+        assertFalse(listViewBase.canDragSheet(eventAbove));
+
+        // Coordinates to the left of contentView should return false.
+        MotionEvent eventLeft =
+                MotionEvent.obtain(
+                        0, 0, MotionEvent.ACTION_DOWN, contentLeft - 10, contentTop + 50, 0);
+        assertFalse(listViewBase.canDragSheet(eventLeft));
+
+        // Coordinates to the right of contentView should return false.
+        MotionEvent eventRight =
+                MotionEvent.obtain(
+                        0, 0, MotionEvent.ACTION_DOWN, contentRight + 10, contentTop + 50, 0);
+        assertFalse(listViewBase.canDragSheet(eventRight));
+
+        // Coordinates within header area (between contentTop and listTop) should return true.
+        MotionEvent eventHeader =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 500, contentTop + 50, 0);
+        assertTrue(listViewBase.canDragSheet(eventHeader));
+
+        // Coordinates at the boundary of the list view should return false.
+        MotionEvent eventListBoundary =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 500, listTop, 0);
+        assertFalse(listViewBase.canDragSheet(eventListBoundary));
+
+        // Coordinates inside the scrollable list view should return false.
+        MotionEvent eventInList =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 500, listTop + 50, 0);
+        assertFalse(listViewBase.canDragSheet(eventInList));
+
+        // When list view is hidden, canDragSheet should return false.
+        recyclerView.setVisibility(View.GONE);
+        assertFalse(listViewBase.canDragSheet(eventHeader));
+
+        // When content view is hidden, canDragSheet should return false.
+        recyclerView.setVisibility(View.VISIBLE);
+        contentView.setVisibility(View.GONE);
+        assertFalse(listViewBase.canDragSheet(eventHeader));
     }
 }

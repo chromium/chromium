@@ -25,6 +25,7 @@ import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -1969,5 +1970,45 @@ public class BottomSheetUnitTest {
                 "Desktop bottom margin must be removed when content is cleared.",
                 0,
                 sheet.getContainerBottomMargin());
+    }
+
+    /**
+     * Test that `shouldDragSheet` safely handles null events, delegates to
+     * `BottomSheetContent.canDragSheet` when present, returns false if `mToolbarHolder` has height
+     * 0 and content cannot drag sheet, and checks `mToolbarHolder` bounds when `mToolbarHolder` has
+     * non-zero height.
+     */
+    @Test
+    public void testShouldDragSheet() {
+        // When motion event is null, should return false safely.
+        assertFalse(mBottomSheet.shouldDragSheet(null));
+
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 50, 0);
+
+        // When sheet content is null and toolbar height is 0, should return false.
+        when(mToolbarHolder.getHeight()).thenReturn(0);
+        assertFalse(mBottomSheet.shouldDragSheet(event));
+
+        doReturn(new View(mActivity)).when(mSheetContent).getContentView();
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+        mBottomSheet.showContent(mSheetContent);
+
+        // When content allows dragging via canDragSheet, shouldDragSheet should be true.
+        doReturn(true).when(mSheetContent).canDragSheet(event);
+        assertTrue(mBottomSheet.shouldDragSheet(event));
+
+        // When content canDragSheet returns false and toolbar height is 0, should return false.
+        doReturn(false).when(mSheetContent).canDragSheet(event);
+        when(mToolbarHolder.getHeight()).thenReturn(0);
+        assertFalse(mBottomSheet.shouldDragSheet(event));
+
+        // When content canDragSheet returns false and toolbar has height 100 with event rawY 50,
+        // should return true based on toolbar.
+        when(mToolbarHolder.getHeight()).thenReturn(100);
+        assertTrue(mBottomSheet.shouldDragSheet(event));
+
+        // When event rawY is 150 (below toolbar height 100), should return false.
+        MotionEvent eventBelow = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 100, 150, 0);
+        assertFalse(mBottomSheet.shouldDragSheet(eventBelow));
     }
 }

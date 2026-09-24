@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -132,6 +133,16 @@ public interface BottomSheetContent {
      * @return The toolbar view.
      */
     @Nullable View getToolbarView();
+
+    /**
+     * @param event The motion event to test.
+     * @return Whether a drag gesture starting at this touch event can drag the sheet, even if the
+     *     content inside the sheet is scrolled down (e.g. touches on a custom header area or drag
+     *     handlebar).
+     */
+    default boolean canDragSheet(@Nullable MotionEvent event) {
+        return false;
+    }
 
     /**
      * @return The vertical scroll offset of the content view.

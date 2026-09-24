@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetSwipeDetector.SwipeableBottomSheet;
 
 import java.util.ArrayList;
@@ -93,9 +94,12 @@ public final class BottomSheetSwipeDetectorTest {
         }
 
         @Override
-        public boolean isTouchEventInToolbar(MotionEvent event) {
+        public boolean shouldDragSheet(@Nullable MotionEvent event) {
+            if (event == null) {
+                return false;
+            }
             // This will be implementation specific in practice. This checks that the motion event
-            // occured above the bottom of the toolbar.
+            // occurred above the bottom of the toolbar.
             return event.getRawY() < (mMaxOffset - mCurrentSheetOffset) + mMinOffset;
         }
 
@@ -286,12 +290,15 @@ public final class BottomSheetSwipeDetectorTest {
 
     /**
      * Test that the sheet moves when scrolled down from max height while the content has been
-     * scrolled.
+     * scrolled away from top.
      */
     @Test
     public void testScrollToolbarDown_maxHeight_contentScrolled() {
         // Init the sheet to be full height.
         mSwipeableBottomSheet.setSheetOffset(SCREEN_HEIGHT, false);
+
+        // Content is scrolled away from top.
+        mSwipeableBottomSheet.isContentScrolledToTop = false;
 
         assertEquals(
                 "The sheet should be at the maximum state.",
@@ -310,6 +317,81 @@ public final class BottomSheetSwipeDetectorTest {
                 mSwipeableBottomSheet.getCurrentOffsetPx(),
                 MathUtils.EPSILON);
         assertTrue("The sheet should be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
+    }
+
+    /**
+     * Test that the sheet moves when the initial touch starts in the toolbar even if the current
+     * move event extends beyond the toolbar bounds while the content is scrolled.
+     */
+    @Test
+    public void testScrollToolbarDown_initialEventInToolbar_movingBeyondToolbar_movesSheet() {
+        // Init the sheet to be full height.
+        mSwipeableBottomSheet.setSheetOffset(SCREEN_HEIGHT, false);
+
+        // Content is scrolled away from top.
+        mSwipeableBottomSheet.isContentScrolledToTop = false;
+
+        // In MockSwipeableBottomSheet at full height, toolbar bounds are [0, MIN_SHEET_OFFSET].
+        // Start gesture at y=50 (inside toolbar) and drag down to y=800 (well outside toolbar).
+        performScroll(0, 50, 0, 800, mSwipeDetector, true);
+
+        // Verify the sheet moved down past the maximum position by 750px (1000 - 750 = 250).
+        assertEquals(
+                "The sheet is not at the correct height.",
+                250f,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
+        assertTrue("The sheet should be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
+    }
+
+    /**
+     * Test that a gesture starting in the list does not hijack and move the sheet when the move
+     * event enters the toolbar area while content is scrolled.
+     */
+    @Test
+    public void testScrollList_initialEventInList_movingIntoToolbar_doesNotMoveSheet() {
+        // Init the sheet to be full height.
+        mSwipeableBottomSheet.setSheetOffset(SCREEN_HEIGHT, false);
+
+        // Content is scrolled away from top.
+        mSwipeableBottomSheet.isContentScrolledToTop = false;
+
+        // In MockSwipeableBottomSheet at full height, toolbar bounds are [0, MIN_SHEET_OFFSET] (0
+        // to 100).
+        // A gesture starting in the list (y=500) and moving upward into the toolbar (y=50), then
+        // slightly downward while in the toolbar (y=80) should not move the sheet.
+        ArrayList<MotionEvent> eventStream = new ArrayList<>();
+        eventStream.add(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 500, 0));
+        eventStream.add(MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0, 50, 0));
+        // Downward move relative to previous event (50 -> 80), inside toolbar bounds.
+        eventStream.add(MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0, 80, 0));
+        eventStream.add(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 80, 0));
+
+        applyGestureStream(eventStream, mSwipeDetector);
+
+        // The sheet should NOT have moved down because the initial touch was outside the toolbar.
+        assertEquals(
+                "The sheet should not have moved down from maximum height.",
+                SCREEN_HEIGHT,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
+        assertFalse(
+                "The sheet should not be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
+    }
+
+    /**
+     * Test that passing a null initial down event to `onScroll` safely returns false without
+     * throwing a NullPointerException or moving the sheet.
+     */
+    @Test
+    public void testScrollToolbarDown_nullInitialEvent_returnsFalse() {
+        MotionEvent moveEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0, 100, 0);
+        assertFalse(mSwipeDetector.onScroll(null, moveEvent, 0, -100));
+        assertEquals(
+                "Sheet offset should not change when initial event is null.",
+                MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
     }
 
     /** Test that the sheet does not move when a scroll is not sufficiently in the up direction. */

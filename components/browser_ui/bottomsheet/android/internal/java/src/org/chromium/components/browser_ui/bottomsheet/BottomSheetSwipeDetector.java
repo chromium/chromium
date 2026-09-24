@@ -75,13 +75,14 @@ class BottomSheetSwipeDetector extends GestureDetector.SimpleOnGestureListener {
 
         /**
          * @param event The motion event to test.
-         * @return Whether the provided motion event is inside the toolbar.
+         * @return Whether a drag gesture starting at the touch event should move the sheet.
          */
-        boolean isTouchEventInToolbar(MotionEvent event);
+        boolean shouldDragSheet(@Nullable MotionEvent event);
 
         /**
          * Check if a particular gesture or touch event should move the bottom sheet when in peeking
          * mode. If the "chrome-home-swipe-logic" flag is not set this function returns true.
+         *
          * @param initialDownEvent The event that started the scroll.
          * @param currentEvent The current motion event.
          * @return True if the bottom sheet should move.
@@ -149,7 +150,8 @@ class BottomSheetSwipeDetector extends GestureDetector.SimpleOnGestureListener {
                             mSheetDelegate.getCurrentOffsetPx(), mSheetDelegate.getMaxOffsetPx());
 
             // Allow the bottom sheet's content to be scrolled up without dragging the sheet down.
-            if (!mSheetDelegate.isTouchEventInToolbar(e2)
+            boolean shouldDragSheet = mSheetDelegate.shouldDragSheet(e1);
+            if (!shouldDragSheet
                     && isSheetInMaxPosition
                     && !mSheetDelegate.isContentScrolledToTop()) {
                 return false;
