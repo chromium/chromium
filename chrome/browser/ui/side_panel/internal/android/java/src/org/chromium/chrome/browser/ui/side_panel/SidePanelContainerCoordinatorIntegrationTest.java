@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.ui.side_panel.test.SidePanelContainerCoordina
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.UndoSnackbarFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -632,6 +633,40 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                 tabSwitcherStation.selectTabAtIndex(0, WebPageStation.newBuilder());
 
         // Assert: The side panel is automatically restored and reopened.
+        waitForContainerViewOpen(coordinator);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE + ":scope/tab")
+    public void closeTab_undo_restoresTabScopedSidePanel() {
+        // Arrange: Open a second tab and show the side panel on it.
+        var newTabPageStation = mResponsivePageStation.openNewTabFast();
+        var newTab = newTabPageStation.getTab();
+        var coordinator = getSidePanelContainerCoordinator();
+        showPanel(newTab);
+        waitForContainerViewOpen(coordinator);
+
+        // Act: Close the new (active) tab.
+        var undoSnackbar =
+                ChromeTriggers.invokeCustomMenuActionTo(
+                                org.chromium.chrome.R.id.close_tab, newTabPageStation)
+                        .arriveAtAnd(
+                                WebPageStation.newBuilder()
+                                        .initFrom(newTabPageStation)
+                                        .withIsSelectingTabs(1)
+                                        .build())
+                        .enterFacility(new UndoSnackbarFacility<>("Closed"));
+
+        // Assert: The side panel is closed because the first tab doesn't have an open side panel.
+        waitForContainerViewClose(coordinator);
+
+        // Act: Undo the tab closure.
+        undoSnackbar
+                .pressUndoTo()
+                .arriveAt(RegularNewTabPageStation.newBuilder().initSelectingExistingTab().build());
+
+        // Assert: The side panel for the second tab is automatically restored and reopened.
         waitForContainerViewOpen(coordinator);
     }
 
