@@ -518,6 +518,11 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
     // The promo elements for current state are shown correctly.
     assertTrue(
         isChildVisible(historySyncPromo, '#web-only-signed-in-description'));
+    assertEquals(
+        loadTimeData.getString('historySyncPromoBodyWebOnlySignedIn'),
+        historySyncPromo.shadowRoot
+            .querySelector<HTMLElement>(
+                '#web-only-signed-in-description')!.textContent.trim());
     assertTrue(isChildVisible(historySyncPromo, '#profile-info-row'));
     assertTrue(isChildVisible(historySyncPromo, '#sync-history-button'));
 
@@ -543,6 +548,11 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
     // The promo elements for current state are shown correctly.
     assertTrue(isChildVisible(historySyncPromo, '#sync-history-illustration'));
     assertTrue(isChildVisible(historySyncPromo, '#signed-out-description'));
+    assertEquals(
+        loadTimeData.getString('historySyncPromoBodySignedOut'),
+        historySyncPromo.shadowRoot
+            .querySelector<HTMLElement>(
+                '#signed-out-description')!.textContent.trim());
     assertTrue(isChildVisible(historySyncPromo, '#sync-history-button'));
 
     // The other states promo elements should not be visible.

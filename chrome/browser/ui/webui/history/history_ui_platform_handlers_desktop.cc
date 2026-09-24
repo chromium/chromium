@@ -47,7 +47,9 @@
 #include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/signin/account_preview_utils.h"
 #include "chrome/browser/ui/webui/history/history_cross_device_signin_promo_handler.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace history {
@@ -73,13 +75,42 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
       IdentityManagerFactory::GetForProfile(profile);
   bool has_primary_account =
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  signin::AccountPreviewDataService* account_preview_data_service =
+      AccountPreviewDataServiceFactory::GetForProfile(profile);
   AccountInfo account_info = signin_ui_util::GetSingleAccountForPromos(
-      identity_manager,
-      AccountPreviewDataServiceFactory::GetForProfile(profile));
+      identity_manager, account_preview_data_service);
+  std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
+      preferred_account =
+          account_preview_data_service
+              ? account_preview_data_service->GetPreferredAccountForPromo()
+              : std::nullopt;
+  bool has_matching_preferred_account =
+      preferred_account.has_value() &&
+      preferred_account->gaia_id == account_info.GetGaiaId();
+
   source->AddString(
       "historySyncPromoBodySignedIn",
-      l10n_util::GetStringFUTF16(IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_IN,
-                                 base::UTF8ToUTF16(account_info.GetEmail())));
+      has_matching_preferred_account
+          ? base::UTF8ToUTF16(
+                signin::GetAccountPreviewHistorySignedInPromoSubtitle(
+                    *preferred_account))
+          : l10n_util::GetStringFUTF16(
+                IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_IN,
+                base::UTF8ToUTF16(account_info.GetEmail())));
+
+  std::optional<std::string> custom_signed_out_subtitle;
+  if (has_matching_preferred_account) {
+    custom_signed_out_subtitle = signin::GetAccountPreviewHistoryPromoSubtitle(
+        account_info.GetEmail(), *preferred_account);
+  }
+  if (custom_signed_out_subtitle.has_value() &&
+      !custom_signed_out_subtitle->empty()) {
+    source->AddString("historySyncPromoBodyWebOnlySignedIn",
+                      *custom_signed_out_subtitle);
+  } else {
+    source->AddLocalizedString("historySyncPromoBodyWebOnlySignedIn",
+                               IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_OUT);
+  }
   source->AddString(
       "turnOnSignedInSyncHistoryPromoBodySignInSyncOff",
       l10n_util::GetStringFUTF16(

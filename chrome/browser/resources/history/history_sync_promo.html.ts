@@ -36,7 +36,7 @@ ${this.shown_ ? html`
       ${this.isSignInState_(HistorySignInState.WEB_ONLY_SIGNED_IN) ? html`
         <div id="web-only-signed-in-description"
             class="web-only-signed-in-description">
-          $i18n{historySyncPromoBodySignedOut}
+          $i18n{historySyncPromoBodyWebOnlySignedIn}
         </div>
       ` : ''}
 
