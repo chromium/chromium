@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.appearance.settings.TabPositionCardContainer
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_position_card_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/settings_item_margin"
+    android:layout_marginTop="@dimen/settings_item_container_vertical_margin"
+    android:layout_marginBottom="@dimen/settings_section_bottom_margin"
+    android:orientation="horizontal">
+
+    <!-- Horizontal Option Card. -->
+    <LinearLayout
+        android:id="@+id/tab_position_horizontal_option"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginEnd="@dimen/tab_position_card_gap"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/tab_position_card_padding"
+        android:focusable="true"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/tab_position_horizontal_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_position_horizontal"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+            android:layout_marginBottom="@dimen/tab_position_card_title_margin_bottom" />
+
+        <FrameLayout
+            android:id="@+id/tab_position_horizontal_preview_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tab_position_card_preview_background"
+            android:foreground="@drawable/tab_position_card_preview_border"
+            android:clipToOutline="true"
+            android:duplicateParentState="true">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/tab_position_horizontal_preview"
+                android:importantForAccessibility="no" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Vertical Option Card. -->
+    <LinearLayout
+        android:id="@+id/tab_position_vertical_option"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/tab_position_card_padding"
+        android:focusable="true"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/tab_position_vertical_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_position_vertical"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+            android:layout_marginBottom="@dimen/tab_position_card_title_margin_bottom" />
+
+        <FrameLayout
+            android:id="@+id/tab_position_vertical_preview_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tab_position_card_preview_background"
+            android:foreground="@drawable/tab_position_card_preview_border"
+            android:clipToOutline="true"
+            android:duplicateParentState="true">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/tab_position_vertical_preview"
+                android:importantForAccessibility="no" />
+        </FrameLayout>
+    </LinearLayout>
+
+</org.chromium.chrome.browser.appearance.settings.TabPositionCardContainer>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Border drawn over a tab position preview illustration. The frame duplicates its parent's
+     state, so the selected border follows the selected option card. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="@dimen/tab_position_card_active_stroke_width"
+                android:color="?attr/colorPrimary" />
+            <corners android:radius="@dimen/tab_position_card_active_stroke_radius" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="@dimen/tab_position_card_inactive_stroke_width"
+                android:color="@color/divider_color" />
+            <corners android:radius="@dimen/tab_position_card_inactive_stroke_radius" />
+        </shape>
+    </item>
+</selector>

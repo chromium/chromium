@@ -39,11 +39,12 @@ public class ContainmentViewStyler {
             view.setBackground(null);
             return;
         }
+        float topRadius = style.getTopRadius();
+        float bottomRadius = style.getBottomRadius();
         view.setBackground(
                 createInteractiveRoundedDrawable(
                         view.getContext(),
-                        style.getTopRadius(),
-                        style.getBottomRadius(),
+                        cornerRadii(topRadius, topRadius, bottomRadius, bottomRadius),
                         style.getBackgroundColor()));
     }
 
@@ -51,13 +52,13 @@ public class ContainmentViewStyler {
      * Creates a rounded drawable with a ripple effect for interactive states, including hover.
      *
      * @param context The context used to resolve the ripple color.
-     * @param topRadius The radius for the top corners.
-     * @param bottomRadius The radius for the bottom corners.
+     * @param radii The eight corner values built by {@link #cornerRadii(float, float, float,
+     *     float)}.
      * @param color The background color of the drawable.
      * @return A new {@link Drawable} with the specified properties.
      */
     public static Drawable createInteractiveRoundedDrawable(
-            Context context, float topRadius, float bottomRadius, int color) {
+            Context context, float[] radii, int color) {
         // Create a background that changes color when hovered.
         float hoverAlpha = context.getResources().getFloat(R.dimen.containment_item_hover_alpha);
         int hoverTint =
@@ -72,8 +73,8 @@ public class ContainmentViewStyler {
                         new int[][] {new int[] {android.R.attr.state_hovered}, new int[] {}},
                         new int[] {hoverColor, color});
 
-        Drawable content = createRoundedDrawable(topRadius, bottomRadius, colorStateList);
-        Drawable mask = createRoundedDrawable(topRadius, bottomRadius, Color.WHITE);
+        Drawable content = createRoundedDrawable(radii, colorStateList);
+        Drawable mask = createRoundedDrawable(radii, ColorStateList.valueOf(Color.WHITE));
 
         ColorStateList rippleColor;
         TypedArray a =
@@ -151,37 +152,32 @@ public class ContainmentViewStyler {
     }
 
     /**
-     * Creates a rounded drawable with the specified top and bottom radii.
-     *
-     * @param topRadius The radius for the top corners.
-     * @param bottomRadius The radius for the bottom corners.
-     * @param color The background color of the drawable.
-     * @return A new {@link Drawable} with the specified properties.
+     * Builds the eight corner values {@link GradientDrawable#setCornerRadii(float[])} expects, one
+     * radius per corner, starting at the top left and moving clockwise.
      */
-    public static Drawable createRoundedDrawable(float topRadius, float bottomRadius, int color) {
-        return createRoundedDrawable(topRadius, bottomRadius, ColorStateList.valueOf(color));
+    public static float[] cornerRadii(
+            float topLeft, float topRight, float bottomRight, float bottomLeft) {
+        return new float[] {
+            topLeft, topLeft,
+            topRight, topRight,
+            bottomRight, bottomRight,
+            bottomLeft, bottomLeft
+        };
     }
 
     /**
-     * Creates a rounded drawable with the specified top and bottom radii and ColorStateList.
+     * Creates a rounded drawable with the specified corner radii and ColorStateList.
      *
-     * @param topRadius The radius for the top corners.
-     * @param bottomRadius The radius for the bottom corners.
+     * @param radii The eight corner values built by {@link #cornerRadii(float, float, float,
+     *     float)}.
      * @param color The background color state list of the drawable.
      * @return A new {@link Drawable} with the specified properties.
      */
-    public static Drawable createRoundedDrawable(
-            float topRadius, float bottomRadius, ColorStateList color) {
+    private static Drawable createRoundedDrawable(float[] radii, ColorStateList color) {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(GradientDrawable.RECTANGLE);
         drawable.setColor(color);
-        drawable.setCornerRadii(
-                new float[] {
-                    topRadius, topRadius,
-                    topRadius, topRadius,
-                    bottomRadius, bottomRadius,
-                    bottomRadius, bottomRadius
-                });
+        drawable.setCornerRadii(radii);
         return drawable;
     }
 

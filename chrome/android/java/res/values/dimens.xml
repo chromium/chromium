@@ -577,4 +577,20 @@ found in the LICENSE file.
 
     <!-- Immersive Playback Confirmation Dialog dimens -->
     <dimen name="immersive_playback_confirmation_dialog_width">256dp</dimen>
+
+    <!-- Tab position settings. -->
+    <!-- TODO(crbug.com/559165430): Replace with the exact UX spec breakpoint. Two 180dp preview
+         illustrations plus 16dp padding on each side need at least 426dp to fit side by side. -->
+    <dimen name="tab_position_card_container_width_breakpoint">480dp</dimen>
+    <dimen name="tab_position_card_padding">16dp</dimen>
+    <dimen name="tab_position_card_title_margin_bottom">12dp</dimen>
+    <dimen name="tab_position_card_preview_corner_radius">8dp</dimen>
+    <dimen name="tab_position_card_active_stroke_width">2dp</dimen>
+    <dimen name="tab_position_card_inactive_stroke_width">1dp</dimen>
+    <!-- GradientDrawable insets its stroke path by half the stroke width, so the stroke radius is
+         tab_position_card_preview_corner_radius minus half the stroke width. This keeps the
+         stroke's corner arc concentric with the frame's outer corner. -->
+    <dimen name="tab_position_card_active_stroke_radius">7dp</dimen>
+    <dimen name="tab_position_card_inactive_stroke_radius">7.5dp</dimen>
+    <dimen name="tab_position_card_gap">2dp</dimen>
 </resources>

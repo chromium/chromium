@@ -152,6 +152,8 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragment.java",
   "java/src/org/chromium/chrome/browser/appearance/settings/BookmarkBarSettingsFragment.java",
   "java/src/org/chromium/chrome/browser/appearance/settings/RadioButtonGroupBookmarkBarPreference.java",
+  "java/src/org/chromium/chrome/browser/appearance/settings/TabPositionCardContainer.java",
+  "java/src/org/chromium/chrome/browser/appearance/settings/TabPositionCardPreference.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillDialogController.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowPrompt.java",

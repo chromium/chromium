@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="102dp"
+    android:viewportWidth="240"
+    android:viewportHeight="136">
+
+    <group>
+        <!-- Browser window background, seen as the vertical rail down the side. -->
+        <path
+            android:name="window_bg"
+            android:pathData="M0,0 H240 V136 H0 Z"
+            android:fillColor="?attr/colorPrimaryContainer" />
+
+        <!-- Toolbar row, starting to the right of the rail. -->
+        <path
+            android:name="toolbar_bg"
+            android:pathData="M93.984,0 H240 V26 H93.984 Z"
+            android:fillColor="@macro/default_bg_color" />
+
+        <!-- Back arrow. -->
+        <path
+            android:pathData="M105.044,13.291 L107.374,15.621 L106.783,16.212 L103.444,12.873 L106.783,9.535 L107.374,10.126 L105.044,12.456 H110.121 V13.291 Z"
+            android:fillColor="@macro/default_icon_color_secondary" />
+        <!-- Forward arrow. -->
+        <path
+            android:pathData="M128.553,13.291 H123.476 V12.456 H128.553 L126.223,10.126 L126.814,9.535 L130.153,12.873 L126.814,16.212 L126.223,15.621 Z"
+            android:fillColor="@macro/default_icon_color_secondary" />
+        <!-- Reload. -->
+        <path
+            android:pathData="M146.845,16.212 C145.918,16.212 145.13,15.887 144.481,15.238 C143.832,14.589 143.507,13.801 143.507,12.873 C143.507,11.946 143.832,11.158 144.481,10.509 C145.13,9.859 145.918,9.535 146.845,9.535 C147.348,9.535 147.811,9.639 148.237,9.848 C148.669,10.056 149.04,10.335 149.349,10.682 V9.535 H150.184 V12.317 H147.402 V11.482 H148.92 C148.696,11.142 148.403,10.872 148.039,10.671 C147.676,10.47 147.278,10.369 146.845,10.369 C146.15,10.369 145.559,10.613 145.072,11.1 C144.585,11.587 144.342,12.178 144.342,12.873 C144.342,13.569 144.585,14.16 145.072,14.647 C145.559,15.134 146.15,15.377 146.845,15.377 C147.495,15.377 148.051,15.165 148.515,14.74 C148.978,14.307 149.245,13.778 149.315,13.152 H150.172 C150.103,14.017 149.751,14.744 149.118,15.331 C148.484,15.918 147.726,16.212 146.845,16.212 Z"
+            android:fillColor="@macro/default_icon_color_secondary" />
+
+        <!-- Omnibox pill, cropped by the window edge. -->
+        <path
+            android:name="omnibox"
+            android:pathData="M161.312,12.998 C161.312,7.774 165.548,3.539 170.772,3.539 H437.262 C442.486,3.539 446.721,7.774 446.721,12.998 C446.721,18.222 442.486,22.457 437.262,22.457 H170.772 C165.548,22.457 161.312,18.222 161.312,12.998 Z"
+            android:fillColor="@macro/default_card_bg_color" />
+
+        <!-- Hairline under the toolbar. Only the sliver above the content
+             area is visible, matching the mock's layering. -->
+        <path
+            android:name="toolbar_divider"
+            android:pathData="M93.984,25.596 H240 V26.152 H93.984 Z"
+            android:fillColor="@color/divider_color" />
+
+        <!-- Web contents area. -->
+        <path
+            android:name="contents_bg"
+            android:pathData="M93.984,26 H240 V136 H93.984 Z"
+            android:fillColor="?attr/colorSurfaceBright" />
+
+        <!-- Active tab in the vertical rail. -->
+        <path
+            android:name="vertical_tab_active"
+            android:pathData="M10.895,34 H83.105 A3.895,3.895 0 0 1 87,37.895 V46.105 A3.895,3.895 0 0 1 83.105,50 H10.895 A3.895,3.895 0 0 1 7,46.105 V37.895 A3.895,3.895 0 0 1 10.895,34 Z"
+            android:fillColor="@macro/default_bg_color" />
+        <!-- Unselected tab in the vertical rail. -->
+        <path
+            android:name="vertical_tab_unselected"
+            android:pathData="M10.895,56 H83.105 A3.895,3.895 0 0 1 87,59.895 V68.105 A3.895,3.895 0 0 1 83.105,72 H10.895 A3.895,3.895 0 0 1 7,68.105 V59.895 A3.895,3.895 0 0 1 10.895,56 Z"
+            android:fillColor="@macro/default_bg_color"
+            android:fillAlpha="0.4" />
+    </group>
+</vector>

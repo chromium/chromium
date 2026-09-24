@@ -52,8 +52,8 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
     /** Card background of unselected items. */
     private @Nullable Drawable mUnselectedBackground;
 
-    /** Corner radius of the card background. */
-    private final float mRadiusPx;
+    /** Corner radii of the card background. */
+    private final float[] mCornerRadii;
 
     /** Color of the card background. */
     private int mSelectedBackgroundColor;
@@ -77,7 +77,7 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
             int verticalMarginPx, int leftMarginPx, float radiusPx, int selectedBackgroundColor) {
         mVerticalMarginPx = verticalMarginPx;
         mLeftMarginPx = leftMarginPx;
-        mRadiusPx = radiusPx;
+        mCornerRadii = ContainmentViewStyler.cornerRadii(radiusPx, radiusPx, radiusPx, radiusPx);
         mSelectedBackgroundColor = selectedBackgroundColor;
     }
 
@@ -137,14 +137,14 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
             mSelectedBackgroundColor = currentColor;
             mSelectedBackground =
                     ContainmentViewStyler.createInteractiveRoundedDrawable(
-                            parent.getContext(), mRadiusPx, mRadiusPx, currentColor);
+                            parent.getContext(), mCornerRadii, currentColor);
             mIsDirty = true;
         }
 
         if (mUnselectedBackground == null) {
             mUnselectedBackground =
                     ContainmentViewStyler.createInteractiveRoundedDrawable(
-                            parent.getContext(), mRadiusPx, mRadiusPx, Color.TRANSPARENT);
+                            parent.getContext(), mCornerRadii, Color.TRANSPARENT);
             mIsDirty = true;
         }
 

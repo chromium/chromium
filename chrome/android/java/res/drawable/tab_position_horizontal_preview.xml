@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="102dp"
+    android:viewportWidth="240"
+    android:viewportHeight="136">
+
+    <group>
+        <!-- Browser window background, seen as the tab strip band along the top. -->
+        <path
+            android:name="window_bg"
+            android:pathData="M0,0 H240 V136 H0 Z"
+            android:fillColor="?attr/colorPrimaryContainer" />
+
+        <!-- Active tab resting in the horizontal strip. -->
+        <path
+            android:name="active_tab"
+            android:pathData="M8,11.189 C8,8.047 10.547,5.5 13.689,5.5 H125.467 C128.609,5.5 131.156,8.047 131.156,11.189 V23 H8 Z"
+            android:fillColor="@macro/default_bg_color" />
+        <!-- Curved shoulders where the active tab meets the toolbar. -->
+        <path
+            android:name="active_tab_shoulder_start"
+            android:pathData="M8,15.844 C8,19.601 4.964,22.668 1.212,22.668 H8.5 V15.844 Z"
+            android:fillColor="@macro/default_bg_color" />
+        <path
+            android:name="active_tab_shoulder_end"
+            android:pathData="M131.156,15.844 C131.156,19.601 134.192,22.668 137.944,22.668 H130.656 V15.844 Z"
+            android:fillColor="@macro/default_bg_color" />
+
+        <!-- Toolbar row below the tab strip. -->
+        <path
+            android:name="toolbar_bg"
+            android:pathData="M0,22.5 H240 V48.668 H0 Z"
+            android:fillColor="@macro/default_bg_color" />
+
+        <!-- Back arrow. -->
+        <path
+            android:pathData="M11.06,35.959 L13.39,38.289 L12.799,38.88 L9.46,35.541 L12.799,32.203 L13.39,32.794 L11.06,35.124 H16.137 V35.959 Z"
+            android:fillColor="@macro/default_icon_color_secondary" />
+        <!-- Forward arrow. -->
+        <path
+            android:pathData="M34.569,35.959 H29.491 V35.124 H34.569 L32.239,32.794 L32.83,32.203 L36.168,35.541 L32.83,38.88 L32.239,38.289 Z"
+            android:fillColor="@macro/default_icon_color_secondary" />
+        <!-- Reload. -->
+        <path
+            android:pathData="M52.861,38.88 C51.934,38.88 51.145,38.555 50.496,37.906 C49.847,37.257 49.523,36.469 49.523,35.541 C49.523,34.614 49.847,33.826 50.496,33.177 C51.145,32.527 51.934,32.203 52.861,32.203 C53.363,32.203 53.827,32.307 54.252,32.516 C54.685,32.724 55.056,33.003 55.365,33.35 V32.203 H56.2 V34.985 H53.418 V34.15 H54.936 C54.712,33.81 54.418,33.54 54.055,33.339 C53.692,33.138 53.294,33.037 52.861,33.037 C52.166,33.037 51.574,33.281 51.087,33.768 C50.601,34.255 50.357,34.846 50.357,35.541 C50.357,36.237 50.601,36.828 51.087,37.315 C51.574,37.802 52.166,38.045 52.861,38.045 C53.51,38.045 54.067,37.833 54.53,37.408 C54.994,36.975 55.261,36.445 55.33,35.82 H56.188 C56.118,36.685 55.767,37.412 55.133,37.999 C54.499,38.586 53.742,38.88 52.861,38.88 Z"
+            android:fillColor="@macro/default_icon_color_secondary" />
+
+        <!-- Omnibox pill, cropped by the window edge. -->
+        <path
+            android:name="omnibox"
+            android:pathData="M67.328,35.666 C67.328,30.442 71.563,26.207 76.787,26.207 H343.277 C348.502,26.207 352.737,30.442 352.737,35.666 C352.737,40.89 348.502,45.125 343.277,45.125 H76.787 C71.563,45.125 67.328,40.89 67.328,35.666 Z"
+            android:fillColor="@macro/default_card_bg_color" />
+
+        <!-- Web contents area. -->
+        <path
+            android:name="contents_bg"
+            android:pathData="M0,48 H240 V138 H0 Z"
+            android:fillColor="?attr/colorSurfaceBright" />
+    </group>
+</vector>
