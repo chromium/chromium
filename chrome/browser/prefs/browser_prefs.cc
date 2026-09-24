@@ -1015,6 +1015,8 @@ inline constexpr char kHatsOnboardingDeviceIsSelected[] =
 // TODO(b:558334457): Remove deprecated pref after 09/2027.
 constexpr char kLastLauncherAppAlmanacCallTimestamp[] =
     "app_discovery_service.last_launcher_app_almanac_call_timestamp";
+inline constexpr char kActivityTimeAfterOnboarding[] =
+    "oobe.activity_time_after_onboarding";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deprecated 09/2026.
@@ -1431,6 +1433,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kHatsOnboardingDeviceIsSelected, false);
   registry->RegisterTimePref(kLastLauncherAppAlmanacCallTimestamp,
                              base::Time());
+  registry->RegisterTimeDeltaPref(kActivityTimeAfterOnboarding,
+                                  base::TimeDelta());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Deprecated 09/2026.
@@ -2791,6 +2795,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHatsOnboardingSurveyCycleEndTs);
   profile_prefs->ClearPref(kHatsOnboardingDeviceIsSelected);
   profile_prefs->ClearPref(kLastLauncherAppAlmanacCallTimestamp);
+  profile_prefs->ClearPref(kActivityTimeAfterOnboarding);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Added 09/2026.

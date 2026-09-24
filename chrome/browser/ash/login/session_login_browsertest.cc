@@ -162,37 +162,6 @@ class OnboardingTest : public LoginManagerTest {
                                      &policy_server_mixin_};
 };
 
-IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingUserActivityRegularUser) {
-  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
-  LoginManagerMixin::TestUserInfo test_user(regular_user_);
-  login_mixin_.LoginWithDefaultContext(test_user);
-  OobeScreenExitWaiter(UserCreationView::kScreenId).Wait();
-
-  test::UserSessionManagerTestApi test_api(UserSessionManager::GetInstance());
-  ASSERT_TRUE(test_api.get_onboarding_user_activity_counter());
-  login_mixin_.SkipPostLoginScreens();
-}
-
-// TODO(crbug.com/339860384): Enable the test.
-IN_PROC_BROWSER_TEST_F(OnboardingTest,
-                       DISABLED_OnboardingUserActivityRegularUser) {
-  login_mixin_.LoginAsNewRegularUser();
-  login_mixin_.WaitForActiveSession();
-
-  test::UserSessionManagerTestApi test_api(UserSessionManager::GetInstance());
-  ASSERT_TRUE(test_api.get_onboarding_user_activity_counter());
-}
-
-// Verifies that counter is not started for child user.
-IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingUserActivityChildUser) {
-  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
-  login_mixin_.LoginAsNewChildUser();
-  OobeScreenExitWaiter(UserCreationView::kScreenId).Wait();
-
-  test::UserSessionManagerTestApi test_api(UserSessionManager::GetInstance());
-  ASSERT_FALSE(test_api.get_onboarding_user_activity_counter());
-}
-
 // Verifies that OnboardingCompletedVersion is stored for new users.
 IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingCompletedVersion) {
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();

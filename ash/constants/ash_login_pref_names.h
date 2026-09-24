@@ -97,9 +97,6 @@ inline constexpr char kLockScreenReauthenticationEnabled[] =
 inline constexpr char kPinUnlockAutosubmitEnabled[] =
     "pin_unlock_autosubmit_enabled";
 
-inline constexpr char kActivityTimeAfterOnboarding[] =
-    "oobe.activity_time_after_onboarding";
-
 // List of screens selected from the CHOOBE screen. This list is used to resume
 // CHOOBE flow if it's not completed yet.
 inline constexpr char kChoobeSelectedScreens[] = "oobe.choobe_selected_screens";

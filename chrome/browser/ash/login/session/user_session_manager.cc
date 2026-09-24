@@ -77,7 +77,6 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker_controller.h"
-#include "chrome/browser/ash/login/onboarding_user_activity_counter.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier.h"
@@ -264,32 +263,10 @@ constexpr char kEventHandleProfileLoad[] = "HandleProfileLoad";
 // is not included.
 constexpr char kEventInitUserDesktop[] = "InitUserDesktop";
 
-constexpr base::TimeDelta kActivityTimeBeforeOnboardingSurvey = base::Hours(1);
-
 // A special version used to backfill the OnboardingCompletedVersion for
 // existing users to indicate that they are already completed the onboarding
 // flow in unknown past version.
 constexpr char kOnboardingBackfillVersion[] = "0.0.0.0";
-
-base::TimeDelta GetActivityTimeBeforeOnboardingSurvey() {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  const auto& time_switch =
-      switches::kTimeBeforeOnboardingSurveyInSecondsForTesting;
-
-  if (!command_line->HasSwitch(time_switch)) {
-    return kActivityTimeBeforeOnboardingSurvey;
-  }
-  int seconds;
-  if (!base::StringToInt(command_line->GetSwitchValueASCII(time_switch),
-                         &seconds)) {
-    return kActivityTimeBeforeOnboardingSurvey;
-  }
-
-  if (seconds <= 0)
-    return kActivityTimeBeforeOnboardingSurvey;
-
-  return base::Seconds(seconds);
-}
 
 void InitLocaleAndInputMethodsForNewUser(
     const std::string& application_locale,
@@ -1972,16 +1949,6 @@ void UserSessionManager::InitializeBrowser(Profile* profile) {
   // resolved.
   if (delegate_)
     delegate_->OnProfilePrepared(profile, browser_launched);
-
-  if (ProfileHelper::IsPrimaryProfile(profile) &&
-      OnboardingUserActivityCounter::ShouldStart(profile->GetPrefs())) {
-    onboarding_user_activity_counter_ =
-        std::make_unique<OnboardingUserActivityCounter>(
-            profile->GetPrefs(), GetActivityTimeBeforeOnboardingSurvey(),
-            base::BindOnce(
-                &UserSessionManager::OnUserEligibleForOnboardingSurvey,
-                GetUserSessionManagerAsWeakPtr(), profile));
-  }
 }
 
 void UserSessionManager::MaybeLaunchHelpAppForFirstRun(Profile* profile) const {
@@ -2031,8 +1998,6 @@ bool UserSessionManager::MaybeStartNewUserOnboarding(Profile* profile) {
     LOG(WARNING) << "Can't start user onboarding as LoginDisplayHost has been "
                     "already  destroyed!";
   }
-
-  OnboardingUserActivityCounter::MaybeMarkForStart(profile);
 
   return true;
 }
@@ -2741,10 +2706,6 @@ void UserSessionManager::Shutdown() {
   token_handle_store_ = nullptr;
   frozen_update_notification_handler_.clear();
 
-  // NOTE: Make sure that the current session length is accumulated on the prefs
-  // before the primary Profile is destroyed.
-  onboarding_user_activity_counter_.reset();
-
   // NOTE: This may report UMA metric of the hats notification status.
   hats_notification_controller_.reset();
 }
@@ -2842,10 +2803,6 @@ bool UserSessionManager::IsFullRestoreEnabled(Profile* profile) {
   auto* full_restore_service =
       full_restore::FullRestoreServiceFactory::GetForProfile(profile);
   return full_restore_service != nullptr;
-}
-
-void UserSessionManager::OnUserEligibleForOnboardingSurvey(Profile* profile) {
-  onboarding_user_activity_counter_.reset();
 }
 
 void UserSessionManager::LoadShillProfile(const AccountId& account_id) {

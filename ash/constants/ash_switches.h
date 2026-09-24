@@ -1088,11 +1088,6 @@ inline constexpr char kTetherHostScansIgnoreWiredConnections[] =
 // of fake networks desired, e.g. 'tether-stub=2'.
 inline constexpr char kTetherStub[] = "tether-stub";
 
-// Used for overriding the required user activity time before running the
-// onboarding survey.
-inline constexpr char kTimeBeforeOnboardingSurveyInSecondsForTesting[] =
-    "time-before-onboarding-survey-in-seconds-for-testing";
-
 // Chromebases' touchscreens can be used to wake from suspend, unlike the
 // touchscreens on other Chrome OS devices. If set, the touchscreen is kept
 // enabled while the screen is off so that it can be used to turn the screen

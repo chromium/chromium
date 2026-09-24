@@ -69,7 +69,6 @@ class KnownUser;
 namespace ash {
 
 class AuthStatusConsumer;
-class OnboardingUserActivityCounter;
 class AuthenticatorBuilder;
 class LegacyTokenHandleFetcher;
 class EolNotification;
@@ -533,8 +532,6 @@ class UserSessionManager
 
   bool IsFullRestoreEnabled(Profile* profile);
 
-  void OnUserEligibleForOnboardingSurvey(Profile* profile);
-
   // Triggers loading of the shill profile for |account_id|. This should only be
   // called for the primary user session.
   void LoadShillProfile(const AccountId& account_id);
@@ -666,9 +663,6 @@ class UserSessionManager
       help_app_notification_controller_;
 
   bool token_handle_backfill_tried_for_testing_ = false;
-
-  std::unique_ptr<OnboardingUserActivityCounter>
-      onboarding_user_activity_counter_;
 
   // Callback that allows tests to inject a test EolNotification implementation.
   EolNotificationHandlerFactoryCallback eol_notification_handler_test_factory_;

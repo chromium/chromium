@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/login_constants.h"
-#include "chrome/browser/ash/login/onboarding_user_activity_counter.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
@@ -183,8 +182,6 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
   if (features::IsOobeDisplaySizeEnabled()) {
     registry->RegisterDoublePref(prefs::kOobeDisplaySizeFactorDeferred, 1.0);
   }
-
-  OnboardingUserActivityCounter::RegisterProfilePrefs(registry);
 }
 
 // static

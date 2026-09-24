@@ -50,8 +50,6 @@ class UserSessionManagerTestApi {
   void SetAttemptRestartClosureInTests(
       const base::RepeatingClosure& attempt_restart_closure);
 
-  OnboardingUserActivityCounter* get_onboarding_user_activity_counter();
-
  private:
   raw_ptr<UserSessionManager> session_manager_;  // not owned
 };
