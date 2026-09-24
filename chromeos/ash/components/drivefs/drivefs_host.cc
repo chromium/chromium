@@ -15,7 +15,6 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
-#include "chromeos/ash/components/drivefs/drivefs_http_client.h"
 #include "chromeos/ash/components/drivefs/drivefs_search.h"
 #include "chromeos/ash/components/drivefs/drivefs_search_query.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -73,8 +72,6 @@ class DriveFsHost::MountState : public DriveFsSession {
         bool{host->account_token_delegate_->GetCachedAccessToken()};
     search_ = std::make_unique<DriveFsSearch>(
         drivefs_interface(), host_->network_connection_tracker_, host_->clock_);
-    http_client_ = std::make_unique<DriveFsHttpClient>(
-        host_->delegate_->GetURLLoaderFactory());
   }
 
   MountState(const MountState&) = delete;
@@ -224,16 +221,11 @@ class DriveFsHost::MountState : public DriveFsSession {
                     std::move(callback), mojom::DialogResult::kNotDisplayed));
   }
 
-  void ExecuteHttpRequest(
+  void DEPRECATED_ExecuteHttpRequest(
       mojom::HttpRequestPtr request,
       mojo::PendingRemote<mojom::HttpDelegate> delegate) override {
-    if (!http_client_) {
-      // The Chrome Network Service <-> DriveFS bridge is not enabled. Ignore
-      // the request and allow the |delegate| to close itself. DriveFS will
-      // pick up on the |delegate| closure and fallback to cURL.
-      return;
-    }
-    http_client_->ExecuteHttpRequest(std::move(request), std::move(delegate));
+    // This feature is deprecated.
+    return;
   }
 
   void GetMachineRootID(GetMachineRootIDCallback callback) override {
@@ -269,7 +261,6 @@ class DriveFsHost::MountState : public DriveFsSession {
   const raw_ptr<DriveFsHost> host_;
 
   std::unique_ptr<DriveFsSearch> search_;
-  std::unique_ptr<DriveFsHttpClient> http_client_;
 
   bool token_fetch_attempted_ = false;
 

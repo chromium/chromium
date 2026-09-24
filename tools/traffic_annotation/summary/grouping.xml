@@ -196,7 +196,6 @@ after discussions on the right group.
     </sender>
     <sender name="Recently Added">
       <annotation id="fast_pair_image_decoder"/>
-      <annotation id="drivefs_http_client"/>
       <annotation id="download_bubble_retry_download"/>
       <annotation id="quick_answers_loader"/>
       <annotation id="chrome_commerce_price_email_pref_fetcher"/>

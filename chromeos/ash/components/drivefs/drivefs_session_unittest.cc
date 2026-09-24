@@ -244,7 +244,7 @@ class DriveFsSessionForTest : public DriveFsSession {
       ConnectToExtensionCallback callback) override {}
   void DisplayConfirmDialog(mojom::DialogReasonPtr error,
                             DisplayConfirmDialogCallback callback) override {}
-  void ExecuteHttpRequest(
+  void DEPRECATED_ExecuteHttpRequest(
       mojom::HttpRequestPtr request,
       mojo::PendingRemote<mojom::HttpDelegate> delegate) override {}
   void GetMachineRootID(
