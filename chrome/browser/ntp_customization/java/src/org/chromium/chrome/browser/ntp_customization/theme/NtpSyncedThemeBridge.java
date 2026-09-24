@@ -94,20 +94,32 @@ public class NtpSyncedThemeBridge {
     }
 
     /**
-     * Updates the theme collection background with the primary theme color and notifies the sync
-     * bridge.
+     * Updates the theme collection background with collection ID, primary color, and daily refresh
+     * state, and notifies the sync bridge.
      *
      * @param backgroundUrl The URL of the background image.
+     * @param collectionId The ID of the theme collection.
+     * @param attribution The attribution of the background image.
      * @param primaryColor The primary color extracted from the theme collection image.
+     * @param isDailyRefresh Whether daily refresh is enabled for this theme.
      */
     public void updateCustomBackgroundPrefsWithColor(
-            GURL backgroundUrl, @Nullable @ColorInt Integer primaryColor) {
+            GURL backgroundUrl,
+            String collectionId,
+            @Nullable String attribution,
+            @Nullable @ColorInt Integer primaryColor,
+            boolean isDailyRefresh) {
         if (mNativeNtpSyncedThemeBridge == 0) return;
 
         int color = primaryColor != null ? primaryColor : 0;
         NtpSyncedThemeBridgeJni.get()
                 .updateCustomBackgroundPrefsWithColor(
-                        mNativeNtpSyncedThemeBridge, backgroundUrl, color);
+                        mNativeNtpSyncedThemeBridge,
+                        backgroundUrl,
+                        collectionId,
+                        attribution,
+                        color,
+                        isDailyRefresh);
     }
 
     /** Exposes whether the C++ service is actively processing a sync update. */
@@ -197,6 +209,9 @@ public class NtpSyncedThemeBridge {
         void updateCustomBackgroundPrefsWithColor(
                 long nativeNtpSyncedThemeBridge,
                 @JniType("GURL") GURL backgroundUrl,
-                int primaryColor);
+                @JniType("std::string") String collectionId,
+                @JniType("std::string") @Nullable String attribution,
+                int primaryColor,
+                boolean isDailyRefresh);
     }
 }

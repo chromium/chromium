@@ -442,12 +442,14 @@ public class NtpSyncedThemeManagerUnitTest {
     @Test
     public void testOnThemeCommitted_themeCollectionData_updatesColor() {
         mNtpSyncedThemeManager = new NtpSyncedThemeManager(mContext, mProfile);
+        String attribution = "Attribution 1, Attribution 2";
         CustomBackgroundInfo info =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
                         TEST_COLLECTION_ID,
                         /* isUploadedImage= */ false,
-                        /* isDailyRefreshEnabled= */ true);
+                        /* isDailyRefreshEnabled= */ true,
+                        attribution);
         int primaryColor = 0xFF112233;
         NtpBackgroundDataThemeCollection themeData =
                 new NtpBackgroundDataThemeCollection(
@@ -460,6 +462,11 @@ public class NtpSyncedThemeManagerUnitTest {
         mNtpSyncedThemeManager.onThemeCommitted(themeData);
         verify(mNatives)
                 .updateCustomBackgroundPrefsWithColor(
-                        anyLong(), eq(JUnitTestGURLs.URL_1), eq(primaryColor));
+                        anyLong(),
+                        eq(JUnitTestGURLs.URL_1),
+                        eq(TEST_COLLECTION_ID),
+                        eq(attribution),
+                        eq(primaryColor),
+                        /* isDailyRefresh= */ eq(true));
     }
 }

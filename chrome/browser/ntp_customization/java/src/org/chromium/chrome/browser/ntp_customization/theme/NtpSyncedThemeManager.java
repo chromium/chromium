@@ -205,9 +205,13 @@ public class NtpSyncedThemeManager
 
         // 5. Theme Collection Image (From Picker or Local History)
         if (data instanceof NtpBackgroundDataThemeCollection collectionData) {
+            CustomBackgroundInfo info = collectionData.getCustomBackgroundInfo();
             mNtpSyncedThemeBridge.updateCustomBackgroundPrefsWithColor(
-                    collectionData.getCustomBackgroundInfo().backgroundUrl,
-                    collectionData.getPrimaryColor());
+                    info.backgroundUrl,
+                    info.collectionId,
+                    info.attribution,
+                    collectionData.getPrimaryColor(),
+                    info.isDailyRefreshEnabled);
             return;
         }
     }

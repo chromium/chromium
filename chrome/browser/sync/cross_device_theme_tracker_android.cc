@@ -87,7 +87,8 @@ CrossDeviceThemeTrackerAndroid::CreateJavaTheme(
     const sync_pb::NtpCustomBackground& bg = specifics.ntp_background();
     bg_url = bg.url();
     bg_collection_id = bg.collection_id();
-    is_bg_daily_refresh = bg.has_refresh_timestamp_unix_epoch_seconds();
+    is_bg_daily_refresh = bg.has_refresh_timestamp_unix_epoch_seconds() &&
+                          bg.refresh_timestamp_unix_epoch_seconds() != 0;
     bg_attribution = ntp_customization::GetCustomBackgroundAttribution(
         bg.attribution_line_1(), bg.attribution_line_2());
   }

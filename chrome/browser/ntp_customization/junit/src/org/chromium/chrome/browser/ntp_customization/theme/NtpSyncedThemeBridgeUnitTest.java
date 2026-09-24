@@ -34,6 +34,7 @@ public class NtpSyncedThemeBridgeUnitTest {
     public static final long NATIVE_NTP_SYNCED_THEME_BRIDGE = 1L;
     public static final GURL BACKGROUND_URL = JUnitTestGURLs.URL_1;
     public static final String COLLECTION_ID = "test_collection";
+    public static final String ATTRIBUTION = "Attribution 1, Attribution 2";
     public static final @NtpThemeColorId int THEME_COLOR_ID = NtpThemeColorId.NTP_COLORS_GREEN;
     public static final int PRIMARY_COLOR = 0xFF123456;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -124,17 +125,36 @@ public class NtpSyncedThemeBridgeUnitTest {
         mNtpSyncedThemeBridge.selectLocalBackgroundImage();
         verify(mNatives).selectLocalBackgroundImage(NATIVE_NTP_SYNCED_THEME_BRIDGE);
 
-        mNtpSyncedThemeBridge.updateCustomBackgroundPrefsWithColor(BACKGROUND_URL, PRIMARY_COLOR);
+        mNtpSyncedThemeBridge.updateCustomBackgroundPrefsWithColor(
+                BACKGROUND_URL,
+                COLLECTION_ID,
+                ATTRIBUTION,
+                PRIMARY_COLOR,
+                /* isDailyRefresh= */ true);
         verify(mNatives)
                 .updateCustomBackgroundPrefsWithColor(
-                        NATIVE_NTP_SYNCED_THEME_BRIDGE, BACKGROUND_URL, PRIMARY_COLOR);
+                        NATIVE_NTP_SYNCED_THEME_BRIDGE,
+                        BACKGROUND_URL,
+                        COLLECTION_ID,
+                        ATTRIBUTION,
+                        PRIMARY_COLOR,
+                        /* isDailyRefresh= */ true);
 
         // Test with null primaryColor defaults to 0.
         mNtpSyncedThemeBridge.updateCustomBackgroundPrefsWithColor(
-                BACKGROUND_URL, /* primaryColor= */ null);
+                BACKGROUND_URL,
+                COLLECTION_ID,
+                ATTRIBUTION,
+                /* primaryColor= */ null,
+                /* isDailyRefresh= */ true);
         verify(mNatives)
                 .updateCustomBackgroundPrefsWithColor(
-                        NATIVE_NTP_SYNCED_THEME_BRIDGE, BACKGROUND_URL, 0);
+                        NATIVE_NTP_SYNCED_THEME_BRIDGE,
+                        BACKGROUND_URL,
+                        COLLECTION_ID,
+                        ATTRIBUTION,
+                        0,
+                        /* isDailyRefresh= */ true);
     }
 
     @Test

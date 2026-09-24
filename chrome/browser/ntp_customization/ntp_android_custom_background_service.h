@@ -74,8 +74,19 @@ class NtpAndroidCustomBackgroundService
   void ResetCustomBackgroundInfo() override;
   void OnNextCollectionImageAvailable() override;
   std::optional<int> GetNextRefreshTimestamp() const override;
-  bool UpdateCustomBackgroundPrefsWithColor(const GURL& image_url,
-                                            SkColor color) override;
+
+  // Updates the theme collection background preference with `color` and
+  // notifies the sync bridge. Unlike the base class version this also works
+  // when the current preference is for a different background, which happens
+  // when the image is re-selected from the local theme history.
+  //
+  // Does nothing if `image_url` is invalid: neither the preference nor sync is
+  // touched.
+  void UpdateThemeCollectionPrefsWithColor(const GURL& image_url,
+                                           const std::string& collection_id,
+                                           const std::string& attribution,
+                                           SkColor color,
+                                           bool is_daily_refresh);
 
   // Callback invoked when incoming theme changes are received from Chrome Sync.
   void OnThemeChangedFromSync(const sync_pb::ThemeAndroidSpecifics& specifics);
@@ -88,6 +99,18 @@ class NtpAndroidCustomBackgroundService
   void NotifyAboutBackgrounds() override;
 
  private:
+  // Records the background that is currently applied on this device.
+  void SetActiveCustomBackground(const GURL& url,
+                                 const std::string& collection_id,
+                                 bool daily_refresh_enabled);
+
+  // Determines if `image_url` is the background that is currently applied,
+  // with the same daily refresh state. When true, the preference dictionary
+  // has already been written by SetCustomBackgroundInfo() and only needs its
+  // color updated.
+  bool IsActiveCustomBackground(const GURL& image_url,
+                                bool is_daily_refresh) const;
+
   // Determines if the updated background information is for the next daily
   // refresh image.
   //

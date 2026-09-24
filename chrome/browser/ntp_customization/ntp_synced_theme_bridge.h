@@ -56,10 +56,13 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   // NtpAndroidCustomBackgroundService.
   void SelectLocalBackgroundImage(JNIEnv* env);
 
-  // Updates the theme collection background's primary color and notifies the
-  // sync bridge.
+  // Updates the theme collection background with collection ID, attribution,
+  // primary color, and daily refresh state, and notifies the sync bridge.
   void UpdateCustomBackgroundPrefsWithColor(const GURL& url,
-                                            int32_t primary_color);
+                                            const std::string& collection_id,
+                                            const std::string& attribution,
+                                            int32_t primary_color,
+                                            bool is_daily_refresh);
 
   // Called when a Chrome color is synced from Chrome Sync.
   virtual void OnChromeColorSynced(int color_id);
