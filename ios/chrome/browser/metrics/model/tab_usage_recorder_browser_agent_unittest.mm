@@ -15,11 +15,18 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/previous_session_info/previous_session_info.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/fake_startup_information.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
+#import "ios/chrome/browser/web_extension/model/fake_extension_service.h"
 #import "ios/testing/scoped_block_swizzler.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -48,11 +55,35 @@ enum WebStateInMemoryOption { NOT_IN_MEMORY = 0, IN_MEMORY };
 class TabUsageRecorderBrowserAgentTest : public PlatformTest {
  protected:
   TabUsageRecorderBrowserAgentTest() {
-    profile_ = TestProfileIOS::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
+        ExtensionServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<FakeExtensionService>();
+            }));
+    profile_ = std::move(test_profile_builder).Build();
+    fake_startup_information_ = [[FakeStartupInformation alloc] init];
+    fake_startup_information_.appLaunchTime = base::TimeTicks::Now();
+    app_state_ =
+        [[AppState alloc] initWithStartupInformation:fake_startup_information_];
+    profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
+    profile_state_.profile = profile_.get();
+    scene_state_ = [[SceneState alloc] init];
+    scene_state_.profileState = profile_state_;
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+    fake_extension_service_ = static_cast<FakeExtensionService*>(
+        ExtensionServiceFactory::GetForProfile(profile_.get()));
+
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser_.get());
     tab_usage_recorder_ =
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
+    tab_usage_recorder_->ResetAll();
+  }
+
+  void TearDown() override {
+    tab_usage_recorder_->ResetAll();
+    PlatformTest::TearDown();
   }
 
   web::FakeWebState* InsertFakeWebState(const char* url,
@@ -101,9 +132,14 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
+  AppState* app_state_ = nil;
+  ProfileState* profile_state_ = nil;
+  SceneState* scene_state_ = nil;
   std::unique_ptr<TestBrowser> browser_;
   base::HistogramTester histogram_tester_;
-  raw_ptr<TabUsageRecorderBrowserAgent> tab_usage_recorder_;
+  FakeStartupInformation* fake_startup_information_ = nil;
+  raw_ptr<FakeExtensionService> fake_extension_service_ = nullptr;
+  raw_ptr<TabUsageRecorderBrowserAgent> tab_usage_recorder_ = nullptr;
 };
 
 TEST_F(TabUsageRecorderBrowserAgentTest, SwitchBetweenInMemoryTabs) {
@@ -388,4 +424,196 @@ TEST_F(TabUsageRecorderBrowserAgentTest, StateAtRendererTerminationInactive) {
   histogram_tester_.ExpectBucketCount(
       tab_usage_recorder::kRendererTerminationStateHistogram,
       tab_usage_recorder::BACKGROUND_TAB_BACKGROUND_APP, 1);
+}
+
+// Tests that Startup.TimeFromMainToFirstNavigation and
+// Startup.TimeFromMainToFirstPageLoaded metrics are recorded on first
+// navigation and page load when no extension started loading at startup.
+TEST_F(TabUsageRecorderBrowserAgentTest,
+       TimeFromMainToFirstStartupMetricsWithoutWebExtensions) {
+  web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
+  fake_extension_service_->SetWebExtensionsWereLoadedAtStartup(false);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_LINK);
+  mock_tab->OnNavigationStarted(&context);
+
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstNavigation",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithoutWebExtensions", 1);
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstPageLoaded",
+                                     0);
+
+  mock_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstPageLoaded",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithoutWebExtensions", 1);
+
+  // Subsequent navigation and page load do not record again.
+  mock_tab->OnNavigationStarted(&context);
+  mock_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstNavigation",
+                                     1);
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstPageLoaded",
+                                     1);
+}
+
+// Tests that Startup.TimeFromMainToFirstNavigation.WithWebExtensions and
+// Startup.TimeFromMainToFirstPageLoaded.WithWebExtensions are recorded when an
+// extension started loading at startup.
+TEST_F(TabUsageRecorderBrowserAgentTest,
+       TimeFromMainToFirstStartupMetricsWithWebExtensions) {
+  web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
+  fake_extension_service_->SetWebExtensionsWereLoadedAtStartup(true);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_LINK);
+  mock_tab->OnNavigationStarted(&context);
+
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstNavigation",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithWebExtensions", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithoutWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstPageLoaded",
+                                     0);
+
+  mock_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstPageLoaded",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithWebExtensions", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithoutWebExtensions", 0);
+}
+
+// Tests that subsequent navigations and page loads are not recorded, even
+// across multiple TabUsageRecorderBrowserAgent instances (simulating
+// multi-profile).
+TEST_F(TabUsageRecorderBrowserAgentTest,
+       TimeFromMainToFirstStartupMetricsMultipleLoadsAndAgents) {
+  web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_LINK);
+
+  mock_tab->OnNavigationStarted(&context);
+  mock_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstNavigation",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithoutWebExtensions", 1);
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstPageLoaded",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithoutWebExtensions", 1);
+
+  // Subsequent navigation and page load on the same tab are not recorded.
+  mock_tab->OnNavigationStarted(&context);
+  mock_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstNavigation",
+                                     1);
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstPageLoaded",
+                                     1);
+
+  // Create a second browser with its own TabUsageRecorderBrowserAgent (e.g.
+  // simulating a second profile).
+  auto second_profile = TestProfileIOS::Builder().Build();
+  auto second_browser =
+      std::make_unique<TestBrowser>(second_profile.get(), scene_state_);
+  TabUsageRecorderBrowserAgent::CreateForBrowser(second_browser.get());
+
+  auto second_fake_web_state = std::make_unique<web::FakeWebState>();
+  auto second_navigation_manager =
+      std::make_unique<web::FakeNavigationManager>();
+  web::NavigationItem* second_item =
+      InsertItemToFakeNavigationManager(second_navigation_manager.get(), kURL);
+  second_navigation_manager->SetLastCommittedItem(second_item);
+  second_fake_web_state->SetNavigationManager(
+      std::move(second_navigation_manager));
+  second_fake_web_state->SetIsEvicted(false);
+  second_fake_web_state->SetVisibleURL(GURL(kURL));
+
+  web::FakeWebState* second_mock_tab = second_fake_web_state.get();
+  second_browser->GetWebStateList()->InsertWebState(
+      std::move(second_fake_web_state));
+
+  web::FakeNavigationContext second_context;
+  second_context.SetUrl(GURL(kURL));
+  second_context.SetWebState(second_mock_tab);
+  second_context.SetPageTransition(ui::PAGE_TRANSITION_LINK);
+  second_mock_tab->OnNavigationStarted(&second_context);
+  second_mock_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  // Metrics should still have been recorded only once.
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstNavigation",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithoutWebExtensions", 1);
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstPageLoaded",
+                                     1);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithoutWebExtensions", 1);
+}
+
+// Tests that no metric is recorded if startup information is missing.
+TEST_F(TabUsageRecorderBrowserAgentTest,
+       TimeFromMainToFirstStartupMetricsNoStartupInfo) {
+  auto browser = std::make_unique<TestBrowser>(profile_.get());
+  TabUsageRecorderBrowserAgent::CreateForBrowser(browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  web::NavigationItem* item =
+      InsertItemToFakeNavigationManager(fake_navigation_manager.get(), kURL);
+  fake_navigation_manager->SetLastCommittedItem(item);
+  fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
+  fake_web_state->SetIsEvicted(false);
+  fake_web_state->SetVisibleURL(GURL(kURL));
+
+  web::FakeWebState* mock_tab = fake_web_state.get();
+  browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_LINK);
+  mock_tab->OnNavigationStarted(&context);
+  mock_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstNavigation",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithoutWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstPageLoaded",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithoutWebExtensions", 0);
 }

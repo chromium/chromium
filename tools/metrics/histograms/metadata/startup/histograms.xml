@@ -72,6 +72,14 @@ chromium-metrics-reviews@google.com.
   <variant name="NewTabPage" summary="Chrome starts into the New Tab Page."/>
 </variants>
 
+<variants name="StartupWebExtensionState">
+  <variant name="" summary="all startups"/>
+  <variant name=".WithoutWebExtensions"
+      summary="when no web extensions were loaded at startup"/>
+  <variant name=".WithWebExtensions"
+      summary="when web extensions were loaded at startup"/>
+</variants>
+
 <histogram name="Startup.AfterStartupTaskCount" units="units"
     expires_after="2025-10-26">
   <owner>michaeln@chromium.org</owner>
@@ -1541,6 +1549,30 @@ chromium-metrics-reviews@google.com.
     [UIApplicationDelegate didFinishLaunching:]. Recorded when first scene is
     becomes active.
   </summary>
+</histogram>
+
+<histogram
+    name="Startup.TimeFromMainToFirstNavigation{StartupWebExtensionState}"
+    units="ms" expires_after="2027-09-23">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    [IOS] The duration between the call to main and the first navigation start
+    {StartupWebExtensionState}.
+  </summary>
+  <token key="StartupWebExtensionState" variants="StartupWebExtensionState"/>
+</histogram>
+
+<histogram
+    name="Startup.TimeFromMainToFirstPageLoaded{StartupWebExtensionState}"
+    units="ms" expires_after="2027-09-23">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    [IOS] The duration between the call to main and the first page loaded
+    {StartupWebExtensionState}.
+  </summary>
+  <token key="StartupWebExtensionState" variants="StartupWebExtensionState"/>
 </histogram>
 
 <histogram name="Startup.TimeFromMainToSceneConnection" units="ms"

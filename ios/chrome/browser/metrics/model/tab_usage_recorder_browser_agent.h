@@ -7,6 +7,7 @@
 
 #import <map>
 #import <memory>
+#import <string>
 #import <vector>
 
 #import "base/containers/circular_deque.h"
@@ -101,6 +102,17 @@ class TabUsageRecorderBrowserAgent
   friend class BrowserUserData<TabUsageRecorderBrowserAgent>;
 
   explicit TabUsageRecorderBrowserAgent(Browser* browser);
+
+  // Records the time from application launch to the first successfully loaded
+  // page.
+  void RecordFirstPageLoad();
+
+  // Records the time from application launch to the first navigation start.
+  void RecordFirstNavigationStart();
+
+  // Records startup timing metrics for `base_histogram_name` (always, and with
+  // `.WithWebExtensions` or `.WithoutWebExtensions` suffix).
+  void RecordFirstStartupMetric(const std::string& base_histogram_name);
 
   // Clear out all state regarding a current evicted tab.
   void ResetEvictedTab();

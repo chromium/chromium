@@ -32,6 +32,9 @@ class ExtensionService : public KeyedService {
   // lifetime regardless of subsequent preference or extension state changes.
   virtual bool IsReady() const = 0;
 
+  // Returns whether web extensions were loaded at startup.
+  virtual bool WebExtensionsWereLoadedAtStartup() const = 0;
+
   // Registers `callback` to be invoked when the extension service finishes
   // startup initialization. Must only be called if `!IsReady()`.
   virtual base::CallbackListSubscription RunWhenReady(

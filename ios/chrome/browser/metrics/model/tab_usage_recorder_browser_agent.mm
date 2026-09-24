@@ -8,15 +8,21 @@
 
 #import <array>
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_extension/model/extension_service.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -24,6 +30,20 @@
 #import "ios/web/public/web_state.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "ui/base/page_transition_types.h"
+
+namespace {
+
+// Tracks whether the first page load has been recorded since app startup.
+// It is global because startup metrics are recorded only once per app lifecycle
+// across all browser windows and profiles.
+bool g_first_page_loaded_recorded = false;
+
+// Tracks whether the first navigation start has been recorded since app
+// startup. It is global because startup metrics are recorded only once per app
+// lifecycle across all browser windows and profiles.
+bool g_first_navigation_started_recorded = false;
+
+}  // namespace
 
 TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)
     : BrowserUserData(browser), restore_start_time_(base::TimeTicks::Now()) {
@@ -286,6 +306,49 @@ void TabUsageRecorderBrowserAgent::ResetAll() {
   ResetEvictedTab();
   ResetPageLoads();
   evicted_web_states_.clear();
+  g_first_page_loaded_recorded = false;
+  g_first_navigation_started_recorded = false;
+}
+
+void TabUsageRecorderBrowserAgent::RecordFirstStartupMetric(
+    const std::string& base_histogram_name) {
+  id<StartupInformation> startup_information =
+      browser_->GetSceneState().profileState.startupInformation;
+  if (!startup_information) {
+    return;
+  }
+  base::TimeTicks launch_time = [startup_information appLaunchTime];
+  if (launch_time.is_null()) {
+    return;
+  }
+  base::TimeDelta duration = base::TimeTicks::Now() - launch_time;
+  bool web_extensions_were_loaded_at_startup = false;
+  if (browser_->GetProfile()) {
+    ExtensionService* extension_service =
+        ExtensionServiceFactory::GetForProfile(browser_->GetProfile());
+    if (extension_service) {
+      web_extensions_were_loaded_at_startup =
+          extension_service->WebExtensionsWereLoadedAtStartup();
+    }
+  }
+  base::UmaHistogramMediumTimes(base_histogram_name, duration);
+  if (web_extensions_were_loaded_at_startup) {
+    base::UmaHistogramMediumTimes(base_histogram_name + ".WithWebExtensions",
+                                  duration);
+  } else {
+    base::UmaHistogramMediumTimes(base_histogram_name + ".WithoutWebExtensions",
+                                  duration);
+  }
+}
+
+void TabUsageRecorderBrowserAgent::RecordFirstPageLoad() {
+  g_first_page_loaded_recorded = true;
+  RecordFirstStartupMetric("Startup.TimeFromMainToFirstPageLoaded");
+}
+
+void TabUsageRecorderBrowserAgent::RecordFirstNavigationStart() {
+  g_first_navigation_started_recorded = true;
+  RecordFirstStartupMetric("Startup.TimeFromMainToFirstNavigation");
 }
 
 void TabUsageRecorderBrowserAgent::ResetEvictedTab() {
@@ -445,12 +508,18 @@ void TabUsageRecorderBrowserAgent::DidStartNavigation(
   if (ShouldRecordPageLoadStartForNavigation(navigation_context)) {
     RecordPageLoadStart(web_state);
   }
+  if (!g_first_navigation_started_recorded) {
+    RecordFirstNavigationStart();
+  }
 }
 
 void TabUsageRecorderBrowserAgent::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
   RecordPageLoadDone(web_state);
+  if (!g_first_page_loaded_recorded) {
+    RecordFirstPageLoad();
+  }
 }
 
 void TabUsageRecorderBrowserAgent::RenderProcessGone(web::WebState* web_state) {

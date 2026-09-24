@@ -22,6 +22,10 @@ bool FakeExtensionService::IsReady() const {
   return is_ready_;
 }
 
+bool FakeExtensionService::WebExtensionsWereLoadedAtStartup() const {
+  return web_extensions_were_loaded_at_startup_;
+}
+
 base::CallbackListSubscription FakeExtensionService::RunWhenReady(
     base::OnceClosure callback) {
   CHECK(!is_ready_);
@@ -37,6 +41,10 @@ void FakeExtensionService::SetReady(bool ready) {
   if (is_ready_) {
     ready_callbacks_.Notify();
   }
+}
+
+void FakeExtensionService::SetWebExtensionsWereLoadedAtStartup(bool loaded) {
+  web_extensions_were_loaded_at_startup_ = loaded;
 }
 
 bool FakeExtensionService::HasWaitingCallback() const {

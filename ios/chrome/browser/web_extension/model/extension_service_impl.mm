@@ -56,6 +56,11 @@ bool ExtensionServiceImpl::IsReady() const {
   return is_ready_;
 }
 
+bool ExtensionServiceImpl::WebExtensionsWereLoadedAtStartup() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return extension_load_started_at_startup_;
+}
+
 base::CallbackListSubscription ExtensionServiceImpl::RunWhenReady(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -82,6 +87,7 @@ void ExtensionServiceImpl::Initialize() {
   const bool opted_in = pref_service_->GetBoolean(
       universal_optout::prefs::kUniversalOptOutEnabled);
   if (opted_in) {
+    extension_load_started_at_startup_ = true;
     is_loading_ = true;
     initialization_start_time_ = base::TimeTicks::Now();
     extension_load_start_time_ = initialization_start_time_;

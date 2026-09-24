@@ -55,6 +55,7 @@ class ExtensionServiceImpl final : public ExtensionService {
   web::ExtensionController* GetExtensionController() const override
       API_AVAILABLE(ios(18.4));
   bool IsReady() const override;
+  bool WebExtensionsWereLoadedAtStartup() const override;
   base::CallbackListSubscription RunWhenReady(
       base::OnceClosure callback) override;
 
@@ -92,6 +93,9 @@ class ExtensionServiceImpl final : public ExtensionService {
 
   // Whether the service has completed loading initial extensions.
   bool is_ready_ = false;
+
+  // Whether the extension started loading at startup.
+  bool extension_load_started_at_startup_ = false;
 
   // Whether an extension is currently being loaded.
   bool is_loading_ = false;
