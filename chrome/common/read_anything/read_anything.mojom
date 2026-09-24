@@ -397,9 +397,11 @@ interface UntrustedPage {
   // after the tree_id was previously passed to AccessibilityEventsReceived.
   // ukm_source_id is a ukm::SourceId which is used to tie the UKM event to the
   // main frame URL for metrics collection.
-  // TODO(41496290): Do not pass is_pdf. The renderer should be able to infer
-  // this value from the AXTree, and should not trust it coming from a
-  // potentially compromised renderer.
+  // is_pdf is resolved in the browser from the frame tree: the PDF content
+  // frame is located with pdf_frame_util on a host whose committed origin is
+  // the PDF extension. Do not replace this with inference from the AXTree,
+  // which is renderer-controlled and would weaken the guarantee.
+  // See https://crrev.com/c/5301501.
   OnActiveAXTreeIDChanged(ax.mojom.AXTreeID tree_id,
                           int64 ukm_source_id,
                           bool is_pdf);
