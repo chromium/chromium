@@ -6,6 +6,8 @@
 
 #include "base/containers/to_vector.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -236,6 +238,52 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_OFFERS_FOOTER_TEXT));
   EXPECT_EQ(promo_code_suggestions[3].type, SuggestionType::kManageOffers);
   EXPECT_EQ(promo_code_suggestions[3].icon, Suggestion::Icon::kSettings);
+}
+
+// Checks that at most 5 promo code suggestions are generated, even if more
+// promo code offers are available for the origin.
+TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
+       GetPromoCodeSuggestionsFromPromoCodeOffers_LimitedToFiveSuggestions) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+  base::Time expiry = base::Time::Now() + base::Days(2);
+  std::vector<GURL> merchant_origins{GURL("https://www.example.com")};
+
+  // Add more offers than the maximum number of suggestions that can be shown.
+  for (int i = 1; i <= 7; ++i) {
+    std::string offer_id = base::NumberToString(i);
+    DisplayStrings display_strings;
+    display_strings.value_prop_text =
+        base::StrCat({"test_value_prop_text_", offer_id});
+    test_api(payments_data_manager())
+        .AddOfferData(std::make_unique<AutofillOfferData>(
+            AutofillOfferData::WalletDirectOffer(
+                offer_id, expiry, merchant_origins,
+                /*offer_details_url=*/GURL("https://offer-details-url.com/"),
+                display_strings,
+                base::StrCat({"test_promo_code_", offer_id}))));
+  }
+
+  std::vector<Suggestion> promo_code_suggestions = GetPromoCodeSuggestions();
+
+  // 5 promo code suggestions, plus the separator and the footer.
+  ASSERT_EQ(promo_code_suggestions.size(), 7u);
+
+  // Only the first 5 offers are converted into suggestions.
+  for (size_t i = 0; i < 5u; ++i) {
+    SCOPED_TRACE(testing::Message() << "Suggestion index: " << i);
+    EXPECT_EQ(promo_code_suggestions[i].type,
+              SuggestionType::kMerchantPromoCodeEntry);
+    EXPECT_EQ(promo_code_suggestions[i].main_text.value,
+              base::UTF8ToUTF16(base::StrCat(
+                  {"test_value_prop_text_", base::NumberToString(i + 1)})));
+    EXPECT_EQ(promo_code_suggestions[i].GetPayload<Suggestion::PromoCode>(),
+              Suggestion::PromoCode(base::StrCat(
+                  {"test_promo_code_", base::NumberToString(i + 1)})));
+  }
+
+  EXPECT_EQ(promo_code_suggestions[5].type, SuggestionType::kSeparator);
+  EXPECT_EQ(promo_code_suggestions[6].type, SuggestionType::kManageOffers);
 }
 
 }  // namespace

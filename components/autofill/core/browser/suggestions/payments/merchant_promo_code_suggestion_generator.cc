@@ -4,10 +4,12 @@
 
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/i18n/time_formatting.h"
@@ -28,6 +30,9 @@
 namespace autofill {
 namespace {
 
+// The maximum number of promo code suggestions to show to the user.
+constexpr size_t kMaxPromoCodeSuggestions = 5;
+
 // Converts the vector of promo code offers that is passed in to a vector of
 // suggestions that can be displayed to the user for a promo code field.
 std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
@@ -36,9 +41,13 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
     return {};
   }
 
+  const size_t num_promo_codes =
+      std::min(promo_code_offers.size(), kMaxPromoCodeSuggestions);
+
   std::vector<Suggestion> suggestions;
-  suggestions.reserve(promo_code_offers.size() + 2);
-  for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
+  suggestions.reserve(num_promo_codes + 2);
+  for (const AutofillOfferData* promo_code_offer :
+       base::span(promo_code_offers).first(num_promo_codes)) {
     // For each promo code, create a suggestion.
     std::u16string main_text = base::UTF8ToUTF16(
         promo_code_offer->GetDisplayStrings().value_prop_text);
