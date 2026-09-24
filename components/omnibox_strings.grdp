@@ -434,6 +434,9 @@
   <message name="IDS_FUSEBOX_MORE_OPTIONS" desc="The label and accessibility text for the More Options button in the Fusebox popup." formatter_data="android_java">
     More options
   </message>
+  <message name="IDS_FUSEBOX_ADD_TO_YOUR_SEARCH_HEADER" desc="Header text above the attachment options in the Fusebox popup." formatter_data="android_java">
+    Add to your search
+  </message>
   <message name="IDS_FUSEBOX_AI_MODE_SUBTEXT" desc="Subtext displayed under the AI Mode button in the Fusebox popup." formatter_data="android_java">
     Smarter, faster answers
   </message>

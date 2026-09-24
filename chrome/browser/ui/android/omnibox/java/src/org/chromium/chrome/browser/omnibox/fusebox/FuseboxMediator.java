@@ -223,6 +223,9 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE, false);
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE, false);
 
+        mModel.set(
+                FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE,
+                !mIsDesktopPlatform && OmniboxFeatures.hasAccordion());
         mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE, !mIsDesktopPlatform);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE, !mIsDesktopPlatform);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE, true);

@@ -120,6 +120,13 @@ public class IncognitoColors {
                 : SemanticColorUtils.getColorOnPrimary(context);
     }
 
+    /** Returns the correct text appearance style res for primary colored headline text. */
+    public static @StyleRes int getHeadlinePrimary(boolean isIncognito) {
+        return isIncognito
+                ? R.style.TextAppearance_Headline_Primary_Baseline_Light
+                : R.style.TextAppearance_Headline_Primary;
+    }
+
     /** Returns the correct text appearance style res for primary colored medium text. */
     public static @StyleRes int getTextMediumPrimary(boolean isIncognito) {
         return isIncognito

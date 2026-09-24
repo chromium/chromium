@@ -101,6 +101,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_ACCORDION_EXPANDED =
             new WritableBooleanPropertyKey();
 
+    /** Whether the attachments header in the popup is visible. */
+    public static final WritableBooleanPropertyKey POPUP_ATTACHMENTS_HEADER_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     /** Action to perform when the user clicks the Camera button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_CAMERA_CLICKED =
             new WritableObjectPropertyKey<>();
@@ -288,6 +292,7 @@ class FuseboxProperties {
         PLUS_BUTTON_CLICKED,
         PLUS_BUTTON_VISIBLE,
         POPUP_ACCORDION_EXPANDED,
+        POPUP_ATTACHMENTS_HEADER_VISIBLE,
         POPUP_ATTACH_CAMERA_CLICKED,
         POPUP_ATTACH_CAMERA_ENABLED,
         POPUP_ATTACH_CAMERA_VISIBLE,

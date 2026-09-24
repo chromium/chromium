@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 
@@ -672,5 +673,24 @@ public class OmniboxResourceProviderUnitTest {
                         .getDimensionPixelSize(
                                 R.dimen.omnibox_search_engine_logo_composed_size_desktop),
                 mProvider.getStatusIconSize());
+    }
+
+    @Test
+    public void getPopupAttachmentsHeaderTextRes() {
+        assertEquals(
+                IncognitoColors.getTextMediumThickSecondary(/* isIncognito= */ false),
+                mProvider.getPopupAttachmentsHeaderTextRes(/* useLarge= */ false));
+        assertEquals(
+                IncognitoColors.getHeadlinePrimary(/* isIncognito= */ false),
+                mProvider.getPopupAttachmentsHeaderTextRes(/* useLarge= */ true));
+
+        OmniboxResourceProvider incognitoProvider =
+                new OmniboxResourceProvider(mContext, BrandedColorScheme.INCOGNITO);
+        assertEquals(
+                IncognitoColors.getTextMediumThickSecondary(/* isIncognito= */ true),
+                incognitoProvider.getPopupAttachmentsHeaderTextRes(/* useLarge= */ false));
+        assertEquals(
+                IncognitoColors.getHeadlinePrimary(/* isIncognito= */ true),
+                incognitoProvider.getPopupAttachmentsHeaderTextRes(/* useLarge= */ true));
     }
 }

@@ -57,6 +57,8 @@ class FuseboxPopup {
 
     /* package */ final View mModelsDivider;
     /* package */ final TextView mModelsHeader;
+    /* package */ final TextView mAttachmentsHeader;
+    /* package */ final View mAttachmentsContainer;
     /* package */ final @Nullable TextView mRecentTabsHeader;
     /* package */ final @Nullable ViewGroup mRecentTabsContainer;
     /* package */ final @Nullable View mRecentTabsDivider;
@@ -142,7 +144,7 @@ class FuseboxPopup {
                                 ? R.layout.fusebox_horizontal_scrollable_attachments
                                 : R.layout.fusebox_horizontal_attachments
                         : R.layout.fusebox_vertical_attachments);
-        stub.inflate();
+        mAttachmentsContainer = stub.inflate();
 
         mAddCurrentTab = contentView.findViewById(R.id.fusebox_add_current_tab);
         mTabButton = contentView.findViewById(R.id.fusebox_pick_tabs_button);
@@ -201,6 +203,7 @@ class FuseboxPopup {
         mModelsDivider = contentView.findViewById(R.id.fusebox_models_divider);
         mModelsHeader = contentView.findViewById(R.id.fusebox_models_header);
 
+        mAttachmentsHeader = contentView.findViewById(R.id.fusebox_attachments_header);
         mRecentTabsDivider = contentView.findViewById(R.id.fusebox_recent_tabs_divider);
         mRecentTabsHeader = contentView.findViewById(R.id.fusebox_recent_tabs_header);
         mRecentTabsContainer = contentView.findViewById(R.id.fusebox_recent_tabs_container);

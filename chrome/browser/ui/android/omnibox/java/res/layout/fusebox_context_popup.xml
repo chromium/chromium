@@ -22,6 +22,12 @@ found in the LICENSE file.
         android:paddingBottom="4dp"
         android:importantForAccessibility="no">
 
+        <TextView
+            style="@style/Fusebox.PopupMenu.Header"
+            android:id="@+id/fusebox_attachments_header"
+            android:text="@string/fusebox_add_to_your_search_header"
+            android:visibility="gone" />
+
         <ViewStub
             android:id="@+id/fusebox_attachments_stub"
             android:layout_width="match_parent"

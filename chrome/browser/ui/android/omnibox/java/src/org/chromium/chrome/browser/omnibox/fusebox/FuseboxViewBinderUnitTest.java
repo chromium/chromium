@@ -101,6 +101,7 @@ public class FuseboxViewBinderUnitTest {
     private FuseboxViewHolder mViewHolder;
     private FuseboxPopup mPopup;
     private FuseboxViewBinder mBinder;
+    private OmniboxResourceProvider mResourceProvider;
 
     @Before
     public void setUp() {
@@ -143,9 +144,8 @@ public class FuseboxViewBinderUnitTest {
                 FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE,
                 BackgroundStyle.INTERACT_ONLY_SMALL);
 
-        var resourceProvider =
-                new OmniboxResourceProvider(activity, BrandedColorScheme.APP_DEFAULT);
-        mBinder = new FuseboxViewBinder(resourceProvider);
+        mResourceProvider = new OmniboxResourceProvider(activity, BrandedColorScheme.APP_DEFAULT);
+        mBinder = new FuseboxViewBinder(mResourceProvider);
         PropertyModelChangeProcessor.create(mModel, mViewHolder, mBinder::bind);
     }
 
@@ -209,6 +209,11 @@ public class FuseboxViewBinderUnitTest {
                 .with(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, "test label")
                 .with(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, false)
                 .build();
+    }
+
+    private void setColorScheme(@BrandedColorScheme int scheme) {
+        mResourceProvider.setBrandedColorScheme(scheme);
+        mModel.set(FuseboxProperties.COLOR_SCHEME, scheme);
     }
 
     private void addModelButton(PropertyModel model, FuseboxViewHolder viewHolder) {
@@ -1119,7 +1124,7 @@ public class FuseboxViewBinderUnitTest {
                 mViewHolder.popup.mMoreOptionsButton.findViewById(R.id.end_icon);
 
         // Verify non-incognito default theme.
-        mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
+        setColorScheme(BrandedColorScheme.APP_DEFAULT);
         assertEquals(
                 activity.getColorStateList(R.color.default_text_color_list),
                 moreOptionsText.getTextColors());
@@ -1129,7 +1134,7 @@ public class FuseboxViewBinderUnitTest {
                 moreOptionsEndIcon.getImageTintList());
 
         // Verify incognito theme.
-        mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
+        setColorScheme(BrandedColorScheme.INCOGNITO);
         assertEquals(
                 activity.getColorStateList(R.color.default_text_color_light_list),
                 moreOptionsText.getTextColors());
@@ -1178,5 +1183,76 @@ public class FuseboxViewBinderUnitTest {
         model.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, false);
         mBinder.bind(model, viewHolder, FuseboxProperties.POPUP_ACCORDION_EXPANDED);
         assertEquals(View.GONE, viewHolder.popup.mAccordionContainer.getVisibility());
+    }
+
+    @Test
+    public void bind_popupAttachmentsHeader_visibility() {
+        mModel.set(FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mAttachmentsHeader.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mAttachmentsHeader.getVisibility());
+    }
+
+    @Test
+    public void bind_popupAttachmentsHeader_headerPadding() {
+        // Non-carousel (default): small vertical padding (8dp).
+        mModel.set(FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE, true);
+        int expectedSmallPadding =
+                mActivityController
+                        .get()
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.fusebox_attachments_small_header_vertical_padding);
+        assertEquals(expectedSmallPadding, mPopup.mAttachmentsHeader.getPaddingTop());
+        assertEquals(expectedSmallPadding, mPopup.mAttachmentsHeader.getPaddingBottom());
+
+        // Carousel: large vertical padding (14dp).
+        PropertyModel carouselModel =
+                new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
+                        .with(FuseboxProperties.POPUP_USE_CAROUSEL, true)
+                        .with(FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE, true)
+                        .build();
+        mBinder.bind(
+                carouselModel, mViewHolder, FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE);
+        int expectedLargePadding =
+                mActivityController
+                        .get()
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.fusebox_attachments_large_header_vertical_padding);
+        assertEquals(expectedLargePadding, mPopup.mAttachmentsHeader.getPaddingTop());
+        assertEquals(expectedLargePadding, mPopup.mAttachmentsHeader.getPaddingBottom());
+    }
+
+    @Test
+    public void bind_popupAttachmentsHeader_attachmentsContainerPadding() {
+        int expectedCarouselPadding =
+                mActivityController
+                        .get()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_carousel_padding_top);
+
+        // Vertical layout (default): top padding is always 0.
+        mModel.set(FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE, true);
+        assertEquals(0, mPopup.mAttachmentsContainer.getPaddingTop());
+        mModel.set(FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE, false);
+        assertEquals(0, mPopup.mAttachmentsContainer.getPaddingTop());
+
+        // Carousel with header: top padding is 0.
+        PropertyModel carouselModel =
+                new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
+                        .with(FuseboxProperties.POPUP_USE_CAROUSEL, true)
+                        .with(FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE, true)
+                        .build();
+        mBinder.bind(
+                carouselModel, mViewHolder, FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE);
+        assertEquals(0, mPopup.mAttachmentsContainer.getPaddingTop());
+
+        // Carousel without header: default carousel top padding (24dp) is restored.
+        carouselModel.set(FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE, false);
+        mBinder.bind(
+                carouselModel, mViewHolder, FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE);
+        assertEquals(expectedCarouselPadding, mPopup.mAttachmentsContainer.getPaddingTop());
     }
 }
