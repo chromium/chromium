@@ -17,6 +17,7 @@
 #include "chrome/browser/devtools/chrome_devtools_session_android.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/grit/browser_resources.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/devtools_external_agent_proxy.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -336,6 +338,29 @@ bool DevToolsManagerDelegateAndroid::AllowInspectingTarget(
     return true;
   }
   return IsInspectionAllowed(profile, agent_host);
+}
+
+void DevToolsManagerDelegateAndroid::Activate(
+    content::DevToolsAgentHost* agent_host) {
+  auto* web_contents = agent_host->GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  // Brings the tab to foreground. We need to do this in case the devtools
+  // window is undocked and this is being called from another tab that is in
+  // the foreground.
+  if (auto* delegate = web_contents->GetDelegate()) {
+    delegate->ActivateContents(web_contents);
+  }
+
+  // Brings a undocked devtools window to the foreground.
+  DevToolsWindow* devtools_window =
+      DevToolsWindow::GetInstanceForInspectedWebContents(web_contents);
+  if (!devtools_window) {
+    return;
+  }
+  devtools_window->ActivateWindow();
 }
 
 void DevToolsManagerDelegateAndroid::HandleCommand(

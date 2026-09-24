@@ -33,6 +33,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -5226,6 +5227,7 @@ IN_PROC_BROWSER_TEST_P(DevToolsConfirmInfoBarTest, ConcurrentRequestHandling) {
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Runs against the legacy and the centralized infobar; behavior must match.
 class DevToolsProcessPerSiteTest
@@ -5249,6 +5251,8 @@ class DevToolsProcessPerSiteTest
   ~DevToolsProcessPerSiteTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    DevToolsProcessPerSiteUpToMainFrameThresholdTest::SetUpCommandLine(
+        command_line);
     command_line->AppendSwitch(switches::kProcessPerSite);
   }
 
@@ -5264,6 +5268,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                              : "LegacyInfobar";
                          });
 
+#if !BUILDFLAG(IS_ANDROID)
 // TODO(https://crbug.com/328693031): Flaky on Linux dbg.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_DevToolsSharedProcessInfobar DISABLED_DevToolsSharedProcessInfobar
@@ -5314,66 +5319,49 @@ IN_PROC_BROWSER_TEST_P(DevToolsProcessPerSiteTest,
   ASSERT_EQ(undocked_infobar_manager->infobars()[0]->GetIdentifier(),
             infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-// Observe that the active tab has changed.
-class ActiveTabChangedObserver : public TabStripModelObserver {
- public:
-  explicit ActiveTabChangedObserver(TabStripModel* tab_strip_model) {
-    tab_strip_model->AddObserver(this);
-  }
-
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override {
-    if (change.type() == TabStripModelChange::kSelectionOnly &&
-        tab_strip_model->active_index() == 0) {
-      loop_.Quit();
-      return;
-    }
-  }
-
-  void Wait() { loop_.Run(); }
-
- private:
-  base::RunLoop loop_;
-};
-
-// TODO: crbug.com/337141755 - Flaky on Windows ASAN.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_PausedDebuggerFocus DISABLED_PausedDebuggerFocus
-#else
-#define MAYBE_PausedDebuggerFocus PausedDebuggerFocus
-#endif
-IN_PROC_BROWSER_TEST_P(DevToolsProcessPerSiteTest, MAYBE_PausedDebuggerFocus) {
+IN_PROC_BROWSER_TEST_P(DevToolsProcessPerSiteTest, PausedDebuggerFocus) {
   const GURL url = embedded_test_server()->GetURL("foo.test", "/hello.html");
 
-  auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  auto* devtools_window = DevToolsWindowTesting::OpenDevToolsWindowSync(
-      tab_strip_model->GetWebContentsAt(0), true);
-  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url,
-                                     ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
-  ASSERT_EQ(2, tab_strip_model->count());
-  ASSERT_EQ(
-      tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame()->GetProcess(),
-      tab_strip_model->GetWebContentsAt(1)
-          ->GetPrimaryMainFrame()
-          ->GetProcess());
-  ASSERT_EQ(1, tab_strip_model->active_index());
+  auto* tab_list = TabListInterface::From(browser_window_interface());
+  ASSERT_TRUE(NavigateToURL(GetInspectedTab(), url));
+  tabs::TabInterface* tab1 = tab_list->OpenTab(url, 1);
+  ASSERT_TRUE(tab1);
+  // Wait for `tab1` to submit a compositor frame before opening DevTools and
+  // pausing the shared renderer process so its InputRouter becomes active and
+  // does not filter out the mouse click due to paint holding.
+  content::RenderFrameSubmissionObserver frame_observer(tab1->GetContents());
+  ASSERT_TRUE(content::WaitForLoadStop(tab1->GetContents()));
+  if (!frame_observer.render_frame_count()) {
+    frame_observer.WaitForAnyFrameSubmission();
+  }
+  ASSERT_EQ(2, tab_list->GetTabCount());
+  ASSERT_EQ(GetWebContentsAt(0)->GetPrimaryMainFrame()->GetProcess(),
+            GetWebContentsAt(1)->GetPrimaryMainFrame()->GetProcess());
+  ASSERT_EQ(1, tab_list->GetActiveIndex());
 
-  ASSERT_TRUE(content::ExecJs(tab_strip_model->GetWebContentsAt(0),
+  auto* devtools_window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(GetWebContentsAt(0), true);
+  tab_list->ActivateTab(tab1->GetHandle());
+  ASSERT_EQ(1, tab_list->GetActiveIndex());
+
+  ASSERT_TRUE(content::ExecJs(GetWebContentsAt(0),
                               "setTimeout(() => {debugger;}, 0);"));
   DispatchOnTestSuite(devtools_window, "waitForDebuggerPaused");
-  ActiveTabChangedObserver active_tab_observer(tab_strip_model);
-  content::SimulateMouseClick(tab_strip_model->GetActiveWebContents(), 0,
+  base::test::TestFuture<tabs::TabInterface*> active_tab_future;
+  base::CallbackListSubscription subscription =
+      tab_list->GetTab(0)->RegisterDidActivate(
+          active_tab_future.GetRepeatingCallback());
+  content::SimulateMouseClick(GetActiveWebContents(), 0,
                               blink::WebMouseEvent::Button::kLeft);
-  active_tab_observer.Wait();
-  ASSERT_EQ(0, tab_strip_model->active_index());
+  ASSERT_TRUE(active_tab_future.Wait());
+  ASSERT_EQ(0, tab_list->GetActiveIndex());
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class DevToolsConsoleInsightsTest : public DevToolsTest {
  public:
   DevToolsConsoleInsightsTest() {
