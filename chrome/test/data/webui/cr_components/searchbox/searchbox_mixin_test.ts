@@ -1810,20 +1810,32 @@ suite('SearchboxMixinTest', () => {
   });
 
   test('question mark keyword entry', async () => {
+    testProxy.callbackRouterRemote.setAvailableKeywordModels(
+        [{
+          type: KeywordType.kChip,
+          keyword: 'google.com',
+          displayText: 'Search Google',
+          iconPath: '',
+          placeholder: 'Search Google',
+        }],
+        'google.com');
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+
     const mockInput = element.getInputElement();
 
     await simulateUserTextInput(mockInput, '?');
 
     assertTrue(element.inputKeywordModel !== null);
     assertEquals(KeywordType.kInKeyword, element.inputKeywordModel.type);
-    assertEquals('?', element.inputKeywordModel.keyword);
+    assertEquals('google.com', element.inputKeywordModel.keyword);
+    assertEquals('Search Google', element.inputKeywordModel.displayText);
     assertEquals('', mockInput.inputElement.value);
 
     const keywordMatches = [createSearchMatchForTesting({
       keywordModel: createMatchKeywordModelForTesting({
         type: KeywordType.kInKeyword,
-        keyword: '?',
-        chipHint: 'Search',
+        keyword: 'google.com',
+        chipHint: 'Search Google',
       }),
     })];
     element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
@@ -3497,22 +3509,24 @@ suite('SearchboxMixinVirtualFocusTest', () => {
   test('dynamic available keyword models update', async () => {
     assertEquals(0, element.keywordModeManager.availableKeywordModels.length);
 
-    testProxy.callbackRouterRemote.setAvailableKeywordModels([
-      {
-        type: KeywordType.kChip,
-        keyword: 'google.com',
-        displayText: 'Search Google',
-        iconPath: '',
-        placeholder: '',
-      },
-      {
-        type: KeywordType.kInstant,
-        keyword: '@history',
-        displayText: '@history',
-        iconPath: '',
-        placeholder: '',
-      },
-    ]);
+    testProxy.callbackRouterRemote.setAvailableKeywordModels(
+        [
+          {
+            type: KeywordType.kChip,
+            keyword: 'google.com',
+            displayText: 'Search Google',
+            iconPath: '',
+            placeholder: '',
+          },
+          {
+            type: KeywordType.kInstant,
+            keyword: '@history',
+            displayText: '@history',
+            iconPath: '',
+            placeholder: '',
+          },
+        ],
+        'google.com');
     await testProxy.callbackRouterRemote.$.flushForTesting();
     assertEquals(2, element.keywordModeManager.availableKeywordModels.length);
     assertEquals(
@@ -3522,20 +3536,22 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         '@history',
         element.keywordModeManager.availableKeywordModels[1]?.keyword);
 
-    testProxy.callbackRouterRemote.setAvailableKeywordModels([]);
+    testProxy.callbackRouterRemote.setAvailableKeywordModels([], '');
     await testProxy.callbackRouterRemote.$.flushForTesting();
     assertEquals(0, element.keywordModeManager.availableKeywordModels.length);
   });
 
   test(
       'space in middle enters keyword mode and queries remainder', async () => {
-        testProxy.callbackRouterRemote.setAvailableKeywordModels([{
-          type: KeywordType.kChip,
-          keyword: 'youtube.com',
-          displayText: 'Search YouTube',
-          iconPath: '',
-          placeholder: '',
-        }]);
+        testProxy.callbackRouterRemote.setAvailableKeywordModels(
+            [{
+              type: KeywordType.kChip,
+              keyword: 'youtube.com',
+              displayText: 'Search YouTube',
+              iconPath: '',
+              placeholder: '',
+            }],
+            '');
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
         const mockInput = element.getInputElement();
@@ -3572,13 +3588,15 @@ suite('SearchboxMixinVirtualFocusTest', () => {
   test(
       'space in middle with case-insensitive keyword enters keyword mode',
       async () => {
-        testProxy.callbackRouterRemote.setAvailableKeywordModels([{
-          type: KeywordType.kChip,
-          keyword: 'youtube.com',
-          displayText: 'Search YouTube',
-          iconPath: '',
-          placeholder: '',
-        }]);
+        testProxy.callbackRouterRemote.setAvailableKeywordModels(
+            [{
+              type: KeywordType.kChip,
+              keyword: 'youtube.com',
+              displayText: 'Search YouTube',
+              iconPath: '',
+              placeholder: '',
+            }],
+            '');
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
         const mockInput = element.getInputElement();
@@ -3610,13 +3628,15 @@ suite('SearchboxMixinVirtualFocusTest', () => {
   test(
       'starter pack keyword followed by space enters keyword mode',
       async () => {
-        testProxy.callbackRouterRemote.setAvailableKeywordModels([{
-          type: KeywordType.kInstant,
-          keyword: '@history',
-          displayText: 'History',
-          iconPath: '',
-          placeholder: '',
-        }]);
+        testProxy.callbackRouterRemote.setAvailableKeywordModels(
+            [{
+              type: KeywordType.kInstant,
+              keyword: '@history',
+              displayText: 'History',
+              iconPath: '',
+              placeholder: '',
+            }],
+            '');
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
         const mockInput = element.getInputElement();
@@ -3636,13 +3656,15 @@ suite('SearchboxMixinVirtualFocusTest', () => {
   test(
       'available keyword followed by space enters keyword mode without chip',
       async () => {
-        testProxy.callbackRouterRemote.setAvailableKeywordModels([{
-          type: KeywordType.kChip,
-          keyword: 'google.com',
-          displayText: 'Google',
-          iconPath: '',
-          placeholder: '',
-        }]);
+        testProxy.callbackRouterRemote.setAvailableKeywordModels(
+            [{
+              type: KeywordType.kChip,
+              keyword: 'google.com',
+              displayText: 'Google',
+              iconPath: '',
+              placeholder: '',
+            }],
+            '');
         await testProxy.callbackRouterRemote.$.flushForTesting();
 
         const mockInput = element.getInputElement();
@@ -3660,13 +3682,15 @@ suite('SearchboxMixinVirtualFocusTest', () => {
       });
 
   test('deleting trailing space does not enter keyword mode', async () => {
-    testProxy.callbackRouterRemote.setAvailableKeywordModels([{
-      type: KeywordType.kInstant,
-      keyword: '@history',
-      displayText: 'History',
-      iconPath: '',
-      placeholder: '',
-    }]);
+    testProxy.callbackRouterRemote.setAvailableKeywordModels(
+        [{
+          type: KeywordType.kInstant,
+          keyword: '@history',
+          displayText: 'History',
+          iconPath: '',
+          placeholder: '',
+        }],
+        '');
     await testProxy.callbackRouterRemote.$.flushForTesting();
 
     const mockInput = element.getInputElement();

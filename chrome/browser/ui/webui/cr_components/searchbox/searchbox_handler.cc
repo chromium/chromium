@@ -1218,8 +1218,14 @@ void SearchboxHandler::SendAvailableKeywordModels() {
 
   TemplateURLService* template_url_service = GetTemplateURLService();
   if (!template_url_service) {
-    page_->SetAvailableKeywordModels({});
+    page_->SetAvailableKeywordModels({}, "");
     return;
+  }
+
+  std::string default_search_provider_keyword;
+  if (const TemplateURL* dse =
+          template_url_service->GetDefaultSearchProvider()) {
+    default_search_provider_keyword = base::UTF16ToUTF8(dse->keyword());
   }
 
   std::vector<searchbox::mojom::InputKeywordModelPtr> models;
@@ -1277,7 +1283,8 @@ void SearchboxHandler::SendAvailableKeywordModels() {
     models.push_back(std::move(keyword_model));
   }
 
-  page_->SetAvailableKeywordModels(std::move(models));
+  page_->SetAvailableKeywordModels(std::move(models),
+                                   default_search_provider_keyword);
 }
 
 void SearchboxHandler::OnKeywordSpaceTriggeringPrefChanged() {
@@ -1342,20 +1349,8 @@ void SearchboxHandler::QueryAutocomplete(
   if (!keyword.empty()) {
     TemplateURLService* service = GetTemplateURLService();
     if (service) {
-      std::u16string keyword16;
-      // TODO(b:504669216): There may actually exist a `TemplateURL` with
-      //   shortcut '?'. Using '?' as a sentinel value to represent the default
-      //   search engine will incorrectly trigger the default search engine even
-      //   when the user wanted the '?' search engine.
-      if (keyword == "?") {
-        template_url = service->GetDefaultSearchProvider();
-        if (template_url) {
-          keyword16 = template_url->keyword();
-        }
-      } else {
-        keyword16 = base::UTF8ToUTF16(keyword);
-        template_url = service->GetTemplateURLForKeyword(keyword16);
-      }
+      const std::u16string keyword16 = base::UTF8ToUTF16(keyword);
+      template_url = service->GetTemplateURLForKeyword(keyword16);
       if (template_url) {
         is_keyword_selected = true;
         input_with_keyword = keyword16 + u" " + input;
@@ -1392,8 +1387,7 @@ void SearchboxHandler::QueryAutocomplete(
           KeywordState::kKeyword, template_url->keyword(),
           AutocompleteMatch::GetKeywordPlaceholder(
               template_url, client() && client()->IsHistoryEmbeddingsEnabled()),
-          keyword == "?" ? metrics::OmniboxEventProto::QUESTION_MARK
-                         : metrics::OmniboxEventProto::SPACE_AT_END);
+          metrics::OmniboxEventProto::SPACE_AT_END);
     } else {
       edit_model()->SetKeywordInfo(KeywordState::kNone, u"", u"",
                                    metrics::OmniboxEventProto::INVALID);

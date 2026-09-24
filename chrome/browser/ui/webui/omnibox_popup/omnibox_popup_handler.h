@@ -87,6 +87,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
   void SetFocus(bool is_focused,
                 bool query_zps = false,
                 bool select_all = false);
+  void FocusSearchWithDefaultSearchEngineKeywordMode();
   void ClearAutocompleteMatches();
   void ClearPopup(base::OnceClosure callback);
 

@@ -8,6 +8,7 @@ import '//resources/cr_components/searchbox/searchbox_compose_button.js';
 import './omnibox_popup_contextual_entrypoint.js';
 
 import type {ComposeboxLensSearchElement} from '//resources/cr_components/composebox/composebox_lens_search.js';
+import {KeywordModeEntryMethod} from '//resources/cr_components/searchbox/keyword_mode_manager.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {ComposeClickEventDetail, SearchboxComposeButtonElement} from '//resources/cr_components/searchbox/searchbox_compose_button.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
@@ -402,6 +403,9 @@ export class OmniboxPopupSearchboxElement extends
           this.onSetInputState_.bind(this)),
       this.popupCallbackRouter_.setFocus.addListener(
           this.onSetFocus_.bind(this)),
+      this.popupCallbackRouter_.focusSearchWithDefaultSearchEngineKeywordMode
+          .addListener(
+              this.onFocusSearchWithDefaultSearchEngineKeywordMode_.bind(this)),
       this.popupCallbackRouter_.clearAutocompleteMatches.addListener(
           this.clearAutocompleteMatches.bind(this)),
       this.popupCallbackRouter_.clearPopup.addListener(
@@ -846,6 +850,17 @@ export class OmniboxPopupSearchboxElement extends
         }
         return;
       }
+      const isFocusSearchShortcut = isMac ?
+          (e.altKey && !e.shiftKey && e.code === 'KeyF') :
+          (!e.altKey && !e.shiftKey && (key === 'k' || key === 'e'));
+      if (isFocusSearchShortcut) {
+        // Cmd+Option+F (Mac) or Ctrl+K / Ctrl+E (Win/Linux/CrOS) -> Enter
+        // keyword mode for default search engine.
+        e.preventDefault();
+        e.stopPropagation();
+        this.onFocusSearchWithDefaultSearchEngineKeywordMode_();
+        return;
+      }
     }
 
     // If the input is already selected, 'ArrowLeft', 'ArrowRight', 'Home',
@@ -1209,6 +1224,34 @@ export class OmniboxPopupSearchboxElement extends
       this.deferredFocusAction_ = null;
       this.handleFocusLost_();
     }
+  }
+
+  /**
+   * Enters keyword mode for the default search engine, clearing permanent URL
+   * text (or selecting all existing user draft text) and querying autocomplete.
+   */
+  private onFocusSearchWithDefaultSearchEngineKeywordMode_() {
+    if (!this.keywordModeManager.enterDefaultSearchEngineKeywordMode(
+            KeywordModeEntryMethod.KEYBOARD_SHORTCUT)) {
+      return;
+    }
+
+    if (!this.userInputInProgress_) {
+      // Clear permanent URL text and transition to user input mode with empty
+      // text.
+      this.$.input.setInputText('');
+      this.userInputInProgress_ = true;
+      this.hasUserInput_ = false;
+      this.lastInputText_ = '';
+    } else {
+      // Preserve existing user draft text and select all of it.
+      this.getInputElement().select();
+    }
+
+    this.queryAutocomplete(
+        this.getInputElement().inputElement.value,
+        /*preventInlineAutocomplete=*/ false,
+        /*isOnFocus=*/ false);
   }
 
   /**

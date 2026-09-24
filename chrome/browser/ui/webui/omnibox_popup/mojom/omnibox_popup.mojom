@@ -131,4 +131,8 @@ interface Page {
 
   // Updates the default search provider's icon path.
   SetDefaultSearchProvider(string default_icon_path);
+
+  // Focuses the searchbox and enters keyword mode for the default search
+  // provider (e.g. via Ctrl+K / Ctrl+E / Cmd+Option+F).
+  FocusSearchWithDefaultSearchEngineKeywordMode();
 };

@@ -77,7 +77,8 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
   void SetInputText(const std::string& input_text) override {}
   void SetKeywordSpaceTriggeringEnabled(bool enabled) override {}
   void SetAvailableKeywordModels(
-      std::vector<searchbox::mojom::InputKeywordModelPtr> models) override {}
+      std::vector<searchbox::mojom::InputKeywordModelPtr> models,
+      const std::string& default_search_provider_keyword) override {}
   void SetThumbnail(const std::string& thumbnail_url,
                     bool is_deletable) override {}
   void OnContextualInputStatusChanged(

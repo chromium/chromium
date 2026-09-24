@@ -252,6 +252,12 @@ void OmniboxPopupHandler::SetFocus(bool is_focused,
   page_->SetFocus(is_focused, query_zps, select_all);
 }
 
+void OmniboxPopupHandler::FocusSearchWithDefaultSearchEngineKeywordMode() {
+  if (page_.is_bound()) {
+    page_->FocusSearchWithDefaultSearchEngineKeywordMode();
+  }
+}
+
 void OmniboxPopupHandler::ClearAutocompleteMatches() {
   page_->ClearAutocompleteMatches();
 }

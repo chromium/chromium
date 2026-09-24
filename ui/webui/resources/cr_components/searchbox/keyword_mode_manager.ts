@@ -49,6 +49,7 @@ export class KeywordModeManager {
       true;
 
   private availableKeywordModels_: Map<string, InputKeywordModel> = new Map();
+  private defaultSearchEngineKeyword_: string = '';
   private inputKeywordModel_: InputKeywordModel|null = null;
   private entryMethod_: KeywordModeEntryMethod = KeywordModeEntryMethod.NONE;
   private delegate_: KeywordModeManagerDelegate;
@@ -59,6 +60,14 @@ export class KeywordModeManager {
 
   get entryMethod(): KeywordModeEntryMethod {
     return this.entryMethod_;
+  }
+
+  get defaultSearchEngineKeyword(): string {
+    return this.defaultSearchEngineKeyword_;
+  }
+
+  set defaultSearchEngineKeyword(keyword: string) {
+    this.defaultSearchEngineKeyword_ = keyword;
   }
 
   get availableKeywordModels(): InputKeywordModel[] {
@@ -108,6 +117,26 @@ export class KeywordModeManager {
           '',
       placeholder: placeholder,
     };
+  }
+
+  /**
+   * Enters keyword mode for the default search engine if available.
+   * Returns true if keyword mode was entered.
+   */
+  enterDefaultSearchEngineKeywordMode(entryMethod: KeywordModeEntryMethod):
+      boolean {
+    if (!this.defaultSearchEngineKeyword_) {
+      return false;
+    }
+    const model = this.availableKeywordModels_.get(
+        this.defaultSearchEngineKeyword_.toLowerCase());
+    if (!model) {
+      return false;
+    }
+    this.enter(
+        model.keyword, model.displayText || model.keyword, entryMethod,
+        model.placeholder || '');
+    return true;
   }
 
   /**
@@ -353,8 +382,8 @@ export class KeywordModeManager {
     // Input must have been typed, not pasted.
     // TODO(b/504669216): webUI doesn't track paste state yet.
 
-    this.enter('?', '', KeywordModeEntryMethod.QUESTION_MARK);
-    return true;
+    return this.enterDefaultSearchEngineKeywordMode(
+        KeywordModeEntryMethod.QUESTION_MARK);
   }
 
   /**

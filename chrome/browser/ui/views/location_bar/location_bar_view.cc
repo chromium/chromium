@@ -1592,6 +1592,12 @@ void LocationBarView::OnPageInfoBubbleClosed(
 void LocationBarView::FocusSearch() {
   // This is called by keyboard accelerator, so it's user-initiated.
   FocusLocation(/*is_user_initiated=*/true, /*clear_focus_if_failed=*/false);
+  if (IsFullWebUiOmniboxReady()) {
+    if (auto* popup_view = GetOmniboxPopupView()) {
+      popup_view->FocusSearchWithDefaultSearchEngineKeywordMode();
+    }
+    return;
+  }
   omnibox_view_->EnterKeywordModeForDefaultSearchProvider();
 }
 

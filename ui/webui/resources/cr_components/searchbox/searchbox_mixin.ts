@@ -191,8 +191,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
 
       this.availableKeywordModelsListenerId_ =
           this.callbackRouter_.setAvailableKeywordModels.addListener(
-              (models: InputKeywordModel[]) => {
+              (models: InputKeywordModel[],
+               defaultSearchProviderKeyword: string) => {
                 this.keywordModeManager_.availableKeywordModels = models;
+                this.keywordModeManager_.defaultSearchEngineKeyword =
+                    defaultSearchProviderKeyword;
               });
 
       // On user interaction, freeze the current results to avoid result updates

@@ -471,6 +471,13 @@ void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps, bool select_all) {
   }
 }
 
+void OmniboxPopupViewFullWebUI::
+    FocusSearchWithDefaultSearchEngineKeywordMode() {
+  if (auto* popup_handler = GetPopupHandler()) {
+    popup_handler->FocusSearchWithDefaultSearchEngineKeywordMode();
+  }
+}
+
 void OmniboxPopupViewFullWebUI::OnBlur() {
   focused_ = false;
   if (auto* popup_handler = GetPopupHandler()) {

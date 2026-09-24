@@ -87,6 +87,10 @@ class OmniboxPopupView {
   // Called when the omnibox gains focus.
   virtual void OnFocus(bool query_zps, bool select_all = false) {}
 
+  // Focuses the searchbox and enters keyword mode for the default search
+  // provider.
+  virtual void FocusSearchWithDefaultSearchEngineKeywordMode() {}
+
   // Called when the omnibox loses focus.
   virtual void OnBlur() {}
 

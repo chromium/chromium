@@ -2053,6 +2053,93 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
  });
 
+ test('FocusSearch_ClearsPermanentUrlWhenUserInputNotInProgress', async () => {
+   testProxy.page.setAvailableKeywordModels(
+       [{
+         type: KeywordType.kChip,
+         keyword: 'google.com',
+         displayText: 'Search Google',
+         iconPath: '',
+         placeholder: 'Search Google',
+       }],
+       'google.com');
+   await microtasksFinished();
+
+   const testUrl = 'https://example.com';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: testUrl,
+     userInputInProgress: false,
+     isFocused: true,
+     queryZps: false,
+   }));
+   await microtasksFinished();
+
+   testProxy.handler.resetResolver('queryAutocomplete');
+
+   callbackRouter.focusSearchWithDefaultSearchEngineKeywordMode();
+   await microtasksFinished();
+
+   const inputEl = searchbox.getInputElement().inputElement;
+   assertEquals('', inputEl.value);
+   assertEquals('google.com', searchbox.inputKeywordModel?.keyword);
+   assertEquals('Search Google', searchbox.inputKeywordModel?.displayText);
+   assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+   const [, , queryText, , , , isOnFocus, keyword] =
+       testProxy.handler.getArgs('queryAutocomplete')[0];
+   assertEquals('', queryText);
+   assertFalse(isOnFocus);
+   assertEquals('google.com', keyword);
+ });
+
+ test('FocusSearch_SelectsDraftTextWhenUserInputInProgress', async () => {
+   testProxy.page.setAvailableKeywordModels(
+       [{
+         type: KeywordType.kChip,
+         keyword: 'google.com',
+         displayText: 'Search Google',
+         iconPath: '',
+         placeholder: 'Search Google',
+       }],
+       'google.com');
+   await microtasksFinished();
+
+   const draftQuery = 'chrome query';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: draftQuery,
+     userInputInProgress: true,
+     isFocused: true,
+     queryZps: false,
+   }));
+   await microtasksFinished();
+
+   const inputEl = searchbox.getInputElement().inputElement;
+   inputEl.setSelectionRange(2, 2);
+   testProxy.handler.resetResolver('queryAutocomplete');
+
+   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+     key: isMac ? 'f' : 'k',
+     code: isMac ? 'KeyF' : 'KeyK',
+     ctrlKey: !isMac,
+     metaKey: isMac,
+     altKey: isMac,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals(draftQuery, inputEl.value);
+   assertEquals(0, inputEl.selectionStart);
+   assertEquals(draftQuery.length, inputEl.selectionEnd);
+   assertEquals('google.com', searchbox.inputKeywordModel?.keyword);
+   assertEquals('Search Google', searchbox.inputKeywordModel?.displayText);
+   assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+   const [, , queryText, , , , isOnFocus, keyword] =
+       testProxy.handler.getArgs('queryAutocomplete')[0];
+   assertEquals(draftQuery, queryText);
+   assertFalse(isOnFocus);
+   assertEquals('google.com', keyword);
+ });
+
  test('UndoRedoBeforeInput', async () => {
    const inputEl = searchbox.getInputElement().inputElement;
    inputEl.focus();

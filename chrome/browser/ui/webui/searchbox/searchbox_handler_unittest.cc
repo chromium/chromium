@@ -354,11 +354,11 @@ TEST_F(SearchboxHandlerTest, AvailableKeywordModels) {
                                    &browser_window_interface);
 
   std::vector<searchbox::mojom::InputKeywordModelPtr> initial_models;
-  EXPECT_CALL(page_, SetAvailableKeywordModels(_))
-      .WillOnce(
-          [&](std::vector<searchbox::mojom::InputKeywordModelPtr> models) {
-            initial_models = std::move(models);
-          });
+  EXPECT_CALL(page_, SetAvailableKeywordModels(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::InputKeywordModelPtr> models,
+                    const std::string& default_search_provider_keyword) {
+        initial_models = std::move(models);
+      });
 
   auto handler = std::make_unique<RealboxHandlerPublic>(
       mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
@@ -415,11 +415,11 @@ TEST_F(SearchboxHandlerTest, AvailableKeywordModels) {
 
   // Now activate the inactive engine via TemplateURLService.
   std::vector<searchbox::mojom::InputKeywordModelPtr> updated_models;
-  EXPECT_CALL(page_, SetAvailableKeywordModels(_))
-      .WillOnce(
-          [&](std::vector<searchbox::mojom::InputKeywordModelPtr> models) {
-            updated_models = std::move(models);
-          });
+  EXPECT_CALL(page_, SetAvailableKeywordModels(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::InputKeywordModelPtr> models,
+                    const std::string& default_search_provider_keyword) {
+        updated_models = std::move(models);
+      });
 
   template_url_service->SetIsActiveTemplateURL(inactive_engine, true);
   page_.FlushForTesting();
@@ -429,11 +429,11 @@ TEST_F(SearchboxHandlerTest, AvailableKeywordModels) {
 
   // Now deactivate the engine again.
   std::vector<searchbox::mojom::InputKeywordModelPtr> deactivated_models;
-  EXPECT_CALL(page_, SetAvailableKeywordModels(_))
-      .WillOnce(
-          [&](std::vector<searchbox::mojom::InputKeywordModelPtr> models) {
-            deactivated_models = std::move(models);
-          });
+  EXPECT_CALL(page_, SetAvailableKeywordModels(_, _))
+      .WillOnce([&](std::vector<searchbox::mojom::InputKeywordModelPtr> models,
+                    const std::string& default_search_provider_keyword) {
+        deactivated_models = std::move(models);
+      });
 
   template_url_service->SetIsActiveTemplateURL(inactive_engine, false);
   page_.FlushForTesting();
@@ -554,7 +554,7 @@ TEST_F(SearchboxHandlerTest, QuestionMarkKeywordInput) {
   handler->QueryAutocomplete(
       0, /*tab_id=*/std::nullopt, u"", /*prevent_inline_autocomplete=*/false, 0,
       omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
-      /*is_on_focus=*/false, /*keyword=*/"?",
+      /*is_on_focus=*/false, /*keyword=*/"google.com",
       searchbox::mojom::InputMethod::kKeyboard);
 
   EXPECT_TRUE(input.in_keyword_mode());
