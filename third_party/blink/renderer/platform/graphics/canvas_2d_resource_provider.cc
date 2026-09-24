@@ -298,16 +298,10 @@ bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
   // Verify that this is the case and update the code here.
   must_preserve_content_on_copy_on_write_ = true;
 
-  auto client_si = resource()->GetSharedImage();
-  auto access = client_si->BeginRasterAccess(RasterInterface(),
-                                             resource()->acquire_sync_token(),
-                                             /*readonly=*/false);
-  RasterInterface()->WritePixels(client_si->mailbox(), x, y,
-                                 client_si->GetTextureTarget(),
-                                 SkPixmap(orig_info, pixels, row_bytes));
-  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
+  gpu::SyncToken sync_token = RasterInterface()->WritePixels(
+      resource()->GetSharedImage(), resource()->acquire_sync_token(), x, y,
+      SkPixmap(orig_info, pixels, row_bytes));
   resource()->SetReleaseSyncToken(sync_token);
-  client_si->UpdateDestructionSyncToken(sync_token);
 
   // If the overdraw optimization kicked in, we need to indicate that the
   // pixels do not need to be cleared, otherwise the subsequent
