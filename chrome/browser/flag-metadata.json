@@ -1946,14 +1946,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "cloud-gaming-device",
-    "owners": [
-      "chenjih@google.com",
-      "chromeos-launcher-search@google.com"
-    ],
-    "expiry_milestone": 126
-  },
-  {
     "name": "collaboration-entreprise-v2",
     "owners": ["haileywang@google.com", "//components/collaboration/OWNERS"],
     "expiry_milestone": 160

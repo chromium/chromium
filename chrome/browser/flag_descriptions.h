@@ -7501,10 +7501,6 @@ inline constexpr char kCellularUseSecondEuiccDescription[] =
     "When enabled Cellular Setup and Settings UI will use the second available "
     "eUICC that's exposed by Hermes.";
 
-inline constexpr char kCloudGamingDeviceName[] = "Enable cloud game search";
-inline constexpr char kCloudGamingDeviceDescription[] =
-    "Enables cloud game search results in the launcher.";
-
 inline constexpr char kCampaignsComponentUpdaterTestTagName[] =
     "Campaigns test tag";
 inline constexpr char kCampaignsComponentUpdaterTestTagDescription[] =

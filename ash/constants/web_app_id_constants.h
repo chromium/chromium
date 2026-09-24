@@ -152,11 +152,6 @@ inline constexpr char kMicrosoft365AppId[] = "onhfoihkhodaeblmangmjjgfpfehnlkm";
 inline constexpr char kMockSystemAppId[] = "maphiehpiinjgiaepbljmopkodkadcbh";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
-//     "https://play.geforcenow.com/mall/"))
-inline constexpr char kNvidiaGeForceNowAppId[] =
-    "egmafekfmcnknbdlbfbhafbllplmjlhn";
-
-// Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "chrome://os-feedback/"))
 inline constexpr char kOsFeedbackAppId[] = "iffgohomcomlpmkfikfffagkkoojjffm";
 

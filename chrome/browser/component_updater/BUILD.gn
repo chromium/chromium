@@ -81,7 +81,6 @@ source_set("component_updater") {
 
   if (is_chromeos) {
     public += [
-      "app_provisioning_component_installer.h",
       "chrome_apps_deprecation_allowlist_component_installer.h",
       "cros_component_installer_chromeos.h",
       "metadata_table_chromeos.h",
@@ -242,7 +241,6 @@ source_set("impl") {
 
   if (is_chromeos) {
     sources += [
-      "app_provisioning_component_installer.cc",
       "chrome_apps_deprecation_allowlist_component_installer.cc",
       "cros_component_installer_chromeos.cc",
       "metadata_table_chromeos.cc",

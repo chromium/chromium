@@ -40,10 +40,6 @@ std::vector<StaticAppId> GetDefaultPinnedApps(
                                     arc::kGooglePhotosAppId,
                                 });
 
-  if (chromeos::features::IsCloudGamingDeviceEnabled()) {
-    app_ids.push_back(ash::kNvidiaGeForceNowAppId);
-  }
-
   return app_ids;
 }
 

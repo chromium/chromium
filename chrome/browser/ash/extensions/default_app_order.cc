@@ -213,10 +213,6 @@ void GetDefault(std::vector<std::string>* app_ids) {
     extension_misc::kGooglePlusAppId,
   });
   // clang-format on
-
-  if (chromeos::features::IsCloudGamingDeviceEnabled()) {
-    app_ids->push_back(ash::kNvidiaGeForceNowAppId);
-  }
 }
 
 PackageId SystemPackageId(ash::SystemWebAppType type) {

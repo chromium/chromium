@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -70,8 +69,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 bool IsFeatureEnabled(const std::string& name) {
   if (name == kAppPreloadServiceEnableTestApps.name) {
     return base::FeatureList::IsEnabled(kAppPreloadServiceEnableTestApps);
-  } else if (name == chromeos::features::kCloudGamingDevice.name) {
-    return base::FeatureList::IsEnabled(chromeos::features::kCloudGamingDevice);
   } else if (!name.empty()) {
     LOG(ERROR) << "Unrecognised feature flag considered disabled: " << name;
     return false;
