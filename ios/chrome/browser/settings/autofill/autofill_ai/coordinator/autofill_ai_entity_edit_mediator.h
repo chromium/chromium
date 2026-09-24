@@ -24,6 +24,8 @@ namespace signin {
 class IdentityManager;
 }
 
+enum class AutofillAIEntityEditMode;
+
 @protocol AutofillAIEntityEditConsumer;
 @protocol ReauthenticationProtocol;
 
@@ -50,6 +52,7 @@ class IdentityManager;
 
 - (instancetype)
     initWithEntityInstance:(autofill::EntityInstance)entityInstance
+                      mode:(AutofillAIEntityEditMode)mode
          entityDataManager:(autofill::EntityDataManager*)entityDataManager
          walletPassManager:(autofill::WalletPassAccessManager*)walletPassManager
             consentAuditor:(consent_auditor::ConsentAuditor*)consentAuditor

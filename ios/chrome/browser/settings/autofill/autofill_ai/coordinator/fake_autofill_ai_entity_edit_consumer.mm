@@ -8,8 +8,6 @@
 
 @implementation FakeAutofillAIEntityEditConsumer
 
-@synthesize mode = _mode;
-
 - (void)updateItem:(TableViewItem*)item {
   // Empty implementation to satisfy protocol.
 }

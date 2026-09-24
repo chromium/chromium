@@ -58,6 +58,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/wallet/core/common:features",
+    "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/autofill_ai/ui:edit_items",

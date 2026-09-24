@@ -80,7 +80,7 @@ class AutofillAIEntityEditTableViewControllerTest
         test_name == "TestDidFinishSavingWithLocalFallbackTrue" ||
         test_name == "TestDidFinishSavingWithLocalFallbackFalse" ||
         test_name == "TestSaveButtonState") {
-      controller.mode = AutofillAIEntityEditMode::kCreate;
+      [controller setMode:AutofillAIEntityEditMode::kCreate];
     }
 
     return controller;

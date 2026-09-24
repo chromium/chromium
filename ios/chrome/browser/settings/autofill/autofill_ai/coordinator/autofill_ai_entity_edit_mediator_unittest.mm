@@ -19,6 +19,7 @@
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/wallet/core/common/wallet_features.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/fake_autofill_ai_entity_edit_consumer.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
@@ -86,10 +87,13 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  // Helper method to create a mediator with a given entity instance.
-  void CreateMediator(autofill::EntityInstance instance) {
+  // Helper method to create a mediator with a given entity instance and mode.
+  void CreateMediator(
+      autofill::EntityInstance instance,
+      AutofillAIEntityEditMode mode = AutofillAIEntityEditMode::kViewAndEdit) {
     mediator_ = [[AutofillAIEntityEditMediator alloc]
         initWithEntityInstance:instance
+                          mode:mode
              entityDataManager:entity_data_manager_
              walletPassManager:mock_wallet_pass_manager_.get()
                 consentAuditor:&fake_consent_auditor_
@@ -345,8 +349,7 @@ TEST_F(AutofillAIEntityEditMediatorTest,
 TEST_F(AutofillAIEntityEditMediatorTest, SaveEntity_CreateMode) {
   autofill::EntityInstance instance =
       autofill::test::GetVehicleEntityInstance();
-  CreateMediator(instance);
-  consumer_.mode = AutofillAIEntityEditMode::kCreate;
+  CreateMediator(instance, AutofillAIEntityEditMode::kCreate);
 
   base::HistogramTester histogram_tester;
 
@@ -363,4 +366,14 @@ TEST_F(AutofillAIEntityEditMediatorTest, SaveEntity_CreateMode) {
 
   histogram_tester.ExpectUniqueSample("Autofill.Ai.EntityAddedFromSettings",
                                       autofill::EntityTypeName::kVehicle, 1);
+}
+
+// Tests that the mediator sets the correct title in Create mode.
+TEST_F(AutofillAIEntityEditMediatorTest, SetsCreateModeTitle) {
+  autofill::EntityInstance instance =
+      autofill::test::GetVehicleEntityInstance();
+  CreateMediator(instance, AutofillAIEntityEditMode::kCreate);
+  EXPECT_EQ(consumer_.mode, AutofillAIEntityEditMode::kCreate);
+  EXPECT_NSEQ(consumer_.title,
+              autofill::GetDialogTitleForAddEntity(instance.type().name()));
 }

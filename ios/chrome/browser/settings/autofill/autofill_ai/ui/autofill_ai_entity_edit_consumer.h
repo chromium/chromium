@@ -21,8 +21,8 @@ enum class AutofillAIEntityEditMode {
 // The consumer of the Autofill AI entity view and edit mediator.
 @protocol AutofillAIEntityEditConsumer <NSObject>
 
-// The mode in which this consumer operates.
-@property(nonatomic, assign) AutofillAIEntityEditMode mode;
+// Sets the mode in which this consumer operates.
+- (void)setMode:(AutofillAIEntityEditMode)mode;
 
 // Sets the title of the view.
 - (void)setTitle:(NSString*)title;

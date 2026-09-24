@@ -97,6 +97,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Guard to prevent re-entrant layout calls during date picker presentation
   // style transitions.
   BOOL _isTransitioningDatePickerStyle;
+
+  // The mode in which this view controller operates.
+  AutofillAIEntityEditMode _mode;
 }
 
 #pragma mark - UIViewController
@@ -108,7 +111,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.toolbarItems = @[];
   self.tableView.allowsSelectionDuringEditing = YES;
 
-  if (self.mode == AutofillAIEntityEditMode::kCreate) {
+  if (_mode == AutofillAIEntityEditMode::kCreate) {
     [self setEditing:YES animated:NO];
     self.shouldHideDoneButton = YES;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
@@ -202,7 +205,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)shouldShowEditButton {
-  if (self.mode == AutofillAIEntityEditMode::kCreate) {
+  if (_mode == AutofillAIEntityEditMode::kCreate) {
     return NO;
   }
   return _editingAllowed || _isServerWalletItem;
@@ -210,17 +213,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (BOOL)shouldShowEditDoneButton {
   // Only show the top right Done button if we are editing an existing entity.
-  return self.mode == AutofillAIEntityEditMode::kViewAndEdit;
+  return _mode == AutofillAIEntityEditMode::kViewAndEdit;
 }
 
 #pragma mark - AutofillAIEntityEditConsumer
+
+- (void)setMode:(AutofillAIEntityEditMode)mode {
+  _mode = mode;
+}
 
 - (void)setTitle:(NSString*)title {
   // Store a copy to ensure we can regenerate the title if `_isServerWalletItem`
   // is set after this method is called.
   _titleText = [title copy];
   BOOL shouldUseBrandedTitle =
-      _isServerWalletItem && self.mode == AutofillAIEntityEditMode::kCreate;
+      _isServerWalletItem && _mode == AutofillAIEntityEditMode::kCreate;
   if (shouldUseBrandedTitle) {
     self.navigationItem.titleView =
         autofill::CreateBrandedTitleForWalletSave(title);
@@ -311,7 +318,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)didFinishSavingWithLocalFallback:(BOOL)isLocalFallback {
   if (isLocalFallback) {
     [self.delegate showLocalSaveFallbackAlert];
-  } else if (self.mode == AutofillAIEntityEditMode::kCreate) {
+  } else if (_mode == AutofillAIEntityEditMode::kCreate) {
     [self.delegate dismissViewController:self];
   }
 }
@@ -397,7 +404,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)didTapSaveNewEntity {
-  CHECK(self.mode == AutofillAIEntityEditMode::kCreate);
+  CHECK(_mode == AutofillAIEntityEditMode::kCreate);
   if (![self validateFields]) {
     return;
   }
@@ -686,7 +693,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
   BOOL isValid = missingFields.empty();
   BOOL buttonEnabled = isValid && !_loadingState;
-  if (self.mode == AutofillAIEntityEditMode::kCreate) {
+  if (_mode == AutofillAIEntityEditMode::kCreate) {
     if (_saveButton) {
       _saveButton.enabled = buttonEnabled;
     }

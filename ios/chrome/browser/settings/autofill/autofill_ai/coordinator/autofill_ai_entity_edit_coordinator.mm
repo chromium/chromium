@@ -154,6 +154,7 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
 
   _mediator = [[AutofillAIEntityEditMediator alloc]
       initWithEntityInstance:std::move(*instance)
+                        mode:_editMode
            entityDataManager:entityDataManager
            walletPassManager:walletPassManager
               consentAuditor:ConsentAuditorFactory::GetForProfile(
@@ -167,7 +168,6 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
       initWithStyle:ChromeTableViewStyle()];
   _viewController.delegate = self;
   _viewController.mutator = _mediator;
-  _viewController.mode = _editMode;
 
   _mediator.delegate = self;
   _mediator.consumer = _viewController;

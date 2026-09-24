@@ -125,6 +125,7 @@ TEST_F(AutofillAIEntityEditCoordinatorTest, MediatorSetsConsumer) {
       [[FakeAutofillAIEntityEditConsumer alloc] init];
   mediator.consumer = consumer;
 
+  EXPECT_EQ(consumer.mode, AutofillAIEntityEditMode::kViewAndEdit);
   EXPECT_GT(consumer.title.length, 0u);
   EXPECT_GT(consumer.editItems.count, 0u);
 }

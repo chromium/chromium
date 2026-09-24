@@ -103,12 +103,16 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   // The reauthentication module.
   __weak id<ReauthenticationProtocol> _reauthModule;
 
+  // The mode in which this entity is presented.
+  AutofillAIEntityEditMode _mode;
+
   // Whether the view controller is currently in edit mode.
   BOOL _isEditing;
 }
 
 - (instancetype)
     initWithEntityInstance:(EntityInstance)entityInstance
+                      mode:(AutofillAIEntityEditMode)mode
          entityDataManager:(EntityDataManager*)entityDataManager
          walletPassManager:(autofill::WalletPassAccessManager*)walletPassManager
             consentAuditor:(consent_auditor::ConsentAuditor*)consentAuditor
@@ -120,6 +124,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
     CHECK(reauthModule);
 
     _entityInstance = std::move(entityInstance);
+    _mode = mode;
     _entityDataManager = entityDataManager;
     _walletPassManager = walletPassManager;
     _consentAuditor = consentAuditor;
@@ -146,6 +151,8 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   }
 
   _consumer = consumer;
+
+  [consumer setMode:_mode];
 
   [self updateTitle];
 
@@ -252,7 +259,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
     // Personal Context entities do not support saving.
     CHECK_NE(_entityInstance->record_type(),
              autofill::EntityInstance::RecordType::kPersonalContext);
-    LogEntitySaveOrUpdate(self.consumer.mode, *_entityInstance);
+    LogEntitySaveOrUpdate(_mode, *_entityInstance);
     _entityDataManager->AddOrUpdateEntityInstance(*_entityInstance);
     [self.consumer didFinishSavingWithLocalFallback:NO];
     return;
@@ -263,7 +270,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
     // Save to local.
     EntityInstance local_entity = _entityInstance->CopyWithNewRecordType(
         EntityInstance::RecordType::kLocal);
-    LogEntitySaveOrUpdate(self.consumer.mode, local_entity);
+    LogEntitySaveOrUpdate(_mode, local_entity);
     _entityDataManager->AddOrUpdateEntityInstance(local_entity);
     [self.consumer didFinishSavingWithLocalFallback:YES];
     return;
@@ -374,7 +381,7 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   autofill::EntityTypeName typeName = _entityInstance->type().name();
   NSString* title = nil;
 
-  if (_consumer.mode == AutofillAIEntityEditMode::kCreate) {
+  if (_mode == AutofillAIEntityEditMode::kCreate) {
     title = autofill::GetDialogTitleForAddEntity(typeName);
   } else if (_isEditing) {
     title = autofill::GetDialogTitleForEditEntity(typeName);
@@ -438,14 +445,14 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   [self.consumer setLoadingState:NO];
 
   if (savedEntity.has_value()) {
-    LogEntitySaveOrUpdate(self.consumer.mode, *savedEntity);
+    LogEntitySaveOrUpdate(_mode, *savedEntity);
     _entityDataManager->AddOrUpdateEntityInstance(std::move(*savedEntity));
     [self.consumer didFinishSavingWithLocalFallback:NO];
   } else {
     // Wallet save failed, fallback to Local.
     autofill::EntityInstance localEntity = originalEntity.CopyWithNewRecordType(
         autofill::EntityInstance::RecordType::kLocal);
-    LogEntitySaveOrUpdate(self.consumer.mode, localEntity);
+    LogEntitySaveOrUpdate(_mode, localEntity);
     _entityDataManager->AddOrUpdateEntityInstance(std::move(localEntity));
 
     [self.consumer didFinishSavingWithLocalFallback:YES];

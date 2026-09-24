@@ -16,6 +16,9 @@
 @interface FakeAutofillAIEntityEditConsumer
     : NSObject <AutofillAIEntityEditConsumer>
 
+// The presentation mode passed to the consumer.
+@property(nonatomic, assign) AutofillAIEntityEditMode mode;
+
 // Title of the view controller.
 @property(nonatomic, copy) NSString* title;
 
