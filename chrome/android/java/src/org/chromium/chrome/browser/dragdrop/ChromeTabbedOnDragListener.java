@@ -251,7 +251,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         return true;
     }
 
-    @Contract("null, _, _, _, _ -> false; _, null, _, _, _ -> false")
+    @Contract("null, _, _, _ -> false; _, null, _, _ -> false")
     private boolean validDragEvent(
             @Nullable DragDropGlobalState globalState,
             @Nullable Object draggedData,
