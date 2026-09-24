@@ -502,8 +502,8 @@ void BoxFragmentBuilder::PropagateBreakInfo(
       child_box_fragment ? child_box_fragment->GetBreakToken() : nullptr;
 
   // Figure out if this child break is in the same flow as this parent. If it's
-  // an out-of-flow positioned box, it's not. If it's in a parallel flow, it's
-  // also not.
+  // a floating or out-of-flow positioned box, it's not. If it's in a parallel
+  // flow, it's also not.
   bool child_is_in_same_flow =
       ((!token || !token->IsAtBlockEnd()) &&
        !child_fragment.IsFloatingOrOutOfFlowPositioned()) ||
@@ -569,11 +569,13 @@ void BoxFragmentBuilder::PropagateBreakInfo(
       has_inflow_child_break_inside_ = true;
     }
 
-    // Downgrade the appeal of breaking inside this container, if the break
-    // inside the child is less appealing than what we've found so far.
-    BreakAppeal appeal_inside =
-        CalculateBreakAppealInside(GetConstraintSpace(), child_layout_result);
-    ClampBreakAppeal(appeal_inside);
+    if (!child_fragment.IsOutOfFlowPositioned()) {
+      // Downgrade the appeal of breaking inside this container, if the break
+      // inside the child is less appealing than what we've found so far.
+      BreakAppeal appeal_inside =
+          CalculateBreakAppealInside(GetConstraintSpace(), child_layout_result);
+      ClampBreakAppeal(appeal_inside);
+    }
   }
 
   if (GetConstraintSpace().IsInitialColumnBalancingPass()) {

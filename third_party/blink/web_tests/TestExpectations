@@ -4367,7 +4367,6 @@ crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/firef
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/flexbox/* [ Crash Failure Pass Skip Timeout ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/grid/* [ Crash Failure Pass Skip Timeout ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-001.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-004.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-010.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-011.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-012.html [ Failure ]
