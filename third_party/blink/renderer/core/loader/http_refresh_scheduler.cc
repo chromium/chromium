@@ -91,6 +91,9 @@ void HttpRefreshScheduler::Schedule(
   Cancel();
   refresh_ = std::make_unique<ScheduledHttpRefresh>(
       delay, url, ToReason(http_refresh_type), timestamp);
+  refresh_->async_task_context.Schedule(
+      document_->GetExecutionContext(), "HttpRefreshScheduler::Schedule",
+      probe::AsyncTaskContext::StackOptions::kScan);
   MaybeStartTimer();
 }
 
@@ -101,6 +104,8 @@ void HttpRefreshScheduler::NavigateTask() {
 
   DCHECK(document_->GetFrame());
   std::unique_ptr<ScheduledHttpRefresh> refresh(refresh_.release());
+  probe::AsyncTask async_task(document_->GetExecutionContext(),
+                              &refresh->async_task_context);
 
   FrameLoadRequest request(document_->domWindow(),
                            ResourceRequest(refresh->url));

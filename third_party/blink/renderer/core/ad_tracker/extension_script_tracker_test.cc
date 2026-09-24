@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
@@ -65,6 +66,22 @@ class TestExtensionScriptTracker final : public ExtensionScriptTracker {
   HashMap<V8ScriptId, String> registered_urls_;
 };
 
+class ExtensionTrackingWebFrameClient
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  void BeginNavigation(std::unique_ptr<WebNavigationInfo> info) override {
+    last_script_injector_host_ = info->script_injector_host;
+    TestWebFrameClient::BeginNavigation(std::move(info));
+  }
+
+  const WebString& last_script_injector_host() const {
+    return last_script_injector_host_;
+  }
+
+ private:
+  WebString last_script_injector_host_;
+};
+
 }  // namespace
 
 class ExtensionScriptTrackerTest : public SimTest {
@@ -88,7 +105,42 @@ class ExtensionScriptTrackerTest : public SimTest {
       tracker_ = nullptr;
     }
     main_resource_.reset();
+    web_frame_client_ = nullptr;
     SimTest::TearDown();
+  }
+
+  std::unique_ptr<frame_test_helpers::TestWebFrameClient>
+  CreateWebFrameClientForMainFrame() override {
+    auto client = std::make_unique<ExtensionTrackingWebFrameClient>();
+    web_frame_client_ = client.get();
+    return client;
+  }
+
+  String last_script_injector_host() const {
+    return web_frame_client_->last_script_injector_host();
+  }
+
+  void EnableNavigationProtection() {
+    GetDocument()
+        .GetFrame()
+        ->Loader()
+        .GetDocumentLoader()
+        ->SetScriptInjectionPolicyForTesting(
+            mojom::blink::ScriptInjectionPolicy::kNavigationProtection);
+    GetDocument().GetFrame()->SetExtensionScriptTrackerForTesting(tracker_);
+  }
+
+  void ExecuteContentScriptInMainWorld(const String& extension_id,
+                                       const String& script) {
+    WebScriptSource source(script);
+    MainFrame().RequestExecuteScript(
+        DOMWrapperWorld::kMainWorldId, base::span_from_ref(source),
+        mojom::blink::UserActivationOption::kDoNotActivate,
+        mojom::blink::EvaluationTiming::kSynchronous,
+        mojom::blink::LoadEventBlockingOption::kDoNotBlock,
+        WebScriptExecutionCallback(), BackForwardCacheAware::kAllow,
+        mojom::blink::WantResultOption::kNoResult,
+        mojom::blink::PromiseResultOption::kDoNotWait, extension_id);
   }
 
   const HashMap<V8ScriptId, String>& extension_scripts() const {
@@ -97,6 +149,7 @@ class ExtensionScriptTrackerTest : public SimTest {
 
   std::unique_ptr<SimRequest> main_resource_;
   Persistent<TestExtensionScriptTracker> tracker_;
+  raw_ptr<ExtensionTrackingWebFrameClient> web_frame_client_ = nullptr;
 };
 
 TEST_F(ExtensionScriptTrackerTest, ExtensionScriptDetectedBySchema) {
@@ -521,4 +574,43 @@ TEST_F(ExtensionScriptTrackerTest, ExtensionScriptUrlsTestingAPI) {
   EXPECT_FALSE(
       tracker_->IsExtensionScriptUrlMarked("https://example.com/unrelated.js"));
 }
+
+TEST_F(ExtensionScriptTrackerTest,
+       MetaRefreshInjectedByMainWorldContentScript_IsTracked) {
+  main_resource_->Complete("<head></head><body></body>");
+  EnableNavigationProtection();
+  SimRequest dest_resource("https://example.com/dest.html", "text/html");
+
+  ExecuteContentScriptInMainWorld("abcdefghijklmnop", R"SCRIPT(
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'refresh';
+    meta.content = '0;url=https://example.com/dest.html';
+    document.head.appendChild(meta);
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(last_script_injector_host(), "abcdefghijklmnop");
+  dest_resource.Complete("<body></body>");
+}
+
+TEST_F(ExtensionScriptTrackerTest,
+       MetaRefreshInjectedByVanillaScript_IsNotTracked) {
+  main_resource_->Complete("<head></head><body></body>");
+  EnableNavigationProtection();
+  SimRequest dest_resource("https://example.com/dest.html", "text/html");
+
+  MainFrame().ExecuteScript(WebScriptSource(R"SCRIPT(
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'refresh';
+    meta.content = '0;url=https://example.com/dest.html';
+    document.head.appendChild(meta);
+  )SCRIPT"));
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(last_script_injector_host().empty());
+  dest_resource.Complete("<body></body>");
+}
+
 }  // namespace blink

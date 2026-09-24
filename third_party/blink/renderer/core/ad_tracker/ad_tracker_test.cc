@@ -4903,4 +4903,54 @@ TEST_F(AdTrackerSimTest,
   EXPECT_FALSE(subchild_frame->IsFrameCreatedByAdScript());
 }
 
+TEST_F(AdTrackerSimTest, MetaRefreshInjectedByAdScript_IsAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimRequest dest_resource("https://example.com/dest.html", "text/html");
+
+  main_resource_->Complete(R"HTML(
+    <head></head>
+    <body><script src="script.js?ad=true"></script></body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'refresh';
+    meta.content = '0;url=https://example.com/dest.html';
+    document.head.appendChild(meta);
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+
+  // Clean up for SimTest expectations.
+  dest_resource.Complete("<body></body>");
+}
+
+TEST_F(AdTrackerSimTest, MetaRefreshInjectedByVanillaScript_IsNotAd) {
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimRequest dest_resource("https://example.com/dest.html", "text/html");
+
+  main_resource_->Complete(R"HTML(
+    <head></head>
+    <body><script src="script.js"></script></body>
+  )HTML");
+
+  vanilla_script.Complete(R"SCRIPT(
+    const meta = document.createElement('meta');
+    meta.httpEquiv = 'refresh';
+    meta.content = '0;url=https://example.com/dest.html';
+    document.head.appendChild(meta);
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
+
+  // Clean up for SimTest expectations.
+  dest_resource.Complete("<body></body>");
+}
+
 }  // namespace blink
