@@ -2065,7 +2065,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                         "/simple_test_page.html"}));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectRemoteNewTabPage) {
+// TODO(b/565566308): Re-enable once failure on Android is resolved.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CantInspectRemoteNewTabPage DISABLED_CantInspectRemoteNewTabPage
+#else
+#define MAYBE_CantInspectRemoteNewTabPage CantInspectRemoteNewTabPage
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
+                       MAYBE_CantInspectRemoteNewTabPage) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
