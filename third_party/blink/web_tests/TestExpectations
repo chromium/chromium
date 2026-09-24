@@ -2122,8 +2122,6 @@ crbug.com/1507773 external/wpt/webdriver/tests/classic/is_element_enabled/enable
 crbug.com/1499775 external/wpt/webdriver/tests/bidi/browsing_context/locate_nodes/context.py [ Failure ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/input/set_files/invalid.py [ Failure ]
 [ Debug ] external/wpt/webdriver/tests/bidi/network/add_intercept/contexts.py [ Failure Pass ]
-# Flaky test
-crbug.com/377833124 external/wpt/webdriver/tests/bidi/browsing_context/navigate/error.py [ Failure Pass ]
 
 # Disable certain requestIdleCallback tests pending spec or test changes.
 crbug.com/1316344 virtual/threaded/external/wpt/requestidlecallback/deadline-max-timeout-dynamic.html [ Failure ]
@@ -9198,3 +9196,20 @@ crbug.com/559396684 [ Debug ] external/wpt/content-security-policy/securitypolic
 crbug.com/561536429 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
 crbug.com/561536429 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
 crbug.com/561536429 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
+
+# Gardener 2026-09-24
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/error.py [ Failure Pass ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/wait.py [ Failure Pass ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/invalid.py [ Failure Pass ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_screen_orientation_override/user_contexts.py [ Failure Pass ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_scripting_enabled/enabled_tentative.py [ Failure Pass ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_characteristic/simulate_characteristic.py [ Failure Pass ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_service/simulate_service.py [ Failure Pass ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_drag.py [ Failure Pass ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_multiclick.py [ Failure Pass ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Failure Pass ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/credentials.py [ Failure Pass ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_with_auth/invalid.py [ Failure Pass ]
+crbug.com/559885106 [ Linux ] external/wpt/webdriver/tests/classic/new_session/unhandled_prompt_behavior.py [ Failure Pass ]
+crbug.com/560754596 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py [ Failure Pass ]
+crbug.com/565369215 [ Linux ] http/tests/devtools/sources/debugger/debugger-prototype-property.js [ Failure Pass ]
