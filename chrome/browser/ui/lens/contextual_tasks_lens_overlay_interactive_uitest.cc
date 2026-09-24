@@ -304,21 +304,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   const GURL page_url =
       embedded_test_server()->GetURL(kDocumentWithNamedElement);
   const DeepQuery kPathToBody{"body"};
-  const DeepQuery kPathToRegionSelection{
-      "lens-overlay-app",
-      "lens-selection-overlay",
-      "#regionSelectionLayer",
-  };
-
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kRegionSelectionLayerIsRendered);
-  StateChange region_selection_is_rendered;
-  region_selection_is_rendered.event = kRegionSelectionLayerIsRendered;
-  region_selection_is_rendered.where = kPathToRegionSelection;
-  region_selection_is_rendered.type =
-      StateChange::Type::kExistsAndConditionTrue;
-  region_selection_is_rendered.test_function =
-      "(el) => { const r = el.getBoundingClientRect(); return r.width > 0 && "
-      "r.height > 0; }";
 
   auto off_center_point = base::BindLambdaForTesting([this]() {
     auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
@@ -329,11 +314,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   });
 
   RunTestSequence(
-      // 1. Prepare active tab and open Contextual Tasks with an AIM query URL.
-      InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, page_url),
-      EnsurePresent(kActiveTab, kPathToBody),
-      WaitForWebContentsPainted(kActiveTab),
-      WaitForWebContentsReady(kActiveTab, page_url), Do([&]() {
+      // 1. Open the Contextual Tasks side panel with an AIM query URL.
+      Do([&]() {
         contextual_tasks::ContextualTasksUiService* ui_service =
             contextual_tasks::ContextualTasksUiServiceFactory::
                 GetForBrowserContext(browser()->GetProfile());
@@ -361,9 +343,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
                         DeepQuery{"contextual-tasks-app"},
                         "el => el.hasAttribute('is-ai-page_')"),
 
-      // 2. Open Lens Overlay via the three-dot app menu and make a visual
-      // selection to trigger a Lens query.
-      InAnyContext(PressButton(kToolbarAppMenuButtonElementId),
+      // 2. Open Lens Overlay and make a selection to trigger a Lens query.
+      InAnyContext(InstrumentTab(kActiveTab),
+                   NavigateWebContents(kActiveTab, page_url),
+                   EnsurePresent(kActiveTab, kPathToBody),
+                   WaitForWebContentsPainted(kActiveTab),
+                   WaitForWebContentsReady(kActiveTab, page_url),
+                   PressButton(kToolbarAppMenuButtonElementId),
                    WaitForShow(AppMenuModel::kShowLensOverlay),
                    SelectMenuItem(AppMenuModel::kShowLensOverlay)),
       InAnyContext(
@@ -406,7 +392,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
             }
           )"),
           WaitForScreenshotRendered(kOverlayId),
-          WaitForStateChange(kOverlayId, region_selection_is_rendered),
+          EnsurePresent(kOverlayId,
+                        DeepQuery{"lens-overlay-app", "lens-selection-overlay",
+                                  "region-selection"}),
           MoveMouseTo(LensOverlayController::kOverlayId),
           DragMouseTo(std::move(off_center_point)), FinishScreenshotUpload(0)),
 
