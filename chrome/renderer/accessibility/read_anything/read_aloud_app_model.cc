@@ -31,8 +31,12 @@ namespace {
 // sequenced task runner.
 base::SequenceBound<DependencyParserModel>& GetDependencyParserModel_() {
   static base::NoDestructor<base::SequenceBound<DependencyParserModel>>
-      instance(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+      instance;
+  if (instance->is_null()) {
+    *instance = base::SequenceBound<DependencyParserModel>(
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+  }
   return *instance;
 }
 

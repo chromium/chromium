@@ -7,18 +7,19 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
-#include "chrome/test/base/chrome_render_view_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree_manager.h"
 
-class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
+class ReadAnythingReadAloudAppModelTest : public testing::Test {
  public:
   ReadAnythingReadAloudAppModelTest() = default;
   ~ReadAnythingReadAloudAppModelTest() override = default;
@@ -28,8 +29,15 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
       const ReadAnythingReadAloudAppModelTest&) = delete;
 
   void SetUp() override {
-    ChromeRenderViewTest::SetUp();
-    model_ = new ReadAloudAppModel();
+    testing::Test::SetUp();
+    model_ = std::make_unique<ReadAloudAppModel>();
+  }
+
+  void TearDown() override {
+    model_->GetDependencyParserModel().Reset();
+    task_environment_.RunUntilIdle();
+    model_.reset();
+    testing::Test::TearDown();
   }
 
   bool SpeechPlaying() { return model_->speech_playing(); }
@@ -191,9 +199,9 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
   static constexpr ui::AXNodeID kId3 = 4;
 
  protected:
-  // ReadAloudAppModel constructor and destructor are private so it's
-  // not accessible by std::make_unique.
-  raw_ptr<ReadAloudAppModel> model_ = nullptr;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<ReadAloudAppModel> model_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // A reference to the tree manager is needed so that the AXTree can stay

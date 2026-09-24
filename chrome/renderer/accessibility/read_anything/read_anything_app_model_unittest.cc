@@ -16,9 +16,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
-#include "chrome/test/base/chrome_render_view_test.h"
 #include "services/strings/grit/services_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_event.h"
@@ -29,7 +29,7 @@
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
-class ReadAnythingAppModelNoInitTest : public ChromeRenderViewTest {
+class ReadAnythingAppModelNoInitTest : public testing::Test {
  public:
   ReadAnythingAppModelNoInitTest() = default;
   ReadAnythingAppModelNoInitTest(const ReadAnythingAppModelNoInitTest&) =
@@ -57,7 +57,7 @@ TEST_F(ReadAnythingAppModelNoInitTest,
   EXPECT_FALSE(model().is_screen_ai_service_ready());
 }
 
-class ReadAnythingAppModelTest : public ChromeRenderViewTest {
+class ReadAnythingAppModelTest : public testing::Test {
  public:
   ReadAnythingAppModelTest() = default;
   ReadAnythingAppModelTest(const ReadAnythingAppModelTest&) = delete;
@@ -70,7 +70,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
       "edit?ouid=103677288878638916900&usp=docs_home&ths=true";
 
   void SetUp() override {
-    ChromeRenderViewTest::SetUp();
+    testing::Test::SetUp();
 
     // Create a tree id.
     tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
