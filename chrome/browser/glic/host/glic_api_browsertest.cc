@@ -3116,7 +3116,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, MAYBE_testNoClientCreated) {
 #endif
 }
 
-#if BUILDFLAG(IS_ANDROID) || defined(SLOW_BINARY) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/565561978): Failing on ChromeOS, too.
+#if BUILDFLAG(IS_ANDROID) || defined(SLOW_BINARY) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_testNoBootstrap DISABLED_testNoBootstrap
 #else
 #define MAYBE_testNoBootstrap testNoBootstrap
