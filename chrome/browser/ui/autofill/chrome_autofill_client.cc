@@ -43,6 +43,7 @@
 #include "chrome/browser/autofill/autofill_policy_service_factory.h"
 #include "chrome/browser/autofill/cross_tab_copy_paste_tracker_factory.h"
 #include "chrome/browser/autofill/entity_suppression_manager_factory.h"
+#include "chrome/browser/autofill/gmail_otp_backend_factory.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
@@ -1516,6 +1517,11 @@ ChromeAutofillClient::GetOneTimeTokenService() const {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   return OneTimeTokenServiceFactory::GetForProfile(profile);
+}
+
+one_time_tokens::GmailOtpBackend* ChromeAutofillClient::GetGmailOtpBackend()
+    const {
+  return GmailOtpBackendFactory::GetForProfile(GetProfile());
 }
 
 void ChromeAutofillClient::set_test_addresses(

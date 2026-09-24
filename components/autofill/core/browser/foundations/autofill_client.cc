@@ -498,6 +498,10 @@ one_time_tokens::OneTimeTokenService* AutofillClient::GetOneTimeTokenService()
   return nullptr;
 }
 
+one_time_tokens::GmailOtpBackend* AutofillClient::GetGmailOtpBackend() const {
+  return nullptr;
+}
+
 bool AutofillClient::DocumentUsedWebOTP() {
   return false;
 }

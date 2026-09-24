@@ -62,6 +62,7 @@ class SharedURLLoaderFactory;
 }
 
 namespace one_time_tokens {
+class GmailOtpBackend;
 class OneTimeTokenService;
 }  // namespace one_time_tokens
 
@@ -947,6 +948,9 @@ class AutofillClient {
 
   // May return null on platforms where no OneTimeTokenService is supported.
   virtual one_time_tokens::OneTimeTokenService* GetOneTimeTokenService() const;
+
+  // May return null on platforms where no GmailOtpBackend is supported.
+  virtual one_time_tokens::GmailOtpBackend* GetGmailOtpBackend() const;
 
   // Returns true if the primary main frame's document used the WebOTP API. This
   // exists only for the main frame because only the main frame has the

@@ -78,6 +78,7 @@
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/metrics/profile_metrics_service.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
@@ -884,6 +885,16 @@ class TestAutofillClientTemplate : public T {
     injected_one_time_token_service_ = std::move(one_time_token_service);
   }
 
+  one_time_tokens::GmailOtpBackend* GetGmailOtpBackend() const override {
+    return injected_gmail_otp_backend_ ? injected_gmail_otp_backend_.get()
+                                       : T::GetGmailOtpBackend();
+  }
+
+  void set_gmail_otp_backend(
+      std::unique_ptr<one_time_tokens::GmailOtpBackend> gmail_otp_backend) {
+    injected_gmail_otp_backend_ = std::move(gmail_otp_backend);
+  }
+
   FormPredictionsTracker* GetFormPredictionsTracker() override {
     return form_predictions_tracker_.get();
   }
@@ -950,6 +961,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<one_time_tokens::SmsOtpBackend> injected_sms_otp_backend_;
   std::unique_ptr<one_time_tokens::OneTimeTokenService>
       injected_one_time_token_service_;
+  std::unique_ptr<one_time_tokens::GmailOtpBackend> injected_gmail_otp_backend_;
 
   std::unique_ptr<FieldClassificationModelHandler>
       autofill_ml_prediction_model_handler_;

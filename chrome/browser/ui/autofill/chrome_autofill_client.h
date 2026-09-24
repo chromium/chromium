@@ -368,6 +368,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   FormPredictionsTracker* GetFormPredictionsTracker() override;
 
   one_time_tokens::OneTimeTokenService* GetOneTimeTokenService() const final;
+  one_time_tokens::GmailOtpBackend* GetGmailOtpBackend() const final;
 
  protected:
   class AtMemoryCopyPasteObserver : public content::WebContentsObserver {
