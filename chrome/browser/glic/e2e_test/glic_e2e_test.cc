@@ -184,7 +184,7 @@ void GlicE2ETest::PreRunTestOnMainThread() {
               base::BindRepeating(&GlicE2ETest::OnActiveInstanceChanged,
                                   base::Unretained(this)));
 
-  GURL glic_guest_url = glic::GetGuestURL();
+  GURL glic_guest_url = glic::GetGuestURL(browser()->GetProfile());
   CHECK(glic_guest_url.is_valid())
       << "Incorrect GLiC guest URL in cmd line arguments.";
 

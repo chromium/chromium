@@ -37,7 +37,8 @@ void GrantAutoplayPermissions(content::NavigationHandle* navigation_handle) {
     return;
   }
   url::Origin origin = url::Origin::Create(navigation_handle->GetURL());
-  if (!IsGuestOriginAllowed(origin)) {
+  if (!IsGuestOriginAllowed(
+          origin, navigation_handle->GetWebContents()->GetBrowserContext())) {
     return;
   }
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
@@ -94,7 +95,8 @@ void GlicGuestObserver::MaybeEnableMojoJsBindings(
   // The frame's committed origin is checked in `BindGlicWebClientHandler()`
   // when the page attempts to bind the pipe.
   if (IsOriginAllowedGlicApi(
-          url::Origin::Create(navigation_handle->GetURL()))) {
+          url::Origin::Create(navigation_handle->GetURL()),
+          navigation_handle->GetWebContents()->GetBrowserContext())) {
     navigation_handle->GetRenderFrameHost()->EnableMojoJsBindings(
         /*features=*/nullptr);
   }

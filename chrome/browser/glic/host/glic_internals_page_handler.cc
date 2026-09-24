@@ -528,7 +528,7 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
                             : nullptr);
 
   mojom::ConfigInfoPtr config = mojom::ConfigInfo::New();
-  config->guest_url = GetGuestURL();
+  config->guest_url = GetGuestURL(browser_context_);
 
   config->autopush_guest_url = GURL(g_browser_process->local_state()->GetString(
       prefs::kGlicGuestUrlPresetAutopush));

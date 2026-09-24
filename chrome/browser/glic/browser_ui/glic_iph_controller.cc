@@ -71,9 +71,10 @@ void GlicIphController::MaybeShowPromo() {
   }
   auto* const contents = tab->GetContents();
   if (!contents || !contents->GetURL().SchemeIsHTTPOrHTTPS() ||
-      contents->GetURL().GetHost() == GetGuestURL().GetHost() ||
       !contents->IsDocumentOnLoadCompletedInPrimaryMainFrame() ||
-      !GlicEnabling::IsEnabledForProfile(window_->GetProfile())) {
+      !GlicEnabling::IsEnabledForProfile(window_->GetProfile()) ||
+      contents->GetURL().GetHost() ==
+          GetGuestURL(window_->GetProfile()).GetHost()) {
     return;
   }
 

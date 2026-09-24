@@ -207,7 +207,7 @@ void MaybeMigrateGlicLocalStorage(content::BrowserContext* browser_context) {
       browser_context->GetDefaultStoragePartition();
 
   blink::StorageKey storage_key =
-      blink::StorageKey::CreateFirstParty(GetGuestOrigin());
+      blink::StorageKey::CreateFirstParty(GetGuestOrigin(profile));
 
   GlicLocalStorageMigrator::Run(profile, source_partition, target_partition,
                                 storage_key);

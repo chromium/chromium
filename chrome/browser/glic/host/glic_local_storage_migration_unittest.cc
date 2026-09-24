@@ -106,7 +106,7 @@ TEST_F(GlicLocalStorageMigrationTest, MigratesKeysAndSetsPref) {
   EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(
       prefs::kGlicLocalStorageCopiedToMainPartition));
 
-  GURL guest_url = GetGuestURL();
+  GURL guest_url = GetGuestURL(&profile_);
   ASSERT_TRUE(guest_url.is_valid());
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(guest_url));
@@ -145,7 +145,7 @@ TEST_F(GlicLocalStorageMigrationTest, NoOpIfPrefAlreadySet) {
   profile_.GetPrefs()->SetBoolean(prefs::kGlicLocalStorageCopiedToMainPartition,
                                   true);
 
-  GURL guest_url = GetGuestURL();
+  GURL guest_url = GetGuestURL(&profile_);
   ASSERT_TRUE(guest_url.is_valid());
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(guest_url));

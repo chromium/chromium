@@ -6,16 +6,15 @@
 
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -27,16 +26,9 @@ namespace glic {
 
 GlicGeminiEnterpriseManager::GlicGeminiEnterpriseManager(Profile* profile)
     : profile_(profile), gaia_origin_(GaiaUrls::GetInstance()->gaia_origin()) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  std::string guest_url_str =
-      command_line->HasSwitch(::switches::kGlicGuestURL)
-          ? command_line->GetSwitchValueASCII(::switches::kGlicGuestURL)
-          : features::kGlicGuestURL.Get();
-  if (!guest_url_str.empty()) {
-    GURL guest_url(guest_url_str);
-    if (guest_url.is_valid()) {
-      guest_origin_ = url::Origin::Create(guest_url);
-    }
+  const GURL guest_url = GetGuestURL(profile);
+  if (guest_url.is_valid()) {
+    guest_origin_ = url::Origin::Create(guest_url);
   }
 }
 
@@ -44,6 +36,9 @@ GlicGeminiEnterpriseManager::~GlicGeminiEnterpriseManager() = default;
 
 void GlicGeminiEnterpriseManager::Bind(
     mojo::PendingReceiver<mojom::GeminiEnterpriseHandler> receiver) {
+  if (!geic::IsGeicEnabled(profile_)) {
+    return;
+  }
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }

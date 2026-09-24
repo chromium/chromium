@@ -7,7 +7,9 @@
 
 #include "url/gurl.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 // Internal helper for resolving Gemini Enterprise in Chrome (GEiC)
 // configuration from Finch and the command line.
@@ -30,20 +32,26 @@ namespace geic {
 // Optional command line switch for manual developer overrides of the guest URL.
 inline constexpr char kGeicGuestURLSwitch[] = "geic-guest-url";
 
-// Returns true if Gemini Enterprise in Chrome (GEiC) is configured on.
-//
-// Evaluates Finch feature `features::kGeic` and parameter
-// `features::kGeicEnabledParam`. This does not consider GLiC eligibility,
-// profile state or enterprise policy; see the file comment above.
-bool IsGeicEnabled();
+// Returns true if the `features::kGeic` feature and its `enabled` parameter are
+// enabled, independent of profile state or guest URL configuration.
+bool IsGeicEnabledByFeature();
 
-// Returns the Gemini Enterprise guest URL if enabled, or empty GURL() if not.
+// Returns true if Gemini Enterprise in Chrome (GEiC) is enabled for
+// `browser_context`.
+//
+// Requires both `IsGeicEnabledByFeature()` and a valid resolved GEiC guest URL
+// for `browser_context`. The result is resolved on the first call and latched
+// on `browser_context`, so it does not change for the rest of the session.
+bool IsGeicEnabled(content::BrowserContext* browser_context);
+
+// Returns the Gemini Enterprise guest URL for `browser_context` if enabled, or
+// empty GURL() if not. Latched together with `IsGeicEnabled()`.
 //
 // Precedence:
 // 1. Command-line switch `--geic-guest-url`.
 // 2. Enterprise policy (`glic.gemini_enterprise_settings.url`).
 // 3. Finch parameter `features::kGeicGuestURL`.
-GURL GetGeicGuestUrl(Profile* profile = nullptr);
+GURL GetGeicGuestUrl(content::BrowserContext* browser_context);
 
 }  // namespace geic
 

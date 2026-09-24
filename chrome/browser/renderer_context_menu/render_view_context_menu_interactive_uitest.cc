@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuPolicyTest,
 IN_PROC_BROWSER_TEST_F(GlicInteractiveContextMenuPolicyTest,
                        GlicShareImageFailsWhenGuestURLBlocked) {
   // Check that our destination is the Guest URL.
-  GURL guest_url = glic::GetGuestURL();
+  GURL guest_url = glic::GetGuestURL(browser()->GetProfile());
   data_controls::SetDataControls(
       browser()->GetProfile()->GetPrefs(),
       {base::StringPrintf(kPastePolicyTemplate, guest_url.spec())});

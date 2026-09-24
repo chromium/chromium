@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom.h"
-#include "chrome/common/chrome_switches.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,6 +24,11 @@ namespace {
 class GlicGeminiEnterpriseManagerUnitTest : public testing::Test {
  public:
   void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGeic,
+          {{"enabled", "true"},
+           {"geic-guest-url", "https://business.gemini.google/side-panel"}}}},
+        {});
     profile_ = std::make_unique<TestingProfile>();
     manager_ = std::make_unique<GlicGeminiEnterpriseManager>(profile_.get());
     manager_->Bind(handler_remote_.BindNewPipeAndPassReceiver());
@@ -34,10 +41,23 @@ class GlicGeminiEnterpriseManagerUnitTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<GlicGeminiEnterpriseManager> manager_;
   mojo::Remote<mojom::GeminiEnterpriseHandler> handler_remote_;
 };
+
+TEST_F(GlicGeminiEnterpriseManagerUnitTest, BindDropsReceiverWhenGeicDisabled) {
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(features::kGeic);
+
+  TestingProfile non_geic_profile;
+  GlicGeminiEnterpriseManager non_geic_manager(&non_geic_profile);
+  mojo::Remote<mojom::GeminiEnterpriseHandler> remote;
+  non_geic_manager.Bind(remote.BindNewPipeAndPassReceiver());
+  remote.FlushForTesting();
+  EXPECT_FALSE(remote.is_connected());
+}
 
 TEST_F(GlicGeminiEnterpriseManagerUnitTest,
        IsSignInURLAllowedValidatesSchemesAndOrigins) {
@@ -83,9 +103,10 @@ TEST_F(GlicGeminiEnterpriseManagerUnitTest,
 
 TEST_F(GlicGeminiEnterpriseManagerUnitTest, AllowsConfiguredGuestOrigin) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      ::switches::kGlicGuestURL,
+      geic::kGeicGuestURLSwitch,
       "https://localhost.corp.google.com:10443/side-panel");
-  GlicGeminiEnterpriseManager manager(profile_.get());
+  TestingProfile custom_profile;
+  GlicGeminiEnterpriseManager manager(&custom_profile);
 
   EXPECT_TRUE(manager.IsSignInURLAllowedForTesting(
       GURL("https://localhost.corp.google.com:10443/auth/signin")));

@@ -36,6 +36,7 @@ class GeicEnablingTest : public testing::Test {
   }
 
   GURL ResolvePolicyUrl(const std::string& url) {
+    profile_ = std::make_unique<TestingProfile>();
     SetPolicyUrl(url);
     return GetGeicGuestUrl(profile_.get());
   }
@@ -45,53 +46,61 @@ class GeicEnablingTest : public testing::Test {
 };
 
 TEST_F(GeicEnablingTest, DefaultStateIsDisabled) {
-  EXPECT_FALSE(IsGeicEnabled());
-  EXPECT_TRUE(GetGeicGuestUrl().is_empty());
+  EXPECT_FALSE(IsGeicEnabledByFeature());
+  EXPECT_FALSE(IsGeicEnabled(profile_.get()));
+  EXPECT_TRUE(GetGeicGuestUrl(profile_.get()).is_empty());
 }
 
 TEST_F(GeicEnablingTest, FinchEnabledWithDefaults) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGeic);
 
-  EXPECT_TRUE(IsGeicEnabled());
-  EXPECT_TRUE(GetGeicGuestUrl().is_empty());
+  EXPECT_TRUE(IsGeicEnabledByFeature());
+  // Without a resolved guest URL, a profile is not in GEiC mode.
+  EXPECT_FALSE(IsGeicEnabled(profile_.get()));
+  EXPECT_TRUE(GetGeicGuestUrl(profile_.get()).is_empty());
 }
 
 TEST_F(GeicEnablingTest, FinchEnabledWithExplicitDisabledParam) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(features::kGeic,
-                                                  {{"enabled", "false"}});
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic, {{"enabled", "false"}}}}, {});
 
-  EXPECT_FALSE(IsGeicEnabled());
-  EXPECT_TRUE(GetGeicGuestUrl().is_empty());
+  EXPECT_FALSE(IsGeicEnabledByFeature());
+  EXPECT_FALSE(IsGeicEnabled(profile_.get()));
+  EXPECT_TRUE(GetGeicGuestUrl(profile_.get()).is_empty());
 }
 
 TEST_F(GeicEnablingTest, FinchEnabledWithCustomGuestUrlParam) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGeic,
-      {{"enabled", "true"},
-       {"geic-guest-url", "https://business.gemini.google/custom-panel"}});
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kGeic,
+        {{"enabled", "true"},
+         {"geic-guest-url", "https://business.gemini.google/side-panel"}}}},
+      {});
 
-  EXPECT_TRUE(IsGeicEnabled());
-  EXPECT_EQ(GetGeicGuestUrl(),
-            GURL("https://business.gemini.google/custom-panel"));
+  EXPECT_TRUE(IsGeicEnabledByFeature());
+  EXPECT_TRUE(IsGeicEnabled(profile_.get()));
+  EXPECT_EQ(GetGeicGuestUrl(profile_.get()),
+            GURL("https://business.gemini.google/side-panel"));
 }
 
 TEST_F(GeicEnablingTest, FlagExplicitlyDisabledOverridesFinch) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kGeic);
+  feature_list.InitWithFeaturesAndParameters(
+      {},
+      {{features::kGeic}});  // Explicitly disabled (e.g. via chrome://flags)
 
-  EXPECT_FALSE(IsGeicEnabled());
-  EXPECT_TRUE(GetGeicGuestUrl().is_empty());
+  EXPECT_FALSE(IsGeicEnabledByFeature());
+  EXPECT_FALSE(IsGeicEnabled(profile_.get()));
+  EXPECT_TRUE(GetGeicGuestUrl(profile_.get()).is_empty());
 }
 
 TEST_F(GeicEnablingTest, FlagExplicitlyEnabledBypassesChecks) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGeic);
 
-  EXPECT_TRUE(IsGeicEnabled());
-  EXPECT_TRUE(GetGeicGuestUrl().is_empty());
+  EXPECT_TRUE(IsGeicEnabledByFeature());
 }
 
 TEST_F(GeicEnablingTest, CommandLineSwitchOverridesGuestUrl) {
@@ -101,7 +110,7 @@ TEST_F(GeicEnablingTest, CommandLineSwitchOverridesGuestUrl) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       kGeicGuestURLSwitch, "https://business.gemini.google/cli-panel");
 
-  EXPECT_EQ(GetGeicGuestUrl(),
+  EXPECT_EQ(GetGeicGuestUrl(profile_.get()),
             GURL("https://business.gemini.google/cli-panel"));
 }
 
@@ -234,12 +243,15 @@ TEST_F(GeicEnablingTest, GetGeicGuestUrlPrecedence) {
   EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=finch"),
             GetGeicGuestUrl(profile_.get()));
 
-  // Policy outranks Finch.
+  // Policy outranks Finch on a fresh profile.
+  profile_ = std::make_unique<TestingProfile>();
   SetPolicyUrl("https://business.gemini.google/home/cid/policy");
   EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=policy"),
             GetGeicGuestUrl(profile_.get()));
 
-  // Switch outranks policy.
+  // Switch outranks policy on a fresh profile.
+  profile_ = std::make_unique<TestingProfile>();
+  SetPolicyUrl("https://business.gemini.google/home/cid/policy");
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       kGeicGuestURLSwitch, "https://business.gemini.google/home/cid/switch");
   EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=switch"),
@@ -256,9 +268,43 @@ TEST_F(GeicEnablingTest, DisallowedCandidateDoesNotFallThrough) {
 
   EXPECT_TRUE(GetGeicGuestUrl(profile_.get()).is_empty());
 
+  profile_ = std::make_unique<TestingProfile>();
   SetPolicyUrl("https://business.gemini.google/side-panel");
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       kGeicGuestURLSwitch, "https://evil.com/switch");
+  EXPECT_TRUE(GetGeicGuestUrl(profile_.get()).is_empty());
+}
+
+TEST_F(GeicEnablingTest, LatchesEnabledStatePerProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeic);
+
+  SetPolicyUrl("https://business.gemini.google/home/cid/initial");
+  EXPECT_TRUE(IsGeicEnabled(profile_.get()));
+  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=initial"),
+            GetGeicGuestUrl(profile_.get()));
+
+  // Policy updates or clears do not change the latched state.
+  SetPolicyUrl("https://business.gemini.google/home/cid/updated");
+  EXPECT_TRUE(IsGeicEnabled(profile_.get()));
+  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=initial"),
+            GetGeicGuestUrl(profile_.get()));
+  SetPolicyUrl("");
+  EXPECT_TRUE(IsGeicEnabled(profile_.get()));
+  EXPECT_EQ(GURL("https://business.gemini.google/side-panel?configId=initial"),
+            GetGeicGuestUrl(profile_.get()));
+}
+
+TEST_F(GeicEnablingTest, LatchesDisabledStatePerProfile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeic);
+
+  EXPECT_FALSE(IsGeicEnabled(profile_.get()));
+  EXPECT_TRUE(GetGeicGuestUrl(profile_.get()).is_empty());
+
+  // A policy URL set after the first call does not change the latched state.
+  SetPolicyUrl("https://business.gemini.google/home/cid/late");
+  EXPECT_FALSE(IsGeicEnabled(profile_.get()));
   EXPECT_TRUE(GetGeicGuestUrl(profile_.get()).is_empty());
 }
 

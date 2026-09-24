@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
+#include "content/public/browser/web_contents.h"
 
 namespace glic {
 
@@ -67,7 +68,9 @@ GlicGuestNavigationThrottle::HandleRequest() {
     return CANCEL;
   }
 
-  if (!IsGuestOriginAllowed(url::Origin::Create(url))) {
+  if (!IsGuestOriginAllowed(
+          url::Origin::Create(url),
+          navigation_handle()->GetWebContents()->GetBrowserContext())) {
     manager->OnGuestNavigationBlocked(mojom::GuestPageType::kLoadError);
     return CANCEL;
   }

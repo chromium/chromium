@@ -6,6 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/public/features.h"
@@ -33,7 +35,11 @@ namespace {
 using testing::Contains;
 using testing::Not;
 
-class GuestUtilTest : public testing::Test {};
+class GuestUtilTest : public testing::Test {
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+};
 
 // Test fixture for multi-instance feature.
 class GuestUtilMultiInstanceTest : public testing::Test {
@@ -65,12 +71,12 @@ class GuestUtilMultiInstanceTest : public testing::Test {
   TestingProfileManager profile_manager_;
 };
 
-TEST(GuestUtilTest, GetLocalizedGuestURLDoesNotChangeLanguageParameter) {
+TEST_F(GuestUtilTest, GetLocalizedGuestURLDoesNotChangeLanguageParameter) {
   EXPECT_EQ(GURL("https://www.google.com?hl=es"),
             GetLocalizedGuestURL(GURL("https://www.google.com?hl=es")));
 }
 
-TEST(GuestUtilTest, GetLocalizedGuestURLForDifferentLocales) {
+TEST_F(GuestUtilTest, GetLocalizedGuestURLForDifferentLocales) {
   struct LocaleTestCase {
     std::string locale;
     std::string expected_hl;
@@ -86,11 +92,13 @@ TEST(GuestUtilTest, GetLocalizedGuestURLForDifferentLocales) {
 }
 
 TEST_F(GuestUtilMultiInstanceTest, GetGlicGuestURLs) {
-  EXPECT_EQ(GURL("https://www.example.com/glic?hl=en"), GetGuestURL());
+  EXPECT_EQ(GURL("https://www.example.com/glic?hl=en"),
+            GetGuestURL(CreateTestingProfile()));
 }
 
-// When features::kGeic is enabled, GetGuestURL loads the GEiC guest URL.
-TEST(GuestUtilTest, GeicEnabledLoadsGeicGuestURL) {
+// When features::kGeic is enabled with a GEiC guest URL, GetGuestURL loads the
+// GEiC guest URL for the profile.
+TEST_F(GuestUtilMultiInstanceTest, GeicEnabledLoadsGeicGuestURL) {
   ScopedBrowserLocale scoped_locale("en");
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
@@ -100,20 +108,52 @@ TEST(GuestUtilTest, GeicEnabledLoadsGeicGuestURL) {
       {});
 
   EXPECT_EQ(GURL("https://business.gemini.google/side-panel?hl=en"),
-            GetGuestURL());
+            GetGuestURL(CreateTestingProfile()));
 }
 
-// When GEiC is enabled without a guest URL configured, GetGuestURL errors
-// explicitly.
-TEST(GuestUtilTest, GeicEnabledWithoutGuestURLErrors) {
+TEST_F(GuestUtilMultiInstanceTest,
+       GeicEnabledLoadsPolicyGuestURLAndAllowsOrigin) {
+  ScopedBrowserLocale scoped_locale("en");
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kGeic, features::kGlicGuestUrlPresets}, {});
+
+  // Even if a consumer Glic preset URL is active in local_state, GEiC must not
+  // allow it to override the validated GEiC guest URL.
+  TestingBrowserProcess::GetGlobal()->local_state()->SetString(
+      prefs::kGlicGuestUrlPresetAutopush, "https://evil.com/preset");
+
+  TestingProfile* profile = CreateTestingProfile();
+  base::DictValue settings;
+  settings.Set("url", "https://business.gemini.google/home/cid/abc123");
+  profile->GetPrefs()->SetDict(glic::prefs::kGlicGeminiEnterpriseSettings,
+                               std::move(settings));
+
+  EXPECT_EQ(
+      GURL("https://business.gemini.google/side-panel?configId=abc123&hl=en"),
+      GetGuestURL(profile));
+  const url::Origin geic_origin =
+      url::Origin::Create(GURL("https://business.gemini.google"));
+  EXPECT_TRUE(IsOriginAllowedGlicApi(geic_origin, profile));
+  EXPECT_TRUE(IsGuestOriginAllowed(geic_origin, profile));
+  EXPECT_FALSE(IsOriginAllowedGlicApi(
+      url::Origin::Create(GURL("https://evil.com/preset")), profile));
+}
+
+// When features::kGeic is enabled without a GEiC guest URL configured, the
+// profile does not enter GEiC mode and falls back to the consumer guest URL.
+TEST_F(GuestUtilMultiInstanceTest,
+       GeicFeatureWithoutGuestURLFallsBackToConsumerGuestURL) {
+  ScopedBrowserLocale scoped_locale("en");
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kGeic);
 
-  EXPECT_TRUE(GetGuestURL().is_empty());
+  EXPECT_EQ(GURL("https://www.example.com/glic?hl=en"),
+            GetGuestURL(CreateTestingProfile()));
 }
 
 // Without GEiC enabled, a consumer guest URL override is respected.
-TEST(GuestUtilTest, GeicDisabledKeepsConsumerGuestURL) {
+TEST_F(GuestUtilTest, GeicDisabledKeepsConsumerGuestURL) {
   ScopedBrowserLocale scoped_locale("en");
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
@@ -123,7 +163,7 @@ TEST(GuestUtilTest, GeicDisabledKeepsConsumerGuestURL) {
       {});
 
   EXPECT_EQ(GURL("https://gemini.google.com/custom-panel?hl=en"),
-            GetGuestURL());
+            GetGuestURL(&profile_));
 }
 
 TEST_F(GuestUtilMultiInstanceTest,
@@ -244,7 +284,7 @@ TEST_F(GuestUtilMultiInstanceTest,
 #endif
 }
 
-TEST(GuestUtilTest, IsOriginAllowedGlicApiWildcardMatching) {
+TEST_F(GuestUtilTest, IsOriginAllowedGlicApiWildcardMatching) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kGlicURLConfig,
@@ -255,28 +295,29 @@ TEST(GuestUtilTest, IsOriginAllowedGlicApiWildcardMatching) {
       {});
 
   EXPECT_TRUE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("https://cat.fun/party"))));
+      url::Origin::Create(GURL("https://cat.fun/party")), &profile_));
   EXPECT_FALSE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("https://cat.fun:42/party"))));
+      url::Origin::Create(GURL("https://cat.fun:42/party")), &profile_));
   EXPECT_TRUE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("https://sub.mouse.org/party"))));
+      url::Origin::Create(GURL("https://sub.mouse.org/party")), &profile_));
   EXPECT_TRUE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("https://inner.sub.mouse.org/party"))));
+      url::Origin::Create(GURL("https://inner.sub.mouse.org/party")),
+      &profile_));
   EXPECT_FALSE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("https://sub.mouse.org:99/party"))));
-  EXPECT_FALSE(
-      IsOriginAllowedGlicApi(url::Origin::Create(GURL("https://mouse.org"))));
-  EXPECT_FALSE(
-      IsOriginAllowedGlicApi(url::Origin::Create(GURL("https://amouse.org"))));
+      url::Origin::Create(GURL("https://sub.mouse.org:99/party")), &profile_));
+  EXPECT_FALSE(IsOriginAllowedGlicApi(
+      url::Origin::Create(GURL("https://mouse.org")), &profile_));
+  EXPECT_FALSE(IsOriginAllowedGlicApi(
+      url::Origin::Create(GURL("https://amouse.org")), &profile_));
   EXPECT_TRUE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("https://dog.com/party"))));
+      url::Origin::Create(GURL("https://dog.com/party")), &profile_));
   EXPECT_FALSE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("https://dog.com:99/party"))));
+      url::Origin::Create(GURL("https://dog.com:99/party")), &profile_));
   EXPECT_FALSE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("http://dog.com/party"))));
+      url::Origin::Create(GURL("http://dog.com/party")), &profile_));
 }
 
-TEST(GuestUtilTest, IsOriginAllowedGlicApiPortMatching) {
+TEST_F(GuestUtilTest, IsOriginAllowedGlicApiPortMatching) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kGlicURLConfig,
@@ -287,16 +328,16 @@ TEST(GuestUtilTest, IsOriginAllowedGlicApiPortMatching) {
       {});
 
   EXPECT_TRUE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("https://dog.com:8080/party"))));
+      url::Origin::Create(GURL("https://dog.com:8080/party")), &profile_));
   EXPECT_FALSE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("https://dog.com:99/party"))));
-  EXPECT_FALSE(
-      IsOriginAllowedGlicApi(url::Origin::Create(GURL("http://cat.fun:42"))));
-  EXPECT_TRUE(
-      IsOriginAllowedGlicApi(url::Origin::Create(GURL("http://cat.fun:80"))));
+      url::Origin::Create(GURL("https://dog.com:99/party")), &profile_));
+  EXPECT_FALSE(IsOriginAllowedGlicApi(
+      url::Origin::Create(GURL("http://cat.fun:42")), &profile_));
+  EXPECT_TRUE(IsOriginAllowedGlicApi(
+      url::Origin::Create(GURL("http://cat.fun:80")), &profile_));
 }
 
-TEST(GuestUtilTest, IsOriginAllowedGlicApiDevMode) {
+TEST_F(GuestUtilTest, IsOriginAllowedGlicApiDevMode) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kGlicURLConfig,
@@ -307,29 +348,29 @@ TEST(GuestUtilTest, IsOriginAllowedGlicApiDevMode) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
 
   EXPECT_TRUE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("https://cat.fun/party"))));
-  EXPECT_TRUE(
-      IsOriginAllowedGlicApi(url::Origin::Create(GURL("https://dog.fun/"))));
+      url::Origin::Create(GURL("https://cat.fun/party")), &profile_));
+  EXPECT_TRUE(IsOriginAllowedGlicApi(
+      url::Origin::Create(GURL("https://dog.fun/")), &profile_));
   EXPECT_FALSE(IsOriginAllowedGlicApi(
-      url::Origin::Create(GURL("data:text/html,hello"))));
+      url::Origin::Create(GURL("data:text/html,hello")), &profile_));
 }
 
-TEST(GuestUtilTest, IsOriginAllowedGlicApiHttp) {
+TEST_F(GuestUtilTest, IsOriginAllowedGlicApiHttp) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kGlicURLConfig,
         {{features::kGlicGuestURL.name, "http://test.com"}}}},
       {});
 
-  EXPECT_TRUE(
-      IsOriginAllowedGlicApi(url::Origin::Create(GURL("http://test.com"))));
-  EXPECT_FALSE(
-      IsOriginAllowedGlicApi(url::Origin::Create(GURL("https://test.com"))));
-  EXPECT_FALSE(
-      IsOriginAllowedGlicApi(url::Origin::Create(GURL("http://other.com"))));
+  EXPECT_TRUE(IsOriginAllowedGlicApi(
+      url::Origin::Create(GURL("http://test.com")), &profile_));
+  EXPECT_FALSE(IsOriginAllowedGlicApi(
+      url::Origin::Create(GURL("https://test.com")), &profile_));
+  EXPECT_FALSE(IsOriginAllowedGlicApi(
+      url::Origin::Create(GURL("http://other.com")), &profile_));
 }
 
-TEST(GuestUtilTest, IsGuestOriginAllowedWildcardMatching) {
+TEST_F(GuestUtilTest, IsGuestOriginAllowedWildcardMatching) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kGlicURLConfig,
@@ -340,30 +381,31 @@ TEST(GuestUtilTest, IsGuestOriginAllowedWildcardMatching) {
       {});
 
   // Primary guest URL is allowed via IsOriginAllowedGlicApi.
-  EXPECT_TRUE(
-      IsGuestOriginAllowed(url::Origin::Create(GURL("https://cat.fun/party"))));
-  EXPECT_TRUE(
-      IsGuestOriginAllowed(url::Origin::Create(GURL("https://cat.fun/other"))));
+  EXPECT_TRUE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("https://cat.fun/party")), &profile_));
+  EXPECT_TRUE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("https://cat.fun/other")), &profile_));
   // Allowed origins wildcard matching.
   EXPECT_TRUE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("https://sub.mouse.org/party"))));
+      url::Origin::Create(GURL("https://sub.mouse.org/party")), &profile_));
   EXPECT_TRUE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("https://inner.sub.mouse.org/party"))));
-  EXPECT_FALSE(
-      IsGuestOriginAllowed(url::Origin::Create(GURL("https://mouse.org"))));
-  EXPECT_FALSE(
-      IsGuestOriginAllowed(url::Origin::Create(GURL("https://amouse.org"))));
-  EXPECT_TRUE(
-      IsGuestOriginAllowed(url::Origin::Create(GURL("https://dog.com/party"))));
+      url::Origin::Create(GURL("https://inner.sub.mouse.org/party")),
+      &profile_));
   EXPECT_FALSE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("https://dog.com:99/party"))));
-  EXPECT_FALSE(
-      IsGuestOriginAllowed(url::Origin::Create(GURL("http://dog.com/party"))));
-  EXPECT_FALSE(
-      IsGuestOriginAllowed(url::Origin::Create(GURL("https://evil.com"))));
+      url::Origin::Create(GURL("https://mouse.org")), &profile_));
+  EXPECT_FALSE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("https://amouse.org")), &profile_));
+  EXPECT_TRUE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("https://dog.com/party")), &profile_));
+  EXPECT_FALSE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("https://dog.com:99/party")), &profile_));
+  EXPECT_FALSE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("http://dog.com/party")), &profile_));
+  EXPECT_FALSE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("https://evil.com")), &profile_));
 }
 
-TEST(GuestUtilTest, IsGuestOriginAllowedAuthOrigins) {
+TEST_F(GuestUtilTest, IsGuestOriginAllowedAuthOrigins) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kGlicURLConfig,
@@ -374,24 +416,26 @@ TEST(GuestUtilTest, IsGuestOriginAllowedAuthOrigins) {
       {});
 
   EXPECT_TRUE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("https://login.corp.google.com"))));
+      url::Origin::Create(GURL("https://login.corp.google.com")), &profile_));
   EXPECT_TRUE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("https://accounts.google.com"))));
+      url::Origin::Create(GURL("https://accounts.google.com")), &profile_));
   EXPECT_TRUE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("https://accounts.googlers.com"))));
+      url::Origin::Create(GURL("https://accounts.googlers.com")), &profile_));
   EXPECT_TRUE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("https://gaiastaging.corp.google.com"))));
+      url::Origin::Create(GURL("https://gaiastaging.corp.google.com")),
+      &profile_));
 
   // Disallow HTTP auth origins.
   EXPECT_FALSE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("http://accounts.google.com"))));
+      url::Origin::Create(GURL("http://accounts.google.com")), &profile_));
 
   // Disallow attacker spoofing domain.
   EXPECT_FALSE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("https://accounts.google.com.attacker.com"))));
+      url::Origin::Create(GURL("https://accounts.google.com.attacker.com")),
+      &profile_));
 }
 
-TEST(GuestUtilTest, IsGuestOriginAllowedOpaqueOrigin) {
+TEST_F(GuestUtilTest, IsGuestOriginAllowedOpaqueOrigin) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kGlicURLConfig,
@@ -401,11 +445,11 @@ TEST(GuestUtilTest, IsGuestOriginAllowedOpaqueOrigin) {
       {});
   base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
 
-  EXPECT_FALSE(
-      IsGuestOriginAllowed(url::Origin::Create(GURL("data:text/html,hello"))));
+  EXPECT_FALSE(IsGuestOriginAllowed(
+      url::Origin::Create(GURL("data:text/html,hello")), &profile_));
 }
 
-TEST(GuestUtilTest, IsGuestOriginAllowedCorpOrigins) {
+TEST_F(GuestUtilTest, IsGuestOriginAllowedCorpOrigins) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kGlicURLConfig,
@@ -416,13 +460,15 @@ TEST(GuestUtilTest, IsGuestOriginAllowedCorpOrigins) {
       {});
 
   EXPECT_TRUE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("https://gemini.corp.google.com"))));
+      url::Origin::Create(GURL("https://gemini.corp.google.com")), &profile_));
   EXPECT_TRUE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("https://subdomain.corp.google.com"))));
+      url::Origin::Create(GURL("https://subdomain.corp.google.com")),
+      &profile_));
   EXPECT_FALSE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("http://gemini.corp.google.com"))));
+      url::Origin::Create(GURL("http://gemini.corp.google.com")), &profile_));
   EXPECT_FALSE(IsGuestOriginAllowed(
-      url::Origin::Create(GURL("https://corp.google.com.attacker.com"))));
+      url::Origin::Create(GURL("https://corp.google.com.attacker.com")),
+      &profile_));
 }
 
 }  // namespace

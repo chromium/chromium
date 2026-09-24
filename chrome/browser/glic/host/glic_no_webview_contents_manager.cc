@@ -65,15 +65,19 @@ namespace glic {
 namespace {
 class GlicPwcPolicyDelegate : public pwc::PwcPolicyDelegate {
  public:
+  explicit GlicPwcPolicyDelegate(Profile* profile) : profile_(profile) {}
   ~GlicPwcPolicyDelegate() override = default;
 
   bool IsNavigationAllowed(const url::Origin& origin) const override {
-    return IsGuestOriginAllowed(origin);
+    return IsGuestOriginAllowed(origin, profile_);
   }
 
   bool IsCapabilityOrigin(const url::Origin& origin) const override {
-    return IsOriginAllowedGlicApi(origin);
+    return IsOriginAllowedGlicApi(origin, profile_);
   }
+
+ private:
+  const raw_ptr<Profile> profile_;
 };
 
 content::WebContents::CreateParams MakeOverlayCreateParams(
@@ -460,7 +464,7 @@ GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
       privileged_guest_contents_(pwc::PrivilegedWebContents::Create(
           pwc::PrivilegedComponent::kGlic,
           profile,
-          std::make_unique<GlicPwcPolicyDelegate>())),
+          std::make_unique<GlicPwcPolicyDelegate>(profile))),
       zoom_controller_(
           privileged_guest_contents_->web_contents(),
           profile ? profile->GetPrefs() : nullptr,
@@ -762,7 +766,7 @@ void GlicNoWebviewContentsManager::LoadGuest() {
   guest_ready_.Set(false);
   is_guest_error_ = false;
   UpdateClientLoadFailed();
-  GURL guest_url = GetGuestURL();
+  GURL guest_url = GetGuestURL(profile_);
   net_log::LogDummyNetworkRequestForTrafficAnnotation(guest_url);
   guest_contents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(guest_url));

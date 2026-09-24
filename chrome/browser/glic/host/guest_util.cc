@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -339,25 +340,22 @@ GlicWebClientManager* GetWebClientManagerForWebContents(
   return nullptr;
 }
 
-GURL GetGuestURL() {
-  GURL url;
-  if (geic::IsGeicEnabled()) {
-    url = geic::GetGeicGuestUrl();
+GURL GetGuestURL(content::BrowserContext* browser_context) {
+  if (geic::IsGeicEnabled(browser_context)) {
+    GURL url = geic::GetGeicGuestUrl(browser_context);
     if (url.is_empty()) {
-      LOG(ERROR) << "GEiC is enabled but no guest URL was provided.";
+      VLOG(1) << "GEiC is enabled but no guest URL was provided.";
       return GURL();
     }
+    return GetLocalizedGuestURL(url);
   }
 
-  if (url.is_empty()) {
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    bool has_glic_guest_url =
-        command_line->HasSwitch(::switches::kGlicGuestURL);
-    url =
-        GURL(has_glic_guest_url
-                 ? command_line->GetSwitchValueASCII(::switches::kGlicGuestURL)
-                 : features::kGlicGuestURL.Get());
-  }
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  bool has_glic_guest_url = command_line->HasSwitch(::switches::kGlicGuestURL);
+  GURL url =
+      GURL(has_glic_guest_url
+               ? command_line->GetSwitchValueASCII(::switches::kGlicGuestURL)
+               : features::kGlicGuestURL.Get());
 
   // If a preset url is enabled, use it instead.
   url = MaybeApplyPresetGuestUrl(std::move(url));
@@ -370,8 +368,8 @@ GURL GetGuestURL() {
   return GetLocalizedGuestURL(url);
 }
 
-url::Origin GetGuestOrigin() {
-  return url::Origin::Create(GetGuestURL());
+url::Origin GetGuestOrigin(content::BrowserContext* browser_context) {
+  return url::Origin::Create(GetGuestURL(browser_context));
 }
 
 std::string GetGlicAllowedOrigins() {
@@ -387,14 +385,15 @@ std::string GetGlicAllowedOrigins() {
   return allowed_origins;
 }
 
-bool IsOriginAllowedGlicApi(const url::Origin& origin) {
+bool IsOriginAllowedGlicApi(const url::Origin& origin,
+                            content::BrowserContext* browser_context) {
   if (origin.opaque()) {
     return false;
   }
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kGlicDev)) {
     return true;
   }
-  if (GetGuestOrigin().IsSameOriginWith(origin)) {
+  if (GetGuestOrigin(browser_context).IsSameOriginWith(origin)) {
     return true;
   }
   std::string api_allowed_origins = features::kGlicApiAllowedOrigins.Get();
@@ -406,11 +405,12 @@ bool IsOriginAllowedGlicApi(const url::Origin& origin) {
   return cached_matcher->Matches(api_allowed_origins, origin);
 }
 
-bool IsGuestOriginAllowed(const url::Origin& origin) {
+bool IsGuestOriginAllowed(const url::Origin& origin,
+                          content::BrowserContext* browser_context) {
   if (origin.opaque()) {
     return false;
   }
-  if (IsOriginAllowedGlicApi(origin)) {
+  if (IsOriginAllowedGlicApi(origin, browser_context)) {
     return true;
   }
 
@@ -479,7 +479,8 @@ bool IsFrameAllowedGlicApi(content::RenderFrameHost& frame_host) {
   if (!guest_contents || !IsGlicGuest(guest_contents)) {
     return false;
   }
-  return IsOriginAllowedGlicApi(frame_host.GetLastCommittedOrigin());
+  return IsOriginAllowedGlicApi(frame_host.GetLastCommittedOrigin(),
+                                frame_host.GetBrowserContext());
 }
 
 void BindGlicWebClientHandler(

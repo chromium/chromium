@@ -209,7 +209,8 @@ void GlicWebClientManager::DidFinishNavigation(
   DVLOG(1) << "Glic [WebClientManager] DidFinishNavigation, url="
            << guest_main_frame->GetLastCommittedURL();
   bool is_api_allowed =
-      IsOriginAllowedGlicApi(guest_main_frame->GetLastCommittedOrigin());
+      IsOriginAllowedGlicApi(guest_main_frame->GetLastCommittedOrigin(),
+                             guest_main_frame->GetBrowserContext());
   mojom::GuestPageType page_type =
       GetGuestPageType(guest_main_frame->GetLastCommittedURL());
   bool is_initial_commit = !has_navigation_committed_;

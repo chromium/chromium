@@ -2512,8 +2512,8 @@ ChromeFileSystemAccessPermissionContext::CanShowFilePicker(
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(rfh);
     if (glic::IsGlicGuest(web_contents) &&
-        glic::GetGuestOrigin().IsSameOriginWith(
-            rfh->GetLastCommittedOrigin())) {
+        glic::GetGuestOrigin(rfh->GetBrowserContext())
+            .IsSameOriginWith(rfh->GetLastCommittedOrigin())) {
       return base::ok();
     }
 #endif  // BUILDFLAG(IS_ANDROID)

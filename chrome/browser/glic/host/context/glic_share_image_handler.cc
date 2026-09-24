@@ -356,7 +356,7 @@ bool GlicShareImageHandler::AreClipboardPolicyChecksRequired(
   bool copy_check_required =
       enterprise_data_protection::IsCopyPolicyCheckRequired(*source, metadata);
 
-  ui::DataTransferEndpoint dte(glic::GetGuestURL());
+  ui::DataTransferEndpoint dte(glic::GetGuestURL(service_->profile()));
   content::ClipboardEndpoint paste_destination =
       content::ClipboardEndpoint::ForUnloadedTab(
           dte, base::BindRepeating(

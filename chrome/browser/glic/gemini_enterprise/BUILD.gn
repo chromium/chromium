@@ -20,6 +20,7 @@ source_set("geic_enabling") {
     "//chrome/browser/glic/public:features",
     "//chrome/browser/profiles:profile",
     "//components/prefs",
+    "//content/public/browser",
     "//net",
     "//url",
   ]
@@ -32,7 +33,9 @@ source_set("gemini_enterprise") {
   ]
 
   deps = [
+    ":geic_enabling",
     "//base",
+    "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/common",
     "//chrome/browser/profiles:profile",
@@ -82,10 +85,12 @@ source_set("browser_tests") {
   ]
 
   deps = [
+    ":geic_enabling",
     ":gemini_enterprise",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/glic/public:features",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
