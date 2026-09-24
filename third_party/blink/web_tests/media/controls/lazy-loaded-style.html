@@ -10,9 +10,16 @@
   if (window.testRunner)
     testRunner.waitUntilDone();
 
-  video.addEventListener('loadeddata', () => {
+  // The reference paints the video's first frame, so the test must not end
+  // before that frame reaches the compositor. The callback only fires for
+  // frames that arrive after it is registered, so register it before src.
+  const firstFrame =
+      new Promise(resolve => video.requestVideoFrameCallback(resolve));
+
+  video.addEventListener('loadeddata', async () => {
     video.controls = true;
 
+    await firstFrame;
     if (window.testRunner)
       testRunner.notifyDone();
   }, { once: true });
