@@ -13,20 +13,23 @@ namespace ntp_tiles {
 // Defines the arms for the AIM Refactor Experiment.
 enum class AimButtonRefactorArm {
   kDisabled = 0,
-  // Present AIM button in the Quick Actions row alongside one merchandising
-  // chips.
-  kOneMerchandisingChip = 1,
-  // Present AIM button in the Quick Actions row alongside two merchandising
-  // chips.
-  kTwoMerchandisingChips = 2,
+  // Focuses the composebox with AI Mode enabled when the AIM Quick Action
+  // button is tapped.
+  kFocusComposeboxAimQuickAction = 1,
+  // Present AIM button in the Quick Actions row alongside an image generation
+  // mode chip.
+  kImageGenerationQuickAction = 2,
+  // Present AIM button in the Quick Actions row alongside an attach images
+  // chip.
+  kAttachImageQuickAction = 3,
   // Present the AIM button as a standalone module beside the Most Visited
   // Tiles. Remove the Quick Actions row from the NTP.
-  kAimAsModule = 3,
+  kAimAsModule = 4,
   // Present the AIM button as a Most Visited Tile. Remove the Quick Actions row
   // from the NTP.
-  kAimAsMvt = 4,
+  kAimAsMvt = 5,
   // Remove the AIM button and the Quick Actions row from the NTP.
-  kNoChips = 5,
+  kNoChips = 6,
 };
 
 // Parameter to indicate which arm of the feature kAimButtonRefactor is enabled.

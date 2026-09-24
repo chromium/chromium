@@ -1209,21 +1209,28 @@ const FeatureEntry::FeatureVariation kNewTabPageUICleanupVariations[] = {
      kNewTabPageUICleanupFakeboxBackgroundAndShadow, nullptr},
 };
 
-constexpr FeatureEntry::FeatureParam kAimButtonRefactorOneMerchandisingChip[] =
-    {{ntp_tiles::kAimButtonRefactorArmParam, "1"}};
-constexpr FeatureEntry::FeatureParam kAimButtonRefactorTwoMerchandisingChips[] =
-    {{ntp_tiles::kAimButtonRefactorArmParam, "2"}};
+constexpr FeatureEntry::FeatureParam
+    kAimButtonRefactorFocusComposeboxAimQuickAction[] = {
+        {ntp_tiles::kAimButtonRefactorArmParam, "1"}};
+constexpr FeatureEntry::FeatureParam
+    kAimButtonRefactorImageGenerationQuickAction[] = {
+        {ntp_tiles::kAimButtonRefactorArmParam, "2"}};
+constexpr FeatureEntry::FeatureParam
+    kAimButtonRefactorAttachImageQuickAction[] = {
+        {ntp_tiles::kAimButtonRefactorArmParam, "3"}};
 constexpr FeatureEntry::FeatureParam kAimButtonRefactorAimAsModule[] = {
-    {ntp_tiles::kAimButtonRefactorArmParam, "3"}};
-constexpr FeatureEntry::FeatureParam kAimButtonRefactorAimAsMvt[] = {
     {ntp_tiles::kAimButtonRefactorArmParam, "4"}};
-constexpr FeatureEntry::FeatureParam kAimButtonRefactorNoChips[] = {
+constexpr FeatureEntry::FeatureParam kAimButtonRefactorAimAsMvt[] = {
     {ntp_tiles::kAimButtonRefactorArmParam, "5"}};
+constexpr FeatureEntry::FeatureParam kAimButtonRefactorNoChips[] = {
+    {ntp_tiles::kAimButtonRefactorArmParam, "6"}};
 
 constexpr FeatureEntry::FeatureVariation kAimButtonRefactorVariations[] = {
-    {" - One Merchandising Chip", kAimButtonRefactorOneMerchandisingChip,
-     nullptr},
-    {" - Two Merchandising Chips", kAimButtonRefactorTwoMerchandisingChips,
+    {" - Focus Composebox AIM Quick Action",
+     kAimButtonRefactorFocusComposeboxAimQuickAction, nullptr},
+    {" - Image Generation Quick Action",
+     kAimButtonRefactorImageGenerationQuickAction, nullptr},
+    {" - Attach Image Quick Action", kAimButtonRefactorAttachImageQuickAction,
      nullptr},
     {" - AIM as Module", kAimButtonRefactorAimAsModule, nullptr},
     {" - AIM as MVT", kAimButtonRefactorAimAsMvt, nullptr},
