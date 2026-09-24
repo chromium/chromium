@@ -361,8 +361,10 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
     [self.locationBarSteadyView setIncognitoBadgeView:self.incognitoBadgeView];
   }
 
-  DCHECK(self.badgeView) << "The badge view must be set at this point";
-  [self.locationBarSteadyView setBadgeView:self.badgeView];
+  if (!_textOnly) {
+    DCHECK(self.badgeView) << "The badge view must be set at this point";
+    [self.locationBarSteadyView setBadgeView:self.badgeView];
+  }
   if (self.readerModeChipView) {
     [self.locationBarSteadyView setReaderModeChipView:self.readerModeChipView];
   }
@@ -971,7 +973,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 
 // Updates the layout guides to point to the entrypoints in this toolbar.
 - (void)updateLayoutGuides {
-  if (!self.isViewLoaded) {
+  if (!self.isViewLoaded || _textOnly) {
     return;
   }
   // The _active flag is only used when NextIA is enabled. When it is disabled,

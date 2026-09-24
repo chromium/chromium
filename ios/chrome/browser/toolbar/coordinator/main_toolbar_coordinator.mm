@@ -1564,7 +1564,11 @@ inline LayoutStateToolbarPassKey PassKey() {
 
   if (IsChromeNextIaEnabled()) {
     [_topLocationBarCoordinator setLocationBarActive:!isToolbarAtBottom];
+    [_topTextOnlyLocationBarCoordinator
+        setLocationBarActive:!isToolbarAtBottom];
     [_bottomLocationBarCoordinator setLocationBarActive:isToolbarAtBottom];
+    [_bottomTextOnlyLocationBarCoordinator
+        setLocationBarActive:isToolbarAtBottom];
   } else {
     if (isToolbarAtBottom) {
       [self.secondaryToolbarCoordinator
