@@ -4,6 +4,7 @@
 
 #include <gtk/gtk.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -14,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/client_session_control.h"
+#include "remoting/host/disconnect_window_base.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/host_window.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -272,6 +274,7 @@ class DisconnectWindowLinuxTest : public testing::Test {
   ~DisconnectWindowLinuxTest() override = default;
 
   void TearDown() override {
+    DisconnectWindowBase::ResetCurrentAnchorForTesting();
     // Pump the event loop to ensure GTK widget destruction and cleanup is
     // processed.
     task_environment_.RunUntilIdle();
@@ -691,6 +694,64 @@ TEST_F(DisconnectWindowLinuxTest, ContinueWindowIsOverrideRedirectOnX11) {
   // Verify the periodic re-raise timer can fire without issue.
   task_environment_.FastForwardBy(base::Seconds(5));
 
+  window.reset();
+}
+
+TEST_F(DisconnectWindowLinuxTest, PositionsAtWorkareaEdges) {
+  if (!InitializeGtk()) {
+    GTEST_SKIP() << "No display available for GTK.";
+  }
+
+  FakeClientSessionControl session_control(kTestUserJid);
+  std::unique_ptr<HostWindow> window = HostWindow::CreateDisconnectWindow();
+  ASSERT_TRUE(window);
+  window->Start(session_control.GetWeakPtr());
+
+  GtkWindow* gtk_window = FindDisconnectWindow();
+  ASSERT_NE(gtk_window, nullptr);
+
+  GdkDisplay* display = gtk_widget_get_display(GTK_WIDGET(gtk_window));
+  ASSERT_NE(display, nullptr);
+  GdkMonitor* monitor = nullptr;
+  GdkWindow* gdk_window = gtk_widget_get_window(GTK_WIDGET(gtk_window));
+  if (gdk_window) {
+    monitor = gdk_display_get_monitor_at_window(display, gdk_window);
+  }
+  if (!monitor) {
+    monitor = gdk_display_get_primary_monitor(display);
+  }
+  if (!monitor) {
+    monitor = gdk_display_get_monitor(display, 0);
+  }
+  ASSERT_NE(monitor, nullptr);
+
+  GdkRectangle workarea;
+  gdk_monitor_get_workarea(monitor, &workarea);
+
+  int width = GPOINTER_TO_INT(
+      g_object_get_data(G_OBJECT(gtk_window), kCurrentWidthKey));
+  int height = GPOINTER_TO_INT(
+      g_object_get_data(G_OBJECT(gtk_window), kCurrentHeightKey));
+  int expected_x =
+      GPOINTER_TO_INT(g_object_get_data(G_OBJECT(gtk_window), kExpectedXKey));
+  int bottom_expected_y =
+      GPOINTER_TO_INT(g_object_get_data(G_OBJECT(gtk_window), kExpectedYKey));
+
+  EXPECT_EQ(expected_x, workarea.x + std::max(0, (workarea.width - width) / 2));
+  EXPECT_EQ(bottom_expected_y, workarea.y + workarea.height - height);
+
+  // Toggle to top anchor and verify it aligns directly with workarea.y.
+  GtkWidget* toggle_button =
+      FindButtonByLabel(GTK_WIDGET(gtk_window), kUpArrow);
+  ASSERT_NE(toggle_button, nullptr);
+  g_signal_emit_by_name(toggle_button, "clicked");
+
+  int top_expected_y =
+      GPOINTER_TO_INT(g_object_get_data(G_OBJECT(gtk_window), kExpectedYKey));
+  EXPECT_EQ(top_expected_y, workarea.y);
+
+  // Restore bottom anchor.
+  g_signal_emit_by_name(toggle_button, "clicked");
   window.reset();
 }
 #endif

@@ -31,11 +31,6 @@ namespace remoting {
 
 namespace {
 
-// Margins from screen edges to ensure the dialog is not obscured by the top bar
-// or an auto-hiding dock/panel at the bottom.
-constexpr int kTopMargin = 40;
-constexpr int kBottomMargin = 60;
-
 // Padding and spacing for the window contents.
 constexpr int kButtonRowSpacing = 12;
 constexpr int kHorizontalPadding = 12;
@@ -87,6 +82,7 @@ class DisconnectWindowGtk : public DisconnectWindowBase {
   gboolean OnConfigure(GtkWidget* widget, GdkEventConfigure* event);
   gboolean OnDraw(GtkWidget* widget, cairo_t* cr);
 #if !GTK_CHECK_VERSION(3, 90, 0)
+  GdkMonitor* GetCurrentMonitor() const;
   void OnMonitorsChanged(GdkScreen* screen);
   gboolean OnWindowState(GtkWidget* window, GdkEventWindowState* event);
   void Raise();
@@ -110,6 +106,9 @@ class DisconnectWindowGtk : public DisconnectWindowBase {
 
   base::RepeatingTimer raise_timer_;
 
+#if !GTK_CHECK_VERSION(3, 90, 0)
+  GdkRectangle current_workarea_ = {0, 0, 0, 0};
+#endif
   std::vector<ScopedGSignal> signals_;
 };
 
@@ -375,32 +374,14 @@ void DisconnectWindowGtk::SetDialogPosition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if !GTK_CHECK_VERSION(3, 90, 0)
-  if (!disconnect_window_) {
-    return;
-  }
-
-  GdkDisplay* display = gtk_widget_get_display(disconnect_window_.get());
-  if (!display) {
-    return;
-  }
-
-  GdkMonitor* monitor = nullptr;
-  GdkWindow* gdk_window = gtk_widget_get_window(disconnect_window_.get());
-  if (gdk_window) {
-    monitor = gdk_display_get_monitor_at_window(display, gdk_window);
-  }
-  if (!monitor) {
-    monitor = gdk_display_get_primary_monitor(display);
-  }
-  if (!monitor) {
-    monitor = gdk_display_get_monitor(display, 0);
-  }
+  GdkMonitor* monitor = GetCurrentMonitor();
   if (!monitor) {
     return;
   }
 
-  GdkRectangle geometry;
-  gdk_monitor_get_geometry(monitor, &geometry);
+  GdkRectangle workarea;
+  gdk_monitor_get_workarea(monitor, &workarea);
+  current_workarea_ = workarea;
 
   int width = current_width_;
   int height = current_height_;
@@ -414,10 +395,10 @@ void DisconnectWindowGtk::SetDialogPosition() {
     current_height_ = height;
   }
 
-  int left = geometry.x + std::max(0, (geometry.width - width) / 2);
+  int left = workarea.x + std::max(0, (workarea.width - width) / 2);
   int top = (current_anchor() == WindowAnchor::kTop)
-                ? (geometry.y + kTopMargin)
-                : (geometry.y + geometry.height - height - kBottomMargin);
+                ? workarea.y
+                : (workarea.y + workarea.height - height);
 
   SetExpectedPosition(left, top);
   gtk_window_move(GTK_WINDOW(disconnect_window_.get()), left, top);
@@ -439,6 +420,28 @@ void DisconnectWindowGtk::SetDialogPosition() {
 }
 
 #if !GTK_CHECK_VERSION(3, 90, 0)
+GdkMonitor* DisconnectWindowGtk::GetCurrentMonitor() const {
+  if (!disconnect_window_) {
+    return nullptr;
+  }
+  GdkDisplay* display = gtk_widget_get_display(disconnect_window_.get());
+  if (!display) {
+    return nullptr;
+  }
+  GdkMonitor* monitor = nullptr;
+  GdkWindow* gdk_window = gtk_widget_get_window(disconnect_window_.get());
+  if (gdk_window) {
+    monitor = gdk_display_get_monitor_at_window(display, gdk_window);
+  }
+  if (!monitor) {
+    monitor = gdk_display_get_primary_monitor(display);
+  }
+  if (!monitor) {
+    monitor = gdk_display_get_monitor(display, 0);
+  }
+  return monitor;
+}
+
 void DisconnectWindowGtk::OnMonitorsChanged(GdkScreen* screen) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ResetRepositionAttempts();
@@ -472,6 +475,14 @@ void DisconnectWindowGtk::Raise() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!disconnect_window_) {
     return;
+  }
+  if (GdkMonitor* monitor = GetCurrentMonitor()) {
+    GdkRectangle workarea;
+    gdk_monitor_get_workarea(monitor, &workarea);
+    if (!gdk_rectangle_equal(&workarea, &current_workarea_)) {
+      ResetRepositionAttempts();
+      SetDialogPosition();
+    }
   }
   GdkWindow* gdk_window = gtk_widget_get_window(disconnect_window_.get());
   if (gdk_window) {
