@@ -255,7 +255,8 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
       /*attempt=*/nullptr,
       /*holdback_status_override=*/PreloadingHoldbackStatus::kUnspecified,
       /*ttl=*/std::nullopt,
-      /*should_ignore_saver_modes=*/false);
+      /*should_ignore_saver_modes=*/false,
+      /*is_ahead_of_actual_navigation=*/false);
   test_prefetch_watcher->WaitUntilPrefetchResponseCompleted(std::nullopt,
                                                             prefetch_url);
 

@@ -1803,12 +1803,41 @@ bool PrefetchContainer::ShouldWaitForNoVarySearchHeader(const GURL& url) const {
 
     case LoadState::kNotStarted:
     case LoadState::kEligible:
-    case LoadState::kStarted:
-      if (const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint =
-              request().no_vary_search_hint()) {
+    case LoadState::kStarted: {
+      const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint =
+          request().no_vary_search_hint();
+
+      // For a prefetch ahead of an actual navigation, waiting for the
+      // No-Vary-Search header is preferable to falling back to the network,
+      // even if no hint is available. Note that the caller has already
+      // narrowed down candidates to the ones whose URLs are equivalent modulo
+      // query and ref, so this doesn't make it wait for unrelated prefetches.
+      if (request().is_ahead_of_actual_navigation() &&
+          base::FeatureList::IsEnabled(
+              features::kPrefetchAheadOfActualNavigation)) {
+        using Policy =
+            features::PrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy;
+        switch (
+            features::kPrefetchAheadOfActualNavigationForceWaitNVSHeaderPolicy
+                .Get()) {
+          case Policy::kNotUse:
+            break;
+          case Policy::kUseIfNoHint:
+            if (!no_vary_search_hint) {
+              return true;
+            }
+            break;
+          case Policy::kAlwaysUse:
+            return true;
+        }
+      }
+
+      if (no_vary_search_hint) {
         return no_vary_search_hint->AreEquivalent(url, GetURL());
       }
+
       return false;
+    }
 
     case LoadState::kFailedDeterminedHead:
     case LoadState::kFailed:

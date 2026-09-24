@@ -68,7 +68,8 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
                   kPrefetch),
           preloading_attempt->GetWeakPtr(), holdback_status_override,
           /*ttl=*/std::nullopt,
-          /*should_ignore_saver_modes=*/false);
+          /*should_ignore_saver_modes=*/false,
+          /*is_ahead_of_actual_navigation=*/false);
   if (prefetch_handle) {
     if (all_prefetches_.size() >= kMaxNumberOfCCTPrefetches) {
       all_prefetches_.pop_front();

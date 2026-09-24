@@ -109,7 +109,8 @@ SearchPreloadSignalResult SearchPreloadPipeline::StartPrefetch(
       /*holdback_status_override=*/
       content::PreloadingHoldbackStatus::kUnspecified,
       /*ttl=*/features::kDsePreload2PrefetchTtl.Get(),
-      should_ignore_saver_modes);
+      should_ignore_saver_modes,
+      /*is_ahead_of_actual_navigation=*/false);
   CHECK(prefetch_handle_);
   prefetch_handle_->SetOnPrefetchHeadReceivedCallback(base::BindRepeating(
       &SearchPreloadService::OnPrefetchHeadReceived, search_preload_service));

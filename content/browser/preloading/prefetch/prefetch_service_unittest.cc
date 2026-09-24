@@ -492,18 +492,23 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       const GURL& prefetch_url,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referrer = blink::mojom::Referrer(),
-      const std::optional<url::Origin> referring_origin = std::nullopt) {
+      const std::optional<url::Origin> referring_origin = std::nullopt,
+      bool is_ahead_of_actual_navigation = false,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint =
+          std::nullopt) {
     CHECK(!prefetch_type.IsRendererInitiated());
 
     auto prefetch_request = PrefetchRequest::CreateBrowserInitiated(
         *web_contents(), prefetch_url, prefetch_type,
         test::kPreloadingEmbedderHistogramSuffixForTesting, referrer,
-        std::move(referring_origin),
-        /*no_vary_search_hint=*/std::nullopt,
+        std::move(referring_origin), std::move(no_vary_search_hint),
         /*priority=*/std::nullopt,
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
-        /*attempt=*/nullptr);
+        /*attempt=*/nullptr,
+        /*holdback_status_override=*/PreloadingHoldbackStatus::kUnspecified,
+        /*ttl=*/std::nullopt,
+        /*should_ignore_saver_modes=*/false, is_ahead_of_actual_navigation);
     return prefetch_service().AddPrefetchRequestWithHandle(
         std::move(prefetch_request));
   }
@@ -4854,6 +4859,301 @@ TEST_P(PrefetchServiceDisableBlockUntilHeadTimeoutTest,
           {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
            metrics_suffix}),
       0);
+}
+
+// Test suite for a prefetch ahead of an actual navigation, i.e.
+// `PrefetchRequest::is_ahead_of_actual_navigation()`.
+class PrefetchServiceAheadOfActualNavigationTest
+    : public PrefetchServiceTestBase,
+      public WithPrefetchRearchParam,
+      public ::testing::WithParamInterface<PrefetchRearchParam> {
+ public:
+  PrefetchServiceAheadOfActualNavigationTest()
+      : WithPrefetchRearchParam(GetParam()) {}
+
+  static constexpr int kBlockUntilHeadTimeout = 1000;
+
+  void InitScopedFeatureList() override {
+    InitBaseParams();
+    InitRearchFeatures();
+    // Override `kPrefetchUseContentRefactor`.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrefetchUseContentRefactor,
+          {
+              {"ineligible_decoy_request_probability", "0"},
+              {"prefetch_container_lifetime_s", "-1"},
+              {"prefetch_timeout_ms", "10000"},
+              // Initialize > 0ms timeouts for testing purposes.
+              {"block_until_head_timeout_embedder_prefetch",
+               base::NumberToString(kBlockUntilHeadTimeout)},
+          }},
+         {features::kPrefetchAheadOfActualNavigation,
+          {
+              {"force_wait_no_vary_search_header_policy", "UseIfNoHint"},
+          }}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PrefetchServiceAheadOfActualNavigationTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
+
+// Tests that a prefetch ahead of an actual navigation is matched by the
+// No-Vary-Search header even if no hint is given, and that the navigation is
+// blocked until the head is received without the block-until-head timeout.
+//
+// Scenario: An embedder starts a prefetch of "?a=1" without a No-Vary-Search
+// hint. Then a navigation to the URL without the query starts before the head
+// is received. It keeps blocked beyond the block-until-head timeout, and is
+// eventually served once the head with the No-Vary-Search header arrives.
+TEST_P(PrefetchServiceAheadOfActualNavigationTest,
+       ForceWaitNoVarySearchHeader) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  std::unique_ptr<PrefetchHandle> handle = MakePrefetchFromEmbedder(
+      GURL("https://example.com/?a=1"),
+      PrefetchType(PreloadingTriggerType::kEmbedder,
+                   /*use_prefetch_proxy=*/false),
+      /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_actual_navigation=*/true);
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestStateForWebContentsPrefetch(
+      GURL("https://example.com/?a=1"), {.use_prefetch_proxy = false});
+
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com/"),
+                               /*is_renderer_initiated=*/false,
+                               /*is_nav_prerender=*/false);
+  task_environment()->RunUntilIdle();
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Milliseconds(kBlockUntilHeadTimeout));
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  MakeResponseAndWait(
+      net::HTTP_OK, net::OK, kHTMLMimeType,
+      /*use_prefetch_proxy=*/false,
+      {{"X-Testing", "Hello World"}, {"No-Vary-Search", R"(params=("a"))"}},
+      kHTMLBody);
+
+  ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
+  PrefetchServingHandle serving_handle =
+      navigation_result->serving_handle_future.Take();
+  ExpectServingReaderSuccess(serving_handle);
+  EXPECT_EQ(serving_handle.GetPrefetchContainer()->GetURL(),
+            GURL("https://example.com/?a=1"));
+}
+
+// Tests that a prefetch that is not ahead of an actual navigation is not
+// matched without a No-Vary-Search hint, i.e. the behavior is unchanged.
+TEST_P(PrefetchServiceAheadOfActualNavigationTest,
+       NotAheadOfActualNavigationIsNotAffected) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  std::unique_ptr<PrefetchHandle> handle = MakePrefetchFromEmbedder(
+      GURL("https://example.com/?a=1"),
+      PrefetchType(PreloadingTriggerType::kEmbedder,
+                   /*use_prefetch_proxy=*/false),
+      /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_actual_navigation=*/false);
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestStateForWebContentsPrefetch(
+      GURL("https://example.com/?a=1"), {.use_prefetch_proxy = false});
+
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com/"),
+                               /*is_renderer_initiated=*/false,
+                               /*is_nav_prerender=*/false);
+  task_environment()->RunUntilIdle();
+
+  ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
+  EXPECT_FALSE(navigation_result->serving_handle_future.Take());
+}
+
+// Tests that a blocked navigation unblocks and falls back to network when the
+// response head arrives without a matching No-Vary-Search header.
+//
+// Scenario: An embedder starts a prefetch of "?a=1" with
+// `is_ahead_of_actual_navigation` true and without a No-Vary-Search hint. A
+// navigation to the URL without the query starts and is blocked beyond the
+// block-until-head timeout. When the response head arrives with a non-matching
+// `No-Vary-Search: params=("b")` header, the navigation unblocks and falls back
+// to network instead of hanging.
+TEST_P(PrefetchServiceAheadOfActualNavigationTest,
+       ForceWaitNoVarySearchHeader_MismatchUnblocks) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  std::unique_ptr<PrefetchHandle> handle = MakePrefetchFromEmbedder(
+      GURL("https://example.com/?a=1"),
+      PrefetchType(PreloadingTriggerType::kEmbedder,
+                   /*use_prefetch_proxy=*/false),
+      /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_actual_navigation=*/true);
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestStateForWebContentsPrefetch(
+      GURL("https://example.com/?a=1"), {.use_prefetch_proxy = false});
+
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com/"),
+                               /*is_renderer_initiated=*/false,
+                               /*is_nav_prerender=*/false);
+  task_environment()->RunUntilIdle();
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Milliseconds(kBlockUntilHeadTimeout));
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  MakeResponseAndWait(
+      net::HTTP_OK, net::OK, kHTMLMimeType,
+      /*use_prefetch_proxy=*/false,
+      {{"X-Testing", "Hello World"}, {"No-Vary-Search", R"(params=("b"))"}},
+      kHTMLBody);
+
+  ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
+  EXPECT_FALSE(navigation_result->serving_handle_future.Take());
+}
+
+// Tests that `UseIfNoHint` policy does not force-wait when a non-matching
+// No-Vary-Search hint is present on the request.
+//
+// Scenario: Under the default `UseIfNoHint` policy, an embedder starts a
+// prefetch of "?a=1" with a non-matching hint `params=("b")` and
+// `is_ahead_of_actual_navigation` true. A navigation to the URL without the
+// query does not wait for the response head and immediately falls back to
+// network.
+TEST_P(PrefetchServiceAheadOfActualNavigationTest,
+       UseIfNoHintPolicy_NonMatchingHintDoesNotWait) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  std::unique_ptr<PrefetchHandle> handle = MakePrefetchFromEmbedder(
+      GURL("https://example.com/?a=1"),
+      PrefetchType(PreloadingTriggerType::kEmbedder,
+                   /*use_prefetch_proxy=*/false),
+      /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_actual_navigation=*/true,
+      net::HttpNoVarySearchData::CreateFromNoVaryParams({"b"}, false));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestStateForWebContentsPrefetch(
+      GURL("https://example.com/?a=1"), {.use_prefetch_proxy = false});
+
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com/"),
+                               /*is_renderer_initiated=*/false,
+                               /*is_nav_prerender=*/false);
+  task_environment()->RunUntilIdle();
+
+  ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
+  EXPECT_FALSE(navigation_result->serving_handle_future.Take());
+}
+
+// Tests that `AlwaysUse` policy ignores a non-matching No-Vary-Search hint on
+// the request and force-waits for the response head's No-Vary-Search header.
+//
+// Scenario: Under the `AlwaysUse` policy, an embedder starts a prefetch of
+// "?a=1" with a non-matching hint `params=("b")` and
+// `is_ahead_of_actual_navigation` true. A navigation to the URL without the
+// query ignores the hint and blocks beyond the block-until-head timeout. When
+// the response head arrives with `No-Vary-Search: params=("a")`, the prefetch
+// is served.
+TEST_P(PrefetchServiceAheadOfActualNavigationTest,
+       AlwaysUsePolicy_IgnoresNonMatchingHintAndWaitsForHeader) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPrefetchAheadOfActualNavigation,
+      {{"force_wait_no_vary_search_header_policy", "AlwaysUse"}});
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  std::unique_ptr<PrefetchHandle> handle = MakePrefetchFromEmbedder(
+      GURL("https://example.com/?a=1"),
+      PrefetchType(PreloadingTriggerType::kEmbedder,
+                   /*use_prefetch_proxy=*/false),
+      /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_actual_navigation=*/true,
+      net::HttpNoVarySearchData::CreateFromNoVaryParams({"b"}, false));
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestStateForWebContentsPrefetch(
+      GURL("https://example.com/?a=1"), {.use_prefetch_proxy = false});
+
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com/"),
+                               /*is_renderer_initiated=*/false,
+                               /*is_nav_prerender=*/false);
+  task_environment()->RunUntilIdle();
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Milliseconds(kBlockUntilHeadTimeout));
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  MakeResponseAndWait(
+      net::HTTP_OK, net::OK, kHTMLMimeType,
+      /*use_prefetch_proxy=*/false,
+      {{"X-Testing", "Hello World"}, {"No-Vary-Search", R"(params=("a"))"}},
+      kHTMLBody);
+
+  ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
+  PrefetchServingHandle serving_handle =
+      navigation_result->serving_handle_future.Take();
+  ExpectServingReaderSuccess(serving_handle);
+  EXPECT_EQ(serving_handle.GetPrefetchContainer()->GetURL(),
+            GURL("https://example.com/?a=1"));
+}
+
+// Tests that setting `use_block_until_head_timeout` to true re-enables the
+// block-until-head timeout for a prefetch ahead of an actual navigation.
+//
+// Scenario: With `use_block_until_head_timeout` set to true, an embedder starts
+// a prefetch of "?a=1" with `is_ahead_of_actual_navigation` true. A navigation
+// to the URL without the query starts and is blocked, then times out after
+// `kBlockUntilHeadTimeout` and falls back to network.
+TEST_P(PrefetchServiceAheadOfActualNavigationTest,
+       UseBlockUntilHeadTimeout_TimesOut) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPrefetchAheadOfActualNavigation,
+      {
+          {"force_wait_no_vary_search_header_policy", "UseIfNoHint"},
+          {"use_block_until_head_timeout", "true"},
+      });
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  std::unique_ptr<PrefetchHandle> handle = MakePrefetchFromEmbedder(
+      GURL("https://example.com/?a=1"),
+      PrefetchType(PreloadingTriggerType::kEmbedder,
+                   /*use_prefetch_proxy=*/false),
+      /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_actual_navigation=*/true);
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestStateForWebContentsPrefetch(
+      GURL("https://example.com/?a=1"), {.use_prefetch_proxy = false});
+
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com/"),
+                               /*is_renderer_initiated=*/false,
+                               /*is_nav_prerender=*/false);
+  task_environment()->RunUntilIdle();
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Milliseconds(kBlockUntilHeadTimeout));
+  ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
+  EXPECT_FALSE(navigation_result->serving_handle_future.Take());
 }
 
 // Tests that browsing data removal for prefetch is performed per 1) its

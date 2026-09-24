@@ -181,7 +181,8 @@ class CONTENT_EXPORT PrefetchRequest final {
       PreloadingHoldbackStatus holdback_status_override =
           PreloadingHoldbackStatus::kUnspecified,
       std::optional<base::TimeDelta> ttl = std::nullopt,
-      bool should_ignore_saver_modes = false);
+      bool should_ignore_saver_modes = false,
+      bool is_ahead_of_actual_navigation = false);
 
   // For browser-initiated prefetch that doesn't depend on web
   // contents. We can pass the referring origin of prefetches via
@@ -251,6 +252,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       bool should_disable_block_until_head_timeout,
       bool should_bypass_http_cache,
       bool should_ignore_saver_modes,
+      bool is_ahead_of_actual_navigation,
       std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
           info);
 
@@ -320,6 +322,9 @@ class CONTENT_EXPORT PrefetchRequest final {
   // TODO(crbug.com/455296998): Remove this code for M145.
   bool should_bypass_http_cache() const { return should_bypass_http_cache_; }
   bool should_ignore_saver_modes() const { return should_ignore_saver_modes_; }
+  bool is_ahead_of_actual_navigation() const {
+    return is_ahead_of_actual_navigation_;
+  }
 
   // Returns non-null if renderer-initiated/browser-initiated, respectively.
   // Exactly one of them returns non-null.
@@ -450,6 +455,17 @@ class CONTENT_EXPORT PrefetchRequest final {
   // If true, saver modes (e.g. Battery Saver or Data Saver) will be ignored for
   // this prefetch request.
   const bool should_ignore_saver_modes_;
+
+  // If true, this prefetch is triggered by a signal that the actual navigation
+  // to this prefetch is (almost) certain to happen soon, e.g. mouse down on an
+  // omnibox suggestion.
+  //
+  // For such a prefetch, falling back to the network at matching time is
+  // strictly worse than keeping waiting for the prefetch, as the fallback
+  // discards the head start that the prefetch already has. So we prefer
+  // matching aggressively. See `features::kPrefetchAheadOfActualNavigation`
+  // for the controlled behaviors.
+  const bool is_ahead_of_actual_navigation_;
 
   const std::variant<PrefetchRendererInitiatorInfo,
                      PrefetchBrowserInitiatorInfo>

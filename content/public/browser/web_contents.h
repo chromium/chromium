@@ -1796,6 +1796,13 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   //   not `PreloadingHoldbackStatus::kUnspecified`.
   // - `ttl`: TTL; `PrefetchService` holds prefetch in `ttl`. Uses default value
   // if `std::nullopt`.
+  // - `should_ignore_saver_modes` is used to ignore saver modes, e.g. data
+  //   saver, battery saver, in eligibility checks.
+  // - `is_ahead_of_actual_navigation` should be true iff this prefetch is
+  //   triggered by a signal that the actual navigation to `prefetch_url` is
+  //   (almost) certain to happen soon, e.g. mouse down on an omnibox
+  //   suggestion. Such a prefetch is matched more aggressively. See
+  //   `features::kPrefetchAheadOfActualNavigation`.
   // - Returns `PrefetchHandle` to control prefetch resources. This can be
   //   nullptr when this function can't add `PrefetchContainer` to
   //   `PrefetchService`.
@@ -1811,7 +1818,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       base::WeakPtr<PreloadingAttempt> attempt,
       PreloadingHoldbackStatus holdback_status_override,
       std::optional<base::TimeDelta> ttl,
-      bool should_ignore_saver_modes) = 0;
+      bool should_ignore_saver_modes,
+      bool is_ahead_of_actual_navigation) = 0;
 
   // Starts an embedder triggered (browser-initiated) prerendering page and
   // returns the unique_ptr<PrerenderHandle>, which cancels prerendering on its

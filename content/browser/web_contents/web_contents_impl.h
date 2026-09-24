@@ -1053,7 +1053,8 @@ class CONTENT_EXPORT WebContentsImpl
       base::WeakPtr<PreloadingAttempt> attempt,
       PreloadingHoldbackStatus holdback_status_override,
       std::optional<base::TimeDelta> ttl,
-      bool should_ignore_saver_modes) override;
+      bool should_ignore_saver_modes,
+      bool is_ahead_of_actual_navigation) override;
   std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
