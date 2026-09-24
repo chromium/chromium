@@ -118,7 +118,7 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
     }
     if (!gpu_workarounds_.disable_d3d11_video_decoder) {
       supported_configs = D3DVideoDecoder::GetSupportedVideoDecoderConfigs(
-          gpu_preferences_, gpu_workarounds_, GetD3DDeviceCallback());
+          gpu_workarounds_, GetD3DDeviceCallback());
     }
     return supported_configs;
   }
@@ -153,15 +153,14 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
     }
   }
 
-  D3DVideoDecoder::GetD3DDeviceCB GetD3DDeviceCallback() {
+  GetD3DDeviceCB GetD3DDeviceCallback() {
     return base::BindRepeating(
         [](Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
            Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
-           D3DVideoDecoder::D3DVersion d3d_version)
-            -> Microsoft::WRL::ComPtr<IUnknown> {
-          if (d3d_version == D3DVideoDecoder::D3DVersion::kD3D11) {
+           D3DVersion d3d_version) -> Microsoft::WRL::ComPtr<IUnknown> {
+          if (d3d_version == D3DVersion::kD3D11) {
             return d3d11_device;
-          } else if (d3d_version == D3DVideoDecoder::D3DVersion::kD3D12) {
+          } else if (d3d_version == D3DVersion::kD3D12) {
             return d3d12_device;
           }
           NOTREACHED();
