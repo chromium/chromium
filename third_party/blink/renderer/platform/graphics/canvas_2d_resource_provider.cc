@@ -288,7 +288,7 @@ bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
     return false;
   }
 
-  auto access = WillDrawInternal();
+  EnsureResourceReadyForDraw();
 
   // The below  write to the resource's SharedImage will need to be preserved in
   // the case of a subsequent CopyOnWrite.
@@ -299,6 +299,7 @@ bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
   must_preserve_content_on_copy_on_write_ = true;
 
   auto client_si = resource()->GetSharedImage();
+  auto access = resource()->BeginAccess(/*readonly=*/false);
   RasterInterface()->WritePixels(client_si->mailbox(), x, y,
                                  client_si->GetTextureTarget(),
                                  SkPixmap(orig_info, pixels, row_bytes));
