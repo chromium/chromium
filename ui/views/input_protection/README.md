@@ -83,8 +83,7 @@ and enforce **partial intersection** checking, install an
 ```cpp
 // In your View subclass initialization:
 InputProtectionSpecification::Install(
-    *this, base::BindRepeating(&MyView::GetLocalProtectedBounds,
-                               base::Unretained(this)));
+    *this, base::BindRepeating(&MyView::GetLocalProtectedBounds));
 ```
 
 Implement the callback to return the sensitive bounds in **local view
@@ -165,8 +164,9 @@ delegates interaction evaluations to one or more policy objects
 This is the main manager class. It is typically owned by a `View` that requires
 protection (for example, `DialogClientView` or `BubbleFrameView`).
 
-- It exposes `IsPossiblyUnintendedInteraction(event, target_view)` to check if
-  an input event should be blocked.
+- It exposes
+  `IsPossiblyUnintendedInteraction(event, allow_key_events, target_view)` to
+  check if an input event should be blocked.
 - It maintains a list of `InputProtectionPolicy` objects and delegates the check
   to them. If *any* policy recommends blocking, the event is blocked.
 - It forwards lifecycle events (like the view being shown or hidden) to the
@@ -588,8 +588,9 @@ manually:
 
 ```cpp
 void MyView::OnButtonPressed(const ui::Event& event) {
-  if (input_protector_->IsPossiblyUnintendedInteraction(event, this)) {
-    return; // Block the event
+  if (input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/false, this)) {
+    return;  // Block the event
   }
   // Handle the event...
 }
@@ -607,8 +608,7 @@ initialization:
 ```cpp
 // In your View subclass initialization:
 InputProtectionSpecification::Install(
-    *this, base::BindRepeating(&MyView::GetLocalProtectedBounds,
-                               base::Unretained(this)));
+    *this, base::BindRepeating(&MyView::GetLocalProtectedBounds));
 ```
 
 And implement the callback method to return the bounds in **local coordinates**
