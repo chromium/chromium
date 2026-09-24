@@ -7,8 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <unordered_map>
 #include <utility>
@@ -633,15 +635,14 @@ TEST_F(DisplayResourceProviderSkiaTest,
   constexpr size_t kTotalResources = 5;
   constexpr size_t kLockedResources = 3;
   constexpr size_t kUsedResources = 4;
-  ResourceId ids[kTotalResources];
+  std::array<ResourceId, kTotalResources> ids = {};
   for (auto& id : ids) {
     TransferableResource tran = CreateResource();
     id = child_resource_provider_->ImportResource(
         tran, base::BindOnce(&MockReleaseCallback::Released,
                              base::Unretained(&release)));
   }
-  std::vector<ResourceId> resource_ids_to_transfer(
-      ids, UNSAFE_TODO(ids + kTotalResources));
+  std::vector<ResourceId> resource_ids_to_transfer(std::from_range, ids);
 
   std::vector<TransferableResource> list;
 
@@ -662,7 +663,7 @@ TEST_F(DisplayResourceProviderSkiaTest,
       std::unique_ptr<DisplayResourceProvider::ScopedReadLockSharedImage>>
       read_locks;
   for (size_t i = 0; i < kLockedResources; i++) {
-    ResourceId mapped_resource_id = resource_map[UNSAFE_TODO(ids[i])];
+    ResourceId mapped_resource_id = resource_map[ids[i]];
     lock_set_->LockResource(mapped_resource_id, /*maybe_concurrent_reads=*/true,
                             /*is_video_plane=*/false);
   }
@@ -673,7 +674,8 @@ TEST_F(DisplayResourceProviderSkiaTest,
     DisplayResourceProvider::ScopedBatchReturnResources returner(
         resource_provider_.get());
     resource_provider_->DeclareUsedResourcesFromChild(
-        child_id, ResourceIdSet(ids, UNSAFE_TODO(ids + kUsedResources)));
+        child_id,
+        ResourceIdSet(std::from_range, base::span(ids).first(kUsedResources)));
     EXPECT_EQ(0u, returned_to_child.size());
   }
   EXPECT_EQ(1u, returned_to_child.size());
@@ -686,14 +688,18 @@ TEST_F(DisplayResourceProviderSkiaTest,
     DisplayResourceProvider::ScopedBatchReturnResources returner(
         resource_provider_.get());
     resource_provider_->DeclareUsedResourcesFromChild(
-        child_id, ResourceIdSet(UNSAFE_TODO(ids + kLockedResources),
-                                UNSAFE_TODO(ids + kUsedResources)));
+        child_id,
+        ResourceIdSet(std::from_range, base::span(ids).subspan(
+                                           kLockedResources,
+                                           kUsedResources - kLockedResources)));
     // Can be called multiple times while batching is enabled.  This happens in
     // practice when the same surface is visited using different paths during
     // surface aggregation.
     resource_provider_->DeclareUsedResourcesFromChild(
-        child_id, ResourceIdSet(UNSAFE_TODO(ids + kLockedResources),
-                                UNSAFE_TODO(ids + kUsedResources)));
+        child_id,
+        ResourceIdSet(std::from_range, base::span(ids).subspan(
+                                           kLockedResources,
+                                           kUsedResources - kLockedResources)));
     lock_set_->UnlockResources(GenSyncToken());
     EXPECT_EQ(0u, returned_to_child.size());
   }

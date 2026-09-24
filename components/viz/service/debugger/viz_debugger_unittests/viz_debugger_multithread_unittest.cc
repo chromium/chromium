@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <unordered_map>
@@ -151,10 +152,10 @@ class WriterTestThread : public base::PlatformThread::Delegate {
 // NOTE: The test assumes that thread ID's are unique
 // (Exception: Fuchsia thread ID's are not unique).
 TEST_F(VizDebuggerMultithreadTest, kReadersTest) {
-  static const unsigned kNumReaderThreads = 3;
+  static constexpr unsigned kNumReaderThreads = 3;
 
-  ReaderTestThread threads[kNumReaderThreads];
-  base::PlatformThreadHandle handles[kNumReaderThreads];
+  std::array<ReaderTestThread, kNumReaderThreads> threads;
+  std::array<base::PlatformThreadHandle, kNumReaderThreads> handles = {};
 
   SetFilter({TestFilter("")});
   // Enable viz debugger
@@ -182,11 +183,10 @@ TEST_F(VizDebuggerMultithreadTest, kReadersTest) {
 
   // Initialize each thread and start thread
   for (uint32_t i = 0; i < kNumReaderThreads; ++i) {
-    UNSAFE_TODO(threads[i]).Init(test_config, 1, 0);
+    threads[i].Init(test_config, 1, 0);
   }
   for (uint32_t i = 0; i < kNumReaderThreads; ++i) {
-    UNSAFE_TODO(
-        ASSERT_TRUE(base::PlatformThread::Create(0, &threads[i], &handles[i])));
+    ASSERT_TRUE(base::PlatformThread::Create(0, &threads[i], &handles[i]));
   }
 
   // Collect all threads
@@ -293,8 +293,9 @@ TEST_F(VizDebuggerMultithreadTest, kReadersOneWriterCommandsSequenceTest) {
 
   WriterTestThread writer_thread;
   base::PlatformThreadHandle writer_thread_handle;
-  ReaderTestThread reader_threads[kNumReaderThreads];
-  base::PlatformThreadHandle reader_thread_handles[kNumReaderThreads];
+  std::array<ReaderTestThread, kNumReaderThreads> reader_threads;
+  std::array<base::PlatformThreadHandle, kNumReaderThreads>
+      reader_thread_handles = {};
 
   SetFilter({TestFilter("")});
   // Enable viz debugger
@@ -322,11 +323,11 @@ TEST_F(VizDebuggerMultithreadTest, kReadersOneWriterCommandsSequenceTest) {
   // Initialize and start each thread. Each thread will start making VizDebugger
   // debug calls simultaneously upon starting.
   for (uint32_t i = 0; i < kNumReaderThreads; ++i) {
-    UNSAFE_TODO(reader_threads[i]).Init(test_config, 1, kReaderSpinAmount);
+    reader_threads[i].Init(test_config, 1, kReaderSpinAmount);
   }
   for (uint32_t i = 0; i < kNumReaderThreads; ++i) {
-    UNSAFE_TODO(ASSERT_TRUE(base::PlatformThread::Create(
-        0, &reader_threads[i], &reader_thread_handles[i])));
+    ASSERT_TRUE(base::PlatformThread::Create(0, &reader_threads[i],
+                                             &reader_thread_handles[i]));
   }
   writer_thread.Init(this, kNumWriterTries, kWriterSpinAmount);
   ASSERT_TRUE(
