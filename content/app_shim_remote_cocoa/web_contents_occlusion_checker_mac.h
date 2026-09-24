@@ -11,9 +11,6 @@
 #include "base/metrics/field_trial_params.h"
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
 
-extern CONTENT_EXPORT const base::FeatureParam<bool>
-    kDisplaySleepAndAppHideDetection;
-
 // The WebContentsOcclusionCheckerMac performs window occlusion checks
 // for browser windows of similar size, a case macOS's occlusion
 // detection system cannot handle (see crbug.com/883031). It initiates
