@@ -157,6 +157,9 @@ int DesktopProcessMain() {
 
   // Run the UI message loop.
   ui_task_runner = nullptr;
+  video_capture_task_runner = nullptr;
+  input_task_runner = nullptr;
+  io_task_runner = nullptr;
   run_loop.Run();
 
   return kSuccessExitCode;

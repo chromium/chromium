@@ -7,10 +7,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/task/single_thread_task_runner.h"
@@ -28,14 +31,22 @@ base::LazyInstance<scoped_refptr<AudioPipeReader>>::Leaky
 // TODO(wez): Remove this and have the DesktopEnvironmentFactory own the
 // AudioPipeReader rather than having it process-global.
 // See crbug.com/161373 and crbug.com/104544.
-void PulseAudioCapturer::InitializePipeReader(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    const base::FilePath& pipe_name) {
+bool PulseAudioCapturer::InitializePipeReader(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   scoped_refptr<AudioPipeReader> pipe_reader;
-  if (!pipe_name.empty()) {
-    pipe_reader = AudioPipeReader::Create(task_runner, pipe_name);
+  if (task_runner) {
+    std::unique_ptr<base::Environment> env = base::Environment::Create();
+    // LINT.IfChange(audio_pipe_env_var)
+    std::optional<std::string> env_pipe =
+        env->GetVar("CHROME_REMOTE_DESKTOP_AUDIO_PIPE");
+    // LINT.ThenChange(//remoting/host/linux/linux_me2me_host.py:audio_pipe_env_var)
+    if (env_pipe.has_value() && !env_pipe->empty()) {
+      pipe_reader =
+          AudioPipeReader::Create(task_runner, base::FilePath(*env_pipe));
+    }
   }
   g_pulseaudio_pipe_sink_reader.Get() = pipe_reader;
+  return pipe_reader != nullptr;
 }
 
 PulseAudioCapturer::PulseAudioCapturer(

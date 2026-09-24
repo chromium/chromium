@@ -259,12 +259,6 @@ const char kApplicationName[] = "chromoting";
 // from stdin.
 constexpr base::FilePath::CharType kStdinConfigPath[] = FILE_PATH_LITERAL("-");
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// The command line switch used to pass name of the pipe to capture audio on
-// linux.
-const char kAudioPipeSwitchName[] = "audio-pipe-name";
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_POSIX)
 // The command line switch used to pass name of the unix domain socket used to
 // listen for security key requests.
@@ -1234,14 +1228,13 @@ void HostProcess::StartOnUiThread() {
       base::BindRepeating(&HostProcess::OnPolicyError, base::Unretained(this)));
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // If an audio pipe is specific on the command-line then initialize
-  // PulseAudioCapturer to capture from it.
-  base::FilePath audio_pipe_name =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-          kAudioPipeSwitchName);
-  if (!audio_pipe_name.empty()) {
+  // For multi-process hosts, `PulseAudioCapturer` will be initialized by the
+  // desktop process.
+  if (!multi_process_) {
+    // Wayland sessions do not set `CHROME_REMOTE_DESKTOP_AUDIO_PIPE`, in which
+    // case this will fail and `PipewireAudioCapturer` will be used instead.
     remoting::PulseAudioCapturer::InitializePipeReader(
-        context_->file_task_runner(), audio_pipe_name);
+        context_->file_task_runner());
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -1307,7 +1300,7 @@ void HostProcess::ShutdownOnUiThread() {
   // thread will remain in-use and prevent the process from exiting.
   // TODO(wez): DesktopEnvironmentFactory should own the pipe reader.
   // See crbug.com/161373 and crbug.com/104544.
-  PulseAudioCapturer::InitializePipeReader(nullptr, base::FilePath());
+  PulseAudioCapturer::InitializePipeReader(nullptr);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)

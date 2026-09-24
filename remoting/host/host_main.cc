@@ -113,11 +113,6 @@ void Usage(const base::FilePath& program_name) {
       "\n"
       "Options:\n"
 
-#if BUILDFLAG(IS_LINUX)
-      "  --audio-pipe-name=<pipe> - Sets the pipe name to capture audio on "
-      "Linux.\n"
-#endif  // BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_APPLE)
       "  --list-audio-devices     - List all audio devices and their device "
       "UID.\n"

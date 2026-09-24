@@ -5,15 +5,13 @@
 #ifndef REMOTING_HOST_LINUX_PULSE_AUDIO_CAPTURER_H_
 #define REMOTING_HOST_LINUX_PULSE_AUDIO_CAPTURER_H_
 
+#include <memory>
+
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/audio_silence_detector.h"
 #include "remoting/host/linux/audio_pipe_reader.h"
-
-namespace base {
-class FilePath;
-}
 
 namespace remoting {
 
@@ -28,11 +26,11 @@ class PulseAudioCapturer : public AudioCapturer,
   static std::unique_ptr<AudioCapturer> Create();
 
   // Must be called to configure the capturer before the first capturer instance
-  // is created. |task_runner| is an IO thread that is passed to AudioPipeReader
-  // to read from the pipe.
-  static void InitializePipeReader(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      const base::FilePath& pipe_name);
+  // is created. `task_runner` is an IO thread that is passed to AudioPipeReader
+  // to read from the pipe specified by the `CHROME_REMOTE_DESKTOP_AUDIO_PIPE`
+  // environment variable. Returns true if the pipe reader was initialized.
+  static bool InitializePipeReader(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   explicit PulseAudioCapturer(scoped_refptr<AudioPipeReader> pipe_reader);
 

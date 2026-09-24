@@ -17,7 +17,6 @@ if sys.version_info[0] != 3 or sys.version_info[1] < 5:
 import abc
 import argparse
 import atexit
-import base64
 import contextlib
 import datetime
 import dbus
@@ -66,6 +65,12 @@ USE_XVFB_ENV_VAR = "CHROME_REMOTE_DESKTOP_USE_XVFB"
 # If this environment variable is set, the script will launch a Wayland
 # session instead of X11.
 USE_WAYLAND_ENV_VAR = "CHROME_REMOTE_DESKTOP_USE_WAYLAND"
+
+# Environment variable used to pass the audio pipe path to the host/desktop
+# process.
+# LINT.IfChange(audio_pipe_env_var)
+AUDIO_PIPE_ENV_VAR = "CHROME_REMOTE_DESKTOP_AUDIO_PIPE"
+# LINT.ThenChange(//remoting/host/linux/pulse_audio_capturer.cc:audio_pipe_env_var)
 
 # The amount of video RAM the dummy driver should claim to have, which limits
 # the maximum possible resolution.
@@ -856,8 +861,6 @@ class Desktop(abc.ABC):
 
     # Start remoting host
     args = [HOST_BINARY_PATH, "--host-config=-"]
-    if self.audio_pipe:
-      args.append("--audio-pipe-name=%s" % self.audio_pipe)
     if self.ssh_auth_sockname:
       args.append("--ssh-auth-sockname=%s" % self.ssh_auth_sockname)
 
@@ -1082,20 +1085,12 @@ class Desktop(abc.ABC):
         failure_count += inhibitor.failures
     return failure_count
 
-  def setup_audio(self, host_id, backoff_time):
+  def setup_audio(self, backoff_time):
     """Launches a CRD-specific instance of PipeWire for audio forwarding within
     the session and sets up the restart inhibitor for it, if supported on this
     system. Otherwise, falls back to writing a legacy PulseAudio
     configuration."""
-    self.audio_pipe = None
-
-    # PipeWire and PulseAudio uses UNIX sockets for communication. The length of
-    # a UNIX socket name is limited to 108 characters, so audio will not work
-    # properly if the path is too long. To workaround this problem we use only
-    # first 10 symbols (60 bits) of the base64url-encoded hash of the host id.
-    suffix = base64.urlsafe_b64encode(hashlib.sha256(
-        host_id.encode("utf-8")).digest()).decode("ascii")[0:10]
-    runtime_dirname = "crd_audio#%s" % suffix
+    runtime_dirname = "crd_audio"
     pipewire_instance = runtime_dirname + "/pipewire"
     runtime_path = os.path.join(
         xdg.BaseDirectory.get_runtime_dir(strict=False), runtime_dirname)
@@ -1116,7 +1111,7 @@ class Desktop(abc.ABC):
       self.pipewire_inhibitor.disable()
       return
 
-    self.audio_pipe = pipe_name
+    self.child_env[AUDIO_PIPE_ENV_VAR] = pipe_name
 
     # Used both with PipeWire-Pulse and PulseAudio
     self.child_env["PULSE_RUNTIME_PATH"] = runtime_path
@@ -1475,7 +1470,6 @@ class XDesktop(Desktop):
   def __init__(self, sizes, host_config):
     super(XDesktop, self).__init__(sizes, host_config)
     self.xorg_conf = None
-    self.audio_pipe = None
     self.server_supports_randr = False
     self.randr_add_sizes = False
     self.ssh_auth_sockname = None
@@ -1965,6 +1959,7 @@ def unset_crd_systemd_env_vars():
     with the multi-process host."""
 
     env_vars_to_unset = [
+        AUDIO_PIPE_ENV_VAR,
         "CHROME_REMOTE_DESKTOP_SESSION",
         "DISPLAY",
         "GDK_BACKEND",
@@ -2504,7 +2499,7 @@ def main():
           and desktop.pipewire_session_manager_proc is None
           and not desktop.pipewire_inhibitor.disabled
           and desktop.pipewire_inhibitor.failures < MAX_LAUNCH_FAILURES):
-        desktop.setup_audio(host.host_id, backoff_time)
+        desktop.setup_audio(backoff_time)
       if (desktop.server_proc is None and desktop.session_proc is None):
         desktop.launch_session(options.args, backoff_time)
       if desktop.server_proc is not None and desktop.host_proc is None:
