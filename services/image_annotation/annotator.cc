@@ -11,13 +11,13 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
@@ -44,14 +44,12 @@ namespace {
 constexpr size_t kImageAnnotationMaxResponseSize = 1024 * 1024;  // 1MB.
 constexpr size_t kServerLangsMaxResponseSize = 1024;             // 1KB.
 
-const std::map<std::string, mojom::AnnotationType>& annotation_types() {
-  static const base::NoDestructor<std::map<std::string, mojom::AnnotationType>>
-      kAnnotationTypes({{"OCR", mojom::AnnotationType::kOcr},
-                        {"CAPTION", mojom::AnnotationType::kCaption},
-                        {"LABEL", mojom::AnnotationType::kLabel}});
-
-  return *kAnnotationTypes;
-}
+constexpr auto kAnnotationTypes =
+    base::MakeFixedFlatMap<std::string_view, mojom::AnnotationType>({
+        {"OCR", mojom::AnnotationType::kOcr},
+        {"CAPTION", mojom::AnnotationType::kCaption},
+        {"LABEL", mojom::AnnotationType::kLabel},
+    });
 
 net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
   return net::DefineNetworkTrafficAnnotation("image_annotation", R"(
@@ -97,17 +95,17 @@ std::string MakeImageId(const std::string& source_id,
   return source_id + (desc_lang_tag.empty() ? "" : " " + desc_lang_tag);
 }
 
-std::string NormalizeLanguageCode(std::string language) {
+std::string NormalizeLanguageCode(std::string_view language) {
   // Remove anything after a comma, in case we got more than one language
   // like "de,de-DE".
   language = language.substr(0, language.find(','));
 
   // Split based on underscore or dash so that we catch both
   // "zh_CN" and "zh-CN".
-  const std::vector<std::string> tokens = base::SplitString(
+  const std::vector<std::string_view> tokens = base::SplitStringPiece(
       language, "-_", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  if (tokens.size() == 0) {
+  if (tokens.empty()) {
     return "";
   }
 
@@ -279,8 +277,8 @@ std::tuple<bool, std::vector<mojom::AnnotationPtr>> ParseJsonDescAnnotations(
       continue;
     }
 
-    const auto type_lookup = annotation_types().find(*type);
-    if (type_lookup == annotation_types().end()) {
+    const auto type_lookup = kAnnotationTypes.find(*type);
+    if (type_lookup == kAnnotationTypes.end()) {
       continue;
     }
 
@@ -516,8 +514,7 @@ mojom::AnnotationPtr CreateAnnotationFromMantaResponse(
 
   std::optional<mojom::AnnotationType> annotation_type;
 
-  if (auto itr = annotation_types().find(*type);
-      itr != annotation_types().end()) {
+  if (auto itr = kAnnotationTypes.find(*type); itr != kAnnotationTypes.end()) {
     annotation_type = itr->second;
   }
 
@@ -911,8 +908,8 @@ void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
           best_ocr = result_dict;
         }
       } else {
-        if (auto itr = annotation_types().find(*type);
-            itr != annotation_types().end()) {
+        if (auto itr = kAnnotationTypes.find(*type);
+            itr != kAnnotationTypes.end()) {
           ReportDescAnnotation(itr->second, *score, false);
         }
         if (!best_score.has_value() || *score > *best_score) {
