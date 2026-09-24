@@ -396,4 +396,47 @@ TEST_F(ManifestSolutionFactoryTest, PropagatesModelCapabilities) {
   EXPECT_EQ(audio_reason, mojom::ModelUnavailableReason::kNotSupported);
 }
 
+TEST_F(ManifestSolutionFactoryTest, IdleTimeoutOverride) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kOnDeviceModelIdleTimeout, {{"on_device_model_idle_timeout", "10s"}});
+
+  auto safe_config = []() {
+    proto::SolutionConfig solution_config;
+    *solution_config.mutable_feature() = SimpleComposeConfig();
+    *solution_config.mutable_safety() = ComposeSafetyConfig();
+    return solution_config;
+  }();
+
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("model_A")
+      .AddSafetyModel("safety")
+      .AddSafeSolution("test", "model_A", "safety", safe_config)
+      .Finish();
+  fake_.Startup();
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  auto session = session_future.Take();
+  ASSERT_TRUE(session);
+
+  ResponseHolder response;
+  session->ExecuteModel(UserInputRequest("hello"),
+                        response.GetStreamingCallback());
+  ASSERT_TRUE(response.GetFinalStatus());
+  EXPECT_TRUE(fake_.launcher().is_service_running());
+
+  // Destroy the active session so the model remotes become idle.
+  session.reset();
+  task_environment_.FastForwardBy(base::Seconds(9));
+  EXPECT_TRUE(fake_.launcher().is_service_running());
+
+  // Once the 10s idle timeout elapses, the base and safety models unload and
+  // the service shuts down (instead of waiting for the default 1m timeout).
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_FALSE(fake_.launcher().is_service_running());
+}
+
 }  // namespace optimization_guide

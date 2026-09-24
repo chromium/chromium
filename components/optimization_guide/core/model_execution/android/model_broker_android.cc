@@ -646,7 +646,7 @@ ModelBrokerAndroid::GetOrCreateModelRemote(AICoreFeature feature) {
         base::BindOnce(&ModelBrokerAndroid::OnModelDisconnected,
                        weak_ptr_factory_.GetWeakPtr(), feature));
     service.remote.set_idle_handler(
-        features::GetOnDeviceModelIdleTimeout(),
+        base::Minutes(1),
         base::BindRepeating(&ModelBrokerAndroid::OnModelDisconnected,
                             weak_ptr_factory_.GetWeakPtr(), feature, nullptr));
     model_services_.emplace(feature, std::move(service));

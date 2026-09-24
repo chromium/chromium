@@ -32,6 +32,18 @@
 
 namespace optimization_guide {
 
+// Feature and parameter controlling the idle timeout before loaded on-device
+// models (base models, adaptations, and safety models) disconnect and unload.
+// NOTE: This feature and parameter are actively used by automated benchmarks
+// and tests (e.g. Web-Workloads blink-ai, see crbug.com/562517320) via
+// `--enable-features=OnDeviceModelIdleTimeout:on_device_model_idle_timeout/10s`
+// to lower model offload latency between test runs. Do not remove as a dead
+// feature.
+BASE_FEATURE(kOnDeviceModelIdleTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta> kOnDeviceModelIdleTimeoutParam{
+    &kOnDeviceModelIdleTimeout, "on_device_model_idle_timeout",
+    base::Minutes(1)};
+
 namespace {
 
 bool CheckCachesExistOnWorkerThread(
@@ -786,8 +798,7 @@ ManifestSolutionFactory::GetOrLoadTextSafetyModel(const std::string& model_id) {
     // Disconnects should only happen on a service crash, and we track those
     // elsewhere.
     state.remote_.reset_on_disconnect();
-    state.remote_.reset_on_idle_timeout(
-        features::GetOnDeviceModelIdleTimeout());
+    state.remote_.reset_on_idle_timeout(kOnDeviceModelIdleTimeoutParam.Get());
   }
   return state.remote_;
 }
@@ -853,7 +864,7 @@ void ManifestSolutionFactory::LoadBaseModel(const std::string& model_id,
   state.remote_.set_disconnect_with_reason_handler(
       base::BindOnce(&ManifestSolutionFactory::OnBaseModelDisconnect,
                      base::Unretained(this), model_id));
-  state.remote_.reset_on_idle_timeout(features::GetOnDeviceModelIdleTimeout());
+  state.remote_.reset_on_idle_timeout(kOnDeviceModelIdleTimeoutParam.Get());
 }
 
 void ManifestSolutionFactory::LoadAdaptation(const std::string& model_id,
@@ -902,7 +913,7 @@ void ManifestSolutionFactory::LoadAdaptation(const std::string& model_id,
           weak_ptr_factory_.GetWeakPtr(), model_id,
           state.remote_.BindNewPipeAndPassReceiver()));
   state.remote_.reset_on_disconnect();
-  state.remote_.reset_on_idle_timeout(features::GetOnDeviceModelIdleTimeout());
+  state.remote_.reset_on_idle_timeout(kOnDeviceModelIdleTimeoutParam.Get());
 }
 
 void ManifestSolutionFactory::OnBaseModelDisconnect(

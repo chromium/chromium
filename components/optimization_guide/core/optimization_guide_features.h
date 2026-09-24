@@ -304,11 +304,6 @@ ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority() {
   return true;
 }
 
-// Returns the idle timeout before the on device model service shuts down.
-inline constexpr base::TimeDelta GetOnDeviceModelIdleTimeout() {
-  return base::Minutes(1);
-}
-
 // Returns the delay before starting the on device model inference when
 // running validation.
 inline constexpr base::TimeDelta

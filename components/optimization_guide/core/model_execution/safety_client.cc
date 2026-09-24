@@ -6,9 +6,9 @@
 
 #include "base/metrics/histogram_macros_local.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
 
@@ -116,7 +116,7 @@ SafetyClient::Remote& SafetyClient::GetTextSafetyModelRemote() {
           weak_ptr_factory_.GetWeakPtr(),
           remote_.BindNewPipeAndPassReceiver()));
   remote_.reset_on_disconnect();  // Maybe track disconnects?
-  remote_.reset_on_idle_timeout(features::GetOnDeviceModelIdleTimeout());
+  remote_.reset_on_idle_timeout(base::Minutes(1));
   return remote_;
 }
 
