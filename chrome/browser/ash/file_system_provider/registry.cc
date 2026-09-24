@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/file_system_provider/registry.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
-#include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
@@ -123,11 +123,10 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
   const base::DictValue* file_systems_per_extension =
       file_systems.FindDict(provider_id.ToString());
   if (!file_systems_per_extension) {
-    return base::WrapUnique(new RestoredFileSystems);  // Nothing to restore.
+    return std::make_unique<RestoredFileSystems>();  // Nothing to restore.
   }
 
-  std::unique_ptr<RestoredFileSystems> restored_file_systems(
-      new RestoredFileSystems);
+  auto restored_file_systems = std::make_unique<RestoredFileSystems>();
 
   for (const auto file_system_it : *file_systems_per_extension) {
     if (!file_system_it.second.is_dict()) {

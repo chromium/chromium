@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -124,8 +123,8 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Write) {
   std::vector<std::string> inner_write_log;
   std::vector<int> inner_flush_log;
   BufferingFileStreamWriter writer(
-      base::WrapUnique(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, nullptr, net::OK)),
+      std::make_unique<FakeFileStreamWriter>(&inner_write_log, &inner_flush_log,
+                                             nullptr, net::OK),
       kIntermediateBufferLength);
 
   ASSERT_LT(kIntermediateBufferLength, 2 * short_text_buffer_->size());
@@ -199,8 +198,8 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Write_NegativeLength) {
   std::vector<std::string> inner_write_log;
   std::vector<int> inner_flush_log;
   BufferingFileStreamWriter writer(
-      std::unique_ptr<storage::FileStreamWriter>(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, nullptr, net::ERR_FAILED)),
+      std::make_unique<FakeFileStreamWriter>(&inner_write_log, &inner_flush_log,
+                                             nullptr, net::ERR_FAILED),
       kIntermediateBufferLength);
 
   {
@@ -220,8 +219,8 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Write_WithError) {
   std::vector<std::string> inner_write_log;
   std::vector<int> inner_flush_log;
   BufferingFileStreamWriter writer(
-      std::unique_ptr<storage::FileStreamWriter>(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, nullptr, net::ERR_FAILED)),
+      std::make_unique<FakeFileStreamWriter>(&inner_write_log, &inner_flush_log,
+                                             nullptr, net::ERR_FAILED),
       kIntermediateBufferLength);
 
   ASSERT_LT(kIntermediateBufferLength, 2 * short_text_buffer_->size());
@@ -270,8 +269,8 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Write_Directly) {
   std::vector<std::string> inner_write_log;
   std::vector<int> inner_flush_log;
   BufferingFileStreamWriter writer(
-      std::unique_ptr<storage::FileStreamWriter>(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, nullptr, net::OK)),
+      std::make_unique<FakeFileStreamWriter>(&inner_write_log, &inner_flush_log,
+                                             nullptr, net::OK),
       kIntermediateBufferLength);
 
   ASSERT_GT(kIntermediateBufferLength, short_text_buffer_->size());
@@ -338,8 +337,8 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Cancel) {
   int inner_cancel_counter = 0;
 
   BufferingFileStreamWriter writer(
-      std::unique_ptr<storage::FileStreamWriter>(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, &inner_cancel_counter, net::OK)),
+      std::make_unique<FakeFileStreamWriter>(&inner_write_log, &inner_flush_log,
+                                             &inner_cancel_counter, net::OK),
       kIntermediateBufferLength);
 
   // Write directly, so there is something to actually cancel. Note, that
@@ -366,8 +365,8 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Flush) {
   std::vector<std::string> inner_write_log;
   std::vector<int> inner_flush_log;
   BufferingFileStreamWriter writer(
-      std::unique_ptr<storage::FileStreamWriter>(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, nullptr, net::OK)),
+      std::make_unique<FakeFileStreamWriter>(&inner_write_log, &inner_flush_log,
+                                             nullptr, net::OK),
       kIntermediateBufferLength);
 
   // Write less bytes than size of the intermediate buffer.
@@ -405,8 +404,8 @@ TEST_F(FileSystemProviderBufferingFileStreamWriterTest, Flush_AfterWriteError) {
   std::vector<std::string> inner_write_log;
   std::vector<int> inner_flush_log;
   BufferingFileStreamWriter writer(
-      std::unique_ptr<storage::FileStreamWriter>(new FakeFileStreamWriter(
-          &inner_write_log, &inner_flush_log, nullptr, net::ERR_FAILED)),
+      std::make_unique<FakeFileStreamWriter>(&inner_write_log, &inner_flush_log,
+                                             nullptr, net::ERR_FAILED),
       kIntermediateBufferLength);
 
   // Write less bytes than size of the intermediate buffer. This should succeed

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/policy/remote_commands/screenshot_delegate.h"
 
+#include <memory>
 #include <string>
 
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -83,12 +83,12 @@ std::unique_ptr<UploadJob> ScreenshotDelegate::CreateUploadJob(
           policy_exception_justification: "Requires explicit admin action."
         }
       )");
-  return std::unique_ptr<UploadJob>(new UploadJobImpl(
+  return std::make_unique<UploadJobImpl>(
       upload_url, robot_account_id,
       device_oauth2_token_service->GetAccessTokenManager(),
       shared_url_loader_factory_, delegate,
-      base::WrapUnique(new UploadJobImpl::RandomMimeBoundaryGenerator),
-      traffic_annotation, base::SingleThreadTaskRunner::GetCurrentDefault()));
+      std::make_unique<UploadJobImpl::RandomMimeBoundaryGenerator>(),
+      traffic_annotation, base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void ScreenshotDelegate::OnScreenshotTaken(

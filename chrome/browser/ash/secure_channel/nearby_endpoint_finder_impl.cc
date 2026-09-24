@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder_impl.h"
 
+#include <memory>
+
 #include "base/base64.h"
-#include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
@@ -69,7 +70,7 @@ std::unique_ptr<NearbyEndpointFinder> NearbyEndpointFinderImpl::Factory::Create(
   if (g_test_factory)
     return g_test_factory->CreateInstance(nearby_connections);
 
-  return base::WrapUnique(new NearbyEndpointFinderImpl(nearby_connections));
+  return std::make_unique<NearbyEndpointFinderImpl>(nearby_connections);
 }
 
 // static
