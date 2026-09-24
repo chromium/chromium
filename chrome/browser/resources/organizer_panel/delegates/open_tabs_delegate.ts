@@ -8,13 +8,14 @@ import '/tab_group_shared/tab_group_dot.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
-import type {Token} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
-import type {OrganizerListSectionItem, OrganizerListSectionItemDescriptionPart, OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
+import type {OrganizerListSectionItem, OrganizerListSectionItemIcon} from '../organizer_list_section_item.js';
 import type {BrowserProxy, ProfileData, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory, SplitTabLayout} from '../tab_search.mojom-webui.js';
 import {TabAlertState} from '../tabs.mojom-webui.js';
+
+import {compareTimeDescending, getTabDescriptionParts, tokenToString} from './tab_delegate_utils.js';
 
 // Trailing icon shown for tabs that are playing or muting audio.
 const AUDIO_ICON = 'organizer-panel:volume-up';
@@ -40,28 +41,13 @@ export function isSplitTab(item: OpenTabsItem): item is SplitTabItem {
   return item.type === OpenTabsItemType.SPLIT_TAB;
 }
 
-function tokenToString(token: Token): string {
-  return `${token.high.toString()}#${token.low.toString()}`;
-}
-
-function getHostnameOrUrl(url: string): string {
-  try {
-    return new URL(url).hostname;
-  } catch {
-    return url;
-  }
-}
-
-function getLastActiveTimeTicks(tab: Tab): bigint {
-  return tab.lastActiveTimeTicks?.internalValue ?? 0n;
-}
-
 function getMostRecentTab(item: OpenTabsItem): Tab {
   if (!isSplitTab(item)) {
     return item.tab;
   }
-  return getLastActiveTimeTicks(item.tabs[1]) >
-          getLastActiveTimeTicks(item.tabs[0]) ?
+  return compareTimeDescending(
+             item.tabs[0].lastActiveTimeTicks,
+             item.tabs[1].lastActiveTimeTicks) > 0 ?
       item.tabs[1] :
       item.tabs[0];
 }
@@ -249,9 +235,9 @@ export class OpenTabsDelegate implements
       if (audioA !== audioB) {
         return audioA ? -1 : 1;
       }
-      const timeA = getLastActiveTimeTicks(getMostRecentTab(a));
-      const timeB = getLastActiveTimeTicks(getMostRecentTab(b));
-      return timeB > timeA ? 1 : (timeB < timeA ? -1 : 0);
+      return compareTimeDescending(
+          getMostRecentTab(a).lastActiveTimeTicks,
+          getMostRecentTab(b).lastActiveTimeTicks);
     });
 
     return items;
@@ -277,15 +263,8 @@ export class OpenTabsDelegate implements
 
     const title = tabs.map(tab => tab.title);
 
-    const description: OrganizerListSectionItemDescriptionPart[] =
-        tabs.map(tab => ({
-                   text: getHostnameOrUrl(tab.url),
-                   elideFromStart: true,
-                 }));
-    const elapsedText = getMostRecentTab(item).lastActiveElapsedText;
-    if (elapsedText) {
-      description.push({text: elapsedText});
-    }
+    const description = getTabDescriptionParts(
+        tabs.map(tab => tab.url), getMostRecentTab(item).lastActiveElapsedText);
 
     const tabGroup = this.getTabGroupFromItem_(item);
     if (tabGroup) {

@@ -4,12 +4,13 @@
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem, OrganizerListSectionItemDescriptionPart} from '../organizer_list_section_item.js';
 import type {BrowserProxy, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, TabsRemovedInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
+
+import {compareTimeDescending, getTabDescriptionParts, tokenToString} from './tab_delegate_utils.js';
 
 // Union type to represent all possible recently closed items (tabs, tab groups,
 // split views).
@@ -17,10 +18,6 @@ export type RecentlyClosedItem = RecentlyClosedTab|RecentlyClosedTabGroup;
 
 function isTabGroup(item: RecentlyClosedItem): item is RecentlyClosedTabGroup {
   return 'sessionId' in item;
-}
-
-function tokenEquals(a: Token, b: Token): boolean {
-  return a.high === b.high && a.low === b.low;
 }
 
 export class RecentTabsDelegate implements
@@ -98,11 +95,10 @@ export class RecentTabsDelegate implements
   }
 
   private extractAndSortItems_(): RecentlyClosedItem[] {
-    const groupIds = this.tabGroups_.map(group => group.id);
-    const filteredTabs = this.tabs_.filter(tab => {
-      return !tab.groupId ||
-          !groupIds.some(groupId => tokenEquals(groupId, tab.groupId!));
-    });
+    const groupIds =
+        new Set(this.tabGroups_.map(group => tokenToString(group.id)));
+    const filteredTabs = this.tabs_.filter(
+        tab => !tab.groupId || !groupIds.has(tokenToString(tab.groupId)));
 
     const allItems: RecentlyClosedItem[] =
         [...filteredTabs, ...this.tabGroups_];
@@ -110,11 +106,8 @@ export class RecentTabsDelegate implements
   }
 
   private sortItems_(items: RecentlyClosedItem[]): RecentlyClosedItem[] {
-    items.sort((a, b) => {
-      const timeA = a.lastActiveTime?.internalValue ?? 0n;
-      const timeB = b.lastActiveTime?.internalValue ?? 0n;
-      return timeB > timeA ? 1 : (timeB < timeA ? -1 : 0);
-    });
+    items.sort(
+        (a, b) => compareTimeDescending(a.lastActiveTime, b.lastActiveTime));
 
     return items;
   }
@@ -127,29 +120,9 @@ export class RecentTabsDelegate implements
 
   private tabToSectionItem_(tab: RecentlyClosedTab):
       OrganizerListSectionItem<RecentlyClosedItem> {
-    const description: OrganizerListSectionItemDescriptionPart[] = [];
-    try {
-      const url = new URL(tab.url);
-      description.push({
-        text: url.hostname,
-        elideFromStart: true,
-      });
-    } catch {
-      description.push({
-        text: tab.url,
-        elideFromStart: true,
-      });
-    }
-
-    if (tab.lastActiveElapsedText) {
-      description.push({
-        text: tab.lastActiveElapsedText,
-      });
-    }
-
     return {
       title: [tab.title],
-      description,
+      description: getTabDescriptionParts([tab.url], tab.lastActiveElapsedText),
       prefixIcon: {
         url: tab.url,
       },
