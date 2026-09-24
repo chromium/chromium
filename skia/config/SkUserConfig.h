@@ -147,6 +147,8 @@ SK_API void SkLog_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_GRAPHITE_RRECT_BLUR
 
+#define SK_LEGACY_GRAPHITE_READ_PIXELS_BOTTOM_LEFT_BEHAVIOR
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,

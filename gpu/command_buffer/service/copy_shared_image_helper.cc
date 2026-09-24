@@ -656,7 +656,7 @@ bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
   CHECK(graphite_shared_context);
   ReadPixelsContext context;
 
-#if !defined(SK_GRAPHITE_READ_PIXELS_SUPPORTS_BOTTOM_LEFT)
+#if defined(SK_LEGACY_GRAPHITE_READ_PIXELS_BOTTOM_LEFT_BEHAVIOR)
   // Make the `src_rect` relative to the bottom left origin if needed. This
   // works around lack of support for bottom-left origin data during readback in
   // Graphite. Graphite correctly handles bottom-left origins when rendering, so
@@ -691,7 +691,7 @@ bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
     return false;
   }
 
-#if !defined(SK_GRAPHITE_READ_PIXELS_SUPPORTS_BOTTOM_LEFT)
+#if defined(SK_LEGACY_GRAPHITE_READ_PIXELS_BOTTOM_LEFT_BEHAVIOR)
   // Use CopyPlane to flip as Graphite doesn't support bottom left origin
   // images. Using a negative height causes CopyPlane to flip while copying.
   // TODO(crbug.com/40269891): Remove this if Graphite performs the flip
