@@ -483,7 +483,7 @@ public class SettingsPageTest {
         onViewWaiting(withId(R.id.search_query)).check(matches(isFocused()));
 
         // Tap on the back button in the search box to exit search state.
-        onViewWaiting(withId(R.id.back_arrow_icon)).perform(click());
+        clickSearchBackArrow();
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
 
         // Tap on search box a second time and verify search query is focused.
@@ -638,7 +638,7 @@ public class SettingsPageTest {
         ensureTwoColumnMode();
 
         // Tap on back arrow in search query box to exit search.
-        onViewWaiting(withId(R.id.back_arrow_icon)).perform(click());
+        clickSearchBackArrow();
 
         // Verify that in two-column mode, the search box is visible and the detail pane is
         // not blank (shows the initial detail fragment, e.g. search engine settings in header
@@ -681,7 +681,7 @@ public class SettingsPageTest {
                 .check(matches(isDisplayed()));
 
         // Tap on back arrow in search query box to exit search.
-        onViewWaiting(withId(R.id.back_arrow_icon)).perform(click());
+        clickSearchBackArrow();
 
         // Verify that the search box is visible and Google Services detail pane is displayed.
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
@@ -1007,7 +1007,7 @@ public class SettingsPageTest {
                 queryBounds.right);
 
         // Tap on back arrow to exit search state.
-        onViewWaiting(withId(R.id.back_arrow_icon)).perform(click());
+        clickSearchBackArrow();
         onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
 
         // Verify search_box still aligns with preference items after exiting search.
@@ -1195,6 +1195,25 @@ public class SettingsPageTest {
                     var hostFragment = SettingsHostFragment.get(mActivityTestRule.getActivity());
                     assertNotNull(message, hostFragment);
                     return hostFragment;
+                });
+    }
+
+    /**
+     * Clicks the search back arrow to exit search state. Uses {@link View#performClick()} on the UI
+     * thread after waiting for the view to be displayed because {@code R.id.back_arrow_icon} has a
+     * {@code TooltipCompat} long-click listener: if the main thread stalls for >400ms between
+     * {@code ACTION_DOWN} and {@code ACTION_UP} during a synthetic Espresso tap, the tooltip
+     * long-press consumes the gesture and {@link View#onTouchEvent} skips {@code performClick()}.
+     * https://crbug.com/562493964
+     */
+    private void clickSearchBackArrow() {
+        onViewWaiting(withId(R.id.back_arrow_icon)).check(matches(isDisplayed()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View backArrow =
+                            mActivityTestRule.getActivity().findViewById(R.id.back_arrow_icon);
+                    assertNotNull(backArrow);
+                    assertTrue(backArrow.performClick());
                 });
     }
 
