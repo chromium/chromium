@@ -2168,7 +2168,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
 
       // Also check if it fits the containing block after applying scroll offset
       // (i.e. the scroll-adjusted inset-modified containing block).
-      if (try_fit_available_space) {
+      if (try_fit_available_space && !is_inside_fragmentation_context) {
         non_overflowing_scroll_ranges.push_back(non_overflowing_range);
       }
 
@@ -2233,9 +2233,13 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
       iter.MoveToChosenTryFallbackIndex(
           non_overflowing_candidates.front().try_fallback_index);
       // If we have a successful non-overflowing candidate, we only want to
-      // invalidate when this candidate becomes invalid.
-      non_overflowing_scroll_ranges = {
-          non_overflowing_candidates.front().non_overflowing_range};
+      // invalidate when this candidate becomes invalid. Note that scrolling
+      // cannot affect anchor positioning for elements inside a fragmentation
+      // context, since scrollable containers are monolithic.
+      if (!is_inside_fragmentation_context) {
+        non_overflowing_scroll_ranges = {
+            non_overflowing_candidates.front().non_overflowing_range};
+      }
     }
     // Once the position-try-fallbacks placement has been decided, calculate the
     // offset again, using the non-base style.
@@ -2254,6 +2258,11 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   CHECK(offset_info);
 
   if (try_fit_available_space) {
+    // We don't collect scroll ranges inside a fragmentation context, since
+    // scrolling cannot affect fallback positioning, because a scrollable
+    // container is always monolithic.
+    DCHECK(non_overflowing_scroll_ranges.empty() ||
+           !is_inside_fragmentation_context);
     offset_info->non_overflowing_scroll_ranges =
         std::move(non_overflowing_scroll_ranges);
   } else {

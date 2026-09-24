@@ -4452,13 +4452,14 @@ LayoutBox::NonOverflowingScrollRanges() const {
   if (layout_results.empty()) {
     return nullptr;
   }
-  // We only need to check the first fragment, because when the box is
-  // fragmented, position fallback results are duplicated on all fragments.
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  for (wtf_size_t i = 1; i < layout_results.size(); ++i) {
-    DCHECK(base::ValuesEquivalent(
-        layout_results[i]->NonOverflowingScrollRanges(),
-        layout_results[i - 1]->NonOverflowingScrollRanges()));
+  // When the box is fragmented, there should be no position fallback results.
+  if (layout_results.size() > 1u) {
+    for (const auto& layout_result : layout_results) {
+      if (auto* ranges = layout_result->NonOverflowingScrollRanges()) {
+        DCHECK(ranges->empty());
+      }
+    }
   }
 #endif
   return layout_results.front()->NonOverflowingScrollRanges();
