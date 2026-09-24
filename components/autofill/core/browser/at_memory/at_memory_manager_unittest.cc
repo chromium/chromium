@@ -2794,6 +2794,45 @@ TEST_F(AtMemoryManagerTestBase,
       manager().GetStateForField(field_id, form_origin()).filter.empty());
 }
 
+// Tests that when the primary main frame navigates (driver resets),
+// the persisted state for the field is cleared.
+TEST_F(AtMemoryManagerTestBase, SearchStatefulness_NavigationResetsState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySearchStatefulness};
+
+  auto [form_id, field_id] = SeeForm();
+
+  EXPECT_TRUE(
+      manager().GetStateForField(field_id, form_origin()).filter.empty());
+
+  manager().OnPopupShown(autofill_manager(), form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{}, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  MemorySearchResult entry(MemoryDataType::kNameFull, u"John Doe", u"John Doe");
+  entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+  manager().OnFilterChanged(u"john");
+  MockQueryResultsAndExpectCallback(u"john",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    {entry}, final_suggestions);
+  manager().OnSearchSubmitted(u"john");
+  ASSERT_FALSE(final_suggestions.empty());
+
+  // Hide popup without accepting. State is preserved.
+  manager().OnPopupHidden();
+  EXPECT_EQ(manager().GetStateForField(field_id, form_origin()).filter,
+            u"john");
+
+  // Simulate primary main frame navigation reset.
+  ResetAutofillDriver(autofill_driver());
+
+  // State should now be cleared.
+  EXPECT_TRUE(
+      manager().GetStateForField(field_id, form_origin()).filter.empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, AtMemoryManagerTest, testing::Bool());
 
 // Tests that empty query displays previously filled suggestions below the

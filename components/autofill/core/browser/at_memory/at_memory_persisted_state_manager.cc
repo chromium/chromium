@@ -13,6 +13,9 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/history/core/browser/history_service.h"
@@ -86,19 +89,32 @@ bool IsSpiiSuggestion(const Suggestion& suggestion) {
          std::ranges::any_of(suggestion.children, &HasSpiiPayload);
 }
 
+// Returns true if `driver` belongs to the tab's *primary* main frame, i.e. the
+// main frame of the page that is currently presented to the user.
+//
+// In MPArch terminology, a frame is the primary main frame if it is
+// - a main frame: it has no parent frame (`GetParent() == nullptr`),
+// - outermost: its frame tree is not embedded in another page by a
+//   <fencedframe> or a GuestView (`!IsEmbedded()`), and
+// - primary: the page is displayed, i.e. it is neither prerendered nor in the
+//   back/forward cache (`IsActive()`).
+bool IsPrimaryMainFrame(AutofillDriver& driver) {
+  return driver.GetParent() == nullptr && !driver.IsEmbedded() &&
+         driver.IsActive();
+}
+
 }  // namespace
 
 AtMemoryPersistedStateManager::AtMemoryPersistedStateManager(
+    AutofillClient* client,
     history::HistoryService* history_service,
-    PrefService* pref_service,
-    signin::IdentityManager* identity_manager,
-    personal_context::PersonalContextEligibilityService* eligibility_service,
     base::RepeatingClosure on_reset_callback)
     : on_reset_callback_(std::move(on_reset_callback)) {
+  CHECK(client);
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }
-  if (pref_service) {
+  if (PrefService* pref_service = client->GetPrefs()) {
     pref_registrar_.Init(pref_service);
     pref_registrar_.Add(
         personal_context::prefs::
@@ -106,12 +122,17 @@ AtMemoryPersistedStateManager::AtMemoryPersistedStateManager(
         base::BindRepeating(&AtMemoryPersistedStateManager::OnPrefChanged,
                             base::Unretained(this)));
   }
-  if (identity_manager) {
+  if (signin::IdentityManager* identity_manager =
+          client->GetIdentityManager()) {
     identity_manager_observation_.Observe(identity_manager);
   }
-  if (eligibility_service) {
+  if (personal_context::PersonalContextEligibilityService* eligibility_service =
+          client->GetPersonalContextEligibilityService()) {
     eligibility_service_observation_.Observe(eligibility_service);
   }
+  autofill_managers_observation_.Observe(
+      client, ScopedAutofillManagersObservation::InitializationPolicy::
+                  kObservePreexistingManagers);
 }
 
 AtMemoryPersistedStateManager::~AtMemoryPersistedStateManager() = default;
@@ -250,6 +271,23 @@ void AtMemoryPersistedStateManager::OnPrimaryAccountChanged(
 void AtMemoryPersistedStateManager::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   identity_manager_observation_.Reset();
+}
+
+void AtMemoryPersistedStateManager::OnAutofillManagerStateChanged(
+    AutofillManager& manager,
+    AutofillManager::LifecycleState old_state,
+    AutofillManager::LifecycleState new_state) {
+  switch (new_state) {
+    case AutofillManager::LifecycleState::kInactive:
+    case AutofillManager::LifecycleState::kActive:
+      return;
+    case AutofillManager::LifecycleState::kPendingReset:
+    case AutofillManager::LifecycleState::kPendingDeletion:
+      break;
+  }
+  if (IsPrimaryMainFrame(manager.driver())) {
+    Reset();
+  }
 }
 
 void AtMemoryPersistedStateManager::Reset() {

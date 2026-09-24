@@ -17,6 +17,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/at_memory/at_memory_search_state.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -25,13 +27,13 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "url/origin.h"
 
-class PrefService;
-
 namespace history {
 class HistoryService;
 }
 
 namespace autofill {
+
+class AutofillClient;
 
 // Manages in-memory persisted state for AtMemory autofill:
 // 1. `search_state_`: Persisted search state (filter, suggestions, search
@@ -51,7 +53,8 @@ namespace autofill {
 class AtMemoryPersistedStateManager
     : public history::HistoryServiceObserver,
       public personal_context::PersonalContextEligibilityService::Observer,
-      public signin::IdentityManager::Observer {
+      public signin::IdentityManager::Observer,
+      public AutofillManager::Observer {
  public:
   struct ExpiringSuggestion {
     Suggestion suggestion;
@@ -62,12 +65,14 @@ class AtMemoryPersistedStateManager
   static constexpr base::TimeDelta kDefaultTimeToLive = base::Minutes(30);
   static constexpr base::TimeDelta kSpiiTimeToLive = base::Minutes(1);
 
-  AtMemoryPersistedStateManager(
-      history::HistoryService* history_service,
-      PrefService* pref_service,
-      signin::IdentityManager* identity_manager,
-      personal_context::PersonalContextEligibilityService* eligibility_service,
-      base::RepeatingClosure on_reset_callback);
+  // `client` must be non-null and outlive `this`. The pref service, identity
+  // manager and eligibility service are obtained from `client`.
+  // `history_service` may be null if the profile has no history service (e.g.
+  // in tests or for profiles without history). In that case AtMemory state is
+  // simply not cleared on history deletions.
+  AtMemoryPersistedStateManager(AutofillClient* client,
+                                history::HistoryService* history_service,
+                                base::RepeatingClosure on_reset_callback);
   ~AtMemoryPersistedStateManager() override;
 
   AtMemoryPersistedStateManager(const AtMemoryPersistedStateManager&) = delete;
@@ -112,6 +117,15 @@ class AtMemoryPersistedStateManager
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
+  // AutofillManager::Observer:
+  // Clears all state when the tab's primary main frame navigates
+  // cross-document, i.e. when its AutofillManager transitions to
+  // `kPendingReset` or `kPendingDeletion`.
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillManager::LifecycleState old_state,
+      AutofillManager::LifecycleState new_state) override;
+
  private:
   // Resets the persisted state, clears `previously_filled_suggestions_`, and
   // executes `on_reset_callback_`.
@@ -150,6 +164,7 @@ class AtMemoryPersistedStateManager
       personal_context::PersonalContextEligibilityService,
       personal_context::PersonalContextEligibilityService::Observer>
       eligibility_service_observation_{this};
+  ScopedAutofillManagersObservation autofill_managers_observation_{this};
   // Callback invoked whenever persisted state is reset (e.g. due to TTL expiry,
   // history deletion, settings toggle being turned off, or eligibility loss).
   // Used by `AtMemoryManager` to cancel in-flight queries and dismiss any
