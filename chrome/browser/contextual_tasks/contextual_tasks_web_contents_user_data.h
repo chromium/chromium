@@ -29,6 +29,10 @@ class ContextualTasksWebContentsUserData
   base::WeakPtr<contextual_search::InputStateModel> GetOrCreateInputStateModel(
       contextual_search::ContextualSearchSessionHandle& session_handle);
 
+  static void UpdateInputStateModelIdentity(
+      content::WebContents* web_contents,
+      contextual_search::InputStateModel* input_state_model);
+
   const std::optional<base::Uuid>& pending_task_id() const {
     return pending_task_id_;
   }

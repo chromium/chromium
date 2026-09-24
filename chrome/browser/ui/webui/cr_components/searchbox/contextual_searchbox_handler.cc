@@ -662,10 +662,22 @@ void ContextualSearchboxHandler::OnTabAdded(TabListInterface& tab_list,
 void ContextualSearchboxHandler::OnActiveTabChanged(TabListInterface& tab_list,
                                                     tabs::TabInterface* tab) {
   active_tab_nav_observer_->ObserveTab(tab);
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DICE_SUPPORT)
+  composebox_drive_signin_promo_controller_.reset();
+#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DICE_SUPPORT)
+  contextual_tasks::ContextualTasksWebContentsUserData::
+      UpdateInputStateModelIdentity(GetActiveTabWebContents(web_contents_),
+                                    input_state_model_.get());
   page_->OnTabStripChanged();
 }
 
 void ContextualSearchboxHandler::OnActiveTabNavigated() {
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DICE_SUPPORT)
+  composebox_drive_signin_promo_controller_.reset();
+#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_DICE_SUPPORT)
+  contextual_tasks::ContextualTasksWebContentsUserData::
+      UpdateInputStateModelIdentity(GetActiveTabWebContents(web_contents_),
+                                    input_state_model_.get());
   page_->OnTabStripChanged();
 }
 
@@ -787,6 +799,9 @@ void ContextualSearchboxHandler::OnAimEligibilityChanged() {
     InitializeInputStateModel();
     return;
   }
+  contextual_tasks::ContextualTasksWebContentsUserData::
+      UpdateInputStateModelIdentity(GetActiveTabWebContents(web_contents_),
+                                    input_state_model_.get());
   auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile_);
   const omnibox::SearchboxConfig* config =
@@ -836,6 +851,10 @@ omnibox::InputState ContextualSearchboxHandler::GetInputState() const {
 omnibox::InputState ContextualSearchboxHandler::GetValidInputState() {
   if (!input_state_model_) {
     InitializeInputStateModel();
+  } else {
+    contextual_tasks::ContextualTasksWebContentsUserData::
+        UpdateInputStateModelIdentity(GetActiveTabWebContents(web_contents_),
+                                      input_state_model_.get());
   }
   if (input_state_model_) {
     return input_state_model_->GetInputState();
@@ -1425,13 +1444,16 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
     // TODO(crbug.com/545561312): Handle visibility of the Drive option when
     // `browser_window_interface` is null (e.g., with `kOmniboxEverywhere`).
     if (browser_window_interface) {
-      if (!composebox_drive_signin_promo_controller_) {
-        composebox_drive_signin_promo_controller_ =
-            std::make_unique<ComposeboxDriveSignInPromoController>(
-                web_contents_);
+      if (content::WebContents* target_web_contents =
+              GetActiveTabWebContents(web_contents_)) {
+        if (!composebox_drive_signin_promo_controller_) {
+          composebox_drive_signin_promo_controller_ =
+              std::make_unique<ComposeboxDriveSignInPromoController>(
+                  target_web_contents);
+        }
+        composebox_drive_signin_promo_controller_->MaybeShowPromo(
+            browser_window_interface);
       }
-      composebox_drive_signin_promo_controller_->MaybeShowPromo(
-          browser_window_interface);
     }
     return;
   }
@@ -1566,6 +1588,10 @@ void ContextualSearchboxHandler::ActivateMetricsFunnel(
 void ContextualSearchboxHandler::GetInputState(GetInputStateCallback callback) {
   if (!input_state_model_) {
     InitializeInputStateModel();
+  } else {
+    contextual_tasks::ContextualTasksWebContentsUserData::
+        UpdateInputStateModelIdentity(GetActiveTabWebContents(web_contents_),
+                                      input_state_model_.get());
   }
   if (input_state_model_) {
     std::move(callback).Run(input_state_model_->GetInputState());
@@ -1618,19 +1644,23 @@ ContextualSearchboxHandler::GetOrCreateInputStateModel() {
 }
 
 void ContextualSearchboxHandler::InitializeInputStateModel() {
+  auto* previous_model = input_state_model_.get();
   input_state_model_ = GetOrCreateInputStateModel();
   if (!input_state_model_) {
     return;
   }
   input_state_model_->SetSmartTabSharingActive(IsSmartTabSharingActive());
+  input_state_model_->TogglePermanentlyDisabledInputType(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB,
+      !IsContextualSearchTabSharingEligible());
+
+  if (input_state_model_.get() == previous_model && input_state_subscription_) {
+    return;
+  }
 
   if (profile_) {
     input_state_model_->SetPrefService(profile_->GetPrefs());
   }
-
-  input_state_model_->TogglePermanentlyDisabledInputType(
-      omnibox::InputType::INPUT_TYPE_BROWSER_TAB,
-      !IsContextualSearchTabSharingEligible());
 
   input_state_subscription_ = input_state_model_->subscribe(
       base::BindRepeating(&ContextualSearchboxHandler::OnInputStateChanged,

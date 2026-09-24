@@ -88,6 +88,10 @@ class InputStateModel {
   // were notified.
   bool UpdateConfig(const omnibox::SearchboxConfig& config);
 
+  // Updates the identity state and re-evaluates allowed and disabled inputs.
+  void SetIdentityState(bool is_signed_in,
+                        bool browser_identity_matches_aim_identity);
+
   // Set a new tool.
   void setActiveTool(ToolMode tool);
 
@@ -205,8 +209,8 @@ class InputStateModel {
   raw_ptr<PrefService> pref_service_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   const bool is_off_the_record_;
-  const bool is_signed_in_;
-  const bool browser_identity_matches_aim_identity_;
+  bool is_signed_in_;
+  bool browser_identity_matches_aim_identity_;
   bool has_valid_config_ = false;
   GURL current_url_;
 

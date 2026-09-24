@@ -1835,4 +1835,34 @@ TEST_F(InputStateModelTest, CopyConstructorPreservesLensCrops) {
   EXPECT_EQ("data:image/png;base64,preserved", copy.lens_crop()->data_uri);
 }
 
+TEST_F(InputStateModelTest, SetIdentityStateUpdatesAllowedInputTypes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({omnibox::kComposeboxDriveContextMenuOption},
+                                {});
+
+  omnibox::SearchboxConfig config;
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_DRIVE);
+
+  auto model = std::make_unique<InputStateModel>(
+      session_handle_, config, GURL("https://www.google.com"),
+      /*is_off_the_record=*/false, /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+
+  EXPECT_THAT(
+      model->GetInputState().allowed_input_types,
+      testing::Not(testing::Contains(omnibox::InputType::INPUT_TYPE_DRIVE)));
+
+  model->SetIdentityState(/*is_signed_in=*/true,
+                          /*browser_identity_matches_aim_identity=*/true);
+  EXPECT_THAT(model->GetInputState().allowed_input_types,
+              testing::Contains(omnibox::InputType::INPUT_TYPE_DRIVE));
+
+  model->SetIdentityState(/*is_signed_in=*/false,
+                          /*browser_identity_matches_aim_identity=*/false);
+  EXPECT_THAT(
+      model->GetInputState().allowed_input_types,
+      testing::Not(testing::Contains(omnibox::InputType::INPUT_TYPE_DRIVE)));
+}
+
 }  // namespace contextual_search
