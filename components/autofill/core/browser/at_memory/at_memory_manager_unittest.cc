@@ -2833,6 +2833,51 @@ TEST_F(AtMemoryManagerTestBase, SearchStatefulness_NavigationResetsState) {
       manager().GetStateForField(field_id, form_origin()).filter.empty());
 }
 
+// Tests that when search statefulness is enabled, the active popup is hidden
+// and search state is cleared after `kDefaultTimeToLive`.
+TEST_F(AtMemoryManagerTestBase,
+       SearchStatefulness_PopupHiddenAndStateResetOnTtlExpiry) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySearchStatefulness};
+
+  auto [form_id, field_id] = SeeForm();
+  manager().GetStateForField(field_id, form_origin());
+
+  manager().OnPopupShown(autofill_manager(), form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{}, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  manager().OnFilterChanged(u"passport");
+
+  base::RepeatingCallback<void(MemorySearchResults)> saved_query_callback;
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"passport"), _, _, _))
+      .WillOnce(SaveArg<3>(&saved_query_callback));
+  EXPECT_CALL(update_callback_, Run).Times(testing::AnyNumber());
+
+  manager().OnSearchSubmitted(u"passport");
+  ASSERT_TRUE(saved_query_callback);
+
+  MemorySearchResult entry(MemoryDataType::kPassportNumber, u"12345678",
+                           u"Passport");
+  entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
+  saved_query_callback.Run(
+      MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess, {entry}));
+
+  task_environment_.FastForwardBy(
+      AtMemoryPersistedStateManager::kDefaultTimeToLive - base::Seconds(1));
+  EXPECT_EQ(manager().GetStateForField(field_id, form_origin()).filter,
+            u"passport");
+
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kStaleData,
+                              std::optional(FillingProduct::kAtMemory)));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(
+      manager().GetStateForField(field_id, form_origin()).filter.empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, AtMemoryManagerTest, testing::Bool());
 
 // Tests that empty query displays previously filled suggestions below the

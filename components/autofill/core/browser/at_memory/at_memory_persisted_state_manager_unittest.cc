@@ -488,120 +488,6 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
 }
 
-// Tests that sensitive personal information (SPII) previously filled
-// suggestions expire and are auto-destructed after the SPII TTL.
-TEST_F(AtMemoryPersistedStateManagerTest, SpiiSuggestionsExpireAfterSpiiTtl) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAtMemoryPreviouslyFilled};
-
-  Suggestion s(u"Passport", SuggestionType::kAtMemorySearchResult);
-  s.payload =
-      Suggestion::AtMemoryPayload(u"12345678", MemoryDataType::kPassportNumber);
-
-  state_manager().OnSuggestionAccepted(s);
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
-
-  // Fast forward to 1 second before the SPII TTL.
-  task_environment().FastForwardBy(
-      AtMemoryPersistedStateManager::kSpiiTimeToLive - base::Seconds(1));
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
-
-  // Fast forward by 1 more second (SPII TTL expires).
-  task_environment().FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
-}
-
-// Tests that suggestions with SPII child metadata expire after the SPII TTL.
-TEST_F(AtMemoryPersistedStateManagerTest,
-       SpiiSuggestionWithChildSpiiExpiresAfterSpiiTtl) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAtMemoryPreviouslyFilled};
-
-  Suggestion primary_suggestion(u"Primary",
-                                SuggestionType::kAtMemorySearchResult);
-  Suggestion child_suggestion(u"12345678",
-                              SuggestionType::kAtMemorySearchResult);
-  child_suggestion.payload =
-      Suggestion::AtMemoryPayload(u"12345678", MemoryDataType::kPassportNumber);
-  primary_suggestion.children = {child_suggestion};
-
-  state_manager().OnSuggestionAccepted(primary_suggestion);
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
-
-  // Fast forward to 1 second before the SPII TTL.
-  task_environment().FastForwardBy(
-      AtMemoryPersistedStateManager::kSpiiTimeToLive - base::Seconds(1));
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
-
-  // Fast forward by 1 more second (SPII TTL expires).
-  task_environment().FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
-}
-
-// Tests that non-SPII and SPII suggestions expire according to their respective
-// TTLs independently.
-TEST_F(AtMemoryPersistedStateManagerTest,
-       MixedSuggestionsExpireAccordingToRespectiveTtl) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAtMemoryPreviouslyFilled};
-
-  Suggestion non_spii(u"Non-SPII", SuggestionType::kAtMemorySearchResult);
-  non_spii.payload =
-      Suggestion::AtMemoryPayload(u"123 Main St", MemoryDataType::kAddressFull);
-  Suggestion spii(u"SPII", SuggestionType::kAtMemorySearchResult);
-  spii.payload =
-      Suggestion::AtMemoryPayload(u"12345678", MemoryDataType::kPassportNumber);
-
-  state_manager().OnSuggestionAccepted(non_spii);
-  state_manager().OnSuggestionAccepted(spii);
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
-
-  // Fast forward to SPII TTL: SPII expires, Non-SPII remains.
-  task_environment().FastForwardBy(
-      AtMemoryPersistedStateManager::kSpiiTimeToLive);
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
-            u"Non-SPII");
-
-  // Fast forward remaining time to default TTL: Non-SPII expires.
-  task_environment().FastForwardBy(
-      AtMemoryPersistedStateManager::kDefaultTimeToLive -
-      AtMemoryPersistedStateManager::kSpiiTimeToLive);
-  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
-}
-
-// Tests that when an SPII suggestion is accepted before a non-SPII suggestion,
-// both expire according to their respective TTLs.
-TEST_F(AtMemoryPersistedStateManagerTest,
-       SpiiAcceptedBeforeNonSpiiExpiresCorrectly) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAtMemoryPreviouslyFilled};
-
-  Suggestion spii(u"SPII", SuggestionType::kAtMemorySearchResult);
-  spii.payload =
-      Suggestion::AtMemoryPayload(u"12345678", MemoryDataType::kPassportNumber);
-  Suggestion non_spii(u"Non-SPII", SuggestionType::kAtMemorySearchResult);
-  non_spii.payload =
-      Suggestion::AtMemoryPayload(u"123 Main St", MemoryDataType::kAddressFull);
-
-  state_manager().OnSuggestionAccepted(spii);
-  state_manager().OnSuggestionAccepted(non_spii);
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
-
-  // Fast forward to SPII TTL: SPII expires, Non-SPII remains.
-  task_environment().FastForwardBy(
-      AtMemoryPersistedStateManager::kSpiiTimeToLive);
-  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
-  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
-            u"Non-SPII");
-
-  // Fast forward remaining time to default TTL: Non-SPII expires.
-  task_environment().FastForwardBy(
-      AtMemoryPersistedStateManager::kDefaultTimeToLive -
-      AtMemoryPersistedStateManager::kSpiiTimeToLive);
-  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
-}
-
 // Tests that re-accepting an existing suggestion refreshes its TTL.
 TEST_F(AtMemoryPersistedStateManagerTest, ReAcceptingSuggestionRefreshesTtl) {
   base::test::ScopedFeatureList feature_list{
@@ -873,19 +759,33 @@ TEST_F(AtMemoryPersistedStateManagerTest,
 }
 
 // Tests that the `on_reset_callback` passed to the constructor is called when
-// the state is reset (e.g. by history deletion, settings change, or account
-// change).
+// the state is reset (e.g. by history deletion, settings change, account
+// change, or search state TTL expiration).
 TEST_F(AtMemoryPersistedStateManagerTest, OnResetCallbackInvokedOnReset) {
   base::MockRepeatingClosure reset_callback;
   AtMemoryPersistedStateManager custom_state_manager(
       &autofill_client(), /*history_service=*/nullptr, reset_callback.Get());
 
-  EXPECT_CALL(reset_callback, Run).Times(2);
+  EXPECT_CALL(reset_callback, Run).Times(3);
   pref_service().SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       false);
   identity_test_env().MakePrimaryAccountAvailable(
       "user@example.com", signin::ConsentLevel::kSignin);
+
+  // Expiring without suggestions does not invoke `on_reset_callback`.
+  custom_state_manager.GetStateForField(field_id(), FieldOrigin());
+  custom_state_manager.OnFilterSubmitted(u"address");
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kDefaultTimeToLive);
+
+  // Expiring with non-empty suggestions invokes `on_reset_callback`.
+  custom_state_manager.GetStateForField(field_id(), FieldOrigin());
+  custom_state_manager.OnFilterSubmitted(u"address");
+  custom_state_manager.OnSuggestionsChanged(
+      {Suggestion(u"123 Main St", SuggestionType::kAddressEntry)});
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kDefaultTimeToLive);
 }
 
 // Tests around resetting the state when the tab navigates. They reuse the

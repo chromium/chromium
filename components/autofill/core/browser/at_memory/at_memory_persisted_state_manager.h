@@ -63,7 +63,6 @@ class AtMemoryPersistedStateManager
 
   static constexpr size_t kMaxPreviouslyFilledSuggestions = 20;
   static constexpr base::TimeDelta kDefaultTimeToLive = base::Minutes(30);
-  static constexpr base::TimeDelta kSpiiTimeToLive = base::Minutes(1);
 
   // `client` must be non-null and outlive `this`. The pref service, identity
   // manager and eligibility service are obtained from `client`.
@@ -131,6 +130,7 @@ class AtMemoryPersistedStateManager
   // executes `on_reset_callback_`.
   void Reset();
   void ResetSearchState();
+  void OnSearchStateTimerExpired();
   void RestartSearchStateTimer();
   void RestartPreviouslyFilledSuggestionsTimer();
 

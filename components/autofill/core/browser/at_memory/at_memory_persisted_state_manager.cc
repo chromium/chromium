@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
-#include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
@@ -70,23 +69,6 @@ const Suggestion& GetSuggestionToStore(
     return *parent;
   }
   return accepted_suggestion;
-}
-
-// Returns true if `suggestion`'s `payload` contains sensitive
-// personal information (SPII).
-bool HasSpiiPayload(const Suggestion& suggestion) {
-  if (const Suggestion::AtMemoryPayload* payload =
-          std::get_if<Suggestion::AtMemoryPayload>(&suggestion.payload)) {
-    return IsSpiiMemoryDataType(payload->memory_data_type);
-  }
-  return false;
-}
-
-// Returns true if `suggestion` or any of its children contains sensitive
-// personal information (SPII).
-bool IsSpiiSuggestion(const Suggestion& suggestion) {
-  return HasSpiiPayload(suggestion) ||
-         std::ranges::any_of(suggestion.children, &HasSpiiPayload);
 }
 
 // Returns true if `driver` belongs to the tab's *primary* main frame, i.e. the
@@ -202,10 +184,8 @@ void AtMemoryPersistedStateManager::OnSuggestionAccepted(
     const auto it =
         std::ranges::find(previously_filled_suggestions_, suggestion_to_store,
                           &ExpiringSuggestion::suggestion);
-    const base::TimeDelta ttl = IsSpiiSuggestion(suggestion_to_store)
-                                    ? kSpiiTimeToLive
-                                    : kDefaultTimeToLive;
-    const base::TimeTicks expiration_time = base::TimeTicks::Now() + ttl;
+    const base::TimeTicks expiration_time =
+        base::TimeTicks::Now() + kDefaultTimeToLive;
 
     if (it != previously_filled_suggestions_.end()) {
       it->expiration_time = expiration_time;
@@ -309,9 +289,19 @@ void AtMemoryPersistedStateManager::ResetSearchState() {
   search_state_.reset();
 }
 
+void AtMemoryPersistedStateManager::OnSearchStateTimerExpired() {
+  const bool has_suggestions =
+      search_state_ && !search_state_->suggestions.empty();
+  ResetSearchState();
+  if (has_suggestions && on_reset_callback_) {
+    on_reset_callback_.Run();
+  }
+}
+
 void AtMemoryPersistedStateManager::RestartSearchStateTimer() {
-  search_state_timer_.Start(FROM_HERE, kDefaultTimeToLive, this,
-                            &AtMemoryPersistedStateManager::ResetSearchState);
+  search_state_timer_.Start(
+      FROM_HERE, kDefaultTimeToLive, this,
+      &AtMemoryPersistedStateManager::OnSearchStateTimerExpired);
 }
 
 void AtMemoryPersistedStateManager::RestartPreviouslyFilledSuggestionsTimer() {
