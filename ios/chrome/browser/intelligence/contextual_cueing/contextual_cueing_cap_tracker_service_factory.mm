@@ -14,7 +14,8 @@ namespace {
 
 std::unique_ptr<KeyedService> BuildContextualCueingCapTrackerService(
     ProfileIOS* profile) {
-  return std::make_unique<ContextualCueingCapTrackerService>();
+  return std::make_unique<ContextualCueingCapTrackerService>(
+      profile->GetPrefs());
 }
 
 }  // namespace

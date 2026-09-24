@@ -26,7 +26,9 @@ source_set("contextual_cueing") {
     "//components/feature_engagement/public",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/prefs",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
   public_deps = [
     ":features",
@@ -73,6 +75,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",
+    "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//ios/chrome/browser/feature_engagement/model",
@@ -83,6 +86,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/page_classification",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/optimization_guide/model:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",

@@ -831,6 +831,12 @@ inline constexpr char kIOSGeminiCameraSetting[] = "ios.gemini.camera.setting";
 inline constexpr char kIOSGeminiSuggestionsSetting[] =
     "ios.gemini.suggestions.setting";
 
+// A dictionary storing per-vertical UI state (consecutive Message ignores,
+// whether a Message was accepted, and whether the vertical permanently switched
+// from Message UI to Omnibox Chip UI) for contextual cueing.
+inline constexpr char kIOSContextualCueingVerticalUiState[] =
+    "ios.contextual_cueing.vertical_ui_state";
+
 // A boolean specifying whether the Gemini Live closed captioning setting is
 // enabled.
 inline constexpr char kIOSGeminiLiveClosedCaptioningSetting[] =

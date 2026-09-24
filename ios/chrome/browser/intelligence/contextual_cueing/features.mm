@@ -154,4 +154,19 @@ BASE_FEATURE_PARAM(size_t,
                    &kGeminiContextualSuggestionsCues,
                    5);
 
+BASE_FEATURE_PARAM(size_t,
+                   kMaxConsecutiveMessageIgnores,
+                   &kGeminiContextualSuggestionsCues,
+                   3);
+
+BASE_FEATURE_PARAM(bool,
+                   kForceMessageUiOnly,
+                   &kGeminiContextualSuggestionsCues,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kForceOmniboxChipUiOnly,
+                   &kGeminiContextualSuggestionsCues,
+                   false);
+
 }  // namespace contextual_cueing

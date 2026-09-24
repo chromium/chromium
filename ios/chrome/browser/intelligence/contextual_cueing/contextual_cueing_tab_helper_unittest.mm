@@ -1400,7 +1400,26 @@ TEST_F(ContextualCueingTabHelperTest, TestMode_VerticalsOnly) {
       web_state_->GetUniqueIdentifier());
 
   EXPECT_TRUE(tab_helper->GetContextualCue().has_value());
+  EXPECT_EQ(tab_helper->GetActiveCategoryType(),
+            page_content_annotations::CategoryType::kEducation);
+  EXPECT_EQ(tab_helper->GetContextualCueUiType(),
+            ContextualCueUiType::kMessage);
   EXPECT_EQ(observer.cue_call_count_, 1);
+
+  // Dismissing the cue switches Education to Omnibox Chip UI permanently.
+  EXPECT_TRUE(tab_helper->RecordCueShown());
+  tab_helper->RecordCueDismissed();
+  EXPECT_EQ(
+      ContextualCueingCapTrackerServiceFactory::GetForProfile(profile_.get())
+          ->GetCueUiTypeForCategory(
+              page_content_annotations::CategoryType::kEducation),
+      ContextualCueUiType::kOmniboxChip);
+  // Shopping vertical remains on Message UI.
+  EXPECT_EQ(
+      ContextualCueingCapTrackerServiceFactory::GetForProfile(profile_.get())
+          ->GetCueUiTypeForCategory(
+              page_content_annotations::CategoryType::kShopping),
+      ContextualCueUiType::kMessage);
 
   tab_helper->RemoveObserver(&observer);
 }

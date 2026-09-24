@@ -532,6 +532,9 @@ TEST_F(ContextualCueingCapTrackerServiceTest, FinchParamOverrides) {
           {kDismissBackoffMultiplierBase.name, "3.0"},
           {kClickBackoffTime.name, "10m"},
           {kDisableFrequencyCappingAndBackoff.name, "false"},
+          {kMaxConsecutiveMessageIgnores.name, "4"},
+          {kForceMessageUiOnly.name, "true"},
+          {kForceOmniboxChipUiOnly.name, "false"},
       });
 
   ContextualCueingCapTrackerService service;
@@ -548,6 +551,211 @@ TEST_F(ContextualCueingCapTrackerServiceTest, FinchParamOverrides) {
   EXPECT_DOUBLE_EQ(config.dismiss_backoff_multiplier_base, 3.0);
   EXPECT_EQ(config.click_backoff_time, base::Minutes(10));
   EXPECT_FALSE(config.disable_frequency_capping_and_backoff);
+  EXPECT_EQ(config.max_consecutive_message_ignores, 4u);
+  EXPECT_TRUE(config.force_message_ui_only);
+  EXPECT_FALSE(config.force_omnibox_chip_ui_only);
+}
+
+TEST_F(ContextualCueingCapTrackerServiceTest,
+       ThreeConsecutiveMessageIgnoresSwitchesToOmniboxPerVertical) {
+  ContextualCueingCapTrackerService::Config config;
+  config.disable_frequency_capping_and_backoff = true;
+  ContextualCueingCapTrackerService service(config);
+
+  const GURL url("https://example.com");
+  const auto kEdu = page_content_annotations::CategoryType::kEducation;
+  const auto kShop = page_content_annotations::CategoryType::kShopping;
+
+  // Initially both verticals start on Message UI.
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kMessage);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kShop),
+            ContextualCueUiType::kMessage);
+
+  // 1st Message shown and ignored for Education.
+  service.RecordCueShown(url, kEdu);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kMessage);
+
+  // 2nd Message shown and ignored for Education.
+  service.RecordCueShown(url, kEdu);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kMessage);
+
+  // 3rd Message shown and ignored for Education -> switches to Omnibox Chip.
+  service.RecordCueShown(url, kEdu);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kOmniboxChip);
+
+  // Shopping vertical is unaffected and still uses Message UI.
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kShop),
+            ContextualCueUiType::kMessage);
+
+  // Once Education has switched to Omnibox Chip, even clicking the Omnibox
+  // Chip on the 4th cue does not switch back to Message UI.
+  service.RecordCueShown(url, kEdu);
+  service.RecordCueClicked(url, kEdu);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kOmniboxChip);
+}
+
+TEST_F(ContextualCueingCapTrackerServiceTest,
+       AcceptingMessageKeepsShowingMessageUntilDismissedOrIgnoredThreeTimes) {
+  ContextualCueingCapTrackerService::Config config;
+  config.disable_frequency_capping_and_backoff = true;
+  ContextualCueingCapTrackerService service(config);
+
+  const GURL url("https://example.com");
+  const auto kEdu = page_content_annotations::CategoryType::kEducation;
+
+  // Ignore 1st and 2nd Messages.
+  service.RecordCueShown(url, kEdu);
+  service.RecordCueShown(url, kEdu);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kMessage);
+
+  // 3rd Message is shown, and the user accepts (clicks) it.
+  service.RecordCueShown(url, kEdu);
+  service.RecordCueClicked(url, kEdu);
+
+  // Because the user accepted the 3rd Message, Message UI is shown on the 4th
+  // cue.
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kMessage);
+  service.RecordCueShown(url, kEdu);
+
+  // Accepting the 4th Message continues to show Message UI on subsequent cues.
+  service.RecordCueClicked(url, kEdu);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kMessage);
+
+  // 5th Message is shown: 1st consecutive ignore.
+  service.RecordCueShown(url, kEdu);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kMessage);
+
+  // 6th Message is shown: 2nd consecutive ignore.
+  service.RecordCueShown(url, kEdu);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kMessage);
+
+  // 7th Message is shown: 3rd consecutive ignore -> switches to Omnibox Chip.
+  service.RecordCueShown(url, kEdu);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kOmniboxChip);
+
+  // Once switched to Omnibox Chip, clicking the chip never switches back to
+  // Message UI.
+  service.RecordCueShown(url, kEdu);
+  service.RecordCueClicked(url, kEdu);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kOmniboxChip);
+}
+
+TEST_F(ContextualCueingCapTrackerServiceTest,
+       DismissingMessageOnceSwitchesToOmniboxPermanently) {
+  ContextualCueingCapTrackerService::Config config;
+  config.disable_frequency_capping_and_backoff = true;
+  ContextualCueingCapTrackerService service(config);
+
+  const GURL url("https://example.com");
+  const auto kShop = page_content_annotations::CategoryType::kShopping;
+
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kShop),
+            ContextualCueUiType::kMessage);
+
+  service.RecordCueShown(url, kShop);
+  service.RecordCueDismissed(url, kShop);
+
+  // Immediately switches to Omnibox Chip UI.
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kShop),
+            ContextualCueUiType::kOmniboxChip);
+
+  // Clicking subsequent Omnibox Chips never switches back to Message UI.
+  service.RecordCueShown(url, kShop);
+  service.RecordCueClicked(url, kShop);
+  EXPECT_EQ(service.GetCueUiTypeForCategory(kShop),
+            ContextualCueUiType::kOmniboxChip);
+
+  // Calling RecordCueDismissed when an Omnibox Chip is shown does not apply the
+  // 24-hour dismissal backoff.
+  ContextualCueingCapTrackerService::Config backoff_config;
+  backoff_config.min_page_count_between_nudges = 0;
+  backoff_config.min_time_between_nudges = base::Minutes(60);
+  backoff_config.base_dismiss_backoff_time = base::Hours(24);
+  backoff_config.force_omnibox_chip_ui_only = true;
+  ContextualCueingCapTrackerService chip_service(backoff_config);
+  chip_service.RecordCueShown(GURL("https://a.com"), kShop);
+  chip_service.RecordCueDismissed(GURL("https://a.com"), kShop);
+  task_environment_.FastForwardBy(base::Minutes(61));
+  EXPECT_EQ(chip_service.CanShowNudge(GURL("https://b.com")),
+            ContextualCueingDecision::kSuccess);
+}
+
+TEST_F(ContextualCueingCapTrackerServiceTest,
+       VerticalUiTransitionPersistsAcrossServiceRestartsViaPrefs) {
+  TestProfileIOS::Builder builder;
+  auto profile = std::move(builder).Build();
+  PrefService* prefs = profile->GetPrefs();
+
+  const GURL url("https://example.com");
+  const auto kEdu = page_content_annotations::CategoryType::kEducation;
+  const auto kShop = page_content_annotations::CategoryType::kShopping;
+
+  {
+    ContextualCueingCapTrackerService::Config config;
+    config.disable_frequency_capping_and_backoff = true;
+    ContextualCueingCapTrackerService service1(prefs, config);
+
+    // Dismiss Shopping Message once -> switches to Omnibox.
+    service1.RecordCueShown(url, kShop);
+    service1.RecordCueDismissed(url, kShop);
+
+    // Accept Education Message once -> keeps Message UI after restart.
+    service1.RecordCueShown(url, kEdu);
+    service1.RecordCueClicked(url, kEdu);
+  }
+
+  // Recreate service with the same PrefService (simulating app relaunch).
+  ContextualCueingCapTrackerService::Config config;
+  config.disable_frequency_capping_and_backoff = true;
+  ContextualCueingCapTrackerService service2(prefs, config);
+
+  EXPECT_EQ(service2.GetCueUiTypeForCategory(kShop),
+            ContextualCueUiType::kOmniboxChip);
+  EXPECT_EQ(service2.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kMessage);
+
+  // Dismissing Education Message switches Education to Omnibox.
+  service2.RecordCueShown(url, kEdu);
+  service2.RecordCueDismissed(url, kEdu);
+  EXPECT_EQ(service2.GetCueUiTypeForCategory(kEdu),
+            ContextualCueUiType::kOmniboxChip);
+}
+
+TEST_F(ContextualCueingCapTrackerServiceTest, ForceUiTypeFinchFlags) {
+  const GURL url("https://example.com");
+  const auto kEdu = page_content_annotations::CategoryType::kEducation;
+
+  // Force Message UI Only: stays on Message UI even after dismissal.
+  {
+    ContextualCueingCapTrackerService::Config config;
+    config.force_message_ui_only = true;
+    ContextualCueingCapTrackerService service(config);
+    service.RecordCueShown(url, kEdu);
+    service.RecordCueDismissed(url, kEdu);
+    EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+              ContextualCueUiType::kMessage);
+  }
+
+  // Force Omnibox Chip UI Only: starts on Omnibox Chip UI immediately.
+  {
+    ContextualCueingCapTrackerService::Config config;
+    config.force_omnibox_chip_ui_only = true;
+    ContextualCueingCapTrackerService service(config);
+    EXPECT_EQ(service.GetCueUiTypeForCategory(kEdu),
+              ContextualCueUiType::kOmniboxChip);
+  }
 }
 
 }  // namespace contextual_cueing

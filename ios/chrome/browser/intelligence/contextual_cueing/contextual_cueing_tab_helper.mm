@@ -80,6 +80,16 @@ ContextualCueingTabHelper::GetContextualCue() const {
   return cue_;
 }
 
+std::optional<ContextualCueUiType>
+ContextualCueingTabHelper::GetContextualCueUiType() const {
+  return cue_ui_type_;
+}
+
+std::optional<page_content_annotations::CategoryType>
+ContextualCueingTabHelper::GetActiveCategoryType() const {
+  return active_category_type_;
+}
+
 bool ContextualCueingTabHelper::RecordCueShown() {
   CHECK(!fet_dismiss_runner_);
   feature_engagement::Tracker* tracker = GetFeatureEngagementTracker();
@@ -104,15 +114,19 @@ bool ContextualCueingTabHelper::RecordCueShown() {
   RecordContextualCueingDecision(ContextualCueingDecision::kSuccess);
   ContextualCueingCapTrackerService* cap_service = GetCapTrackerService();
   if (cap_service && web_state_) {
-    cap_service->RecordCueShown(web_state_->GetLastCommittedURL());
+    cap_service->RecordCueShown(web_state_->GetLastCommittedURL(),
+                                active_category_type_);
   }
   return true;
 }
 
 void ContextualCueingTabHelper::RecordCueDismissed() {
-  ContextualCueingCapTrackerService* cap_service = GetCapTrackerService();
-  if (cap_service && web_state_) {
-    cap_service->RecordCueDismissed(web_state_->GetLastCommittedURL());
+  if (cue_ui_type_ == ContextualCueUiType::kMessage) {
+    ContextualCueingCapTrackerService* cap_service = GetCapTrackerService();
+    if (cap_service && web_state_) {
+      cap_service->RecordCueDismissed(web_state_->GetLastCommittedURL(),
+                                      active_category_type_);
+    }
   }
 
   DismissFeatureEngagementPromo();
@@ -121,7 +135,8 @@ void ContextualCueingTabHelper::RecordCueDismissed() {
 void ContextualCueingTabHelper::RecordCueClicked() {
   ContextualCueingCapTrackerService* cap_service = GetCapTrackerService();
   if (cap_service && web_state_) {
-    cap_service->RecordCueClicked(web_state_->GetLastCommittedURL());
+    cap_service->RecordCueClicked(web_state_->GetLastCommittedURL(),
+                                  active_category_type_);
   }
 
   feature_engagement::Tracker* tracker = GetFeatureEngagementTracker();
@@ -380,6 +395,10 @@ void ContextualCueingTabHelper::ProcessClassificationResult(
     return;
   }
 
+  if (evaluation_result.top_category.has_value()) {
+    active_category_type_ = evaluation_result.top_category->category_type;
+  }
+
   if (IsGeminiContextualSuggestionsCuesServerModelExecutionEnabled()) {
     InitiateModelExecutionRequest(expected_url);
   }
@@ -494,16 +513,29 @@ void ContextualCueingTabHelper::OnModelExecutionResponseReceived(
 void ContextualCueingTabHelper::NotifyContextualCueReceived(
     std::optional<optimization_guide::proto::ContextualCue> cue) {
   cue_ = std::move(cue);
+  if (cue_.has_value()) {
+    ContextualCueingCapTrackerService* cap_service = GetCapTrackerService();
+    if (cap_service && active_category_type_.has_value()) {
+      cue_ui_type_ =
+          cap_service->GetCueUiTypeForCategory(*active_category_type_);
+    } else {
+      cue_ui_type_ = ContextualCueUiType::kMessage;
+    }
+  } else {
+    cue_ui_type_.reset();
+  }
   for (Observer& observer : observers_) {
     observer.OnContextualCueReceived(this, cue_);
   }
 }
 
 void ContextualCueingTabHelper::InvalidateCue() {
+  active_category_type_.reset();
   if (!cue_.has_value()) {
     return;
   }
   cue_.reset();
+  cue_ui_type_.reset();
   for (Observer& observer : observers_) {
     observer.OnContextualCueInvalidated(this);
   }

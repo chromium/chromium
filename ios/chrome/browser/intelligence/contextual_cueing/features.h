@@ -95,6 +95,18 @@ BASE_DECLARE_FEATURE_PARAM(bool, kDisableFrequencyCappingAndBackoff);
 // execution requests.
 BASE_DECLARE_FEATURE_PARAM(size_t, kMaxBackgroundTabs);
 
+// Maximum consecutive Message UI impressions ignored without interaction for a
+// vertical before permanently switching to Omnibox Chip UI for that vertical.
+BASE_DECLARE_FEATURE_PARAM(size_t, kMaxConsecutiveMessageIgnores);
+
+// When true, forces contextual cues to always use Message UI and never switch
+// to Omnibox Chip UI.
+BASE_DECLARE_FEATURE_PARAM(bool, kForceMessageUiOnly);
+
+// When true, forces contextual cues to always use Omnibox Chip UI and skip
+// Message UI.
+BASE_DECLARE_FEATURE_PARAM(bool, kForceOmniboxChipUiOnly);
+
 }  // namespace contextual_cueing
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_FEATURES_H_

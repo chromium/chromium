@@ -8,25 +8,39 @@
 #include <cstddef>
 #include <optional>
 
+#import "base/containers/flat_map.h"
 #import "base/containers/lru_cache.h"
+#import "base/memory/raw_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/time/time.h"
 #import "components/contextual_cueing/contextual_cueing_enums.h"
 #import "components/contextual_cueing/nudge_cap_tracker.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/page_content_annotations/core/page_content_annotation_type.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
+class PrefService;
+
 namespace contextual_cueing {
 
+// The UI surface type to present for a contextual cue.
+enum class ContextualCueUiType {
+  // High-prominence Message banner UI (initial state for a vertical).
+  kMessage = 0,
+  // Lower-prominence Omnibox Chip UI (permanent state once switched from
+  // Message UI).
+  kOmniboxChip = 1,
+};
+
 // KeyedService that tracks and enforces impression frequency caps, per-origin
-// caps, navigation spacing, and dismissal backoff for contextual cueing across
-// an entire Profile on iOS, aligned 1:1 with Desktop and Chrome on Android.
+// caps, navigation spacing, dismissal backoff, and per-vertical Message-to-
+// Omnibox UI transitions for contextual cueing across an entire Profile on iOS.
 class ContextualCueingCapTrackerService : public KeyedService {
  public:
-  // Configuration parameters for frequency capping and cooldown backoffs.
-  // Default values are managed via Finch feature parameters in `features.mm`
-  // and populated by `Config()`.
+  // Configuration parameters for frequency capping, cooldown backoffs, and UI
+  // surface transitions. Default values are managed via Finch feature
+  // parameters in `features.mm` and populated by `Config()`.
   struct Config {
     Config();
     ~Config();
@@ -66,10 +80,22 @@ class ContextualCueingCapTrackerService : public KeyedService {
     // Whether all frequency capping and cooldown backoff logic is completely
     // disabled (e.g. for testing or debugging).
     bool disable_frequency_capping_and_backoff;
+
+    // Maximum consecutive Message UI impressions ignored without interaction
+    // for a vertical before permanently switching to Omnibox Chip UI.
+    size_t max_consecutive_message_ignores;
+
+    // When true, forces all contextual cues to use Message UI only.
+    bool force_message_ui_only;
+
+    // When true, forces all contextual cues to use Omnibox Chip UI only.
+    bool force_omnibox_chip_ui_only;
   };
 
   ContextualCueingCapTrackerService();
+  explicit ContextualCueingCapTrackerService(PrefService* pref_service);
   explicit ContextualCueingCapTrackerService(Config config);
+  ContextualCueingCapTrackerService(PrefService* pref_service, Config config);
   ~ContextualCueingCapTrackerService() override;
 
   ContextualCueingCapTrackerService(const ContextualCueingCapTrackerService&) =
@@ -80,14 +106,29 @@ class ContextualCueingCapTrackerService : public KeyedService {
   // Returns whether a contextual cue can be shown for `url`.
   ContextualCueingDecision CanShowNudge(const GURL& url) const;
 
-  // Notifies the tracker that a cue was presented to the user for `url`.
-  void RecordCueShown(const GURL& url);
+  // Returns the UI surface (`kMessage` or `kOmniboxChip`) that should be
+  // presented for `category`. Once a vertical transitions from `kMessage` to
+  // `kOmniboxChip`, it permanently stays on `kOmniboxChip`.
+  ContextualCueUiType GetCueUiTypeForCategory(
+      page_content_annotations::CategoryType category) const;
 
-  // Notifies the tracker that the user dismissed a cue for `url`.
-  void RecordCueDismissed(const GURL& url);
+  // Notifies the tracker that a cue was presented to the user for `url` and
+  // optional `category`.
+  void RecordCueShown(const GURL& url,
+                      std::optional<page_content_annotations::CategoryType>
+                          category = std::nullopt);
 
-  // Notifies the tracker that the user clicked a cue for `url`.
-  void RecordCueClicked(const GURL& url);
+  // Notifies the tracker that the user dismissed a cue for `url` and optional
+  // `category`.
+  void RecordCueDismissed(const GURL& url,
+                          std::optional<page_content_annotations::CategoryType>
+                              category = std::nullopt);
+
+  // Notifies the tracker that the user clicked a cue for `url` and optional
+  // `category`.
+  void RecordCueClicked(const GURL& url,
+                        std::optional<page_content_annotations::CategoryType>
+                            category = std::nullopt);
 
   // Notifies the tracker of a new page navigation to update page spacing.
   void RecordPageNavigation();
@@ -98,6 +139,22 @@ class ContextualCueingCapTrackerService : public KeyedService {
   const Config& config() const { return config_; }
 
  private:
+  struct VerticalUiState {
+    // Whether this vertical has permanently switched to Omnibox Chip UI.
+    bool switched_to_omnibox = false;
+    // Number of consecutive Messages shown without user interaction.
+    size_t consecutive_message_ignores = 0;
+    // The UI surface type of the most recently shown cue for this vertical.
+    ContextualCueUiType last_shown_ui_type = ContextualCueUiType::kMessage;
+  };
+
+  // Loads persisted per-vertical UI transition states from `pref_service_`.
+  void LoadVerticalUiStatesFromPrefs();
+
+  // Persists the UI transition state for `category` to `pref_service_`.
+  void SaveVerticalUiState(page_content_annotations::CategoryType category);
+
+  raw_ptr<PrefService> pref_service_ = nullptr;
   const Config config_;
 
   // Global timestamp tracker.
@@ -105,6 +162,10 @@ class ContextualCueingCapTrackerService : public KeyedService {
 
   // Per-origin timestamp trackers.
   base::LRUCache<url::Origin, NudgeCapTracker> origin_trackers_;
+
+  // Per-vertical UI surface transition state.
+  base::flat_map<page_content_annotations::CategoryType, VerticalUiState>
+      vertical_ui_states_;
 
   // Remaining quiet page loads before another cue can be shown.
   size_t remaining_quiet_loads_ = 0;

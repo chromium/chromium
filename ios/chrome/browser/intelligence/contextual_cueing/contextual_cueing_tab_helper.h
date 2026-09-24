@@ -106,6 +106,15 @@ class ContextualCueingTabHelper
   const std::optional<optimization_guide::proto::ContextualCue>&
   GetContextualCue() const;
 
+  // Returns the UI surface type (`kMessage` or `kOmniboxChip`) for the current
+  // contextual cue, or std::nullopt if no cue is available.
+  std::optional<ContextualCueUiType> GetContextualCueUiType() const;
+
+  // Returns the top eligible category type for the current committed page, or
+  // std::nullopt if classification has not identified an eligible category.
+  std::optional<page_content_annotations::CategoryType> GetActiveCategoryType()
+      const;
+
   // Records that a contextual cue was shown to the user. Must only be called
   // once per cue presentation. Returns true if the cue is allowed to be shown.
   // Returns false if the Feature Engagement Tracker rejected the promo, in
@@ -207,9 +216,13 @@ class ContextualCueingTabHelper
   // Structured multi-vertical classification result from
   // PageClassificationService (e.g. shopping, education) for the current page.
   std::optional<PageClassificationResult> page_classification_result_;
+  // The top eligible category type determined for the current page.
+  std::optional<page_content_annotations::CategoryType> active_category_type_;
   // The contextual cue proto payload returned from server model execution,
   // containing UI labels and the prompt.
   std::optional<optimization_guide::proto::ContextualCue> cue_;
+  // The UI surface (`kMessage` or `kOmniboxChip`) selected for `cue_`.
+  std::optional<ContextualCueUiType> cue_ui_type_;
   bool is_model_execution_in_flight_ = false;
 
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_;

@@ -847,6 +847,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kIOSBWGPromoImpressionCount, 0);
   registry->RegisterBooleanPref(prefs::kIOSGeminiCameraSetting, false);
   registry->RegisterBooleanPref(prefs::kIOSGeminiSuggestionsSetting, true);
+  registry->RegisterDictionaryPref(prefs::kIOSContextualCueingVerticalUiState);
   registry->RegisterBooleanPref(prefs::kIOSGeminiLiveClosedCaptioningSetting,
                                 false);
   registry->RegisterBooleanPref(prefs::kIOSGeminiLiveMicrophoneSetting, true);
