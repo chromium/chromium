@@ -23,10 +23,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/web_apps/web_app_dialog_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -93,16 +92,6 @@ class SimpleInstallDialogBubbleViewBrowserTest : public WebAppBrowserTestBase {
     feature_list_.InitAndDisableFeature(features::kWebAppInstallDialog);
   }
   ~SimpleInstallDialogBubbleViewBrowserTest() override = default;
-
-  page_actions::PageActionViewInterface* GetPwaInstallIconView() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    if (!browser_view || !browser_view->toolbar_button_provider()) {
-      return nullptr;
-    }
-    auto* provider = browser_view->toolbar_button_provider();
-    return provider->GetPageActionViewInterface(kActionInstallPwa);
-  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -407,8 +396,8 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
         .GetVisible();
   }));
 
-  auto* icon = page_actions::GetIconLabelBubbleViewForTesting(
-      GetPwaInstallIconView(), kActionInstallPwa);
+  auto* icon =
+      page_actions::PageActionTestAccessor(browser(), kActionInstallPwa).view();
   ASSERT_NE(icon, nullptr);
   icon->RequestFocus();
   EXPECT_TRUE(icon->HasFocus());

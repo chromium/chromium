@@ -19,11 +19,8 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/ui/views/web_apps/progress_delay.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
@@ -129,16 +126,6 @@ class WebAppInstallFlowBrowserTest : public WebAppBrowserTestBase {
         .AwaitAllCommandsCompleteForTesting();
   }
 
-  page_actions::PageActionViewInterface* GetPwaInstallIconView() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    if (!browser_view || !browser_view->toolbar_button_provider()) {
-      return nullptr;
-    }
-    auto* provider = browser_view->toolbar_button_provider();
-    return provider->GetPageActionViewInterface(kActionInstallPwa);
-  }
-
   void AcceptWidgetAndMoveForward(views::Widget* widget) {
     widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
   }
@@ -189,8 +176,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, FocusRestoredOnCancel) {
         .GetVisible();
   }));
 
-  auto* icon = page_actions::GetIconLabelBubbleViewForTesting(
-      GetPwaInstallIconView(), kActionInstallPwa);
+  auto* icon =
+      page_actions::PageActionTestAccessor(browser(), kActionInstallPwa).view();
   ASSERT_NE(icon, nullptr);
   icon->RequestFocus();
   EXPECT_TRUE(icon->HasFocus());

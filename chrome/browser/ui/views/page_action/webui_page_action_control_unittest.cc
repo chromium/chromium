@@ -568,8 +568,6 @@ TEST_F(WebUIPageActionControlTest, GetPageActionViewInterfaceAndMethods) {
       control_->GetPageActionViewInterface(target_action_id);
   ASSERT_TRUE(view_interface);
 
-  EXPECT_DEATH(view_interface->GetIconLabelBubbleViewNotMigrated(), "");
-
   controller->OverrideTooltip(target_action_id, u"Test Tooltip");
   controller->OverrideAccessibleName(target_action_id, u"Test Accessible Name");
 

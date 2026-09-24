@@ -119,8 +119,6 @@ source_set("page_action_test_support") {
   sources = [
     "test_support/page_action_test_accessor.cc",
     "test_support/page_action_test_accessor.h",
-    "test_support/page_action_test_support.cc",
-    "test_support/page_action_test_support.h",
   ]
 
   public_deps = [

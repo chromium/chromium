@@ -73,6 +73,8 @@ class PageActionTestAccessor {
   std::u16string GetAccessibleName() const;
   ui::ImageModel GetImage() const;
   ui::TrackedElement* GetElement() const;
+  // TODO(crbug.com/562493581): Migrate callers of view() to accessor methods so
+  // tests work in both Views and WebUI.
   page_actions::PageActionView* view() const;
   std::optional<size_t> GetIndex() const;
   void FinishAnimation() const;
