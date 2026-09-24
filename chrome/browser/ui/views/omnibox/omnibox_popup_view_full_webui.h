@@ -43,7 +43,6 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   void SaveStateToTab(content::WebContents* tab) override;
   // Called when the active tab changes.
   void OnTabChanged(content::WebContents* contents) override;
-  bool IsHandlingTabChange() const override;
   // Called when the native omnibox gains focus. If the popup state changed,
   // synchronizes full input state (`SyncNativeStateToWebUI()`). If the popup
   // was already open, sends a dedicated `SetFocus(true)` Mojo IPC to ensure
@@ -88,7 +87,6 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   std::optional<gfx::Range> last_consumed_native_selection_;
 
   bool has_completed_first_tab_changed_ = false;
-  bool is_handling_tab_change_ = false;
   bool is_reverting_ = false;
   bool focused_ = false;
   // Invoked when the WebUI Mojo handler connects to trigger one-time focus

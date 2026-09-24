@@ -2908,6 +2908,24 @@ void OmniboxEditModel::OpenMatch(
 
   autocomplete_controller()->MaybeProcessInlineLocationSuggestionMatch(match);
 
+  // Ends the omnibox edit session now that a match has been accepted: dismisses
+  // the Full WebUI popup and reverts the box to its unedited state. Background
+  // tab navigations leave the session intact, since the omnibox keeps focus.
+  auto end_edit_session = [&] {
+    if (disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+      return;
+    }
+    if (view_ && view_->IsFullWebUIOmnibox()) {
+      if (auto* state_manager = controller_->popup_state_manager()) {
+        state_manager->SetPopupState(OmniboxPopupState::kNone);
+      }
+    }
+    if (view_) {
+      base::AutoReset<bool> tmp(&in_revert_, true);
+      view_->RevertAll();
+    }
+  };
+
   TemplateURLService* template_url_service =
       controller_->client()->GetTemplateURLService();
   TemplateURL* template_url = match.GetTemplateURL(template_url_service);
@@ -2932,10 +2950,7 @@ void OmniboxEditModel::OpenMatch(
           !action) {
         controller_->client()->ProcessExtensionMatch(input_text, template_url,
                                                      match, disposition);
-        if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
-          base::AutoReset<bool> tmp(&in_revert_, true);
-          view_->RevertAll();
-        }
+        end_edit_session();
         // Avoid calling `OmniboxClient::OnAutocompleteAccept()`. The extension
         // was notfied of the accepted input and will handle the navigation.
         return;
@@ -2971,10 +2986,7 @@ void OmniboxEditModel::OpenMatch(
     }
   }
 
-  if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
-    base::AutoReset<bool> tmp(&in_revert_, true);
-    view_->RevertAll();  // Revert the box to its unedited state.
-  }
+  end_edit_session();
 
   if (action) {
     OmniboxEditModelActionClient action_client(

@@ -625,7 +625,13 @@ void LocationBarView::FocusLocation(bool is_user_initiated,
 
 void LocationBarView::Revert() {
   omnibox_view_->RevertAll();
-  if (is_full_webui_omnibox_ && !in_popup_state_transition_) {
+  // `Revert()` is only reached from explicit browser commands that end the
+  // omnibox edit session (e.g. reload), so always dismiss the Full WebUI
+  // popup. Deliberately not gated on `in_popup_state_transition_`: that flag
+  // debounces popup show/hide races for 100ms, and honoring it here would
+  // strand the popup on screen whenever the command lands right after the
+  // popup opened.
+  if (is_full_webui_omnibox_) {
     GetOmniboxController()->popup_state_manager()->SetPopupState(
         OmniboxPopupState::kNone);
   }

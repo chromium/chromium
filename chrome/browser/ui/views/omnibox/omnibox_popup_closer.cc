@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -90,18 +89,6 @@ void OmniboxPopupCloser::CloseWithReason(PopupCloseReason reason) {
   // Reset focus ring for the AIM button if it was set.
   if (auto* omnibox_view = location_bar->GetOmniboxView()) {
     omnibox_view->ApplyFocusRingToAimButton(false);
-  }
-  // For `kRevertAll` ensure the popup state is reset back to `kNone`, unless
-  // the popup view is in the middle of applying a tab change. Restoring the
-  // newly active tab's state reverts the omnibox, and closing here would hide
-  // (and tear down) a popup that the same tab change is about to show again,
-  // which the user sees as a flicker.
-  if (reason == PopupCloseReason::kRevertAll &&
-      !(popup_view && popup_view->IsHandlingTabChange())) {
-    if (auto* state_manager =
-            location_bar->GetOmniboxController()->popup_state_manager()) {
-      state_manager->SetPopupState(OmniboxPopupState::kNone);
-    }
   }
 }
 

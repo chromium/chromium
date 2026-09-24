@@ -84,11 +84,6 @@ class OmniboxPopupView {
   // Called when the active tab changes.
   virtual void OnTabChanged(content::WebContents* contents) {}
 
-  // Returns true while `OnTabChanged()` is applying the newly active tab's
-  // state. The popup must not be closed as a side effect during this window,
-  // since `OnTabChanged()` decides and applies the target popup state itself.
-  virtual bool IsHandlingTabChange() const;
-
   // Called when the omnibox gains focus.
   virtual void OnFocus(bool query_zps, bool select_all = false) {}
 

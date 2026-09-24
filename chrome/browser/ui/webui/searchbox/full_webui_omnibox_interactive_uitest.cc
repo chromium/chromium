@@ -765,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       // Open Tab 1 and focus Omnibox to open WebUI popup.
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       // Click the reload button while the popup is active and visible.
-      MoveMouseTo(kReloadButtonElementId), ClickMouse(),
+      PressButton(kReloadButtonElementId),
       // Verify that the popup hides cleanly without crashes.
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)));
 }
@@ -968,6 +968,58 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, TabSwitchKeepsPopup) {
       // through `kNone` and hidden it.
       CheckResult([&]() { return observed_states; },
                   std::vector<OmniboxPopupState>(), "PopupStateChanges"),
+      CheckResult(
+          [popup_state_manager]() {
+            return popup_state_manager->popup_state();
+          },
+          OmniboxPopupState::kFull, "PopupState"),
+      CheckResult(
+          [this]() {
+            auto* popup_view = BrowserWindow::FromBrowser(browser())
+                                   ->GetLocationBar()
+                                   ->GetOmniboxPopupView();
+            return popup_view->presenter() &&
+                   popup_view->presenter()->IsShown();
+          },
+          true, "PopupIsShown"));
+}
+
+// Verifies that opening a new tab (which auto-focuses the omnibox) keeps the
+// popup on screen without closing or recreating it. Restoring display texts
+// when navigation commits used to revert the omnibox and close the popup to
+// kNone, destroying the popup widget and causing a visible flicker.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, NewTabKeepsPopup) {
+  std::vector<OmniboxPopupState> observed_states;
+  base::CallbackListSubscription subscription;
+  auto* const popup_state_manager = BrowserWindow::FromBrowser(browser())
+                                        ->GetLocationBar()
+                                        ->GetOmniboxController()
+                                        ->popup_state_manager();
+
+  RunTestSequence(
+      // Open Tab 1 at chrome://version/ and focus the Omnibox.
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      // Start recording popup state changes before opening a new tab.
+      Do([&]() {
+        subscription = popup_state_manager->AddPopupStateChangedCallback(
+            base::BindLambdaForTesting(
+                [&observed_states](OmniboxPopupState /*old_state*/,
+                                   OmniboxPopupState new_state) {
+                  observed_states.push_back(new_state);
+                }));
+      }),
+      // Open a new tab (NTP), which auto-focuses the omnibox.
+      AddInstrumentedTab(kTab2, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab2),
+      // Ensure that throughout opening the new tab, the popup state did not
+      // transition through `kNone` and hide it.
+      CheckResult(
+          [&]() {
+            return std::ranges::find(observed_states,
+                                     OmniboxPopupState::kNone) !=
+                   observed_states.end();
+          },
+          false, "NoTransitionToNone"),
       CheckResult(
           [popup_state_manager]() {
             return popup_state_manager->popup_state();

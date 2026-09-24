@@ -39,10 +39,6 @@ bool OmniboxPopupView::IsPopupHandlerReady() const {
   return false;
 }
 
-bool OmniboxPopupView::IsHandlingTabChange() const {
-  return false;
-}
-
 bool OmniboxPopupView::IsReverting() const {
   return false;
 }
