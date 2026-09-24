@@ -12,8 +12,12 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
@@ -21,10 +25,15 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /** Unit tests for {@link GlicUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class GlicUtilsUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Profile mProfileMock;
+
     private Context mContext;
 
     @Before
@@ -68,5 +77,21 @@ public class GlicUtilsUnitTest {
 
         GlicUtils.setIsSidePanelFormFactorForTesting(false);
         assertFalse(GlicUtils.isSidePanelFormFactor(mContext));
+    }
+
+    @Test
+    public void testIsTabStripGlicSupported() {
+        GlicUtils.setIsSidePanelFormFactorForTesting(true);
+        GlicEnabling.setEnabledForTesting(true);
+        assertTrue(GlicUtils.isTabStripGlicSupported(mContext, mProfileMock));
+
+        assertFalse(GlicUtils.isTabStripGlicSupported(mContext, null));
+
+        GlicEnabling.setEnabledForTesting(false);
+        assertFalse(GlicUtils.isTabStripGlicSupported(mContext, mProfileMock));
+
+        GlicEnabling.setEnabledForTesting(true);
+        GlicUtils.setIsSidePanelFormFactorForTesting(false);
+        assertFalse(GlicUtils.isTabStripGlicSupported(mContext, mProfileMock));
     }
 }

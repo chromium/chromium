@@ -4169,6 +4169,7 @@ public class ChromeContextMenuPopulatorTest {
     })
     public void testAskGeminiForLinkEligibleOnDesktopSidePanel() {
         // Side panel (desktop Android) presentation.
+        DeviceInfo.setIsDesktopForTesting(true);
         GlicEnabling.setEnabledForTesting(true);
         ContextMenuParams params = getHttpLinkParams();
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -4186,6 +4187,7 @@ public class ChromeContextMenuPopulatorTest {
     })
     public void testAskGeminiForPageEligibleOnDesktopSidePanel() {
         // Side panel (desktop Android) presentation with the page param on.
+        DeviceInfo.setIsDesktopForTesting(true);
         GlicEnabling.setEnabledForTesting(true);
         ContextMenuParams params = getPageParams();
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);

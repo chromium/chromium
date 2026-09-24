@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarActionEligibility;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
-import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
@@ -212,14 +211,14 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         boolean isBottomBarEnabled = BottomBarConfigUtils.isBottomBarEnabled(context);
         // TODO(crbug.com/503082430): Change to tab strip visibility check once toolbar Glic
         // supported on LFF
-        boolean isSidePanelEnabled = AndroidSidePanelEnabledFn.isEnabled();
+        boolean isSidePanelFormFactor = GlicUtils.isSidePanelFormFactor(context);
         if (isBottomBarEnabled) {
             updateBottomBarButtonPreference(
                     bottomBarButtonTogglePref,
                     buttonTogglePref,
                     buttonPref,
                     /* attachListener= */ true);
-        } else if (isSidePanelEnabled) {
+        } else if (isSidePanelFormFactor) {
             buttonPref.setVisible(false); // Hide the phone UI.
             bottomBarButtonTogglePref.setVisible(false);
             buttonTogglePref.setVisible(true);
@@ -510,7 +509,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
 
             // TODO(crbug.com/503082430): Change to tab strip visibility check once toolbar Glic
             // supported on LFF
-        } else if (AndroidSidePanelEnabledFn.isEnabled()) {
+        } else if (GlicUtils.isSidePanelFormFactor(getContext())) {
             if (bottomBarButtonTogglePref != null) bottomBarButtonTogglePref.setVisible(false);
             if (buttonTogglePref != null) {
                 boolean isPinned = GlicUtils.isButtonPinnedToTabStrip(getProfile());
@@ -747,6 +746,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         pref.setSummary(spannable);
     }
 
+    @SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
     private void setupAutoBrowseExpandedArea(View expandedArea) {
         TextView consider2 =
                 expandedArea.findViewById(
@@ -793,6 +793,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 });
     }
 
+    @SuppressWarnings("checkstyle:SetTextColorAndSetTextSizeCheck")
     private void setupSparkAutoBrowseExpandedArea(View expandedArea) {
         TextView considerUserResponsibility =
                 expandedArea.findViewById(
@@ -856,7 +857,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             mLauncherHotkeyPref.setVisible(enabled);
         }
         if (mNavigationShortcutPref != null) {
-            mNavigationShortcutPref.setVisible(enabled && AndroidSidePanelEnabledFn.isEnabled());
+            mNavigationShortcutPref.setVisible(
+                    enabled && GlicUtils.isSidePanelFormFactor(getContext()));
         }
         notifyPreferencesUpdated();
     }
@@ -884,7 +886,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                     String prefFrag = GlicSettings.class.getName();
                     // TODO(crbug.com/503082430): Change to tab strip visibility check once toolbar
                     // Glic supported on LFF
-                    if (AndroidSidePanelEnabledFn.isEnabled()) {
+                    if (GlicUtils.isSidePanelFormFactor(context)) {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON);
                     } else {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON_TOGGLE);

@@ -1474,7 +1474,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initializeTabBottomSheetManagers();
 
         if (GlicEnabling.isEnabledByFlags()
-                && (mTabBottomSheetManager != null || AndroidSidePanelEnabledFn.isEnabled())) {
+                && (mTabBottomSheetManager != null || GlicUtils.isSidePanelFormFactor(mActivity))) {
             GlicNavigationUtils.setLauncher(SigninAndHistorySyncActivityLauncherImpl::get);
             ViewStub actorOverlayStub = mActivity.findViewById(R.id.actor_overlay_stub);
             mGlicUiCoordinator =
@@ -2155,7 +2155,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      */
     public void initializeCoBrowseViewFactory() {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()
-                || AndroidSidePanelEnabledFn.isEnabled()) {
+                || GlicUtils.isSidePanelFormFactor(mActivity)) {
             ContextMenuPopulatorFactory contextMenuPopulatorFactory =
                     new ChromeContextMenuPopulatorFactory(
                             /* itemDelegate= */ null,

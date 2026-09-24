@@ -57,6 +57,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/features.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/webui/buildflags.h"
 
@@ -195,8 +196,13 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       GetUserDataFactory().CreateInstance<tabs::PageContextEligibilityHelper>(
           *tab, *tab);
 
+  const ui::DeviceFormFactor form_factor = ui::GetDeviceFormFactor();
+  const bool is_side_panel_form_factor =
+      form_factor == ui::DEVICE_FORM_FACTOR_DESKTOP ||
+      (form_factor == ui::DEVICE_FORM_FACTOR_TABLET &&
+       base::FeatureList::IsEnabled(features::kGlicAndroidTablet));
   if (base::FeatureList::IsEnabled(features::kGlicAndroidSidePanel) &&
-      AndroidSidePanelEnabledFn::IsEnabled()) {
+      AndroidSidePanelEnabledFn::IsEnabled() && is_side_panel_form_factor) {
     glic_side_panel_coordinator_ =
         GetUserDataFactory()
             .CreateInstance<glic::GlicSidePanelCoordinatorDesktopAndroid>(

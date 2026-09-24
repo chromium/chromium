@@ -13,7 +13,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -55,13 +54,15 @@ public class GlicUtils {
     /**
      * Returns whether the Glic button is supported on the tab strip for the given profile.
      *
+     * @param context An Android context used to determine the form factor. See {@link
+     *     #isSidePanelFormFactor(Context)} for the requirements on this context.
      * @param profile The {@link Profile} to check.
      * @return True if the button is supported on the tab strip.
      */
-    public static boolean isTabStripGlicSupported(@Nullable Profile profile) {
+    public static boolean isTabStripGlicSupported(Context context, @Nullable Profile profile) {
         return profile != null
                 && GlicEnabling.isEnabledForProfile(profile)
-                && AndroidSidePanelEnabledFn.isEnabled();
+                && isSidePanelFormFactor(context);
     }
 
     /**

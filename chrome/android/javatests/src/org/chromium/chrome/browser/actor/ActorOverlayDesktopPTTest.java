@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -33,7 +34,10 @@ import org.chromium.chrome.test.transit.GlicTransitTestRule;
 
 /** Integration test for ActorOverlay when running in Android Desktop/Side Panel mode. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    BaseSwitches.FORCE_DESKTOP_ANDROID
+})
 @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
 @DisableFeatures({ChromeFeatureList.TAB_BOTTOM_SHEET})
 @Batch(Batch.PER_CLASS)
