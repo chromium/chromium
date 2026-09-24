@@ -149,17 +149,16 @@ namespace {
 // https://www.rfc-editor.org/rfc/rfc8941.html.
 const AtomicString SerializeStringHeader(const std::string& str) {
   std::string output = net::structured_headers::SerializeItem(
-                           net::structured_headers::Item(
-                               net::structured_headers::Item::string, str))
+                           net::structured_headers::ItemView(
+                               net::structured_headers::ItemView::string, str))
                            .value_or(std::string());
 
   return AtomicString(output.c_str());
 }
 
 AtomicString GenerateBoolHeaderValue(bool value) {
-  const std::string output = net::structured_headers::SerializeItem(
-                                 net::structured_headers::Item(value))
-                                 .value_or(std::string());
+  const std::string output =
+      net::structured_headers::SerializeItem(value).value_or(std::string());
   return AtomicString(output.c_str());
 }
 

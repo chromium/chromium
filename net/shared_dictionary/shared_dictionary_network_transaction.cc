@@ -279,8 +279,8 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
 
   if (!shared_dictionary_->id().empty()) {
     std::optional<std::string> serialized_id =
-        structured_headers::SerializeItem(structured_headers::Item(
-            structured_headers::Item::string, shared_dictionary_->id()));
+        structured_headers::SerializeItem(structured_headers::ItemView(
+            structured_headers::ItemView::string, shared_dictionary_->id()));
     if (serialized_id) {
       request_headers->SetHeader("Dictionary-ID", *serialized_id);
     }

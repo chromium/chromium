@@ -17,6 +17,7 @@
 namespace net::structured_headers {
 
 using Item = quiche::structured_headers::Item;
+using ItemView = quiche::structured_headers::ItemView;
 using ParameterisedIdentifier =
     quiche::structured_headers::ParameterisedIdentifier;
 using ParameterizedItem = quiche::structured_headers::ParameterizedItem;
@@ -44,7 +45,7 @@ inline std::optional<ListOfLists> ParseListOfLists(std::string_view str) {
   return quiche::structured_headers::ParseListOfLists(str);
 }
 
-inline std::optional<std::string> SerializeItem(const Item& value) {
+inline std::optional<std::string> SerializeItem(ItemView value) {
   return quiche::structured_headers::SerializeItem(value);
 }
 inline std::optional<std::string> SerializeItem(

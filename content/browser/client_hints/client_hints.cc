@@ -516,7 +516,7 @@ void AddUAHeader(net::HttpRequestHeaders* headers,
 template <typename... Args>
 const std::string SerializeHeaderString(Args&&... args) {
   return net::structured_headers::SerializeItem(
-             net::structured_headers::Item(std::forward<Args>(args)...))
+             net::structured_headers::ItemView(std::forward<Args>(args)...))
       .value_or(std::string());
 }
 
@@ -731,38 +731,44 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     }
 
     if (ShouldAddClientHint(data, WebClientHintsType::kUAFullVersion)) {
-      AddUAHeader(headers, WebClientHintsType::kUAFullVersion,
-                  SerializeHeaderString(net::structured_headers::Item::string,
-                                        ua_metadata->full_version));
+      AddUAHeader(
+          headers, WebClientHintsType::kUAFullVersion,
+          SerializeHeaderString(net::structured_headers::ItemView::string,
+                                ua_metadata->full_version));
     }
 
     if (ShouldAddClientHint(data, WebClientHintsType::kUAArch)) {
-      AddUAHeader(headers, WebClientHintsType::kUAArch,
-                  SerializeHeaderString(net::structured_headers::Item::string,
-                                        ua_metadata->architecture));
+      AddUAHeader(
+          headers, WebClientHintsType::kUAArch,
+          SerializeHeaderString(net::structured_headers::ItemView::string,
+                                ua_metadata->architecture));
     }
 
     if (ShouldAddClientHint(data, WebClientHintsType::kUAPlatform)) {
-      AddUAHeader(headers, WebClientHintsType::kUAPlatform,
-                  SerializeHeaderString(net::structured_headers::Item::string,
-                                        ua_metadata->platform));
+      AddUAHeader(
+          headers, WebClientHintsType::kUAPlatform,
+          SerializeHeaderString(net::structured_headers::ItemView::string,
+                                ua_metadata->platform));
     }
 
     if (ShouldAddClientHint(data, WebClientHintsType::kUAPlatformVersion)) {
-      AddUAHeader(headers, WebClientHintsType::kUAPlatformVersion,
-                  SerializeHeaderString(net::structured_headers::Item::string,
-                                        ua_metadata->platform_version));
+      AddUAHeader(
+          headers, WebClientHintsType::kUAPlatformVersion,
+          SerializeHeaderString(net::structured_headers::ItemView::string,
+                                ua_metadata->platform_version));
     }
 
     if (ShouldAddClientHint(data, WebClientHintsType::kUAModel)) {
-      AddUAHeader(headers, WebClientHintsType::kUAModel,
-                  SerializeHeaderString(net::structured_headers::Item::string,
-                                        ua_metadata->model));
+      AddUAHeader(
+          headers, WebClientHintsType::kUAModel,
+          SerializeHeaderString(net::structured_headers::ItemView::string,
+                                ua_metadata->model));
     }
     if (ShouldAddClientHint(data, WebClientHintsType::kUABitness)) {
-      AddUAHeader(headers, WebClientHintsType::kUABitness,
-                  SerializeHeaderString(net::structured_headers::Item::string,
-                                        ua_metadata->bitness));
+      AddUAHeader(
+          headers, WebClientHintsType::kUABitness,
+          SerializeHeaderString(net::structured_headers::ItemView::string,
+                                ua_metadata->bitness));
     }
     if (ShouldAddClientHint(data, WebClientHintsType::kUAWoW64)) {
       AddUAHeader(headers, WebClientHintsType::kUAWoW64,

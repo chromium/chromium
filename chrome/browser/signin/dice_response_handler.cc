@@ -106,8 +106,8 @@ void RecordDiceFetchTokenResult(DiceTokenFetchResult result) {
 // structured headers.
 std::string SerializeHeaderString(const std::string& value) {
   return net::structured_headers::SerializeItem(
-             net::structured_headers::Item(
-                 net::structured_headers::Item::string, value))
+             net::structured_headers::ItemView(
+                 net::structured_headers::ItemView::string, value))
       .value_or(std::string());
 }
 

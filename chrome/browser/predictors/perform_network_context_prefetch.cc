@@ -57,7 +57,7 @@ template <typename... Args>
   requires(std::is_constructible_v<net::structured_headers::Item, Args...>)
 const std::string SerializeHeaderString(Args&&... args) {
   return net::structured_headers::SerializeItem(
-             net::structured_headers::Item(std::forward<Args>(args)...))
+             net::structured_headers::ItemView(std::forward<Args>(args)...))
       .value_or(std::string());
 }
 
@@ -127,9 +127,10 @@ void PrefetchResource(network::mojom::NetworkContext* network_context,
   headers.SetHeader("sec-ch-ua", ua_metadata.SerializeBrandMajorVersionList());
   headers.SetHeader("sec-ch-ua-mobile",
                     SerializeHeaderString(ua_metadata.mobile));
-  headers.SetHeader("sec-ch-ua-platform",
-                    SerializeHeaderString(net::structured_headers::Item::string,
-                                          ua_metadata.platform));
+  headers.SetHeader(
+      "sec-ch-ua-platform",
+      SerializeHeaderString(net::structured_headers::ItemView::string,
+                            ua_metadata.platform));
   // We shouldn't be prefetching if data saver is enabled, so we should never
   // need to set the "save-data" header.
 
