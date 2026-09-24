@@ -26,6 +26,7 @@
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_registry.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
@@ -2374,6 +2375,19 @@ TEST_F(ClipboardHostImplServiceWorkerTest, CannotWriteOrRead) {
   std::u16string text = u"non-empty";
   remote->ReadText(ui::ClipboardBuffer::kCopyPaste, &text);
   EXPECT_TRUE(text.empty());
+}
+
+TEST_F(ClipboardHostImplServiceWorkerTest, HostDiesWithWorker) {
+  mojo::Remote<blink::mojom::ClipboardHost> remote;
+  version().worker_host()->BindClipboardHost(
+      remote.BindNewPipeAndPassReceiver());
+  remote.FlushForTesting();
+  ASSERT_TRUE(remote.is_connected());
+
+  base::test::TestFuture<void> disconnected;
+  remote.set_disconnect_handler(disconnected.GetCallback());
+  StopServiceWorker(&version());
+  EXPECT_TRUE(disconnected.Wait());
 }
 
 }  // namespace content

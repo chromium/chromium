@@ -1927,6 +1927,8 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
             }
           },
           base::Unretained(host)));
+  map->Add<blink::mojom::ClipboardHost>(base::BindRepeating(
+      &ServiceWorkerHost::BindClipboardHost, base::Unretained(host)));
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindServiceWorkerReceiver(

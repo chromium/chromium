@@ -13,6 +13,7 @@
 #include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
+#include "content/browser/renderer_host/clipboard_host_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
@@ -154,6 +155,13 @@ void ServiceWorkerHost::BindHidService(
                                               std::move(receiver));
 }
 #endif
+
+void ServiceWorkerHost::BindClipboardHost(
+    mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  clipboard_hosts_.Add(std::make_unique<ClipboardHostImpl>(*this),
+                       std::move(receiver));
+}
 
 void ServiceWorkerHost::BindUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
