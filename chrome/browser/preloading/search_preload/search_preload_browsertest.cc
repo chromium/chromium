@@ -254,6 +254,8 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
         net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_->RegisterRequestMonitor(
         request_collector_->GetOnResourceRequest());
+    https_server_->RegisterRequestMonitor(
+        delay_injector_->GetOnResourceRequest());
     https_server_->RegisterRequestHandler(
         base::BindRepeating(&SearchPreloadBrowserTestBase::HandleSearchRequest,
                             base::Unretained(this)));
@@ -2384,6 +2386,223 @@ IN_PROC_BROWSER_TEST_F(
                        {SearchPreloadSignalResult::kPrefetchTriggered});
   uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnSuggest.Prerender",
                        {SearchPreloadSignalResult::kPrerenderTriggered});
+}
+
+// Test suite for `kDsePreload2AheadOfActualNavigation`.
+class SearchPreloadBrowserTest_AheadOfActualNavigation
+    : public SearchPreloadBrowserTestBase {
+ public:
+  void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) override {
+    // Note that `features::kPrefetchAheadOfActualNavigation` is not visible
+    // from chrome/, so enable features by their names.
+    scoped_feature_list.InitFromCommandLine(
+        "ForceWebRequestProxyForTest,"
+        "DsePreload2:kDsePreload2DeviceMemoryThresholdMiB/0,"
+        "DsePreload2OnPress:kDsePreload2OnPressMouseDown/true/"
+        "kDsePreload2OnPressUpOrDownArrowButton/true/"
+        "kDsePreload2OnPressTouchDown/true,"
+        "DsePreload2AheadOfActualNavigation,"
+        "PrefetchAheadOfActualNavigation:"
+        "force_wait_no_vary_search_header_policy/UseIfNoHint,"
+        "PrefetchUseContentRefactor:"
+        "block_until_head_timeout_embedder_prefetch/100",
+        /*disable_features=*/"");
+  }
+};
+
+// `OnNavigationLikely()` with `kMouseDown` triggers a prefetch that is matched
+// by the No-Vary-Search header without a hint.
+//
+// Scenario: No No-Vary-Search hint is available and the response head is
+// delayed longer than the default block-until-head timeout. A user presses a
+// suggestion by mouse and then navigates. The navigation keeps blocked until
+// the head arrives, and the prefetch is used.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfActualNavigation,
+                       OnNavigationLikely_MouseDown_MatchedByHeader) {
+  HistogramTesterWrapper uma_tester;
+
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = std::nullopt,
+  });
+  // Keep `PrefetchContainer` waiting for a response header longer than the
+  // block-until-head timeout.
+  delay_injector().SetResponseDelay(base::Milliseconds(300));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+      original_query, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+
+  const bool is_triggered_prefetch =
+      GetSearchPreloadService().OnNavigationLikely(
+          1, autocomplete_match,
+          omnibox::mojom::NavigationPredictor::kMouseDown, &GetWebContents());
+  ASSERT_TRUE(is_triggered_prefetch);
+
+  // Navigate without waiting for the head of the prefetch.
+  NavigateAndWaitFCP(urls.navigation);
+  NavigateAwayToRecordHistogram();
+
+  // Prefetch is used.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_press));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
+
+  uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
+                       {SearchPreloadSignalResult::kPrefetchTriggered});
+}
+
+// `OnNavigationLikely()` with `kTouchDown` triggers a prefetch that is matched
+// by the No-Vary-Search header without a hint.
+//
+// Scenario: Same as `OnNavigationLikely_MouseDown_MatchedByHeader`, but
+// triggered by touch down (`kTouchDown`).
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfActualNavigation,
+                       OnNavigationLikely_TouchDown_MatchedByHeader) {
+  HistogramTesterWrapper uma_tester;
+
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = std::nullopt,
+  });
+  delay_injector().SetResponseDelay(base::Milliseconds(300));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+      original_query, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+
+  const bool is_triggered_prefetch =
+      GetSearchPreloadService().OnNavigationLikely(
+          1, autocomplete_match,
+          omnibox::mojom::NavigationPredictor::kTouchDown, &GetWebContents());
+  ASSERT_TRUE(is_triggered_prefetch);
+
+  NavigateAndWaitFCP(urls.navigation);
+  NavigateAwayToRecordHistogram();
+
+  // Prefetch is used.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.prefetch_on_press));
+  EXPECT_EQ(0, request_collector().CountByPath(urls.navigation));
+
+  uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
+                       {SearchPreloadSignalResult::kPrefetchTriggered});
+}
+
+// `OnNavigationLikely()` with `kUpOrDownArrowButton` is not marked as ahead of
+// actual navigation, so it is not matched by the No-Vary-Search header without
+// a hint even when `kDsePreload2AheadOfActualNavigation` is enabled.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfActualNavigation,
+                       OnNavigationLikely_ArrowButton_NotMatchedByHeader) {
+  HistogramTesterWrapper uma_tester;
+
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = std::nullopt,
+  });
+  delay_injector().SetResponseDelay(base::Milliseconds(300));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+      original_query, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+
+  const bool is_triggered_prefetch =
+      GetSearchPreloadService().OnNavigationLikely(
+          1, autocomplete_match,
+          omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton,
+          &GetWebContents());
+  ASSERT_TRUE(is_triggered_prefetch);
+
+  NavigateAndWaitFCP(urls.navigation);
+  NavigateAwayToRecordHistogram();
+
+  // Prefetch is not used because arrow button predictions are not marked as
+  // ahead of actual navigation.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.navigation));
+
+  uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
+                       {SearchPreloadSignalResult::kPrefetchTriggered});
+}
+
+// Test suite for the case that `kDsePreload2AheadOfActualNavigation` is
+// disabled.
+class SearchPreloadBrowserTest_AheadOfActualNavigationDisabled
+    : public SearchPreloadBrowserTestBase {
+ public:
+  void InitFeatures(
+      base::test::ScopedFeatureList& scoped_feature_list) override {
+    scoped_feature_list.InitFromCommandLine(
+        "ForceWebRequestProxyForTest,"
+        "DsePreload2:kDsePreload2DeviceMemoryThresholdMiB/0,"
+        "DsePreload2OnPress:kDsePreload2OnPressMouseDown/true/"
+        "kDsePreload2OnPressUpOrDownArrowButton/true/"
+        "kDsePreload2OnPressTouchDown/true,"
+        "PrefetchUseContentRefactor:"
+        "block_until_head_timeout_embedder_prefetch/100",
+        /*disable_features=*/
+        "DsePreload2AheadOfActualNavigation,PrefetchAheadOfActualNavigation");
+  }
+};
+
+// Counterpart of `OnNavigationLikely_MouseDown_MatchedByHeader`. The prefetch
+// is not matched without a No-Vary-Search hint.
+IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest_AheadOfActualNavigationDisabled,
+                       OnNavigationLikely_MouseDown_NotMatchedByHeader) {
+  HistogramTesterWrapper uma_tester;
+
+  SetUpTemplateURLService(/*prefetch_likely_navigations=*/true);
+  SetUpSearchPreloadService({
+      .no_vary_search_data_cache = std::nullopt,
+  });
+  delay_injector().SetResponseDelay(base::Milliseconds(300));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      &GetWebContents(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::string original_query = "he";
+  std::string search_terms = "hello";
+  SearchUrls urls = GetSearchUrls(search_terms);
+
+  AutocompleteMatch autocomplete_match = CreateSearchSuggestionMatch(
+      original_query, search_terms, PrefetchHint::kEnabled,
+      PrerenderHint::kDisabled);
+
+  const bool is_triggered_prefetch =
+      GetSearchPreloadService().OnNavigationLikely(
+          1, autocomplete_match,
+          omnibox::mojom::NavigationPredictor::kMouseDown, &GetWebContents());
+  ASSERT_TRUE(is_triggered_prefetch);
+
+  NavigateAndWaitFCP(urls.navigation);
+  NavigateAwayToRecordHistogram();
+
+  // Prefetch is not used. Note that we don't check the number of requests for
+  // `urls.prefetch_on_press` because the prefetch request is not necessarily
+  // processed by the test server at this point due to the injected delay.
+  EXPECT_EQ(1, request_collector().CountByPath(urls.navigation));
+
+  uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
+                       {SearchPreloadSignalResult::kPrefetchTriggered});
 }
 
 // Test suite for `kDsePreload2SuppressForUnsupportedSearchMode`.

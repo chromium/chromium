@@ -56,7 +56,8 @@ SearchPreloadSignalResult SearchPreloadPipeline::StartPrefetch(
     content::PreloadingPredictor predictor,
     const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint,
     bool is_navigation_likely,
-    bool should_ignore_saver_modes) {
+    bool should_ignore_saver_modes,
+    bool is_ahead_of_actual_navigation) {
   // Don't trigger prefetch if already triggered and is alive.
   //
   // TODO(crbug.com/394213503): Reconsider the behavior when prefetch is already
@@ -109,8 +110,7 @@ SearchPreloadSignalResult SearchPreloadPipeline::StartPrefetch(
       /*holdback_status_override=*/
       content::PreloadingHoldbackStatus::kUnspecified,
       /*ttl=*/features::kDsePreload2PrefetchTtl.Get(),
-      should_ignore_saver_modes,
-      /*is_ahead_of_actual_navigation=*/false);
+      should_ignore_saver_modes, is_ahead_of_actual_navigation);
   CHECK(prefetch_handle_);
   prefetch_handle_->SetOnPrefetchHeadReceivedCallback(base::BindRepeating(
       &SearchPreloadService::OnPrefetchHeadReceived, search_preload_service));

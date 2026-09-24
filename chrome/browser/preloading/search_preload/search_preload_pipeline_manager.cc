@@ -283,7 +283,8 @@ SearchPreloadPipelineManager::TriggerPreloads(TriggerPreloadsData data) {
           chrome_preloading_predictor::kDefaultSearchEngine,
           data.no_vary_search_hint,
           /*is_navigation_likely=*/false,
-          /*should_ignore_saver_modes=*/false);
+          /*should_ignore_saver_modes=*/false,
+          /*is_ahead_of_actual_navigation=*/false);
 
   // Trigger prerender without waiting prefetch.
   //
@@ -462,6 +463,23 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
       }
     }();
 
+    // Mouse down and touch down mean that the user is already pressing the
+    // suggestion, i.e. the navigation is almost certain to happen soon. On the
+    // other hand, up-or-down arrow key predictions have lower confidence.
+    const bool is_ahead_of_actual_navigation = [&] {
+      if (!features::IsDsePreload2AheadOfActualNavigationEnabled()) {
+        return false;
+      }
+
+      switch (navigation_predictor) {
+        case omnibox::mojom::NavigationPredictor::kMouseDown:
+        case omnibox::mojom::NavigationPredictor::kTouchDown:
+          return true;
+        case omnibox::mojom::NavigationPredictor::kUpOrDownArrowButton:
+          return false;
+      }
+    }();
+
     if (!pipelines_.contains(canonical_url)) {
       pipelines_.insert_or_assign(
           canonical_url,
@@ -471,7 +489,8 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
     return pipelines_[canonical_url]->StartPrefetch(
         GetWebContents(), search_preload_service, prefetch_url, predictor,
         no_vary_search_hint,
-        /*is_navigation_likely=*/true, should_ignore_saver_modes);
+        /*is_navigation_likely=*/true, should_ignore_saver_modes,
+        is_ahead_of_actual_navigation);
   }();
 
   if (signal_result_prefetch.has_value()) {
