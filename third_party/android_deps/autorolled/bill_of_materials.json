@@ -1232,7 +1232,7 @@
     {
         "name": "webkit",
         "group": "androidx.webkit",
-        "version": "1.18.0-SNAPSHOT"
+        "version": "1.19.0-SNAPSHOT"
     },
     {
         "name": "sidecar",
