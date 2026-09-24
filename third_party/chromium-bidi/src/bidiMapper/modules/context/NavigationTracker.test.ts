@@ -467,6 +467,52 @@ describe('NavigationTracker', () => {
         );
         assert.equal(navigationTracker.url, INITIAL_URL);
       });
+
+      it('downloadWillBegin returns null when no navigation is pending', () => {
+        assert.isNull(navigationTracker.downloadWillBegin());
+      });
+
+      it('downloadWillBegin returns and consumes pending navigation ID', () => {
+        navigationTracker.frameStartedNavigating(
+          ANOTHER_URL,
+          LOADER_ID,
+          'differentDocument',
+        );
+        const expectedNavigationId = navigationTracker.currentNavigationId;
+
+        assert.equal(
+          navigationTracker.downloadWillBegin(),
+          expectedNavigationId,
+        );
+        assert.isNull(navigationTracker.downloadWillBegin());
+      });
+
+      it('downloadWillBegin returns pending navigation ID after net::ERR_ABORTED', () => {
+        navigationTracker.frameStartedNavigating(
+          ANOTHER_URL,
+          LOADER_ID,
+          'differentDocument',
+        );
+        const expectedNavigationId = navigationTracker.currentNavigationId;
+        navigationTracker.networkLoadingFailed(LOADER_ID, 'net::ERR_ABORTED');
+
+        assert.equal(
+          navigationTracker.downloadWillBegin(),
+          expectedNavigationId,
+        );
+        assert.isNull(navigationTracker.downloadWillBegin());
+      });
+
+      it('downloadWillBegin returns null after non-abort network failure', () => {
+        navigationTracker.frameStartedNavigating(
+          ANOTHER_URL,
+          LOADER_ID,
+          'differentDocument',
+        );
+        navigationTracker.networkLoadingFailed(LOADER_ID, ERROR_MESSAGE);
+
+        assert.isNull(navigationTracker.downloadWillBegin());
+      });
     });
   });
 });

@@ -54,12 +54,25 @@ export class NavigationState {
 
   #started = false;
   #finished = new Deferred<NavigationResult>();
+  #failureMessage?: string;
   url: string;
   loaderId?: string;
   #isInitial: boolean;
   #eventManager: EventManager;
   committed: Deferred<void> = new Deferred<void>();
   isFragmentNavigation?: boolean;
+
+  get isInitial(): boolean {
+    return this.#isInitial;
+  }
+
+  get isFinished(): boolean {
+    return this.#finished.isFinished;
+  }
+
+  get failureMessage(): string | undefined {
+    return this.#failureMessage;
+  }
 
   get finished(): Promise<NavigationResult> {
     return this.#finished;
@@ -156,6 +169,7 @@ export class NavigationState {
   }
 
   fail(message: string): void {
+    this.#failureMessage = message;
     this.#finish(
       new NavigationResult(
         this.committed.isFinished
@@ -233,6 +247,13 @@ export class NavigationTracker {
    */
   get isInitialNavigation(): boolean {
     return this.#isInitialNavigation;
+  }
+
+  /**
+   * Flags if the last committed navigation is the initial `about:blank` navigation.
+   */
+  get isInitialCommittedNavigation(): boolean {
+    return this.#lastCommittedNavigation.isInitial;
   }
 
   /**
@@ -480,5 +501,42 @@ export class NavigationTracker {
    */
   networkLoadingFailed(loaderId: string, errorText: string): void {
     this.#loaderIdToNavigationsMap.get(loaderId)?.fail(errorText);
+  }
+
+  /**
+   * Returns the navigation ID if the download was initiated by an ongoing
+   * cross-document navigation (e.g., a navigation response with
+   * `Content-Disposition: attachment`), or `null` if the download was started
+   * without a navigation (e.g., clicking an `<a download>` link), as required
+   * by `browsingContext.BaseNavigationInfo` in the WebDriver BiDi spec.
+   */
+  downloadWillBegin(): string | null {
+    // CDP and BiDi navigations do not match 1:1:
+    // - CDP `Browser.downloadWillBegin` lacks `loaderId`, so it must be matched
+    //   against `#pendingNavigation`.
+    // - CDP tracks initial `about:blank` and fragment navigations, which are not
+    //   BiDi cross-document navigations.
+    // - In CDP, handing off a navigation to a download aborts the network load
+    //   with `net::ERR_ABORTED`, and `Network.loadingFailed` may arrive before
+    //   `Browser.downloadWillBegin`.
+    if (this.#pendingNavigation === undefined) {
+      return null;
+    }
+    if (
+      this.#pendingNavigation.isInitial ||
+      this.#pendingNavigation.isFragmentNavigation !== false
+    ) {
+      return null;
+    }
+    if (
+      this.#pendingNavigation.isFinished &&
+      this.#pendingNavigation.failureMessage !== 'net::ERR_ABORTED'
+    ) {
+      return null;
+    }
+
+    const navigationId = this.#pendingNavigation.navigationId;
+    this.#pendingNavigation = undefined;
+    return navigationId;
   }
 }

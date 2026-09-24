@@ -68,7 +68,15 @@ export class BrowsingContextImpl {
   readonly userContext: string;
   // Used for running helper scripts.
   readonly #hiddenSandbox = uuidv4();
-  readonly #downloadIdToUrlMap = new Map<string, string>();
+  // Maps active CDP download GUIDs initiated in this context to their info from
+  // `Browser.downloadWillBegin`. Required to populate `browsingContext.downloadEnd`
+  // because CDP's `Browser.downloadProgress` event only provides `guid`, `state`,
+  // and `filePath` (and does not include the downloaded resource's `url` or the
+  // associated BiDi `navigation` ID).
+  readonly #downloadIdToInfoMap = new Map<
+    string,
+    {url: string; navigation: string | null}
+  >();
 
   /**
    * The ID of the parent browsing context.
@@ -848,23 +856,58 @@ export class BrowsingContextImpl {
           return;
         }
 
-        this.#downloadIdToUrlMap.set(params.guid, params.url);
+        let openerContext: BrowsingContextImpl | undefined;
+        if (
+          this.#originalOpener !== undefined &&
+          this.#navigationTracker.isInitialCommittedNavigation
+        ) {
+          openerContext = this.#browsingContextStorage.findContext(
+            this.#originalOpener,
+          );
+        }
+        const targetContext = openerContext ?? this;
+
+        const navigation = this.#navigationTracker.downloadWillBegin();
+        targetContext.#downloadIdToInfoMap.set(params.guid, {
+          url: params.url,
+          navigation,
+        });
+
+        if (openerContext !== undefined && navigation !== null) {
+          // When a download starts in a temporary `_blank` browsing context
+          // that has not committed any navigation, attribute the navigation
+          // and download events to the opener context.
+          this.#eventManager.registerEvent(
+            {
+              type: 'event',
+              method: ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+              params: {
+                context: openerContext.id,
+                navigation,
+                timestamp: getTimestamp(),
+                url: params.url,
+                userContext: openerContext.userContext,
+              },
+            },
+            openerContext.id,
+          );
+        }
 
         this.#eventManager.registerEvent(
-          // @ts-expect-error we do not support download yet. https://github.com/GoogleChromeLabs/chromium-bidi/issues/4155.
           {
             type: 'event',
             method: ChromiumBidi.BrowsingContext.EventNames.DownloadWillBegin,
             params: {
-              context: this.id,
+              context: targetContext.id,
+              download: params.guid,
               suggestedFilename: params.suggestedFilename,
-              navigation: params.guid,
+              navigation,
               timestamp: getTimestamp(),
               url: params.url,
-              userContext: this.userContext,
+              userContext: targetContext.userContext,
             },
           },
-          this.id,
+          targetContext.id,
         );
       },
     );
@@ -872,7 +915,7 @@ export class BrowsingContextImpl {
     this.#cdpTarget.browserCdpClient.on(
       'Browser.downloadProgress',
       (params) => {
-        if (!this.#downloadIdToUrlMap.has(params.guid)) {
+        if (!this.#downloadIdToInfoMap.has(params.guid)) {
           // The event is not related to this browsing context.
           return;
         }
@@ -882,19 +925,20 @@ export class BrowsingContextImpl {
           return;
         }
 
-        const url = this.#downloadIdToUrlMap.get(params.guid)!;
+        const {url, navigation} = this.#downloadIdToInfoMap.get(params.guid)!;
+        this.#downloadIdToInfoMap.delete(params.guid);
 
         switch (params.state) {
           case 'canceled':
             this.#eventManager.registerEvent(
-              // @ts-expect-error we do not support download yet. https://github.com/GoogleChromeLabs/chromium-bidi/issues/4155.
               {
                 type: 'event',
                 method: ChromiumBidi.BrowsingContext.EventNames.DownloadEnd,
                 params: {
                   status: 'canceled',
                   context: this.id,
-                  navigation: params.guid,
+                  download: params.guid,
+                  navigation,
                   timestamp: getTimestamp(),
                   url,
                   userContext: this.userContext,
@@ -905,7 +949,6 @@ export class BrowsingContextImpl {
             break;
           case 'completed':
             this.#eventManager.registerEvent(
-              // @ts-expect-error we do not support download yet. https://github.com/GoogleChromeLabs/chromium-bidi/issues/4155.
               {
                 type: 'event',
                 method: ChromiumBidi.BrowsingContext.EventNames.DownloadEnd,
@@ -913,7 +956,8 @@ export class BrowsingContextImpl {
                   filepath: params.filePath ?? null,
                   status: 'complete',
                   context: this.id,
-                  navigation: params.guid,
+                  download: params.guid,
+                  navigation,
                   timestamp: getTimestamp(),
                   url,
                   userContext: this.userContext,

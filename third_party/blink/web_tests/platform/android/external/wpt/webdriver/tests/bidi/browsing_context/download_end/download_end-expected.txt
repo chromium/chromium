@@ -1,0 +1,7 @@
+This is a wdspec test.
+[FAIL] test_download_attribute[data]
+[FAIL] test_download_attribute[http]
+[FAIL] test_content_disposition_header[in the same page]
+[FAIL] test_content_disposition_header[in the other page]
+Harness: the test ran to completion.
+
