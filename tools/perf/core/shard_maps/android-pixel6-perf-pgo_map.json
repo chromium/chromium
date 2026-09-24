@@ -22,15 +22,6 @@
         }
     },
     "1": {
-        "crossbench": {
-            "loadline_phone.crossbench": {
-                "crossbench_name": "loadline-phone-fast",
-                "arguments": [
-                    "--cool-down-threshold=moderate",
-                    "--disable-field-trials"
-                ]
-            }
-        },
         "benchmarks": {
             "jetstream2": {
                 "abridged": false

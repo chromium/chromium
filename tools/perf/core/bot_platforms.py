@@ -795,30 +795,6 @@ def _jetstream3_turbolev_future_crossbench(
 
 
 # LoadLine:
-@_register('loadline_phone.crossbench')
-def _loadline_phone_crossbench(
-  estimated_runtime: int = 7000, flags: tuple[str, ...] = ()
-):
-  return CrossbenchConfig(
-    'loadline_phone.crossbench',
-    'loadline-phone-fast',
-    estimated_runtime=estimated_runtime,
-    flags=flags,
-  )
-
-
-@_register('loadline_tablet.crossbench')
-def _loadline_tablet_crossbench(
-  estimated_runtime: int = 3600, flags: tuple[str, ...] = ()
-):
-  return CrossbenchConfig(
-    'loadline_tablet.crossbench',
-    'loadline-tablet-fast',
-    estimated_runtime=estimated_runtime,
-    flags=flags,
-  )
-
-
 @_register('loadline2_phone.crossbench')
 def _loadline2_phone_crossbench(
   estimated_runtime: int = 1000, flags: tuple[str, ...] = ()

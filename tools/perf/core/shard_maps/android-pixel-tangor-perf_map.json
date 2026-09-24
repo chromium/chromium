@@ -79,15 +79,6 @@
         }
     },
     "3": {
-        "crossbench": {
-            "loadline_tablet.crossbench": {
-                "crossbench_name": "loadline-tablet-fast",
-                "arguments": [
-                    "--cool-down-threshold=moderate",
-                    "--enable-field-trials=benchmarking"
-                ]
-            }
-        },
         "benchmarks": {}
     },
     "4": {

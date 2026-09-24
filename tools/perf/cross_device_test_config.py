@@ -315,7 +315,4 @@ TARGET_DEVICES = {
     'speedometer3.crossbench': 10,
     'motionmark1.3.crossbench': 5,
   },
-  'android-brya-kano-i5-8gb-perf': {
-    'loadline_tablet.crossbench': 8,
-  },
 }

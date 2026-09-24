@@ -431,16 +431,6 @@
         }
     },
     "10": {
-        "crossbench": {
-            "loadline_phone.crossbench": {
-                "crossbench_name": "loadline-phone-fast",
-                "arguments": [
-                    "--cool-down-threshold=moderate",
-                    "--debug",
-                    "--disable-field-trials"
-                ]
-            }
-        },
         "benchmarks": {}
     },
     "11": {

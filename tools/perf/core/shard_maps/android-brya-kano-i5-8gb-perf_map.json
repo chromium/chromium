@@ -4,86 +4,25 @@
             "jetstream2": {
                 "abridged": false
             }
-        },
-        "crossbench": {
-            "loadline_tablet.crossbench": {
-                "crossbench_name": "loadline-tablet-fast",
-                "arguments": [
-                    "--debug",
-                    "--disable-field-trials"
-                ]
-            }
         }
     },
     "1": {
-        "crossbench": {
-            "loadline_tablet.crossbench": {
-                "crossbench_name": "loadline-tablet-fast",
-                "arguments": [
-                    "--debug",
-                    "--disable-field-trials"
-                ]
-            }
-        },
         "benchmarks": {}
     },
     "2": {
-        "crossbench": {
-            "loadline_tablet.crossbench": {
-                "crossbench_name": "loadline-tablet-fast",
-                "arguments": [
-                    "--debug",
-                    "--disable-field-trials"
-                ]
-            }
-        },
         "benchmarks": {}
     },
     "3": {
-        "crossbench": {
-            "loadline_tablet.crossbench": {
-                "crossbench_name": "loadline-tablet-fast",
-                "arguments": [
-                    "--debug",
-                    "--disable-field-trials"
-                ]
-            }
-        },
         "benchmarks": {}
     },
     "4": {
-        "crossbench": {
-            "loadline_tablet.crossbench": {
-                "crossbench_name": "loadline-tablet-fast",
-                "arguments": [
-                    "--debug",
-                    "--disable-field-trials"
-                ]
-            }
-        },
         "benchmarks": {}
     },
     "5": {
-        "crossbench": {
-            "loadline_tablet.crossbench": {
-                "crossbench_name": "loadline-tablet-fast",
-                "arguments": [
-                    "--debug",
-                    "--disable-field-trials"
-                ]
-            }
-        },
         "benchmarks": {}
     },
     "6": {
         "crossbench": {
-            "loadline_tablet.crossbench": {
-                "crossbench_name": "loadline-tablet-fast",
-                "arguments": [
-                    "--debug",
-                    "--disable-field-trials"
-                ]
-            },
             "motionmark1.3.crossbench": {
                 "crossbench_name": "motionmark_1.3",
                 "arguments": [
@@ -101,13 +40,6 @@
             }
         },
         "crossbench": {
-            "loadline_tablet.crossbench": {
-                "crossbench_name": "loadline-tablet-fast",
-                "arguments": [
-                    "--debug",
-                    "--disable-field-trials"
-                ]
-            },
             "speedometer3.crossbench": {
                 "crossbench_name": "speedometer_3",
                 "arguments": [
