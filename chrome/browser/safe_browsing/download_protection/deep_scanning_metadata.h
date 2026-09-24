@@ -59,6 +59,9 @@ class DeepScanningMetadata {
   virtual const GURL& GetTabUrl() const = 0;
   virtual bool HasUserGesture() const = 0;
   virtual bool IsObfuscated() const = 0;
+  // Makes `IsObfuscated()` return false. Call this before deobfuscating so the
+  // file is not deobfuscated twice, which fails and cancels the download.
+  virtual void MarkDeobfuscated() = 0;
   virtual bool IsTopLevelEncryptedArchive() const = 0;
   virtual bool IsForDownloadItem(download::DownloadItem* download) const = 0;
 

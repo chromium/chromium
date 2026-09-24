@@ -894,6 +894,62 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(MetadataSourceType::kDownloadItem,
                     MetadataSourceType::kFileSystemAccessWriteItem));
 
+// Regression test for crbug.com/503210986: a single user bypass also reaches
+// the DOWNLOAD_DANGER_TYPE_USER_VALIDATED deobfuscation path, so the flag must
+// be cleared here or the file is deobfuscated twice and the download is
+// canceled.
+TEST_F(DeepScanningRequestTest, ClearsObfuscationFlagAfterDeobfuscating) {
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
+      kScanForDlpAndMalware);
+
+  item_.SetUserData(
+      enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
+      std::make_unique<enterprise_obfuscation::DownloadObfuscationData>(
+          /*is_obfuscated=*/true));
+
+  // A clean verdict yields EventResult::ALLOWED, which is one of the cases
+  // that triggers deobfuscation.
+  enterprise_connectors::ContentAnalysisResponse response;
+  download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+      download_path_, enterprise_connectors::ScanRequestUploadResult::kSuccess,
+      response);
+  download_protection_service_.GetFakeBinaryUploadService()
+      ->SetExpectedFinalAction(
+          enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
+
+  enterprise_connectors::AnalysisSettings settings;
+  settings.tags = {{"dlp", enterprise_connectors::TagSettings()},
+                   {"malware", enterprise_connectors::TagSettings()}};
+  settings.block_until_verdict =
+      enterprise_connectors::BlockUntilVerdict::kBlock;
+
+  base::RunLoop run_loop;
+  DeepScanningRequest request(
+      CreateMetadata(),
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+      DownloadCheckResult::SAFE,
+      base::BindRepeating(
+          [](base::RepeatingClosure closure, DownloadCheckResult result) {
+            if (result != DownloadCheckResult::ASYNC_SCANNING) {
+              closure.Run();
+            }
+          },
+          run_loop.QuitClosure()),
+      &download_protection_service_, std::move(settings),
+      /*password=*/std::nullopt);
+
+  request.Start();
+  run_loop.Run();
+
+  auto* obfuscation_data =
+      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+          item_.GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+  ASSERT_TRUE(obfuscation_data);
+  EXPECT_FALSE(obfuscation_data->is_obfuscated);
+}
+
 class DeepScanningRequestAllFeaturesEnabledTest
     : public DeepScanningRequestSourceTypeTest {};
 

@@ -8,10 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/file_manager/io_task.h"
-#include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "components/download/public/common/download_item_rename_handler.h"
 
 namespace download {
@@ -24,9 +21,7 @@ namespace enterprise_obfuscation {
 // content analysis that were staged in a local temporary directory before being
 // moved to their final target path on virtual/cloud filesystems (e.g. OneDrive,
 // Google Drive).
-class ObfuscationRenameHandler
-    : public download::DownloadItemRenameHandler,
-      public file_manager::io_task::IOTaskController::Observer {
+class ObfuscationRenameHandler : public download::DownloadItemRenameHandler {
  public:
   static std::unique_ptr<ObfuscationRenameHandler> CreateIfNeeded(
       download::DownloadItem* download_item);
@@ -39,21 +34,11 @@ class ObfuscationRenameHandler
              RenameCallback rename_callback) override;
   bool ShowRenameProgress() override;
 
-  // file_manager::io_task::IOTaskController::Observer:
-  void OnIOTaskStatus(
-      const file_manager::io_task::ProgressStatus& status) override;
-
  private:
-  void OnThreadPoolMoveComplete(RenameCallback rename_callback,
-                                const base::FilePath& destination_path,
-                                bool success);
+  void OnMoveComplete(RenameCallback rename_callback,
+                      const base::FilePath& destination_path,
+                      bool success);
 
-  raw_ptr<file_manager::io_task::IOTaskController> io_task_controller_ =
-      nullptr;
-  file_manager::io_task::IOTaskId observed_task_id_ = 0;
-  base::FilePath destination_path_;
-  ProgressCallback progress_callback_;
-  RenameCallback rename_callback_;
   base::WeakPtrFactory<ObfuscationRenameHandler> weak_factory_{this};
 };
 

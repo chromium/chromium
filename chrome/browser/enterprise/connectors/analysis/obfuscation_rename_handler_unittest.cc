@@ -49,6 +49,32 @@ TEST_F(ObfuscationRenameHandlerTest, CreateIfNeededWithObfuscation) {
   EXPECT_NE(nullptr, handler);
 }
 
+// Regression test for crbug.com/503210986: deobfuscation clears `is_obfuscated`
+// before a rename handler is ever requested, so requiring the flag here left
+// the download stranded at its local temporary path.
+TEST_F(ObfuscationRenameHandlerTest, CreateIfNeededAfterDeobfuscation) {
+  download::MockDownloadItem item;
+  auto obfuscation_data =
+      std::make_unique<DownloadObfuscationData>(/*is_obfuscated=*/false);
+  obfuscation_data->original_target_path = target_path_;
+  item.SetUserData(DownloadObfuscationData::kUserDataKey,
+                   std::move(obfuscation_data));
+
+  EXPECT_NE(nullptr, ObfuscationRenameHandler::CreateIfNeeded(&item));
+}
+
+// The absence of a target path, not the obfuscation flag, is what signals that
+// no relocation is pending.
+TEST_F(ObfuscationRenameHandlerTest,
+       CreateIfNeededReturnsNullWithoutTargetPath) {
+  download::MockDownloadItem item;
+  item.SetUserData(
+      DownloadObfuscationData::kUserDataKey,
+      std::make_unique<DownloadObfuscationData>(/*is_obfuscated=*/true));
+
+  EXPECT_EQ(nullptr, ObfuscationRenameHandler::CreateIfNeeded(&item));
+}
+
 TEST_F(ObfuscationRenameHandlerTest, StartMovesFileToTarget) {
   download::MockDownloadItem item;
   auto obfuscation_data =

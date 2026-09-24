@@ -28,7 +28,7 @@ if (is_chromeos) {
 
     deps = [
       "//base",
-      "//chrome/browser/ash/file_manager",
+      "//components/download/public/common:public",
       "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     ]
   }

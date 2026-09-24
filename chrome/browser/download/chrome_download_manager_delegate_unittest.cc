@@ -2934,6 +2934,93 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
   EXPECT_TRUE(delegate()->GetRenameHandlerForDownload(download_item.get()));
 }
 
+// Regression test for crbug.com/503210986: a rename handler must still be
+// produced after the download has been deobfuscated, which is when
+// DownloadItemImpl first asks for one. Unlike
+// GetRenameHandlerForDownload_Obfuscation above, this drives the real
+// deobfuscation path instead of setting the flag by hand.
+TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
+       GetRenameHandlerForDownload_AfterDeobfuscation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_obfuscation::kEnterpriseFileObfuscation);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath staging_path = temp_dir.GetPath().AppendASCII("staging.txt");
+  base::FilePath virtual_path("/media/fuse/odfs/final.txt");
+
+  // Write genuinely obfuscated content so that deobfuscation succeeds and
+  // `is_obfuscated` is cleared the way it is in production.
+  std::vector<uint8_t> original_contents(5000, 'a');
+  enterprise_obfuscation::DownloadObfuscator obfuscator;
+  auto obfuscation_result =
+      obfuscator.ObfuscateChunk(base::span(original_contents), true);
+  ASSERT_TRUE(obfuscation_result.has_value());
+  ASSERT_TRUE(base::WriteFile(staging_path, obfuscation_result.value()));
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*download_item, GetTargetFilePath())
+      .WillRepeatedly(ReturnRef(staging_path));
+  EXPECT_CALL(*download_item, GetFullPath())
+      .WillRepeatedly(ReturnRef(staging_path));
+  EXPECT_CALL(*download_item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED));
+
+  auto mock_protection_service =
+      std::make_unique<::testing::NiceMock<TestDownloadProtectionService>>();
+  EXPECT_CALL(*delegate(), GetDownloadProtectionService())
+      .WillRepeatedly(Return(mock_protection_service.get()));
+
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  enterprise_connectors::test::SetAnalysisConnector(
+      pref_service(), enterprise_connectors::FILE_DOWNLOADED,
+      R"({
+        "service_provider": "google",
+        "enable": [
+          {
+            "url_list": ["*"],
+            "tags": ["malware", "dlp"]
+          }
+        ],
+        "block_until_verdict": 1
+      })");
+
+  auto obfuscation_data =
+      std::make_unique<enterprise_obfuscation::DownloadObfuscationData>(
+          /*is_obfuscated=*/true);
+  obfuscation_data->original_target_path = virtual_path;
+  download_item->SetUserData(
+      enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
+      std::move(obfuscation_data));
+  download_item->SetUserData(
+      &ChromeDownloadManagerDelegate::SafeBrowsingState::
+          kSafeBrowsingUserDataKey,
+      std::make_unique<ChromeDownloadManagerDelegate::SafeBrowsingState>());
+
+  // Completion defers while the file is deobfuscated in place.
+  base::RunLoop run_loop;
+  EXPECT_FALSE(delegate()->ShouldCompleteDownload(download_item.get(),
+                                                  run_loop.QuitClosure()));
+  run_loop.Run();
+
+  auto* final_data =
+      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+          download_item->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+  ASSERT_TRUE(final_data);
+  // Precondition: deobfuscation has cleared the flag.
+  ASSERT_FALSE(final_data->is_obfuscated);
+  ASSERT_EQ(virtual_path, final_data->original_target_path);
+
+  // The relocation to the virtual filesystem is still pending, so a rename
+  // handler is required here.
+  EXPECT_TRUE(delegate()->GetRenameHandlerForDownload(download_item.get()));
+}
+
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        DetermineLocalPath_Obfuscation_NonLocalPath) {
   base::test::ScopedFeatureList scoped_feature_list;

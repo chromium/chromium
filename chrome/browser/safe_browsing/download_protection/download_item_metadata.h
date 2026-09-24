@@ -29,6 +29,7 @@ class DownloadItemMetadata : public DeepScanningMetadata {
   const GURL& GetTabUrl() const override;
   bool HasUserGesture() const override;
   bool IsObfuscated() const override;
+  void MarkDeobfuscated() override;
   bool IsTopLevelEncryptedArchive() const override;
   download::DownloadDangerType GetDangerType() const override;
   enterprise_connectors::EventResult GetPreScanEventResult(

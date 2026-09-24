@@ -1113,6 +1113,11 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
        event_result == enterprise_connectors::EventResult::BYPASSED ||
        result == DownloadCheckResult::UNKNOWN) &&
       metadata_->IsObfuscated()) {
+    // Guard against the DOWNLOAD_DANGER_TYPE_USER_VALIDATED path, which a
+    // single user bypass also reaches, deobfuscating the file a second time.
+    // Must happen before `metadata_` is reset below.
+    metadata_->MarkDeobfuscated();
+
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(&enterprise_obfuscation::DeobfuscateFileInPlace,

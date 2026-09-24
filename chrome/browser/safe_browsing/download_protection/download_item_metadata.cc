@@ -83,6 +83,17 @@ bool DownloadItemMetadata::IsObfuscated() const {
   return obfuscation_data ? obfuscation_data->is_obfuscated : false;
 }
 
+void DownloadItemMetadata::MarkDeobfuscated() {
+  // TODO(crbug.com/367259664): Ensure this doesn't run too soon.
+  enterprise_obfuscation::DownloadObfuscationData* obfuscation_data =
+      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+          item_->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+  if (obfuscation_data) {
+    obfuscation_data->is_obfuscated = false;
+  }
+}
+
 bool DownloadItemMetadata::IsTopLevelEncryptedArchive() const {
   return DownloadItemWarningData::IsTopLevelEncryptedArchive(item_);
 }

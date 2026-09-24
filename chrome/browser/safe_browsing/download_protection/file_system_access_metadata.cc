@@ -99,6 +99,12 @@ bool FileSystemAccessMetadata::IsObfuscated() const {
   return false;
 }
 
+void FileSystemAccessMetadata::MarkDeobfuscated() {
+  // TODO(crbug.com/367259664): Ensure this doesn't run too soon.
+
+  // No-op: these files are never obfuscated.
+}
+
 bool FileSystemAccessMetadata::IsTopLevelEncryptedArchive() const {
   // No support for password-protected files for filesystem access API.
   return false;
