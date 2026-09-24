@@ -132,11 +132,10 @@ class PartnerCustomizationsUma {
         tryLogInitialTabCustomizationOutcome();
     }
 
+    // TODO(crbug.com/565457901): Rename and adapt this @IntDef and
+    // logPartnerCustomizationHomepage() for logger refactoring.
     /**
      * Constants used to categorize what kind of Homepage was initially shown at Chrome's startup.
-     * These correspond to PartnerCustomizationsHomepage in enums.xml.
-     * These values are recorded as histogram values. Entries should not be renumbered and numeric
-     * values should never be reused.
      */
     @IntDef({
         PartnerCustomizationsHomepageEnum.NTP_UNKNOWN,
@@ -451,34 +450,18 @@ class PartnerCustomizationsUma {
     }
 
     /**
-     * Logs the outcome of Homepage customization. This indicates what the user saw: NTP vs'
-     * some other page and whether that was the correct page to show after customization completes.
+     * Logs the outcome of Homepage customization. Formerly recorded to UMA, retained temporarily as
+     * a stub for logger refactoring.
+     *
      * @param partnerCustomizationHomepageEnum The code for what kind of page was shown.
      * @param whichDelegate Which delegate was doing the customization.
      * @param wasHomepageCached Whether the homepage was cached, which effectively tells us that
-     *                          this was not Chrome's first ever launch.
+     *     this was not Chrome's first ever launch.
      */
     void logPartnerCustomizationHomepage(
             @PartnerCustomizationsHomepageEnum int partnerCustomizationHomepageEnum,
             @CustomizationProviderDelegateType int whichDelegate,
-            boolean wasHomepageCached) {
-        String delegateName = delegateName(whichDelegate);
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.PartnerCustomization.HomepageCustomizationOutcome",
-                partnerCustomizationHomepageEnum,
-                PartnerCustomizationsHomepageEnum.NUM_ENTRIES);
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.PartnerCustomization.HomepageCustomizationOutcome." + delegateName,
-                partnerCustomizationHomepageEnum,
-                PartnerCustomizationsHomepageEnum.NUM_ENTRIES);
-        if (!wasHomepageCached) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Android.PartnerCustomization.HomepageCustomizationOutcomeNotCached."
-                            + delegateName,
-                    partnerCustomizationHomepageEnum,
-                    PartnerCustomizationsHomepageEnum.NUM_ENTRIES);
-        }
-    }
+            boolean wasHomepageCached) {}
 
     /** The different outcomes for the Async Task completion. */
     @IntDef({

@@ -1793,14 +1793,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Preload APK"/>
 </enum>
 
-<enum name="PartnerCustomizationsHomepage">
-  <int value="0" label="NTP but unknown if correct"/>
-  <int value="1" label="NTP but should have been Partner Homepage"/>
-  <int value="2" label="NTP correctly"/>
-  <int value="3" label="Partner custom"/>
-  <int value="4" label="Other custom"/>
-</enum>
-
 <enum name="PartnerCustomizationUsage">
   <int value="0" label="Homepage"/>
   <int value="1" label="Bookmarks"/>

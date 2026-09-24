@@ -4981,59 +4981,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.PartnerCustomization.HomepageCustomizationOutcome"
-    enum="PartnerCustomizationsHomepage" expires_after="2025-02-02">
-  <owner>donnd@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Records the outcome of initial Tab creation relative to Homepage
-    customization. The outcome characterizes the initial Tab focusing on an NTP
-    and whether it was created correctly. When a custom Homepage was created we
-    only record whether it was a Partner Homepage or some other Homepage. At
-    this time we don't differentiate between User and Policy Homepages or record
-    whether any Homepage was correctly created when customization changes.
-    Recorded at the end of customization or initial Tab creation, whichever is
-    last.
-  </summary>
-</histogram>
-
-<histogram
-    name="Android.PartnerCustomization.HomepageCustomizationOutcome.{CustomizationDelegate}"
-    enum="PartnerCustomizationsHomepage" expires_after="2025-02-02">
-  <owner>donnd@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Records the outcome of initial Tab creation relative to Homepage
-    customization using delegate &quot;{CustomizationDelegate}&quot;. The
-    outcome characterizes the initial Tab focusing on an NTP and whether it was
-    created correctly. When a custom Homepage was created we only record whether
-    it was a Partner Homepage or some other Homepage. At this time we don't
-    differentiate between User and Policy Homepages or record whether any
-    Homepage was correctly created when customization changes. Recorded at the
-    end of customization or initial Tab creation, whichever is last.
-  </summary>
-  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
-</histogram>
-
-<histogram
-    name="Android.PartnerCustomization.HomepageCustomizationOutcomeNotCached.{CustomizationDelegate}"
-    enum="PartnerCustomizationsHomepage" expires_after="2025-02-02">
-  <owner>donnd@chromium.org</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <summary>
-    Records the outcome of initial Tab creation relative to Homepage
-    customization using delegate &quot;{CustomizationDelegate}&quot; when the
-    Homepage was not previously cached. The outcome characterizes the initial
-    Tab focusing on an NTP and whether it was created correctly. When a custom
-    Homepage was created we only record whether it was a Partner Homepage or
-    some other Homepage. At this time we don't differentiate between User and
-    Policy Homepages or record whether any Homepage was correctly created when
-    customization changes. Recorded at the end of customization or initial Tab
-    creation, whichever is last.
-  </summary>
-  <token key="CustomizationDelegate" variants="CustomizationDelegate"/>
-</histogram>
-
 <histogram name="Android.PartnerCustomization.TaskCompletion"
     enum="PartnerTaskCompletion" expires_after="2025-04-06">
   <owner>donnd@chromium.org</owner>
