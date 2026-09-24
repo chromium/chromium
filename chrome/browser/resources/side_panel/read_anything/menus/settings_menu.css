@@ -16,7 +16,6 @@
   background: none;
   border: none;
   box-sizing: border-box;
-  color: inherit;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -50,7 +49,7 @@
 }
 
 .menu-row .start-icon {
-  --cr-icon-color: var(--cr-secondary-text-color);
+  --cr-icon-color: var(--color-menu-icon, var(--cr-secondary-text-color));
 }
 
 .menu-row .label {
@@ -67,7 +66,7 @@ new-badge {
 }
 
 .menu-row .end-icon {
-  --cr-icon-color: var(--cr-secondary-text-color);
+  --cr-icon-color: var(--color-menu-icon, var(--cr-secondary-text-color));
 }
 
 :host-context([dir='rtl']) .end-icon {
@@ -80,6 +79,7 @@ new-badge {
 
 #settings-menu-dialog::part(dialog) {
   border-radius: var(--cornerRadii-medium-small, 12px);
+  color: var(--cr-primary-text-color);
   padding-bottom: 12px;
   padding-top: 12px;
   width: clamp(92px, 100%, 340px);

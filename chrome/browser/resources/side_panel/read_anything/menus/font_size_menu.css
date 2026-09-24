@@ -11,11 +11,13 @@
  * #css_wrapper_metadata_end */
 
 #font-size-increase {
-  --cr-icon-button-fill-color: var(--color-sys-on-surface-subtle);
+  --cr-icon-button-fill-color:
+      var(--color-menu-icon, var(--color-sys-on-surface-subtle));
 }
 
 #font-size-decrease {
-  --cr-icon-button-fill-color: var(--color-sys-on-surface-subtle);
+  --cr-icon-button-fill-color:
+      var(--color-menu-icon, var(--color-sys-on-surface-subtle));
   margin-inline-start: 12px;
 }
 
@@ -25,6 +27,7 @@
 
 cr-action-menu::part(dialog) {
   border-radius: var(--cornerRadii-medium-small, 12px);
+  color: var(--cr-primary-text-color);
 }
 
 .announce-block {

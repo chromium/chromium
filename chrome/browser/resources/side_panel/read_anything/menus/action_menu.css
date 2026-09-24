@@ -72,6 +72,7 @@ cr-icon {
 }
 
 cr-action-menu::part(dialog) {
+  color: var(--cr-primary-text-color);
   /* 90% of side panel height minus 36px toolbar height. */
   max-height: calc(90% - 36px);
   overscroll-behavior: contain;
@@ -108,7 +109,7 @@ cr-action-menu[non-modal]::part(dialog),
 }
 
 .toggle-row .start-icon {
-  --cr-icon-color: var(--cr-secondary-text-color);
+  --cr-icon-color: var(--color-menu-icon, var(--cr-secondary-text-color));
 }
 
 .toggle-row .label {

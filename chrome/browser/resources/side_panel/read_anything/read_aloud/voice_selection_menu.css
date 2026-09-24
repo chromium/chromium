@@ -20,7 +20,7 @@ cr-icon {
 cr-icon-button {
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 24px;
-  color: var(--color-sys-on-surface-subtle);
+  color: var(--color-menu-icon, var(--color-sys-on-surface-subtle));
   margin: 0 4px;
 }
 
@@ -31,6 +31,7 @@ cr-icon-button {
 }
 
 cr-action-menu::part(dialog) {
+  color: var(--cr-primary-text-color);
   max-height: calc(90% - 36px);
   min-width: 304px;
   /* Prevent jank due to overscrolling from the dialog */
@@ -72,7 +73,8 @@ cr-action-menu[non-modal]::part(dialog) {
 
 .lang-group-title,
 .notification {
-  color: var(--color-sys-on-surface-subtle);
+  color: var(--color-menu-item-foreground-secondary,
+      var(--color-sys-on-surface-subtle));
   display: grid;
   font-size: 12px;
   font-weight: 400;
