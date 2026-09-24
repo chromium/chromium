@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "chrome/common/request_header_integrity/buildflags.h"
 #include "chrome/services/file_util/buildflags.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
@@ -96,6 +97,11 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_ANDROID)
 #include "chrome/services/media_gallery_util/media_parser_factory.h"
 #include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
+#endif
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/common/request_header_integrity/platform_runtime.mojom.h"  // nogncheck
+#include "chrome/services/platform_runtime/platform_runtime_service_impl.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
@@ -330,6 +336,15 @@ auto RunPdfService(mojo::PendingReceiver<pdf::mojom::PdfService> receiver) {
 }
 #endif
 
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY) && !BUILDFLAG(IS_ANDROID)
+auto RunPlatformRuntimeService(
+    mojo::PendingReceiver<
+        request_header_integrity::mojom::PlatformRuntimeService> receiver) {
+  return std::make_unique<platform_runtime::PlatformRuntimeServiceImpl>(
+      std::move(receiver));
+}
+#endif
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \
     (BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_WIN))
 auto RunPrintingService(
@@ -540,6 +555,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   services.Add(RunPdfService);
+#endif
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY) && !BUILDFLAG(IS_ANDROID)
+  services.Add(RunPlatformRuntimeService);
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) || \

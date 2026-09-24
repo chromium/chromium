@@ -1,0 +1,6 @@
+include_rules = [
+  "+chrome/common/request_header_integrity/platform_runtime.mojom.h",
+  "+mojo/public/cpp/bindings",
+  "+net/http",
+  "+services/network/public/mojom",
+]

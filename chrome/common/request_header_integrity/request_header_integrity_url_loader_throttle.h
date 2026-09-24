@@ -46,6 +46,11 @@ class RequestHeaderIntegrityURLLoaderThrottle
   static void UpdateCorsExemptHeaders(
       network::mojom::NetworkContextParams* params);
 
+  // Adds the integrity headers.
+  static void AddRequestIntegrityHeaders(
+      net::HttpRequestHeaders* headers,
+      ChromeCompaneroLoader& companero_loader);
+
   // Called both for initial requests and upon redirects during prefetching.
   // - Adds the integrity header names to `removed_headers` in the case where
   //   the request is redirection from a target domain to a non-target domain

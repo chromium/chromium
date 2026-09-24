@@ -1,0 +1,55 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module request_header_integrity.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "services/network/public/mojom/http_request_headers.mojom";
+
+// Outcome of one invocation of the native library.
+[EnableIf=is_chromeos|is_linux|is_mac|is_win]
+enum PlatformRuntimeStatus {
+  // The library could not be loaded, or is not present.
+  kLibraryUnavailable,
+  // The library ran and produced at least one header.
+  kSuccess,
+  // The library ran but produced no output. It reports success in this case,
+  // so it must be distinguished from kSuccess by the caller.
+  kNoOutput,
+  // The library ran and reported failure.
+  kFailure,
+};
+
+// Bound to a single loaded instance of the native Platform Runtime library.
+[EnableIf=is_chromeos|is_linux|is_mac|is_win]
+interface PlatformRuntime {
+  // Invokes the loaded library over `input_headers` and returns the headers it
+  // wrote.
+  ProcessHeaders(network.mojom.HttpRequestHeaders input_headers)
+      => result<network.mojom.HttpRequestHeaders, PlatformRuntimeStatus>;
+};
+
+// Runs the native Platform Runtime library in a utility process.
+//
+// Both the library (shipped by Component Updater) and `input_headers`
+// (constructed by the browser) are trusted. Running the library in a separate
+// utility process is for stability rather than a Rule-of-2 security boundary.
+// `[ServiceSandbox]` assigns it to a dedicated service process configured to
+// load the component library.
+//
+// This is the only place in Chrome that loads or executes the library. The
+// service is a thin wrapper around the library's entry point: it loads the
+// library once via `LoadLibrary`, and `PlatformRuntime` forwards
+// `input_headers` to that loaded library and returns the headers written back.
+[EnableIf=is_chromeos|is_linux|is_mac|is_win,
+ ServiceSandbox=sandbox.mojom.Sandbox.kPlatformRuntime]
+interface PlatformRuntimeService {
+  // Loads the library at `library_path` once and binds `runtime` to it.
+  //
+  // On Windows the library is expected to have been mapped into this process
+  // before sandbox lockdown and verified at installation time prior to launch.
+  LoadLibrary(mojo_base.mojom.FilePath library_path,
+              pending_receiver<PlatformRuntime> runtime);
+};

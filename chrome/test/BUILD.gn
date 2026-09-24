@@ -5831,6 +5831,9 @@ test("unit_tests") {
       "//chrome/browser/request_header_integrity:unit_tests",
       "//chrome/common/request_header_integrity:unit_tests",
     ]
+    if (!is_android) {
+      deps += [ "//chrome/services/platform_runtime:unit_tests" ]
+    }
   }
 
   if (is_android) {

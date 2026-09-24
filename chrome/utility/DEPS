@@ -1,6 +1,8 @@
 include_rules = [
   "+chrome/grit",
   "+chrome/installer/util",
+  "+chrome/common/request_header_integrity/buildflags.h",
+  "+chrome/common/request_header_integrity/platform_runtime.mojom.h",
   "+chrome/services/file_util/buildflags.h",
   "+chrome/services/file_util/document_analysis_service.h",
   "+chrome/services/file_util/file_util_service.h",
@@ -9,6 +11,7 @@ include_rules = [
   "+chrome/services/media_gallery_util",
   "+chrome/services/pdf/pdf_service.h",
   "+chrome/services/pdf/public/mojom",
+  "+chrome/services/platform_runtime/platform_runtime_service_impl.h",
   "+chrome/services/printing/printing_service.h",
   "+chrome/services/printing/print_backend_service_impl.h",
   "+chrome/services/printing/public/mojom",

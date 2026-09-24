@@ -28,6 +28,6 @@ extern "C" PR_EXPORT DISABLE_CFI_DLSYM bool ProcessRequestHeaders(
   if (!get_header(headers, "host", host, sizeof(host))) {
     return false;
   }
-  set_header(headers, host, url);
+  set_header(headers, host, url ? url : "no-url");
   return true;
 }

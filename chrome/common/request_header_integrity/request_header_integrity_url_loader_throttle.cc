@@ -17,6 +17,7 @@
 #include "base/hash/sha1.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -103,26 +104,6 @@ std::string GetChannelName() {
   }
 
   return channel_name;
-}
-
-void AddRequestIntegrityHeaders(net::HttpRequestHeaders* headers,
-                                ChromeCompaneroLoader& companero_loader) {
-  const std::string digest =
-      base::Base64Encode(base::SHA1Hash(base::as_byte_span(
-          std::string(kIntegritySeed) + google_apis::GetAPIKey() +
-          embedder_support::GetUserAgent())));
-  const std::string channel_name = GetChannelName();
-  if (!channel_name.empty()) {
-    headers->SetHeader(CHANNEL_NAME_HEADER_NAME, channel_name);
-  }
-  headers->SetHeader(LASTCHANGE_YEAR_HEADER_NAME, LASTCHANGE_YEAR);
-  headers->SetHeader(VALIDATE_HEADER_NAME, digest);
-  headers->SetHeader(COPYRIGHT_HEADER_NAME, CHROME_COPYRIGHT);
-
-  auto companero_header = companero_loader.GetHeaderNameAndValue();
-  if (companero_header) {
-    headers->SetHeader(companero_header->name, companero_header->value);
-  }
 }
 
 void AddRequestIntegrityHeaderNamesToVector(
@@ -264,6 +245,27 @@ void RequestHeaderIntegrityURLLoaderThrottle::UpdateCorsExemptHeaders(
     network::mojom::NetworkContextParams* params) {
   AddRequestIntegrityHeaderNamesToVector(&(params->cors_exempt_header_list),
                                          ChromeCompaneroLoader::GetInstance());
+}
+
+// static
+void RequestHeaderIntegrityURLLoaderThrottle::AddRequestIntegrityHeaders(
+    net::HttpRequestHeaders* headers,
+    ChromeCompaneroLoader& companero_loader) {
+  const std::string digest = base::Base64Encode(base::SHA1Hash(
+      base::as_byte_span(base::StrCat({kIntegritySeed, google_apis::GetAPIKey(),
+                                       embedder_support::GetUserAgent()}))));
+  const std::string channel_name = GetChannelName();
+  if (!channel_name.empty()) {
+    headers->SetHeader(CHANNEL_NAME_HEADER_NAME, channel_name);
+  }
+  headers->SetHeader(LASTCHANGE_YEAR_HEADER_NAME, LASTCHANGE_YEAR);
+  headers->SetHeader(VALIDATE_HEADER_NAME, digest);
+  headers->SetHeader(COPYRIGHT_HEADER_NAME, CHROME_COPYRIGHT);
+
+  auto companero_header = companero_loader.GetHeaderNameAndValue();
+  if (companero_header) {
+    headers->SetHeader(companero_header->name, companero_header->value);
+  }
 }
 
 // static
