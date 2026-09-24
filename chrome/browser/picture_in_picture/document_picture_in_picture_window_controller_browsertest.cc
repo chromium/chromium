@@ -255,13 +255,11 @@ class DocumentPictureInPictureWindowControllerBrowserTest
     return nullptr;
   }
 
-  void LoadTabAndEnterPictureInPicture(
+  void LoadUrlAndEnterPictureInPicture(
       BrowserWindowInterface* browser,
+      const GURL& test_page_url,
       const gfx::Size& window_size = gfx::Size(500, 500),
       bool prefer_initial_window_placement = false) {
-    GURL test_page_url = chrome_test_utils::GetTestUrl(
-        base::FilePath(base::FilePath::kCurrentDirectory),
-        base::FilePath(kPictureInPictureDocumentPipPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
 
     content::WebContents* active_web_contents =
@@ -286,6 +284,18 @@ class DocumentPictureInPictureWindowControllerBrowserTest
         true, base::Seconds(30))
         .Wait();
     ASSERT_TRUE(GetRenderWidgetHostView()->IsShowing());
+  }
+
+  void LoadTabAndEnterPictureInPicture(
+      BrowserWindowInterface* browser,
+      const gfx::Size& window_size = gfx::Size(500, 500),
+      bool prefer_initial_window_placement = false) {
+    LoadUrlAndEnterPictureInPicture(
+        browser,
+        chrome_test_utils::GetTestUrl(
+            base::FilePath(base::FilePath::kCurrentDirectory),
+            base::FilePath(kPictureInPictureDocumentPipPage)),
+        window_size, prefer_initial_window_placement);
   }
 
   void ClickButton(views::Button* button) {
@@ -905,6 +915,19 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerFrameViewTest,
   // The directionality should still be LTR.
   EXPECT_EQ(base::i18n::LEFT_TO_RIGHT,
             window_title->GetTextDirectionForTesting());
+}
+
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerFrameViewTest,
+                       WindowTitleShowsOpenerHost) {
+  const GURL test_page_url = embedded_test_server()->GetURL(
+      "/media/picture-in-picture/document-pip.html?query=1#fragment");
+  LoadUrlAndEnterPictureInPicture(browser(), test_page_url);
+
+  views::Label* window_title = GetPipFrameViewControls().window_title();
+  ASSERT_NE(nullptr, window_title);
+  EXPECT_EQ(base::UTF8ToUTF16(base::StrCat(
+                {test_page_url.host(), ":", test_page_url.port()})),
+            window_title->GetText());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

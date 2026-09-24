@@ -531,16 +531,16 @@ TEST_F(DocumentPipFrameViewTest, OriginChipPresent) {
   EXPECT_TRUE(GetWindowTitle(frame_view));
 }
 
-// The window title shows the opener URL formatted the omnibox way: scheme and
-// trivial subdomain omitted, path preserved.
-TEST_F(DocumentPipFrameViewTest, WindowTitleShowsFormattedUrl) {
+// The window title shows only the opener host, matching the browser-backed
+// Document PiP frame.
+TEST_F(DocumentPipFrameViewTest, WindowTitleShowsFormattedHost) {
   content::WebContentsTester::For(opener())->NavigateAndCommit(
-      GURL("https://www.example.com/some/path?query=1"));
+      GURL("https://www.example.com/some/path?query=1#fragment"));
 
   auto* frame_view =
       CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
 
-  EXPECT_EQ(std::u16string(u"example.com/some/path?query=1"),
+  EXPECT_EQ(std::u16string(u"example.com"),
             GetWindowTitle(frame_view)->GetText());
 }
 

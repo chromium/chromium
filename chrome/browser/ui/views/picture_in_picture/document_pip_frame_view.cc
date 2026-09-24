@@ -219,10 +219,16 @@ class DocumentPipFrameView::LocationBarModelDelegateImpl
   content::WebContents* GetActiveWebContents() const override {
     return host_->GetOpenerWebContents();
   }
+  bool ShouldTrimDisplayUrlAfterHostName() const override;
 
  private:
   const raw_ref<DocumentPipHost> host_;
 };
+
+bool DocumentPipFrameView::LocationBarModelDelegateImpl::
+    ShouldTrimDisplayUrlAfterHostName() const {
+  return true;
+}
 
 class DocumentPipFrameView::WindowEventObserver : public ui::EventObserver {
  public:
