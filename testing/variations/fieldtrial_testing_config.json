@@ -12367,6 +12367,29 @@
             ]
         }
     ],
+    "NewVoiceSearchUiInNtpRealbox": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Arm4_Transcript_AutoEndpoint_20260923",
+                    "params": {
+                        "VoiceSearchCoherenceRealboxAutoEndpoint": "true",
+                        "VoiceSearchCoherenceRealboxHelperText": "true",
+                        "VoiceSearchCoherenceSearchboxWithLiveTranscription": "true"
+                    },
+                    "enable_features": [
+                        "VoiceSearchCoherenceSearchbox"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoPauseMediaOnHeadphoneUnplug": [
         {
             "platforms": [
@@ -19491,33 +19514,6 @@
                     },
                     "enable_features": [
                         "VoiceSearchCoherenceComposeboxes"
-                    ]
-                }
-            ]
-        }
-    ],
-    "VoiceSearchCoherenceNtpRealbox": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_NoLiveTranscription",
-                    "enable_features": [
-                        "VoiceSearchCoherenceSearchbox"
-                    ]
-                },
-                {
-                    "name": "Enabled_WithLiveTranscription",
-                    "params": {
-                        "VoiceSearchCoherenceSearchboxWithLiveTranscription": "true"
-                    },
-                    "enable_features": [
-                        "VoiceSearchCoherenceSearchbox"
                     ]
                 }
             ]
