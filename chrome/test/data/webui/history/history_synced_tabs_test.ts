@@ -458,6 +458,15 @@ suite('<history-sync-optin>', function() {
     assertTrue(isChildVisible(element, '#account-name'));
     assertTrue(isChildVisible(element, '#account-email'));
     assertTrue(isChildVisible(element, '#profile-icon'));
+    assertTrue(
+        isChildVisible(element, '#web-only-signed-in-sync-history-promo-desc'));
+    assertFalse(isChildVisible(element, '#signed-out-sync-history-promo-desc'));
+    assertEquals(
+        loadTimeData.getString('syncHistoryPromoBodyWebOnlySignedIn'),
+        element.shadowRoot
+            .querySelector<HTMLElement>(
+                '#web-only-signed-in-sync-history-promo-desc')!.textContent
+            .trim());
   });
 
   test('check elements in signed out state', async () => {
@@ -478,6 +487,13 @@ suite('<history-sync-optin>', function() {
     // The history sync promo elements for SIGNED_OUT state are shown correctly.
     assertTrue(isChildVisible(element, '#sync-history-button'));
     assertTrue(isChildVisible(element, '#signed-out-sync-history-promo-desc'));
+    assertFalse(
+        isChildVisible(element, '#web-only-signed-in-sync-history-promo-desc'));
+    assertEquals(
+        loadTimeData.getString('syncHistoryPromoBodySignedOut'),
+        element.shadowRoot
+            .querySelector<HTMLElement>(
+                '#signed-out-sync-history-promo-desc')!.textContent.trim());
   });
 
   test('check elements in pending signin without tabs sync state', async () => {

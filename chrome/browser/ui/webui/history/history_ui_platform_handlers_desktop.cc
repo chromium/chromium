@@ -113,9 +113,28 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
   }
   source->AddString(
       "turnOnSignedInSyncHistoryPromoBodySignInSyncOff",
-      l10n_util::GetStringFUTF16(
-          IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_IN_SYNC_OFF,
-          base::UTF8ToUTF16(account_info.GetEmail())));
+      has_matching_preferred_account
+          ? base::UTF8ToUTF16(
+                signin::GetAccountPreviewRecentTabsSignedInPromoSubtitle(
+                    account_info.GetEmail(), *preferred_account))
+          : l10n_util::GetStringFUTF16(
+                IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_IN_SYNC_OFF,
+                base::UTF8ToUTF16(account_info.GetEmail())));
+
+  std::optional<std::string> custom_recent_tabs_signed_out_subtitle;
+  if (has_matching_preferred_account) {
+    custom_recent_tabs_signed_out_subtitle =
+        signin::GetAccountPreviewRecentTabsPromoSubtitle(*preferred_account);
+  }
+  if (custom_recent_tabs_signed_out_subtitle.has_value() &&
+      !custom_recent_tabs_signed_out_subtitle->empty()) {
+    source->AddString("syncHistoryPromoBodyWebOnlySignedIn",
+                      *custom_recent_tabs_signed_out_subtitle);
+  } else {
+    source->AddLocalizedString(
+        "syncHistoryPromoBodyWebOnlySignedIn",
+        IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_OUT);
+  }
   source->AddString("accountName", account_info.GetFullName().value_or(""));
   source->AddString("accountEmail", account_info.GetEmail());
   if (!has_primary_account && !account_info.IsEmpty()) {

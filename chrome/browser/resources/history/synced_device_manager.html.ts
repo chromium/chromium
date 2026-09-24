@@ -53,10 +53,18 @@ ${this.shouldShowHistorySyncOptIn_() ? html`
         <img class="sync-history-illustration" alt="">
       </div>
       <h1 class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</h1>
-      <div id="signed-out-sync-history-promo-desc"
-          class="sync-history-promo-desc">
-        $i18n{syncHistoryPromoBodySignedOut}
-      </div>
+      ${this.isSignInState_(HistorySignInState.SIGNED_OUT) ? html`
+        <div id="signed-out-sync-history-promo-desc"
+            class="sync-history-promo-desc">
+          $i18n{syncHistoryPromoBodySignedOut}
+        </div>
+      ` : ''}
+      ${this.isSignInState_(HistorySignInState.WEB_ONLY_SIGNED_IN) ? html`
+        <div id="web-only-signed-in-sync-history-promo-desc"
+            class="sync-history-promo-desc">
+          $i18n{syncHistoryPromoBodyWebOnlySignedIn}
+        </div>
+      ` : ''}
     ` : ''}
 
     ${this.isSignInState_(HistorySignInState.WEB_ONLY_SIGNED_IN) &&
