@@ -1,7 +1,7 @@
 # Surface Embed User Guide
 
 `//components/surface_embed` implements a mechanism to embed a
-`content::WebContents` (the inner/guest page) inside another
+`content::WebContents` (the inner/embedded page) inside another
 `content::WebContents` (the outer/embedder page) by using a custom
 `blink::WebPlugin`. It is utilized by **WebUI Browser** to embed tab contents
 directly.
@@ -60,21 +60,22 @@ source->OverrideContentSecurityPolicy(
 ```
 
 ### 1.3. How to Get the Content ID for a WebContents
-To embed a guest `content::WebContents`, the frontend needs a unique identifier
-corresponding to that guest. This is managed by [GuestContentsHandle](https://source.chromium.org/chromium/chromium/src/+/main:components/guest_contents/browser/guest_contents_handle.h;l=28;drc=d60f66038e8386eeee7708012e9b61c7ff8afb8d).
+To embed a child `content::WebContents`, the frontend needs a unique identifier
+corresponding to that embedded `WebContents`. This is managed by
+`SurfaceEmbedHandle`.
 
-On the C++ side, associate a handle with the guest `WebContents` and retrieve
-its assigned unique ID token (`GuestId` / `base::UnguessableToken`):
+On the C++ side, associate a handle with the embedded `WebContents` and retrieve
+its assigned unique ID token (`base::UnguessableToken`):
 ```cpp
-#include "components/guest_contents/browser/guest_contents_handle.h"
+#include "components/surface_embed/browser/surface_embed_handle.h"
 
 // 1. Create or retrieve the handle for the target WebContents
-guest_contents::GuestContentsHandle* guest_handle =
-    guest_contents::GuestContentsHandle::CreateForWebContents(web_contents);
+surface_embed::SurfaceEmbedHandle* embedded_handle =
+    surface_embed::SurfaceEmbedHandle::CreateForWebContents(web_contents);
 
 // 2. Get the unique ID token and pass its serialized string to the frontend
 // (e.g. via Mojo message)
-std::string content_id = guest_handle->id().ToString();
+std::string content_id = embedded_handle->id().ToString();
 ```
 
 Surface Embed does not manage the lifecycle of `WebContents`. If the child
@@ -89,8 +90,8 @@ to force the plugin to be recreated with the new content ID.
 
 ## 2. Setup in HTML / JS (Frontend)
 
-To embed the guest page on your WebUI frontend, simply instantiate the `<embed>`
-tag with your guest's content ID.
+To embed the child page on your WebUI frontend, simply instantiate the `<embed>`
+tag with your embedded `WebContents`'s content ID.
 
 ### 2.1. Render the `<embed>` Element
 In your template:
@@ -102,7 +103,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 return html`
   <embed class="content"
          type="application/x-chromium-surface-embed"
-         data-content-id="${this.guestId}">
+         data-content-id="${this.contentId}">
   </embed>
 `;
 ```
@@ -111,5 +112,5 @@ return html`
 * **`type`**: Must match [kInternalPluginMimeType](https://source.chromium.org/chromium/chromium/src/+/main:components/surface_embed/common/constants.h;l=11;drc=da966bf8542039f60d23ff8d922166ef30725b5d),
 which is `"application/x-chromium-surface-embed"`.
 * **`data-content-id`**: Must contain the serialized string representation of
-the `guest_contents::GuestContentsHandle` token corresponding to the nested
+the `surface_embed::SurfaceEmbedHandle` token corresponding to the nested
 `WebContents` (the `content_id` retrieved in Section 1.3).

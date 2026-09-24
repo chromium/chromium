@@ -92,5 +92,5 @@ Content Security Policy setup. After completing that setup, include an
 data-content-id="[content-id]">
 ```
 
-The `data-content-id` corresponds to a `guest_contents::GuestContentsHandle` ID,
+The `data-content-id` corresponds to a `surface_embed::SurfaceEmbedHandle` ID,
 which identifies the `WebContents` to be embedded.

@@ -4,8 +4,8 @@
 
 #include "ui/webui/examples/browser/ui/web/browser.h"
 
-#include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/guest_contents/browser/guest_contents_host_impl.h"
+#include "components/surface_embed/browser/surface_embed_handle.h"
 #include "components/surface_embed/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
@@ -47,11 +47,12 @@ Browser::Browser(content::WebUI* web_ui)
   content::WebContents::CreateParams params(browser_context);
   guest_contents_ = content::WebContents::Create(params);
 
-  guest_contents::GuestContentsHandle::CreateForWebContents(
+  surface_embed::SurfaceEmbedHandle::CreateForWebContents(
       guest_contents_.get());
-  auto* guest_handle = guest_contents::GuestContentsHandle::FromWebContents(
-      guest_contents_.get());
-  html_source->AddString("guest-contents-id", guest_handle->id().ToString());
+  auto* embedded_handle =
+      surface_embed::SurfaceEmbedHandle::FromWebContents(guest_contents_.get());
+  html_source->AddString("guest-contents-id",
+                         embedded_handle->id().ToString());
 }
 
 Browser::~Browser() {

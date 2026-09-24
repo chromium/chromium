@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "components/guest_contents/browser/guest_contents_handle.h"
+#include "components/surface_embed/browser/surface_embed_handle.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -120,15 +120,14 @@ void SurfaceEmbedHost::AttachConnector(const base::UnguessableToken& content_id,
   CHECK(surface_embed_);
 
   CHECK(!content_id.is_empty());
-  guest_contents::GuestContentsHandle* guest_handle =
-      guest_contents::GuestContentsHandle::FromID(content_id);
-  if (!guest_handle) {
+  SurfaceEmbedHandle* handle = SurfaceEmbedHandle::FromID(content_id);
+  if (!handle) {
     // The child may have been destroyed while the renderer was asynchronously
     // creating the embed element.
     return;
   }
 
-  content::WebContents* web_contents_to_attach = guest_handle->web_contents();
+  content::WebContents* web_contents_to_attach = handle->web_contents();
   CHECK(web_contents_to_attach);
 
   // If the child WebContents is already attached to a SurfaceEmbedConnector, we

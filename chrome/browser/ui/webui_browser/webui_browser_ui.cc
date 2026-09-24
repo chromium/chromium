@@ -43,6 +43,7 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/guest_contents/browser/guest_contents_host_impl.h"
+#include "components/surface_embed/browser/surface_embed_handle.h"
 #include "components/surface_embed/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -191,8 +192,7 @@ void WebUIBrowserUI::BindInterface(
 }
 
 void WebUIBrowserUI::BindInterface(
-    mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory>
-        receiver) {
+    mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory> receiver) {
   searchbox_page_factory_receiver_.reset();
   searchbox_page_factory_receiver_.Bind(std::move(receiver));
 }
@@ -315,18 +315,18 @@ void WebUIBrowserUI::BookmarkBarStateChanged(
 }
 
 void WebUIBrowserUI::ShowSidePanel(SidePanelEntryKey side_panel_entry_key) {
-  // Create guest contents.
+  // Create side panel contents.
   WebUIBrowserSidePanelUI* side_panel_ui =
       browser_window()->GetWebUIBrowserSidePanelUI();
   content::WebContents* web_contents =
       side_panel_ui->GetWebContentsForId(side_panel_entry_key.id());
   web_contents->SetColorProviderSource(browser_window());
   CHECK(web_contents);
-  auto* guest_handle =
-      guest_contents::GuestContentsHandle::CreateForWebContents(web_contents);
+  auto* embedded_handle =
+      surface_embed::SurfaceEmbedHandle::CreateForWebContents(web_contents);
 
   // Notify JS.
-  page_->ShowSidePanel(guest_handle->id(),
+  page_->ShowSidePanel(embedded_handle->id(),
                        SidePanelEntryIdToTitle(side_panel_entry_key.id()));
 }
 

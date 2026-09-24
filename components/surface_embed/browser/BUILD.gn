@@ -10,12 +10,14 @@
 # executable can see the mojom symbols directly.
 static_library("browser") {
   sources = [
+    "surface_embed_handle.h",
     "surface_embed_host.cc",
     "surface_embed_host.h",
   ]
 
   public_deps = [
     "//base",
+    "//components/guest_contents/browser",
     "//components/surface_embed/common:mojom",
     "//components/viz/host",
     "//mojo/public/cpp/bindings",
@@ -24,7 +26,6 @@ static_library("browser") {
   ]
 
   deps = [
-    "//components/guest_contents/browser",
     "//components/viz/common",
     "//content/public/browser",
     "//skia",
@@ -45,7 +46,6 @@ source_set("browser_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
-    "//components/guest_contents/browser",
     "//components/surface_embed/common",
     "//content/public/browser",
     "//content/shell:content_shell_lib",

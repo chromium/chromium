@@ -30,9 +30,9 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
-#include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/surface_embed/browser/surface_embed_handle.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_controller.h"
@@ -212,10 +212,10 @@ void WebUIBrowserPageHandler::GetGuestIdForTabId(
   new WebUIBrowserGuestHandler(render_frame_host(), std::move(receiver),
                                tab_contents, GetBrowserWindow());
 
-  guest_contents::GuestContentsHandle::CreateForWebContents(tab_contents);
-  auto* guest_handle =
-      guest_contents::GuestContentsHandle::FromWebContents(tab_contents);
-  std::move(callback).Run(guest_handle->id());
+  surface_embed::SurfaceEmbedHandle::CreateForWebContents(tab_contents);
+  auto* embedded_handle =
+      surface_embed::SurfaceEmbedHandle::FromWebContents(tab_contents);
+  std::move(callback).Run(embedded_handle->id());
 }
 
 void WebUIBrowserPageHandler::LoadTabSearch(LoadTabSearchCallback callback) {
@@ -225,11 +225,11 @@ void WebUIBrowserPageHandler::LoadTabSearch(LoadTabSearchCallback callback) {
   content::NavigationController::LoadURLParams url_params{
       GURL(chrome::kChromeUITabSearchURL)};
   tab_search_contents_->GetController().LoadURLWithParams(url_params);
-  guest_contents::GuestContentsHandle::CreateForWebContents(
+  surface_embed::SurfaceEmbedHandle::CreateForWebContents(
       tab_search_contents_.get());
-  auto* guest_handle = guest_contents::GuestContentsHandle::FromWebContents(
+  auto* embedded_handle = surface_embed::SurfaceEmbedHandle::FromWebContents(
       tab_search_contents_.get());
-  std::move(callback).Run(guest_handle->id());
+  std::move(callback).Run(embedded_handle->id());
 }
 
 void WebUIBrowserPageHandler::ShowTabSearchBubble(
