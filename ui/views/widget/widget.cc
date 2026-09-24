@@ -85,25 +85,22 @@
 
 namespace views {
 
-class Widget::ParentThemeObserver : public ui::ColorProviderSourceObserver {
+namespace {
+
+class ParentThemeObserver : public ui::ColorProviderSourceObserver {
  public:
   ParentThemeObserver(Widget* widget, ui::ColorProviderSource* parent)
       : ColorProviderSourceObserver(parent), widget_(widget) {}
   ~ParentThemeObserver() override = default;
 
   void OnColorProviderChanged() override {
-    Widget* widget = widget_;
-    if (!GetColorProviderSource()) {
-      widget->UpdateThemeObservation();
-    }
-    widget->ScheduleThemeChanged();
+    widget_->ResetLastColorProviderKey();
+    widget_->ScheduleThemeChanged();
   }
 
  private:
   raw_ptr<Widget> widget_;
 };
-
-namespace {
 
 // If `view` has a layer the layer is added to `layers`. Else this recurses
 // through the children. This is used to build a list of the layers in reverse
@@ -518,12 +515,16 @@ void Widget::Init(InitParams params) {
     parent_ = GetWidgetForNativeView(params.parent)->GetWeakPtr();
   }
 
-  // Subscribe to parent's paint-as-active change.
+  // Subscribe to parent's paint-as-active change and theme changes.
   if (parent_) {
     parent_paint_as_active_subscription_ =
         parent_->RegisterPaintAsActiveChangedCallback(
             base::BindRepeating(&Widget::OnParentShouldPaintAsActiveChanged,
                                 base::Unretained(this)));
+    if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
+      parent_theme_observer_ =
+          std::make_unique<ParentThemeObserver>(this, parent_.get());
+    }
   }
 
   params.child |= (params.type == InitParams::TYPE_CONTROL);
@@ -655,7 +656,7 @@ void Widget::Init(InitParams params) {
       GetColorProvider()->GetColor(GetBackgroundColorId()));
 
   UpdateAccessibleNameForRootView();
-  UpdateThemeObservation();
+  native_theme_observation_.Observe(GetNativeTheme());
   native_widget_initialized_ = true;
   native_widget_->OnWidgetInitDone();
 
@@ -1601,38 +1602,7 @@ FocusTraversable* Widget::GetFocusTraversable() {
   return static_cast<internal::RootView*>(root_view_.get());
 }
 
-void Widget::UpdateThemeObservation() {
-  native_theme_observation_.Reset();
-  if (is_destroying_ || widget_destroying_handled_ ||
-      native_widget_destroyed_) {
-    parent_theme_observer_.reset();
-    return;
-  }
-  if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization) &&
-      parent_ && !native_theme_) {
-    if (parent_theme_observer_ &&
-        parent_theme_observer_->GetColorProviderSourceForTesting() ==
-            parent_.get()) {
-      return;
-    }
-    if (!parent_theme_observer_ ||
-        parent_theme_observer_->GetColorProviderSourceForTesting()) {
-      parent_theme_observer_ =
-          std::make_unique<ParentThemeObserver>(this, parent_.get());
-      return;
-    }
-  }
-  parent_theme_observer_.reset();
-  if (ui::NativeTheme* native_theme = GetNativeTheme()) {
-    native_theme_observation_.Observe(native_theme);
-  }
-}
-
 void Widget::ScheduleThemeChanged() {
-  if (is_destroying_ || widget_destroying_handled_ ||
-      native_widget_destroyed_) {
-    return;
-  }
   if (!base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
     ThemeChanged();
     return;
@@ -1656,10 +1626,6 @@ void Widget::ProcessScheduledThemeChanged() {
 
 void Widget::ThemeChanged() {
   theme_update_scheduled_ = false;
-  if (is_destroying_ || widget_destroying_handled_ ||
-      native_widget_destroyed_) {
-    return;
-  }
 
   if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
     const ui::ColorProviderKey current_key = GetColorProviderKey();
@@ -1946,7 +1912,10 @@ void Widget::NotifyPaintAsActiveChanged() {
 void Widget::SetNativeTheme(ui::NativeTheme* native_theme) {
   const bool is_update = native_theme_ && (native_theme_ != native_theme);
   native_theme_ = native_theme;
-  UpdateThemeObservation();
+  native_theme_observation_.Reset();
+  if (native_theme) {
+    native_theme_observation_.Observe(native_theme);
+  }
 
   if (is_update) {
     OnNativeThemeUpdated(native_theme);
@@ -2991,8 +2960,15 @@ void Widget::HandleNativeWidgetReparented(Widget* parent) {
         parent->RegisterPaintAsActiveChangedCallback(
             base::BindRepeating(&Widget::OnParentShouldPaintAsActiveChanged,
                                 base::Unretained(this)));
+    if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
+      parent_theme_observer_ =
+          std::make_unique<ParentThemeObserver>(this, parent);
+    } else {
+      parent_theme_observer_.reset();
+    }
+  } else {
+    parent_theme_observer_.reset();
   }
-  UpdateThemeObservation();
 
   if (old_parent) {
     old_parent->OnChildRemoved(this);
@@ -3103,8 +3079,7 @@ void Widget::HandleWidgetDestroying() {
   if (parent_) {
     parent_->OnChildRemoved(this);
   }
-  theme_update_scheduled_ = false;
-  UpdateThemeObservation();
+  parent_theme_observer_.reset();
   ClearFocusManagerFromWidget();
   observers_.Notify(&WidgetObserver::OnWidgetDestroying, this);
   if (non_client_view_) {

@@ -7063,15 +7063,6 @@ class ThemeChangeTrackingView : public View {
 BEGIN_METADATA(ThemeChangeTrackingView)
 END_METADATA
 
-void FlushScheduledThemeChanges() {
-  for (int i = 0; i < 2; ++i) {
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-  }
-}
-
 }  // namespace
 
 // TODO(crbug.com/555907780): Re-enable this test on Mac.
@@ -7085,7 +7076,6 @@ void FlushScheduledThemeChanges() {
 TEST_F(WidgetTest, MAYBE_ThemeChangedShortCircuitRedundantUpdates) {
   base::test::ScopedFeatureList feature_list(
       ::features::kThemeChangeOptimization);
-  ui::MockOsSettingsProvider os_settings_provider;
 
   std::unique_ptr<Widget> widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -7094,7 +7084,6 @@ TEST_F(WidgetTest, MAYBE_ThemeChangedShortCircuitRedundantUpdates) {
 
   // Initial ThemeChanged() should propagate to the view tree.
   widget->ThemeChanged();
-  FlushScheduledThemeChanges();
   const int initial_count = tracking_view->theme_changed_count();
   EXPECT_GT(initial_count, 0);
 
@@ -7106,8 +7095,9 @@ TEST_F(WidgetTest, MAYBE_ThemeChangedShortCircuitRedundantUpdates) {
   // Modifying the key (e.g. via color mode override) should trigger
   // propagation.
   widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
-  FlushScheduledThemeChanges();
-  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return tracking_view->theme_changed_count() == initial_count + 1;
+  }));
 
   // Calling ThemeChanged() again with the same override should short-circuit.
   widget->ThemeChanged();
@@ -7115,8 +7105,9 @@ TEST_F(WidgetTest, MAYBE_ThemeChangedShortCircuitRedundantUpdates) {
 
   // Modifying user color override should trigger propagation again.
   widget->SetUserColorOverride(SK_ColorRED);
-  FlushScheduledThemeChanges();
-  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 2);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return tracking_view->theme_changed_count() == initial_count + 2;
+  }));
 
   // Redundant call should short-circuit.
   widget->ThemeChanged();
@@ -7126,7 +7117,6 @@ TEST_F(WidgetTest, MAYBE_ThemeChangedShortCircuitRedundantUpdates) {
 TEST_F(WidgetTest, ThemeChangedDoesNotShortCircuitWhenFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(::features::kThemeChangeOptimization);
-  ui::MockOsSettingsProvider os_settings_provider;
 
   std::unique_ptr<Widget> widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -7142,14 +7132,20 @@ TEST_F(WidgetTest, ThemeChangedDoesNotShortCircuitWhenFeatureDisabled) {
   EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
 }
 
-TEST_F(WidgetTest, ChildWidgetObservesParentThemeChanges) {
+// TODO(crbug.com/555468642): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChildWidgetObservesParentThemeChanges \
+  DISABLED_ChildWidgetObservesParentThemeChanges
+#else
+#define MAYBE_ChildWidgetObservesParentThemeChanges \
+  ChildWidgetObservesParentThemeChanges
+#endif
+TEST_F(WidgetTest, MAYBE_ChildWidgetObservesParentThemeChanges) {
   base::test::ScopedFeatureList feature_list(
       ::features::kThemeChangeOptimization);
-  ui::MockOsSettingsProvider os_settings_provider;
 
   std::unique_ptr<Widget> parent_widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
-  parent_widget->ThemeChanged();
 
   Widget::InitParams child_params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
@@ -7163,105 +7159,36 @@ TEST_F(WidgetTest, ChildWidgetObservesParentThemeChanges) {
 
   // Initial ThemeChanged() on child.
   child_widget->ThemeChanged();
-  FlushScheduledThemeChanges();
   const int child_initial_count = child_tracking_view->theme_changed_count();
   EXPECT_GT(child_initial_count, 0);
 
   // Changing parent widget's color mode should automatically propagate to child
   // widget.
   parent_widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
-  FlushScheduledThemeChanges();
-  EXPECT_EQ(child_tracking_view->theme_changed_count(),
-            child_initial_count + 1);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return child_tracking_view->theme_changed_count() ==
+           child_initial_count + 1;
+  }));
 
   // Changing parent widget's user color should also propagate to child widget.
   parent_widget->SetUserColorOverride(SK_ColorBLUE);
-  FlushScheduledThemeChanges();
-  EXPECT_EQ(child_tracking_view->theme_changed_count(),
-            child_initial_count + 2);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return child_tracking_view->theme_changed_count() ==
+           child_initial_count + 2;
+  }));
 }
 
-TEST_F(WidgetTest,
-       ChildWidgetWithOverrideShortCircuitsRedundantParentThemeChanges) {
+// TODO(crbug.com/555304813) Re-enable.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ScheduleThemeChangedCoalescesUpdates \
+  DISABLED_ScheduleThemeChangedCoalescesUpdates
+#else
+#define MAYBE_ScheduleThemeChangedCoalescesUpdates \
+  ScheduleThemeChangedCoalescesUpdates
+#endif
+TEST_F(WidgetTest, MAYBE_ScheduleThemeChangedCoalescesUpdates) {
   base::test::ScopedFeatureList feature_list(
       ::features::kThemeChangeOptimization);
-  ui::MockOsSettingsProvider os_settings_provider;
-
-  std::unique_ptr<Widget> parent_widget =
-      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* parent_tracking_view = parent_widget->SetContentsView(
-      std::make_unique<ThemeChangeTrackingView>());
-  parent_widget->ThemeChanged();
-  FlushScheduledThemeChanges();
-  const int parent_initial_count = parent_tracking_view->theme_changed_count();
-
-  Widget::InitParams child_params = CreateParams(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
-  child_params.parent = parent_widget->GetNativeView();
-  child_params.child = true;
-  std::unique_ptr<Widget> child_widget =
-      CreateTestWidget(std::move(child_params));
-
-  auto* child_tracking_view = child_widget->SetContentsView(
-      std::make_unique<ThemeChangeTrackingView>());
-
-  // Override child color mode explicitly to kDark and apply initial theme.
-  child_widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
-  child_widget->ThemeChanged();
-  FlushScheduledThemeChanges();
-  const int child_initial_count = child_tracking_view->theme_changed_count();
-  EXPECT_GT(child_initial_count, 0);
-
-  // Changing parent widget's color mode to kDark should be short-circuited on
-  // the child because child's effective ColorProviderKey does not change.
-  parent_widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
-  FlushScheduledThemeChanges();
-  EXPECT_EQ(parent_tracking_view->theme_changed_count(),
-            parent_initial_count + 1);
-  EXPECT_EQ(child_tracking_view->theme_changed_count(), child_initial_count);
-
-  // Changing parent widget's user color (which child does not override) should
-  // still propagate and update the child widget.
-  parent_widget->SetUserColorOverride(SK_ColorRED);
-  FlushScheduledThemeChanges();
-  EXPECT_EQ(child_tracking_view->theme_changed_count(),
-            child_initial_count + 1);
-}
-
-TEST_F(WidgetTest, ChildWidgetDoesNotDoubleUpdateOnGlobalNativeThemeChange) {
-  base::test::ScopedFeatureList feature_list(
-      ::features::kThemeChangeOptimization);
-  ui::MockOsSettingsProvider os_settings_provider;
-
-  std::unique_ptr<Widget> parent_widget =
-      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
-  parent_widget->ThemeChanged();
-
-  Widget::InitParams child_params = CreateParams(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
-  child_params.parent = parent_widget->GetNativeView();
-  child_params.child = true;
-  std::unique_ptr<Widget> child_widget =
-      CreateTestWidget(std::move(child_params));
-
-  auto* child_tracking_view = child_widget->SetContentsView(
-      std::make_unique<ThemeChangeTrackingView>());
-  child_widget->ThemeChanged();
-  FlushScheduledThemeChanges();
-  const int child_initial_count = child_tracking_view->theme_changed_count();
-
-  // Trigger a global NativeTheme update. The child widget should update exactly
-  // once (via its parent) rather than twice.
-  parent_widget->GetNativeTheme()->NotifyOnNativeThemeUpdated();
-  FlushScheduledThemeChanges();
-  EXPECT_EQ(child_tracking_view->theme_changed_count(),
-            child_initial_count + 1);
-}
-
-TEST_F(WidgetTest, ScheduleThemeChangedCoalescesUpdates) {
-  base::test::ScopedFeatureList feature_list(
-      ::features::kThemeChangeOptimization);
-  ui::MockOsSettingsProvider os_settings_provider;
 
   std::unique_ptr<Widget> widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -7269,7 +7196,6 @@ TEST_F(WidgetTest, ScheduleThemeChangedCoalescesUpdates) {
       widget->SetContentsView(std::make_unique<ThemeChangeTrackingView>());
 
   widget->ThemeChanged();
-  FlushScheduledThemeChanges();
   const int initial_count = tracking_view->theme_changed_count();
   EXPECT_GT(initial_count, 0);
 
@@ -7283,8 +7209,9 @@ TEST_F(WidgetTest, ScheduleThemeChangedCoalescesUpdates) {
   EXPECT_EQ(tracking_view->theme_changed_count(), initial_count);
 
   // Wait for the scheduled tasks to process.
-  FlushScheduledThemeChanges();
-  EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return tracking_view->theme_changed_count() == initial_count + 1;
+  }));
 
   // Scheduling an update then calling ThemeChanged() synchronously should run
   // immediately and prevent the posted task from executing again.
@@ -7294,14 +7221,12 @@ TEST_F(WidgetTest, ScheduleThemeChangedCoalescesUpdates) {
   EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 2);
 
   // Ensure no duplicate deferred execution occurs.
-  FlushScheduledThemeChanges();
   EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 2);
 }
 
 TEST_F(WidgetTest, ScheduleThemeChangedRunsSynchronouslyWhenDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(::features::kThemeChangeOptimization);
-  ui::MockOsSettingsProvider os_settings_provider;
 
   std::unique_ptr<Widget> widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -7315,40 +7240,6 @@ TEST_F(WidgetTest, ScheduleThemeChangedRunsSynchronouslyWhenDisabled) {
   widget->ScheduleThemeChanged();
   // When feature is disabled, ScheduleThemeChanged runs synchronously.
   EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
-}
-
-TEST_F(WidgetTest, ScheduledThemeChangeCancelledOnNativeWidgetDestruction) {
-  base::test::ScopedFeatureList feature_list(
-      ::features::kThemeChangeOptimization);
-  ui::MockOsSettingsProvider os_settings_provider;
-
-  std::unique_ptr<Widget> parent_widget =
-      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
-
-  Widget::InitParams child_params = CreateParams(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
-  child_params.parent = parent_widget->GetNativeView();
-  child_params.child = true;
-  std::unique_ptr<Widget> child_widget =
-      CreateTestWidget(std::move(child_params));
-
-  auto* child_tracking_view = child_widget->SetContentsView(
-      std::make_unique<ThemeChangeTrackingView>());
-  child_widget->ThemeChanged();
-  FlushScheduledThemeChanges();
-  const int child_initial_count = child_tracking_view->theme_changed_count();
-
-  // Schedule a theme update on the child widget, then destroy its native widget
-  // via CloseNow() before the asynchronous task executes.
-  child_widget->ResetLastColorProviderKey();
-  child_widget->ScheduleThemeChanged();
-  child_widget->CloseNow();
-
-  FlushScheduledThemeChanges();
-
-  // The scheduled theme update should not execute after native widget
-  // destruction.
-  EXPECT_EQ(child_tracking_view->theme_changed_count(), child_initial_count);
 }
 
 }  // namespace views::test
