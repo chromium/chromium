@@ -46,6 +46,8 @@ const std::vector<GURL>& GetUrlAllowList() {
 
 // Note: Keep in sync with Context Hub topic URLs. Tested in
 // context_hub_tab_provider_desktop_unittest.cc.
+// Keep in sync with `isContextHubTopicUrl` in the web client
+// (//depot/google3/java/com/google/assistant/boq/bard/web/chatui/embedded/glic/api/internal/context_availability_checker_impl.ts).
 bool IsContextHubTopicUrl(const GURL& url) {
   if (!url.SchemeIs(content::kChromeUIScheme) ||
       url.host() != chrome::kChromeUIContextHubHost) {
