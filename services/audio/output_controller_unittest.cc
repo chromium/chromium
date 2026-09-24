@@ -565,8 +565,6 @@ TEST_F(OutputControllerTest, ProcessDeviceChangeTimeHistogram) {
   histogram_tester.ExpectTotalCount(
       "Media.AudioOutputController.ProcessDeviceChangeTime2", 1);
   histogram_tester.ExpectTotalCount(
-      "Media.AudioOutputController.ProcessDeviceChangeTime.Suspended", 0);
-  histogram_tester.ExpectTotalCount(
       "Media.AudioOutputController.ProcessDeviceChangeTime", 0);
   histogram_tester.ExpectTotalCount(
       "Media.AudioOutputController.CloseStreamTime", 1);
@@ -576,12 +574,9 @@ TEST_F(OutputControllerTest, ProcessDeviceChangeTimeHistogram) {
   power_monitor_source.Suspend();
 
   ChangeDevice();
-  // Expect no additional samples recorded to Time2 while suspended, but
-  // recorded to Suspended instead.
+  // Expect no additional samples recorded to Time2 while suspended.
   histogram_tester.ExpectTotalCount(
       "Media.AudioOutputController.ProcessDeviceChangeTime2", 1);
-  histogram_tester.ExpectTotalCount(
-      "Media.AudioOutputController.ProcessDeviceChangeTime.Suspended", 1);
   histogram_tester.ExpectTotalCount(
       "Media.AudioOutputController.CloseStreamTime", 2);
 
@@ -590,8 +585,6 @@ TEST_F(OutputControllerTest, ProcessDeviceChangeTimeHistogram) {
   // Expect a new sample recorded to Time2 after resuming.
   histogram_tester.ExpectTotalCount(
       "Media.AudioOutputController.ProcessDeviceChangeTime2", 2);
-  histogram_tester.ExpectTotalCount(
-      "Media.AudioOutputController.ProcessDeviceChangeTime.Suspended", 1);
   histogram_tester.ExpectTotalCount(
       "Media.AudioOutputController.CloseStreamTime", 3);
 

@@ -727,20 +727,12 @@ void OutputController::ProcessDeviceChange() {
         start_time;
   }
 
-  // Record to separate histograms depending on whether sleep occurred:
-  // - ProcessDeviceChangeTime2 uses UmaHistogramMediumTimes (up to 3 min)
-  //   to track normal execution latency without distortion from sleep.
-  // - ProcessDeviceChangeTime.Suspended uses UmaHistogramLongTimes (up to 1
-  //   hr) to capture wake-from-sleep latency, as sleep durations can span
-  //   minutes or hours.
+  // Record execution latency excluding intervals where the machine entered
+  // system sleep / suspend.
   const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
   if (!was_suspended) {
     base::UmaHistogramMediumTimes(
         "Media.AudioOutputController.ProcessDeviceChangeTime2", elapsed);
-  } else {
-    base::UmaHistogramLongTimes(
-        "Media.AudioOutputController.ProcessDeviceChangeTime.Suspended",
-        elapsed);
   }
 }
 
