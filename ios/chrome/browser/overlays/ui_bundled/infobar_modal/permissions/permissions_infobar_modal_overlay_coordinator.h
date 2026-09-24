@@ -9,6 +9,8 @@
 
 // A coordinator that displays the permissions infobar modal UI using
 // OverlayPresenter.
+// TODO(crbug.com/552559484): Remove this class once
+// `kDomainLevelSitePermissions` is launched.
 @interface PermissionsInfobarModalOverlayCoordinator
     : InfobarModalOverlayCoordinator
 @end

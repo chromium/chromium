@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card/save_card_infobar_banner_overlay_mediator+Testing.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
@@ -86,15 +87,20 @@ enum class VoiceOverOverrideForTesting {
 
 #pragma mark - InfobarBannerOverlayMediator
 
+- (void)configureDependenciesWithDispatcher:(CommandDispatcher*)dispatcher {
+  [super configureDependenciesWithDispatcher:dispatcher];
+  self.snackbarHandler = HandlerForProtocol(dispatcher, SnackbarCommands);
+}
+
 - (void)disconnect {
-  self.snackbarCommandsHandler = nil;
+  self.snackbarHandler = nil;
   [super disconnect];
 }
 
 #pragma mark - Private
 
 - (void)showSnackbarAndDismissBanner {
-  if (!self.snackbarCommandsHandler) {
+  if (!self.snackbarHandler) {
     return;
   }
   SnackbarMessage* message = [self createCardSavedSnackbarMessage];
@@ -103,7 +109,7 @@ enum class VoiceOverOverrideForTesting {
     self.accessibilityNotificationPoster(
         UIAccessibilityScreenChangedNotification, nil);
     // Show the snackbar.
-    [self.snackbarCommandsHandler showSnackbarMessage:message];
+    [self.snackbarHandler showSnackbarMessage:message];
   }
   // Dismiss the infobar banner after showing the snackbar.
   [self dismissOverlay];

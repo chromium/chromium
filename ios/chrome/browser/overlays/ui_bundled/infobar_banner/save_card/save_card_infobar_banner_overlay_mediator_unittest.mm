@@ -87,7 +87,7 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
     mediator_.consumer = consumer_;
     mock_snackbar_commands_handler_ =
         OCMProtocolMock(@protocol(SnackbarCommands));
-    mediator_.snackbarCommandsHandler = mock_snackbar_commands_handler_;
+    mediator_.snackbarHandler = mock_snackbar_commands_handler_;
   }
 
  protected:

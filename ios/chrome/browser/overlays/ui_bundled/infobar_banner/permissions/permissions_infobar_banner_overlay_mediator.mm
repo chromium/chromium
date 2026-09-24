@@ -13,6 +13,9 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -40,11 +43,31 @@
   return DefaultInfobarOverlayRequestConfig::RequestSupport();
 }
 
+#pragma mark - InfobarBannerOverlayMediator
+
+- (void)configureDependenciesWithDispatcher:(CommandDispatcher*)dispatcher {
+  [super configureDependenciesWithDispatcher:dispatcher];
+  self.pageActionMenuHandler =
+      HandlerForProtocol(dispatcher, PageActionMenuCommands);
+}
+
+- (void)disconnect {
+  self.pageActionMenuHandler = nil;
+  [super disconnect];
+}
+
 #pragma mark - InfobarOverlayRequestMediator
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
-  // Present the modal if the 'Edit' button is pressed.
-  [self presentInfobarModalFromBanner];
+  if (IsDomainLevelSitePermissionsEnabled()) {
+    id<PageActionMenuCommands> pageActionMenuHandler =
+        self.pageActionMenuHandler;
+    [self dismissOverlay];
+    [pageActionMenuHandler showPageActionMenu];
+  } else {
+    // Present the modal if the 'Edit' button is pressed.
+    [self presentInfobarModalFromBanner];
+  }
 }
 
 @end

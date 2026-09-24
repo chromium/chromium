@@ -12,7 +12,7 @@
 // Mediator that configures an infobar banner for a save card infobar.
 @interface SaveCardInfobarBannerOverlayMediator : InfobarBannerOverlayMediator
 
-@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
+@property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
 
 @end
 
