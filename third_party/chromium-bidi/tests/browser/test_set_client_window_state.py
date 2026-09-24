@@ -220,3 +220,29 @@ async def test_set_client_window_state_fullscreen(
             "active": ANY_BOOL,
         }
     ]
+
+
+@pytest.mark.asyncio
+async def test_set_client_window_state_fullscreen_to_maximized(
+    websocket, context_id, client_window_id
+):
+    await goto_url(websocket, context_id, "about:blank")
+
+    result = await execute_command(
+        websocket,
+        {
+            "method": "browser.setClientWindowState",
+            "params": {"clientWindow": client_window_id, "state": "fullscreen"},
+        },
+    )
+    assert result["state"] == "fullscreen"
+
+    result = await execute_command(
+        websocket,
+        {
+            "method": "browser.setClientWindowState",
+            "params": {"clientWindow": client_window_id, "state": "maximized"},
+        },
+    )
+    assert result["state"] == "maximized"
+

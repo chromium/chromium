@@ -2709,8 +2709,6 @@ crbug.com/501223525 [ Win ] external/wpt/shadow-dom/build-deep-detached-shadow-t
 crbug.com/501209160 [ Mac ] external/wpt/webrtc/RTCDataChannel-GC.html [ Skip Timeout ]
 crbug.com/501209160 [ Mac ] external/wpt/webrtc/RTCRtpSender-replaceTrack.https.html [ Skip Timeout ]
 crbug.com/499074022 external/wpt/html/rendering/the-details-element/details-content-pseudo-attr.html [ Failure ]
-crbug.com/499073530 external/wpt/webdriver/tests/bidi/browser/set_client_window_state/invalid.py [ Failure ]
-crbug.com/499073530 external/wpt/webdriver/tests/bidi/browser/set_client_window_state/state.py [ Failure ]
 crbug.com/497404481 [ Android ] external/wpt/webdriver/tests/classic/find_element/user_prompts.py [ Failure ]
 crbug.com/497404481 [ Android ] external/wpt/webdriver/tests/classic/take_screenshot/user_prompts.py [ Failure ]
 crbug.com/497145619 external/wpt/credential-management/credentialscontainer-get-basics.https.html [ Timeout ]

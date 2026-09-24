@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_set_client_window_state_maximized
+  assert 800 > 800
+Harness: the test ran to completion.
+
