@@ -37,7 +37,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
@@ -111,9 +110,6 @@ struct ProfileMenuViewPixelTestParam {
   // Features and parameters that are enabled in addition to the features
   // enabled by default.
   std::vector<base::test::FeatureRefAndParams> extra_features_and_params;
-  // Features that are disabled in addition to the features disabled by
-  // default.
-  base::flat_set<base::test::FeatureRef> disabled_features;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -186,17 +182,11 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     {
         .pixel_test_param = {.test_suffix = "SignedIn_Sync"},
         .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
-        .disabled_features =
-            {syncer::kReplaceSyncPromosWithSignInPromos,
-             syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
     },
     {
         .pixel_test_param = {.test_suffix = "SignedIn_SyncPaused",
                              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignedInSyncPaused,
-        .disabled_features =
-            {syncer::kReplaceSyncPromosWithSignInPromos,
-             syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
     },
     {
         .pixel_test_param = {.test_suffix = "SignInPending"},
@@ -230,9 +220,6 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
                              .use_dark_theme = true},
         .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
         .management_status = ManagementStatus::kSupervisedUser,
-        .disabled_features =
-            {syncer::kReplaceSyncPromosWithSignInPromos,
-             syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
     },
     {
         .pixel_test_param =
@@ -258,9 +245,6 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
             },
         .signin_status = SigninStatusPixelTestParam::kSignedInWithSync,
         .management_status = ManagementStatus::kSupervisedUser,
-        .disabled_features =
-            {syncer::kReplaceSyncPromosWithSignInPromos,
-             syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
     },
     {
         .pixel_test_param =
@@ -292,8 +276,6 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     {
         .pixel_test_param = {.test_suffix = "HistorySyncOptinExperiment"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
-        .extra_features_and_params =
-            {{syncer::kReplaceSyncPromosWithSignInPromos, {}}},
     },
     {
         .pixel_test_param = {.test_suffix = "BatchUploadPromoSingleLocalData"},
@@ -398,9 +380,8 @@ class ProfileMenuViewPixelTest
  public:
   ProfileMenuViewPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
-    // 1. Get default-enabled features.
-    std::vector<base::test::FeatureRefAndParams> enabled_features_and_params = {
-        {syncer::kReplaceSyncPromosWithSignInPromos, {}}};
+    std::vector<base::test::FeatureRefAndParams> enabled_features_and_params =
+        GetParam().extra_features_and_params;
 
     if (GetParam().with_ai_avatar_ring) {
       enabled_features_and_params.push_back(
@@ -411,28 +392,8 @@ class ProfileMenuViewPixelTest
           {switches::kCrossDeviceSigninFromDesktop, {}});
     }
 
-    // 2. Get default-enabled features without params-disabled.
-    std::vector<base::test::FeatureRefAndParams>
-        final_enabled_features_and_params;
-    const base::flat_set<base::test::FeatureRef>& disabled_features =
-        GetParam().disabled_features;
-    for (const auto& feature_and_param : enabled_features_and_params) {
-      if (!disabled_features.contains(feature_and_param.feature.get())) {
-        final_enabled_features_and_params.push_back(feature_and_param);
-      }
-    }
-
-    // 3. Enrich collections with params-enabled/disabled features respectively.
-    std::move(GetParam().extra_features_and_params.begin(),
-              GetParam().extra_features_and_params.end(),
-              std::back_inserter(final_enabled_features_and_params));
-
-    feature_list_.InitWithFeaturesAndParameters(
-        std::vector<base::test::FeatureRefAndParams>(
-            final_enabled_features_and_params.begin(),
-            final_enabled_features_and_params.end()),
-        std::vector<base::test::FeatureRef>(disabled_features.begin(),
-                                            disabled_features.end()));
+    feature_list_.InitWithFeaturesAndParameters(enabled_features_and_params,
+                                                /*disabled_features=*/{});
 
     // The Profile menu view seems not to be resizied properly on changes which
     // causes the view to go out of bounds. This should not happen and needs to
@@ -639,6 +600,7 @@ class ProfileMenuViewPixelTest
         account_info = SignInWithAccount(GetAccountManagementStatus(),
                                          signin::ConsentLevel::kSync);
         // Enable sync.
+        sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
         sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
 
         break;
@@ -655,6 +617,7 @@ class ProfileMenuViewPixelTest
                                          signin::ConsentLevel::kSync);
 
         // Enable sync.
+        sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
         sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
 
         sync_service()->SetPersistentAuthError();

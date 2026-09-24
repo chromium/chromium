@@ -1264,11 +1264,8 @@ class AvatarButtonPromoManagerTest : public testing::Test {
  public:
   AvatarButtonPromoManagerTest()
       : identity_test_environment_(&test_url_loader_factory_) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::
-                                  kSigninWindows10DepreciationStateForTesting},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        switches::kSigninWindows10DepreciationStateForTesting);
 
     AvatarButtonPromoManager::RegisterProfilePrefs(pref_service_.registry());
     SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
@@ -1887,12 +1884,8 @@ class ComputeProfileMenuAvatarButtonPromoInfoTestBase : public testing::Test {
   BatchUploadServiceTestHelper batch_upload_test_helper_;
 };
 
-class ComputeProfileMenuAvatarButtonPromoInfoSignInPromoTest
-    : public ComputeProfileMenuAvatarButtonPromoInfoTestBase {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
-};
+using ComputeProfileMenuAvatarButtonPromoInfoSignInPromoTest =
+    ComputeProfileMenuAvatarButtonPromoInfoTestBase;
 
 TEST_F(ComputeProfileMenuAvatarButtonPromoInfoSignInPromoTest,
        SigninPromoWhenSignedOut) {
@@ -1938,25 +1931,19 @@ class ComputeProfileMenuAvatarButtonPromoInfoParamTest
       case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
       case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
       case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
-        scoped_feature_list_.InitWithFeatures(
-            // Enable
-            // `switches::kSigninWindows10DepreciationStateBypassForTesting` to
-            // allow Windows machine to test the regular flow (non-Windows10
-            // specific flow).
-            /*enabled_features=*/
-            {syncer::kReplaceSyncPromosWithSignInPromos,
-             switches::kSigninWindows10DepreciationStateBypassForTesting},
-            /*disabled_features=*/{});
+        // Enable
+        // `switches::kSigninWindows10DepreciationStateBypassForTesting` to
+        // allow Windows machine to test the regular flow (non-Windows10
+        // specific flow).
+        scoped_feature_list_.InitAndEnableFeature(
+            switches::kSigninWindows10DepreciationStateBypassForTesting);
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::
           kBatchUploadWindows10DepreciationPromo:
-        scoped_feature_list_.InitWithFeatures(
-            // Enabling `switches::kSigninWindows10DepreciationStateForTesting`
-            // to simulate Windows10 setup.
-            /*enabled_features=*/
-            {syncer::kReplaceSyncPromosWithSignInPromos,
-             switches::kSigninWindows10DepreciationStateForTesting},
-            /*disabled_features=*/{});
+        // Enabling `switches::kSigninWindows10DepreciationStateForTesting`
+        // to simulate Windows10 setup.
+        scoped_feature_list_.InitAndEnableFeature(
+            switches::kSigninWindows10DepreciationStateForTesting);
         break;
     }
   }
