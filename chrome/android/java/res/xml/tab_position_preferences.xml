@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="tab_position_description"
+        android:order="0"
+        android:summary="@string/tab_position_settings_description"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.chrome.browser.appearance.settings.TabPositionCardPreference
+        android:key="tab_position_card_selector"
+        android:order="1" />
+
+</PreferenceScreen>

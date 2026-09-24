@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.appearance.settings;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
@@ -15,9 +17,11 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_BOOKMARK_BAR;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_BOOKMARK_BAR_SWITCH;
+import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_TAB_POSITION;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_TOOLBAR_SHORTCUT;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_UI_THEME;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.VERTICAL_TABS_ENABLED;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.NEW_TAB;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.NONE;
 
@@ -25,6 +29,7 @@ import androidx.preference.Preference;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,6 +63,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
@@ -88,6 +94,7 @@ public class AppearanceSettingsFragmentTest {
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
+    @Mock private SettingsIndexData mIndexData;
     @Mock private UserPrefs.Natives mUserPrefsJni;
 
     private Set<PrefObserver> mBookmarkBarSettingObserverCache;
@@ -145,6 +152,11 @@ public class AppearanceSettingsFragmentTest {
         doAnswer(i -> mBookmarkBarVisibilityStateSupplier.get())
                 .when(mPrefService)
                 .getInteger(eq(Pref.BOOKMARK_BAR_VISIBILITY_STATE));
+    }
+
+    @After
+    public void tearDownPerTest() {
+        ChromeSharedPreferences.getInstance().removeKey(VERTICAL_TABS_ENABLED);
     }
 
     @AfterClass
@@ -376,6 +388,42 @@ public class AppearanceSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void testTabPositionPreferenceIsAbsentWhenDisabled() {
+        launchSettings();
+        assertNull(mSettings.findPreference(PREF_TAB_POSITION));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void testTabPositionPreferenceIsPresent() throws ClassNotFoundException {
+        VerticalTabUtils.setIsVerticalTabsEligibleForTesting(true);
+        launchSettings();
+
+        final var tabPositionPref =
+                assertSettingsExists(PREF_TAB_POSITION, TabPositionSettingsFragment.class);
+        final var context = mSettings.getContext();
+        assertEquals(
+                context.getString(R.string.tab_position_horizontal), tabPositionPref.getSummary());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ChromeSharedPreferences.getInstance()
+                                .writeBoolean(VERTICAL_TABS_ENABLED, true));
+        assertEquals(
+                context.getString(R.string.tab_position_vertical), tabPositionPref.getSummary());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ChromeSharedPreferences.getInstance()
+                                .writeBoolean(VERTICAL_TABS_ENABLED, false));
+        assertEquals(
+                context.getString(R.string.tab_position_horizontal), tabPositionPref.getSummary());
+    }
+
+    @Test
+    @SmallTest
     public void testUiThemePreference() throws ClassNotFoundException {
         launchSettings();
 
@@ -449,6 +497,35 @@ public class AppearanceSettingsFragmentTest {
 
         verify(indexData).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
         verify(indexData, never()).removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR_SWITCH);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void testSearchIndex_TabPositionNotEligible() {
+        var context = ContextUtils.getApplicationContext();
+        String prefFragment = AppearanceSettingsFragment.class.getName();
+
+        AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                context, mIndexData, mProfile);
+
+        verify(mIndexData).removeEntryForKey(prefFragment, PREF_TAB_POSITION);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void testSearchIndex_TabPosition() {
+        VerticalTabUtils.setIsVerticalTabsEligibleForTesting(true);
+        var context = ContextUtils.getApplicationContext();
+        String prefFragment = AppearanceSettingsFragment.class.getName();
+
+        AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
+                context, mIndexData, mProfile);
+
+        verify(mIndexData, never()).removeEntryForKey(prefFragment, PREF_TAB_POSITION);
+        verify(mIndexData, never())
+                .updateEntrySummaryForKey(eq(prefFragment), eq(PREF_TAB_POSITION), anyInt());
     }
 
     private Preference assertSettingsExists(String prefKey, Class settingsFragmentClass)

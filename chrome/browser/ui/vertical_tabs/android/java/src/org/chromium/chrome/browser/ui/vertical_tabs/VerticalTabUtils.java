@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -35,6 +36,8 @@ import java.lang.annotation.Target;
 /** Helper utilities for Vertical Tabs eligibility and preferences. */
 @NullMarked
 public class VerticalTabUtils {
+    private static @Nullable Boolean sIsVerticalTabsEligibleForTesting;
+
     /** The width of the vertical tabs SideUiContainer in dp. */
     public static final int SIDE_UI_CONTAINER_WIDTH_DP = 240;
 
@@ -151,6 +154,9 @@ public class VerticalTabUtils {
      * AndroidVerticalTabs feature flag to be enabled and the device to be a tablet form factor.
      */
     public static boolean isVerticalTabsEligible(@Nullable Context context) {
+        if (sIsVerticalTabsEligibleForTesting != null) {
+            return sIsVerticalTabsEligibleForTesting;
+        }
         return context != null
                 && ChromeFeatureList.sAndroidVerticalTabs.isEnabled()
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
@@ -414,5 +420,11 @@ public class VerticalTabUtils {
                 .removeKey(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.VERTICAL_TABS_USER_RESIZED_WIDTH_DP);
+    }
+
+    /** Sets whether Vertical Tabs is eligible for testing. */
+    public static void setIsVerticalTabsEligibleForTesting(@Nullable Boolean eligible) {
+        sIsVerticalTabsEligibleForTesting = eligible;
+        ResettersForTesting.register(() -> sIsVerticalTabsEligibleForTesting = null);
     }
 }

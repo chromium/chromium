@@ -983,6 +983,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Hidden on narrow screens
       </message>
       <!-- Tab position settings. -->
+      <message name="IDS_TAB_POSITION_SETTINGS_TITLE" desc="Title for the tab position settings page and preference row.">
+        Tab position
+      </message>
+      <message name="IDS_TAB_POSITION_SETTINGS_DESCRIPTION" desc="Description for the tab position settings subpage.">
+        Customize your tab layout to appear at the top or along the side of your browser.
+      </message>
       <message name="IDS_TAB_POSITION_HORIZONTAL" desc="Label for the horizontal tab position option.">
         Horizontal
       </message>

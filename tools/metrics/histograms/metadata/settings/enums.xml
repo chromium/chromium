@@ -144,6 +144,7 @@ chromium-metrics-reviews@google.com.
   <int value="2070921964" label="(Obsolete) ClearBrowsingDataTabsFragment"/>
   <int value="2084696263"
       label="(Obsolete) IncognitoTrackingProtectionsFragment"/>
+  <int value="2136356721" label="TabPositionSettingsFragment"/>
 </enum>
 
 <!-- LINT.IfChange(DisruptiveNotificationRevocationResult) -->

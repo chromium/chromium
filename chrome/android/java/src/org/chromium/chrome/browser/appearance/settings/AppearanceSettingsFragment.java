@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
@@ -50,6 +52,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     public static final String PREF_BOOKMARK_BAR_SWITCH = "bookmark_bar_switch";
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
+    public static final String PREF_TAB_POSITION = "tab_position";
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -58,6 +61,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable PrefObserver mPrefObserver;
     private @Nullable OnSharedPreferenceChangeListener mDevicePrefsListener;
+    private @Nullable OnSharedPreferenceChangeListener mTabPositionListener;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
@@ -70,6 +74,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         initBookmarkBarPref();
         initToolbarShortcutPref();
         initUiThemePref();
+        initTabPositionPref();
     }
 
     @Override
@@ -90,6 +95,11 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                     .unregisterOnSharedPreferenceChangeListener(mDevicePrefsListener);
             mDevicePrefsListener = null;
         }
+        if (mTabPositionListener != null) {
+            ContextUtils.getAppSharedPreferences()
+                    .unregisterOnSharedPreferenceChangeListener(mTabPositionListener);
+            mTabPositionListener = null;
+        }
     }
 
     @Override
@@ -97,6 +107,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         super.onStart();
         updateBookmarkBarPref();
         updateUiThemePref();
+        updateTabPositionPref();
     }
 
     @Override
@@ -313,6 +324,37 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                                 getContext(), NightModeUtils.getThemeSetting()));
     }
 
+    /** Initializes the tab position preference row and listens for state changes. */
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
+    private void initTabPositionPref() {
+        if (!VerticalTabUtils.isVerticalTabsEligible(getContext())) {
+            removePreference(PREF_TAB_POSITION);
+            return;
+        }
+        mTabPositionListener =
+                (sharedPreferences, key) -> {
+                    if (ChromePreferenceKeys.VERTICAL_TABS_ENABLED.equals(key)) {
+                        updateTabPositionPref();
+                    }
+                };
+        ContextUtils.getAppSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(mTabPositionListener);
+    }
+
+    /** Updates the summary text on the tab position preference row based on current state. */
+    private void updateTabPositionPref() {
+        Context context = getContext();
+        if (!VerticalTabUtils.isVerticalTabsEligible(context)) {
+            return;
+        }
+        Preference tabPositionPref = findPreference(PREF_TAB_POSITION);
+        if (tabPositionPref != null) {
+            boolean isVertical = VerticalTabUtils.isVerticalTabsEnabled(context);
+            tabPositionPref.setSummary(
+                    isVertical ? R.string.tab_position_vertical : R.string.tab_position_horizontal);
+        }
+    }
+
     @Override
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
@@ -385,6 +427,10 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                                 getBookmarkBarVisibilityStateSummaryRes(profile));
                     } else {
                         indexData.removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
+                    }
+
+                    if (!VerticalTabUtils.isVerticalTabsEligible(context)) {
+                        indexData.removeEntryForKey(prefFragment, PREF_TAB_POSITION);
                     }
 
                     shouldShowToolbarShortcutPrefAsync(

@@ -580,12 +580,14 @@ android_library("chrome_test_java_org.chromium.chrome.browser.appearance") {
   sources = [
     "src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragmentTest.java",
     "src/org/chromium/chrome/browser/appearance/settings/BookmarkBarSettingsFragmentTest.java",
+    "src/org/chromium/chrome/browser/appearance/settings/TabPositionSettingsFragmentTest.java",
   ]
 
   deps = [
     ":chrome_test_java_helper",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
+    "//chrome/browser/ui/vertical_tabs:java",
   ]
 }
 
@@ -1073,6 +1075,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.omnibox") {
     ":chrome_test_java_helper",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
+    "//chrome/browser/ui/vertical_tabs:java",
   ]
 }
 

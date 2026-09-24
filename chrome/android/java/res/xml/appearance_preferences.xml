@@ -34,4 +34,10 @@ exclusive options. -->
         android:title="@string/bookmark_bar_setting"
         android:summary="@string/bookmark_bar_setting_subtitle" />
 
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.chrome.browser.appearance.settings.TabPositionSettingsFragment"
+        android:key="tab_position"
+        android:order="3"
+        android:title="@string/tab_position_settings_title" />
+
 </PreferenceScreen>

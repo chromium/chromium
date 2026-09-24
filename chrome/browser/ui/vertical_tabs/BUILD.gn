@@ -12,6 +12,7 @@ android_library("java") {
   deps = [
     "//base:build_info_java",
     "//base:metrics_java",
+    "//base:resetters_java",
     "//build/android:build_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
