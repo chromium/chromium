@@ -126,8 +126,7 @@ TEST_F(RubyBlockPositionCalculatorTest, GroupLinesAnnotationForAnnotation) {
             calculator.RubyLineListForTesting()[2]->Level());
 }
 
-TEST_F(RubyBlockPositionCalculatorTest,
-       PlaceLinesTreePlacementDisabledAndEnabled) {
+TEST_F(RubyBlockPositionCalculatorTest, PlaceLinesTreePlacement) {
   ColumnList column_list;
   column_list.push_back(MakeGarbageCollected<LogicalRubyColumn>());
   column_list.back()->start_index = 0;
@@ -138,80 +137,13 @@ TEST_F(RubyBlockPositionCalculatorTest,
 
   auto* line_items = MakeGarbageCollected<LogicalLineItems>();
 
-  {
-    ScopedTreeRubyPlacementForTest tree_ruby_placement(false);
-    RubyBlockPositionCalculator calculator;
-    calculator.GroupLines(column_list);
-    calculator.PlaceLines(*line_items,
-                          FontHeight(LayoutUnit(10), LayoutUnit(4)));
-    EXPECT_EQ(2u, calculator.RubyLineListForTesting().size());
-  }
-
-  {
-    ScopedTreeRubyPlacementForTest tree_ruby_placement(true);
-    RubyBlockPositionCalculator calculator;
-    calculator.GroupLines(column_list);
-    calculator.PlaceLines(*line_items,
-                          FontHeight(LayoutUnit(10), LayoutUnit(4)));
-    EXPECT_EQ(2u, calculator.RubyLineListForTesting().size());
-  }
-}
-
-TEST_F(RubyBlockPositionCalculatorTest, PlaceLinesTreePlacementComparison) {
-  ColumnList column_list;
-  auto* col1 = MakeGarbageCollected<LogicalRubyColumn>();
-  col1->start_index = 0;
-  col1->size = 0;
-  col1->ruby_position = RubyPosition::kOver;
-  col1->annotation_items = MakeGarbageCollected<LogicalLineItems>();
-
-  auto* col1_1 = MakeGarbageCollected<LogicalRubyColumn>();
-  col1_1->start_index = 0;
-  col1_1->size = 0;
-  col1_1->ruby_position = RubyPosition::kOver;
-  col1_1->annotation_items = MakeGarbageCollected<LogicalLineItems>();
-  col1->RubyColumnList().push_back(col1_1);
-
-  auto* col1_under = MakeGarbageCollected<LogicalRubyColumn>();
-  col1_under->start_index = 0;
-  col1_under->size = 0;
-  col1_under->ruby_position = RubyPosition::kUnder;
-  col1_under->annotation_items = MakeGarbageCollected<LogicalLineItems>();
-  col1->RubyColumnList().push_back(col1_under);
-
-  column_list.push_back(col1);
-
-  auto* line_items = MakeGarbageCollected<LogicalLineItems>();
-  FontHeight line_box_metrics(LayoutUnit(12), LayoutUnit(4));
-
-  Vector<LayoutUnit> offsets_disabled;
-  Vector<LayoutUnit> offsets_enabled;
-
-  {
-    ScopedTreeRubyPlacementForTest tree_ruby_placement(false);
-    RubyBlockPositionCalculator calculator;
-    calculator.GroupLines(column_list);
-    calculator.PlaceLines(*line_items, line_box_metrics);
-    for (const auto& line : calculator.RubyLineListForTesting()) {
-      offsets_disabled.push_back(line->Offset());
-    }
-  }
-
-  {
-    ScopedTreeRubyPlacementForTest tree_ruby_placement(true);
-    RubyBlockPositionCalculator calculator;
-    calculator.GroupLines(column_list);
-    calculator.PlaceLines(*line_items, line_box_metrics);
-    for (const auto& line : calculator.RubyLineListForTesting()) {
-      offsets_enabled.push_back(line->Offset());
-    }
-  }
-
-  EXPECT_EQ(offsets_disabled, offsets_enabled);
+  RubyBlockPositionCalculator calculator;
+  calculator.GroupLines(column_list);
+  calculator.PlaceLines(*line_items, FontHeight(LayoutUnit(10), LayoutUnit(4)));
+  EXPECT_EQ(2u, calculator.RubyLineListForTesting().size());
 }
 
 TEST_F(RubyBlockPositionCalculatorTest, PlaceLinesNestedRubyWithTextEmphasis) {
-  ScopedTreeRubyPlacementForTest tree_ruby_placement(true);
   LoadAhem();
 
   SetBodyContent(R"HTML(
