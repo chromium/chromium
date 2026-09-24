@@ -11,6 +11,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -27,6 +28,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.settings.SettingsSearchTestUtils.assertPreferenceScreenMatchesIndex;
+import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
+import static org.chromium.ui.test.util.ViewUtils.withEventualExpectedViewState;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -280,7 +283,14 @@ public class AutofillAndPasswordsFragmentTest {
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_promo_dismiss_button)).perform(click());
 
-        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        // Dismissing the promo hides the SigninPromoPreference, but PreferenceGroupAdapter
+        // applies visibility changes on a posted runnable and RecyclerView only detaches the
+        // row on a subsequent layout pass. Neither is covered by Espresso's idle detection, so
+        // poll for the removal instead of sampling the hierarchy once.
+        onView(isRoot())
+                .check(
+                        withEventualExpectedViewState(
+                                withId(R.id.signin_promo_view_container), VIEW_NULL));
         assertTrue(
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(
