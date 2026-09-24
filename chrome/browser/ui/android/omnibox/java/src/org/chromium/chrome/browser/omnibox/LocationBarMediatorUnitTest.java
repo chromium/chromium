@@ -163,7 +163,6 @@ import java.lang.ref.WeakReference;
         shadows = {LocationBarMediatorUnitTest.ObjectAnimatorShadow.class},
         qualifiers = "w1000dp")
 @DisableFeatures({OmniboxFeatureList.OMNIBOX_SEARCH_PREFETCH_ON_ENTER_KEY_DOWN})
-@EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public class LocationBarMediatorUnitTest {
 
     @Implements(ObjectAnimator.class)
@@ -2871,11 +2870,14 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testUpdateZoomButtonVisibility_popupShowing() {
         mTabletMediator.onFinishNativeInitialization();
         doReturn(mWebContents).when(mTab).getWebContents();
         when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(false);
+        int buttonWidth =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        mTabletMediator.getZoomButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
         mTabletMediator.updateZoomButtonVisibilityForTesting();
 
         verify(mLocationBarTablet, atLeastOnce()).setZoomButtonVisibility(true);
@@ -2883,7 +2885,6 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testUpdateZoomButtonVisibility_hideButton() {
         mMediator.onFinishNativeInitialization();
         clearInvocations(mLocationBarEmbedder);
@@ -2902,7 +2903,6 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testMicButtonToolbarWidthConsumer() {
         int buttonWidth =
                 mContext.getResources()
@@ -2930,7 +2930,6 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testMicButtonToolbarWidthConsumer_suggestionsPopover() {
         int buttonWidth =
                 mContext.getResources()
@@ -3201,7 +3200,6 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testLensButtonToolbarWidthConsumer() {
         int buttonWidth =
                 mContext.getResources()
@@ -3231,7 +3229,6 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testBookmarkButtonToolbarWidthConsumer() {
         int buttonWidth =
                 mContext.getResources()
@@ -3254,7 +3251,6 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testBookmarkButton_ntp() {
         mTabletMediator.onFinishNativeInitialization();
         doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
@@ -3265,7 +3261,6 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testInstallButtonToolbarWidthConsumer() {
         int buttonWidth =
                 mContext.getResources()
@@ -3323,7 +3318,6 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testZoomButtonToolbarWidthConsumer_notVisible() {
         int buttonWidth =
                 mContext.getResources()
@@ -3346,7 +3340,6 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testZoomButtonToolbarWidthConsumer() {
         int buttonWidth =
                 mContext.getResources()
