@@ -98,8 +98,8 @@ class BiquadFilterHandler final : public AudioHandler {
   const double nyquist_;
   const unsigned render_quantum_frames_;
 
-  double tail_time_ GUARDED_BY(process_lock_) =
-      std::numeric_limits<double>::infinity();
+  // `tail_time_` must only be accessed on the audio thread.
+  double tail_time_ = std::numeric_limits<double>::infinity();
 
   Vector<std::unique_ptr<Biquad>> biquads_ GUARDED_BY(process_lock_);
 

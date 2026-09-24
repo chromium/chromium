@@ -147,7 +147,7 @@ void WaveShaperHandler::SetCurve(base::span<const float> curve) {
 
   if (curve.empty()) {
     curve_.clear();
-    tail_time_ = 0;
+    tail_time_.store(0, std::memory_order_relaxed);
     return;
   }
 
@@ -156,7 +156,8 @@ void WaveShaperHandler::SetCurve(base::span<const float> curve) {
 
   // Compute the curve output for a zero input, and set the tail time.
   const double output = WaveShaperCurveValue(0.0, curve);
-  tail_time_ = output == 0 ? 0 : std::numeric_limits<double>::infinity();
+  tail_time_.store(output == 0 ? 0 : std::numeric_limits<double>::infinity(),
+                   std::memory_order_relaxed);
 }
 
 const Vector<float>* WaveShaperHandler::Curve() const {
@@ -199,18 +200,19 @@ void WaveShaperHandler::SetOversample(V8OverSampleType::Enum oversample) {
 
   // Calculate and cache `latency_time_`
   if (kernels_.empty()) {
-    latency_time_ = 0;
+    latency_time_.store(0, std::memory_order_relaxed);
   } else {
     switch (oversample) {
       case V8OverSampleType::Enum::kNone:
-        latency_time_ = 0;
+        latency_time_.store(0, std::memory_order_relaxed);
         break;
       case V8OverSampleType::Enum::k2X: {
         const size_t latency_frames =
             kernels_.front()->up_sampler_->LatencyFrames() +
             kernels_.front()->down_sampler_->LatencyFrames();
 
-        latency_time_ = static_cast<double>(latency_frames) / sample_rate_;
+        latency_time_.store(static_cast<double>(latency_frames) / sample_rate_,
+                            std::memory_order_relaxed);
       } break;
       case V8OverSampleType::Enum::k4X: {
         // Account for first stage upsampling.
@@ -225,8 +227,10 @@ void WaveShaperHandler::SetOversample(V8OverSampleType::Enum oversample) {
              kernels_.front()->down_sampler2_->LatencyFrames()) /
             2;
 
-        latency_time_ = static_cast<double>(latency_frames + latency_frames2) /
-                        sample_rate_;
+        latency_time_.store(
+            static_cast<double>(latency_frames + latency_frames2) /
+                sample_rate_,
+            std::memory_order_relaxed);
       } break;
     }
   }
@@ -426,27 +430,13 @@ bool WaveShaperHandler::RequiresTailProcessing() const {
 }
 
 double WaveShaperHandler::TailTime() const {
-  DCHECK(!IsMainThread());
-  base::AutoTryLock try_locker(process_lock_);
-  if (try_locker.is_acquired()) {
-    return tail_time_;
-  } else {
-    // Since we don't want to block the Audio Device thread, we return a large
-    // value instead of trying to acquire the lock.
-    return std::numeric_limits<double>::infinity();
-  }
+  DCHECK(Context()->IsAudioThread());
+  return tail_time_.load(std::memory_order_relaxed);
 }
 
 double WaveShaperHandler::LatencyTime() const {
-  DCHECK(!IsMainThread());
-  base::AutoTryLock try_locker(process_lock_);
-  if (try_locker.is_acquired()) {
-    return latency_time_;
-  } else {
-    // Since we don't want to block the Audio Device thread, we return a large
-    // value instead of trying to acquire the lock.
-    return std::numeric_limits<double>::infinity();
-  }
+  DCHECK(Context()->IsAudioThread());
+  return latency_time_.load(std::memory_order_relaxed);
 }
 
 void WaveShaperHandler::PullInputs(uint32_t frames_to_process) {

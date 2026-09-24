@@ -237,6 +237,7 @@ void BiquadFilterHandler::Uninitialize() {
 }
 
 void BiquadFilterHandler::Process(uint32_t frames_to_process) {
+  DCHECK(Context()->IsAudioThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                "BiquadFilterHandler::Process");
 
@@ -558,15 +559,9 @@ bool BiquadFilterHandler::RequiresTailProcessing() const {
 }
 
 double BiquadFilterHandler::TailTime() const {
-  DCHECK(!IsMainThread());
-  base::AutoTryLock try_locker(process_lock_);
-  if (try_locker.is_acquired()) {
-    // It is expected that all the kernels have the same tailTime.
-    return tail_time_;
-  }
-  // Since we don't want to block the Audio Device thread, we return a large
-  // value instead of trying to acquire the lock.
-  return std::numeric_limits<double>::infinity();
+  DCHECK(Context()->IsAudioThread());
+  // It is expected that all the kernels have the same tailTime.
+  return tail_time_;
 }
 
 double BiquadFilterHandler::LatencyTime() const {
