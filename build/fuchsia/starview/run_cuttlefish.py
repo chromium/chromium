@@ -262,7 +262,7 @@ def _wait_adb_shell(adb_path, adb_port, cmd, pattern):
     """Waits for an ADB shell command output to match regex pattern or times out."""
     target = f'127.0.0.1:{adb_port}'
     start_time = time.time()
-    while time.time() - start_time < 300:
+    while time.time() - start_time < 480:
         res = subprocess.run(
             [adb_path, '-s', target, 'shell'] + cmd,
             capture_output=True,
@@ -273,6 +273,7 @@ def _wait_adb_shell(adb_path, adb_port, cmd, pattern):
         ):
             return True
         time.sleep(10)
+        subprocess.run([adb_path, 'connect', target])
     return False
 
 
