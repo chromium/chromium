@@ -150,7 +150,7 @@ bool CobrowseTabHelper::ShouldHideAssistant(web::WebState* web_state,
     return true;
   }
 
-  if (!url.is_valid() || url.IsAboutBlank() || IsUrlNtp(url)) {
+  if (IsUrlNtp(url)) {
     return true;
   }
 
