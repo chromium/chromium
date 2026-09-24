@@ -16,7 +16,6 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,6 +44,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
@@ -999,19 +999,20 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    public void testResetHoverState_ExecutesTagHoverExitListener() {
+    public void testResetHoverState_ExecutesTagHoverStateListener() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
-        Runnable mockHoverExit = mock(Runnable.class);
-        when(mTabView1.getTag(R.id.tab_hover_exit_listener)).thenReturn(mockHoverExit);
+        Boolean[] lastHoverState = new Boolean[] {null};
+        Callback<Boolean> hoverStateCallback = isHovered -> lastHoverState[0] = isHovered;
+        when(mTabView1.getTag(R.id.tab_hover_state_listener)).thenReturn(hoverStateCallback);
 
         TabHoverListener listener = mController.getTabHoverListener();
         listener.onTabHoverStateChanged(TAB_ID_1, mTabView1, /* isHovered= */ true);
 
         mController.hideHoverCard();
-        verify(mockHoverExit, never()).run();
+        assertNull(lastHoverState[0]);
 
         mController.resetHoverState();
-        verify(mockHoverExit).run();
+        assertEquals(false, lastHoverState[0]);
     }
 
     @Test
@@ -1421,5 +1422,260 @@ public class VerticalTabHoverControllerUnitTest {
         assertFalse(group1Hovered[0]);
 
         controller.destroy();
+    }
+
+    @Test
+    public void testSetupTabHover_FocusChange_RoutesToListener() {
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout tabView1 =
+                new FrameLayout(activity) {
+                    @Override
+                    public boolean hasFocus() {
+                        return true;
+                    }
+                };
+        tabView1.layout(0, 0, 100, 48);
+
+        VerticalTabHoverController.setupTabHover(
+                mController.getTabHoverListener(),
+                TAB_ID_1,
+                tabView1,
+                /* actionButton= */ null,
+                v -> {});
+
+        assertNotNull(tabView1.getOnFocusChangeListener());
+        tabView1.getOnFocusChangeListener().onFocusChange(tabView1, /* hasFocus= */ true);
+
+        assertEquals(tabView1, mController.getCurrentHoveredView());
+        verify(mTabHoverCardViewStub).inflate();
+        verify(mTabHoverCardView).bindTab(eq(mTab1));
+        verify(mTabHoverCardView).show(anyFloat(), anyFloat());
+
+        tabView1.getOnFocusChangeListener().onFocusChange(tabView1, /* hasFocus= */ false);
+        assertNull(mController.getCurrentHoveredView());
+        verify(mTabHoverCardView, times(2)).hide();
+    }
+
+    @Test
+    public void testSetupTabGroupHeaderHover_FocusChange_RoutesToListener() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout groupView1 =
+                new FrameLayout(activity) {
+                    @Override
+                    public boolean hasFocus() {
+                        return true;
+                    }
+                };
+        groupView1.layout(0, 0, 100, 48);
+
+        VerticalTabHoverController.setupTabGroupHeaderHover(
+                mController.getTabHoverListener(),
+                GROUP_HEADER_TAB_ID_1,
+                GROUP_ID_1,
+                groupView1,
+                /* menuButton= */ null,
+                v -> {});
+
+        assertNotNull(groupView1.getOnFocusChangeListener());
+        groupView1.getOnFocusChangeListener().onFocusChange(groupView1, /* hasFocus= */ true);
+
+        assertEquals(groupView1, mController.getCurrentHoveredView());
+        verify(mTabGroupHoverCardViewStub).inflate();
+        verify(mTabGroupHoverCardView)
+                .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
+        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
+
+        groupView1.getOnFocusChangeListener().onFocusChange(groupView1, /* hasFocus= */ false);
+        assertNull(mController.getCurrentHoveredView());
+        verify(mTabGroupHoverCardView).hide();
+    }
+
+    @Test
+    public void testSetupItemHover_NullListener_UpdatesVisualStateDirectly() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout tabView1 = new FrameLayout(activity);
+        tabView1.layout(0, 0, 100, 48);
+
+        boolean[] tab1Hovered = new boolean[] {false};
+        VerticalTabHoverController.setupTabHover(
+                /* listener= */ null,
+                TAB_ID_1,
+                tabView1,
+                /* actionButton= */ null,
+                v -> tab1Hovered[0] = v);
+
+        MotionEvent enter =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
+        enter.setSource(InputDevice.SOURCE_MOUSE);
+        tabView1.dispatchGenericMotionEvent(enter);
+        assertTrue(tabView1.isHovered());
+        assertTrue(tab1Hovered[0]);
+
+        MotionEvent exit =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_EXIT,
+                        /* x= */ -10f,
+                        /* y= */ -10f,
+                        /* metaState= */ 0);
+        exit.setSource(InputDevice.SOURCE_MOUSE);
+        tabView1.dispatchGenericMotionEvent(exit);
+        assertFalse(tabView1.isHovered());
+        assertFalse(tab1Hovered[0]);
+
+        // Focus change with null listener should safely no-op.
+        tabView1.getOnFocusChangeListener().onFocusChange(tabView1, /* hasFocus= */ true);
+        assertFalse(tab1Hovered[0]);
+    }
+
+    @Test
+    public void testSetupItemHover_ChildButtonHoverOrchestration() {
+        when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout tabView1 = new FrameLayout(activity);
+        View actionButton = new View(activity);
+        tabView1.addView(actionButton);
+        tabView1.layout(0, 0, 100, 48);
+        actionButton.layout(70, 8, 94, 32);
+
+        boolean[] tab1Hovered = new boolean[] {false};
+        VerticalTabHoverController.setupTabHover(
+                mController.getTabHoverListener(),
+                TAB_ID_1,
+                tabView1,
+                actionButton,
+                v -> tab1Hovered[0] = v);
+
+        // 1. Hover enter and move on child button -> sets child and parent hovered.
+        MotionEvent childEnter =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 5f,
+                        /* y= */ 5f,
+                        /* metaState= */ 0);
+        childEnter.setSource(InputDevice.SOURCE_MOUSE);
+        actionButton.dispatchGenericMotionEvent(childEnter);
+        assertTrue(actionButton.isHovered());
+        assertTrue(tabView1.isHovered());
+        assertTrue(tab1Hovered[0]);
+        assertEquals(tabView1, mController.getCurrentHoveredView());
+
+        MotionEvent childMove =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_MOVE,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
+        childMove.setSource(InputDevice.SOURCE_MOUSE);
+        actionButton.dispatchGenericMotionEvent(childMove);
+        assertTrue(actionButton.isHovered());
+        assertTrue(tabView1.isHovered());
+        assertTrue(tab1Hovered[0]);
+
+        // 2. Hover exit from child button while staying inside parent bounds (left = 70 + (-10) =
+        // 60, top = 8 + 10 = 18) -> clears child hover but preserves parent hover state.
+        MotionEvent childExitInsideParent =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_EXIT,
+                        /* x= */ -10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
+        childExitInsideParent.setSource(InputDevice.SOURCE_MOUSE);
+        actionButton.dispatchGenericMotionEvent(childExitInsideParent);
+        assertFalse(actionButton.isHovered());
+        assertTrue(tabView1.isHovered());
+        assertTrue(tab1Hovered[0]);
+        assertEquals(tabView1, mController.getCurrentHoveredView());
+
+        // 3. Re-enter child button, then hover exit outside parent bounds (left = 70 + 40 = 110 >=
+        // 100) -> clears both child and parent hover state.
+        actionButton.dispatchGenericMotionEvent(childEnter);
+        assertTrue(actionButton.isHovered());
+
+        MotionEvent childExitOutsideParent =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_EXIT,
+                        /* x= */ 40f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
+        childExitOutsideParent.setSource(InputDevice.SOURCE_MOUSE);
+        actionButton.dispatchGenericMotionEvent(childExitOutsideParent);
+        assertFalse(actionButton.isHovered());
+        assertFalse(tabView1.isHovered());
+        assertFalse(tab1Hovered[0]);
+        assertNull(mController.getCurrentHoveredView());
+    }
+
+    @Test
+    public void testSetupItemHover_AlreadyHoveredView_AppliesVisualStateImmediately() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout tabView1 = new FrameLayout(activity);
+        tabView1.setHovered(true);
+
+        boolean[] tab1Hovered = new boolean[] {false};
+        VerticalTabHoverController.setupTabHover(
+                mController.getTabHoverListener(),
+                TAB_ID_1,
+                tabView1,
+                /* actionButton= */ null,
+                v -> tab1Hovered[0] = v);
+
+        assertTrue(tab1Hovered[0]);
+    }
+
+    @Test
+    public void testSetupTabGroupHeaderHover_NullTabGroupId_RoutesToGroupHoverListener() {
+        when(mTabModel.getTabById(GROUP_HEADER_TAB_ID_1)).thenReturn(mTab1);
+        when(mTab1.getTabGroupId()).thenReturn(GROUP_ID_1);
+
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        FrameLayout groupView1 = new FrameLayout(activity);
+        groupView1.layout(0, 0, 100, 48);
+
+        boolean[] group1Hovered = new boolean[] {false};
+        VerticalTabHoverController.setupTabGroupHeaderHover(
+                mController.getTabHoverListener(),
+                GROUP_HEADER_TAB_ID_1,
+                /* tabGroupId= */ null,
+                groupView1,
+                /* menuButton= */ null,
+                v -> group1Hovered[0] = v);
+
+        MotionEvent enter =
+                MotionEvent.obtain(
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
+                        MotionEvent.ACTION_HOVER_ENTER,
+                        /* x= */ 10f,
+                        /* y= */ 10f,
+                        /* metaState= */ 0);
+        enter.setSource(InputDevice.SOURCE_MOUSE);
+        groupView1.dispatchGenericMotionEvent(enter);
+
+        assertTrue(groupView1.isHovered());
+        assertTrue(group1Hovered[0]);
+        assertEquals(groupView1, mController.getCurrentHoveredView());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mTabGroupHoverCardViewStub).inflate();
+        verify(mTabGroupHoverCardView)
+                .bindData(eq("Group 1"), eq(List.of("• Tab 1", "• Tab 2")), eq(0), eq(false));
+        verify(mTabGroupHoverCardView).show(anyFloat(), anyFloat());
     }
 }

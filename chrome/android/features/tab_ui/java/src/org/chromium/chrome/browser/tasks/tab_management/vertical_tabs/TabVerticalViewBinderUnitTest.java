@@ -627,7 +627,7 @@ public class TabVerticalViewBinderUnitTest {
     }
 
     @Test
-    public void testTabHover_ExitTagRunnable_ClearsHoverState() {
+    public void testTabHover_StateListenerTag_ClearsHoverState() {
         mModel.set(TabProperties.IS_SELECTED, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_SELECTED);
 
@@ -643,9 +643,11 @@ public class TabVerticalViewBinderUnitTest {
                         mItemView.getContext(), /* isIncognito= */ false),
                 bgTint.getDefaultColor());
 
-        Object tag = mItemView.getTag(R.id.tab_hover_exit_listener);
-        assertTrue(tag instanceof Runnable);
-        ((Runnable) tag).run();
+        @SuppressWarnings("unchecked")
+        Callback<Boolean> callback =
+                (Callback<Boolean>) mItemView.getTag(R.id.tab_hover_state_listener);
+        assertNotNull(callback);
+        callback.onResult(/* result= */ false);
 
         bgTint = mItemView.getBackgroundTintList();
         assertNotNull(bgTint);
