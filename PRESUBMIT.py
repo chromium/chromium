@@ -2892,14 +2892,12 @@ def _IsMojomFile(input_api, file_path):
 
 
 def CheckAyeAye(input_api, output_api):
-    """Runs AyeAye checks locally via the alint tool if opted in.
+    """Runs AyeAye checks locally via the alint tool.
 
     These checks get run automatically behind the scenes on CLs in
     Gerrit. Running them locally should surface any warnings or errors
-    earlier. Set PRESUBMIT_ENABLE_AYEAYE=1 in the environment to enable.
+    earlier.
     """
-    if input_api.environ.get('PRESUBMIT_ENABLE_AYEAYE') != '1':
-        return []
     return input_api.canned_checks.CheckAyeAye(input_api, output_api)
 
 

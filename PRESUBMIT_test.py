@@ -7456,42 +7456,5 @@ class ExtensionFastPathsTest(unittest.TestCase):
         self.assertTrue(PRESUBMIT._HasCPlusPlusFiles(mock_inp_inl))
         self.assertTrue(PRESUBMIT._HasCPlusPlusHeaderFiles(mock_inp_inl))
 
-
-class CheckAyeAyeTest(unittest.TestCase):
-
-    def testSkippedIfEnvVarNotDefined(self):
-        mock_input_api = MockInputApi()
-        mock_output_api = MockOutputApi()
-        mock_input_api.canned_checks.CheckAyeAye = mock.MagicMock(
-            return_value=['finding'])
-
-        results = PRESUBMIT.CheckAyeAye(mock_input_api, mock_output_api)
-        self.assertEqual([], results)
-        mock_input_api.canned_checks.CheckAyeAye.assert_not_called()
-
-    def testSkippedWhenDisabled(self):
-        mock_input_api = MockInputApi()
-        mock_input_api.environ = {'PRESUBMIT_ENABLE_AYEAYE': '0'}
-        mock_output_api = MockOutputApi()
-        mock_input_api.canned_checks.CheckAyeAye = mock.MagicMock(
-            return_value=['finding'])
-
-        results = PRESUBMIT.CheckAyeAye(mock_input_api, mock_output_api)
-        self.assertEqual([], results)
-        mock_input_api.canned_checks.CheckAyeAye.assert_not_called()
-
-    def testRunsWhenEnabled(self):
-        mock_input_api = MockInputApi()
-        mock_input_api.environ = {'PRESUBMIT_ENABLE_AYEAYE': '1'}
-        mock_output_api = MockOutputApi()
-        mock_input_api.canned_checks.CheckAyeAye = mock.MagicMock(
-            return_value=['finding'])
-
-        results = PRESUBMIT.CheckAyeAye(mock_input_api, mock_output_api)
-        self.assertEqual(['finding'], results)
-        mock_input_api.canned_checks.CheckAyeAye.assert_called_once_with(
-            mock_input_api, mock_output_api)
-
-
 if __name__ == '__main__':
     unittest.main()

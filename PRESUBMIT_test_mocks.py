@@ -74,7 +74,6 @@ class MockInputApi(object):
     def __init__(self):
         self.basename = os.path.basename
         self.canned_checks = MockCannedChecks()
-        self.environ = {}
         self.fnmatch = fnmatch
         self.json = json
         self.re = re
