@@ -14,6 +14,7 @@
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-script.h"
@@ -73,6 +74,44 @@ TEST_F(ArgumentsTest, TestArgumentsHolderCreationContext) {
         v8::Context::New(isolate, nullptr, v8::Local<v8::ObjectTemplate>());
     test_context(second_context);
   }
+}
+
+TEST_F(ArgumentsTest, TestIsolate) {
+  v8::Isolate* isolate = instance_->isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = context_.Get(isolate);
+
+  EXPECT_EQ(nullptr, Arguments().isolate());
+
+  auto is_current_isolate = [](gin::Arguments* arguments) {
+    return arguments->isolate() == v8::Isolate::GetCurrent();
+  };
+  v8::Local<v8::ObjectTemplate> object_template =
+      ObjectTemplateBuilder(isolate)
+          .SetMethod("fromFunction", base::BindRepeating(is_current_isolate))
+          .SetLazyDataProperty("fromProperty", is_current_isolate)
+          .Build();
+  v8::Local<v8::Object> object =
+      object_template->NewInstance(context).ToLocalChecked();
+
+  auto evaluate = [&](const char* source) {
+    v8::Local<v8::Script> script =
+        v8::Script::Compile(context, StringToV8(isolate, source))
+            .ToLocalChecked();
+    v8::Local<v8::Function> function;
+    EXPECT_TRUE(ConvertFromV8(isolate, script->Run(context).ToLocalChecked(),
+                              &function));
+    v8::Local<v8::Value> args[] = {object};
+    bool result = false;
+    EXPECT_TRUE(ConvertFromV8(
+        isolate,
+        function->Call(context, v8::Undefined(isolate), std::size(args), args)
+            .ToLocalChecked(),
+        &result));
+    return result;
+  };
+  EXPECT_TRUE(evaluate("(function(o) { return o.fromFunction(); })"));
+  EXPECT_TRUE(evaluate("(function(o) { return o.fromProperty; })"));
 }
 
 TEST_F(ArgumentsTest, TestGetAll) {

@@ -5,7 +5,6 @@
 #ifndef GIN_ARGUMENTS_H_
 #define GIN_ARGUMENTS_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
@@ -30,14 +29,14 @@ class GIN_EXPORT Arguments {
     v8::Local<v8::Object> holder = is_for_property_
                                        ? info_for_property_->Holder()
                                        : info_for_function_->This();
-    return ConvertFromV8(isolate_, holder, out);
+    return ConvertFromV8(isolate(), holder, out);
   }
 
   template<typename T>
   bool GetData(T* out) {
     v8::Local<v8::Data> data = is_for_property_ ? info_for_property_->DataV2()
                                                 : info_for_function_->DataV2();
-    return ConvertFromV8(isolate_, data.As<v8::Value>(), out);
+    return ConvertFromV8(isolate(), data.As<v8::Value>(), out);
   }
 
   template<typename T>
@@ -47,7 +46,7 @@ class GIN_EXPORT Arguments {
       return false;
     }
     v8::Local<v8::Value> val = (*info_for_function_)[next_++];
-    return ConvertFromV8(isolate_, val, out);
+    return ConvertFromV8(isolate(), val, out);
   }
 
   template<typename T>
@@ -60,8 +59,9 @@ class GIN_EXPORT Arguments {
     out->resize(remaining);
     for (int i = 0; i < remaining; ++i) {
       v8::Local<v8::Value> val = (*info_for_function_)[next_++];
-      if (!ConvertFromV8(isolate_, val, &out->at(i)))
+      if (!ConvertFromV8(isolate(), val, &out->at(i))) {
         return false;
+      }
     }
     return true;
   }
@@ -82,7 +82,7 @@ class GIN_EXPORT Arguments {
   template <typename T>
   void Return(const T& val) {
     v8::Local<v8::Value> v8_value;
-    if (!TryConvertToV8(isolate_, val, &v8_value)) {
+    if (!TryConvertToV8(isolate(), val, &v8_value)) {
       return;
     }
     (is_for_property_ ? info_for_property_->GetReturnValue()
@@ -111,14 +111,18 @@ class GIN_EXPORT Arguments {
   void ThrowError() const;
   void ThrowTypeError(const std::string& message) const;
 
-  v8::Isolate* isolate() const { return isolate_; }
+  v8::Isolate* isolate() const {
+    if (is_for_property_) {
+      return info_for_property_->GetIsolate();
+    }
+    return info_for_function_ ? info_for_function_->GetIsolate() : nullptr;
+  }
 
   // Allows the function handler to distinguish between normal invocation
   // and object construction.
   bool IsConstructCall() const;
 
  private:
-  raw_ptr<v8::Isolate> isolate_;
   union {
     // This field is not a raw_ptr<> because it was filtered by the rewriter
     // for: #union

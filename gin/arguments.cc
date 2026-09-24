@@ -13,18 +13,13 @@
 
 namespace gin {
 
-Arguments::Arguments()
-    : isolate_(nullptr), info_for_function_(nullptr), is_for_property_(false) {}
+Arguments::Arguments() : info_for_function_(nullptr) {}
 
 Arguments::Arguments(const v8::FunctionCallbackInfo<v8::Value>& info)
-    : isolate_(info.GetIsolate()),
-      info_for_function_(&info),
-      is_for_property_(false) {}
+    : info_for_function_(&info) {}
 
 Arguments::Arguments(const v8::PropertyCallbackInfo<v8::Value>& info)
-    : isolate_(info.GetIsolate()),
-      info_for_property_(&info),
-      is_for_property_(true) {}
+    : info_for_property_(&info), is_for_property_(true) {}
 
 Arguments::~Arguments() = default;
 
@@ -37,7 +32,7 @@ v8::Local<v8::Value> Arguments::PeekNext() const {
 }
 
 v8::LocalVector<v8::Value> Arguments::GetAll() const {
-  v8::LocalVector<v8::Value> result(isolate_);
+  v8::LocalVector<v8::Value> result(isolate());
   if (is_for_property_)
     return result;
 
@@ -55,7 +50,7 @@ v8::LocalVector<v8::Value> Arguments::GetAll() const {
 v8::Local<v8::Context> Arguments::GetHolderCreationContext() const {
   v8::Local<v8::Object> holder = is_for_property_ ? info_for_property_->Holder()
                                                   : info_for_function_->This();
-  return holder->GetCreationContextChecked(isolate_);
+  return holder->GetCreationContextChecked(isolate());
 }
 
 std::string V8TypeAsString(v8::Isolate* isolate, v8::Local<v8::Value> value) {
@@ -81,12 +76,12 @@ void Arguments::ThrowError() const {
   v8::Local<v8::Value> value = (*info_for_function_)[next_ - 1];
   return ThrowTypeError(base::StringPrintf(
       "Error processing argument at index %d, conversion failure from %s",
-      next_ - 1, V8TypeAsString(isolate_, value).c_str()));
+      next_ - 1, V8TypeAsString(isolate(), value).c_str()));
 }
 
 void Arguments::ThrowTypeError(const std::string& message) const {
-  isolate_->ThrowException(v8::Exception::TypeError(
-      StringToV8(isolate_, message)));
+  isolate()->ThrowException(
+      v8::Exception::TypeError(StringToV8(isolate(), message)));
 }
 
 bool Arguments::IsConstructCall() const {
