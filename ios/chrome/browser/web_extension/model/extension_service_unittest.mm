@@ -11,6 +11,7 @@
 #import "base/callback_list.h"
 #import "base/functional/callback.h"
 #import "base/ios/ios_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/simple_test_clock.h"
 #import "base/test/task_environment.h"
@@ -226,6 +227,7 @@ API_AVAILABLE(ios(18.4)) {
 // user is eligible and opted in.
 TEST_F(ExtensionServiceTest, TestInitializationWithEligibleUserOptedIn)
 API_AVAILABLE(ios(18.4)) {
+  base::HistogramTester histogram_tester;
   SetOptedIn(true);
   auto optout_service = CreateOptOutService(/*eligible=*/true);
 
@@ -247,18 +249,26 @@ API_AVAILABLE(ios(18.4)) {
       service.RunWhenReady(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
+  task_environment_.FastForwardBy(base::Milliseconds(150));
   raw_fake_controller->CompleteLoad(/*success=*/true);
 
   EXPECT_TRUE(service.IsReady());
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(raw_fake_controller->IsBuiltInExtensionLoaded(
       web::BuiltInExtension::kGPC));
+
+  histogram_tester.ExpectUniqueSample("IOS.WebExtension.LoadSuccess", true, 1);
+  histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.LoadDelay",
+                                          base::Milliseconds(150), 1);
+  histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.ReadyDelay",
+                                          base::Milliseconds(150), 1);
 }
 
 // Tests that ExtensionService times out after 2 seconds and marks itself ready
 // if the extension takes too long to load.
 TEST_F(ExtensionServiceTest, TestInitializationLoadingTimeout)
 API_AVAILABLE(ios(18.4)) {
+  base::HistogramTester histogram_tester;
   SetOptedIn(true);
   auto optout_service = CreateOptOutService(/*eligible=*/true);
 
@@ -284,9 +294,20 @@ API_AVAILABLE(ios(18.4)) {
   EXPECT_TRUE(service.IsReady());
   EXPECT_TRUE(future.IsReady());
 
-  // Complete load after timeout and verify it does not cause errors.
+  histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
+  histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
+  histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.ReadyDelay",
+                                          base::Seconds(2), 1);
+
+  // Complete load after timeout and verify that the actual load delay and
+  // success are recorded.
+  task_environment_.FastForwardBy(base::Milliseconds(500));
   raw_fake_controller->CompleteLoad(/*success=*/true);
   EXPECT_TRUE(service.IsReady());
+  histogram_tester.ExpectUniqueSample("IOS.WebExtension.LoadSuccess", true, 1);
+  histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.LoadDelay",
+                                          base::Milliseconds(2500), 1);
+  histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 1);
 }
 
 // Tests that ExtensionService cancels the timeout timer if loading finishes

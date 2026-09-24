@@ -15,6 +15,7 @@
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
+#import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
@@ -97,6 +98,12 @@ class ExtensionServiceImpl final : public ExtensionService {
 
   // List of callbacks waiting for the service to be ready.
   base::OnceClosureList ready_callbacks_;
+
+  // Timestamp when initialization started.
+  base::TimeTicks initialization_start_time_;
+
+  // Timestamp when loading the extension started.
+  base::TimeTicks extension_load_start_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ExtensionServiceImpl> weak_ptr_factory_{this};

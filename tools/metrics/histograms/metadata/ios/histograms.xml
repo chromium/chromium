@@ -8704,6 +8704,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.WebExtension.LoadDelay" units="ms"
+    expires_after="2027-09-20">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <summary>
+    The delay taken to load the web extension. Recorded when the extension
+    finishes loading in ExtensionService.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WebExtension.LoadSuccess" enum="BooleanSuccess"
+    expires_after="2027-09-20">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <summary>
+    Whether loading of the web extension succeeded. Recorded when the extension
+    finishes loading in ExtensionService.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WebExtension.ReadyDelay" units="ms"
+    expires_after="2027-09-20">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <summary>
+    The delay taken to declare ExtensionService ready. Recorded when
+    ExtensionService is declared ready (either after loading finishes or after
+    timeout).
+  </summary>
+</histogram>
+
 <histogram name="IOS.WebState.Clipboard.{Action}.Outcome" enum="BooleanAllowed"
     expires_after="2027-02-07">
   <owner>eic@google.com</owner>

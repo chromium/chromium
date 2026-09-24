@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/universal_optout/prefs.h"
@@ -41,7 +42,8 @@ void ExtensionServiceImpl::Shutdown() {
   pref_change_registrar_.RemoveAll();
   ready_callbacks_.Clear();
   extension_controller_.reset();
-  universal_optout_service_ = nullptr;
+  extension_load_start_time_ = base::TimeTicks();
+  initialization_start_time_ = base::TimeTicks();
 }
 
 web::ExtensionController* ExtensionServiceImpl::GetExtensionController() const {
@@ -81,6 +83,8 @@ void ExtensionServiceImpl::Initialize() {
       universal_optout::prefs::kUniversalOptOutEnabled);
   if (opted_in) {
     is_loading_ = true;
+    initialization_start_time_ = base::TimeTicks::Now();
+    extension_load_start_time_ = initialization_start_time_;
     loading_timer_.Start(
         FROM_HERE, kExtensionLoadingTimeout,
         base::BindOnce(&ExtensionServiceImpl::OnExtensionLoadTimeout,
@@ -98,6 +102,13 @@ void ExtensionServiceImpl::OnExtensionLoaded(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_loading_ = false;
   loading_timer_.Stop();
+  if (!extension_load_start_time_.is_null()) {
+    base::UmaHistogramBoolean("IOS.WebExtension.LoadSuccess", success);
+    base::UmaHistogramTimes(
+        "IOS.WebExtension.LoadDelay",
+        base::TimeTicks::Now() - extension_load_start_time_);
+    extension_load_start_time_ = base::TimeTicks();
+  }
   if (!pref_service_->GetBoolean(
           universal_optout::prefs::kUniversalOptOutEnabled)) {
     if (extension_controller_ &&
@@ -124,6 +135,12 @@ void ExtensionServiceImpl::OnExtensionLoadTimeout() {
 
 void ExtensionServiceImpl::NotifyReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!initialization_start_time_.is_null()) {
+    base::UmaHistogramTimes(
+        "IOS.WebExtension.ReadyDelay",
+        base::TimeTicks::Now() - initialization_start_time_);
+    initialization_start_time_ = base::TimeTicks();
+  }
   is_ready_ = true;
   ready_callbacks_.Notify();
 }
