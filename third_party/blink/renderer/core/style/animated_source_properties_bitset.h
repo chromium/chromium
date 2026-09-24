@@ -5,22 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_ANIMATED_SOURCE_PROPERTIES_BITSET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_ANIMATED_SOURCE_PROPERTIES_BITSET_H_
 
-#include <cstdint>
-
+#include "base/containers/enum_set.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 
 namespace blink {
 
-// Bitmask representing a set of CSS properties that track animated sources.
-using AnimatedSourceBits = uint32_t;
-static_assert(kAnimatedSourcePropertyCount <= sizeof(AnimatedSourceBits) * 8,
-              "AnimatedSourceBits needs a bit per tracked property");
-
-// Returns the bit representing the given property.
-constexpr AnimatedSourceBits BitForAnimatedSourceProperty(
-    AnimatedSourceProperty property) {
-  return AnimatedSourceBits{1} << static_cast<unsigned>(property);
-}
+// Set of CSS properties that track animated sources.
+using AnimatedSourceBitset = base::EnumSet<AnimatedSourceProperty>;
 
 }  // namespace blink
 

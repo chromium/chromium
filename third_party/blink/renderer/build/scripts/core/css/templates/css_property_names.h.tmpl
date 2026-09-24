@@ -42,8 +42,9 @@ inline constexpr CSSPropertyID kCSSIncludesCurrentColorProperties[] = {
 enum class AnimatedSourceProperty : unsigned {
 {{animated_source_property_enums}}
   kNumFields = {{animated_source_property_count}},
+  kMinValue = 0,
+  kMaxValue = kNumFields - 1,
 };
-inline constexpr unsigned kAnimatedSourcePropertyCount = {{animated_source_property_count}};
 
 // Returns the AnimatedSourceProperty for the given property, or nullopt if
 // the property does not track animated sources.

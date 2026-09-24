@@ -57,9 +57,8 @@ class CORE_EXPORT StyleAnimatedSources {
     if (!sources_.HasField(property)) {
       return {};
     }
-    const AnimatedSourceBits bit = BitForAnimatedSourceProperty(property);
     return {sources_.GetField(property),
-            (has_untracked_dependencies_ & bit) != 0};
+            has_untracked_dependencies_.Has(property)};
   }
 
   // Writes the source the given property's computed value is from or derived
@@ -77,7 +76,7 @@ class CORE_EXPORT StyleAnimatedSources {
   SparseVector<AnimatedSourceProperty, AnimatedSourceHandle, 2> sources_;
 
   // Which properties have `has_untracked_dependencies` set in `AnimatedSource`.
-  AnimatedSourceBits has_untracked_dependencies_ = 0;
+  AnimatedSourceBitset has_untracked_dependencies_;
 };
 
 }  // namespace blink

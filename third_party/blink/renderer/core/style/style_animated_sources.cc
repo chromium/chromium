@@ -14,12 +14,8 @@ void StyleAnimatedSources::Set(AnimatedSourceProperty property,
   sources_.SetField(property, AnimatedSourceHandle(source.animated_source));
 
   // Set the bit for untracked dependencies, clearing any previous state.
-  const AnimatedSourceBits bit = BitForAnimatedSourceProperty(property);
-  if (source.has_untracked_dependencies) {
-    has_untracked_dependencies_ |= bit;
-  } else {
-    has_untracked_dependencies_ &= ~bit;
-  }
+  has_untracked_dependencies_.PutOrRemove(property,
+                                          source.has_untracked_dependencies);
 }
 
 void StyleAnimatedSources::Clear(AnimatedSourceProperty property) {
@@ -31,8 +27,7 @@ void StyleAnimatedSources::Clear(AnimatedSourceProperty property) {
   }
 
   // Clear bit for untracked dependencies for the property
-  const AnimatedSourceBits bit = BitForAnimatedSourceProperty(property);
-  has_untracked_dependencies_ &= ~bit;
+  has_untracked_dependencies_.Remove(property);
 }
 
 }  // namespace blink
