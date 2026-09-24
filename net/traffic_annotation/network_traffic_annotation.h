@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 
@@ -22,10 +23,11 @@ namespace net::internal {
 
 template <size_t N>
 consteval int32_t ComputeAnnotationHash(const char (&str)[N]) {
+  static_assert(N > 0, "String literal cannot be empty");
   uint32_t ret = 0;
   // - 1 to not include NUL
-  for (size_t i = 0; i < N - 1; ++i) {
-    ret = (ret * 31u + static_cast<uint32_t>(UNSAFE_TODO(str[i]))) % 138003713u;
+  for (char c : base::span(str).template first<N - 1>()) {
+    ret = (ret * 31u + static_cast<uint32_t>(c)) % 138003713u;
   }
   return static_cast<int32_t>(ret);
 }

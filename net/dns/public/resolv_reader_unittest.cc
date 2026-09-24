@@ -16,6 +16,7 @@
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/sys_byteorder.h"
@@ -53,18 +54,20 @@ void InitializeResState(res_state res) {
   UNSAFE_TODO(memset(res, 0, sizeof(*res)));
   res->options = RES_INIT;
 
+  auto nsaddr_list = base::span(res->nsaddr_list);
   for (unsigned i = 0; i < std::size(kNameserversIPv4) && i < MAXNS; ++i) {
     struct sockaddr_in sa;
     sa.sin_family = AF_INET;
     sa.sin_port = base::HostToNet16(NS_DEFAULTPORT + i);
     inet_pton(AF_INET, kNameserversIPv4[i], &sa.sin_addr);
-    UNSAFE_TODO(res->nsaddr_list[i]) = sa;
+    nsaddr_list[i] = sa;
     ++res->nscount;
   }
 
 #if BUILDFLAG(IS_LINUX)
   // Install IPv6 addresses, replacing the corresponding IPv4 addresses.
   unsigned nscount6 = 0;
+  auto ext_nsaddrs = base::span(res->_u._ext.nsaddrs);
   for (unsigned i = 0; i < std::size(kNameserversIPv6) && i < MAXNS; ++i) {
     if (!kNameserversIPv6[i])
       continue;
@@ -75,8 +78,8 @@ void InitializeResState(res_state res) {
     sa6->sin6_family = AF_INET6;
     sa6->sin6_port = base::HostToNet16(NS_DEFAULTPORT - i);
     inet_pton(AF_INET6, kNameserversIPv6[i], &sa6->sin6_addr);
-    UNSAFE_TODO(res->_u._ext.nsaddrs[i]) = sa6;
-    UNSAFE_TODO(memset(&res->nsaddr_list[i], 0, sizeof res->nsaddr_list[i]));
+    ext_nsaddrs[i] = sa6;
+    nsaddr_list[i] = {};
     ++nscount6;
   }
   res->_u._ext.nscount6 = nscount6;
@@ -85,10 +88,12 @@ void InitializeResState(res_state res) {
 
 void FreeResState(struct __res_state* res) {
 #if BUILDFLAG(IS_LINUX)
-  for (int i = 0; i < res->nscount; ++i) {
-    if (UNSAFE_TODO(res->_u._ext.nsaddrs[i]) != nullptr) {
-      free(UNSAFE_TODO(res->_u._ext.nsaddrs[i]));
+  int count = res->nscount;
+  for (sockaddr_in6* ext_nsaddr : res->_u._ext.nsaddrs) {
+    if (count-- <= 0) {
+      break;
     }
+    free(ext_nsaddr);
   }
 #endif
 }

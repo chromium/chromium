@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
@@ -78,26 +79,25 @@ std::unique_ptr<addrinfo, FreeAddrInfoFunc>
 MockAddrInfoGetter::MakeAddrInfoList(const IpAndPort (&ipp)[N],
                                      std::string_view canonical_name) {
   struct Buffer {
-    addrinfo ai[N];
-    sockaddr_in addr[N];
-    char canonical_name[256];
+    std::array<addrinfo, N> ai = {};
+    std::array<sockaddr_in, N> addr = {};
+    std::array<char, 256> canonical_name = {};
   };
 
+  // `Buffer::canonical_name` is zero-initialized and holds 256 chars. Capping
+  // the copy at 255 leaves at least one trailing null byte, so the buffer stays
+  // a valid NUL-terminated C string for `addrinfo::ai_canonname`.
   CHECK_LE(canonical_name.size(), 255u);
 
   Buffer* const buffer = new Buffer();
-  UNSAFE_TODO(memset(buffer, 0x0, sizeof(Buffer)));
+  base::span(buffer->canonical_name).copy_prefix_from(canonical_name);
 
-  // At least one trailing nul byte on buffer->canonical_name was added by
-  // memset() above.
-  UNSAFE_TODO(memcpy(buffer->canonical_name, canonical_name.data(),
-                     canonical_name.size()));
-
-  for (size_t i = 0; i < N; ++i) {
-    InitializeAddrinfo(UNSAFE_TODO(ipp[i]), buffer->canonical_name,
-                       i + 1 < N ? UNSAFE_TODO(buffer->ai + i + 1) : nullptr,
-                       UNSAFE_TODO(buffer->addr + i),
-                       UNSAFE_TODO(buffer->ai + i));
+  size_t i = 0;
+  for (const auto& item : ipp) {
+    InitializeAddrinfo(item, buffer->canonical_name.data(),
+                       i + 1 < N ? &buffer->ai[i + 1] : nullptr,
+                       &buffer->addr[i], &buffer->ai[i]);
+    ++i;
   }
 
   return {reinterpret_cast<addrinfo*>(buffer),
@@ -115,9 +115,13 @@ void MockAddrInfoGetter::InitializeAddrinfo(const IpAndPort& ip_and_port,
                                             addrinfo* ai_next,
                                             sockaddr_in* addr,
                                             addrinfo* ai) {
-  const uint8_t ip[4] = {ip_and_port.ip.a, ip_and_port.ip.b, ip_and_port.ip.c,
-                         ip_and_port.ip.d};
-  UNSAFE_TODO(memcpy(&addr->sin_addr, ip, 4));
+  const std::array<uint8_t, 4> ip = {
+      ip_and_port.ip.a,
+      ip_and_port.ip.b,
+      ip_and_port.ip.c,
+      ip_and_port.ip.d,
+  };
+  base::byte_span_from_ref(addr->sin_addr).copy_from(ip);
   addr->sin_family = AF_INET;
   addr->sin_port =
       base::HostToNet16(base::checked_cast<uint16_t>(ip_and_port.port));

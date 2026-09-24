@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -264,8 +265,11 @@ std::optional<DnsConfig> ConvertResStateToDnsConfig(
 
   dns_config.nameservers = std::move(*nameservers);
   dns_config.search.clear();
-  for (int i = 0; (i < MAXDNSRCH) && UNSAFE_TODO(res.dnsrch[i]); ++i) {
-    dns_config.search.emplace_back(UNSAFE_TODO(res.dnsrch[i]));
+  for (const char* search : base::span(res.dnsrch).first<MAXDNSRCH>()) {
+    if (!search) {
+      break;
+    }
+    dns_config.search.emplace_back(search);
   }
 
   dns_config.ndots = res.ndots;

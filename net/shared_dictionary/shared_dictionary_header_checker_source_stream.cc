@@ -4,6 +4,8 @@
 
 #include "net/shared_dictionary/shared_dictionary_header_checker_source_stream.h"
 
+#include <array>
+
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
@@ -16,30 +18,26 @@
 namespace net {
 namespace {
 
-static constexpr unsigned char kCompressionTypeBrotliSignature[] = {0xff, 0x44,
-                                                                    0x43, 0x42};
-static constexpr unsigned char kCompressionTypeZstdSignature[] = {
+static constexpr std::array<unsigned char, 4> kCompressionTypeBrotliSignature =
+    {0xff, 0x44, 0x43, 0x42};
+static constexpr std::array<unsigned char, 8> kCompressionTypeZstdSignature = {
     0x5e, 0x2a, 0x4d, 0x18, 0x20, 0x00, 0x00, 0x00};
-static constexpr size_t kCompressionTypeBrotliSignatureSize =
-    sizeof(kCompressionTypeBrotliSignature);
-static constexpr size_t kCompressionTypeZstdSignatureSize =
-    sizeof(kCompressionTypeZstdSignature);
 static constexpr size_t kCompressionDictionaryHashSize = 32;
 static_assert(sizeof(SHA256HashValue) == kCompressionDictionaryHashSize,
               "kCompressionDictionaryHashSize mismatch");
 static constexpr size_t kCompressionTypeBrotliHeaderSize =
-    kCompressionTypeBrotliSignatureSize + kCompressionDictionaryHashSize;
+    kCompressionTypeBrotliSignature.size() + kCompressionDictionaryHashSize;
 static constexpr size_t kCompressionTypeZstdHeaderSize =
-    kCompressionTypeZstdSignatureSize + kCompressionDictionaryHashSize;
+    kCompressionTypeZstdSignature.size() + kCompressionDictionaryHashSize;
 
 size_t GetSignatureSize(SharedDictionaryHeaderCheckerSourceStream::Type type) {
   switch (type) {
     case SharedDictionaryHeaderCheckerSourceStream::Type::
         kDictionaryCompressedBrotli:
-      return kCompressionTypeBrotliSignatureSize;
+      return kCompressionTypeBrotliSignature.size();
     case SharedDictionaryHeaderCheckerSourceStream::Type::
         kDictionaryCompressedZstd:
-      return kCompressionTypeZstdSignatureSize;
+      return kCompressionTypeZstdSignature.size();
   }
 }
 
