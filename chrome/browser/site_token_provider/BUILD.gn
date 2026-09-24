@@ -37,23 +37,6 @@ source_set("site_token_provider") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  visibility = [ ":*" ]
-  sources = [
-    "fake_trusted_url_loader_header_client.cc",
-    "fake_trusted_url_loader_header_client.h",
-  ]
-  deps = [
-    "//base",
-    "//mojo/public/cpp/bindings",
-    "//net",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-    "//url",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -83,29 +66,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
-}
-
-if (!is_android) {
-  source_set("browser_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    visibility = [ "//chrome/test:browser_tests" ]
-    sources = [ "site_token_browsertest.cc" ]
-    deps = [
-      ":site_token_provider",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser:chrome_content_browser_client",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
-      "//components/site_token_provider",
-      "//content/test:test_support",
-      "//net:test_support",
-      "//testing/gtest",
-      "//url",
-    ]
-  }
 }

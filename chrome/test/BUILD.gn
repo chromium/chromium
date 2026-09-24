@@ -1911,7 +1911,6 @@ if (!is_android) {
       "//chrome/browser/site_isolation:browser_tests",
       "//chrome/browser/site_protection",
       "//chrome/browser/site_protection:utils",
-      "//chrome/browser/site_token_provider:browser_tests",
       "//chrome/browser/skills:browser_tests",
       "//chrome/browser/ssl",
       "//chrome/browser/ssl:browser_tests",
