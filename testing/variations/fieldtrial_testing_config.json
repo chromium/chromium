@@ -20330,6 +20330,7 @@
                 {
                     "name": "EnabledWithSurfaceSync_20260902",
                     "params": {
+                        "WebUIReloadButtonBypassLoaderThrottles": "true",
                         "WebUIReloadButtonDeferBrowserViewShow": "false",
                         "WebUIReloadButtonKeepVisibleUntilPaint": "true",
                         "WebUIReloadButtonRestartUnresponsive": "true",
@@ -20341,7 +20342,9 @@
                     },
                     "enable_features": [
                         "BypassOutdatedSurfaceActivation",
+                        "DeferHistoryBackendInit",
                         "DeferLayoutDuringBrowserStartup",
+                        "DeferSessionStorageScavengingOnStartup",
                         "DeferSpellcheckInitialization",
                         "InitialWebUI",
                         "InitialWebUISurfaceSync",
@@ -20354,6 +20357,7 @@
                         "SkipIPCChannelPausingForNonGuests",
                         "WebUIBackForwardButton",
                         "WebUIBundledCodeCache",
+                        "WebUIBypassMojoConnections",
                         "WebUIHomeButton",
                         "WebUIInProcessResourceLoadingV2",
                         "WebUIReloadButton",
