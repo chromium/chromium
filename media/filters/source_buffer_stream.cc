@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/demuxer_memory_limit.h"
@@ -22,9 +21,6 @@
 namespace media {
 
 namespace {
-
-// TODO(crbug.com/486351442): Kill-switch to be removed after M147 goes stable.
-BASE_FEATURE(kMergeRangesDuringAppend, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The minimum interbuffer decode timestamp delta (or buffer duration) for use
 // in fudge room for range membership, adjacency and coalescing.
@@ -411,9 +407,7 @@ void SourceBufferStream::Append(const BufferQueue& buffers) {
 
   SetSelectedRangeIfNeeded(next_buffer_timestamp);
 
-  if (base::FeatureList::IsEnabled(kMergeRangesDuringAppend)) {
-    MergeAllAdjacentRanges();
-  }
+  MergeAllAdjacentRanges();
   DVLOG(1) << __func__ << " " << GetStreamTypeName()
            << ": done. ranges_=" << RangesToString(ranges_);
   DCHECK(IsRangeListSorted(ranges_));
