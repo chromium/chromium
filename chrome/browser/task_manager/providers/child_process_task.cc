@@ -101,7 +101,7 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
 // usage of the browser child process whose unique ID is
 // |unique_child_process_id|.
 std::unique_ptr<ProcessResourceUsage> CreateProcessResourcesSampler(
-    int unique_child_process_id) {
+    content::ChildProcessId unique_child_process_id) {
   mojo::PendingRemote<content::mojom::ResourceUsageReporter> usage_reporter;
   content::BrowserChildProcessHost* host =
       content::BrowserChildProcessHost::FromID(unique_child_process_id);
@@ -146,8 +146,9 @@ ChildProcessTask::ChildProcessTask(const content::ChildProcessData& data,
                              ProcessSubtype::kNoSubtype),
            FetchIcon(IDR_PLUGINS_FAVICON, &s_icon_),
            process.Handle()),
-      process_resources_sampler_(CreateProcessResourcesSampler(data.id)),
-      unique_child_process_id_(data.id),
+      process_resources_sampler_(
+          CreateProcessResourcesSampler(data.GetChildProcessId())),
+      unique_child_process_id_(data.GetChildProcessId()),
       process_type_(data.process_type),
       process_subtype_(ProcessSubtype::kNoSubtype),
       uses_v8_memory_(UsesV8Memory(process_type_)) {}
@@ -160,7 +161,7 @@ ChildProcessTask::ChildProcessTask(content::RenderProcessHost& host,
            FetchIcon(IDR_PLUGINS_FAVICON, &s_icon_),
            host.GetProcess().Handle()),
       process_resources_sampler_(CreateProcessResourcesSampler(host)),
-      unique_child_process_id_(host.GetID().value()),
+      unique_child_process_id_(host.GetID()),
       process_type_(content::PROCESS_TYPE_RENDERER),
       process_subtype_(subtype),
       uses_v8_memory_(true) {
@@ -257,7 +258,8 @@ Task::SubType ChildProcessTask::GetSubType() const {
 }
 
 int ChildProcessTask::GetChildProcessUniqueID() const {
-  return unique_child_process_id_;
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
+  return unique_child_process_id_.GetUnsafeValue();
 }
 
 std::optional<base::ByteSize> ChildProcessTask::GetV8MemoryAllocated() const {

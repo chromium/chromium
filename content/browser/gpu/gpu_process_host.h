@@ -122,8 +122,6 @@ class GpuProcessHost final : public BrowserChildProcessHostDelegate,
   info_collection_gpu_service();
 #endif
 
-  CONTENT_EXPORT int GetIDForTesting() const;
-
   viz::GpuHostImpl* gpu_host() { return gpu_host_.get(); }
 
 #if BUILDFLAG(IS_MAC)

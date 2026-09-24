@@ -43,9 +43,9 @@ void NotifyChildProcess(
   }
 }
 
-ChildProcessHost* FindChildProcessHost(int unique_id) {
+ChildProcessHost* FindChildProcessHost(ChildProcessId unique_id) {
   for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-    if (iter.GetData().id == unique_id) {
+    if (iter.GetData().GetChildProcessId() == unique_id) {
       return iter.GetHost();
     }
   }
@@ -67,7 +67,8 @@ std::unique_ptr<SyntheticTrialSyncer> SyntheticTrialSyncer::Create(
   return instance;
 }
 
-void SyntheticTrialSyncer::OnDisconnected(int unique_child_process_id) {
+void SyntheticTrialSyncer::OnDisconnected(
+    ChildProcessId unique_child_process_id) {
   child_process_unique_id_to_mojo_connections_.erase(unique_child_process_id);
 }
 
@@ -99,7 +100,7 @@ void SyntheticTrialSyncer::OnSyntheticTrialsChanged(
 void SyntheticTrialSyncer::BrowserChildProcessLaunchedAndConnected(
     const ChildProcessData& data,
     const base::Process& process) {
-  const int unique_id = data.id;
+  const ChildProcessId unique_id = data.GetChildProcessId();
   ChildProcessHost* host = FindChildProcessHost(unique_id);
   if (host == nullptr) {
     return;
@@ -127,7 +128,7 @@ void SyntheticTrialSyncer::BrowserChildProcessHostDisconnected(
     const ChildProcessData& data) {
   // ChildProcessData does not carry a process handle, so we look up the
   // connection by unique child process ID.
-  child_process_unique_id_to_mojo_connections_.erase(data.id);
+  child_process_unique_id_to_mojo_connections_.erase(data.GetChildProcessId());
 }
 
 void SyntheticTrialSyncer::OnRenderProcessHostCreated(RenderProcessHost* host) {
@@ -142,7 +143,7 @@ void SyntheticTrialSyncer::RenderProcessReady(RenderProcessHost* host) {
     return;
   }
 
-  const int unique_id = host->GetDeprecatedID();
+  const ChildProcessId unique_id = host->GetID();
   mojo::Remote<mojom::SyntheticTrialConfiguration>
       synthetic_trial_configuration;
   host->BindReceiver(
@@ -165,13 +166,13 @@ void SyntheticTrialSyncer::RenderProcessReady(RenderProcessHost* host) {
 void SyntheticTrialSyncer::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
-  child_process_unique_id_to_mojo_connections_.erase(host->GetDeprecatedID());
+  child_process_unique_id_to_mojo_connections_.erase(host->GetID());
 
   host_observation_.RemoveObservation(host);
 }
 
 void SyntheticTrialSyncer::RenderProcessHostDestroyed(RenderProcessHost* host) {
-  child_process_unique_id_to_mojo_connections_.erase(host->GetDeprecatedID());
+  child_process_unique_id_to_mojo_connections_.erase(host->GetID());
 
   host_observation_.RemoveObservation(host);
 }

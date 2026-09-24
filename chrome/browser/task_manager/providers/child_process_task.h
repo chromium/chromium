@@ -11,6 +11,7 @@
 
 #include "base/byte_size.h"
 #include "chrome/browser/task_manager/providers/task.h"
+#include "content/public/common/child_process_id.h"
 
 class ProcessResourceUsage;
 
@@ -85,8 +86,7 @@ class ChildProcessTask : public Task {
   std::optional<base::ByteSize> v8_memory_used_;
 
   // The unique ID of the child process. It is not the PID of the process.
-  // See |content::ChildProcessData::id|.
-  const int unique_child_process_id_;
+  const content::ChildProcessId unique_child_process_id_;
 
   // The type of the child process. See |content::ProcessType|.
   const int process_type_;

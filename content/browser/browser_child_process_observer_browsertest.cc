@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "content/public/browser/child_process_data.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
 #include "content/public/test/browser_test.h"
@@ -64,7 +65,7 @@ std::ostream& operator<<(std::ostream& os, Notification notification) {
 }
 
 // Returns true if a child process whose ID is |child_id| is still alive.
-bool IsHostAlive(int child_id) {
+bool IsHostAlive(ChildProcessId child_id) {
   return BrowserChildProcessHost::FromID(child_id) != nullptr;
 }
 
@@ -79,7 +80,7 @@ class BrowserChildProcessNotificationObserver
       base::RepeatingCallback<void(Notification notification)>;
 
   BrowserChildProcessNotificationObserver(
-      int child_id,
+      ChildProcessId child_id,
       OnNotificationCallback on_notification_callback)
       : child_id_(child_id),
         on_notification_callback_(std::move(on_notification_callback)) {
@@ -95,7 +96,7 @@ class BrowserChildProcessNotificationObserver
   void BrowserChildProcessLaunchedAndConnected(
       const ChildProcessData& data,
       const base::Process& process) override {
-    if (data.id == child_id_) {
+    if (data.GetChildProcessId() == child_id_) {
       EXPECT_TRUE(process.IsValid());
     }
     OnNotification(data, Notification::kLaunchedAndConnected);
@@ -126,14 +127,14 @@ class BrowserChildProcessNotificationObserver
   }
 
   void OnNotification(const ChildProcessData& data, Notification notification) {
-    if (data.id == child_id_) {
+    if (data.GetChildProcessId() == child_id_) {
       on_notification_callback_.Run(notification);
     }
   }
 
  private:
   // Every notification coming for a child with a different ID will be ignored.
-  int child_id_;
+  ChildProcessId child_id_;
 
   // The callback to invoke every time a method of the observer is called.
   OnNotificationCallback on_notification_callback_;
@@ -143,7 +144,8 @@ class BrowserChildProcessNotificationObserver
 // is sent for a child process whose ID matches |child_id|.
 class WaitForNotificationObserver {
  public:
-  WaitForNotificationObserver(int child_id, Notification notification)
+  WaitForNotificationObserver(ChildProcessId child_id,
+                              Notification notification)
       : inner_observer_(
             child_id,
             base::BindRepeating(&WaitForNotificationObserver::OnNotification,
@@ -208,7 +210,7 @@ class TestProcessHost final : public BrowserChildProcessHostDelegate {
   ~TestProcessHost() override = default;
 
   // Returns the ID of the child process.
-  int GetID() { return process_->GetData().id; }
+  ChildProcessId GetID() { return process_->GetData().GetChildProcessId(); }
 
   // Binds to the test service on the child process and returns the bound
   // remote.
@@ -289,7 +291,7 @@ class TestProcessHost final : public BrowserChildProcessHostDelegate {
 // child process.
 class TestBrowserChildProcessObserver {
  public:
-  explicit TestBrowserChildProcessObserver(int child_id)
+  explicit TestBrowserChildProcessObserver(ChildProcessId child_id)
       : inner_observer_(child_id,
                         base::BindRepeating(
                             &TestBrowserChildProcessObserver::OnNotification,
@@ -325,7 +327,7 @@ class BrowserChildProcessObserverBrowserTest : public ContentBrowserTest {};
 IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
                        MAYBE_LaunchAndForceShutdown) {
   base::WeakPtr<TestProcessHost> host = TestProcessHost::Create();
-  int child_id = host->GetID();
+  ChildProcessId child_id = host->GetID();
 
   TestBrowserChildProcessObserver observer(child_id);
 
@@ -365,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
                        LaunchAndDelete) {
   base::WeakPtr<TestProcessHost> host = TestProcessHost::Create();
-  int child_id = host->GetID();
+  ChildProcessId child_id = host->GetID();
 
   TestBrowserChildProcessObserver observer(child_id);
 
@@ -404,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
                        MAYBE_LaunchAndDisconnect) {
   base::WeakPtr<TestProcessHost> host = TestProcessHost::Create();
-  int child_id = host->GetID();
+  ChildProcessId child_id = host->GetID();
 
   TestBrowserChildProcessObserver observer(child_id);
 
@@ -451,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
                        MAYBE_LaunchAndCrash) {
   base::WeakPtr<TestProcessHost> host = TestProcessHost::Create();
-  int child_id = host->GetID();
+  ChildProcessId child_id = host->GetID();
 
   TestBrowserChildProcessObserver observer(child_id);
 
@@ -497,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
 #if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest, LaunchFailed) {
   base::WeakPtr<TestProcessHost> host = TestProcessHost::Create();
-  int child_id = host->GetID();
+  ChildProcessId child_id = host->GetID();
 
 #if BUILDFLAG(IS_WIN)
   // The Windows sandbox does not like the child process being a different
@@ -562,7 +564,7 @@ class TestPreSpawnTargetFailureBrowserChildProcessNotificationObserver
 IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
                        LaunchPreSpawnFailed) {
   base::WeakPtr<TestProcessHost> host = TestProcessHost::Create();
-  int child_id = host->GetID();
+  ChildProcessId child_id = host->GetID();
 
   TestBrowserChildProcessObserver observer(child_id);
 

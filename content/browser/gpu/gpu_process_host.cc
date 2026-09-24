@@ -1413,8 +1413,9 @@ bool GpuProcessHost::LaunchGpuProcess() {
   // Because AppendExtraCommandLineSwitches is called here, we should call
   // LaunchWithoutExtraCommandLineSwitches() instead of Launch for gpu process
   // launch below.
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   GetContentClient()->browser()->AppendExtraCommandLineSwitches(
-      cmd_line.get(), process_->GetData().id);
+      cmd_line.get(), process_->GetData().GetChildProcessId().GetUnsafeValue());
 
   // TODO(kylechar): The command line flags added here should be based on
   // |mode_|.
@@ -1539,9 +1540,5 @@ GpuProcessHost::info_collection_gpu_service() {
   return gpu_host_->info_collection_gpu_service();
 }
 #endif
-
-int GpuProcessHost::GetIDForTesting() const {
-  return process_->GetData().id;
-}
 
 }  // namespace content

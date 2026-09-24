@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace variations {
@@ -54,7 +55,7 @@ class CONTENT_EXPORT SyntheticTrialSyncer
   SyntheticTrialSyncer& operator=(const SyntheticTrialSyncer&) = delete;
 
  private:
-  void OnDisconnected(int unique_child_process_id);
+  void OnDisconnected(ChildProcessId unique_child_process_id);
 
   // variations::SyntheticTrialObserver:
   void OnSyntheticTrialsChanged(
@@ -86,7 +87,8 @@ class CONTENT_EXPORT SyntheticTrialSyncer
   //
   // Since the number of child precesses is basically not large, use
   // base::flat_map for the map.
-  base::flat_map<int, mojo::Remote<mojom::SyntheticTrialConfiguration>>
+  base::flat_map<ChildProcessId,
+                 mojo::Remote<mojom::SyntheticTrialConfiguration>>
       child_process_unique_id_to_mojo_connections_;
 
   base::ScopedMultiSourceObservation<RenderProcessHost,

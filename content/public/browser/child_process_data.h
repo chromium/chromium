@@ -27,9 +27,6 @@ struct CONTENT_EXPORT ChildProcessData {
   // The non-localized name of the process used for metrics reporting.
   std::string metrics_name;
 
-  // TODO(crbug.com/379869738): Deprecated, please use GetChildProcessId().
-  int id = 0;
-
   // The Sandbox that this process was launched at. May be invalid prior to
   // process launch.
   std::optional<sandbox::mojom::Sandbox> sandbox_type;
