@@ -307,6 +307,11 @@ void AshTestHelper::TearDown() {
     input_method_manager_ = nullptr;
     input_method::InputMethodManager::Shutdown();
   }
+
+  // Tests can mark a display internal; clear that again so later tests in this
+  // process do not see a stale internal display. SetUp() clears it too, but
+  // only helps fixtures that go on to create an AshTestHelper.
+  display::SetInternalDisplayIds({});
 }
 
 aura::Window* AshTestHelper::GetContext() {
