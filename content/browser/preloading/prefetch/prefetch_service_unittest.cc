@@ -3982,9 +3982,6 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
 
   std::string histogram_suffix =
       GetMetricsSuffixTriggerTypeAndEagerness(prefetch_type, std::nullopt);
-  base::TimeDelta block_until_head_timeout = PrefetchBlockUntilHeadTimeout(
-      prefetch_type, /*should_disable_block_until_head_timeout=*/false,
-      /*is_nav_prerender=*/false);
   histogram_tester().ExpectTotalCount(
       base::StrCat(
           {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.Served.",
@@ -3994,7 +3991,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
       base::StrCat(
           {"Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NotServed.",
            histogram_suffix}),
-      block_until_head_timeout, 1);
+      base::Milliseconds(kBlockUntilHeadTimeout), 1);
   histogram_tester().ExpectUniqueSample(
       base::StrCat(
           {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
