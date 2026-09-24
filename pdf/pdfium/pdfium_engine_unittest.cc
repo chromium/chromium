@@ -5171,6 +5171,38 @@ TEST_P(PDFiumEngineInkDrawTextTest, ActualText) {
   EXPECT_EQ(PDFiumRange::AllTextOnPage(&page).GetText(), u"পরিকল্পনা");
 }
 
+TEST_P(PDFiumEngineInkDrawTextTest, DrawTextUpdatesTextRunsAndSelection) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  engine->PluginSizeUpdated({500, 500});
+  engine->set_next_textbox_id_for_testing(0);
+
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  FontId font_id = AddDefaultFont(engine.get());
+
+  // Draw "a".
+  DrawAndVerifyMarks(engine.get(), page, font_id,
+                     GetGlyphsForText("a", /*font_size=*/10.0f), InkTextId(0),
+                     /*expected_textbox_id=*/0);
+
+  // Select all text before drawing additional text.
+  engine->SelectAll();
+  ASSERT_EQ(engine->GetSelectedText(), "a");
+  engine->ClearTextSelection();
+
+  // Draw "b".
+  DrawAndVerifyMarks(engine.get(), page, font_id,
+                     GetGlyphsForText("b", /*font_size=*/10.0f), InkTextId(1),
+                     /*expected_textbox_id=*/1);
+
+  // Selecting all text again should include the newly drawn "b" without
+  // hanging.
+  engine->SelectAll();
+  EXPECT_EQ(engine->GetSelectedText(), "ab");
+}
+
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,
 // covering one of these is sufficient for checking how data is written out.
 INSTANTIATE_TEST_SUITE_P(All,

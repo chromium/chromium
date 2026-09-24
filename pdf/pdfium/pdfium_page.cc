@@ -512,6 +512,18 @@ FPDF_TEXTPAGE PDFiumPage::GetTextPage() {
 void PDFiumPage::ReloadTextPage() {
   CHECK_EQ(preventing_text_page_unload_count_, 0);
   text_page_.reset();
+
+  // Reset cached state that depends on `text_page_`.
+  calculated_text_runs_ = false;
+  text_runs_.clear();
+  marked_content_id_to_text_runs_map_.clear();
+  associated_text_run_indices_.clear();
+  calculated_links_ = false;
+  links_.clear();
+  calculated_annotations_ = false;
+  highlights_.clear();
+  calculated_page_object_text_run_breaks_ = false;
+  page_object_text_run_breaks_.clear();
   GetTextPage();
 }
 
@@ -886,8 +898,13 @@ std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfoAt(
   // start index of 0 and char index bounds have already been checked.
   CHECK(it != text_runs_.begin());
 
-  // The previous text run will include `char_index`.
-  return *std::prev(it);
+  // The previous text run will include `char_index`. Verify that `char_index`
+  // is within the text run's range, which would fail if `text_runs_` is out of
+  // sync with `text_page_`.
+  auto prev_it = std::prev(it);
+  CHECK_LT(static_cast<uint32_t>(char_index),
+           prev_it->start_index + prev_it->len);
+  return *prev_it;
 }
 
 std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo() {
