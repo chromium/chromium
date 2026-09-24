@@ -209,7 +209,7 @@ class Invoker<std::index_sequence<indices...>, ArgTypes...>
 
   template <typename ReturnType>
   void DispatchToCallback(
-      base::RepeatingCallback<ReturnType(ArgTypes...)> callback) {
+      const base::RepeatingCallback<ReturnType(ArgTypes...)>& callback) {
     args_->Return(
         callback.Run(std::move(ArgumentHolder<indices, ArgTypes>::value)...));
   }
@@ -217,7 +217,8 @@ class Invoker<std::index_sequence<indices...>, ArgTypes...>
   // In C++, you can declare the function foo(void), but you can't pass a void
   // expression to foo. As a result, we must specialize the case of Callbacks
   // that have the void return type.
-  void DispatchToCallback(base::RepeatingCallback<void(ArgTypes...)> callback) {
+  void DispatchToCallback(
+      const base::RepeatingCallback<void(ArgTypes...)>& callback) {
     callback.Run(std::move(ArgumentHolder<indices, ArgTypes>::value)...);
   }
 
