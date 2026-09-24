@@ -34,7 +34,6 @@
 #include "base/containers/span.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
-#include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/rust/chromium_crates_io/vendor/icu_capi-v2/bindings/cpp/icu4x/Locale.hpp"
 #include "third_party/rust/chromium_crates_io/vendor/icu_capi-v2/bindings/cpp/icu4x/LocaleFallbackIterator.hpp"
@@ -102,38 +101,25 @@ std::vector<LanguageTag> GetFallbackLocales(
 // needed when ICU4X implements a locale matcher:
 // https://github.com/unicode-org/icu4x/issues/3023
 float GetEdgeWeight(const LanguageTag& source, const LanguageTag& target) {
-  static const base::NoDestructor<
-      base::flat_map<std::pair<LanguageTag, LanguageTag>, float>>
-      kNonDefaultEdges([]() {
-        base::flat_map<std::pair<LanguageTag, LanguageTag>, float>
-            non_default_edges{
-                {{GetKnownLanguageTag("es-419"), GetKnownLanguageTag("es-MX")},
-                 0.8},
-                // For english global (en-001), we favor "en-GB" matches by
-                // lowering the edge weight.
-                {{GetKnownLanguageTag("en-001"), GetKnownLanguageTag("en-GB")},
-                 0.8},
-                {{GetKnownLanguageTag("en-001"), GetKnownLanguageTag("en-US")},
-                 0.9},
-                // For english (en) we favor "en-US" matches by lowering the
-                // "en" -> "en-US" edge weight.
-                {{GetKnownLanguageTag("en"), GetKnownLanguageTag("en-US")},
-                 0.8},
-                {{GetKnownLanguageTag("en"), GetKnownLanguageTag("en-GB")},
-                 0.9},
-                {{GetKnownLanguageTag("es"), GetKnownLanguageTag("es-419")},
-                 0.8},
-                {{GetKnownLanguageTag("pt"), GetKnownLanguageTag("pt-BR")},
-                 0.8},
-                {{GetKnownLanguageTag("zh"), GetKnownLanguageTag("zh-CN")},
-                 0.8},
-                {{GetKnownLanguageTag("zh-Hant"), GetKnownLanguageTag("zh-TW")},
-                 0.8}};
-        return non_default_edges;
-      }());
+  static constexpr auto kNonDefaultEdges =
+      base::MakeFixedFlatMap<std::pair<LanguageTag, LanguageTag>, float>({
+          {{GetKnownLanguageTag("es-419"), GetKnownLanguageTag("es-MX")}, 0.8},
+          // For english global (en-001), we favor "en-GB" matches by
+          // lowering the edge weight.
+          {{GetKnownLanguageTag("en-001"), GetKnownLanguageTag("en-GB")}, 0.8},
+          {{GetKnownLanguageTag("en-001"), GetKnownLanguageTag("en-US")}, 0.9},
+          // For english (en) we favor "en-US" matches by lowering the
+          // "en" -> "en-US" edge weight.
+          {{GetKnownLanguageTag("en"), GetKnownLanguageTag("en-US")}, 0.8},
+          {{GetKnownLanguageTag("en"), GetKnownLanguageTag("en-GB")}, 0.9},
+          {{GetKnownLanguageTag("es"), GetKnownLanguageTag("es-419")}, 0.8},
+          {{GetKnownLanguageTag("pt"), GetKnownLanguageTag("pt-BR")}, 0.8},
+          {{GetKnownLanguageTag("zh"), GetKnownLanguageTag("zh-CN")}, 0.8},
+          {{GetKnownLanguageTag("zh-Hant"), GetKnownLanguageTag("zh-TW")}, 0.8},
+      });
 
-  if (auto it = kNonDefaultEdges->find({source, target});
-      it != kNonDefaultEdges->end()) {
+  if (auto it = kNonDefaultEdges.find({source, target});
+      it != kNonDefaultEdges.end()) {
     return it->second;
   }
   return 1.0;
