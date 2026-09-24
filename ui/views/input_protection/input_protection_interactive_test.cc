@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/time/time.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -143,9 +143,18 @@ InputProtectionTestApi::~InputProtectionTestApi() = default;
 ui::InteractionSequence::StepBuilder
 InputProtectionTestApi::EnableInputEventActivationProtection(
     ui::ElementIdentifier element_id) {
-  auto step = WithView(element_id, [](View* view) {
-    if (view->GetWidget()) {
-      view->GetWidget()->EnableInputEventActivationProtection();
+  if (element_id) {
+    auto step = WithView(element_id, [](View* view) {
+      if (view->GetWidget()) {
+        view->GetWidget()->EnableInputEventActivationProtection();
+      }
+    });
+    step.SetDescription("EnableInputEventActivationProtection()");
+    return step;
+  }
+  auto step = Do([this]() {
+    if (context_widget()) {
+      context_widget()->EnableInputEventActivationProtection();
     }
   });
   step.SetDescription("EnableInputEventActivationProtection()");
@@ -197,28 +206,32 @@ InputProtectionTestApi::MultiStep InputProtectionTestApi::Click(
   return steps;
 }
 
-InputProtectionTestApi::MultiStep InputProtectionTestApi::ClickExpectingBlocked(
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::ClickExpectingBlocked(
     ui::ElementIdentifier element_id,
     const int& action_counter,
-    int expected_count,
     std::optional<gfx::Point> click_point) {
-  auto steps =
-      Steps(Click(element_id, click_point),
-            CheckVariable(action_counter, expected_count, "action_counter"));
-  AddDescriptionPrefix(steps, "ClickExpectingBlocked()");
-  return steps;
+  auto step = WithView(element_id, [&action_counter, click_point](View* view) {
+    const int initial_count = action_counter;
+    DispatchClick(view, click_point);
+    EXPECT_EQ(action_counter, initial_count);
+  });
+  step.SetDescription("ClickExpectingBlocked()");
+  return step;
 }
 
-InputProtectionTestApi::MultiStep InputProtectionTestApi::ClickExpectingAllowed(
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::ClickExpectingAllowed(
     ui::ElementIdentifier element_id,
     const int& action_counter,
-    int expected_count,
     std::optional<gfx::Point> click_point) {
-  auto steps =
-      Steps(Click(element_id, click_point),
-            CheckVariable(action_counter, expected_count, "action_counter"));
-  AddDescriptionPrefix(steps, "ClickExpectingAllowed()");
-  return steps;
+  auto step = WithView(element_id, [&action_counter, click_point](View* view) {
+    const int initial_count = action_counter;
+    DispatchClick(view, click_point);
+    EXPECT_EQ(action_counter, initial_count + 1);
+  });
+  step.SetDescription("ClickExpectingAllowed()");
+  return step;
 }
 
 InputProtectionTestApi::MultiStep InputProtectionTestApi::KeyPress(
@@ -254,32 +267,34 @@ InputProtectionTestApi::MultiStep InputProtectionTestApi::KeyPressAndRelease(
   return steps;
 }
 
-InputProtectionTestApi::MultiStep
+ui::InteractionSequence::StepBuilder
 InputProtectionTestApi::KeyPressAndReleaseExpectingBlocked(
     ui::ElementIdentifier element_id,
     ui::KeyboardCode key,
     const int& action_counter,
-    int expected_count,
     int flags) {
-  auto steps =
-      Steps(KeyPressAndRelease(element_id, key, flags),
-            CheckVariable(action_counter, expected_count, "action_counter"));
-  AddDescriptionPrefix(steps, "KeyPressAndReleaseExpectingBlocked()");
-  return steps;
+  auto step = WithView(element_id, [&action_counter, key, flags](View* view) {
+    const int initial_count = action_counter;
+    DispatchKeyPressAndRelease(view, key, flags);
+    EXPECT_EQ(action_counter, initial_count);
+  });
+  step.SetDescription("KeyPressAndReleaseExpectingBlocked()");
+  return step;
 }
 
-InputProtectionTestApi::MultiStep
+ui::InteractionSequence::StepBuilder
 InputProtectionTestApi::KeyPressAndReleaseExpectingAllowed(
     ui::ElementIdentifier element_id,
     ui::KeyboardCode key,
     const int& action_counter,
-    int expected_count,
     int flags) {
-  auto steps =
-      Steps(KeyPressAndRelease(element_id, key, flags),
-            CheckVariable(action_counter, expected_count, "action_counter"));
-  AddDescriptionPrefix(steps, "KeyPressAndReleaseExpectingAllowed()");
-  return steps;
+  auto step = WithView(element_id, [&action_counter, key, flags](View* view) {
+    const int initial_count = action_counter;
+    DispatchKeyPressAndRelease(view, key, flags);
+    EXPECT_EQ(action_counter, initial_count + 1);
+  });
+  step.SetDescription("KeyPressAndReleaseExpectingAllowed()");
+  return step;
 }
 
 void InputProtectionTestApi::FastForwardMockClock(base::TimeDelta delta) {

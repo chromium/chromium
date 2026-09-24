@@ -38,9 +38,10 @@ class InputProtectionTestApi
   InputProtectionTestApi();
   ~InputProtectionTestApi() override;
 
-  // Enables input protection on the widget containing `element_id`.
+  // Enables input protection on the widget containing `element_id`. If
+  // `element_id` is omitted, input protection is enabled on `context_widget()`.
   [[nodiscard]] ui::InteractionSequence::StepBuilder
-  EnableInputEventActivationProtection(ui::ElementIdentifier element_id);
+  EnableInputEventActivationProtection(ui::ElementIdentifier element_id = {});
 
   // Hides and shows the widget containing `element_id` to trigger the initial
   // show cooldown via visibility change. Also activates the widget so it is
@@ -66,17 +67,15 @@ class InputProtectionTestApi
       std::optional<gfx::Point> click_point = std::nullopt);
 
   // Clicks `element_id` and verifies the click was blocked by input protection.
-  [[nodiscard]] MultiStep ClickExpectingBlocked(
+  [[nodiscard]] ui::InteractionSequence::StepBuilder ClickExpectingBlocked(
       ui::ElementIdentifier element_id,
       const int& action_counter,
-      int expected_count = 0,
       std::optional<gfx::Point> click_point = std::nullopt);
 
   // Clicks `element_id` and verifies the click was processed.
-  [[nodiscard]] MultiStep ClickExpectingAllowed(
+  [[nodiscard]] ui::InteractionSequence::StepBuilder ClickExpectingAllowed(
       ui::ElementIdentifier element_id,
       const int& action_counter,
-      int expected_count = 1,
       std::optional<gfx::Point> click_point = std::nullopt);
 
   // Dispatches a simulated key press to the widget containing `element_id`.
@@ -97,21 +96,19 @@ class InputProtectionTestApi
 
   // Dispatches an action key (press and release) and verifies it was blocked
   // by input protection.
-  [[nodiscard]] MultiStep KeyPressAndReleaseExpectingBlocked(
-      ui::ElementIdentifier element_id,
-      ui::KeyboardCode key,
-      const int& action_counter,
-      int expected_count = 0,
-      int flags = ui::EF_NONE);
+  [[nodiscard]] ui::InteractionSequence::StepBuilder
+  KeyPressAndReleaseExpectingBlocked(ui::ElementIdentifier element_id,
+                                     ui::KeyboardCode key,
+                                     const int& action_counter,
+                                     int flags = ui::EF_NONE);
 
   // Dispatches an action key (press and release) and verifies it was
   // processed.
-  [[nodiscard]] MultiStep KeyPressAndReleaseExpectingAllowed(
-      ui::ElementIdentifier element_id,
-      ui::KeyboardCode key,
-      const int& action_counter,
-      int expected_count = 1,
-      int flags = ui::EF_NONE);
+  [[nodiscard]] ui::InteractionSequence::StepBuilder
+  KeyPressAndReleaseExpectingAllowed(ui::ElementIdentifier element_id,
+                                     ui::KeyboardCode key,
+                                     const int& action_counter,
+                                     int flags = ui::EF_NONE);
 
   // Creates and shows an Always-On-Top floating window completely occluding the
   // element with `element_id`.
