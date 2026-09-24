@@ -73,6 +73,7 @@ FirstRunFinishOrContinuePixelTest.*
 FirstRunIntroPixelTest.*
 FirstRunSignInCelebrationPixelTest.*
 GlobalErrorBubbleTest.*
+*GmailOtpOptInBubbleViewBrowsertest.*
 HatsBubbleTest.*
 HistorySyncOptinUIDialogPixelTest.*
 HomeButtonUiTest.*
