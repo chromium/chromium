@@ -155,6 +155,11 @@ class ComposeboxQueryController
       override;
   void SetAuthUserIndex(size_t auth_user_index) override;
   base::WeakPtr<ContextualSearchContextController> AsWeakPtr() override;
+  std::string search_session_id() const override;
+  std::optional<lens::LensOverlayVisualSearchInteractionData>
+  GetVisualSearchInteractionData(
+      const base::UnguessableToken& file_token,
+      const std::optional<std::string>& query_text) override;
 
   // Returns a request id to use for the viewport image upload request for the
   // given file info, setting the viewport request id on the file info if it is

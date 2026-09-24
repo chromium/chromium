@@ -149,6 +149,21 @@ ContextualSearchSessionHandle::GetSuggestInputs() const {
   return std::nullopt;
 }
 
+std::string ContextualSearchSessionHandle::search_session_id() const {
+  auto* controller = GetController();
+  return controller ? controller->search_session_id() : "";
+}
+
+std::optional<lens::LensOverlayVisualSearchInteractionData>
+ContextualSearchSessionHandle::GetVisualSearchInteractionData(
+    const base::UnguessableToken& file_token,
+    const std::optional<std::string>& query_text) {
+  auto* controller = GetController();
+  return controller ? controller->GetVisualSearchInteractionData(file_token,
+                                                                 query_text)
+                    : std::nullopt;
+}
+
 base::UnguessableToken ContextualSearchSessionHandle::CreateContextToken() {
   CHECK(policy_checked_);
   // Create the file token and add it to the list of uploaded context tokens so

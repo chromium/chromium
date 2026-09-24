@@ -8,6 +8,10 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_contextual_inputs.proto";
+import "lens_overlay_request_id.proto";
+import "lens_overlay_visual_search_interaction_data.proto";
+
 // Top-level envelope for messages from Extension Iframes to Search Web.
 message ClientToSearchMessage {
   // Handshake ping sent by an extension frame to initiate communication.
@@ -32,6 +36,20 @@ message ClientToSearchMessage {
     bool is_active = 3;
   }
 
+  // Query submission response returned by Chrome after an
+  // OnSubmitQueryRequest. Signals that Chrome has finalized the context for
+  // the query and that Search Web can issue it.
+  message OnSubmitQueryResponse {
+    // Contexts Chrome successfully uploaded for this query, safe to attach to
+    // the submitted query. A context that failed to upload, or that did not
+    // finish uploading before Chrome's submission deadline, is simply omitted.
+    repeated AddedContext added_contexts = 1;
+
+    // Contexts that must not be attached to the query anymore, e.g. because
+    // the tab was closed or navigated away.
+    repeated RemovedContext removed_contexts = 2;
+  }
+
   oneof event_message {
     // Initial handshake ping sent by an extension iframe upon mounting.
     HandshakePing handshake_ping = 1;
@@ -39,6 +57,10 @@ message ClientToSearchMessage {
     // Instructs Search Web to mount or unmount an input iframe (e.g. Lens chip,
     // tab chip).
     InjectChromeInput inject_chrome_input = 2;
+
+    // Response to an OnSubmitQueryRequest, returning the finalized contexts
+    // for the query being submitted.
+    OnSubmitQueryResponse on_submit_query_response = 3;
   }
 }
 
@@ -51,8 +73,45 @@ message SearchToClientMessage {
     int32 auth_user_index = 1;
   }
 
+  // Query submission request sent when the user submits a query, asking Chrome
+  // to finalize the attached context before the query is issued. Chrome
+  // answers with an OnSubmitQueryResponse.
+  message OnSubmitQueryRequest {}
+
   oneof event_message {
     // Handshake response sent by Search Web acknowledging readiness.
     HandshakeResponse handshake_response = 1;
+
+    // Sent when the user submits a query, requesting Chrome to finalize the
+    // context attached to it.
+    OnSubmitQueryRequest on_submit_query_request = 2;
   }
+}
+
+// --- Data structures ---
+
+// A context uploaded by Chrome that can be attached to a query.
+message AddedContext {
+  // ID for subsequent search requests.
+  string search_session_id = 1;
+
+  // A preformatted request ID identifying the uploaded context.
+  LensOverlayRequestId request_id = 2;
+
+  // The visual input interaction data for the query. Only set for region
+  // searches.
+  LensOverlayVisualSearchInteractionData visual_search_interaction_data = 7;
+
+  // The upload type of the contextual input.
+  LensOverlayContextualInputUploadType contextual_input_upload_type = 9;
+
+  // Deprecated/unused fields to match the LensImageQueryData numbering.
+  reserved 3, 4, 5, 8, 10;
+}
+
+// A previously uploaded context that must no longer be attached to queries,
+// e.g. because the tab was closed, navigated away or failed to upload.
+message RemovedContext {
+  // The request ID of the context to remove.
+  LensOverlayRequestId request_id = 1;
 }

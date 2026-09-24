@@ -76,6 +76,12 @@ class MockContextualSearchContextController
               AsWeakPtr,
               (),
               (override));
+  MOCK_METHOD(std::string, search_session_id, (), (const, override));
+  MOCK_METHOD((std::optional<lens::LensOverlayVisualSearchInteractionData>),
+              GetVisualSearchInteractionData,
+              (const base::UnguessableToken&,
+               const std::optional<std::string>&),
+              (override));
 };
 
 }  // namespace contextual_search

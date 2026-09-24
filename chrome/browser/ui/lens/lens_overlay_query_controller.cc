@@ -773,6 +773,16 @@ LensOverlayQueryController::LensServerFetchRequest::LensServerFetchRequest(
 LensOverlayQueryController::LensServerFetchRequest::~LensServerFetchRequest() =
     default;
 
+std::string LensOverlayQueryController::search_session_id() const {
+  return cluster_info_.has_value() ? cluster_info_->search_session_id()
+                                   : std::string();
+}
+
+std::optional<lens::LensOverlayVisualSearchInteractionData>
+LensOverlayQueryController::GetVisualSearchInteractionData() {
+  return visual_search_interaction_data_;
+}
+
 std::string LensOverlayQueryController::GetVsridForNewTab() {
   // LensOverlay search urls are all considered to use implicit uploads and
   // Chrome tab data.

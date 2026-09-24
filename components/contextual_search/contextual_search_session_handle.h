@@ -167,6 +167,16 @@ class ContextualSearchSessionHandle {
   virtual std::optional<lens::proto::LensOverlaySuggestInputs>
   GetSuggestInputs() const;
 
+  // Returns the search session ID from the underlying controller, or empty
+  // string if not available.
+  virtual std::string search_session_id() const;
+
+  // Constructs the visual search interaction data for the given file token, if
+  // available.
+  virtual std::optional<lens::LensOverlayVisualSearchInteractionData>
+  GetVisualSearchInteractionData(const base::UnguessableToken& file_token,
+                                 const std::optional<std::string>& query_text);
+
   // Generates a token and adds it to the list of uploaded context tokens. A
   // followup call to 'StartFileContextUploadFlow` or
   // `StartTabContextUploadFlow`, using the returned token, is required to start

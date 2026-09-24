@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_EXTENSION_HANDLER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -48,6 +49,7 @@ class WebContents;
 }  // namespace content
 
 namespace lens {
+class AddedContext;
 class ClientToSearchMessage;
 }  // namespace lens
 
@@ -265,6 +267,8 @@ class ContextualTasksExtensionHandler
   GetOrCreateInputStateModel();
   void OnLensThumbnailCreated(const std::string& thumbnail_uri);
   void RecordTimeToHandshakeComplete();
+  void HandleOnSubmitQueryRequest();
+  std::optional<lens::AddedContext> GetLensAddedContext();
 
   base::WeakPtr<contextual_search::InputStateModel> input_state_model_;
   base::CallbackListSubscription input_state_subscription_;

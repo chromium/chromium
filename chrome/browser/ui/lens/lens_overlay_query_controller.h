@@ -188,10 +188,7 @@ class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {
   uint64_t gen204_id() const { return gen204_id_; }
 
   // Returns the search session id for the current query flow.
-  std::string search_session_id() const {
-    return cluster_info_.has_value() ? cluster_info_->search_session_id()
-                                     : std::string();
-  }
+  virtual std::string search_session_id() const;
 
   // Testing method to reset the cluster info state.
   void ResetRequestClusterInfoStateForTesting();
@@ -204,10 +201,15 @@ class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {
   // Returns the latest visual search interaction data sent to the server.
   // This does not take into account whether the selection was cleared by the
   // user.
-  std::optional<lens::LensOverlayVisualSearchInteractionData>
-  GetVisualSearchInteractionData() {
-    return visual_search_interaction_data_;
-  }
+  virtual std::optional<lens::LensOverlayVisualSearchInteractionData>
+  GetVisualSearchInteractionData();
+
+  // Updates the request id based on the given update mode and returns the
+  // request id proto. Also updates the suggest signals with the new request id
+  // and runs the suggest inputs callback.
+  virtual std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
+      lens::RequestIdUpdateMode update_mode,
+      lens::LensOverlayRequestId::MediaType media_type);
 
   // After this is called, for the remainder of the current session, requests do
   // not need to check prefs for whether the user has granted permissions
@@ -272,13 +274,6 @@ class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {
   virtual void SendSemanticEventGen204IfEnabled(
       lens::mojom::SemanticEvent event,
       std::optional<lens::LensOverlayRequestId> request_id);
-
-  // Updates the request id based on the given update mode and returns the
-  // request id proto. Also updates the suggest signals with the new request id
-  // and runs the suggest inputs callback.
-  std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId(
-      lens::RequestIdUpdateMode update_mode,
-      lens::LensOverlayRequestId::MediaType media_type);
 
   // Updates the suggest inputs with the feature params and latest cluster info
   // response, then runs the callback. The request id in the suggest inputs will

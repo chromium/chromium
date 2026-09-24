@@ -34,6 +34,9 @@ FileInfo& FileInfo::operator=(const FileInfo& other) {
   tab_session_id = other.tab_session_id;
   request_id = other.request_id;
   response_bodies = other.response_bodies;
+  is_superceded = other.is_superceded;
+  is_implicit_upload = other.is_implicit_upload;
+  mime_type_string = other.mime_type_string;
   if (other.input_data) {
     input_data = std::make_unique<lens::ContextualInputData>(*other.input_data);
   } else {

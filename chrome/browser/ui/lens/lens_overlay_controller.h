@@ -125,10 +125,8 @@ class LensOverlayController : public OverlayBaseController,
       mojo::PendingRemote<lens::mojom::LensPage> page);
 
   // Returns the screenshot initially displayed on this overlay. If no
-  // screenshot is showing, will return nullptr.
-  const SkBitmap& initial_screenshot() {
-    return initialization_data_->initial_screenshot_;
-  }
+  // screenshot is showing, will return an empty SkBitmap.
+  virtual const SkBitmap& initial_screenshot() const;
 
   // Returns the screenshot of the live page which may have been updated after
   // the overlay is hidden and the live page is shown. If no screenshot is
@@ -168,7 +166,7 @@ class LensOverlayController : public OverlayBaseController,
   void TriggerCopy();
 
   // Returns true if the overlay has a region selection.
-  bool HasRegionSelection() const;
+  virtual bool HasRegionSelection() const;
 
   // Returns true if the results side panel is currently showing, or is opening.
   bool IsResultsSidePanelShowingOrWillOpen();
@@ -309,6 +307,9 @@ class LensOverlayController : public OverlayBaseController,
   const lens::mojom::CenterRotatedBoxPtr& get_selected_region_for_testing() {
     return initialization_data_->selected_region_;
   }
+
+  // Returns the active selected region, or empty if none.
+  virtual const lens::mojom::CenterRotatedBoxPtr& selected_region() const;
 
   LensSearchController* get_lens_search_controller_for_testing() {
     return lens_search_controller_;

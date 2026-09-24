@@ -399,6 +399,13 @@ bool LensOverlayController::HasRegionSelection() const {
          !initialization_data_->selected_region_.is_null();
 }
 
+const lens::mojom::CenterRotatedBoxPtr& LensOverlayController::selected_region()
+    const {
+  static const base::NoDestructor<lens::mojom::CenterRotatedBoxPtr> kEmpty;
+  return initialization_data_ ? initialization_data_->selected_region_
+                              : *kEmpty;
+}
+
 void LensOverlayController::IssueLensRegionRequestForTesting(
     lens::mojom::CenterRotatedBoxPtr region,
     bool is_click) {
@@ -418,6 +425,12 @@ void LensOverlayController::
     RecordUkmAndTaskCompletionForLensOverlayInteractionForTesting(
         lens::mojom::UserAction user_action) {
   RecordUkmAndTaskCompletionForLensOverlayInteraction(user_action);
+}
+
+const SkBitmap& LensOverlayController::initial_screenshot() const {
+  static const base::NoDestructor<SkBitmap> kEmptyBitmap;
+  return initialization_data_ ? initialization_data_->initial_screenshot_
+                              : *kEmptyBitmap;
 }
 
 void LensOverlayController::RecordSemanticEventForTesting(

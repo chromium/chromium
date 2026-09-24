@@ -75,6 +75,17 @@ class MockLensOverlayQueryController : public LensOverlayQueryController {
                std::optional<SkBitmap>),
               (override));
 
+  MOCK_METHOD(std::string, search_session_id, (), (const, override));
+  MOCK_METHOD(std::unique_ptr<lens::LensOverlayRequestId>,
+              GetNextRequestId,
+              (lens::RequestIdUpdateMode,
+               lens::LensOverlayRequestId::MediaType),
+              (override));
+  MOCK_METHOD(std::optional<lens::LensOverlayVisualSearchInteractionData>,
+              GetVisualSearchInteractionData,
+              (),
+              (override));
+
   MOCK_METHOD(const lens::proto::LensOverlaySuggestInputs&,
               GetLensSuggestInputs,
               (),

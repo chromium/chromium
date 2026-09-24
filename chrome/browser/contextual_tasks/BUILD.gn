@@ -224,6 +224,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/lens:backend_logic_impl",
       "//chrome/browser/ui/views/permissions:permission_prompt_observer",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/searchbox",
@@ -623,6 +624,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/lens:test_support",
       "//chrome/browser/ui/test:dialog",
       "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",
       "//chrome/browser/ui/webui:webui_util",

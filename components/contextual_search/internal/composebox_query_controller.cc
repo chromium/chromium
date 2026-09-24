@@ -2872,6 +2872,23 @@ ComposeboxQueryController::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+std::string ComposeboxQueryController::search_session_id() const {
+  return cluster_info_.has_value() ? cluster_info_->search_session_id() : "";
+}
+
+std::optional<lens::LensOverlayVisualSearchInteractionData>
+ComposeboxQueryController::GetVisualSearchInteractionData(
+    const base::UnguessableToken& file_token,
+    const std::optional<std::string>& query_text) {
+  const FileInfo* file_info = GetMutableFileInfo(file_token);
+  if (!file_info) {
+    return std::nullopt;
+  }
+  return ConstructVisualSearchInteractionData(
+      file_info, query_text, std::nullopt,
+      /*force_include_latest_interaction_request_data=*/true);
+}
+
 void ComposeboxQueryController::BeforeCreateSearchUrl(
     std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info,
     base::OnceCallback<void(GURL)> callback,
