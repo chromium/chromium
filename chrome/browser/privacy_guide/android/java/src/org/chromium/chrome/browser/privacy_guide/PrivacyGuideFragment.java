@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -26,10 +27,10 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,8 +39,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.settings.SettingsFragment;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
@@ -53,7 +53,7 @@ import java.util.List;
  */
 @NullMarked
 public class PrivacyGuideFragment extends Fragment
-        implements BackPressHandler, ProfileDependentSetting, SettingsFragment {
+        implements ProfileDependentSetting, EmbeddableSettingsPage {
     /**
      * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
      */
@@ -87,8 +87,9 @@ public class PrivacyGuideFragment extends Fragment
                             FragmentType.DONE));
 
     private OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
-            ObservableSuppliers.createNonNull(false);
+    private OnBackPressedCallback mOnBackPressedCallback;
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     private PrivacyGuidePagerAdapter mPagerAdapter;
     private View mView;
@@ -107,6 +108,16 @@ public class PrivacyGuideFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mOnBackPressedCallback =
+                new OnBackPressedCallback(false) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        // The callback is only enabled while there is a previous step to return
+                        // to, so there is nothing else to check here.
+                        previousStep();
+                    }
+                };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, mOnBackPressedCallback);
         setHasOptionsMenu(true);
         mPrivacyGuideMetricsDelegate = new PrivacyGuideMetricsDelegate(mProfile);
         if (savedInstanceState != null) {
@@ -214,20 +225,23 @@ public class PrivacyGuideFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        mHandleBackPressChangedSupplier.set(shouldHandleBackPress());
+        updateBackPressState();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mOnPageChangeCallback != null) {
+        if (mOnBackPressedCallback != null) {
+            mOnBackPressedCallback.remove();
+        }
+        if (mOnPageChangeCallback != null && mViewPager != null) {
             mViewPager.unregisterOnPageChangeCallback(mOnPageChangeCallback);
         }
     }
 
     private void modifyAppBar() {
         Activity activity = requireActivity();
-        activity.setTitle(R.string.privacy_guide_fragment_title);
+        mPageTitle.set(getString(R.string.privacy_guide_fragment_title));
 
         // Tests may not use a SettingsActivity or ChromeTabbedActivity.
         if (activity instanceof AppCompatActivity appCompatActivity) {
@@ -251,7 +265,7 @@ public class PrivacyGuideFragment extends Fragment
 
         mViewPager.setCurrentItem(nextIdx);
         updateButtonVisibility();
-        mHandleBackPressChangedSupplier.set(shouldHandleBackPress());
+        updateBackPressState();
         recordMetricsOnButtonPress(currentIdx, nextIdx);
     }
 
@@ -266,7 +280,7 @@ public class PrivacyGuideFragment extends Fragment
 
         mViewPager.setCurrentItem(prevIdx);
         updateButtonVisibility();
-        mHandleBackPressChangedSupplier.set(shouldHandleBackPress());
+        updateBackPressState();
         recordMetricsOnButtonPress(currentIdx, prevIdx);
     }
 
@@ -299,15 +313,6 @@ public class PrivacyGuideFragment extends Fragment
         // Record the initial state of the next/previous card
         mPrivacyGuideMetricsDelegate.setInitialStateForCard(
                 mPagerAdapter.getFragmentType(followingStepIdx));
-    }
-
-    private boolean onBackPressed() {
-        if (shouldHandleBackPress()) {
-            previousStep();
-            return true;
-        }
-
-        return false;
     }
 
     @Override
@@ -353,17 +358,25 @@ public class PrivacyGuideFragment extends Fragment
     }
 
     @Override
-    public int handleBackPress() {
-        return onBackPressed() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
-    }
-
-    @Override
-    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        return mHandleBackPressChangedSupplier;
+    public MonotonicObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private boolean shouldHandleBackPress() {
-        return mViewPager.getCurrentItem() > 0;
+        return mViewPager != null && mViewPager.getCurrentItem() > 0;
+    }
+
+    /**
+     * Syncs the back press callback with the current step. The callback is only enabled while there
+     * is a previous step to return to; otherwise back is left to the host so that it can close the
+     * guide.
+     */
+    private void updateBackPressState() {
+        // Defensive: the callback is created in onCreate(), which precedes every caller below.
+        if (mOnBackPressedCallback == null) {
+            return;
+        }
+        mOnBackPressedCallback.setEnabled(shouldHandleBackPress());
     }
 
     @Initializer

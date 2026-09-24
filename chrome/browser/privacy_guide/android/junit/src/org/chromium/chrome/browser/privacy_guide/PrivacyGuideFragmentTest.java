@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,9 +13,11 @@ import static org.mockito.Mockito.when;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
+import androidx.viewpager2.widget.ViewPager2;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +36,8 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -59,6 +65,7 @@ public class PrivacyGuideFragmentTest {
     @Mock private IdentityManager mIdentityManager;
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
+    @Mock private UnifiedConsentServiceBridge.Natives mUnifiedConsentNatives;
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceNatives;
 
     private FragmentScenario<PrivacyGuideFragment> mScenario;
@@ -70,6 +77,9 @@ public class PrivacyGuideFragmentTest {
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         Mockito.lenient().when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
+
+        // Advancing a step records MSBB state, which reads through this bridge.
+        UnifiedConsentServiceBridgeJni.setInstanceForTesting(mUnifiedConsentNatives);
 
         WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceNatives);
         Mockito.lenient()
@@ -140,5 +150,53 @@ public class PrivacyGuideFragmentTest {
 
         assertTrue(mFragment.onOptionsItemSelected(homeItem));
         verify(mSettingsNavigation).finishCurrentSettings(mFragment);
+    }
+
+    @Test
+    public void testGetPageTitle_isPopulatedForEmbeddedHost() {
+        // As an EmbeddableSettingsPage the fragment must publish its title through the supplier
+        // rather than by mutating the activity title.
+        assertEquals(
+                mFragment.getString(R.string.privacy_guide_fragment_title),
+                mFragment.getPageTitle().get());
+    }
+
+    @Test
+    public void testBackPress_onFirstStep_isNotConsumed() {
+        ViewPager2 viewPager = mFragment.requireView().findViewById(R.id.review_viewpager);
+        assertEquals(0, viewPager.getCurrentItem());
+
+        // On the first step the host owns back so that it can close the guide.
+        assertFalse(mFragment.requireActivity().getOnBackPressedDispatcher().hasEnabledCallbacks());
+    }
+
+    @Test
+    public void testBackPress_afterAdvancing_returnsToPreviousStep() {
+        ViewPager2 viewPager = mFragment.requireView().findViewById(R.id.review_viewpager);
+        mFragment.requireView().findViewById(R.id.start_button).performClick();
+
+        int advancedIdx = viewPager.getCurrentItem();
+        assertTrue("Expected to advance past the welcome step.", advancedIdx > 0);
+
+        OnBackPressedDispatcher dispatcher =
+                mFragment.requireActivity().getOnBackPressedDispatcher();
+        assertTrue(dispatcher.hasEnabledCallbacks());
+        dispatcher.onBackPressed();
+
+        assertEquals(advancedIdx - 1, viewPager.getCurrentItem());
+    }
+
+    @Test
+    public void testBackPress_backToFirstStep_releasesBackToHost() {
+        ViewPager2 viewPager = mFragment.requireView().findViewById(R.id.review_viewpager);
+        mFragment.requireView().findViewById(R.id.start_button).performClick();
+
+        OnBackPressedDispatcher dispatcher =
+                mFragment.requireActivity().getOnBackPressedDispatcher();
+        dispatcher.onBackPressed();
+
+        // Back on the first step, the fragment must stop intercepting so the host can close it.
+        assertEquals(0, viewPager.getCurrentItem());
+        assertFalse(dispatcher.hasEnabledCallbacks());
     }
 }

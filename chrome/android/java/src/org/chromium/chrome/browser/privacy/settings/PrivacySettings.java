@@ -154,10 +154,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                             PrivacyGuideInteractions.MAX_VALUE + 1);
                     UserPrefs.get(getProfile()).setBoolean(Pref.PRIVACY_GUIDE_VIEWED, true);
 
-                    // Explicitly launch PrivacyGuideFragment from here. Because the fragment
-                    // does not implement EmbeddableSettingsPage, it will work as standalone mode.
-                    // In details it is still a part of SettingsActivity, it will let user find
-                    // it is an independent flow.
+                    // Explicitly launch PrivacyGuideFragment from here so that the click is
+                    // recorded above before navigating. The fragment implements
+                    // EmbeddableSettingsPage, so it is shown as a regular settings page rather
+                    // than in standalone mode.
                     SettingsNavigationFactory.createSettingsNavigation(requireContext())
                             .startSettings(
                                     getActivity(),
