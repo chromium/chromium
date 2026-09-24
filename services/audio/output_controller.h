@@ -296,9 +296,6 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // Helper method that stops the physical stream.
   void StopStream();
 
-  // Helper method that closes and NULLs |*stream_|.
-  void CloseStream();
-
   // Helper method that stops, closes, and NULLs |*stream_|.
   void StopCloseAndClearStream();
 

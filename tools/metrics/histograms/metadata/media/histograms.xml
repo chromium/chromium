@@ -2461,30 +2461,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Win.CoreAudioUtil.CreateClientTime" units="ms"
-    expires_after="2026-12-17">
-  <owner>henrika@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <owner>media-audio@chromium.org</owner>
-  <summary>
-    Measures the execution time of CoreAudioUtil::CreateClient. Recorded when
-    Chrome creates and activates an IAudioClient COM interface for an audio
-    endpoint device (IMMDevice::Activate).
-  </summary>
-</histogram>
-
-<histogram name="Media.Audio.Win.CoreAudioUtil.GetPreferredAudioParametersTime"
-    units="ms" expires_after="2026-12-17">
-  <owner>henrika@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <owner>media-audio@chromium.org</owner>
-  <summary>
-    Measures the execution time of CoreAudioUtil::GetPreferredAudioParameters.
-    Recorded when Chrome queries the preferred audio parameters (mix format,
-    device period, and channel configuration) for a Windows audio endpoint.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Win.CoreAudioUtil.SharedModeInitializeTime"
     units="ms" expires_after="2027-03-14">
   <owner>henrika@chromium.org</owner>
@@ -2893,7 +2869,6 @@ chromium-metrics-reviews@google.com.
     corresponding AudioOutputController method finishes execution.
   </summary>
   <token key="MediaAudioOutputControllerTime">
-    <variant name=".CloseStreamTime"/>
     <variant name=".CloseTime"/>
     <variant name=".CreateTime"/>
     <variant name=".PauseTime"/>

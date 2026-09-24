@@ -787,35 +787,4 @@ TEST_F(CoreAudioUtilWinTest, SharedModeLowerBufferSize) {
   EXPECT_LT(low_latency_endpoint_buffer_size, default_endpoint_buffer_size);
 }
 
-TEST_F(CoreAudioUtilWinTest, ExecutionTimeHistograms) {
-  ABORT_AUDIO_TEST_IF_NOT(DevicesAvailable());
-
-  base::HistogramTester histogram_tester;
-
-  ComPtr<IAudioClient> client = CoreAudioUtil::CreateClient(
-      AudioDeviceDescription::kDefaultDeviceId, eRender, eConsole);
-  EXPECT_TRUE(client.Get());
-  histogram_tester.ExpectTotalCount(
-      "Media.Audio.Win.CoreAudioUtil.CreateClientTime", 1);
-
-  AudioParameters params;
-  EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
-      AudioDeviceDescription::kDefaultDeviceId, true, &params));
-  histogram_tester.ExpectTotalCount(
-      "Media.Audio.Win.CoreAudioUtil.GetPreferredAudioParametersTime", 1);
-  // GetPreferredAudioParameters uses CreateClientInternal directly, so
-  // CreateClientTime should remain at 1.
-  histogram_tester.ExpectTotalCount(
-      "Media.Audio.Win.CoreAudioUtil.CreateClientTime", 1);
-
-  WAVEFORMATEXTENSIBLE format;
-  EXPECT_HRESULT_SUCCEEDED(
-      CoreAudioUtil::GetSharedModeMixFormat(client.Get(), &format));
-  uint32_t endpoint_buffer_size = 0;
-  EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::SharedModeInitialize(
-      client.Get(), &format, nullptr, 0, &endpoint_buffer_size, nullptr));
-  histogram_tester.ExpectTotalCount(
-      "Media.Audio.Win.CoreAudioUtil.SharedModeInitializeTime", 1);
-}
-
 }  // namespace media

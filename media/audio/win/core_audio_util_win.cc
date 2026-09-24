@@ -941,7 +941,6 @@ ComPtr<IAudioClient> CoreAudioUtil::CreateClient(const std::string& device_id,
                                                  EDataFlow data_flow,
                                                  ERole role,
                                                  HRESULT& hr_out) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Media.Audio.Win.CoreAudioUtil.CreateClientTime");
   TRACE_EVENT0("audio", "CoreAudioUtil::CreateClient");
   ComPtr<IMMDevice> device(CreateDevice(device_id, data_flow, role, hr_out));
   if (!device) {
@@ -1119,9 +1118,6 @@ HRESULT CoreAudioUtil::GetPreferredAudioParameters(const std::string& device_id,
                                                    bool is_output_device,
                                                    AudioParameters* params,
                                                    bool is_offload_stream) {
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Media.Audio.Win.CoreAudioUtil.GetPreferredAudioParametersTime");
-  TRACE_EVENT0("audio", "CoreAudioUtil::GetPreferredAudioParameters");
   // Loopback capture audio streams must be input streams. If an output device
   // is requested for a loopback device, the default output device will be used
   // instead. See https://crbug.com/956526 for more details.
