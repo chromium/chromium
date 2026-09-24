@@ -67,7 +67,7 @@ class MockDelegate : public ReadAloudService::Delegate {
               (override));
   MOCK_METHOD(void,
               OnPlaybackStateChanged,
-              (ReadAloudService::PlaybackState playback_state),
+              (read_aloud::mojom::PlaybackState playback_state),
               (override));
   MOCK_METHOD(void,
               OnVoicesAvailable,
@@ -87,7 +87,7 @@ class MockDelegate : public ReadAloudService::Delegate {
   MOCK_METHOD(void,
               OnVoicePreviewPlaybackStateChanged,
               (std::string_view voice_id,
-               ReadAloudService::PlaybackState playback_state),
+               read_aloud::mojom::PlaybackState playback_state),
               (override));
   MOCK_METHOD(void,
               OnReadabilityResult,
@@ -333,7 +333,7 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
         .Times(1);
     EXPECT_CALL(*delegate,
                 OnPlaybackStateChanged(
-                    ReadAloudService::PlaybackState::kPlaybackCreation))
+                    read_aloud::mojom::PlaybackState::kPlaybackCreation))
         .Times(1);
     EXPECT_CALL(*delegate,
                 OnPlaybackProgressUpdated(/*elapsed=*/base::Seconds(0),
@@ -512,7 +512,7 @@ TEST_F(ReadAloudServiceTest,
       .Times(1);
   EXPECT_CALL(*delegate_ptr,
               OnPlaybackStateChanged(
-                  ReadAloudService::PlaybackState::kPlaybackCreation))
+                  read_aloud::mojom::PlaybackState::kPlaybackCreation))
       .Times(1);
   EXPECT_CALL(*delegate_ptr,
               OnPlaybackProgressUpdated(base::Seconds(0), base::Seconds(0)))
@@ -536,7 +536,7 @@ TEST_F(ReadAloudServiceTest,
   EXPECT_CALL(*delegate_ptr, OnMetadataAvailable("", "")).Times(1);
   EXPECT_CALL(*delegate_ptr,
               OnPlaybackStateChanged(
-                  ReadAloudService::PlaybackState::kPlaybackCreation))
+                  read_aloud::mojom::PlaybackState::kPlaybackCreation))
       .Times(1);
   EXPECT_CALL(*delegate_ptr,
               OnPlaybackProgressUpdated(/*elapsed=*/base::Seconds(0),
@@ -887,8 +887,8 @@ TEST_F(ReadAloudServiceTest, PrimaryPageChangedStopsAndDetachesObserver) {
   MockDelegate* delegate_ptr = delegate.get();
   service()->SetDelegate(std::move(delegate));
 
-  EXPECT_CALL(*delegate_ptr,
-              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kStopped))
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kStopped))
       .Times(1);
 
   // Navigating to a new URL triggers PrimaryPageChanged().
@@ -1045,8 +1045,8 @@ TEST_F(ReadAloudServiceTest,
   MockDelegate* delegate_ptr = delegate.get();
   service()->SetDelegate(std::move(delegate));
 
-  EXPECT_CALL(*delegate_ptr,
-              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kStopped))
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kStopped))
       .Times(1);
 
   // Deleting the observed WebContents triggers WebContentsDestroyed().
@@ -1066,13 +1066,13 @@ TEST_F(ReadAloudServiceTest, VoicePreviewDispatchesPlayingAndStoppedStates) {
   testing::InSequence s;
   EXPECT_CALL(*delegate_ptr,
               OnVoicePreviewPlaybackStateChanged(
-                  kTestVoiceId, ReadAloudService::PlaybackState::kBuffering))
+                  kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
   service()->PreviewVoice(kTestVoiceId);
 
   EXPECT_CALL(*delegate_ptr,
               OnVoicePreviewPlaybackStateChanged(
-                  /*voice_id=*/"", ReadAloudService::PlaybackState::kStopped))
+                  /*voice_id=*/"", read_aloud::mojom::PlaybackState::kStopped))
       .Times(1);
   service()->StopVoicePreview();
 
@@ -1092,17 +1092,17 @@ TEST_F(ReadAloudServiceTest, PreviewVoicePausesActivePlayback) {
   // PreviewVoice should pause active article playback and start the requested
   // voice preview.
   EXPECT_CALL(*delegate_ptr,
-              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kPaused))
+              OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused))
       .Times(1);
   EXPECT_CALL(*delegate_ptr,
               OnVoicePreviewPlaybackStateChanged(
-                  kTestVoiceId, ReadAloudService::PlaybackState::kBuffering))
+                  kTestVoiceId, read_aloud::mojom::PlaybackState::kBuffering))
       .Times(1);
   service()->PreviewVoice(kTestVoiceId);
 
   // Stopping playback returns article state to stopped before teardown.
-  EXPECT_CALL(*delegate_ptr,
-              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kStopped))
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kStopped))
       .Times(1);
   service()->Stop();
 
@@ -1120,15 +1120,15 @@ TEST_F(ReadAloudServiceTest, PlayResumesPlaybackAfterVoicePreview) {
 
   testing::InSequence s;
   // Starting article playback again resumes article playback.
-  EXPECT_CALL(*delegate_ptr,
-              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kPlaying))
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kPlaying))
       .Times(1);
   service()->Play(test_contents.get());
 
   // Explicitly stopping playback returns article state to stopped before
   // teardown.
-  EXPECT_CALL(*delegate_ptr,
-              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kStopped))
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kStopped))
       .Times(1);
   service()->Stop();
 
@@ -1239,6 +1239,34 @@ TEST_F(ReadAloudServiceTest, OnTextChunkedExceedsLimit) {
 
   EXPECT_EQ("Received invalid chunk payload",
             bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(ReadAloudServiceTest, OnPlaybackStateChangedRejectsStopped) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kStopped);
+
+  EXPECT_EQ(
+      bad_message_observer.WaitForBadMessage(),
+      "ReadAloudService: browser-only PlaybackState received from utility");
+}
+
+TEST_F(ReadAloudServiceTest, OnPlaybackStateChangedRejectsPlaybackCreation) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaybackCreation);
+
+  EXPECT_EQ(
+      bad_message_observer.WaitForBadMessage(),
+      "ReadAloudService: browser-only PlaybackState received from utility");
 }
 
 }  // namespace readaloud

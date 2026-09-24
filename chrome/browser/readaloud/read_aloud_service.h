@@ -53,25 +53,6 @@ class ReadAloudService
       public read_aloud::mojom::ReadAloudPlaybackControllerClient,
       public content::WebContentsObserver {
  public:
-  // TODO(b/522830940): Share this enum with Java using java_cpp_enum.
-  enum class PlaybackState {
-    // Unknown state.
-    kUnknown = 0,
-    // An error occurred during playback.
-    kError = 1,
-    // 2 is skipped to maintain alignment with the legacy Read Aloud on Android.
-    // Buffering (audio is loading and not playing).
-    kBuffering = 3,
-    // Playback is paused.
-    kPaused = 4,
-    // Audio is actively playing.
-    kPlaying = 5,
-    // Playback is stopped (represents the end of playback).
-    kStopped = 6,
-    // Playback session is currently being created.
-    kPlaybackCreation = 7,
-  };
-
   enum class PlaybackMode {
     // Unspecified playback mode.
     kUnspecified = 0,
@@ -110,7 +91,8 @@ class ReadAloudService
                                            base::TimeDelta duration) = 0;
 
     // Called when playback state changes (e.g. playing, paused, buffering).
-    virtual void OnPlaybackStateChanged(PlaybackState playback_state) = 0;
+    virtual void OnPlaybackStateChanged(
+        read_aloud::mojom::PlaybackState playback_state) = 0;
 
     // Called when the available voices list and currently selected voice are updated.
     virtual void OnVoicesAvailable(const std::vector<Voice>& voices,
@@ -132,7 +114,7 @@ class ReadAloudService
     // Called when the playback state of a voice preview changes in settings.
     virtual void OnVoicePreviewPlaybackStateChanged(
         std::string_view voice_id,
-        PlaybackState playback_state) = 0;
+        read_aloud::mojom::PlaybackState playback_state) = 0;
 
     // Called with the result of a page readability assessment.
     virtual void OnReadabilityResult(const GURL& url, bool is_readable) = 0;
@@ -270,7 +252,7 @@ class ReadAloudService
       media::mojom::ReadWriteAudioDataPipePtr data_pipe);
   void OnUtilityDisconnect();
   void ResetUtilityConnection();
-  PlaybackState GetCurrentPlaybackState() const;
+  read_aloud::mojom::PlaybackState GetCurrentPlaybackState() const;
   void HandlePlaybackError(std::string_view error_message);
 
   raw_ptr<Profile> profile_;

@@ -25,6 +25,11 @@ enum PlaybackState {
   kBuffering,
   kPlaying,
   kError,
+  // Browser-only playback lifecycle states, used by the browser's own
+  // UI-facing state machine. These are never sent by the utility process; the
+  // browser rejects them as a bad message if received.
+  kStopped,
+  kPlaybackCreation,
 };
 
 // Interface for controlling playback (ReadAloudService [Browser] ->
