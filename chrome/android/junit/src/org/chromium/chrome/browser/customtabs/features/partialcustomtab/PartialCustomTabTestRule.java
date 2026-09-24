@@ -178,6 +178,8 @@ public class PartialCustomTabTestRule implements TestRule {
         ContextUtils.initApplicationContextForTests(mContext);
         when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
         when(mActivity.getSystemService(Context.WINDOW_SERVICE)).thenReturn(mWindowManager);
+        // ViewConfiguration looks up the WindowManager by class on SDK 30 and 31.
+        when(mActivity.getSystemService(WindowManager.class)).thenReturn(mWindowManager);
         when(mActivity.getPackageManager()).thenReturn(mPackageManager);
     }
 
@@ -209,6 +211,7 @@ public class PartialCustomTabTestRule implements TestRule {
         when(mWindow.getInsetsController()).thenReturn(mWindowInsetsController);
         when(mDecorView.getWindowInsetsController()).thenReturn(mWindowInsetsController);
         when(mWindowManager.getCurrentWindowMetrics()).thenReturn(mWindowMetrics);
+        when(mWindowManager.getMaximumWindowMetrics()).thenReturn(mWindowMetrics);
         doAnswer(
                         invocation -> {
                             return new Rect(
