@@ -81,8 +81,7 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
     CGFloat mvtHeight =
         MostVisitedContainerHeight(_mostVisitedContainerView, _mostVisitedView);
     if (mvtHeight > 0) {
-      height += mvtHeight +
-                content_suggestions::ReducedModuleSpacing(self.traitCollection);
+      height += mvtHeight + content_suggestions::ReducedModuleSpacing();
     }
   }
   return height;
@@ -195,8 +194,7 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   if (IsMVTInBottomSheetEnabled()) {
     _magicStackTopConstraint = [_magicStackContainerView.topAnchor
         constraintEqualToAnchor:_mostVisitedContainerView.bottomAnchor
-                       constant:content_suggestions::ReducedModuleSpacing(
-                                    self.traitCollection)];
+                       constant:content_suggestions::ReducedModuleSpacing()];
   } else {
     _magicStackTopConstraint = [_magicStackContainerView.topAnchor
         constraintEqualToAnchor:_headerContainerView.topAnchor
@@ -267,7 +265,7 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 - (void)handleTraitChanges {
   if (IsMVTInBottomSheetEnabled() && _magicStackTopConstraint) {
     _magicStackTopConstraint.constant =
-        content_suggestions::ReducedModuleSpacing(self.traitCollection);
+        content_suggestions::ReducedModuleSpacing();
   }
   [self applyBackgroundTheme];
   [self updateFeedInsets];

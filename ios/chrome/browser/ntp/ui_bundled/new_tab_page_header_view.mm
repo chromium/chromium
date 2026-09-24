@@ -977,7 +977,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   CGFloat maxTopMarginDiff = fakeOmniboxHeight - locationBarHeight -
                              kAdaptiveLocationBarVerticalMargin;
   topMarginConstraint.constant =
-      -content_suggestions::LogoToFakeboxPadding(self.searchEngineLogoState) -
+      -content_suggestions::LogoToFakeboxPadding(self.searchEngineLogoState,
+                                                 self.traitCollection) -
       maxTopMarginDiff * progress;
   heightConstraint.constant =
       ntp_header::kFakeLocationBarTopConstraint -
@@ -1664,7 +1665,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       offset += content_suggestions::FakeOmniboxHeight();
       if (canShowTabStrip) {
         offset -= content_suggestions::LogoToFakeboxPadding(
-            self.searchEngineLogoState);
+            self.searchEngineLogoState, self.traitCollection);
       }
     }
     return offset;
@@ -1692,8 +1693,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
             content_suggestions::FakeOmniboxHeight();
 
   if (canShowTabStrip) {
-    offset -=
-        content_suggestions::LogoToFakeboxPadding(self.searchEngineLogoState);
+    offset -= content_suggestions::LogoToFakeboxPadding(
+        self.searchEngineLogoState, self.traitCollection);
   } else {
     offset -= self.safeAreaInsets.top + topToolbarHeight;
   }
@@ -2118,7 +2119,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.searchEngineLogoState = logoState;
 
   self.fakeOmniboxTopMarginConstraint.constant =
-      -content_suggestions::LogoToFakeboxPadding(self.searchEngineLogoState);
+      -content_suggestions::LogoToFakeboxPadding(self.searchEngineLogoState,
+                                                 self.traitCollection);
 
   [self updateFakeboxDisplay];
 
@@ -2274,7 +2276,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.fakeOmniboxTopMarginConstraint = [logoView.bottomAnchor
       constraintEqualToAnchor:fakeOmnibox.topAnchor
                      constant:-content_suggestions::LogoToFakeboxPadding(
-                                  self.searchEngineLogoState)];
+                                  self.searchEngineLogoState,
+                                  self.traitCollection)];
   self.headerViewHeightConstraint =
       [headerView.heightAnchor constraintEqualToConstant:[self headerHeight]];
   self.headerViewHeightConstraint.active = YES;

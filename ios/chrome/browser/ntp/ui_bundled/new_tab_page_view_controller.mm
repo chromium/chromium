@@ -640,16 +640,14 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     if (obj == self.magicStackCollectionView ||
         obj == self.contentSuggestionsViewController ||
         obj == self.feedHeaderViewController) {
-      heightAboveFeed +=
-          content_suggestions::ReducedModuleSpacing(self.traitCollection);
+      heightAboveFeed += content_suggestions::ReducedModuleSpacing();
     }
 
     if (obj == _quickActionsViewController) {
       // First, subtract off the "standard" space that was added in the
       // previous iteration of the loop because this module uses custom
       // top and bottom spacing.
-      heightAboveFeed -=
-          content_suggestions::ReducedModuleSpacing(self.traitCollection);
+      heightAboveFeed -= content_suggestions::ReducedModuleSpacing();
       // Then add in the custom spacing used for this module.
       heightAboveFeed += content_suggestions::QuickActionsTopPadding() +
                          [self quickActionsBottomSpacing];
@@ -1421,8 +1419,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
                                         ? content_suggestions::
                                               QuickActionsTopPadding()
                                         : content_suggestions::
-                                              ReducedModuleSpacing(
-                                                  self.traitCollection)],
+                                              ReducedModuleSpacing()],
       ];
     }
   }
@@ -1676,10 +1673,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
         UIView* viewAbove =
             [self viewForAboveFeedObject:self.objectsAboveFeed[index - 1]];
 
-        CGFloat spacingToUse = isQuickActions
-                                   ? [self quickActionsBottomSpacing]
-                                   : content_suggestions::ReducedModuleSpacing(
-                                         self.traitCollection);
+        CGFloat spacingToUse =
+            isQuickActions ? [self quickActionsBottomSpacing]
+                           : content_suggestions::ReducedModuleSpacing();
         [NSLayoutConstraint activateConstraints:@[
           [view.topAnchor constraintEqualToAnchor:viewAbove.bottomAnchor
                                          constant:spacingToUse],
@@ -1878,8 +1874,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 // Visited is visible.
 - (CGFloat)quickActionsBottomSpacing {
   return self.mostVisitedVisible
-             ? content_suggestions::MostVisitedTopPadding()
-             : content_suggestions::ReducedModuleSpacing(self.traitCollection);
+             ? content_suggestions::MostVisitedTopPadding(self.traitCollection)
+             : content_suggestions::ReducedModuleSpacing();
 }
 
 - (CGFloat)minimumNTPHeight {

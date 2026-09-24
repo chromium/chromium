@@ -367,7 +367,8 @@ constexpr CGFloat kMinDragHandleHeight = 24.0;
     UIView* anchorView = self.quickActionsVisible
                              ? _quickActionsViewController.view
                              : _fakeLocationBar;
-    CGFloat constant = content_suggestions::MostVisitedTopPadding();
+    CGFloat constant =
+        content_suggestions::MostVisitedTopPadding(self.traitCollection);
 
     _mvtTopConstraint = [_mostVisitedContainerView.topAnchor
         constraintEqualToAnchor:anchorView.bottomAnchor
@@ -515,6 +516,14 @@ constexpr CGFloat kMinDragHandleHeight = 24.0;
 - (void)handleTraitChanges {
   [self updateLogoConstraints];
   _fakeLocationBarTopConstraint.constant = [self centeredFakeOmniboxTop];
+  _fakeLocationBarWidthConstraint.constant = [self fakeLocationBarWidth];
+  if (_qaTopConstraint) {
+    _qaTopConstraint.constant = content_suggestions::QuickActionsTopPadding();
+  }
+  if (_mvtTopConstraint) {
+    _mvtTopConstraint.constant =
+        content_suggestions::MostVisitedTopPadding(self.traitCollection);
+  }
   if (_dividerWidthConstraint) {
     _dividerWidthConstraint.constant = 1.0 / self.traitCollection.displayScale;
   }
@@ -960,7 +969,7 @@ constexpr CGFloat kMinDragHandleHeight = 24.0;
     [_searchEngineLogoView.bottomAnchor
         constraintEqualToAnchor:_fakeLocationBar.topAnchor
                        constant:-content_suggestions::LogoToFakeboxPadding(
-                                    _logoState)],
+                                    _logoState, self.traitCollection)],
     [_searchEngineLogoView.widthAnchor constraintEqualToConstant:width],
     [_searchEngineLogoView.heightAnchor constraintEqualToConstant:height]
   ];
@@ -973,9 +982,9 @@ constexpr CGFloat kMinDragHandleHeight = 24.0;
   if (self.quickActionsVisible && _quickActionsViewController) {
     height += content_suggestions::QuickActionsTopPadding();
     height += _quickActionsViewController.preferredContentSize.height;
-    height += content_suggestions::MostVisitedTopPadding();
+    height += content_suggestions::MostVisitedTopPadding(self.traitCollection);
   } else {
-    height += content_suggestions::MostVisitedTopPadding();
+    height += content_suggestions::MostVisitedTopPadding(self.traitCollection);
   }
 
   if (!IsMVTInBottomSheetEnabled()) {
@@ -1003,7 +1012,8 @@ constexpr CGFloat kMinDragHandleHeight = 24.0;
       content_suggestions::DoodleHeight(_logoState, self.traitCollection);
   CGFloat logoTopMargin = [self logoTopPaddingForCurrentOrientation];
   return safeAreaTop + logoTopMargin + logoHeight +
-         content_suggestions::LogoToFakeboxPadding(_logoState);
+         content_suggestions::LogoToFakeboxPadding(_logoState,
+                                                   self.traitCollection);
 }
 
 
@@ -1118,7 +1128,8 @@ constexpr CGFloat kMinDragHandleHeight = 24.0;
 
       UIView* anchorView =
           isVisible ? _quickActionsViewController.view : _fakeLocationBar;
-      CGFloat constant = content_suggestions::MostVisitedTopPadding();
+      CGFloat constant =
+          content_suggestions::MostVisitedTopPadding(self.traitCollection);
 
       _mvtTopConstraint = [_mostVisitedContainerView.topAnchor
           constraintEqualToAnchor:anchorView.bottomAnchor
