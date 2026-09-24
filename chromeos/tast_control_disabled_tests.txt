@@ -82,9 +82,6 @@ apps.Sharesheet
 tast.apps.Sharesheet
 
 # https://crbug.com/437961311
-tast.bruschetta.AppEmacsWindowOperations.maximize@betty
-tast.bruschetta.AppEmacsWindowOperations.minimize@betty
-tast.bruschetta.AppEmacsWindowOperations.switch_tablet@betty
 tast.bruschetta.Basic.with_fieldtrial_config@betty
 tast.bruschetta.CommandVim@betty
 tast.bruschetta.CopyFilesToGuest@betty
