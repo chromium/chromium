@@ -24,15 +24,22 @@
 class AppMenuActionItem {
  public:
   enum class DisplayType {
-    kRow,
+    // Searchable Types
     kBlock,
-    kFooter,
-    kDivider,
+    kCustom,
+    kNotification,
+    kRow,
     kSection,
+
+    // Non-searchable Types
+    kDivider,
+    kFooter,
     kHeader,
     kSearch,
-    kNotification,
-    kCustom,
+
+    // Exclusive boundary marker for searchable types.
+    // Any type with a value < kMaxSearchable is searchable.
+    kMaxSearchable = kDivider,
   };
 
   enum class ItemHeight {
