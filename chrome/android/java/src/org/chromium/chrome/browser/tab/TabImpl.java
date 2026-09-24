@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.autofill.AutofillManager;
 import android.view.autofill.AutofillValue;
 import android.view.inputmethod.EditorInfo;
@@ -3454,10 +3455,28 @@ class TabImpl implements Tab, TabInternal {
         /** Suppresses generating autofill child structures on uninflated background proxy views. */
         @Override
         public void onProvideAutofillVirtualStructure(ViewStructure structure, int flags) {}
+
+        /**
+         * Suppresses initializing native WebContentsAccessibility on uninflated background proxy
+         * views during startup layout/scanning.
+         */
+        @Override
+        @SuppressWarnings("NullAway")
+        public @Nullable AccessibilityNodeProvider getAccessibilityNodeProvider() {
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.SUPPRESS_ACCESSIBILITY_ON_DEFERRED_CONTENT_VIEW)) {
+                return null;
+            }
+            return super.getAccessibilityNodeProvider();
+        }
     }
 
     boolean isArchivedForTesting() {
         return getTabModelType() == TabModelType.ARCHIVED;
+    }
+
+    boolean isContentViewDeferredForTesting() {
+        return mIsContentViewDeferred;
     }
 
     OnAttachStateChangeListener getAttachStateChangeListenerForTesting() {
