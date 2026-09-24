@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -52,8 +53,8 @@ class TabGroupsOrganizerPageHandler
 
   // organizer_panel::mojom::TabGroupsOrganizerPageHandler:
   void GetTabGroups(GetTabGroupsCallback callback) override;
-  void OpenTabGroup(const base::Uuid& id) override;
-  void ShowContextMenu(const base::Uuid& group_id,
+  void OpenTabGroup(const std::string& id) override;
+  void ShowContextMenu(const std::string& group_id,
                        const gfx::Rect& anchor_rect,
                        ShowContextMenuCallback callback) override;
 

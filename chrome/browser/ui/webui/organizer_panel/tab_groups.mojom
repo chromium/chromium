@@ -5,12 +5,11 @@
 module organizer_panel.mojom;
 
 import "components/tab_groups/public/mojom/tab_group_types.mojom";
-import "mojo/public/mojom/base/uuid.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Information about an existing tab group.
 struct TabGroup {
-  mojo_base.mojom.Uuid id;
+  string id;
   tab_groups.mojom.Color color;
   string title;
   bool is_open;
@@ -22,7 +21,7 @@ interface TabGroupsOrganizerPage {
   TabGroupAdded(TabGroup tab_group);
 
   // Called when a tab group is removed.
-  TabGroupRemoved(mojo_base.mojom.Uuid id);
+  TabGroupRemoved(string id);
 
   // Called when a tab group is updated.
   TabGroupUpdated(TabGroup tab_group);
@@ -35,12 +34,11 @@ interface TabGroupsOrganizerPageHandler {
 
   // Open the tab group with the given ID in the tab strip, or highlight it if
   // already open.
-  OpenTabGroup(mojo_base.mojom.Uuid id);
+  OpenTabGroup(string id);
 
   // Shows the context menu for the specified tab group anchored at
   // `anchor_rect`. The callback is invoked when the menu is closed.
-  ShowContextMenu(mojo_base.mojom.Uuid group_id, gfx.mojom.Rect anchor_rect)
-      => ();
+  ShowContextMenu(string group_id, gfx.mojom.Rect anchor_rect) => ();
 };
 
 // Factory interface to bootstrap communication between WebUI and browser.

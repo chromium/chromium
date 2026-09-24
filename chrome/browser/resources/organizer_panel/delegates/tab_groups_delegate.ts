@@ -8,7 +8,6 @@ import {CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
-import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {TabGroupDotSize} from '/tab_group_shared/tab_group_dot.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
@@ -30,7 +29,7 @@ export class TabGroupsDelegate implements
         callbackRouter.tabGroupAdded.addListener((tabGroup: TabGroup) => {
           this.onTabGroupAdded_(tabGroup);
         }),
-        callbackRouter.tabGroupRemoved.addListener((id: Uuid) => {
+        callbackRouter.tabGroupRemoved.addListener((id: string) => {
           this.onTabGroupRemoved_(id);
         }),
         callbackRouter.tabGroupUpdated.addListener((tabGroup: TabGroup) => {
@@ -74,19 +73,18 @@ export class TabGroupsDelegate implements
   private onTabGroupAdded_(tabGroup: TabGroup) {
     this.tabGroups_ = [
       tabGroup,
-      ...this.tabGroups_.filter(g => g.id.value !== tabGroup.id.value),
+      ...this.tabGroups_.filter(g => g.id !== tabGroup.id),
     ];
     this.notifyClient_();
   }
 
-  private onTabGroupRemoved_(id: Uuid) {
-    this.tabGroups_ = this.tabGroups_.filter(g => g.id.value !== id.value);
+  private onTabGroupRemoved_(id: string) {
+    this.tabGroups_ = this.tabGroups_.filter(g => g.id !== id);
     this.notifyClient_();
   }
 
   private onTabGroupUpdated_(tabGroup: TabGroup) {
-    const index =
-        this.tabGroups_.findIndex(g => g.id.value === tabGroup.id.value);
+    const index = this.tabGroups_.findIndex(g => g.id === tabGroup.id);
     if (index !== -1) {
       this.tabGroups_[index] = tabGroup;
       this.notifyClient_();

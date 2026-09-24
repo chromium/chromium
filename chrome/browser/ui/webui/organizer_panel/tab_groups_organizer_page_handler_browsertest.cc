@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/organizer_panel/tab_groups_organizer_page_handler.h"
 
+#include <string>
 #include <vector>
 
 #include "base/run_loop.h"
@@ -48,7 +49,7 @@ class FakeTabGroupsOrganizerPage
     }
   }
 
-  void TabGroupRemoved(const base::Uuid& id) override {
+  void TabGroupRemoved(const std::string& id) override {
     removed_group_ids_.push_back(id);
     if (removed_quit_closure_) {
       std::move(removed_quit_closure_).Run();
@@ -83,7 +84,7 @@ class FakeTabGroupsOrganizerPage
   const std::vector<organizer_panel::mojom::TabGroupPtr>& added_groups() const {
     return added_groups_;
   }
-  const std::vector<base::Uuid>& removed_group_ids() const {
+  const std::vector<std::string>& removed_group_ids() const {
     return removed_group_ids_;
   }
   const std::vector<organizer_panel::mojom::TabGroupPtr>& updated_groups()
@@ -95,7 +96,7 @@ class FakeTabGroupsOrganizerPage
   mojo::Receiver<organizer_panel::mojom::TabGroupsOrganizerPage> receiver_{
       this};
   std::vector<organizer_panel::mojom::TabGroupPtr> added_groups_;
-  std::vector<base::Uuid> removed_group_ids_;
+  std::vector<std::string> removed_group_ids_;
   std::vector<organizer_panel::mojom::TabGroupPtr> updated_groups_;
   base::OnceClosure added_quit_closure_;
   base::OnceClosure removed_quit_closure_;
@@ -183,15 +184,15 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   ASSERT_EQ(3u, returned_groups.size());
 
   // Groups are returned sorted by most recently used descending.
-  EXPECT_EQ(returned_groups[0]->id, id1);
+  EXPECT_EQ(returned_groups[0]->id, id1.AsLowercaseString());
   EXPECT_EQ(returned_groups[0]->title, "Group 1");
   EXPECT_EQ(returned_groups[0]->color, tab_groups::TabGroupColorId::kBlue);
 
-  EXPECT_EQ(returned_groups[1]->id, id2);
+  EXPECT_EQ(returned_groups[1]->id, id2.AsLowercaseString());
   EXPECT_EQ(returned_groups[1]->title, "Group 2");
   EXPECT_EQ(returned_groups[1]->color, tab_groups::TabGroupColorId::kRed);
 
-  EXPECT_EQ(returned_groups[2]->id, id3);
+  EXPECT_EQ(returned_groups[2]->id, id3.AsLowercaseString());
   EXPECT_EQ(returned_groups[2]->title, "Group 3");
   EXPECT_EQ(returned_groups[2]->color, tab_groups::TabGroupColorId::kGreen);
 }
@@ -221,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
       handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
-  handler_remote->OpenTabGroup(id);
+  handler_remote->OpenTabGroup(id.AsLowercaseString());
   handler_remote.FlushForTesting();
 
   std::optional<tab_groups::SavedTabGroup> opened_group = service->GetGroup(id);
@@ -261,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
       handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
-  handler_remote->OpenTabGroup(saved_group->saved_guid());
+  handler_remote->OpenTabGroup(saved_group->saved_guid().AsLowercaseString());
   handler_remote.FlushForTesting();
 
   // Clicking an open group should activate the first tab in that group (tab 0).
@@ -291,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   page.WaitForTabGroupAdded();
 
   ASSERT_EQ(1u, page.added_groups().size());
-  EXPECT_EQ(page.added_groups()[0]->id, id);
+  EXPECT_EQ(page.added_groups()[0]->id, id.AsLowercaseString());
   EXPECT_EQ(page.added_groups()[0]->title, "New Group");
   EXPECT_EQ(page.added_groups()[0]->color,
             tab_groups::TabGroupColorId::kYellow);
@@ -320,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   page.WaitForTabGroupRemoved();
 
   ASSERT_EQ(1u, page.removed_group_ids().size());
-  EXPECT_EQ(page.removed_group_ids()[0], id);
+  EXPECT_EQ(page.removed_group_ids()[0], id.AsLowercaseString());
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
@@ -350,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   page.WaitForTabGroupUpdated();
 
   ASSERT_EQ(1u, page.updated_groups().size());
-  EXPECT_EQ(page.updated_groups()[0]->id, id);
+  EXPECT_EQ(page.updated_groups()[0]->id, id.AsLowercaseString());
   EXPECT_EQ(page.updated_groups()[0]->title, "Updated Title");
   EXPECT_EQ(page.updated_groups()[0]->color, tab_groups::TabGroupColorId::kRed);
 }
@@ -375,8 +376,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
       handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
-  handler_remote->ShowContextMenu(id, gfx::Rect(10, 20, 30, 40),
-                                  base::DoNothing());
+  handler_remote->ShowContextMenu(id.AsLowercaseString(),
+                                  gfx::Rect(10, 20, 30, 40), base::DoNothing());
   handler_remote.FlushForTesting();
   EXPECT_TRUE(handler.IsContextMenuRunningForTesting());
 }
@@ -401,8 +402,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
       handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
-  handler_remote->ShowContextMenu(id, gfx::Rect(-10, -20, 30, 40),
-                                  base::DoNothing());
+  handler_remote->ShowContextMenu(
+      id.AsLowercaseString(), gfx::Rect(-10, -20, 30, 40), base::DoNothing());
   handler_remote.FlushForTesting();
   EXPECT_FALSE(handler.IsContextMenuRunningForTesting());
 }

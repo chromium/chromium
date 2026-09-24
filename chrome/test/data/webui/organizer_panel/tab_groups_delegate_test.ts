@@ -26,19 +26,19 @@ suite('TabGroupsDelegateTest', () => {
 
   const sampleGroups: TabGroup[] = [
     {
-      id: {value: '1'},
+      id: '1',
       color: Color.kBlue,
       title: 'Sample Group 1',
       isOpen: true,
     },
     {
-      id: {value: '2'},
+      id: '2',
       color: Color.kRed,
       title: 'Sample Group 2',
       isOpen: false,
     },
     {
-      id: {value: '3'},
+      id: '3',
       color: Color.kGreen,
       title: 'Sample Group 3',
       isOpen: true,
@@ -112,7 +112,7 @@ suite('TabGroupsDelegateTest', () => {
     await delegate.getItems();
 
     const newGroup: TabGroup = {
-      id: {value: '4'},
+      id: '4',
       color: Color.kYellow,
       title: 'Sample Group 4',
       isOpen: true,
@@ -134,7 +134,7 @@ suite('TabGroupsDelegateTest', () => {
 
     await delegate.getItems();
 
-    remotePage.tabGroupRemoved({value: '2'});
+    remotePage.tabGroupRemoved('2');
     await microtasksFinished();
 
     assertEquals(2, client.items.length);
@@ -149,7 +149,7 @@ suite('TabGroupsDelegateTest', () => {
     await delegate.getItems();
 
     const updatedGroup: TabGroup = {
-      id: {value: '2'},
+      id: '2',
       color: Color.kCyan,
       title: 'Updated Group 2',
       isOpen: true,

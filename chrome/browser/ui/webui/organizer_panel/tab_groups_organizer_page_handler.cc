@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -44,7 +46,7 @@ base::Time GetLastUsedTime(const tab_groups::SavedTabGroup& group) {
 organizer_panel::mojom::TabGroupPtr CreateMojoTabGroup(
     const tab_groups::SavedTabGroup& group) {
   auto tab_group = organizer_panel::mojom::TabGroup::New();
-  tab_group->id = group.saved_guid();
+  tab_group->id = group.saved_guid().AsLowercaseString();
   tab_group->title = base::UTF16ToUTF8(
       tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(group));
   tab_group->color = group.color();
@@ -102,13 +104,14 @@ void TabGroupsOrganizerPageHandler::GetTabGroups(
   std::move(callback).Run(std::move(tab_groups));
 }
 
-void TabGroupsOrganizerPageHandler::OpenTabGroup(const base::Uuid& id) {
-  if (!tab_group_sync_service_) {
+void TabGroupsOrganizerPageHandler::OpenTabGroup(const std::string& id) {
+  const base::Uuid uuid = base::Uuid::ParseLowercase(id);
+  if (!tab_group_sync_service_ || !uuid.is_valid()) {
     return;
   }
 
   const std::optional<tab_groups::SavedTabGroup> group =
-      tab_group_sync_service_->GetGroup(id);
+      tab_group_sync_service_->GetGroup(uuid);
   if (!group || group->saved_tabs().empty()) {
     return;
   }
@@ -123,7 +126,7 @@ void TabGroupsOrganizerPageHandler::OpenTabGroup(const base::Uuid& id) {
 }
 
 void TabGroupsOrganizerPageHandler::ShowContextMenu(
-    const base::Uuid& group_id,
+    const std::string& group_id,
     const gfx::Rect& anchor_rect,
     ShowContextMenuCallback callback) {
   // If the menu was already open, close it.
@@ -131,13 +134,14 @@ void TabGroupsOrganizerPageHandler::ShowContextMenu(
 
   on_menu_closed_callback_ = std::move(callback);
 
-  if (!tab_group_sync_service_) {
+  const base::Uuid uuid = base::Uuid::ParseLowercase(group_id);
+  if (!tab_group_sync_service_ || !uuid.is_valid()) {
     OnContextMenuClosed();
     return;
   }
 
   const std::optional<tab_groups::SavedTabGroup> saved_group =
-      tab_group_sync_service_->GetGroup(group_id);
+      tab_group_sync_service_->GetGroup(uuid);
   if (!saved_group.has_value()) {
     OnContextMenuClosed();
     return;
@@ -206,7 +210,7 @@ void TabGroupsOrganizerPageHandler::OnTabGroupUpdated(
 void TabGroupsOrganizerPageHandler::OnTabGroupRemoved(
     const base::Uuid& sync_id,
     tab_groups::TriggerSource source) {
-  page_->TabGroupRemoved(sync_id);
+  page_->TabGroupRemoved(sync_id.AsLowercaseString());
 }
 
 void TabGroupsOrganizerPageHandler::OnTabGroupLocalIdChanged(
