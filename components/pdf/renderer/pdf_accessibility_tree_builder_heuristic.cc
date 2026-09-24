@@ -1092,6 +1092,20 @@ bool BreakParagraph(uint32_t text_run_index,
   return heading_classifier != next_classifier;
 }
 
+// Returns whether `style` differs from the style of the in-progress static
+// text node, which requires starting a new one so that text runs of different
+// styles (e.g. bold vs regular) are not merged into a single static text node.
+bool BreaksStaticTextNode(const StaticTextState& static_text_state,
+                          const chrome_pdf::AccessibilityTextStyleInfo& style) {
+  if (!static_text_state.node || !static_text_state.style) {
+    return false;
+  }
+  // `style` is only ever set when the flag is enabled.
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  return !PdfAccessibilityTreeBuilder::AreStylesEquivalent(
+      *static_text_state.style, style);
+}
+
 void BuildStaticNode(StaticTextState* static_text_state) {
   // If a static text node is currently being built, finish it before
   // moving on to the next object.
@@ -1240,45 +1254,13 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
           (builder_->highlights())[current_highlight_index_++], block_node,
           &previous_on_line_node, &text_run_index);
     } else {
-      chrome_pdf::PageCharacterIndex page_char_index = {
-          builder_->page_index(),
-          builder_->text_run_start_indices()[text_run_index]};
-
-      // Under enhanced heuristics, break and start a new static text node if
-      // the style changes. This prevents text runs of different styles (e.g.
-      // bold vs regular) from being merged into a single static text node.
-      if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
-          static_text_state.node && static_text_state.style &&
-          !PdfAccessibilityTreeBuilder::AreStylesEquivalent(
-              *static_text_state.style, text_run.style)) {
-        BuildStaticNode(&static_text_state);
+      // A style change starts a new static text node, which ends any heading
+      // the current block was classified as.
+      if (BreaksStaticTextNode(static_text_state, text_run.style)) {
         current_heading_classifier = HeadingClassifier::kNone;
       }
-
-      // This node is for the text inside the block, it includes the text of all
-      // of the text runs.
-      if (!static_text_state.node) {
-        // No need to add text styling to the node if it's a heading because the
-        // heading has its own styling.
-        if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
-            (block_node->role != ax::mojom::Role::kHeading)) {
-          static_text_state.node = builder_->CreateStaticTextNodeWithStyle(
-              page_char_index, text_run.style);
-          static_text_state.style = text_run.style;
-        } else {
-          static_text_state.node =
-              builder_->CreateStaticTextNode(page_char_index);
-        }
-        block_node->child_ids.push_back(static_text_state.node->id);
-      }
-
-      // Add this text run to the current static text node.
       ui::AXNodeData* inline_text_box_node =
-          builder_->CreateInlineTextBoxNode(text_run, page_char_index);
-      static_text_state.node->child_ids.push_back(inline_text_box_node->id);
-
-      static_text_state.text += inline_text_box_node->GetStringAttribute(
-          ax::mojom::StringAttribute::kName);
+          AddTextRunToNode(text_run_index, block_node, &static_text_state);
 
       if (previous_on_line_node) {
         ConnectPreviousAndNextOnLine(previous_on_line_node,
@@ -1421,33 +1403,62 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
   return block_node;
 }
 
+ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::AddTextRunToNode(
+    size_t text_run_index,
+    ui::AXNodeData* parent_node,
+    StaticTextState* static_text_state) {
+  const chrome_pdf::AccessibilityTextRunInfo& text_run =
+      builder_->text_runs()[text_run_index];
+  chrome_pdf::PageCharacterIndex page_char_index = {
+      builder_->page_index(),
+      builder_->text_run_start_indices()[text_run_index]};
+
+  if (BreaksStaticTextNode(*static_text_state, text_run.style)) {
+    BuildStaticNode(static_text_state);
+  }
+
+  // This node is for the text inside the parent node, it includes the text of
+  // all of the text runs.
+  if (!static_text_state->node) {
+    // No need to add text styling to the node if it's a heading because the
+    // heading has its own styling.
+    if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+        parent_node->role != ax::mojom::Role::kHeading) {
+      static_text_state->node = builder_->CreateStaticTextNodeWithStyle(
+          page_char_index, text_run.style);
+      static_text_state->style = text_run.style;
+    } else {
+      static_text_state->node = builder_->CreateStaticTextNode(page_char_index);
+    }
+    parent_node->child_ids.push_back(static_text_state->node->id);
+  }
+
+  // Add this text run to the current static text node.
+  ui::AXNodeData* inline_text_box_node =
+      builder_->CreateInlineTextBoxNode(text_run, page_char_index);
+  static_text_state->node->child_ids.push_back(inline_text_box_node->id);
+
+  static_text_state->text += inline_text_box_node->GetStringAttribute(
+      ax::mojom::StringAttribute::kName);
+  return inline_text_box_node;
+}
+
 void PdfAccessibilityTreeBuilderHeuristic::AddTextToAXNode(
     size_t start_text_run_index,
     uint32_t end_text_run_index,
     ui::AXNodeData* ax_node,
     ui::AXNodeData** previous_on_line_node) {
-  chrome_pdf::PageCharacterIndex page_char_index = {
-      builder_->page_index(),
-      builder_->text_run_start_indices()[start_text_run_index]};
-  ui::AXNodeData* ax_static_text_node =
-      builder_->CreateStaticTextNode(page_char_index);
-  ax_node->child_ids.push_back(ax_static_text_node->id);
+  StaticTextState static_text_state;
   // Accumulate the text of the node.
   std::string ax_name;
   LineHelper line_helper(builder_->text_runs());
 
   for (size_t text_run_index = start_text_run_index;
        text_run_index <= end_text_run_index; ++text_run_index) {
-    const chrome_pdf::AccessibilityTextRunInfo& text_run =
-        (builder_->text_runs())[text_run_index];
-    page_char_index.char_index =
-        builder_->text_run_start_indices()[text_run_index];
-    // Add this text run to the current static text node.
     ui::AXNodeData* inline_text_box_node =
-        builder_->CreateInlineTextBoxNode(text_run, page_char_index);
-    ax_static_text_node->child_ids.push_back(inline_text_box_node->id);
+        AddTextRunToNode(text_run_index, ax_node, &static_text_state);
 
-    ax_static_text_node->relative_bounds.bounds.Union(
+    static_text_state.node->relative_bounds.bounds.Union(
         inline_text_box_node->relative_bounds.bounds);
     ax_name += inline_text_box_node->GetStringAttribute(
         ax::mojom::StringAttribute::kName);
@@ -1471,9 +1482,8 @@ void PdfAccessibilityTreeBuilderHeuristic::AddTextToAXNode(
     }
   }
 
+  BuildStaticNode(&static_text_state);
   ax_node->AddStringAttribute(ax::mojom::StringAttribute::kName, ax_name);
-  ax_static_text_node->AddStringAttribute(ax::mojom::StringAttribute::kName,
-                                          ax_name);
 }
 
 void PdfAccessibilityTreeBuilderHeuristic::AddTextToObjectNode(

@@ -166,6 +166,10 @@ class PdfAccessibilityTreeBuilderHeuristic {
       const HeuristicPageProperties& page_properties,
       HeadingClassifier* out_heading_classifier);
 
+  ui::AXNodeData* AddTextRunToNode(size_t text_run_index,
+                                   ui::AXNodeData* parent_node,
+                                   StaticTextState* static_text_state);
+
   void AddTextToAXNode(size_t start_text_run_index,
                        uint32_t end_text_run_index,
                        ui::AXNodeData* ax_node,
