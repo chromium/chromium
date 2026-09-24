@@ -629,17 +629,6 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
     return;
   }
 
-  content::RenderProcessHost* render_process_host =
-      render_frame_host.GetProcess();
-  if (params->is_scripted && render_frame_host.IsNestedWithinFencedFrame()) {
-    // The renderer should have checked and disallowed the request for fenced
-    // frames in ChromeClient. Ignore the request and mark it as bad if it
-    // didn't happen for some reason.
-    bad_message::ReceivedBadMessage(
-        render_process_host, bad_message::PVMB_SCRIPTED_PRINT_FENCED_FRAME);
-    std::move(callback).Run(nullptr);
-    return;
-  }
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (ShouldPrintJobOop() && !query_with_ui_client_id().has_value()) {
     // Renderer process has requested settings outside of the expected setup.

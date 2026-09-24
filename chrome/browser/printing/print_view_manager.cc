@@ -354,11 +354,6 @@ bool PrintViewManager::PrintPreview(
     return false;
   }
 
-  // Don't print / print preview fenched frames.
-  if (rfh->IsNestedWithinFencedFrame()) {
-    return false;
-  }
-
   GetPrintRenderFrame(rfh)->InitiatePrintPreview(
 #if BUILDFLAG(IS_CHROMEOS)
       std::move(print_renderer),
@@ -371,8 +366,7 @@ bool PrintViewManager::PrintPreview(
 }
 
 void PrintViewManager::DidShowPrintDialog() {
-  if (!CheckTargetRenderFrameMatchesRFH() ||
-      !CheckForInvalidTargetRenderFrame(/*is_scripted=*/false)) {
+  if (!CheckTargetRenderFrameMatchesRFH() || !CurrentTargetFrame().IsActive()) {
     return;
   }
 
@@ -384,8 +378,13 @@ void PrintViewManager::DidShowPrintDialog() {
 void PrintViewManager::GetPrintPreviewParams(
     GetPrintPreviewParamsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!CheckTargetRenderFrameMatchesRFH() ||
-      !CheckForInvalidTargetRenderFrame(/*is_scripted=*/false)) {
+  if (!CheckTargetRenderFrameMatchesRFH()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  content::RenderFrameHost& rfh = CurrentTargetFrame();
+  if (!rfh.IsActive()) {
     std::move(callback).Run(nullptr);
     return;
   }
@@ -460,7 +459,7 @@ void PrintViewManager::GetPrintPreviewParams(
     // Without a document cookie to find a previous query, must generate a
     // fresh printer query each time, even if the paper size didn't change.
     std::unique_ptr<PrinterQuery> printer_query =
-        queue()->CreatePrinterQuery(CurrentTargetFrame().GetGlobalId());
+        queue()->CreatePrinterQuery(rfh.GetGlobalId());
 
     auto* printer_query_ptr = printer_query.get();
     auto* print_settings_ptr = print_settings.get();
@@ -486,7 +485,7 @@ void PrintViewManager::SetupScriptedPrintPreview(
   // this DCHECK should always hold.
   DCHECK(rfh.IsRenderFrameLive());
 
-  if (!CheckForInvalidTargetRenderFrame(/*is_scripted=*/true)) {
+  if (!rfh.IsActive()) {
     std::move(callback).Run();
     return;
   }
@@ -529,8 +528,7 @@ void PrintViewManager::ShowScriptedPrintPreview() {
     return;
   }
 
-  if (!CheckTargetRenderFrameMatchesRFH() ||
-      !CheckForInvalidTargetRenderFrame(/*is_scripted=*/true)) {
+  if (!CheckTargetRenderFrameMatchesRFH() || !CurrentTargetFrame().IsActive()) {
     return;
   }
 
@@ -591,14 +589,15 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(
 
 void PrintViewManager::RequestPrintPreview(
     mojom::RequestPrintPreviewParamsPtr params) {
-  if (!CheckForInvalidTargetRenderFrame(/*is_scripted=*/false)) {
+  content::RenderFrameHost& rfh = CurrentTargetFrame();
+  if (!rfh.IsActive()) {
     return;
   }
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   set_analyzing_content(/*analyzing=*/true);
 #endif
-  content::GlobalRenderFrameHostId id = CurrentTargetFrame().GetGlobalId();
+  content::GlobalRenderFrameHostId id = rfh.GetGlobalId();
   RejectPrintPreviewRequestIfRestricted(
       id, base::BindOnce(&PrintViewManager::OnRequestPrintPreviewCallback,
                          weak_factory_.GetWeakPtr(), std::move(params), id));
@@ -650,8 +649,7 @@ void PrintViewManager::CheckForCancel(
     const base::UnguessableToken& preview_ui_id,
     int32_t request_id,
     CheckForCancelCallback callback) {
-  if (!CheckTargetRenderFrameMatchesRFH() ||
-      !CheckForInvalidTargetRenderFrame(/*is_scripted=*/false)) {
+  if (!CheckTargetRenderFrameMatchesRFH() || !CurrentTargetFrame().IsActive()) {
     std::move(callback).Run(/*cancel=*/true);
     return;
   }
@@ -663,8 +661,7 @@ void PrintViewManager::CheckForCancel(
 void PrintViewManager::SetAccessibilityTree(
     int32_t cookie,
     const ui::AXTreeUpdate& accessibility_tree) {
-  if (!CheckTargetRenderFrameMatchesRFH() ||
-      !CheckForInvalidTargetRenderFrame(/*is_scripted=*/false)) {
+  if (!CheckTargetRenderFrameMatchesRFH() || !CurrentTargetFrame().IsActive()) {
     return;
   }
 
@@ -754,26 +751,6 @@ void PrintViewManager::PrintPreviewAllowedForTesting() {
 bool PrintViewManager::CheckTargetRenderFrameMatchesRFH() {
   // Implicitly rejects null `print_preview_rfh_` case as well.
   return &CurrentTargetFrame() == print_preview_rfh_;
-}
-
-bool PrintViewManager::CheckForInvalidTargetRenderFrame(bool is_scripted) {
-  content::RenderFrameHost& rfh = CurrentTargetFrame();
-  if (rfh.IsNestedWithinFencedFrame()) {
-    // Either the renderer should have checked and disallowed the request for
-    // fenced frames in ChromeClient, or PrintPreview() above should have
-    // checked. Ignore the request and mark it as bad if those checks didn't
-    // happen for some reason.
-    bad_message::ReceivedBadMessage(
-        rfh.GetProcess(), is_scripted
-                              ? bad_message::PVM_SCRIPTED_PRINT_FENCED_FRAME
-                              : bad_message::PVM_PRINT_FENCED_FRAME);
-    return false;
-  }
-  if (!rfh.IsActive()) {
-    // Only active RFHs should be printing and potentially showing UI elements.
-    return false;
-  }
-  return true;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManager);

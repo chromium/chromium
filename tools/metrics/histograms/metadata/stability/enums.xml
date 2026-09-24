@@ -126,12 +126,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="RFH_DISPLAY_CAPTURE_PERMISSION_MISSING"/>
   <int value="5" label="MSFD_MULTIPLE_CLOSURES_OF_FOCUSABILITY_WINDOW"/>
   <int value="6" label="MSFD_MULTIPLE_EXPLICIT_CALLS_TO_FOCUS"/>
-  <int value="7" label="PVM_SCRIPTED_PRINT_FENCED_FRAME"/>
-  <int value="8" label="PVMB_SCRIPTED_PRINT_FENCED_FRAME"/>
+  <int value="7" label="OBSOLETE_PVM_SCRIPTED_PRINT_FENCED_FRAME"/>
+  <int value="8" label="OBSOLETE_PVMB_SCRIPTED_PRINT_FENCED_FRAME"/>
   <int value="9" label="SSI_CREATE_FENCED_FRAME"/>
   <int value="10" label="CCU_SUPERFLUOUS_BIND"/>
   <int value="11" label="RFH_INVALID_WEB_FRAME_URL"/>
-  <int value="12" label="PVM_PRINT_FENCED_FRAME"/>
+  <int value="12" label="OBSOLETE_PVM_PRINT_FENCED_FRAME"/>
   <int value="13" label="SAGPC_INVALID_PERMISSION_REQUEST_CONTEXT"/>
   <int value="14" label="TLSAPC_INVALID_PERMISSION_REQUEST_CONTEXT"/>
   <int value="15" label="CCBC_GOOGLE_CHROME_SCHEME"/>
