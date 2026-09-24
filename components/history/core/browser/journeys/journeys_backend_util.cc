@@ -47,6 +47,16 @@ std::optional<Journey> ResolveJourneyVisits(HistoryDatabase& db,
                  std::move(visits), std::move(journey.continuation_queries));
 }
 
+std::optional<Journey> GetJourneyWithResolvedVisits(
+    HistoryDatabase& db,
+    const std::string& journey_id) {
+  std::optional<JourneyRow> journey = db.GetJourney(journey_id);
+  if (!journey.has_value()) {
+    return std::nullopt;
+  }
+  return ResolveJourneyVisits(db, std::move(*journey));
+}
+
 std::vector<Journey> GetAllJourneysWithResolvedVisits(HistoryDatabase& db) {
   std::vector<JourneyRow> journeys = db.GetAllJourneys();
   std::vector<Journey> resolved_journeys;

@@ -27,6 +27,14 @@ namespace journeys {
 std::optional<Journey> ResolveJourneyVisits(HistoryDatabase& db,
                                             JourneyRow journey);
 
+// Retrieves the journey identified by `journey_id`, with history entries
+// resolved the same way as `GetAllJourneysWithResolvedVisits()`. Returns
+// `std::nullopt` if there is no such journey, or if any of its visits cannot
+// be resolved (matching the list, which excludes such journeys).
+std::optional<Journey> GetJourneyWithResolvedVisits(
+    HistoryDatabase& db,
+    const std::string& journey_id);
+
 // Retrieves all stored journeys, ordered by `creation_time` DESC, with
 // history entries resolved to URLs and titles via the `visits` and `urls`
 // tables. Journeys with unresolved visits are excluded.

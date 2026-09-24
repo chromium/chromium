@@ -785,6 +785,11 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   std::vector<journeys::Journey> GetAllJourneysWithVisits() override;
   bool DeleteAllJourneys() override;
 
+  // Returns the journey identified by `journey_id` with its visits resolved,
+  // or `std::nullopt` if it doesn't exist or can't be fully resolved.
+  std::optional<journeys::Journey> GetJourneyWithVisits(
+      const std::string& journey_id);
+
   // Deleting ------------------------------------------------------------------
 
   void DeleteURLs(const std::vector<GURL>& urls);

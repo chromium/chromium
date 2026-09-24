@@ -240,4 +240,49 @@ TEST_F(JourneysBackendUtilTest,
               ElementsAre(Field(&Journey::journey_id, "journey_complete")));
 }
 
+TEST_F(JourneysBackendUtilTest, GetJourneyWithResolvedVisits_Found) {
+  URLID url_id = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
+  ASSERT_NE(url_id, 0);
+  base::Time visit_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  ASSERT_NE(AddTestVisit(url_id, visit_time), 0);
+
+  base::Time creation_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  ASSERT_TRUE(db_.AddOrUpdateJourneys(
+      {CreateJourneyRow("journey_a", "Journey A", creation_time,
+                        /*visit_times=*/{visit_time}),
+       CreateJourneyRow("journey_b", "Journey B", creation_time,
+                        /*visit_times=*/{visit_time})}));
+
+  Journey expected_journey(
+      "journey_b", "Journey B", creation_time,
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*visits=*/
+      {JourneyVisit(GURL("http://www.example.com/page1"), u"Page 1")});
+  EXPECT_THAT(GetJourneyWithResolvedVisits(db_, "journey_b"),
+              Optional(expected_journey));
+}
+
+TEST_F(JourneysBackendUtilTest,
+       GetJourneyWithResolvedVisits_UnknownIdReturnsNullopt) {
+  ASSERT_TRUE(db_.AddOrUpdateJourneys({CreateJourneyRow(
+      "journey_a", "Journey A", /*creation_time=*/base::Time(),
+      /*visit_times=*/{})}));
+
+  EXPECT_EQ(GetJourneyWithResolvedVisits(db_, "unknown"), std::nullopt);
+}
+
+TEST_F(JourneysBackendUtilTest,
+       GetJourneyWithResolvedVisits_UnresolvedVisitReturnsNullopt) {
+  ASSERT_TRUE(db_.AddOrUpdateJourneys({CreateJourneyRow(
+      "journey_incomplete", "Incomplete", /*creation_time=*/base::Time(),
+      /*visit_times=*/
+      {base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999))})}));
+
+  EXPECT_EQ(GetJourneyWithResolvedVisits(db_, "journey_incomplete"),
+            std::nullopt);
+}
+
 }  // namespace history::journeys

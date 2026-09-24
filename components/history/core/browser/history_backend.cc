@@ -2160,6 +2160,14 @@ std::vector<journeys::Journey> HistoryBackend::GetAllJourneysWithVisits() {
   return journeys::GetAllJourneysWithResolvedVisits(*db_);
 }
 
+std::optional<journeys::Journey> HistoryBackend::GetJourneyWithVisits(
+    const std::string& journey_id) {
+  if (!db_) {
+    return std::nullopt;
+  }
+  return journeys::GetJourneyWithResolvedVisits(*db_, journey_id);
+}
+
 bool HistoryBackend::DeleteAllJourneys() {
   if (!db_) {
     return false;

@@ -716,6 +716,18 @@ class HistoryService : public KeyedService,
 
   // Journeys ------------------------------------------------------------------
 
+  using GetJourneyCallback =
+      base::OnceCallback<void(std::optional<journeys::Journey>)>;
+  // Retrieves the journey identified by `journey_id`, with history entries
+  // resolved to URLs and titles. `callback` is invoked on the calling sequence
+  // with `std::nullopt` if there is no such journey, or if it contains
+  // unresolved visits (the same journeys `GetAllJourneys()` excludes).
+  // Note: Virtual needed for mocking.
+  virtual base::CancelableTaskTracker::TaskId GetJourney(
+      const std::string& journey_id,
+      GetJourneyCallback callback,
+      base::CancelableTaskTracker* tracker);
+
   using GetAllJourneysCallback =
       base::OnceCallback<void(std::vector<journeys::Journey>)>;
   // Retrieves all stored journeys with history entries resolved to URLs and

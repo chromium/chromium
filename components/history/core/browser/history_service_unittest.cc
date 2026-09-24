@@ -1589,6 +1589,70 @@ TEST_F(HistoryServiceTest, GetAllJourneys) {
   EXPECT_THAT(future.Take(), testing::ElementsAre(expected_journey));
 }
 
+TEST_F(HistoryServiceTest, GetJourney) {
+  HistoryService* history = history_service_.get();
+  ASSERT_TRUE(history);
+
+  // When the journey doesn't exist, GetJourney returns nullopt.
+  {
+    base::test::TestFuture<std::optional<journeys::Journey>> future;
+    history->GetJourney("test_journey", future.GetCallback(), &tracker_);
+    EXPECT_EQ(future.Take(), std::nullopt);
+  }
+
+  const GURL visited_url("https://www.example.com/test");
+  const base::Time visit_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  const std::u16string page_title = u"Example Title";
+
+  history->AddPage(visited_url, visit_time, /*context_id=*/0,
+                   /*nav_entry_id=*/0, GURL(), history::RedirectList(),
+                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
+                   VisitResponseCodeCategory::kNot404,
+                   /*did_replace_entry=*/false);
+  history->SetPageTitle(visited_url, page_title);
+
+  const base::Time creation_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  journeys::JourneyRow journey_row(
+      "test_journey", "Example Journey", creation_time,
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*history_entries=*/{journeys::JourneyHistoryEntry(visit_time)});
+
+  const base::Time unvisited_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999));
+  journeys::JourneyRow unresolved_journey_row(
+      "unresolved_journey", "Unresolved Journey", creation_time,
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*history_entries=*/{journeys::JourneyHistoryEntry(unvisited_time)});
+
+  history->ScheduleDBTask(
+      FROM_HERE,
+      std::make_unique<AddJourneysDBTask>(std::vector<journeys::JourneyRow>{
+          journey_row, unresolved_journey_row}),
+      &tracker_);
+
+  {
+    base::test::TestFuture<std::optional<journeys::Journey>> future;
+    history->GetJourney("test_journey", future.GetCallback(), &tracker_);
+    journeys::Journey expected_journey(
+        "test_journey", "Example Journey", creation_time,
+        /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+        /*short_overview=*/std::nullopt,
+        /*visits=*/{journeys::JourneyVisit(visited_url, page_title)});
+    EXPECT_THAT(future.Take(), testing::Optional(expected_journey));
+  }
+
+  // A journey with an unresolvable visit timestamp is not returned.
+  {
+    base::test::TestFuture<std::optional<journeys::Journey>> future;
+    history->GetJourney("unresolved_journey", future.GetCallback(), &tracker_);
+    EXPECT_EQ(future.Take(), std::nullopt);
+  }
+}
+
 // This class mocks the VisitDelegate in HistoryService to ensure that
 // partitioned visited links are not added immediately, but rather are posted to
 // the HistoryBackend before notifying the VisitDelegate.

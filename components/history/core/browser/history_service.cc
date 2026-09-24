@@ -436,6 +436,20 @@ base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentClusters(
       std::move(callback));
 }
 
+base::CancelableTaskTracker::TaskId HistoryService::GetJourney(
+    const std::string& journey_id,
+    GetJourneyCallback callback,
+    base::CancelableTaskTracker* tracker) {
+  TRACE_EVENT0("browser", "HistoryService::GetJourney");
+  CHECK(backend_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReplyWithResult(
+      GetBackendTaskRunner(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::GetJourneyWithVisits, history_backend_,
+                     journey_id),
+      std::move(callback));
+}
+
 base::CancelableTaskTracker::TaskId HistoryService::GetAllJourneys(
     GetAllJourneysCallback callback,
     base::CancelableTaskTracker* tracker) {
