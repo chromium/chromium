@@ -10,6 +10,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -208,6 +209,13 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
         mTitleView = findViewById(R.id.title);
         mDescriptionView = findViewById(R.id.description);
+        // When visible, the description holds the bookmark's origin. Elide the start so that the
+        // registrable domain (eTLD+1) stays visible and a long, deceptive subdomain cannot spoof
+        // the origin.
+        mDescriptionView.setEllipsize(TextUtils.TruncateAt.START);
+        // Ensure IDN hostnames with RTL characters are composed LTR so bidi does not
+        // re-order host components.
+        mDescriptionView.setTextDirection(TextView.TEXT_DIRECTION_LTR);
         mAccessoryViewGroup = findViewById(R.id.custom_content_container);
 
         mLocalBookmarkImageView = findViewById(R.id.local_bookmark_image);

@@ -19,10 +19,13 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
 
 import android.app.Activity;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.accessibility.AccessibilityEvent;
@@ -102,6 +105,10 @@ public class ImprovedBookmarkRowTest {
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
+        // The junit manifest doesn't declare android:supportsRtl, and without it View resolves
+        // every text direction to the legacy FIRST_STRONG default instead of the direction set on
+        // the view. Chrome's manifest does declare it.
+        mActivity.getApplicationInfo().flags |= ApplicationInfo.FLAG_SUPPORTS_RTL;
         mStartImageView =
                 spy(
                         new RoundedCornerImageView(mActivity) {
@@ -175,6 +182,24 @@ public class ImprovedBookmarkRowTest {
         mModel.set(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE, false);
         Assert.assertEquals(
                 View.GONE, mImprovedBookmarkRow.findViewById(R.id.description).getVisibility());
+    }
+
+    @Test
+    public void testDescriptionUrlAntiSpoofAttributes_survivesRebind() {
+        // Rebind a spoof-shaped host through the normal model path, the attributes which keep the
+        // registrable domain (eTLD+1) visible and stop bidi re-ordering must survive it.
+        mModel.set(
+                ImprovedBookmarkRowProperties.DESCRIPTION,
+                "www.paypal.com.attacker.controlled.subdomain.evil.tld");
+        // Measuring is what makes the view resolve its text direction.
+        int rowWidthPx = 1000;
+        mImprovedBookmarkRow.measure(
+                MeasureSpec.makeMeasureSpec(rowWidthPx, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+
+        TextView descriptionView = mImprovedBookmarkRow.findViewById(R.id.description);
+        Assert.assertEquals(TextUtils.TruncateAt.START, descriptionView.getEllipsize());
+        Assert.assertEquals(TextView.TEXT_DIRECTION_LTR, descriptionView.getTextDirection());
     }
 
     @Test

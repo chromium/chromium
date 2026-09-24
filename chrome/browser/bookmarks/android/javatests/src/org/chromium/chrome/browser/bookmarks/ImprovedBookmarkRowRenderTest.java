@@ -217,6 +217,18 @@ public class ImprovedBookmarkRowRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testLongUrlDescription() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mModel.set(
+                                ImprovedBookmarkRowProperties.DESCRIPTION,
+                                "www.paypal.com.attacker.controlled.subdomain.evil.tld"));
+        mRenderTestRule.render(mContentView, "long_url_description");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testDisabled() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(ImprovedBookmarkRowProperties.ENABLED, false));
