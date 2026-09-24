@@ -410,7 +410,8 @@ class AutofillCapturedSitesInteractiveTest
         /*enabled_features=*/
         {{features::kAutofillRequireFocusInFrameForSuggestions, {}},
          {features::debug::kAutofillCapturedSiteTestsUseAutofillFlow, {}},
-         {features::debug::kAutofillServerCommunication, {}}},
+         {features::debug::kAutofillServerCommunication, {}},
+         {features::debug::kAutofillShowTypePredictions, {}}},
         /*disabled_features=*/{});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
