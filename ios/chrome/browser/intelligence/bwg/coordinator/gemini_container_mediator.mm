@@ -406,6 +406,7 @@ class GeminiContainerMediatorTabHelperObserver
   }
 
   [_stateManager transitionToProcessingStatus:processingStatus];
+  [self updatePageContextForLiveProcessingStatus:processingStatus];
 }
 
 - (void)geminiLiveUserDidTapLiveButton {
@@ -784,4 +785,26 @@ class GeminiContainerMediatorTabHelperObserver
   return _stateManager.viewMode == GeminiViewMode::kLive &&
          gemini::IsFeatureAvailable(gemini::Feature::kLive, _profile);
 }
+
+// Updates page context for Gemini Live based on `processingStatus` changes.
+- (void)updatePageContextForLiveProcessingStatus:
+    (GeminiClientMode)processingStatus {
+  if (![self isInGeminiLiveMode]) {
+    return;
+  }
+
+  switch (processingStatus) {
+    case GeminiClientMode::kTranscribing:
+      [self requestActivePageContextGeneration];
+      break;
+    case GeminiClientMode::kResponding:
+      // Update partial page context (i.e., live sharing context label) when
+      // transitioning out of the transcribing (i.e., speaking) state.
+      [self updateFloatyWithPartialPageContext];
+      break;
+    default:
+      break;
+  }
+}
+
 @end

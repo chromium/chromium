@@ -1379,15 +1379,14 @@ void GeminiBrowserAgent::OnProcessingStatusChanged(
     return;
   }
 
+  // The page context updates are now migrated to GeminiContainerMediator.
+  // TODO(crbug.com/562532278): Migrate the metrics recording as well.
   LogLiveStatusTransition(processing_status_, processing_status);
 
   processing_status_ = processing_status;
   switch (processing_status) {
     case ios::provider::GeminiClientMode::kListening:
       LogLiveSessionStartedMetrics();
-      break;
-    case ios::provider::GeminiClientMode::kTranscribing:
-      [gemini_container_mediator_ requestActivePageContextGeneration];
       break;
     case ios::provider::GeminiClientMode::kThinking:
       live_thinking_start_time_ = base::TimeTicks::Now();
@@ -1401,9 +1400,6 @@ void GeminiBrowserAgent::OnProcessingStatusChanged(
         RecordGeminiLiveResponseLatency(latency);
         live_thinking_start_time_ = base::TimeTicks();
       }
-      // Update partial page context (i.e., live sharing context label) when
-      // transitioning out of the transcribing (i.e., speaking) state.
-      [gemini_container_mediator_ updateFloatyWithPartialPageContext];
       break;
     }
     case ios::provider::GeminiClientMode::kDormant:

@@ -67,15 +67,41 @@
 @property(nonatomic, assign) BOOL populateCalled;
 @end
 
-@implementation MediatorFakePageContextWrapper
+@implementation MediatorFakePageContextWrapper {
+  base::OnceCallback<void(PageContextWrapperCallbackResponse)>
+      _completionCallback;
+}
+
+- (instancetype)initWithWebState:(web::WebState*)webState
+                          config:(PageContextWrapperConfig)config
+              completionCallback:
+                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
+                      completionCallback {
+  self = [super initWithWebState:webState
+                          config:config
+              completionCallback:base::DoNothing()];
+  if (self) {
+    _completionCallback = std::move(completionCallback);
+  }
+  return self;
+}
+
 - (instancetype)initWithWebState:(web::WebState*)webState
               completionCallback:
                   (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
                       completionCallback {
-  return [super initWithWebState:webState completionCallback:base::DoNothing()];
+  return [self initWithWebState:webState
+                         config:PageContextWrapperConfigBuilder().Build()
+             completionCallback:std::move(completionCallback)];
 }
+
 - (void)populatePageContextFieldsAsync {
   self.populateCalled = YES;
+  if (_completionCallback) {
+    std::move(_completionCallback)
+        .Run(base::ok(
+            std::make_unique<optimization_guide::proto::PageContext>()));
+  }
 }
 @end
 
@@ -1017,16 +1043,18 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
 
   // Switch to Live mode and transition processing status to `kTranscribing`.
+  // Transitioning to `kTranscribing` requests active page context generation.
   [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
   [mediator_
       didUpdateProcessingStatus:ios::provider::GeminiClientMode::kTranscribing
                       sessionID:@"session"
                  conversationID:@"conv"];
+  EXPECT_EQ(2, ios::provider::GetUpdateActivePageContextCallCount());
 
   // Updating the page context while transcribing in Live mode should be
   // ignored.
   web_state->SetTitle(u"Ignored Title While Transcribing");
-  EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
+  EXPECT_EQ(2, ios::provider::GetUpdateActivePageContextCallCount());
 
   // Transitioning processing status out of `kTranscribing` allows updates
   // again.
@@ -1035,7 +1063,100 @@ TEST_F(GeminiContainerMediatorTest,
                       sessionID:@"session"
                  conversationID:@"conv"];
   web_state->SetTitle(u"Updated Title After Listening");
+  EXPECT_EQ(3, ios::provider::GetUpdateActivePageContextCallCount());
+}
+
+// Test that `didUpdateProcessingStatus` requests full page context generation
+// (`GeneratePageContext`) on `kTranscribing` and updates partial page context
+// (`GetPartialPageContext`) on `kResponding` only when in Gemini Live mode.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidUpdateProcessingStatusUpdatesPageContextInLiveMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kGeminiLive, kPageActionMenu}, {});
+
+  web::FakeWebState* web_state = AppendActiveWebState();
+  web_state->WasShown();
+  web_state->SetCurrentURL(GURL("https://example.com"));
+  web_state->SetContentsMimeType("text/html");
+
+  id mock_wrapper_class = OCMClassMock([PageContextWrapper class]);
+  MediatorFakePageContextWrapper* fake_wrapper =
+      [[MediatorFakePageContextWrapper alloc]
+            initWithWebState:web_state
+          completionCallback:base::DoNothing()];
+  OCMStub([mock_wrapper_class alloc]).andReturn(fake_wrapper);
+
+  id mock_shared_tabs_delegate =
+      OCMProtocolMock(@protocol(GeminiSharedTabsDelegate));
+  mediator_.sharedTabsDelegate = mock_shared_tabs_delegate;
+
+  // In non-Live mode (`kFloaty`), `kTranscribing` and `kResponding` should not
+  // trigger full or partial page context updates.
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kFloaty];
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kTranscribing
+                      sessionID:@"session"
+                 conversationID:@"conv"];
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
+                      sessionID:@"session"
+                 conversationID:@"conv"];
+  EXPECT_FALSE(fake_wrapper.populateCalled);
+  EXPECT_EQ(0, ios::provider::GetUpdateActivePageContextCallCount());
+
+  // Switch to Live mode.
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
+
+  // Transitioning to `kTranscribing` in Live mode requests full page context
+  // generation via `tabHelper->GeneratePageContext`, which completes and calls
+  // `propagatePageContext` with `geminiPageContextComputationState ==
+  // kSuccess`.
+  OCMExpect([mock_shared_tabs_delegate
+      saveActivePageContextToSharedTabs:[OCMArg checkWithBlock:^BOOL(id obj) {
+        GeminiPageContext* context = static_cast<GeminiPageContext*>(obj);
+        return context.geminiPageContextComputationState ==
+                   ios::provider::GeminiPageContextComputationState::kSuccess &&
+               context.uniquePageContext != nullptr;
+      }]]);
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kTranscribing
+                      sessionID:@"session"
+                 conversationID:@"conv"];
+  EXPECT_TRUE(fake_wrapper.populateCalled);
+  EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
+  EXPECT_OCMOCK_VERIFY(mock_shared_tabs_delegate);
+
+  // Reset `populateCalled` to verify subsequent statuses do not trigger full
+  // page context generation.
+  fake_wrapper.populateCalled = NO;
+
+  // Transitioning to `kThinking` does not update page context.
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kThinking
+                      sessionID:@"session"
+                 conversationID:@"conv"];
+  EXPECT_FALSE(fake_wrapper.populateCalled);
+  EXPECT_EQ(1, ios::provider::GetUpdateActivePageContextCallCount());
+
+  // Transitioning to `kResponding` in Live mode updates partial page context
+  // via `tabHelper->GetPartialPageContext` (`geminiPageContextComputationState
+  // == kPending`) without triggering `PageContextWrapper`.
+  OCMExpect([mock_shared_tabs_delegate
+      saveActivePageContextToSharedTabs:[OCMArg checkWithBlock:^BOOL(id obj) {
+        GeminiPageContext* context = static_cast<GeminiPageContext*>(obj);
+        return context.geminiPageContextComputationState ==
+                   ios::provider::GeminiPageContextComputationState::kPending &&
+               context.uniquePageContext != nullptr;
+      }]]);
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
+                      sessionID:@"session"
+                 conversationID:@"conv"];
+  EXPECT_FALSE(fake_wrapper.populateCalled);
   EXPECT_EQ(2, ios::provider::GetUpdateActivePageContextCallCount());
+  EXPECT_OCMOCK_VERIFY(mock_shared_tabs_delegate);
+
+  [mock_wrapper_class stopMocking];
 }
 
 }  // namespace
