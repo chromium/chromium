@@ -13009,8 +13009,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "fusebox_popup_carousel_ui": "true",
-                        "fusebox_popup_use_accordion_ui": "true",
+                        "fusebox_popup_carousel": "true",
+                        "fusebox_popup_use_accordion": "true",
                         "show_bottom_sheet_popup": "true"
                     },
                     "enable_features": [

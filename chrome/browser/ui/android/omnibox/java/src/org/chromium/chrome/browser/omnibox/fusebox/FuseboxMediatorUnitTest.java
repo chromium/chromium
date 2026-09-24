@@ -925,6 +925,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onPlusButtonClicked_togglePopup() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
         Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
 
@@ -951,6 +952,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onPlusButtonClicked_updatesPopupStateSupplier() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
         assertEquals(PopupState.HIDDEN, mPopupStateSupplier.get().intValue());
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertEquals(PopupState.FLOATING, mPopupStateSupplier.get().intValue());
@@ -1020,6 +1022,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testDoubleBeginInput_doesNotReapplyPopupState() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
         mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
         recreateMediator();
 
@@ -1080,6 +1083,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testEndInput_DismissesPopup() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertEquals(PopupState.FLOATING, (int) mModel.get(FuseboxProperties.POPUP_STATE));
 
