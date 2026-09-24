@@ -117,10 +117,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneRequest {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   // When request was actually started.
-  base::Time request_started_at_;
+  base::TimeTicks request_started_at_;
 
   // Absolute time, when it is passed no more retry requests are allowed.
-  base::Time retry_timeout_abs_;
+  base::TimeTicks retry_timeout_abs_;
 
   // Pending retry.
   base::OneShotTimer timezone_request_scheduled_;
