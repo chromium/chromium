@@ -1472,7 +1472,6 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
       DLOG(ERROR) << "AddPageVisit: Adding URL failed: " << url_info.url();
       return std::make_pair(0, 0);
     }
-    UMA_HISTOGRAM_BOOLEAN("History.URLRowAddedAsHidden", url_info.hidden());
     url_info.set_id(url_id);
   }
 
@@ -1543,12 +1542,6 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
   }
 
   if (visit_info.visit_id) {
-    // For redirect chains that end in a 404 visit, the redirect visits are
-    // saved due to the 404 visit. Here, the `response_code_category` is
-    // always for the final navigation in the chain.
-    UMA_HISTOGRAM_BOOLEAN(
-        "History.VisitAddedDueTo404",
-        response_code_category == VisitResponseCodeCategory::k404);
     // Broadcast a notification of the visit.
     NotifyURLVisited(VisitedURLInfo(
         url_info, visit_info, response_code_category, local_navigation_id));

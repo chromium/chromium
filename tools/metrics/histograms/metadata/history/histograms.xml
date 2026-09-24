@@ -2609,18 +2609,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.URLRowAddedAsHidden" enum="Boolean"
-    expires_after="2027-01-24">
-  <owner>svend@chromium.org</owner>
-  <owner>kyraseevers@chromium.org</owner>
-  <summary>
-    Whether a newly added URLRow is hidden. Emitted when a URLRow is added to
-    the History database. Intended to monitor how much the number of hidden rows
-    added increases when saving page visits with HTTP response code 404 to the
-    History database.
-  </summary>
-</histogram>
-
 <histogram name="History.URLTableCount" units="URLs" expires_after="2027-03-21">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
@@ -2628,39 +2616,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Number of rows in urls table in History DB. Metrics are logged on
     initialization of the History DB on 1% of starts.
-  </summary>
-</histogram>
-
-<histogram name="History.VisitAddedDueTo404" enum="Boolean"
-    expires_after="2027-01-31">
-  <owner>svend@chromium.org</owner>
-  <owner>kyraseevers@chromium.org</owner>
-  <summary>
-    Whether a page visit recorded in the History DB was added due to a
-    navigation with an HTTP response code of 404. Visits added due to a 404
-    includes a) 404 visits themselves and b) redirects in chains that end in a
-    404 visit. Recorded after a visit is successfully added to the History DB
-    (because this includes redirects, one user-initiated navigation can result
-    in multiple emissions). Intended to monitor what proportion of newly
-    recorded visits are 404s when saving page visits with HTTP response code 404
-    to the History database. See also
-    `History.VisitedLinks.AdditionCausedBy404`.
-  </summary>
-</histogram>
-
-<histogram name="History.VisitedLinks.AdditionCausedBy404" enum="Boolean"
-    expires_after="2027-01-24">
-  <owner>svend@chromium.org</owner>
-  <owner>kyraseevers@chromium.org</owner>
-  <summary>
-    When we attempt to add a VisitedLink to the in-memory partitioned hashtable,
-    records whether that record is added due to a visit with an HTTP response
-    code 404. Recorded on every attempt to write a VisitedLink entry, including
-    those for redirects (i.e., for a redirect chain ending in a 404, there will
-    be one emission per redirect, all emitted as true, since the 404 is what is
-    causing the redirects' addition to the hashtable). Intended to monitor the
-    proportion of VisitedLink entries that are for 404s, after allowing 404
-    visits to be saved to History. See also `History.VisitAddedDueTo404`.
   </summary>
 </histogram>
 
