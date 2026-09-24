@@ -24,16 +24,39 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_utils.h"
 
 namespace dictation {
 
 namespace {
 constexpr int kVoiceTypingSettingsDisabled = 2;
+
+content::WebContents* GetWebContentsForHotkey(
+    BrowserWindowInterface* active_browser,
+    tabs::TabInterface* active_tab) {
+  if (auto* const browser_view =
+          BrowserView::GetBrowserViewForBrowser(active_browser)) {
+    if (views::FocusManager* const focus_manager =
+            browser_view->GetFocusManager()) {
+      if (auto* const web_view = views::AsViewClass<views::WebView>(
+              focus_manager->GetFocusedView())) {
+        if (content::WebContents* const guest_contents =
+                glic::GetGlicGuestWebContents(web_view->web_contents())) {
+          return guest_contents;
+        }
+      }
+    }
+  }
+  return active_tab->GetContents();
+}
 
 tabs::TabInterface* GetActiveTabFromGlic(content::WebContents* web_contents) {
   if (!glic::IsGlicGuest(web_contents)) {
@@ -309,7 +332,8 @@ void DictationKeyedService::ToggleHotkeyHandler() {
     }
   }
 
-  content::WebContents* web_contents = active_tab->GetContents();
+  content::WebContents* web_contents =
+      GetWebContentsForHotkey(active_browser, active_tab);
   if (!web_contents) {
     return;
   }

@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/dictation/local_hotkey_manager.h"
 #include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/dictation/session_ui.h"
 #include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/dictation/target.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/accelerator_table.h"
 #include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
@@ -54,6 +56,23 @@ std::ostream& operator<<(std::ostream& os,
 }  // namespace content
 
 namespace dictation {
+
+namespace {
+
+// Returns true if `key_event` is the key combination described by
+// `accelerator`.
+bool MatchesAccelerator(const blink::WebKeyboardEvent& key_event,
+                        const ui::Accelerator& accelerator) {
+  if (accelerator.IsEmpty()) {
+    return false;
+  }
+  return key_event.windows_key_code == accelerator.key_code() &&
+         ui::Accelerator::MaskOutKeyEventFlags(
+             ui::WebEventModifiersToEventFlags(key_event.GetModifiers())) ==
+             ui::Accelerator::MaskOutKeyEventFlags(accelerator.modifiers());
+}
+
+}  // namespace
 
 SessionController::SessionController(SessionControllerDelegate& delegate)
     : delegate_(delegate) {
@@ -139,14 +158,20 @@ void SessionController::DidGetUserInteraction(
   // accessibility so it's not treated as typing that ends the stream.
   ui::Accelerator focus_accelerator;
   if (GetAcceleratorForCommandId(IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY,
-                                 &focus_accelerator)) {
-    if (key_event.windows_key_code == focus_accelerator.key_code() &&
-        ui::Accelerator::MaskOutKeyEventFlags(
-            ui::WebEventModifiersToEventFlags(key_event.GetModifiers())) ==
-            ui::Accelerator::MaskOutKeyEventFlags(
-                focus_accelerator.modifiers())) {
-      return;
-    }
+                                 &focus_accelerator) &&
+      MatchesAccelerator(key_event, focus_accelerator)) {
+    return;
+  }
+
+  // Ignore the Dictation hotkey itself. On surfaces where the key event reaches
+  // the renderer before the accelerator is handled (e.g. the Glic side panel),
+  // treating it as typing would end the stream here. ToggleHotkeyHandler()
+  // would then find no attached stream to toggle off and start a new one
+  // instead, so dictation could never be stopped with the hotkey.
+  Profile* const profile = Profile::FromBrowserContext(GetBrowserContext());
+  CHECK(profile);
+  if (MatchesAccelerator(key_event, GetDictationHotkeyFromPrefs(profile))) {
+    return;
   }
 
   // If the user starts typing, end the stream.

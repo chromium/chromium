@@ -15,6 +15,10 @@ class Profile;
 
 namespace dictation {
 
+// Returns the Dictation hotkey from prefs, or an empty accelerator if it is
+// unset or not registrable. Use this so all callers agree on the hotkey.
+ui::Accelerator GetDictationHotkeyFromPrefs(Profile* profile);
+
 // Manages the local hotkey for Dictation.
 // It listens to preference changes and registers the hotkey with standard
 // priority using a delegate.

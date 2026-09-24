@@ -100,6 +100,7 @@ source_set("impl") {
     "//ui/base",
     "//ui/events/blink",
     "//ui/views",
+    "//ui/views/controls/webview",
   ]
 
   if (!is_android) {

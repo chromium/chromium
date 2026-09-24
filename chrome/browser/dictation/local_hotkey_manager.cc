@@ -4,6 +4,9 @@
 
 #include "chrome/browser/dictation/local_hotkey_manager.h"
 
+#include <string>
+
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -12,6 +15,29 @@
 #include "ui/base/accelerators/command.h"
 
 namespace dictation {
+
+ui::Accelerator GetDictationHotkeyFromPrefs(Profile* profile) {
+  CHECK(profile);
+
+  const std::string accelerator_str =
+      profile->GetPrefs()->GetString(prefs::kVoiceTypingHotkey);
+  if (accelerator_str.empty()) {
+    return ui::Accelerator();
+  }
+
+  const ui::Accelerator accelerator =
+      ui::Command::StringToAccelerator(accelerator_str);
+
+  // StringToAccelerator() returns an empty accelerator when the pref can't be
+  // parsed, and it already requires parsed hotkeys to have a modifier. This is
+  // defense in depth: never register a modifier-less hotkey, which would
+  // swallow ordinary keystrokes.
+  if (ui::Accelerator::MaskOutKeyEventFlags(accelerator.modifiers()) == 0) {
+    return ui::Accelerator();
+  }
+
+  return accelerator;
+}
 
 LocalHotkeyManager::LocalHotkeyManager(
     Profile* profile,
@@ -51,21 +77,8 @@ void LocalHotkeyManager::OnHotkeyPrefChanged() {
 void LocalHotkeyManager::UpdateRegistration() {
   hotkey_registration_.reset();
 
-  std::string accelerator_str =
-      profile_->GetPrefs()->GetString(prefs::kVoiceTypingHotkey);
-  if (accelerator_str.empty()) {
-    return;
-  }
-
-  ui::Accelerator accelerator =
-      ui::Command::StringToAccelerator(accelerator_str);
-
+  const ui::Accelerator accelerator = GetDictationHotkeyFromPrefs(profile_);
   if (accelerator.IsEmpty()) {
-    return;
-  }
-
-  // Early return if no valid modifiers are set.
-  if (ui::Accelerator::MaskOutKeyEventFlags(accelerator.modifiers()) == 0) {
     return;
   }
 

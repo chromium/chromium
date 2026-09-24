@@ -18,6 +18,7 @@
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -34,6 +35,7 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_dom_node_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -704,7 +706,13 @@ INSTANTIATE_TEST_SUITE_P(All,
 class DictationGlicBrowserTest : public glic::GlicBrowserTest {
  public:
   DictationGlicBrowserTest()
-      : scoped_feature_list_(CreateEnablingFeatureList()) {}
+      : scoped_feature_list_(CreateEnablingFeatureList()) {
+    // The fieldtrial testing config enables kGlicNoWebview, which changes what
+    // the Glic panel's WebView holds. Pin these tests to the <webview> mode
+    // that currently ships.
+    glic_webview_feature_list_.InitAndDisableFeature(
+        ::features::kGlicNoWebview);
+  }
   ~DictationGlicBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -740,6 +748,7 @@ class DictationGlicBrowserTest : public glic::GlicBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList glic_webview_feature_list_;
 };
 
 // Ensure basic stream setup, state changes, and end work correctly for streams
@@ -867,6 +876,72 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest,
 
   histogram_tester.ExpectUniqueSample(kSessionUrlCategoryHistogramName,
                                       DictationUrlCategory::kGlic, 1);
+
+  dictation_service().EndSession();
+}
+
+IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest,
+                       ToggleHotkeyTargetsFocusedGlicSidePanel) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  content::WebContents* tab_contents = tab->GetContents();
+  ASSERT_TRUE(tab_contents);
+
+  // Navigate the main tab and focus its textarea first so the web page has a
+  // focused editable node.
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+  ASSERT_TRUE(content::NavigateToURL(tab_contents, url));
+  ASSERT_TRUE(content::ExecJs(tab_contents,
+                              "document.getElementById('text_id').focus();"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* frame = tab_contents->GetFocusedFrame();
+    return frame && !frame->GetFocusedDOMNodeId().is_null();
+  }));
+
+  // Open the Glic side panel and focus an input element inside the Glic guest.
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  content::RenderFrameHost* glic_rfh = instance->host().GetGuestMainFrame();
+  ASSERT_TRUE(glic_rfh);
+
+  auto* glic_contents = content::WebContents::FromRenderFrameHost(glic_rfh);
+  ASSERT_TRUE(glic_contents);
+  glic_contents->Focus();
+  content::FocusWebContentsOnFrame(glic_contents, glic_rfh);
+  ASSERT_TRUE(content::ExecJs(glic_rfh, R"(
+    const input = document.createElement('input');
+    input.id = 'glic_input';
+    document.body.appendChild(input);
+    input.focus();
+  )"));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !glic_rfh->GetFocusedDOMNodeId().is_null(); }));
+
+  std::optional<int> expected_glic_node_id =
+      content::GetDOMNodeId(*glic_rfh, "#glic_input");
+  ASSERT_TRUE(expected_glic_node_id.has_value());
+
+  // Triggering the dictation hotkey should target the focused Glic side panel
+  // input box rather than the main tab's input box.
+  dictation_service().ToggleHotkeyHandler();
+
+  SessionController* controller = dictation_service().session_controller();
+  ASSERT_NE(controller, nullptr);
+  StreamProvider* provider = controller->attached_stream_provider();
+  ASSERT_NE(provider, nullptr);
+  ASSERT_NE(provider->GetTarget(), nullptr);
+  EXPECT_EQ(provider->GetTarget()
+                ->global_dom_node_id()
+                .document.AsRenderFrameHostIfValid(),
+            glic_rfh);
+  EXPECT_EQ(provider->GetTarget()->global_dom_node_id().target_element_dom_id,
+            blink::DOMNodeIdType(*expected_glic_node_id));
+
+  // Pressing the hotkey again should stop the active stream in Glic.
+  dictation_service().ToggleHotkeyHandler();
+  EXPECT_EQ(controller->attached_stream_provider(), nullptr);
 
   dictation_service().EndSession();
 }
