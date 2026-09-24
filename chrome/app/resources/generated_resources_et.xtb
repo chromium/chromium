@@ -2629,7 +2629,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3001614333383288217">{COUNT,plural, =0{Ühtegi klaviatuuriklahvi pole kohandatud}=1{Üks kohandatud klaviatuuriklahv}other{{COUNT} kohandatud klaviatuuriklahvi}}</translation>
 <translation id="3002864108328203174">Gemini alumine leht on avatud poolel kõrgusel.</translation>
 <translation id="3003144360685731741">Eelistatud võrgud</translation>
-<translation id="3003152206838282768">Teie Gemini rakenduse ülesannet täidetakse Chrome'is. Värskendusi vaadake Chrome'ist</translation>
+<translation id="3003152206838282768">Teie Gemini rakenduse ülesannet täidetakse Chrome'is. Värskendusi vaadake Chrome'ist.</translation>
 <translation id="3003253259757197230">Teie külastatavad URL-id saadetakse Google'ile, et prognoosida, milliseid saite võiksite järgmisena külastada, ja pakkuda lisateavet lehe kohta, mida külastate</translation>
 <translation id="3003623123441819449">CSS-i vahemälu</translation>
 <translation id="3003967365858406397">Teie telefon <ph name="PHONE_NAME" /> loob privaatse WiFi-ühenduse.</translation>
@@ -5079,7 +5079,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4864805589453749318">Vali vanem, kes annab kooli konto lisamiseks loa.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokeeritud)</translation>
 <translation id="486505726797718946">Mälu salvestatud</translation>
-<translation id="4865526064010209178"><ph name="TASK_TITLE" />: teie Gemini rakenduse ülesannet täidetakse Chrome'is. Värskendusi vaadake Chrome'ist</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: teie Gemini rakenduse ülesannet täidetakse Chrome'is. Värskendusi vaadake Chrome'ist.</translation>
 <translation id="486635084936119914">Teatud failitüübid avatakse pärast allalaadimist automaatselt</translation>
 <translation id="4868284252360267853">See dialoog pole praegu esile tõstetud. Selle dialoogi esiletõstmiseks vajutage klahve Command-Tõstuklahv-Option A.</translation>
 <translation id="4869170227080975044">ChromeOS-i võrguteabe lugemine</translation>
@@ -8285,6 +8285,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7368927539449986686">Saidiotsingu muutmine</translation>
 <translation id="7370592524170198497">Etherneti EAP:</translation>
 <translation id="7374376573160927383">USB-seadmete haldamine</translation>
+<translation id="7375506263741703384">Teie administraator on selle blokeerinud.</translation>
 <translation id="7376124766545122644">Seda linki ei saa kasutada. Enne uuesti proovimist veenduge, et link algaks protokolliga „http://“ või „https://“.</translation>
 <translation id="7376553024552204454">Tõsta hiirekursor esile, kui see liigub</translation>
 <translation id="7377250337652426186">Rohkem kui ühe lehekülje võrra tagasi liikumiseks klõpsake nuppu Tagasi ja hoidke seda all.</translation>

@@ -5696,7 +5696,7 @@
 <translation id="5362741141255528695">選取秘密金鑰檔案。</translation>
 <translation id="536278396489099088">ChromeOS 系統狀態和報告</translation>
 <translation id="5362916924854054326">不要顯示 SharePoint 和 OneDrive 檔案</translation>
-<translation id="5365858324977454035">發生未預期的錯誤，檔案上傳作業失敗。</translation>
+<translation id="5365858324977454035">發生未預期的錯誤，檔案上傳失敗。</translation>
 <translation id="5365881113273618889">你選取的資料夾包含敏感檔案。你確定要將這個資料夾的寫入權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="536638840841140142">無</translation>
 <translation id="5368246151595623328">透過 <ph name="DEVICE_NAME" /> 儲存「<ph name="NETWORK_NAME" />」</translation>
@@ -8268,6 +8268,7 @@
 <translation id="7368927539449986686">編輯網站搜尋引擎</translation>
 <translation id="7370592524170198497">乙太網路 EAP：</translation>
 <translation id="7374376573160927383">管理 USB 裝置</translation>
+<translation id="7375506263741703384">管理員已禁止這項操作</translation>
 <translation id="7376124766545122644">無法使用這個連結，請確認連結的開頭是「http://」或「https://」，然後再試一次。</translation>
 <translation id="7376553024552204454">滑鼠游標移動時醒目顯示</translation>
 <translation id="7377250337652426186">如果要返回的頁數超過 1 頁以上，請點選並按住「返回」按鈕。</translation>

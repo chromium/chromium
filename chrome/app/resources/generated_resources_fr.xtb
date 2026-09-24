@@ -7156,7 +7156,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
         <ph name="EVENT_NAME" /></translation>
-<translation id="6520087076882753524">Vous pouvez afficher et gérer les mots de passe enregistrés dans le Gestionnaire de mots de passe Google</translation>
+<translation id="6520087076882753524">Vous pouvez afficher et gérer les mots de passe enregistrés dans le Gestionnaire de mots de passe de Google</translation>
 <translation id="6520115099532274511"><ph name="SITE" /> souhaite valider votre identité. Saisissez votre code alphanumérique pour le Gestionnaire de mots de passe de Google.</translation>
 <translation id="6520876759015997832">Résultat de recherche <ph name="LIST_POSITION" /> sur <ph name="LIST_SIZE" /> : <ph name="SEARCH_RESULT_TEXT" />. Appuyez sur Entrée pour accéder à la section.</translation>
 <translation id="6521214596282732365">Les sites utilisent généralement vos polices pour que vous puissiez créer du contenu haute fidélité grâce à des outils de conception et de graphisme en ligne</translation>
@@ -8280,6 +8280,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7368927539449986686">Modifier une recherche sur un site</translation>
 <translation id="7370592524170198497">EAP Ethernet :</translation>
 <translation id="7374376573160927383">Gérer les appareils USB</translation>
+<translation id="7375506263741703384">Bloqué par votre administrateur</translation>
 <translation id="7376124766545122644">Impossible d'utiliser ce lien. Vérifiez qu'il commence par "http://" ou "https://", puis réessayez.</translation>
 <translation id="7376553024552204454">Mettre en surbrillance le curseur de la souris lorsqu'il se déplace</translation>
 <translation id="7377250337652426186">Pour revenir en arrière de plus d'une page, cliquez de manière prolongée sur le bouton Retour.</translation>
@@ -10237,7 +10238,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8871043459130124414">S'exécute uniquement après que vous avez cliqué sur l'extension</translation>
 <translation id="8871551568777368300">Épinglé par l'administrateur</translation>
 <translation id="8871696467337989339">Vous utilisez un flag de ligne de commande non pris en charge : <ph name="BAD_FLAG" />. La stabilité et la sécurité en seront affectées.</translation>
-<translation id="8871974300055371298">Paramètres du contenu</translation>
+<translation id="8871974300055371298">Paramètres de contenu</translation>
 <translation id="8872506776304248286">Ouvrir dans l'appli</translation>
 <translation id="8872774989979382243">Le volume est désactivé. Activez le volume.</translation>
 <translation id="887292602123626481">En savoir plus sur les moteurs de recherche par défaut</translation>

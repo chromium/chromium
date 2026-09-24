@@ -2716,7 +2716,7 @@ Wenn die Richtlinie auf „2“ (Deaktiviert) festgelegt wird, ist die Einbindun
 <translation id="2702023190395322609">Empfehlungen zu Medien aktivieren</translation>
 <translation id="2702682139813393777">Erzwingen, dass Windows-Hosts für natives Messaging über cmd.exe gestartet werden</translation>
 <translation id="270582584528242502">Keine Warnung anzeigen, wenn der Nutzer versucht, den Browser zu schließen</translation>
-<translation id="2706209533052022524">„Anprobieren“ ist eine KI-basierte Funktion, mit der Nutzer Bilder von Kleidung, die sie im Web finden, virtuell anprobieren können. Wenn Gemini in Chrome aktiviert ist, erhalten sie außerdem hilfreiche Shopping-Informationen.
+<translation id="2706209533052022524">„Anprobieren“ ist eine KI-basierte Funktion, mit der Nutzer Kleidung, die sie im Web finden, virtuell anprobieren können. Wenn Gemini in Chrome aktiviert ist, erhalten sie außerdem hilfreiche Shopping-Informationen.
 
 „0“ = Die Nutzung der Funktion wird zugelassen, wobei Google relevante Daten zur Verbesserung seiner KI-Modelle verwenden darf. Relevante Daten können je nach Funktion Bilder, Eingaben, Ausgaben, Quellenmaterial und Feedback sein. Diese Daten werden möglicherweise auch manuell überprüft, um KI-Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
 

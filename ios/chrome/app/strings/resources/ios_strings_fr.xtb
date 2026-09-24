@@ -1615,7 +1615,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6196207969502475924">Recherche vocale</translation>
 <translation id="6198252989419008588">Modifier le code</translation>
-<translation id="6210079381482819663">Les onglets inutilisés pendant au moins <ph name="THRESHOLD" /> jours sont déplacés ici. Vous pouvez modifier cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
+<translation id="6210079381482819663">Les onglets inutilisés depuis au moins <ph name="THRESHOLD" /> jours sont déplacés ici. Vous pouvez modifier cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Aucune adresse trouvée</translation>
 <translation id="6218508144653756827">Thème fuchsia</translation>
 <translation id="6218758465102657583">Déplacer la barre d'adresse vers le haut</translation>
@@ -2320,7 +2320,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8385363453480067273">Recherchez ce que vous voyez grâce à Google Lens</translation>
 <translation id="8386068868580335421">Réinitialiser</translation>
 <translation id="8393700583063109961">Envoyer un message</translation>
-<translation id="8393889347136007944">Onglets non utilisés pendant <ph name="THRESHOLD" /> jours</translation>
+<translation id="8393889347136007944">Onglets non utilisés depuis <ph name="THRESHOLD" /> jours</translation>
 <translation id="8395180897620197612">Arrêter la journalisation</translation>
 <translation id="8407669440184693619">Aucun mot de passe trouvé pour ce site</translation>
 <translation id="8407831512155324054">Vos mots de passe semblent sécurisés</translation>
@@ -2480,7 +2480,7 @@ Vous pouvez recommencer à tout moment.</translation>
 <translation id="8856643812068084733">Archives</translation>
 <translation id="8863067612494559785">Envoi sur <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Obtenez un itinéraire et des informations locales depuis Google Maps</translation>
-<translation id="8871974300055371298">Paramètres du contenu</translation>
+<translation id="8871974300055371298">Paramètres de contenu</translation>
 <translation id="8876661425082386199">Vérifier votre connexion</translation>
 <translation id="8877788021141246043">Définis un rappel</translation>
 <translation id="8879604564928138696">Appuyez deux fois pour essayer</translation>

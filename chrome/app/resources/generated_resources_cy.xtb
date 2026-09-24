@@ -6555,7 +6555,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6022659036123304283">Personoleiddio Chrome</translation>
 <translation id="6024317249717725918">Chwilio Ffrâm Fideo gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="6025215716629925253">Olrhain Pentwr</translation>
-<translation id="6026436621921471553">Dadffocysu'r Grŵp Tabiau</translation>
+<translation id="6026436621921471553">Dadffocysu Grŵp Tabiau</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - Mae dyfais USB wedi'i chysylltu</translation>
 <translation id="6027143200498653403">Pan fyddwch yn gofyn cwestiynau am eich hanes, gallwch gael atebion am wybodaeth benodol o dudalen y gwnaethoch chi ymweld â hi</translation>
 <translation id="6027945736510816438">A oeddech chi'n golygu <ph name="WEBSITE" />?</translation>
@@ -7024,7 +7024,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6399675241776343019">Wedi'i wrthod</translation>
 <translation id="6399774419735315745">Ysbiwraig</translation>
 <translation id="6400360390396538896">Bob amser ar <ph name="ORIGIN" /></translation>
-<translation id="6400714103322134861">Dadffocysu'r grŵp tabiau</translation>
+<translation id="6400714103322134861">Dadffocysu grŵp tabiau</translation>
 <translation id="6401118106417399952">EID eich dyfais yw <ph name="EID_NUMBER" /> a rhif cyfresol eich dyfais yw <ph name="SERIAL_NUMBER" />. Gellir defnyddio'r rhifau hyn i helpu i weithredu gwasanaeth.</translation>
 <translation id="6401458660421980302">I anfon y tab hwn i ddyfais arall, mewngofnodwch i Chrome yno</translation>
 <translation id="6402042774506839496">I ddysgu pam, cysylltwch â datblygwr yr ap</translation>
@@ -8301,6 +8301,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7368927539449986686">Golygu chwiliad gwefan</translation>
 <translation id="7370592524170198497">EAP Ether-rwyd:</translation>
 <translation id="7374376573160927383">Rheoli dyfeisiau USB</translation>
+<translation id="7375506263741703384">Rhwystrwyd gan eich gweinyddwr</translation>
 <translation id="7376124766545122644">Methu â defnyddio'r ddolen hon. Gwiriwch fod eich dolen yn dechrau gyda 'http://' neu 'https://' i roi cynnig arall arni.</translation>
 <translation id="7376553024552204454">Amlygwch gyrchwr y llygoden pan fydd yn symud</translation>
 <translation id="7377250337652426186">I fynd yn ôl mwy nag 1 dudalen, cliciwch a dal y botwm Yn ôl.</translation>

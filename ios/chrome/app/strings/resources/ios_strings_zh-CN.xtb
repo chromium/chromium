@@ -1150,7 +1150,7 @@
 <translation id="4742142641516465928">打开“自动填充和密码”</translation>
 <translation id="4742407542027196863">管理密码…</translation>
 <translation id="4744428388659507035">若要将书签同步到所有设备上，请在设置中开启“书签”。</translation>
-<translation id="4746926359847517643">您随时可以从历史记录中重新打开这些标签页。</translation>
+<translation id="4746926359847517643">您可随时从历史记录中重新打开它们。</translation>
 <translation id="4749529195026091676">{count,plural, =1{已导入 {count} 张卡}other{已导入 {count} 张卡}}</translation>
 <translation id="4751645464639803239">打开新的无痕式标签页</translation>
 <translation id="4752348350801431746">关闭安全检查通知…</translation>
@@ -1577,7 +1577,7 @@
 <translation id="6089212833343035912">Google 密码管理工具 PIN 码</translation>
 <translation id="6090760257419195752">已忽略的警告</translation>
 <translation id="6094325891006032858">开启增强型安全浏览功能</translation>
-<translation id="6096965253650248286">已找到 <ph name="COUNT" /> 个</translation>
+<translation id="6096965253650248286">找到 <ph name="COUNT" /> 个</translation>
 <translation id="6099466082815574659">此 iPad 已设置为供儿童使用</translation>
 <translation id="6100617279104942061">您目前登录的账号为 <ph name="USER_EMAIL" />。打开“设置”。</translation>
 <translation id="6100676328067737810">您的数据将保存到 Google 账号 <ph name="USER_EMAIL" /> 中</translation>
@@ -1615,7 +1615,7 @@
 <translation id="6193448654517602979">选择标签页</translation>
 <translation id="6196207969502475924">语音搜索</translation>
 <translation id="6198252989419008588">更改 PIN</translation>
-<translation id="6210079381482819663">连续 <ph name="THRESHOLD" /> 天或更长时间未使用的标签页会被移至此处。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中更改此设置。</translation>
+<translation id="6210079381482819663">连续 <ph name="THRESHOLD" /> 天或更长时间未使用的标签页会被移至此处。您可随时前往<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />进行更改。</translation>
 <translation id="6213281885682386884">未找到任何地址</translation>
 <translation id="6218508144653756827">紫红色主题</translation>
 <translation id="6218758465102657583">将地址栏移到顶部</translation>
@@ -2219,7 +2219,7 @@
 <translation id="8061584726507121204">历史记录</translation>
 <translation id="8065136076319366194">不建议保存</translation>
 <translation id="8065556469005366939">分享标签页，以获得更贴合需求的回答</translation>
-<translation id="8069394452933076548">选择何时将最近未使用的标签页移至“闲置标签页”部分中。</translation>
+<translation id="8069394452933076548">选择何时将最近未使用的标签页移至“闲置标签页”部分。</translation>
 <translation id="8073670137947914548">已下载完毕</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8079530767338315840">重复播放</translation>
@@ -2320,7 +2320,7 @@
 <translation id="8385363453480067273">使用 Google 智能镜头搜索您看到的内容</translation>
 <translation id="8386068868580335421">重置</translation>
 <translation id="8393700583063109961">发送消息</translation>
-<translation id="8393889347136007944"><ph name="THRESHOLD" /> 天未用过的标签页</translation>
+<translation id="8393889347136007944"><ph name="THRESHOLD" /> 天未使用的标签页</translation>
 <translation id="8395180897620197612">停止日志记录</translation>
 <translation id="8407669440184693619">未找到此网站的密码</translation>
 <translation id="8407831512155324054">您的密码看起来安全系数较高</translation>
