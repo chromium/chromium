@@ -374,14 +374,9 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
                                              std::memory_order_relaxed);
 
   if (enable_zapping_) {
-    if constexpr (quarantine_target == QuarantineTarget::kSanitizedObjects) {
-      internal::SecureMemset(
-          slot_start.ToObject(), internal::kFreedByte,
-          allocator_root_->GetSlotUsableSize(size_details, slot_span));
-    } else {
-      internal::SecureMemset(slot_start.ToObject(), internal::kFreedByte,
-                             slot_size);
-    }
+    internal::SecureMemset(
+        slot_start.ToObject(), internal::kFreedByte,
+        allocator_root_->GetSlotUsableSize(size_details, slot_span));
   }
 }
 
