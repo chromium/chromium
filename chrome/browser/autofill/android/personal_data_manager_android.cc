@@ -579,10 +579,9 @@ PersonalDataManagerAndroid::GetIbansForSettings(JNIEnv* env) {
   for (const Iban* iban : payments_data_manager().GetIbans()) {
     j_ibans_list.push_back(CreateJavaIbanFromNative(env, *iban));
   }
-  ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env, "org/chromium/components/autofill/payments/Iban");
-  return base::android::ToTypedJavaArrayOfObjects(env, j_ibans_list,
-                                                  type.obj());
+  return base::android::ToTypedJavaArrayOfObjects(
+      env, j_ibans_list,
+      org_chromium_components_autofill_payments_Iban_clazz(env));
 }
 
 std::string PersonalDataManagerAndroid::AddOrUpdateLocalIban(
@@ -617,10 +616,9 @@ PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
                        return CreateJavaBankAccountFromNative(env,
                                                               bank_account);
                      });
-  ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env, "org/chromium/components/autofill/payments/BankAccount");
-  return base::android::ToTypedJavaArrayOfObjects(env, j_bank_accounts_list,
-                                                  type.obj());
+  return base::android::ToTypedJavaArrayOfObjects(
+      env, j_bank_accounts_list,
+      org_chromium_components_autofill_payments_BankAccount_clazz(env));
 }
 
 bool PersonalDataManagerAndroid::IsAutofillTypeDisabledByEnterprisePolicy(
@@ -706,10 +704,10 @@ PersonalDataManagerAndroid::GetBnplIssuersForSettings(JNIEnv* env) {
                        return CreateBnplIssuerForSettingsFromNative(
                            env, bnpl_issuer);
                      });
-  ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env, "org/chromium/components/autofill/payments/BnplIssuerForSettings");
-  return base::android::ToTypedJavaArrayOfObjects(env, jbnpl_issuers_list,
-                                                  type.obj());
+  return base::android::ToTypedJavaArrayOfObjects(
+      env, jbnpl_issuers_list,
+      org_chromium_components_autofill_payments_BnplIssuerForSettings_clazz(
+          env));
 }
 
 // static
