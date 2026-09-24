@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
 #import <vector>
 
 #import "base/ios/block_types.h"
@@ -45,6 +46,11 @@ enum class AssistantContainerDetent : NSInteger;
 
 // Sets the minimized detent height of the Assistant Container.
 - (void)setAssistantContainerMinimizedDetentHeight:(NSInteger)height;
+
+// Sets the medium detent height of the Assistant Container.
+// If std::nullopt, the default medium detent calculation is used.
+- (void)setAssistantContainerMediumDetentHeight:
+    (std::optional<NSInteger>)height;
 
 // Sets whether the grabber on the Assistant Container is hidden with optional
 // animation.

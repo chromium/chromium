@@ -156,6 +156,30 @@ TEST_F(AssistantContainerViewControllerTest, UpdatesMinimizedDetentHeight) {
   EXPECT_EQ(view_controller_.heightConstraint.constant, new_min_height);
 }
 
+// Test that updating the `mediumDetentHeight` property in points dynamically
+// updates the medium detent height and resets to default when `std::nullopt`.
+TEST_F(AssistantContainerViewControllerTest, UpdatesMediumDetentHeight) {
+  [view_controller_ setDetents:{AssistantContainerDetent::kMedium}];
+
+  constexpr CGFloat kDefaultMediumRatio = 0.5;
+  NSInteger default_medium_height =
+      [view_controller_ absoluteMaxHeight] * kDefaultMediumRatio;
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      default_medium_height);
+
+  constexpr NSInteger kCustomMediumHeight = 350;
+  view_controller_.mediumDetentHeight = kCustomMediumHeight;
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      kCustomMediumHeight);
+
+  view_controller_.mediumDetentHeight = std::nullopt;
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      default_medium_height);
+}
+
 // Tests that specific limits are respected.
 TEST_F(AssistantContainerViewControllerTest, RespectsLimits) {
   [view_controller_ setDetents:{AssistantContainerDetent::kLarge}];

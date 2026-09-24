@@ -57,14 +57,6 @@ constexpr CGFloat kMinTopPadding = 12.0;
 // Default percentage for the medium detent.
 constexpr NSInteger kDefaultMediumDetentPercentage = 50;
 
-// Returns the height for the medium detent, taking into account the
-// experimental setting percentage.
-NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
-  NSInteger percentage =
-      GetAssistantMediumDetentPercentage() ?: kDefaultMediumDetentPercentage;
-  return absoluteMax * (percentage / 100.0);
-}
-
 // Helper function to return the domain passkey used to mutate the layout state.
 inline LayoutStateAssistantPassKey PassKey() {
   return layout_state::AssistantContainerViewControllerPassKeyFactory::
@@ -465,6 +457,17 @@ inline LayoutStateAssistantPassKey PassKey() {
 - (void)setMinimizedDetentHeight:(NSInteger)minimizedDetentHeight {
   _minimizedDetentHeight = minimizedDetentHeight;
   [self updateDetentHeights];
+}
+
+- (void)setMediumDetentHeight:(std::optional<NSInteger>)mediumDetentHeight {
+  if (_mediumDetentHeight == mediumDetentHeight) {
+    return;
+  }
+  _mediumDetentHeight = mediumDetentHeight;
+  [self updateDetentHeights];
+  if (_activeDetent == AssistantContainerDetent::kMedium && _hasAppeared) {
+    [self animateToDetent:AssistantContainerDetent::kMedium];
+  }
 }
 
 - (void)setGuideName:(GuideName*)guideName {
@@ -1318,6 +1321,19 @@ inline LayoutStateAssistantPassKey PassKey() {
       }];
 }
 
+// Computes the height for the medium detent, taking into account optional
+// custom height and experimental setting percentage.
+- (NSInteger)computeMediumDetentHeight {
+  NSInteger absoluteMax = [self absoluteMaxHeight];
+  if (self.mediumDetentHeight.has_value()) {
+    return std::clamp(self.mediumDetentHeight.value(),
+                      self.minimizedDetentHeight, absoluteMax);
+  }
+  NSInteger percentage =
+      GetAssistantMediumDetentPercentage() ?: kDefaultMediumDetentPercentage;
+  return absoluteMax * (percentage / 100.0);
+}
+
 // Recomputes and caches the heights for all active detents.
 - (void)updateDetentHeights {
   _detentHeights[AssistantContainerDetent::kMinimized] = kInvalidDetentHeight;
@@ -1331,7 +1347,7 @@ inline LayoutStateAssistantPassKey PassKey() {
         _detentHeights[detent] = absoluteMax;
         break;
       case AssistantContainerDetent::kMedium:
-        _detentHeights[detent] = GetMediumDetentHeight(absoluteMax);
+        _detentHeights[detent] = [self computeMediumDetentHeight];
         break;
       case AssistantContainerDetent::kMinimized:
         _detentHeights[detent] = self.minimizedDetentHeight;

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <optional>
 #import <vector>
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_animatable.h"
@@ -39,6 +40,10 @@ enum class AssistantContainerDetent : NSInteger;
 // The height to use for the minimized detent. Defaults to
 // kAssistantContainerMinimizedDetentHeight.
 @property(nonatomic, assign) NSInteger minimizedDetentHeight;
+
+// An optional height to use for the medium detent.
+// If specified, `computeMediumDetentHeight` will return this value.
+@property(nonatomic, assign) std::optional<NSInteger> mediumDetentHeight;
 
 // The delegate for the container events.
 @property(nonatomic, weak) id<AssistantContainerDelegate> delegate;

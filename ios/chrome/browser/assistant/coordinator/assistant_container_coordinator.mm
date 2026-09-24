@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_coordinator.h"
 
+#import <optional>
+
 #import "base/check.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
@@ -261,6 +263,13 @@ enum class TransitionState {
   _minimizedDetentHeight = height;
   if (_containerViewController) {
     _containerViewController.minimizedDetentHeight = height;
+  }
+}
+
+- (void)setAssistantContainerMediumDetentHeight:
+    (std::optional<NSInteger>)height {
+  if (_containerViewController) {
+    _containerViewController.mediumDetentHeight = height;
   }
 }
 
