@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!-- TODO(crbug.com/541184524): Used in unit/render tests in downstream CLs
+     until coordinator lands. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:ignore="UnusedResources">
+
+    <ImageView
+        android:id="@+id/autofill_ai_attribution_sheet_logo"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_small"
+        android:src="@drawable/chrome_logo_24dp"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/autofill_ai_attribution_sheet_title"
+        android:accessibilityHeading="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
+        android:gravity="center_horizontal"
+        android:textAlignment="center"
+        android:text="@string/autofill_ai_attribution_bottom_sheet_title"
+        android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/autofill_ai_attribution_sheet_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_medium"
+        android:gravity="center_horizontal"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+</LinearLayout>

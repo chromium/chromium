@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!-- TODO(crbug.com/541184524): Used in unit/render tests in downstream CLs
+     until coordinator lands. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/min_touch_target_size"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/card_container_background"
+    android:foreground="?attr/selectableItemBackground"
+    android:padding="@dimen/autofill_bottom_sheet_spacing_medium"
+    android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
+    android:clickable="true"
+    android:focusable="true"
+    tools:ignore="UnusedResources">
+
+    <ImageView
+        android:id="@+id/source_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="@dimen/autofill_bottom_sheet_spacing_medium"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/source_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textDirection="locale"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        android:importantForAccessibility="no" />
+
+    <ImageView
+        android:id="@+id/source_open_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="@dimen/autofill_bottom_sheet_spacing_extra_small"
+        android:src="@drawable/ic_open_in_new_20dp"
+        android:tint="@macro/default_icon_color_secondary"
+        android:importantForAccessibility="no" />
+</LinearLayout>
