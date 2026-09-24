@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/oscillator_node.h"
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
+#include "third_party/blink/renderer/modules/webaudio/periodic_wave_handler.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
@@ -187,9 +188,9 @@ bool OscillatorHandler::SetInitialType(const String& oscillator_type) {
 }
 
 void OscillatorHandler::SetInitialPeriodicWave(
-    PeriodicWaveImpl* periodic_wave_impl) {
-  DCHECK(periodic_wave_impl);
-  SetPeriodicWave(periodic_wave_impl);
+    PeriodicWaveHandler* periodic_wave_handler) {
+  DCHECK(periodic_wave_handler);
+  SetPeriodicWave(periodic_wave_handler);
 }
 
 scoped_refptr<OscillatorHandler> OscillatorHandler::Create(
@@ -277,7 +278,7 @@ bool OscillatorHandler::SetType(uint8_t type) {
     return false;
   }
 
-  SetPeriodicWave(periodic_wave->impl());
+  SetPeriodicWave(periodic_wave->handler());
   type_ = type;
   return true;
 }
@@ -761,7 +762,7 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   output_bus->ClearSilentFlag();
 }
 
-void OscillatorHandler::SetPeriodicWave(PeriodicWaveImpl* periodic_wave) {
+void OscillatorHandler::SetPeriodicWave(PeriodicWaveHandler* periodic_wave) {
   DCHECK(IsMainThread());
   DCHECK(periodic_wave);
 

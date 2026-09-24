@@ -8,7 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
-#include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
+#include "third_party/blink/renderer/modules/webaudio/periodic_wave_handler.h"
 
 namespace blink {
 

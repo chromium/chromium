@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/oscillator_node.h"
-#include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
+#include "third_party/blink/renderer/modules/webaudio/periodic_wave_handler.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {

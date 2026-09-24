@@ -90,7 +90,7 @@ OscillatorNode* OscillatorNode::Create(BaseAudioContext& context,
                                                     oscillator_type,
                                                     wave_table);
   if (wave_table) {
-    node->GetOscillatorHandler().SetInitialPeriodicWave(wave_table->impl());
+    node->GetOscillatorHandler().SetInitialPeriodicWave(wave_table->handler());
   } else {
     if (!node->GetOscillatorHandler().SetInitialType(oscillator_type)) {
       exception_state.ThrowDOMException(
@@ -157,7 +157,7 @@ AudioParam* OscillatorNode::detune() {
 }
 
 void OscillatorNode::setPeriodicWave(PeriodicWave* wave) {
-  GetOscillatorHandler().SetPeriodicWave(wave->impl());
+  GetOscillatorHandler().SetPeriodicWave(wave->handler());
 }
 
 void OscillatorNode::ReportDidCreate() {
