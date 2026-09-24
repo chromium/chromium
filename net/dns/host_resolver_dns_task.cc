@@ -91,12 +91,13 @@ base::DictValue NetLogResults(const HostResolverDnsTask::Results& results) {
 }
 
 void RecordResolveTimeDiff(const char* histogram_variant,
-                           base::TimeTicks start_time,
                            base::TimeTicks first_record_end_time,
                            base::TimeTicks second_record_end_time) {
-  CHECK_LE(start_time, first_record_end_time);
-  CHECK_LE(first_record_end_time, second_record_end_time);
-  base::TimeDelta diff = second_record_end_time - first_record_end_time;
+  // TimeTicks::Now() (e.g., CLOCK_MONOTONIC on Linux) can slightly go backwards
+  // across CPU cores due to TSC skew. Clamp negative diffs to zero instead of
+  // CHECK-crashing.
+  base::TimeDelta diff = std::max(
+      base::TimeDelta(), second_record_end_time - first_record_end_time);
 
   base::UmaHistogramTimes(
       base::StrCat({"Net.Dns.ResolveTimeDiff2.", histogram_variant}), diff);
@@ -647,15 +648,15 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
     case DnsQueryType::A:
       a_record_end_time_ = now;
       if (!aaaa_record_end_time_.is_null()) {
-        RecordResolveTimeDiff("AAAABeforeA", task_start_time_,
-                              aaaa_record_end_time_, a_record_end_time_);
+        RecordResolveTimeDiff("AAAABeforeA", aaaa_record_end_time_,
+                              a_record_end_time_);
       }
       if (!https_record_end_time_.is_null()) {
         if (aaaa_record_end_time_.is_null()) {
-          RecordResolveTimeDiff("HTTPSBeforeFirstAddress", task_start_time_,
+          RecordResolveTimeDiff("HTTPSBeforeFirstAddress",
                                 https_record_end_time_, a_record_end_time_);
         } else {
-          RecordResolveTimeDiff("HTTPSBeforeLastAddress", task_start_time_,
+          RecordResolveTimeDiff("HTTPSBeforeLastAddress",
                                 https_record_end_time_, a_record_end_time_);
         }
       }
@@ -663,15 +664,15 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
     case DnsQueryType::AAAA:
       aaaa_record_end_time_ = now;
       if (!a_record_end_time_.is_null()) {
-        RecordResolveTimeDiff("ABeforeAAAA", task_start_time_,
-                              a_record_end_time_, aaaa_record_end_time_);
+        RecordResolveTimeDiff("ABeforeAAAA", a_record_end_time_,
+                              aaaa_record_end_time_);
       }
       if (!https_record_end_time_.is_null()) {
         if (a_record_end_time_.is_null()) {
-          RecordResolveTimeDiff("HTTPSBeforeFirstAddress", task_start_time_,
+          RecordResolveTimeDiff("HTTPSBeforeFirstAddress",
                                 https_record_end_time_, aaaa_record_end_time_);
         } else {
-          RecordResolveTimeDiff("HTTPSBeforeLastAddress", task_start_time_,
+          RecordResolveTimeDiff("HTTPSBeforeLastAddress",
                                 https_record_end_time_, aaaa_record_end_time_);
         }
       }
@@ -683,7 +684,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
               ? std::min(a_record_end_time_, aaaa_record_end_time_)
               : std::max(a_record_end_time_, aaaa_record_end_time_);
       if (!first_address_end_time.is_null()) {
-        RecordResolveTimeDiff("AddressRecordBeforeHTTPS", task_start_time_,
+        RecordResolveTimeDiff("AddressRecordBeforeHTTPS",
                               first_address_end_time, now);
       }
       break;
