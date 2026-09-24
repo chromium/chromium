@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -162,7 +161,7 @@ public class MultiInstancePersistentStore {
         getTaskRunner().execute(() -> getAtomicFile().delete());
     }
 
-    static boolean containsMultiWindowModeCycleStartTime() {
+    public static boolean containsMultiWindowModeCycleStartTime() {
         if (sData != null) {
             return sData.hasMultiWindowModeCycleStartTime();
         }
@@ -170,7 +169,7 @@ public class MultiInstancePersistentStore {
                 .contains(MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME);
     }
 
-    static boolean containsMultiWindowModeStartTime(int modeIndex) {
+    public static boolean containsMultiWindowModeStartTime(int modeIndex) {
         if (sData != null) {
             WindowModeData windowModeData = sData.getWindowModesMap().get(modeIndex);
             return windowModeData != null && windowModeData.hasStartTime();
@@ -180,17 +179,6 @@ public class MultiInstancePersistentStore {
                             String.valueOf(modeIndex));
             return getManager().contains(key);
         }
-    }
-
-    @VisibleForTesting
-    static boolean containsMultiWindowModeDurationMs(int modeIndex) {
-        if (sData != null) {
-            WindowModeData windowModeData = sData.getWindowModesMap().get(modeIndex);
-            return windowModeData != null && windowModeData.hasDurationMs();
-        }
-        String durationKey =
-                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_DURATION_MS.createKey(modeIndex);
-        return getManager().contains(durationKey);
     }
 
     static long readMultiWindowStartTime() {
@@ -442,16 +430,16 @@ public class MultiInstancePersistentStore {
         }
     }
 
-    static Set<String> readMultiWindowModeActivities(int modeIndex) {
+    static @Nullable Set<String> readMultiWindowModeActivities(int modeIndex) {
         if (sData != null) {
             WindowModeData windowModeData = sData.getWindowModesMap().get(modeIndex);
             return (windowModeData != null && windowModeData.getActivitiesCount() > 0)
-                    ? Collections.unmodifiableSet(new HashSet<>(windowModeData.getActivitiesList()))
-                    : Collections.emptySet();
+                    ? new HashSet<>(windowModeData.getActivitiesList())
+                    : null;
         }
         String activitiesKey =
                 MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_ACTIVITIES.createKey(modeIndex);
-        return getManager().readStringSet(activitiesKey, Collections.emptySet());
+        return getManager().readStringSet(activitiesKey, null);
     }
 
     static void writeMultiWindowModeActivities(int modeIndex, Set<String> activities) {
@@ -506,6 +494,10 @@ public class MultiInstancePersistentStore {
         }
     }
 
+    static boolean contains(String key) {
+        return getManager().contains(key);
+    }
+
     public static void resetForTesting() {
         sData = null;
         sTaskRunner = null;
@@ -515,6 +507,5 @@ public class MultiInstancePersistentStore {
             sAtomicFile.delete();
             sAtomicFile = null;
         }
-        getManager().getEditor().clear().commit();
     }
 }

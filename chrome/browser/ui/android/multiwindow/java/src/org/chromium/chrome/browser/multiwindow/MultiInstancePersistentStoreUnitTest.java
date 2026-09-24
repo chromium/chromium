@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
@@ -184,18 +185,15 @@ public class MultiInstancePersistentStoreUnitTest {
         int modeIndex = WindowingMode.FULLSCREEN;
         long duration = 33333L;
         // Test default value.
-        assertFalse(MultiInstancePersistentStore.containsMultiWindowModeDurationMs(modeIndex));
         assertEquals(0L, MultiInstancePersistentStore.readMultiWindowModeDurationMs(modeIndex));
 
         // Verify that the value is successfully written to the store.
         MultiInstancePersistentStore.writeMultiWindowModeDurationMs(modeIndex, duration);
-        assertTrue(MultiInstancePersistentStore.containsMultiWindowModeDurationMs(modeIndex));
         assertEquals(
                 duration, MultiInstancePersistentStore.readMultiWindowModeDurationMs(modeIndex));
 
         // Verify that the value is successfully cleared.
         MultiInstancePersistentStore.removeMultiWindowModeDurationMs(modeIndex);
-        assertFalse(MultiInstancePersistentStore.containsMultiWindowModeDurationMs(modeIndex));
         assertEquals(0L, MultiInstancePersistentStore.readMultiWindowModeDurationMs(modeIndex));
     }
 
@@ -207,7 +205,7 @@ public class MultiInstancePersistentStoreUnitTest {
         activities.add("Activity2");
 
         // Test default value.
-        assertTrue(MultiInstancePersistentStore.readMultiWindowModeActivities(modeIndex).isEmpty());
+        assertNull(MultiInstancePersistentStore.readMultiWindowModeActivities(modeIndex));
 
         // Verify that the value is successfully written to the store.
         MultiInstancePersistentStore.writeMultiWindowModeActivities(modeIndex, activities);
@@ -216,6 +214,6 @@ public class MultiInstancePersistentStoreUnitTest {
 
         // Verify that the value is successfully cleared.
         MultiInstancePersistentStore.writeMultiWindowModeActivities(modeIndex, new HashSet<>());
-        assertTrue(MultiInstancePersistentStore.readMultiWindowModeActivities(modeIndex).isEmpty());
+        assertNull(MultiInstancePersistentStore.readMultiWindowModeActivities(modeIndex));
     }
 }
