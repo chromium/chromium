@@ -32,25 +32,30 @@ import {TestRunner} from 'test_runner';
   await UI.Widget.Widget.allUpdatesComplete;
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
+  function getReturnValueProperty() {
+    const treeElement = SourcesTestRunner.findChildPropertyTreeElement(
+        localScope, 'Return value');
+    return UI.Widget.Widget
+        .get(treeElement.titleElement.querySelector('devtools-widget'))
+        .property;
+  }
+
   TestRunner.addResult('Set return value to {a:1}');
-  let returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
-  await returnValueElement.applyExpression('{a:1}');
+  await getReturnValueProperty().setValue('{a:1}');
   await UI.Widget.Widget.allUpdatesComplete;
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
   await UI.Widget.Widget.allUpdatesComplete;
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   TestRunner.addResult('Try to remove return value');
-  returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
-  await returnValueElement.applyExpression('');
+  await getReturnValueProperty().setValue('');
   await UI.Widget.Widget.allUpdatesComplete;
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
   await UI.Widget.Widget.allUpdatesComplete;
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   TestRunner.addResult('Set return value to 239');
-  returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
-  await returnValueElement.applyExpression('239');
+  await getReturnValueProperty().setValue('239');
   await UI.Widget.Widget.allUpdatesComplete;
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
   await UI.Widget.Widget.allUpdatesComplete;

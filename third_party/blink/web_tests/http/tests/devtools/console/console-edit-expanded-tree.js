@@ -38,23 +38,21 @@ import * as Console from 'devtools/panels/console/console.js';
          node = node.traverseNextNode(message.contentElement())) {
       const treeElement =
           UIModule.TreeOutline.TreeElement.getTreeElementBylistItemNode(node);
-      if (treeElement) {
-        if (!treeElement.firstChild() && treeElement.onpopulate) {
-          await treeElement.onpopulate();
-          await UIModule.Widget.Widget.allUpdatesComplete;
-        }
-        if (treeElement.firstChild()) {
-          onTreeElement(treeElement.firstChild());
-          return;
-        }
+      if (treeElement?.firstChild()) {
+        onTreeElement(treeElement.firstChild());
+        return;
       }
     }
   }
 
   function onTreeElement(treeElement) {
-    treeElement.startEditing();
+    const widget = UIModule.Widget.Widget.get(
+        treeElement.titleElement.querySelector('devtools-widget'));
+    widget.startEditing();
     Console.ConsoleView.ConsoleView.instance().viewport.refresh();
-    TestRunner.addResult('After viewport refresh tree element remains in editing mode: ' + !!treeElement.editing);
+    TestRunner.addResult(
+        'After viewport refresh tree element remains in editing mode: ' +
+        !!widget.editing);
     TestRunner.completeTest();
   }
 })();

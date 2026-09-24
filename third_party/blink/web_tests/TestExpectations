@@ -9176,10 +9176,6 @@ crbug.com/549199028 [ Android ] external/wpt/webdriver/tests/bidi/browsing_conte
 crbug.com/540619916 [ Debug Linux ] external/wpt/webdriver/tests/bidi/network/provide_response/body.py [ Failure Pass ]
 crbug.com/562009743 [ Win ] fast/ruby/base-shorter-than-text.html [ Failure Pass ]
 
-# Temporarily disabled for DevTools ObjectPropertiesSection migration
-crbug.com/457388389 http/tests/devtools/console/console-call-getter-on-proto.js [ Failure Pass ]
-crbug.com/457388389 http/tests/devtools/console/console-edit-expanded-tree.js [ Failure Pass ]
-crbug.com/457388389 http/tests/devtools/sources/debugger-pause/set-return-value.js [ Failure Pass ]
 
 # Gardener 2026-09-17
 crbug.com/562895059 external/wpt/streams/readable-byte-streams/crashtests/from-cross-realm.html [ Crash Failure ]

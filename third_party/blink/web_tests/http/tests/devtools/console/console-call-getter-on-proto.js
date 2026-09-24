@@ -37,7 +37,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   function expandTreeElementFilter(treeElement) {
-    return treeElement.property?.name === '[[Prototype]]';
+    return treeElement.listItemElement.dataset.objectPropertyNameForTest ===
+        '[[Prototype]]';
   }
 
   async function step3() {
