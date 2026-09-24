@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -61,7 +62,6 @@ IsExplicitlyRegisteredForElementTiming(const LayoutObject& layout_object) {
 }
 }  // namespace internal
 
-
 AtomicString ImagePaintString() {
   DEFINE_STATIC_LOCAL(const AtomicString, kImagePaint, ("image-paint"));
   return kImagePaint;
@@ -82,6 +82,10 @@ void ImageElementTiming::NotifyImagePaint(
     const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
+  if (paint_timing::ShouldIgnoreImageContentForPaintTiming(layout_object,
+                                                           &media_timing)) {
+    return;
+  }
   Node* node = layout_object.GetNode();
   bool is_image_or_video_element = IsA<HTMLImageElement>(node) ||
                                    IsA<HTMLVideoElement>(node) ||
@@ -258,6 +262,10 @@ void ImageElementTiming::OnFramePresented(
 
 void ImageElementTiming::NotifyImageRemoved(const LayoutObject& layout_object,
                                             const ImageResourceContent* image) {
+  if (paint_timing::ShouldIgnoreImageContentForPaintTiming(layout_object,
+                                                           image)) {
+    return;
+  }
   recorded_images_.erase(MediaRecordId::GenerateHash(&layout_object, image));
 }
 

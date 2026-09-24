@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -198,7 +200,7 @@ TEST_P(ImageElementTimingTest, BackgroundImageRemoved) {
       #target {
         width: 100px;
         height: 100px;
-        background: url(data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==);
+        background: url()HTML" SIMPLE_IMAGE R"HTML();
       }
     </style>
     <div elementtiming="time-my-background-image" id="target"></div>
@@ -259,6 +261,50 @@ TEST_P(ImageElementTimingTest, LateAddedElementTimingAfterPaint) {
   EXPECT_EQ(RecordedImagesSize(), 1u);
   EXPECT_TRUE(IsRecorded("target", image));
   EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+}
+
+TEST_P(ImageElementTimingTest, VideoImage_DefaultPosterIgnored) {
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(SIMPLE_IMAGE));
+  SetBodyInnerHTML(R"HTML(
+    <video id="target" elementtiming="video-et" width="100" height="100"></video>
+  )HTML");
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(RecordedImagesSize(), 0u);
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+}
+
+TEST_P(ImageElementTimingTest,
+       VideoImage_ExplicitPosterRecordedWhenDefaultSet) {
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(SIMPLE_IMAGE));
+  SetBodyInnerHTML(R"HTML(
+    <video id="target" elementtiming="video-et"
+           width="100" height="100"></video>
+  )HTML");
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(RecordedImagesSize(), 0u);
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
+
+  // Changing the poster to an explicit image after the default poster loaded
+  // should record the new explicit poster.
+  Element* video_element = GetElementById("target");
+  ASSERT_TRUE(video_element);
+  video_element->setAttribute(html_names::kPosterAttr,
+                              AtomicString(LARGE_IMAGE));
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(RecordedImagesSize(), 1u);
+  EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
+
+  // Removing the explicit poster attribute reverts to the default poster,
+  // which should remove the explicit poster record and not record the default.
+  video_element->removeAttribute(html_names::kPosterAttr);
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(RecordedImagesSize(), 0u);
 }
 
 }  // namespace blink

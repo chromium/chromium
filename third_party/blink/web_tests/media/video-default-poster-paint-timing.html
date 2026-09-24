@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_test(async t => {
+  assert_implements(window.internals, 'window.internals is required');
+  internals.settings.setDefaultVideoPosterURL('content/abe.png');
+
+  // Preload both images so their resource loads don't race.
+  await Promise.all(['content/abe.png', 'content/greenbox.png'].map(src => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = src;
+    });
+  }));
+
+  const entries = [];
+  const observer = new PerformanceObserver(list => {
+    entries.push(...list.getEntries());
+  });
+  observer.observe({entryTypes: ['largest-contentful-paint', 'element']});
+
+  // 1. Video with default poster (no poster attribute) and elementtiming.
+  // Sized larger (300x300) than videoExplicit so it would win LCP if not filtered.
+  const videoDefault = document.createElement('video');
+  videoDefault.id = 'video-default';
+  videoDefault.setAttribute('elementtiming', 'default-et');
+  videoDefault.width = 300;
+  videoDefault.height = 300;
+  document.body.appendChild(videoDefault);
+
+  // Ensure videoDefault has gone through a rendering update before adding videoExplicit.
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  // 2. Video with explicit poster and elementtiming.
+  const videoExplicit = document.createElement('video');
+  videoExplicit.id = 'video-explicit';
+  videoExplicit.poster = 'content/greenbox.png';
+  videoExplicit.setAttribute('elementtiming', 'explicit-et');
+  videoExplicit.width = 100;
+  videoExplicit.height = 100;
+  document.body.appendChild(videoExplicit);
+
+  // Wait for an LCP entry and the explicit ElementTiming entry.
+  // Do not filter LCP by id here so that if video-default wrongly wins LCP,
+  // step_wait resolves immediately and fails the assertion below instead of timing out.
+  await t.step_wait(() => {
+    const hasLcp = entries.some(e => e.entryType === 'largest-contentful-paint');
+    const hasEt = entries.some(
+        e => e.entryType === 'element' && e.identifier === 'explicit-et');
+    return hasLcp && hasEt;
+  }, 'Wait for LCP and ElementTiming entries');
+
+  // Verify that the default poster was never reported to LCP or ElementTiming,
+  // and that the explicit poster was reported to LCP.
+  const defaultLcp = entries.find(
+      e => e.entryType === 'largest-contentful-paint' &&
+           (e.id === 'video-default' || e.url.includes('abe.png')));
+  const defaultEt = entries.find(
+      e => e.entryType === 'element' &&
+           (e.identifier === 'default-et' || e.url.includes('abe.png')));
+  const explicitLcp = entries.find(
+      e => e.entryType === 'largest-contentful-paint' &&
+           e.id === 'video-explicit');
+
+  assert_equals(defaultLcp, undefined,
+      'Default video poster should not be reported to LargestContentfulPaint');
+  assert_equals(defaultEt, undefined,
+      'Default video poster should not be reported to ElementTiming');
+  assert_not_equals(explicitLcp, undefined,
+      'Explicit video poster should be reported to LargestContentfulPaint');
+}, 'Default video poster image is ignored by LargestContentfulPaint and ElementTiming');
+</script>
+</body>

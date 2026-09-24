@@ -17,6 +17,7 @@ namespace blink {
 class Document;
 class LocalDOMWindow;
 class LocalFrameView;
+class MediaTiming;
 }  // namespace blink
 
 namespace blink::paint_timing {
@@ -38,6 +39,12 @@ CORE_EXPORT cc::HeadsUpDisplayLayer* GetHUDLayerIfContentfulPaintRectsEnabled(
 
 CORE_EXPORT cc::HeadsUpDisplayLayer* GetHUDLayerIfLayoutShiftRectsEnabled(
     LocalFrameView* frame_view);
+
+// Returns whether or not the `media_timing` should be ignored. Currently only
+// `MediaTiming` objects representing the default poster image are ignored.
+CORE_EXPORT bool ShouldIgnoreImageContentForPaintTiming(
+    const LayoutObject& object,
+    const MediaTiming* media_timing);
 
 // Notifies the document loader that performance timing has changed in some way
 // if the window, document, and loader are non-null. Causes the current

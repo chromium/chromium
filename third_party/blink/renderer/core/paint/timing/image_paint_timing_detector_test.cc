@@ -46,23 +46,6 @@
 
 namespace blink {
 
-#define SIMPLE_IMAGE       \
-  "data:image/gif;base64," \
-  "R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-
-#define LARGE_IMAGE                                                            \
-  "data:image/gif;base64,"                                                     \
-  "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSF" \
-  "lzAAAN1wAADdcBQiibeAAAAb5JREFUOMulkr1KA0EQgGdvTwwnYmER0gQsrFKmSy+pLESw9Qm0" \
-  "F/ICNnba+h6iEOuAEWslKJKTOyJJvIT72d1xZuOFC0giOLA77O7Mt/PnNptN+I+49Xr9GhH3f3" \
-  "mb0v1ht9vtLAUYYw5ItkgDL3KyD8PhcLvdbl/WarXT3DjLMnAcR/f7/YfxeKwtgC5RKQVhGILW" \
-  "eg4hQ6hUKjWyucmhLFEUuWR3QYBWAZABQ9i5CCmXy16pVALP80BKaaG+70MQBLvzFMjRKKXh8j" \
-  "6FSYKF7ITdEWLa4/ktokN74wiqjSMpnVcbQZqmEJHz+ckeCPFjWKwULpyspAqhdXVXdcnZcPjs" \
-  "Ign+2BsVA8jVYuWlgJ3yBj0icgq2uoK+lg4t+ZvLomSKamSQ4AI5BcMADtMhyNoSgNIISUaFNt" \
-  "wlazcDcBc4gjjVwCWid2usCWroYEhnaqbzFJLUzAHIXRDChXCcQP8zhkSZ5eNLgHAUzwDcRu4C" \
-  "oIRn/wsGUQIIy4Vr9TH6SYFCNzw4nALn5627K4vIttOUOwfa5YnrDYzt/9OLv9I5l8kk5hZ3XL" \
-  "O20b7tbR7zHLy/BX8G0IeBEM7ZN1NGIaFUaKLgAAAAAElFTkSuQmCC"
-
 #define TRANSPARENT_PLACEHOLDER_IMAGE \
   "data:image/gif;base64,"            \
   "R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
@@ -823,6 +806,69 @@ TEST_P(ImagePaintTimingDetectorTest, VideoImage_ImageNotLoaded) {
   SimulateRenderingAndPresentationTime();
   ImageRecord* record = LargestImage();
   EXPECT_FALSE(record);
+}
+
+TEST_P(ImagePaintTimingDetectorTest, VideoImage_DefaultPosterIgnored) {
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(LARGE_IMAGE));
+  SetMainFrameBodyContent(R"HTML(
+    <video id="target" width="300" height="200"></video>
+  )HTML");
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+  EXPECT_FALSE(LargestImage());
+  EXPECT_EQ(CountImageRecords(), 0u);
+
+  // Verify that a subsequent first video frame is not blocked by the ignored
+  // default poster image.
+  Element* video_element = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(video_element);
+  VideoTiming* video_timing = MakeGarbageCollected<VideoTiming>();
+  video_timing->SetFirstVideoFrameTime(NowTicks());
+  video_timing->SetIsSufficientContentLoadedForPaint();
+  video_timing->SetUrl(KURL("http://test.com/video.mp4"));
+  video_timing->SetContentSizeForEntropy(1024 * 1024);
+
+  SimulateFirstVideoFrame(video_element, video_timing, 300, 200);
+  SimulateRenderingAndPresentationTime();
+  ImageRecord* record = LargestImage();
+  ASSERT_TRUE(record);
+  EXPECT_EQ(record->GetMediaTiming(), video_timing);
+  EXPECT_TRUE(record->HasPaintTime());
+}
+
+TEST_P(ImagePaintTimingDetectorTest,
+       VideoImage_ExplicitPosterRecordedWhenDefaultSet) {
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      AtomicString(SIMPLE_IMAGE));
+  SetMainFrameBodyContent(R"HTML(
+    <video id="target" width="300" height="200"></video>
+  )HTML");
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+  EXPECT_FALSE(LargestImage());
+  EXPECT_EQ(CountImageRecords(), 0u);
+
+  // Changing the poster to an explicit image after the default poster loaded
+  // should record the new explicit poster.
+  Element* video_element = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(video_element);
+  video_element->setAttribute(html_names::kPosterAttr,
+                              AtomicString(LARGE_IMAGE));
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+  ImageRecord* record = LargestImage();
+  ASSERT_TRUE(record);
+  EXPECT_GT(record->EffectiveVisualSize(), 0ul);
+  EXPECT_TRUE(record->HasPaintTime());
+
+  // Removing the explicit poster attribute reverts to the default poster,
+  // which should remove the explicit poster record and not record the default.
+  video_element->removeAttribute(html_names::kPosterAttr);
+  test::RunPendingTasks();
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(CountImageRecords(), 0u);
+  EXPECT_EQ(ContainerTotalSize(), 0u);
 }
 
 TEST_P(ImagePaintTimingDetectorTest, SVGImage) {
