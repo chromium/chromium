@@ -15,12 +15,6 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-@interface TTCAudioSessionManager (Testing)
-- (AVAudioSessionMode)modeForDestination:(TTCAudioOutputDestination)destination;
-- (AVAudioSessionCategoryOptions)categoryOptionsForDestination:
-    (TTCAudioOutputDestination)destination;
-- (void)notifyRouteChanged;
-@end
 
 // Test fake conforming to TTCAudioSessionManagerDelegate for verifying
 // lifecycle, route changes, reconfigurations, and interruption notifications.
@@ -140,8 +134,7 @@ TEST_F(TTCAudioSessionManagerTest, TestConfigureAudioSessionSynchronous) {
 
   AVAudioSession* session = [AVAudioSession sharedInstance];
   EXPECT_NSEQ(session.category, AVAudioSessionCategoryPlayAndRecord);
-  EXPECT_NSEQ(session.mode,
-              [manager_ modeForDestination:manager_.outputDestination]);
+  EXPECT_NSEQ(session.mode, AVAudioSessionModeVideoChat);
 
   auto [route_desc, has_aec] = route_future.Take();
   EXPECT_TRUE(delegate_.didChangeRouteCalled);
@@ -164,55 +157,11 @@ TEST_F(TTCAudioSessionManagerTest, TestConfigureAudioSessionWithCompletion) {
 
   AVAudioSession* session = [AVAudioSession sharedInstance];
   EXPECT_NSEQ(session.category, AVAudioSessionCategoryPlayAndRecord);
-  EXPECT_NSEQ(session.mode,
-              [manager_ modeForDestination:manager_.outputDestination]);
+  EXPECT_NSEQ(session.mode, AVAudioSessionModeVideoChat);
 
   auto [route_desc, has_aec] = route_future.Take();
   EXPECT_TRUE(delegate_.didChangeRouteCalled);
   ASSERT_NE(route_desc, nil);
-}
-
-// Test that modeForDestination maps speaker to VideoChat (for loudspeaker AEC)
-// and earpiece/external to VoiceChat (for VoIP processing).
-TEST_F(TTCAudioSessionManagerTest, TestModeForDestination) {
-  EXPECT_NSEQ([manager_ modeForDestination:TTCAudioOutputDestination::kSpeaker],
-              AVAudioSessionModeVideoChat);
-  EXPECT_NSEQ(
-      [manager_ modeForDestination:TTCAudioOutputDestination::kEarpiece],
-      AVAudioSessionModeVoiceChat);
-  EXPECT_NSEQ(
-      [manager_ modeForDestination:TTCAudioOutputDestination::kExternal],
-      AVAudioSessionModeVoiceChat);
-}
-
-// Test that categoryOptionsForDestination sets DefaultToSpeaker only for
-// speaker, enables Bluetooth and AirPlay for speaker and external, and omits
-// them for earpiece to force receiver routing.
-TEST_F(TTCAudioSessionManagerTest, TestCategoryOptionsForDestination) {
-  AVAudioSessionCategoryOptions speakerOptions = [manager_
-      categoryOptionsForDestination:TTCAudioOutputDestination::kSpeaker];
-  EXPECT_TRUE((speakerOptions & AVAudioSessionCategoryOptionDefaultToSpeaker) !=
-              0);
-  EXPECT_TRUE(
-      (speakerOptions & AVAudioSessionCategoryOptionAllowBluetoothHFP) != 0);
-  EXPECT_TRUE(
-      (speakerOptions & AVAudioSessionCategoryOptionAllowBluetoothA2DP) != 0);
-  EXPECT_TRUE((speakerOptions & AVAudioSessionCategoryOptionAllowAirPlay) != 0);
-
-  AVAudioSessionCategoryOptions earpieceOptions = [manager_
-      categoryOptionsForDestination:TTCAudioOutputDestination::kEarpiece];
-  EXPECT_EQ(earpieceOptions, 0u);
-
-  AVAudioSessionCategoryOptions externalOptions = [manager_
-      categoryOptionsForDestination:TTCAudioOutputDestination::kExternal];
-  EXPECT_FALSE(
-      (externalOptions & AVAudioSessionCategoryOptionDefaultToSpeaker) != 0);
-  EXPECT_TRUE(
-      (externalOptions & AVAudioSessionCategoryOptionAllowBluetoothHFP) != 0);
-  EXPECT_TRUE(
-      (externalOptions & AVAudioSessionCategoryOptionAllowBluetoothA2DP) != 0);
-  EXPECT_TRUE((externalOptions & AVAudioSessionCategoryOptionAllowAirPlay) !=
-              0);
 }
 
 // Test that setting output destination synchronously updates outputDestination
@@ -630,6 +579,228 @@ TEST_F(TTCAudioSessionManagerTest,
   EXPECT_NSEQ(error.domain, kTTCAudioSessionManagerErrorDomain);
   EXPECT_EQ(error.code, static_cast<NSInteger>(
                             TTCAudioSessionManagerErrorCode::kCancelled));
+}
+
+// Test that AVAudioEngineConfigurationChangeNotification requests engine
+// reconfiguration on the delegate.
+TEST_F(TTCAudioSessionManagerTest,
+       TestEngineConfigurationChangeNotificationRequestsReconfiguration) {
+  base::test::TestFuture<void> reconfig_future;
+  delegate_.onReconfigurationRequired =
+      base::CallbackToBlock(reconfig_future.GetCallback());
+
+  @autoreleasepool {
+    AVAudioEngine* engine = [[AVAudioEngine alloc] init];
+    [manager_ registerNotificationObserversWithAudioEngine:engine];
+
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:AVAudioEngineConfigurationChangeNotification
+                      object:engine];
+  }
+
+  EXPECT_TRUE(reconfig_future.Wait());
+  EXPECT_TRUE(delegate_.didRequireReconfigurationCalled);
+}
+
+// Test that AVAudioEngineConfigurationChangeNotification is ignored after
+// the manager has been disconnected.
+TEST_F(TTCAudioSessionManagerTest,
+       TestEngineConfigurationChangeNotificationIgnoredWhenDisconnected) {
+  AVAudioEngine* engine = [[AVAudioEngine alloc] init];
+  [manager_ registerNotificationObserversWithAudioEngine:engine];
+  [manager_ disconnect];
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioEngineConfigurationChangeNotification
+                    object:engine];
+
+  base::test::TestFuture<void> flush_future;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, flush_future.GetCallback());
+  EXPECT_TRUE(flush_future.Wait());
+
+  EXPECT_FALSE(delegate_.didRequireReconfigurationCalled);
+}
+
+// Test that AVAudioEngineConfigurationChangeNotification is not observed when
+// registering with a nil engine.
+TEST_F(TTCAudioSessionManagerTest,
+       TestEngineConfigurationChangeNotificationWithNilEngine) {
+  [manager_ registerNotificationObserversWithAudioEngine:nil];
+
+  AVAudioEngine* engine = [[AVAudioEngine alloc] init];
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioEngineConfigurationChangeNotification
+                    object:engine];
+
+  base::test::TestFuture<void> flush_future;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, flush_future.GetCallback());
+  EXPECT_TRUE(flush_future.Wait());
+
+  EXPECT_FALSE(delegate_.didRequireReconfigurationCalled);
+}
+
+// Test that malformed route change notifications (missing userInfo or reason)
+// are safely ignored without dispatching delegate callbacks.
+TEST_F(TTCAudioSessionManagerTest,
+       TestMalformedRouteChangeNotificationIgnored) {
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioSessionRouteChangeNotification
+                    object:[AVAudioSession sharedInstance]
+                  userInfo:nil];
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioSessionRouteChangeNotification
+                    object:[AVAudioSession sharedInstance]
+                  userInfo:@{}];
+
+  base::test::TestFuture<void> flush_future;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, flush_future.GetCallback());
+  EXPECT_TRUE(flush_future.Wait());
+
+  EXPECT_FALSE(delegate_.didRequireReconfigurationCalled);
+  EXPECT_FALSE(delegate_.didChangeRouteCalled);
+}
+
+// Test that AVAudioSessionRouteChangeNotification with Override reason
+// updates route description without requesting engine reconfiguration.
+TEST_F(TTCAudioSessionManagerTest,
+       TestRouteChangeNotificationWithOverrideDoesNotRequestReconfiguration) {
+  base::test::TestFuture<NSString*, BOOL> route_future;
+  delegate_.onRouteChange = base::CallbackToBlock(route_future.GetCallback());
+
+  NSDictionary* userInfo = @{
+    AVAudioSessionRouteChangeReasonKey :
+        @(AVAudioSessionRouteChangeReasonOverride)
+  };
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioSessionRouteChangeNotification
+                    object:[AVAudioSession sharedInstance]
+                  userInfo:userInfo];
+
+  auto [route_desc, has_aec] = route_future.Take();
+  EXPECT_FALSE(delegate_.didRequireReconfigurationCalled);
+  EXPECT_TRUE(delegate_.didChangeRouteCalled);
+  EXPECT_NSNE(route_desc, nil);
+}
+
+// Test that AVAudioSessionRouteChangeNotification with CategoryChange reason
+// updates route description without requesting engine reconfiguration.
+TEST_F(
+    TTCAudioSessionManagerTest,
+    TestRouteChangeNotificationWithCategoryChangeDoesNotRequestReconfiguration) {
+  base::test::TestFuture<NSString*, BOOL> route_future;
+  delegate_.onRouteChange = base::CallbackToBlock(route_future.GetCallback());
+
+  NSDictionary* userInfo = @{
+    AVAudioSessionRouteChangeReasonKey :
+        @(AVAudioSessionRouteChangeReasonCategoryChange)
+  };
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioSessionRouteChangeNotification
+                    object:[AVAudioSession sharedInstance]
+                  userInfo:userInfo];
+
+  auto [route_desc, has_aec] = route_future.Take();
+  EXPECT_FALSE(delegate_.didRequireReconfigurationCalled);
+  EXPECT_TRUE(delegate_.didChangeRouteCalled);
+  EXPECT_NSNE(route_desc, nil);
+}
+
+// Test that AVAudioSessionRouteChangeNotification with NewDeviceAvailable
+// updates route description without forcing external output if no external
+// output port is connected.
+TEST_F(TTCAudioSessionManagerTest,
+       TestRouteChangeNotificationWithNewDeviceAvailableWithoutExternalOutput) {
+  base::test::TestFuture<NSString*, BOOL> route_future;
+  delegate_.onRouteChange = base::CallbackToBlock(route_future.GetCallback());
+
+  NSDictionary* userInfo = @{
+    AVAudioSessionRouteChangeReasonKey :
+        @(AVAudioSessionRouteChangeReasonNewDeviceAvailable)
+  };
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioSessionRouteChangeNotification
+                    object:[AVAudioSession sharedInstance]
+                  userInfo:userInfo];
+
+  EXPECT_TRUE(route_future.Wait());
+  EXPECT_TRUE(delegate_.didChangeRouteCalled);
+  EXPECT_FALSE(delegate_.didRequireReconfigurationCalled);
+  EXPECT_EQ(manager_.outputDestination, TTCAudioOutputDestination::kSpeaker);
+}
+
+// Test that AVAudioSessionRouteChangeNotification with OldDeviceUnavailable
+// defaults to speaker when no external devices remain connected.
+TEST_F(TTCAudioSessionManagerTest,
+       TestRouteChangeNotificationWithOldDeviceUnavailableDefaultsToSpeaker) {
+  base::test::TestFuture<NSString*, BOOL> route_future;
+  delegate_.onRouteChange = base::CallbackToBlock(route_future.GetCallback());
+
+  NSDictionary* userInfo = @{
+    AVAudioSessionRouteChangeReasonKey :
+        @(AVAudioSessionRouteChangeReasonOldDeviceUnavailable)
+  };
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioSessionRouteChangeNotification
+                    object:[AVAudioSession sharedInstance]
+                  userInfo:userInfo];
+
+  EXPECT_TRUE(route_future.Wait());
+  EXPECT_TRUE(delegate_.didChangeRouteCalled);
+  EXPECT_EQ(manager_.outputDestination, TTCAudioOutputDestination::kSpeaker);
+}
+
+// Test that AVAudioSessionRouteChangeNotification with RouteConfigurationChange
+// requests engine reconfiguration and synchronizes outputDestination to the
+// active session route.
+TEST_F(
+    TTCAudioSessionManagerTest,
+    TestRouteChangeNotificationWithRouteConfigurationChangeSynchronizesDestination) {
+  base::test::TestFuture<void> reconfig_future;
+  base::test::TestFuture<NSString*, BOOL> route_future;
+  delegate_.onReconfigurationRequired =
+      base::CallbackToBlock(reconfig_future.GetCallback());
+  delegate_.onRouteChange = base::CallbackToBlock(route_future.GetCallback());
+
+  NSDictionary* userInfo = @{
+    AVAudioSessionRouteChangeReasonKey :
+        @(AVAudioSessionRouteChangeReasonRouteConfigurationChange)
+  };
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioSessionRouteChangeNotification
+                    object:[AVAudioSession sharedInstance]
+                  userInfo:userInfo];
+
+  EXPECT_TRUE(reconfig_future.Wait());
+  EXPECT_TRUE(route_future.Wait());
+  EXPECT_TRUE(delegate_.didRequireReconfigurationCalled);
+  EXPECT_TRUE(delegate_.didChangeRouteCalled);
+  EXPECT_EQ(manager_.outputDestination, TTCAudioOutputDestination::kSpeaker);
+}
+
+// Test that disconnect unregisters route change observers and ensures no
+// callbacks are delivered afterwards.
+TEST_F(TTCAudioSessionManagerTest, TestDisconnectRemovesRouteChangeObserver) {
+  [manager_ disconnect];
+
+  NSDictionary* userInfo = @{
+    AVAudioSessionRouteChangeReasonKey :
+        @(AVAudioSessionRouteChangeReasonNewDeviceAvailable)
+  };
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:AVAudioSessionRouteChangeNotification
+                    object:[AVAudioSession sharedInstance]
+                  userInfo:userInfo];
+
+  base::test::TestFuture<void> flush_future;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, flush_future.GetCallback());
+  EXPECT_TRUE(flush_future.Wait());
+
+  EXPECT_FALSE(delegate_.didRequireReconfigurationCalled);
+  EXPECT_FALSE(delegate_.didChangeRouteCalled);
 }
 
 }  // namespace

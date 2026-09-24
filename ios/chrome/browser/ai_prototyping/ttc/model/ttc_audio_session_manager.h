@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class AVAudioEngine;
 @class AVAudioSessionPortDescription;
 @protocol TTCAudioSessionManagerDelegate;
 
@@ -136,6 +137,13 @@ enum class TTCAudioOutputDestination : NSInteger {
 // accessory if connected or handset earpiece.
 // @param error Populated with any error encountered while updating the session.
 - (BOOL)setOutputOverriddenToSpeaker:(BOOL)forceSpeaker error:(NSError**)error;
+
+// Registers notification observers for session route changes and interruptions.
+// If `engine` is non-nil, also registers for engine configuration changes.
+// Calling this method unregisters any previously registered observers.
+// @param engine Audio engine to observe for configuration changes, or nil if
+//     only session-level notifications are needed.
+- (void)registerNotificationObserversWithAudioEngine:(AVAudioEngine*)engine;
 
 // Tears down the audio session manager, cancelling any in-flight startup tasks
 // and restoring the prior audio session configuration.

@@ -134,6 +134,25 @@ NSError* CreateCancelledError() {
                       }];
 }
 
+// Returns the audio output destination corresponding to `port`.
+// @param port The audio session port description to inspect, or nil.
+// @return The matching destination, defaulting to `kSpeaker` if `port` is nil
+//     or an unrecognized port type.
+TTCAudioOutputDestination DestinationForPort(
+    AVAudioSessionPortDescription* port) {
+  if (!port) {
+    return TTCAudioOutputDestination::kSpeaker;
+  }
+  NSString* portType = port.portType;
+  if (IsExternalPortType(portType)) {
+    return TTCAudioOutputDestination::kExternal;
+  }
+  if ([portType isEqualToString:AVAudioSessionPortBuiltInReceiver]) {
+    return TTCAudioOutputDestination::kEarpiece;
+  }
+  return TTCAudioOutputDestination::kSpeaker;
+}
+
 }  // namespace
 
 @interface TTCAudioSessionManager ()
@@ -184,11 +203,7 @@ NSError* CreateCancelledError() {
           {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     }
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(handleInterruptionNotification:)
-               name:AVAudioSessionInterruptionNotification
-             object:[AVAudioSession sharedInstance]];
+    [self registerNotificationObserversWithAudioEngine:nil];
   }
   return self;
 }
@@ -197,9 +212,9 @@ NSError* CreateCancelledError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _isDisconnected = YES;
   _delegate = nil;
-  _cachedExternalOutputPort = nil;
+  [self clearCachedExternalOutputPort];
   _outputDestination = TTCAudioOutputDestination::kSpeaker;
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self unregisterNotificationObservers];
   [self restoreAudioSessionCategoryInternal];
 }
 
@@ -258,6 +273,44 @@ NSError* CreateCancelledError() {
 }
 
 #pragma mark - Public
+
+- (void)registerNotificationObserversWithAudioEngine:(AVAudioEngine*)engine {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_isDisconnected) {
+    return;
+  }
+  [self unregisterNotificationObservers];
+
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self
+             selector:@selector(handleRouteChangeNotification:)
+                 name:AVAudioSessionRouteChangeNotification
+               object:nil];
+  [center addObserver:self
+             selector:@selector(handleInterruptionNotification:)
+                 name:AVAudioSessionInterruptionNotification
+               object:nil];
+  if (engine) {
+    [center addObserver:self
+               selector:@selector(handleEngineConfigurationChangeNotification:)
+                   name:AVAudioEngineConfigurationChangeNotification
+                 object:engine];
+  }
+}
+
+- (void)unregisterNotificationObservers {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center removeObserver:self
+                    name:AVAudioSessionRouteChangeNotification
+                  object:nil];
+  [center removeObserver:self
+                    name:AVAudioSessionInterruptionNotification
+                  object:nil];
+  [center removeObserver:self
+                    name:AVAudioEngineConfigurationChangeNotification
+                  object:nil];
+}
 
 - (NSError*)configureAudioSession {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
@@ -514,6 +567,13 @@ NSError* CreateCancelledError() {
 }
 
 #pragma mark - Private
+
+// Invalidates the cached external output descriptor when an accessory is
+// disconnected or during teardown to prevent routing to stale hardware ports.
+- (void)clearCachedExternalOutputPort {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  _cachedExternalOutputPort = nil;
+}
 
 // Returns destination based on speaker override state and connected devices.
 // @param forceSpeaker YES if speaker output is explicitly requested.
@@ -807,6 +867,123 @@ NSError* CreateCancelledError() {
 }
 
 #pragma mark - Notifications
+
+// Handles AVAudioSessionRouteChangeNotification received from AVFoundation on
+// arbitrary CoreAudio notification threads, validating the payload and
+// dispatching to the UI thread.
+// @param notification The route change notification posted by AVFoundation.
+- (void)handleRouteChangeNotification:(NSNotification*)notification {
+  if (!web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
+    return;
+  }
+
+  NSDictionary* userInfo = notification.userInfo;
+  NSNumber* reasonValue = userInfo[AVAudioSessionRouteChangeReasonKey];
+  if (!reasonValue) {
+    return;
+  }
+  AVAudioSessionRouteChangeReason reason =
+      static_cast<AVAudioSessionRouteChangeReason>(
+          [reasonValue unsignedIntegerValue]);
+
+  __weak TTCAudioSessionManager* weakSelf = self;
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf handleRouteChangeWithReason:reason];
+      }));
+}
+
+// Handles an audio route change on the UI thread for the specified reason.
+// Adapts destination for new/removed devices, and notifies the delegate.
+// @param reason The route change reason reported by AVFoundation.
+- (void)handleRouteChangeWithReason:(AVAudioSessionRouteChangeReason)reason {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_isDisconnected) {
+    return;
+  }
+
+  if (reason == AVAudioSessionRouteChangeReasonNewDeviceAvailable) {
+    AVAudioSessionPortDescription* externalOutput =
+        [self connectedExternalOutputPort];
+    if (externalOutput) {
+      _cachedExternalOutputPort = externalOutput;
+      [self setOutputDestination:TTCAudioOutputDestination::kExternal
+                      completion:nil];
+    } else {
+      [self notifyRouteChanged];
+    }
+  } else if (reason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
+    if (!self.isExternalOutputConnected) {
+      [self clearCachedExternalOutputPort];
+      [self setOutputDestination:TTCAudioOutputDestination::kSpeaker
+                      completion:nil];
+    } else {
+      [self notifyRouteChanged];
+    }
+  } else {
+    // Port overrides and audio category updates should not trigger
+    // engine reconfigurations, which cause audio dropouts and spurious
+    // port override resets.
+    if (reason == AVAudioSessionRouteChangeReasonOverride ||
+        reason == AVAudioSessionRouteChangeReasonCategoryChange) {
+      [self notifyRouteChanged];
+      return;
+    }
+
+    AVAudioSession* session = [AVAudioSession sharedInstance];
+    AVAudioSessionPortDescription* activeOutput =
+        session.currentRoute.outputs.firstObject;
+    TTCAudioOutputDestination activeDestination =
+        DestinationForPort(activeOutput);
+
+    if (activeDestination != self.outputDestination) {
+      if (activeDestination == TTCAudioOutputDestination::kExternal) {
+        _cachedExternalOutputPort = activeOutput;
+      }
+      [self setOutputDestination:activeDestination completion:nil];
+      return;
+    }
+
+    if (activeDestination == TTCAudioOutputDestination::kExternal &&
+        activeOutput) {
+      _cachedExternalOutputPort = activeOutput;
+    }
+
+    [self notifyRouteChanged];
+    // A route change with the same logical destination may indicate a hardware
+    // parameter change (e.g. sample rate or channel layout) requiring audio
+    // engine reconfiguration.
+    [self notifyEngineReconfigurationRequested];
+  }
+}
+
+// Handles an audio engine configuration change on the UI thread.
+// Notifies the delegate that the engine's audio graph requires reconfiguration.
+- (void)handleEngineConfigurationChange {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_isDisconnected) {
+    return;
+  }
+  [self notifyEngineReconfigurationRequested];
+}
+
+// Handles AVAudioEngineConfigurationChangeNotification received from
+// AVFoundation when the audio engine's hardware configuration changes.
+// Stops the engine's audio graph and requires rebuilding or restarting taps.
+// @param notification The configuration change notification posted by
+// AVAudioEngine.
+- (void)handleEngineConfigurationChangeNotification:
+    (NSNotification*)notification {
+  if (!web::WebThread::IsThreadInitialized(web::WebThread::UI)) {
+    return;
+  }
+
+  __weak TTCAudioSessionManager* weakSelf = self;
+  web::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf handleEngineConfigurationChange];
+      }));
+}
 
 // Handles AVAudioSessionInterruptionNotification received from AVFoundation on
 // arbitrary CoreAudio notification threads, validating the payload and
