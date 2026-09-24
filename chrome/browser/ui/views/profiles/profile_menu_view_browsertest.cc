@@ -1129,7 +1129,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, AccountPreferenceSubtitle) {
   OpenProfileMenu();
 
   std::optional<std::string> expected_subtitle =
-      signin::GetAccountPreviewPromoSubtitle(pref);
+      signin::GetAccountPreviewProfileMenuSubtitle(account_info_.email, pref);
   ASSERT_TRUE(expected_subtitle.has_value());
 
   auto get_labels = [](views::View* root,
