@@ -39,6 +39,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -100,6 +101,8 @@ public class ActorOverlayCoordinatorTest {
     private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
     private UserDataHost mUserDataHost;
     private SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
+            ObservableSuppliers.createNonNull(false);
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -180,6 +183,7 @@ public class ActorOverlayCoordinatorTest {
                         mBackPressHandlerRegistry,
                         mLayoutManagerSupplier,
                         mProfileSupplier,
+                        mOmniboxFocusStateSupplier,
                         mSideUiStateProvider);
         mLayoutManagerSupplier.set(mLayoutManager);
     }
@@ -767,6 +771,38 @@ public class ActorOverlayCoordinatorTest {
     }
 
     @Test
+    public void testOmniboxFocusHidesOverlayAndTakeOverButton() {
+        mCurrentTabSupplier.set(mTab);
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+
+        UiTabState activeState =
+                new UiTabState(
+                        TAB_ID,
+                        new ActorOverlayState(true, false, false),
+                        new HandoffButtonState(true, 0),
+                        0,
+                        false);
+        mTabController.onUiTabStateChange(activeState);
+
+        PropertyModel model = mCoordinator.getModelForTesting();
+        Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
+        Assert.assertTrue(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+
+        // Focusing the omnibox draws the suggestions list above the overlay, so the overlay glow
+        // and the handoff button must be suppressed.
+        mOmniboxFocusStateSupplier.set(true);
+
+        Assert.assertFalse(model.get(ActorOverlayProperties.VISIBLE));
+        Assert.assertFalse(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+
+        // Unfocusing restores both.
+        mOmniboxFocusStateSupplier.set(false);
+
+        Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
+        Assert.assertTrue(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+    }
+
+    @Test
     public void testButtonDrawnFirstThenOverlayDrawn() {
         mCurrentTabSupplier.set(mTab);
 
@@ -1008,6 +1044,7 @@ public class ActorOverlayCoordinatorTest {
                         mBackPressHandlerRegistry,
                         mLayoutManagerSupplier,
                         mProfileSupplier,
+                        mOmniboxFocusStateSupplier,
                         /* sideUiStateProvider= */ null);
 
         PropertyModel model = coordinator.getModelForTesting();

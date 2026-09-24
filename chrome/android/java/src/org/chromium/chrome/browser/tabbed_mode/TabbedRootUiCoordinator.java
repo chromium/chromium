@@ -1491,6 +1491,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mLayoutManagerSupplier,
                             actorOverlayStub,
                             mActivityLifecycleDispatcher,
+                            getOmniboxFocusStateSupplier(),
                             mSideUiStateProviderSupplier.get());
         }
 

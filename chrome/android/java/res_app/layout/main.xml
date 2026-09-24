@@ -113,12 +113,6 @@ found in the LICENSE file.
             app:inflatedId="@+id/ntp_realbox_results_container"
             app:layout="@layout/suggestions_result_container" />
 
-        <org.chromium.chrome.browser.ui.BottomContainer
-            android:id="@+id/bottom_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom" />
-
         <!-- Toolbar size area painted black to avoid the action bar showing the window background -->
         <View
             android:id="@+id/action_bar_black_background"
@@ -151,14 +145,21 @@ found in the LICENSE file.
             android:layout_height="wrap_content" />
 
         <!-- Must stay after control_container_stub so the Actor handoff button can straddle the
-             line of death, and before bottom_app_bar_container_stub so the overlay does not cover
-             the bottom bar, tab switcher, messages, or bottom sheet. -->
+             line of death, and before bottom_container and bottom_app_bar_container_stub so the
+             overlay does not cover snackbars, the bottom bar, tab switcher, messages, or bottom
+             sheet. -->
         <ViewStub
             android:id="@+id/actor_overlay_stub"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inflatedId="@+id/actor_overlay"
             android:layout="@layout/actor_overlay" />
+
+        <org.chromium.chrome.browser.ui.BottomContainer
+            android:id="@+id/bottom_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom" />
 
         <ViewStub
             android:id="@+id/bottom_app_bar_container_stub"

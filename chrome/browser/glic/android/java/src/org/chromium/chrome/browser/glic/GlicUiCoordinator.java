@@ -9,6 +9,7 @@ import android.view.ViewStub;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -52,6 +53,7 @@ public class GlicUiCoordinator implements Destroyable {
      * @param layoutManagerSupplier Supplier for the {@link LayoutManager}.
      * @param overlayStub The {@link ViewStub} to inflate the overlay into.
      * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events.
+     * @param omniboxFocusStateSupplier Supplier for whether the omnibox currently has focus.
      * @param sideUiStateProvider The {@link SideUiStateProvider} providing state on the side UI.
      */
     public GlicUiCoordinator(
@@ -67,6 +69,7 @@ public class GlicUiCoordinator implements Destroyable {
             MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             ViewStub overlayStub,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @Nullable SideUiStateProvider sideUiStateProvider) {
         mActivity = activity;
 
@@ -80,6 +83,7 @@ public class GlicUiCoordinator implements Destroyable {
                         backPressHandlerRegistry,
                         layoutManagerSupplier,
                         profileSupplier,
+                        omniboxFocusStateSupplier,
                         sideUiStateProvider);
 
         mActorTaskHelper =

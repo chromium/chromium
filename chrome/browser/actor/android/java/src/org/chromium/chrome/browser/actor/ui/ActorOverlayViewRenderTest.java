@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
@@ -85,6 +86,8 @@ public class ActorOverlayViewRenderTest {
     private ActorOverlayCoordinator mCoordinator;
     private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
     private SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
+            ObservableSuppliers.createNonNull(false);
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
     private FrameLayout mParentView;
 
@@ -128,6 +131,7 @@ public class ActorOverlayViewRenderTest {
                                     mBackPressHandlerRegistry,
                                     mLayoutManagerSupplier,
                                     mProfileSupplier,
+                                    mOmniboxFocusStateSupplier,
                                     mSideUiStateProvider);
                 });
     }
