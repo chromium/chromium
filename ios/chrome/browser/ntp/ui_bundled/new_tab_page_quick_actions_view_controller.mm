@@ -4,56 +4,45 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 
-#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_button_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 
+using ntp_tiles::AimButtonRefactorArm;
+
 // The spacing in points between the buttons.
-const CGFloat kButtonStackViewSpacing = 8.0;
+constexpr CGFloat kButtonStackViewSpacing = 8.0;
 
 // The height for the quick actions button row.
 constexpr CGFloat kQuickActionsHeight = 44.0;
 constexpr CGFloat kQuickActionsHeightUICleanup = 50.0;
 
-// The border radius for a quick action button.
-const CGFloat kButtonCornerRadius = 24.0;
+// Width ratio of the leading quick action button to the total width of the
+// quick actions row when there are three (3) buttons in the row.
+constexpr CGFloat kLeadingActionWidthFactor = 0.5;
 
-// The size of the quick actions symbols.
-constexpr CGFloat kSymbolPointSize = 18.0;
-constexpr CGFloat kSymbolPointSizeUICleanup = 14.0;
+// The horizontal inset margin for the button stack view in a regular x regular
+// size class.
+constexpr CGFloat kHorizontalInsetRegularXRegular = 36.0;
 
-// The maximum font size for the quick actions button.
-const CGFloat kMaximumFontSize = 20.0;
-
-// The color used to match the fakebox background.
-NSString* const kFakeboxMatchingBackgroundColor =
-    @"fake_omnibox_bottom_gradient_color";
-
-// Returns the color needed for the background of the button.
-UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
-  if (color_palette) {
-    return color_palette.omniboxColor;
+// Returns the leading margin for the button stack based on the window's size
+// class.
+CGFloat HorizontalInsetForQuickActions(
+    id<UITraitEnvironment> trait_environment) {
+  if (!IsNewTabPageUICleanupEnabled()) {
+    return 0.0;
   }
-  if (IsNewTabPageUICleanupEnabled()) {
-    return [UIColor colorNamed:kNTPQuickActionChipColor];
-  }
-  return [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
+  return IsRegularXRegularSizeClass(trait_environment)
+             ? kHorizontalInsetRegularXRegular
+             : 0.0;
 }
 
 }  // namespace
@@ -61,47 +50,35 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
 @implementation NewTabPageQuickActionsViewController {
   // The stack view containing the quick actions buttons.
   UIStackView* _buttonStackView;
+
+  // Quick action buttons.
+  UIButton* _aimButton;
+  UIButton* _aimImageGenerationButton;
+  UIButton* _aimAttachImageButton;
+  UIButton* _incognitoSearchButton;
+
+  // Constraints for the leading and trailing edges of the `_buttonStackView`.
+  NSLayoutConstraint* _stackViewLeadingConstraint;
+  NSLayoutConstraint* _stackViewTrailingConstraint;
+}
+
+#pragma mark - Accessors & Mutators
+
+- (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
+  if (layoutGuideCenter == _layoutGuideCenter) {
+    return;
+  }
+  _layoutGuideCenter = layoutGuideCenter;
+  if (_aimButton) {
+    [_layoutGuideCenter referenceView:_aimButton underName:kNTPAIMButtonGuide];
+  }
 }
 
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  _buttonStackView = [self createButtonStackView];
-  [self.view addSubview:_buttonStackView];
-
-  AddSameConstraints(_buttonStackView, self.view);
-  [NSLayoutConstraint activateConstraints:@[
-    [_buttonStackView.heightAnchor
-        constraintEqualToConstant:IsNewTabPageUICleanupEnabled()
-                                      ? kQuickActionsHeightUICleanup
-                                      : kQuickActionsHeight],
-  ]];
-
-  if (IsAimEnabledInNtp()) {
-    _aimButton =
-        [self createButtonWithSymbol:SymbolMagnifyingglassSpark
-                               title:l10n_util::GetNSString(
-                                         IDS_IOS_NTP_QUICK_ACTIONS_AIM)];
-    [_buttonStackView addArrangedSubview:_aimButton];
-    [self.layoutGuideCenter referenceView:_aimButton
-                                underName:kNTPAIMButtonGuide];
-  }
-
-  _incognitoButton =
-      [self createButtonWithSymbol:SymbolIncognito
-                             title:l10n_util::GetNSString(
-                                       IDS_IOS_NTP_QUICK_ACTIONS_INCOGNITO)];
-  [_buttonStackView addArrangedSubview:_incognitoButton];
-
-  [self setupQuickActionsButtonsAccessibility];
-
-  [_incognitoButton addTarget:self
-                       action:@selector(openIncognitoSearch)
-             forControlEvents:UIControlEventTouchUpInside];
-  [_aimButton addTarget:self
-                 action:@selector(openAIM)
-       forControlEvents:UIControlEventTouchUpInside];
+  [self createSubviews];
 }
 
 - (CGSize)preferredContentSize {
@@ -113,90 +90,157 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
 
 #pragma mark - Private
 
-- (void)setupQuickActionsButtonsAccessibility {
-  _incognitoButton.accessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_ACCNAME_NEW_INCOGNITO_TAB);
-  _incognitoButton.accessibilityIdentifier = kNTPIncognitoQuickActionIdentifier;
+// Creates the subviews for the Quick Actions row.
+- (void)createSubviews {
+  switch (ntp_tiles::GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kDisabled: {
+      _buttonStackView = [self createButtonStackView];
+      _aimButton = [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:YES];
+      _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory
+          incognitoSearchButtonWithTitle:YES];
+      [_buttonStackView addArrangedSubview:_aimButton];
+      [_buttonStackView addArrangedSubview:_incognitoSearchButton];
+      _buttonStackView.distribution = UIStackViewDistributionFillEqually;
+      break;
+    }
+    case AimButtonRefactorArm::kImageGenerationQuickAction: {
+      _buttonStackView = [self createButtonStackView];
+      _aimButton = [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:YES];
+      _aimImageGenerationButton =
+          [NewTabPageQuickActionsButtonFactory aimImageGenerationButton];
+      _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory
+          incognitoSearchButtonWithTitle:NO];
+      [_buttonStackView addArrangedSubview:_aimButton];
+      [_buttonStackView addArrangedSubview:_aimImageGenerationButton];
+      [_buttonStackView addArrangedSubview:_incognitoSearchButton];
+      _buttonStackView.distribution = UIStackViewDistributionFill;
+      [NSLayoutConstraint activateConstraints:@[
+        [_aimButton.widthAnchor
+            constraintEqualToAnchor:_buttonStackView.widthAnchor
+                         multiplier:kLeadingActionWidthFactor],
+        [_aimImageGenerationButton.widthAnchor
+            constraintEqualToAnchor:_incognitoSearchButton.widthAnchor],
+      ]];
+      break;
+    }
+    case AimButtonRefactorArm::kAttachImageQuickAction: {
+      _buttonStackView = [self createButtonStackView];
+      _aimButton = [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:YES];
+      _aimAttachImageButton =
+          [NewTabPageQuickActionsButtonFactory aimAttachImageButton];
+      _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory
+          incognitoSearchButtonWithTitle:NO];
+      [_buttonStackView addArrangedSubview:_aimButton];
+      [_buttonStackView addArrangedSubview:_aimAttachImageButton];
+      [_buttonStackView addArrangedSubview:_incognitoSearchButton];
+      _buttonStackView.distribution = UIStackViewDistributionFill;
+      [NSLayoutConstraint activateConstraints:@[
+        [_aimButton.widthAnchor
+            constraintEqualToAnchor:_buttonStackView.widthAnchor
+                         multiplier:kLeadingActionWidthFactor],
+        [_aimAttachImageButton.widthAnchor
+            constraintEqualToAnchor:_incognitoSearchButton.widthAnchor],
+      ]];
+      break;
+    }
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kAimAsMvt:
+    case AimButtonRefactorArm::kNoChips:
+      // No quick actions row.
+      return;
+  }
+
+  [self.layoutGuideCenter referenceView:_aimButton
+                              underName:kNTPAIMButtonGuide];
+
+  // Add button actions.
+  [_aimButton addTarget:self
+                 action:@selector(didTapAIMButton)
+       forControlEvents:UIControlEventTouchUpInside];
+  [_aimImageGenerationButton addTarget:self
+                                action:@selector(didTapAIMImageGenerationButton)
+                      forControlEvents:UIControlEventTouchUpInside];
+  [_aimAttachImageButton addTarget:self
+                            action:@selector(didTapAIMAttachImageButton)
+                  forControlEvents:UIControlEventTouchUpInside];
+  [_incognitoSearchButton addTarget:self
+                             action:@selector(didTapIncognitoSearchButton)
+                   forControlEvents:UIControlEventTouchUpInside];
+
+  [self.view addSubview:_buttonStackView];
+
+  CGFloat inset = HorizontalInsetForQuickActions(self);
+
+  _stackViewLeadingConstraint = [_buttonStackView.leadingAnchor
+      constraintEqualToAnchor:self.view.leadingAnchor
+                     constant:inset];
+  _stackViewTrailingConstraint = [_buttonStackView.trailingAnchor
+      constraintEqualToAnchor:self.view.trailingAnchor
+                     constant:-inset];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_buttonStackView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [_buttonStackView.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
+    [_buttonStackView.heightAnchor
+        constraintEqualToConstant:IsNewTabPageUICleanupEnabled()
+                                      ? kQuickActionsHeightUICleanup
+                                      : kQuickActionsHeight],
+    _stackViewLeadingConstraint,
+    _stackViewTrailingConstraint,
+  ]];
+
+  if (IsNewTabPageUICleanupEnabled()) {
+    [self registerForTraitChanges:@[
+      UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
+    ]
+                       withAction:@selector(updateButtonStackConstraints)];
+  }
 }
 
-// Creates a new horizontal button stack view.
+// Creates a horizontal stack view for the Quick Action buttons.
 - (UIStackView*)createButtonStackView {
   UIStackView* stackView = [[UIStackView alloc] init];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
-  stackView.distribution = UIStackViewDistributionFillEqually;
   stackView.alignment = UIStackViewAlignmentFill;
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.spacing = kButtonStackViewSpacing;
-
   return stackView;
 }
 
-// Creates a new quick action button with the given `icon`.
-- (UIButton*)createButtonWithSymbol:(Symbol)symbol {
-  return [self createButtonWithSymbol:symbol title:nil];
-}
-
-// Creates a new quick action button with the given `icon` and title.
-- (UIButton*)createButtonWithSymbol:(Symbol)symbol title:(NSString*)title {
-  UIButtonConfiguration* configuration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  configuration.background.backgroundColor = ButtonBackgroundColor(nil);
-  configuration.background.cornerRadius = kButtonCornerRadius;
-  configuration.baseForegroundColor = [UIColor colorNamed:kGrey700Color];
-  UIImage* icon;
-  if (IsNewTabPageUICleanupEnabled()) {
-    UIImageSymbolConfiguration* symbolConfiguration =
-        [UIImageSymbolConfiguration
-            configurationWithPointSize:kSymbolPointSizeUICleanup
-                                weight:UIImageSymbolWeightSemibold];
-    icon = SymbolWithConfiguration(symbol, symbolConfiguration);
-  } else {
-    icon = SymbolWithPointSize(symbol, kSymbolPointSize);
+// Updates the horizontal constraints for the button stack view based on the
+// layout environment.
+- (void)updateButtonStackConstraints {
+  CHECK(IsNewTabPageUICleanupEnabled());
+  if (!_stackViewLeadingConstraint && !_stackViewTrailingConstraint) {
+    return;
   }
-  configuration.image = MakeSymbolMonochrome(icon);
-
-  if (title) {
-    UIFont* font = PreferredFontForTextStyle(
-        UIFontTextStyleSubheadline, UIFontWeightRegular, kMaximumFontSize);
-    NSDictionary* attributes = @{NSFontAttributeName : font};
-    NSAttributedString* attributedTitle =
-        [[NSAttributedString alloc] initWithString:title attributes:attributes];
-    configuration.attributedTitle = attributedTitle;
-    configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-    configuration.imagePadding = 8;
-  }
-
-  UIButton* button = [[UIButton alloc] init];
-  UIColor* baseTintColor =
-      content_suggestions::DefaultIconTintColorWithAIMAllowed(YES);
-  button.configurationUpdateHandler =
-      CreateThemedButtonConfigurationUpdateHandler(
-          baseTintColor,
-          ^(NewTabPageColorPalette* palette) {
-            return ButtonBackgroundColor(palette);
-          },
-          UIBlurEffectStyleSystemThickMaterial);
-
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.configuration = configuration;
-  return button;
+  CGFloat inset = HorizontalInsetForQuickActions(self);
+  _stackViewLeadingConstraint.constant = inset;
+  _stackViewTrailingConstraint.constant = -inset;
 }
 
-#pragma mark - Button actions
+#pragma mark - Actions
 
-- (void)openIncognitoSearch {
-  [self.NTPShortcutsHandler openIncognitoSearch];
-}
-
-- (void)openAIM {
+- (void)didTapAIMButton {
   [self.NTPShortcutsHandler openAIM];
 }
 
-- (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
-  _layoutGuideCenter = layoutGuideCenter;
-  if (_aimButton) {
-    [_layoutGuideCenter referenceView:_aimButton underName:kNTPAIMButtonGuide];
-  }
+- (void)didTapAIMImageGenerationButton {
+  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+           AimButtonRefactorArm::kImageGenerationQuickAction);
+  [self.NTPShortcutsHandler openAIMImageGeneration];
+}
+
+- (void)didTapAIMAttachImageButton {
+  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+           AimButtonRefactorArm::kAttachImageQuickAction);
+  [self.NTPShortcutsHandler openAIMAttachImage];
+}
+
+- (void)didTapIncognitoSearchButton {
+  [self.NTPShortcutsHandler openIncognitoSearch];
 }
 
 @end

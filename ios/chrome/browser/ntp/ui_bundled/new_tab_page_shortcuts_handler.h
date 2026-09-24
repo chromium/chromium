@@ -17,6 +17,13 @@
 // Opens the AIM experience.
 - (void)openAIM;
 
+// Opens the AIM experience with the image generation chip activated.
+- (void)openAIMImageGeneration;
+
+// Opens the AIM experience and focuses the gallery picker for adding
+// attachments.
+- (void)openAIMAttachImage;
+
 // Preload views and view controllers needed for voice search.
 - (void)preloadVoiceSearch;
 

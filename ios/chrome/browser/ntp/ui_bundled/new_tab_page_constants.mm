@@ -45,6 +45,14 @@ NSString* const kNTPBackdropBlurIdentifier = @"NTPBackdropBlurIdentifier";
 
 NSString* const kNTPMIAIdentifier = @"kNTPMIAIdentifier";
 
+NSString* const kNTPAIMQuickActionIdentifier = @"kNTPAIMQuickActionIdentifier";
+
+NSString* const kNTPAIMImageGenerationQuickActionIdentifier =
+    @"kNTPAIMImageGenerationQuickActionIdentifier";
+
+NSString* const kNTPAIMAttachImageQuickActionIdentifier =
+    @"kNTPAIMAttachImageQuickActionIdentifier";
+
 NSString* const kNTPIncognitoQuickActionIdentifier =
     @"kNTPIncognitoQuickActionIdentifier";
 

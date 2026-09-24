@@ -40,7 +40,16 @@ extern NSString* const kNTPFeedHeaderIdentityDiscBadge;
 // Represents the MIA entry point.
 extern NSString* const kNTPMIAIdentifier;
 
-// Represents the incognito quick action.
+// Represents the AIM Quick Action.
+extern NSString* const kNTPAIMQuickActionIdentifier;
+
+// Represents the AIM Create Images Quick Action.
+extern NSString* const kNTPAIMImageGenerationQuickActionIdentifier;
+
+// Represents the AIM Attach Images Quick Action.
+extern NSString* const kNTPAIMAttachImageQuickActionIdentifier;
+
+// Represents the incognito Quick Action.
 extern NSString* const kNTPIncognitoQuickActionIdentifier;
 
 // Represents the NTP omnibox.

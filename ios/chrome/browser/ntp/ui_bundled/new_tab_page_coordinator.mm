@@ -20,6 +20,7 @@
 #import "components/feed/feed_feature_list.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/pref_names.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
@@ -2258,6 +2259,20 @@
   }
 
   [self openAIMWeb];
+}
+
+- (void)openAIMImageGeneration {
+  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+           ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
+  // TODO(crbug.com/549020046): Implement this method and add metrics recording
+  // hooks.
+}
+
+- (void)openAIMAttachImage {
+  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
+           ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction);
+  // TODO(crbug.com/549020046): Implement this method and add metrics recording
+  // hooks.
 }
 
 - (void)preloadVoiceSearch {
