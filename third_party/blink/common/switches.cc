@@ -12,6 +12,11 @@ namespace switches {
 // involving a command line switch.
 const char kAllowPreCommitInput[] = "allow-pre-commit-input";
 
+// Minimum time interval (in milliseconds) at which async touchmove events
+// during scroll will be skipped during rAF signal when throttling is active.
+const char kAsyncTouchMoveThrottleTimeMs[] =
+    "async-touch-move-throttle-time-ms";
+
 // Set blink settings. Format is <name>[=<value],<name>[=<value>],...
 // The names are declared in Settings.json5. For boolean type, use "true",
 // "false", or omit '=<value>' part to set to true. For enum type, use the int

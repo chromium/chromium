@@ -191,6 +191,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   friend class MainThreadEventQueueInitializationTest;
   raw_ptr<MainThreadEventQueueClient> client_;
   const bool allow_raf_aligned_input_;
+  const base::TimeDelta async_touch_move_interval_;
 
   // Contains data that are read and written on the main thread only.
   struct MainThreadOnly {
