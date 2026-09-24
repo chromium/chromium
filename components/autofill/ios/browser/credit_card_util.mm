@@ -5,15 +5,14 @@
 #import "components/autofill/ios/browser/credit_card_util.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/autofill_type.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 
 namespace autofill {
 
 NSString* GetCreditCardName(const CreditCard& credit_card,
                             const std::string& locale) {
-  return base::SysUTF16ToNSString(credit_card.GetInfo(
-      autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL), locale));
+  return base::SysUTF16ToNSString(
+      credit_card.GetInfo(autofill::CREDIT_CARD_NAME_FULL, locale));
 }
 
 NSString* GetCreditCardNameAndLastFourDigits(const CreditCard& credit_card) {

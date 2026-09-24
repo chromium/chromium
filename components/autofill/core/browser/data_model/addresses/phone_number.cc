@@ -17,7 +17,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/data_model_util.h"
@@ -180,9 +179,8 @@ void PhoneNumber::GetMatchingTypes(std::u16string_view text,
 //   (650)2345678 -> 6502345678
 //   1-800-FLOWERS -> 18003569377
 // If the phone cannot be normalized, returns the stored value verbatim.
-std::u16string PhoneNumber::GetInfo(const AutofillType& autofill_type,
+std::u16string PhoneNumber::GetInfo(FieldType type,
                                     std::string_view app_locale) const {
-  FieldType type = autofill_type.GetAddressType();
   UpdateCacheIfNeeded(app_locale);
 
   // When the phone number autofill has stored cannot be normalized, it
@@ -293,11 +291,11 @@ std::u16string PhoneNumber::GetInfo(const AutofillType& autofill_type,
   }
 }
 
-bool PhoneNumber::SetInfoWithVerificationStatus(const AutofillType& type,
+bool PhoneNumber::SetInfoWithVerificationStatus(FieldType type,
                                                 std::u16string_view value,
                                                 std::string_view app_locale,
                                                 VerificationStatus status) {
-  SetRawInfoWithVerificationStatus(type.GetAddressType(), value, status);
+  SetRawInfoWithVerificationStatus(type, value, status);
 
   if (number_.empty()) {
     return true;

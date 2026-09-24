@@ -11,7 +11,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
@@ -26,26 +25,23 @@ using ::i18n::addressinput::AddressField;
 std::unique_ptr<::i18n::addressinput::AddressData>
 CreateAddressDataFromAutofillProfile(const AutofillProfile& profile,
                                      std::string_view app_locale) {
-  auto get_info = [&profile, app_locale](const AutofillType& type) {
+  auto get_info = [&profile, app_locale](FieldType type) {
     return base::UTF16ToUTF8(profile.GetInfo(type, app_locale));
   };
 
   auto address_data = std::make_unique<AddressData>();
-  address_data->recipient = get_info(AutofillType(NAME_FULL));
-  address_data->organization = get_info(AutofillType(COMPANY_NAME));
+  address_data->recipient = get_info(NAME_FULL);
+  address_data->organization = get_info(COMPANY_NAME);
   address_data->region_code =
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
-  address_data->administrative_area =
-      get_info(AutofillType(ADDRESS_HOME_STATE));
-  address_data->locality = get_info(AutofillType(ADDRESS_HOME_CITY));
-  address_data->dependent_locality =
-      get_info(AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY));
-  address_data->sorting_code =
-      get_info(AutofillType(ADDRESS_HOME_SORTING_CODE));
-  address_data->postal_code = get_info(AutofillType(ADDRESS_HOME_ZIP));
+  address_data->administrative_area = get_info(ADDRESS_HOME_STATE);
+  address_data->locality = get_info(ADDRESS_HOME_CITY);
+  address_data->dependent_locality = get_info(ADDRESS_HOME_DEPENDENT_LOCALITY);
+  address_data->sorting_code = get_info(ADDRESS_HOME_SORTING_CODE);
+  address_data->postal_code = get_info(ADDRESS_HOME_ZIP);
   address_data->address_line =
-      base::SplitString(get_info(AutofillType(ADDRESS_HOME_STREET_ADDRESS)),
-                        "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      base::SplitString(get_info(ADDRESS_HOME_STREET_ADDRESS), "\n",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   address_data->language_code = profile.language_code();
   return address_data;
 }

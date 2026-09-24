@@ -32,7 +32,6 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
@@ -1042,27 +1041,27 @@ VerificationStatus AutofillProfile::GetVerificationStatus(
   return form_group->GetVerificationStatus(type);
 }
 
-std::u16string AutofillProfile::GetInfo(const AutofillType& type,
+std::u16string AutofillProfile::GetInfo(FieldType type,
                                         std::string_view app_locale) const {
-  const FormGroup* form_group = FormGroupForType(type.GetAddressType());
+  const FormGroup* form_group = FormGroupForType(type);
   if (!form_group) {
     return std::u16string();
   }
   return form_group->GetInfo(type, app_locale);
 }
 
-bool AutofillProfile::SetInfoWithVerificationStatus(const AutofillType& type,
+bool AutofillProfile::SetInfoWithVerificationStatus(FieldType type,
                                                     std::u16string_view value,
                                                     std::string_view app_locale,
                                                     VerificationStatus status) {
-  FormGroup* form_group = MutableFormGroupForType(type.GetAddressType());
+  FormGroup* form_group = MutableFormGroupForType(type);
   if (!form_group) {
     return false;
   }
 
   const std::u16string_view trimmed_value =
       base::TrimWhitespace(value, base::TRIM_ALL);
-  if (type.GetAddressType() == ADDRESS_HOME_COUNTRY) {
+  if (type == ADDRESS_HOME_COUNTRY) {
     const AddressCountryCode old_country_code = GetAddressCountryCode();
     const bool response = form_group->SetInfoWithVerificationStatus(
         type, trimmed_value, app_locale, status);
@@ -1072,14 +1071,6 @@ bool AutofillProfile::SetInfoWithVerificationStatus(const AutofillType& type,
 
   return form_group->SetInfoWithVerificationStatus(type, trimmed_value,
                                                    app_locale, status);
-}
-
-bool AutofillProfile::SetInfoWithVerificationStatus(FieldType type,
-                                                    std::u16string_view value,
-                                                    std::string_view app_locale,
-                                                    VerificationStatus status) {
-  return SetInfoWithVerificationStatus(AutofillType(type), value, app_locale,
-                                       status);
 }
 
 // static

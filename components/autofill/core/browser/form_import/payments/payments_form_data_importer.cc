@@ -128,11 +128,11 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
         !field.Type().GetGroups().contains(FieldTypeGroup::kCreditCard)) {
       return;
     }
-    std::u16string old_value = result.card.GetInfo(field.Type(), app_locale);
+    const FieldType field_type = field.Type().GetCreditCardType();
+    std::u16string old_value = result.card.GetInfo(field_type, app_locale);
     if (field.form_control_type() == FormControlType::kInputMonth) {
       // If |field| is an HTML5 month input, handle it as a special case.
-      DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-                field.Type().GetCreditCardType());
+      DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, field_type);
       result.card.SetInfoForMonthInputType(value);
     } else {
       // If the credit card number offset is within the range of the old value,
@@ -145,7 +145,7 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
         value = old_value.replace(field.credit_card_number_offset(),
                                   value.size(), value);
       }
-      bool saved = result.card.SetInfo(field.Type(), value, app_locale);
+      bool saved = result.card.SetInfo(field_type, value, app_locale);
       if (!saved && field.IsSelectElement()) {
         // Saving with the option text (here `value`) may fail for the
         // expiration month. Attempt to save with the option value. First find
@@ -154,16 +154,16 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
         if (auto it =
                 std::ranges::find(field.options(), value, &SelectOption::text);
             it != field.options().end()) {
-          result.card.SetInfo(field.Type(), it->value, app_locale);
+          result.card.SetInfo(field_type, it->value, app_locale);
         }
       }
     }
 
-    std::u16string new_value = result.card.GetInfo(field.Type(), app_locale);
+    std::u16string new_value = result.card.GetInfo(field_type, app_locale);
     // Skip duplicate field check if the field is a split credit card
     // number field.
     const bool skip_duplication_check =
-        field.Type().GetCreditCardType() == FieldType::CREDIT_CARD_NUMBER &&
+        field_type == FieldType::CREDIT_CARD_NUMBER &&
         field.credit_card_number_offset() > 0;
     result.has_duplicate_credit_card_field_type |=
         !skip_duplication_check && !old_value.empty() && old_value != new_value;
@@ -185,7 +185,9 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
         }
         std::erase_if(fields, [&](const AutofillField* field) {
           return std::invoke(pred, *field) ||
-                 !result.card.GetInfo(field->Type(), app_locale).empty();
+                 !result.card
+                      .GetInfo(field->Type().GetCreditCardType(), app_locale)
+                      .empty();
         });
       };
 

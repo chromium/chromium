@@ -164,14 +164,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
                 [NSCharacterSet whitespaceAndNewlineCharacterSet]];
         _creditCard.SetNickname(base::SysNSStringToUTF16(trimmedNickname));
       } else {
-        _creditCard.SetInfo(
-            autofill::AutofillType(AutofillTypeFromAutofillUITypeForCard(
-                item.autofillCreditCardUIType)),
-            base::SysNSStringToUTF16(item.textFieldValue),
-            GetApplicationContext()
-                ->GetApplicationLocaleStorage()
-                ->GetTag()
-                .tag_string());
+        _creditCard.SetInfo(AutofillTypeFromAutofillUITypeForCard(
+                                item.autofillCreditCardUIType),
+                            base::SysNSStringToUTF16(item.textFieldValue),
+                            GetApplicationContext()
+                                ->GetApplicationLocaleStorage()
+                                ->GetTag()
+                                .tag_string());
       }
     }
     std::u16string newCVC = _creditCard.cvc();

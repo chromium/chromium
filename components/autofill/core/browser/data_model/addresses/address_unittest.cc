@@ -11,7 +11,6 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address_test_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
@@ -48,14 +47,10 @@ TEST_F(AddressTest, GetCountry) {
 
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
   EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"United States");
-  EXPECT_EQ(address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US"),
-            u"United States");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
 
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
   EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"Canada");
-  EXPECT_EQ(address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US"),
-            u"Canada");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"CA");
 }
 
@@ -93,19 +88,15 @@ TEST_F(AddressTest, SetCountry) {
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
   EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"United States");
 
-  // Test case-insensitivity when setting the country based on an HTML field
-  // type.
+  // Test case-insensitivity when setting a country code.
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"cA", "en-US");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"CA");
   EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"Canada");
 
-  // Test setting the country based on invalid data with an HTML field type.
-  address.SetInfo(ADDRESS_HOME_COUNTRY, u"unknown", "en-US");
-  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"");
-  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"");
-
-  // Test incorrect use of country codes (when a country name is passed
-  // as a country code).
+  // Test non-standard / localized country names.
+  address.SetInfo(ADDRESS_HOME_COUNTRY, u"deutschland", "de");
+  EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"DE");
+  EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "de"), u"Deutschland");
   address.SetInfo(ADDRESS_HOME_COUNTRY, u"日本", "ja-JP");
   EXPECT_EQ(address.GetRawInfo(ADDRESS_HOME_COUNTRY), u"JP");
   EXPECT_EQ(address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US"), u"Japan");

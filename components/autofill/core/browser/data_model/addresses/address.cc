@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
@@ -209,26 +208,21 @@ FieldTypeSet Address::GetSupportedTypes() const {
   return GetRoot().GetSupportedTypes();
 }
 
-std::u16string Address::GetInfo(const AutofillType& type,
-                                std::string_view locale) const {
-  FieldType storable_type = type.GetAddressType();
-
-  if (storable_type == ADDRESS_HOME_COUNTRY) {
+std::u16string Address::GetInfo(FieldType type, std::string_view locale) const {
+  if (type == ADDRESS_HOME_COUNTRY) {
     return AutofillCountry(GetRoot().GetValueForType(ADDRESS_HOME_COUNTRY),
                            locale)
         .name();
   }
 
-  return GetRawInfo(storable_type);
+  return GetRawInfo(type);
 }
 
-bool Address::SetInfoWithVerificationStatus(const AutofillType& type,
+bool Address::SetInfoWithVerificationStatus(FieldType type,
                                             std::u16string_view value,
                                             std::string_view locale,
                                             VerificationStatus status) {
-  FieldType storable_type = type.GetAddressType();
-
-  if (storable_type == ADDRESS_HOME_COUNTRY) {
+  if (type == ADDRESS_HOME_COUNTRY) {
     // `ParseCountry` handles empty values, trying to parse the country from a
     // country code or a country name
     const std::string country_code = ParseCountry(value, locale);
@@ -239,12 +233,12 @@ bool Address::SetInfoWithVerificationStatus(const AutofillType& type,
     return !country_code.empty();
   }
 
-  SetRawInfoWithVerificationStatus(storable_type, value, status);
+  SetRawInfoWithVerificationStatus(type, value, status);
 
   // Give up when importing addresses with any entirely blank lines.
   // There's a good chance that this formatting is not intentional, but it's
   // also not obviously safe to just strip the newlines.
-  if (storable_type == ADDRESS_HOME_STREET_ADDRESS) {
+  if (type == ADDRESS_HOME_STREET_ADDRESS) {
     return Root()->IsValueForTypeValid(ADDRESS_HOME_STREET_ADDRESS,
                                        /*wipe_if_not=*/true);
   }

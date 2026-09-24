@@ -14,8 +14,6 @@
 
 namespace autofill {
 
-class AutofillType;
-
 class CompanyInfo : public FormGroup {
  public:
   // See `AutofillProfile::kDatabaseStoredTypes` for a documentation of the
@@ -31,14 +29,13 @@ class CompanyInfo : public FormGroup {
   bool operator==(const CompanyInfo& other) const;
 
   // FormGroup:
-  using FormGroup::GetInfo;
-  std::u16string GetInfo(const AutofillType& type,
+  std::u16string GetInfo(FieldType type,
                          std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         std::u16string_view value,
                                         VerificationStatus status) override;
-  bool SetInfoWithVerificationStatus(const AutofillType& type,
+  bool SetInfoWithVerificationStatus(FieldType type,
                                      std::u16string_view value,
                                      std::string_view locale,
                                      VerificationStatus status) override;

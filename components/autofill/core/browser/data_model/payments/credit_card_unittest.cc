@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/payments/payments_metadata.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"

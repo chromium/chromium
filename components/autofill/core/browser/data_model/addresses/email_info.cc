@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -36,9 +35,9 @@ FieldTypeSet EmailInfo::GetSupportedTypes() const {
   return supported_types;
 }
 
-std::u16string EmailInfo::GetInfo(const AutofillType& type,
+std::u16string EmailInfo::GetInfo(FieldType type,
                                   std::string_view app_locale) const {
-  return GetRawInfo(type.GetAddressType());
+  return GetRawInfo(type);
 }
 
 std::u16string EmailInfo::GetRawInfo(FieldType type) const {
@@ -56,11 +55,11 @@ void EmailInfo::SetRawInfoWithVerificationStatus(FieldType type,
   email_ = value;
 }
 
-bool EmailInfo::SetInfoWithVerificationStatus(const AutofillType& type,
+bool EmailInfo::SetInfoWithVerificationStatus(FieldType type,
                                               std::u16string_view value,
                                               std::string_view app_locale,
                                               const VerificationStatus status) {
-  SetRawInfoWithVerificationStatus(type.GetAddressType(), value, status);
+  SetRawInfoWithVerificationStatus(type, value, status);
   return true;
 }
 

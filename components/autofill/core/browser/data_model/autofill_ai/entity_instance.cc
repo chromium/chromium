@@ -30,7 +30,6 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/name_info.h"
@@ -330,8 +329,8 @@ void AttributeInstance::SetInfo(
             if (!name.GetSupportedTypes().contains(field_type)) {
               return;
             }
-            name.SetInfoWithVerificationStatus(AutofillType(field_type), value,
-                                               app_locale, status);
+            name.SetInfoWithVerificationStatus(field_type, value, app_locale,
+                                               status);
           },
           [&](const StateInfo&) { SetRawInfo(field_type, value, status); },
           [&](std::u16string&) { SetRawInfo(field_type, value, status); }},

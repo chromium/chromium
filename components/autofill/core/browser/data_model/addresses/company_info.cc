@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/check_op.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -48,9 +47,9 @@ void CompanyInfo::GetMatchingTypes(std::u16string_view text,
   }
 }
 
-std::u16string CompanyInfo::GetInfo(const AutofillType& type,
+std::u16string CompanyInfo::GetInfo(FieldType type,
                                     std::string_view app_locale) const {
-  return GetRawInfo(type.GetAddressType());
+  return GetRawInfo(type);
 }
 
 std::u16string CompanyInfo::GetRawInfo(FieldType type) const {
@@ -66,11 +65,11 @@ void CompanyInfo::SetRawInfoWithVerificationStatus(FieldType type,
 }
 
 bool CompanyInfo::SetInfoWithVerificationStatus(
-    const AutofillType& type,
+    FieldType type,
     std::u16string_view value,
     std::string_view app_locale,
     const VerificationStatus status) {
-  SetRawInfoWithVerificationStatus(type.GetAddressType(), value, status);
+  SetRawInfoWithVerificationStatus(type, value, status);
   return true;
 }
 

@@ -149,7 +149,7 @@ FillRequest BillingAddressFillRequest(std::vector<FieldGlobalId> field_ids,
 
 // Returns the value that `group` would fill into a field with a certain `type`.
 std::u16string GetFillValue(const FormGroup& group, FieldType type) {
-  return group.GetInfo(AutofillType(FieldTypeSet({type})), "en-us");
+  return group.GetInfo(type, "en-us");
 }
 
 constexpr ActorFormFillingError kActorFormFillingSuccessForMetrics =

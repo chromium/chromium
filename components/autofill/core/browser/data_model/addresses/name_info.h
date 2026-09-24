@@ -19,7 +19,6 @@ namespace autofill {
 
 class AddressComponent;
 class AlternativeFullName;
-class AutofillType;
 class NameFull;
 enum class VerificationStatus;
 
@@ -73,15 +72,14 @@ class NameInfo : public FormGroup {
   bool operator==(const NameInfo& other) const;
 
   // FormGroup:
-  using FormGroup::GetInfo;
-  std::u16string GetInfo(const AutofillType& type,
+  std::u16string GetInfo(FieldType type,
                          std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
 
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         std::u16string_view value,
                                         VerificationStatus status) override;
-  bool SetInfoWithVerificationStatus(const AutofillType& type,
+  bool SetInfoWithVerificationStatus(FieldType type,
                                      std::u16string_view value,
                                      std::string_view app_locale,
                                      VerificationStatus status) override;

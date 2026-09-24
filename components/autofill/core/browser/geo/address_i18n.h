@@ -9,7 +9,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 
@@ -20,15 +19,8 @@ struct AddressData;
 namespace autofill {
 
 class AutofillProfile;
-class AutofillType;
 
 namespace i18n {
-
-// Creates an AddressData object for internationalized address display or
-// validation using `get_info` for field values.
-std::unique_ptr<::i18n::addressinput::AddressData> CreateAddressData(
-    const base::RepeatingCallback<std::u16string(const AutofillType&)>&
-        get_info);
 
 // Creates an `AddressData` from `profile`.
 std::unique_ptr<::i18n::addressinput::AddressData>

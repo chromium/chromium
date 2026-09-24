@@ -18,7 +18,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/data_model/payments/enum_types.mojom.h"
@@ -180,14 +179,13 @@ class CreditCard : public FormGroup {
   void GetMatchingTypes(std::u16string_view text,
                         std::string_view app_locale,
                         FieldTypeSet* matching_types) const override;
-  using FormGroup::GetInfo;
-  std::u16string GetInfo(const AutofillType& type,
+  std::u16string GetInfo(FieldType type,
                          std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         std::u16string_view value,
                                         VerificationStatus status) override;
-  bool SetInfoWithVerificationStatus(const AutofillType& type,
+  bool SetInfoWithVerificationStatus(FieldType type,
                                      std::u16string_view value,
                                      std::string_view app_locale,
                                      VerificationStatus status) override;

@@ -536,7 +536,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
         ff, FilledFieldHasAttributeWithValue(
                 "autofillType", base::JoinString(field_type_strings, ", ")));
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16(
-                        "value", profile.GetInfo(af->Type(), "en-us")));
+                        "value",
+                        profile.GetInfo(af->Type().GetAddressType(), "en-us")));
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16(
                         "frameId",
                         base::UTF8ToUTF16(

@@ -28,7 +28,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
@@ -682,29 +681,29 @@ FieldTypeSet NameInfo::GetSupportedTypes() const {
   return supported_types;
 }
 
-std::u16string NameInfo::GetInfo(const AutofillType& type,
+std::u16string NameInfo::GetInfo(FieldType type,
                                  std::string_view app_locale) const {
-  return GetRawInfo(type.GetAddressType());
+  return GetRawInfo(type);
 }
 
-bool NameInfo::SetInfoWithVerificationStatus(const AutofillType& type,
+bool NameInfo::SetInfoWithVerificationStatus(FieldType type,
                                              std::u16string_view value,
                                              std::string_view app_locale,
                                              VerificationStatus status) {
-  const FieldType ft = type.GetAddressType();
-  if (ft == NAME_FULL ||
-      (ft == ALTERNATIVE_FULL_NAME && IsAlternativeNameSupported())) {
+  if (type == NAME_FULL ||
+      (type == ALTERNATIVE_FULL_NAME && IsAlternativeNameSupported())) {
     // If the set string is token equivalent to the old one, the value can
     // just be updated, otherwise create a new name record and complete it in
     // the end.
     // TODO(crbug.com/40266145): Move this logic to the data model.
-    AreStringTokenEquivalent(value, GetRootForType(ft)->GetValueForType(ft))
-        ? GetRootForType(ft)->SetValueForType(ft, value, status)
-        : GetRootForType(ft)->SetValueForType(ft, value, status,
-                                              /*invalidate_child_nodes=*/true);
+    AreStringTokenEquivalent(value, GetRootForType(type)->GetValueForType(type))
+        ? GetRootForType(type)->SetValueForType(type, value, status)
+        : GetRootForType(type)->SetValueForType(
+              type, value, status,
+              /*invalidate_child_nodes=*/true);
     return true;
   }
-  SetRawInfoWithVerificationStatus(ft, value, status);
+  SetRawInfoWithVerificationStatus(type, value, status);
   return true;
 }
 

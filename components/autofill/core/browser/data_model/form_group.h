@@ -13,7 +13,6 @@
 
 namespace autofill {
 
-class AutofillType;
 class LogBuffer;
 
 // This class is an interface for collections of form fields, grouped by type.
@@ -56,10 +55,8 @@ class FormGroup {
 
   // Returns the string that should be auto-filled into a text field given the
   // type of that field, localized to the given `app_locale` if appropriate.
-  // TODO(crbug.com/40264633): Make `type` a `FieldType`.
-  virtual std::u16string GetInfo(const AutofillType& type,
+  virtual std::u16string GetInfo(FieldType type,
                                  std::string_view app_locale) const = 0;
-  std::u16string GetInfo(FieldType type, std::string_view app_locale) const;
 
   // Returns the verification status associated with the type.
   // Returns kNoStatus if the type does not support a verification status.
@@ -67,31 +64,19 @@ class FormGroup {
 
   // Used to populate this FormGroup object with data. Canonicalizes the data
   // according to the specified `app_locale` prior to storing, if appropriate.
-  // TODO(crbug.com/40264633): Remove the `AutofillType` version.
   bool SetInfo(FieldType type,
-               std::u16string_view value,
-               std::string_view app_locale);
-  bool SetInfo(const AutofillType& type,
                std::u16string_view value,
                std::string_view app_locale);
 
   // Same as `SetInfo` but supports a verification status.
-  // TODO(crbug.com/40264633): Remove the `AutofillType` version.
-  bool SetInfoWithVerificationStatus(FieldType type,
-                                     std::u16string_view value,
-                                     std::string_view app_locale,
-                                     const VerificationStatus status);
-
   virtual bool SetInfoWithVerificationStatus(
-      const AutofillType& type,
+      FieldType type,
       std::u16string_view value,
       std::string_view app_locale,
       const VerificationStatus status) = 0;
 
   // Returns true iff the string associated with `type` is nonempty.
-  // TODO(crbug.com/40264633): Remove the `AutofillType` version.
   bool HasInfo(FieldType type) const;
-  bool HasInfo(const AutofillType& type) const;
 
   // Returns the set of `FieldType`s for which `SetInfo()` and friends may be
   // called.

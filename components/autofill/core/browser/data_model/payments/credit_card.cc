@@ -32,7 +32,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/data_model_util.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
@@ -1197,9 +1196,8 @@ FieldTypeSet CreditCard::GetSupportedTypes() const {
   return supported_types;
 }
 
-std::u16string CreditCard::GetInfo(const AutofillType& autofill_type,
+std::u16string CreditCard::GetInfo(FieldType type,
                                    std::string_view app_locale) const {
-  const FieldType type = autofill_type.GetCreditCardType();
   if (type == CREDIT_CARD_NUMBER) {
     // Web pages should never actually be filled by a masked server card,
     // but this function is used at the preview stage.
@@ -1211,20 +1209,19 @@ std::u16string CreditCard::GetInfo(const AutofillType& autofill_type,
   return GetRawInfo(type);
 }
 
-bool CreditCard::SetInfoWithVerificationStatus(const AutofillType& type,
+bool CreditCard::SetInfoWithVerificationStatus(FieldType type,
                                                std::u16string_view value,
                                                std::string_view app_locale,
                                                VerificationStatus status) {
-  const FieldType storable_type = type.GetCreditCardType();
-  if (storable_type == CREDIT_CARD_EXP_MONTH) {
+  if (type == CREDIT_CARD_EXP_MONTH) {
     return SetExpirationMonthFromString(value, app_locale);
   }
 
-  if (storable_type == CREDIT_CARD_NUMBER) {
+  if (type == CREDIT_CARD_NUMBER) {
     SetRawInfoWithVerificationStatus(
-        storable_type, StripSeparatorsAndNormalizeDigits(value), status);
+        type, StripSeparatorsAndNormalizeDigits(value), status);
   } else {
-    SetRawInfoWithVerificationStatus(storable_type, value, status);
+    SetRawInfoWithVerificationStatus(type, value, status);
   }
   return true;
 }

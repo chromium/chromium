@@ -16,11 +16,11 @@ namespace {
 // corresponding field value.
 NSString* FieldValueOfTypeOnProfile(const autofill::AutofillProfile& profile,
                                     autofill::FieldType fieldType) {
-  return base::SysUTF16ToNSString(profile.GetInfo(
-      autofill::AutofillType(fieldType), GetApplicationContext()
-                                             ->GetApplicationLocaleStorage()
-                                             ->GetTag()
-                                             .tag_string()));
+  return base::SysUTF16ToNSString(
+      profile.GetInfo(fieldType, GetApplicationContext()
+                                     ->GetApplicationLocaleStorage()
+                                     ->GetTag()
+                                     .tag_string()));
 }
 
 }  // namespace

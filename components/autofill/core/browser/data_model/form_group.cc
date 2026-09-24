@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
@@ -61,11 +60,6 @@ bool FormGroup::HasRawInfo(FieldType type) const {
   return !GetRawInfo(type).empty();
 }
 
-std::u16string FormGroup::GetInfo(FieldType type,
-                                  std::string_view app_locale) const {
-  return GetInfo(AutofillType(type), app_locale);
-}
-
 bool FormGroup::SetInfo(FieldType type,
                         std::u16string_view value,
                         std::string_view app_locale) {
@@ -73,29 +67,10 @@ bool FormGroup::SetInfo(FieldType type,
                                        VerificationStatus::kNoStatus);
 }
 
-bool FormGroup::SetInfo(const AutofillType& type,
-                        std::u16string_view value,
-                        std::string_view app_locale) {
-  return SetInfoWithVerificationStatus(type, value, app_locale,
-                                       VerificationStatus::kNoStatus);
-}
-
 bool FormGroup::HasInfo(FieldType type) const {
-  return HasInfo(AutofillType(type));
-}
-
-bool FormGroup::HasInfo(const AutofillType& type) const {
   // Use "en-US" as a placeholder locale. We are only interested in emptiness,
   // not in the presentation of the string.
   return !GetInfo(type, "en-US").empty();
-}
-
-bool FormGroup::SetInfoWithVerificationStatus(FieldType type,
-                                              std::u16string_view value,
-                                              std::string_view app_locale,
-                                              const VerificationStatus status) {
-  return SetInfoWithVerificationStatus(AutofillType(type), value, app_locale,
-                                       status);
 }
 
 void FormGroup::SetRawInfo(FieldType type, std::u16string_view value) {

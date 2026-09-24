@@ -19,7 +19,6 @@
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -186,22 +185,16 @@ class AutofillProfile : public FormGroup {
   void GetMatchingTypes(std::u16string_view text,
                         std::string_view app_locale,
                         FieldTypeSet* matching_types) const override;
-  using FormGroup::GetInfo;
-  std::u16string GetInfo(const AutofillType& type,
+  std::u16string GetInfo(FieldType type,
                          std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         std::u16string_view value,
                                         VerificationStatus status) override;
-  // TODO(crbug.com/40264633): Change `AutofillType` into `FieldType`.
-  bool SetInfoWithVerificationStatus(const AutofillType& type,
-                                     std::u16string_view value,
-                                     std::string_view app_locale,
-                                     VerificationStatus status) override;
   bool SetInfoWithVerificationStatus(FieldType type,
                                      std::u16string_view value,
                                      std::string_view app_locale,
-                                     VerificationStatus status);
+                                     VerificationStatus status) override;
   VerificationStatus GetVerificationStatus(const FieldType type) const override;
   FieldTypeSet GetSupportedTypes() const override;
 
