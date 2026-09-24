@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.account_menu;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -78,6 +79,19 @@ public class AccountMenuViewBinderTest {
     public void testBindStartIcon() {
         mModel.set(MenuItemProperties.START_ICON_ID, R.drawable.ic_password_manager_24dp);
         assertNotNull(mItemView.getCompoundDrawablesRelative()[0]);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindStartIcon_showIconBadge_togglesTintList() {
+        mModel.set(MenuItemProperties.START_ICON_ID, R.drawable.ic_password_manager_24dp);
+        assertNotNull(mItemView.getCompoundDrawableTintList());
+
+        mModel.set(MenuItemProperties.SHOW_ICON_BADGE, true);
+        assertNull(mItemView.getCompoundDrawableTintList());
+
+        mModel.set(MenuItemProperties.SHOW_ICON_BADGE, false);
+        assertNotNull(mItemView.getCompoundDrawableTintList());
     }
 
     @Test
