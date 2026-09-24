@@ -7,10 +7,14 @@
 #include "base/files/safe_base_name.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webshare/store_file_task.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/web_contents_tester.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
@@ -34,17 +38,6 @@ class SharingServiceOperationUnitTest : public ChromeRenderViewHostTestHarness {
             &SharingServiceOperationUnitTest::AcceptShareRequest));
   }
 
-  void SetIncognito() {
-    Profile* const otr_profile =
-        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-    EXPECT_TRUE(otr_profile->IsOffTheRecord());
-    EXPECT_TRUE(otr_profile->IsIncognitoProfile());
-    scoped_refptr<content::SiteInstance> instance =
-        content::SiteInstance::Create(otr_profile);
-    SetContents(content::WebContentsTester::CreateTestWebContents(
-        otr_profile, std::move(instance)));
-  }
-
   static void AcceptShareRequest(
       content::WebContents* web_contents,
       const std::vector<base::FilePath>& file_paths,
@@ -56,9 +49,50 @@ class SharingServiceOperationUnitTest : public ChromeRenderViewHostTestHarness {
   }
 };
 
-TEST_F(SharingServiceOperationUnitTest, TestIncognitoWithFiles) {
-  SetIncognito();
+class SharingServiceOperationIncognitoUnitTest
+    : public SharingServiceOperationUnitTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    SharingServiceOperationUnitTest::SetUp();
+    SetIncognito();
+  }
 
+  bool IsEnterpriseIsolatedMode() const { return GetParam(); }
+
+  void SetIncognito() {
+    if (IsEnterpriseIsolatedMode()) {
+      profile()->GetPrefs()->SetInteger(
+          enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+          static_cast<int>(
+              enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+    }
+    Profile* const otr_profile =
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    EXPECT_TRUE(otr_profile->IsOffTheRecord());
+    EXPECT_EQ(otr_profile->IsEnterpriseIsolatedModeProfile(),
+              IsEnterpriseIsolatedMode());
+    EXPECT_EQ(otr_profile->IsIncognitoProfile(), !IsEnterpriseIsolatedMode());
+    scoped_refptr<content::SiteInstance> instance =
+        content::SiteInstance::Create(otr_profile);
+    SetContents(content::WebContentsTester::CreateTestWebContents(
+        otr_profile, std::move(instance)));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode};
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SharingServiceOperationIncognitoUnitTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "EnterpriseIsolatedMode" : "Incognito";
+    });
+
+TEST_P(SharingServiceOperationIncognitoUnitTest, TestIncognitoWithFiles) {
   const std::string title = "Title";
   const std::string text = "Text";
   const GURL url("https://example.com");
@@ -83,9 +117,7 @@ TEST_F(SharingServiceOperationUnitTest, TestIncognitoWithFiles) {
   EXPECT_EQ(error, blink::mojom::ShareError::CANCELED);
 }
 
-TEST_F(SharingServiceOperationUnitTest, TestIncognitoWithoutFiles) {
-  SetIncognito();
-
+TEST_P(SharingServiceOperationIncognitoUnitTest, TestIncognitoWithoutFiles) {
   const std::string title = "Title";
   const std::string text = "Text";
   const GURL url("https://example.com");

@@ -128,11 +128,11 @@ void SharesheetClient::Share(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   DCHECK(profile);
 
-  // File sharing is denied in incognito, as files are written to disk.
-  // To prevent sites from using that to detect whether incognito mode is
-  // active, we deny after a random time delay, to simulate a user cancelling
-  // the share.
-  if (profile->IsIncognitoProfile() && !files.empty()) {
+  // File sharing is denied in incognito and enterprise isolated mode, as files
+  // are written to disk. To prevent sites from using that to detect whether
+  // incognito or isolated mode is active, we deny after a random time delay,
+  // to simulate a user cancelling the share.
+  if (profile->IsPrimaryOTRProfileWithRegularParent() && !files.empty()) {
     // Random number of seconds in the range [1.0, 2.0).
     double delay_seconds = 1.0 + 1.0 * base::RandDouble();
     visibility_timer::VisibilityTimerTabHelper::CreateForWebContents(
