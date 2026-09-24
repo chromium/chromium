@@ -5,11 +5,11 @@
 import("//chrome/common/features.gni")
 
 source_set("delegate") {
-  sources = [ "actor_task_list_bubble_controller_delegate.h" ]
+  sources = [ "glic_activity_list_bubble_controller_delegate.h" ]
 }
 
 source_set("controller") {
-  sources = [ "actor_task_list_bubble_controller.h" ]
+  sources = [ "glic_activity_list_bubble_controller.h" ]
   deps = [
     "//base",
     "//chrome/browser/actor",
@@ -28,7 +28,7 @@ source_set("controller") {
 }
 
 source_set("controller_impl") {
-  sources = [ "actor_task_list_bubble_controller.cc" ]
+  sources = [ "glic_activity_list_bubble_controller.cc" ]
   deps = [
     ":controller",
     ":delegate",
@@ -50,7 +50,7 @@ source_set("controller_impl") {
 
 if (!is_android) {
   source_set("ui") {
-    sources = [ "actor_task_list_bubble.h" ]
+    sources = [ "glic_activity_list_bubble.h" ]
     public_deps = [
       "//base",
       "//components/actor/core:task_id",
@@ -60,9 +60,9 @@ if (!is_android) {
 
   source_set("ui_impl") {
     sources = [
-      "actor_task_list_bubble.cc",
-      "actor_task_list_bubble_row_button.cc",
-      "actor_task_list_bubble_row_button.h",
+      "glic_activity_list_bubble.cc",
+      "glic_activity_list_bubble_row_button.cc",
+      "glic_activity_list_bubble_row_button.h",
     ]
     public_deps = [ ":ui" ]
     deps = [
@@ -85,8 +85,8 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
-      "actor_task_list_bubble_controller_unittest.cc",
-      "actor_task_list_bubble_unittest.cc",
+      "glic_activity_list_bubble_controller_unittest.cc",
+      "glic_activity_list_bubble_unittest.cc",
     ]
     deps = [
       ":controller",
@@ -107,7 +107,7 @@ if (!is_android) {
   source_set("interactive_ui_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "actor_task_list_bubble_interactive_uitest.cc" ]
+    sources = [ "glic_activity_list_bubble_interactive_uitest.cc" ]
     deps = [
       ":controller",
       ":ui_impl",

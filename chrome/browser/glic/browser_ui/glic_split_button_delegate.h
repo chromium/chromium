@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller_delegate.h"
+#include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller_delegate.h"
 
 namespace glic {
 

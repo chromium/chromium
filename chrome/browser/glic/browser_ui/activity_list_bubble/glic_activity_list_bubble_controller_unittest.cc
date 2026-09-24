@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller.h"
 
 #include <memory>
 #include <string>
@@ -13,7 +13,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble.h"
+#include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
@@ -44,7 +44,6 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace {
-
 
 class MockGlicActorNudgeController : public glic::GlicActorNudgeController {
  public:
