@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -44,21 +45,28 @@
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/permission_request_observer.h"
+#include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/mojo_capability_control_test_util.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -96,6 +104,7 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
     ExclusiveAccessTest::SetUpOnMainThread();
 
     SetDisableFullscreenWithinTab(true);
+    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -797,6 +806,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
 
   // Entering tab fullscreen removes the bubble.
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser());
+  web_contents->Focus();
   EXPECT_TRUE(content::ExecJs(web_contents,
                               "document.documentElement.requestFullscreen()"));
   ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
@@ -828,6 +840,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(observer.request_shown());
 
   // Entering tab fullscreen removes the permission prompt bubble.
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser());
+  web_contents->Focus();
   EXPECT_TRUE(content::ExecJs(web_contents,
                               "document.documentElement.requestFullscreen()"));
   ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
@@ -1000,6 +1015,127 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
+#if BUILDFLAG(IS_MAC)
+// On Mac, the opener window retains focus below even after opening the popup,
+// and then allows fullscreen from the opener instead of the popup. We found
+// the behavior inconsistent in practice. https://crbug.com/564799166
+#define MAYBE_DisallowFullscreenFromUnfocusedWindow \
+  DISABLED_DisallowFullscreenFromUnfocusedWindow
+#else
+#define MAYBE_DisallowFullscreenFromUnfocusedWindow \
+  DisallowFullscreenFromUnfocusedWindow
+#endif
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       MAYBE_DisallowFullscreenFromUnfocusedWindow) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* opener =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Open a popup, passing the windowFeatures parameter so that it opens in a
+  // separate window.
+  ui_test_utils::BrowserCreatedObserver popup_browser_observer;
+  ASSERT_TRUE(content::ExecJs(
+      opener,
+      "window.w = window.open('about:blank', 'popup', 'width=90,height=90');"));
+  BrowserWindowInterface* popup_browser = popup_browser_observer.Wait();
+  ASSERT_TRUE(popup_browser);
+
+  content::WebContents* popup_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(popup_contents);
+  EXPECT_NE(opener, popup_contents);
+
+  // The popup window should have focus, and the opener should not have focus.
+  ui_test_utils::WaitUntilBrowserBecomeActive(popup_browser);
+  EXPECT_FALSE(opener->GetRenderWidgetHostView()->HasFocus());
+  EXPECT_TRUE(popup_contents->GetRenderWidgetHostView()->HasFocus());
+
+  // Attempt to enter fullscreen from the unfocused opener window. This should
+  // fail because the view is not focused.
+  auto opener_result =
+      content::EvalJs(opener, "window.document.body.requestFullscreen();");
+  EXPECT_FALSE(opener_result.is_ok());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
+
+  // Attempt to enter fullscreen from the focused popup window. This should
+  // succeed.
+  {
+    ui_test_utils::FullscreenWaiter waiter(popup_browser,
+                                           {.tab_fullscreen = true});
+    EXPECT_TRUE(
+        content::ExecJs(popup_contents, "document.body.requestFullscreen();"));
+    waiter.Wait();
+    EXPECT_TRUE(popup_browser->GetWindow()->IsFullscreen());
+  }
+
+  // Exit fullscreen on the popup window.
+  {
+    ui_test_utils::FullscreenWaiter waiter(popup_browser,
+                                           {.tab_fullscreen = false});
+    EXPECT_TRUE(content::ExecJs(popup_contents, "document.exitFullscreen();"));
+    waiter.Wait();
+    EXPECT_FALSE(popup_browser->GetWindow()->IsFullscreen());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       DisallowFullscreenFromUnfocusedTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::WebContents* opener =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Open a new tab using w = window.open.
+  ui_test_utils::AllBrowserTabAddedWaiter tab_added;
+  ASSERT_TRUE(
+      content::ExecJs(opener, "window.w = window.open('about:blank');"));
+  content::WebContents* new_tab = tab_added.Wait();
+  ASSERT_TRUE(new_tab);
+  EXPECT_NE(opener, new_tab);
+
+  // The new tab should have focus, and the opener should not have focus.
+  EXPECT_FALSE(opener->GetRenderWidgetHostView()->HasFocus());
+  EXPECT_TRUE(new_tab->GetRenderWidgetHostView()->HasFocus());
+
+  // Attempt to enter fullscreen from the unfocused opener tab. This should fail
+  // because the tab is not focused.
+  auto opener_result =
+      content::EvalJs(opener, "window.document.body.requestFullscreen();");
+  EXPECT_FALSE(opener_result.is_ok());
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
+
+  // Attempt to enter fullscreen from the focused new tab. This should succeed.
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
+    EXPECT_TRUE(content::ExecJs(new_tab, "document.body.requestFullscreen();"));
+    waiter.Wait();
+    EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  }
+
+  // Exit fullscreen.
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(),
+                                           {.tab_fullscreen = false});
+    EXPECT_TRUE(content::ExecJs(new_tab, "document.exitFullscreen();"));
+    waiter.Wait();
+    EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
+  }
+
+  // Switch back to the opener tab. Now it has focus and can enter fullscreen.
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  EXPECT_TRUE(opener->GetRenderWidgetHostView()->HasFocus());
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
+    EXPECT_TRUE(
+        content::ExecJs(opener, "window.document.body.requestFullscreen();"));
+    waiter.Wait();
+    EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        BlockingContentsExitsFullscreen) {
   ASSERT_NO_FATAL_FAILURE(ToggleTabFullscreen(true));
@@ -1122,6 +1258,401 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
       tab, true);
   EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
             content::FullscreenMode::kPseudoContent);
+}
+
+namespace {
+
+class DestroyTargetOnFullscreenExitDelegate
+    : public content::WebContentsDelegate {
+ public:
+  DestroyTargetOnFullscreenExitDelegate(
+      content::WebContentsDelegate* original_delegate,
+      content::WebContents* target_to_destroy)
+      : original_delegate_(original_delegate),
+        target_to_destroy_(target_to_destroy) {}
+
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
+    if (target_to_destroy_) {
+      target_to_destroy_->Close();
+      target_to_destroy_ = nullptr;
+    }
+    if (original_delegate_) {
+      original_delegate_->ExitFullscreenModeForTab(web_contents);
+    }
+  }
+
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const override {
+    if (original_delegate_) {
+      return original_delegate_->GetFullscreenState(web_contents);
+    }
+    return content::FullscreenState();
+  }
+
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override {
+    if (original_delegate_) {
+      return original_delegate_->IsFullscreenForTabOrPending(web_contents);
+    }
+    return false;
+  }
+
+ private:
+  raw_ptr<content::WebContentsDelegate> original_delegate_;
+  raw_ptr<content::WebContents, DisableDanglingPtrDetection> target_to_destroy_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       ForSecurityDropFullscreenUAF) {
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
+  // TODO(mustaq@chromium.org): Why is it timing out on Wayland? Maybe for
+  // https://crbug.com/40761568?
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP();
+  }
+#endif
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* opener_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  ui_test_utils::BrowserCreatedObserver popup_observer;
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "window.w = window.open('about:blank', 'popup', "
+                              "'width=100,height=100');"));
+  BrowserWindowInterface* popup_browser = popup_observer.Wait();
+  ASSERT_TRUE(popup_browser);
+
+  content::WebContents* popup_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(popup_contents);
+
+  // Focus and enter fullscreen on opener.
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser());
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
+    EXPECT_TRUE(
+        content::ExecJs(opener_contents, "document.body.requestFullscreen();"));
+    waiter.Wait();
+    EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  }
+
+  content::WebContentsDelegate* original_delegate =
+      opener_contents->GetDelegate();
+  DestroyTargetOnFullscreenExitDelegate intercepting_delegate(original_delegate,
+                                                              popup_contents);
+  opener_contents->SetDelegate(&intercepting_delegate);
+
+  base::WeakPtr<content::WebContents> weak_popup = popup_contents->GetWeakPtr();
+
+  auto blocker = popup_contents->ForSecurityDropFullscreen(
+      /*display_id=*/display::kInvalidDisplayId);
+
+  EXPECT_EQ(weak_popup, nullptr);
+  EXPECT_FALSE(blocker.has_value());
+
+  if (opener_contents) {
+    opener_contents->SetDelegate(original_delegate);
+  }
+}
+
+namespace {
+
+// Simulates a delegate that removes an iframe synchronously upon exiting
+// fullscreen.
+class DetachFrameOnFullscreenExitDelegate
+    : public content::WebContentsDelegate {
+ public:
+  DetachFrameOnFullscreenExitDelegate(
+      content::WebContentsDelegate* original_delegate,
+      content::WebContents* target_contents)
+      : original_delegate_(original_delegate),
+        target_contents_(target_contents) {}
+
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
+    if (target_contents_) {
+      EXPECT_TRUE(content::ExecJs(
+          target_contents_, "document.querySelector('iframe').remove();"));
+      target_contents_ = nullptr;
+    }
+    if (original_delegate_) {
+      original_delegate_->ExitFullscreenModeForTab(web_contents);
+    }
+  }
+
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const override {
+    if (original_delegate_) {
+      return original_delegate_->GetFullscreenState(web_contents);
+    }
+    return content::FullscreenState();
+  }
+
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override {
+    if (original_delegate_) {
+      return original_delegate_->IsFullscreenForTabOrPending(web_contents);
+    }
+    return false;
+  }
+
+ private:
+  raw_ptr<content::WebContentsDelegate> original_delegate_;
+  raw_ptr<content::WebContents, DisableDanglingPtrDetection> target_contents_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       RunJavaScriptDialogFrameDetachOnFullscreenExit) {
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
+  // TODO(mustaq@chromium.org): Why is it timing out on Wayland? Maybe for
+  // https://crbug.com/40761568?
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP();
+  }
+#endif
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Use a cross-origin iframe so that when alert() triggers a [Sync] Mojo call
+  // that blocks the child renderer, the parent renderer can still process
+  // ExecJs() to detach the iframe without deadlocking.
+  GURL opener_url = embedded_test_server()->GetURL("a.com", "/simple.html");
+  GURL iframe_url = embedded_test_server()->GetURL("b.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
+
+  content::WebContents* opener_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  ui_test_utils::BrowserCreatedObserver popup_observer;
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "window.w = window.open('about:blank', 'popup', "
+                              "'width=100,height=100');"));
+  BrowserWindowInterface* popup_browser = popup_observer.Wait();
+  ASSERT_TRUE(popup_browser);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(popup_browser, opener_url));
+  content::WebContents* popup_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(popup_contents);
+
+  EXPECT_TRUE(content::ExecJs(popup_contents, content::JsReplace(R"(
+        new Promise(resolve => {
+          let iframe = document.createElement('iframe');
+          iframe.src = $1;
+          iframe.onload = resolve;
+          document.body.appendChild(iframe);
+        });
+      )",
+                                                                 iframe_url)));
+
+  content::RenderFrameHost* child_rfh =
+      content::ChildFrameAt(popup_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+
+  // Focus and enter fullscreen on opener.
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser());
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
+    EXPECT_TRUE(
+        content::ExecJs(opener_contents, "document.body.requestFullscreen();"));
+    waiter.Wait();
+    EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  }
+
+  content::WebContentsDelegate* original_delegate =
+      opener_contents->GetDelegate();
+  DetachFrameOnFullscreenExitDelegate intercepting_delegate(original_delegate,
+                                                            popup_contents);
+  opener_contents->SetDelegate(&intercepting_delegate);
+
+  // Use FrameDeletedObserver to await asynchronous frame deletion across
+  // processes, since RenderFrameHost lacks GetWeakPtr() and the synchronous
+  // RunJavaScriptDialog() is private to //content.
+  content::FrameDeletedObserver frame_deleted_observer(child_rfh);
+  content::ExecuteScriptAsync(child_rfh, "alert('test message');");
+  frame_deleted_observer.Wait();
+  EXPECT_TRUE(frame_deleted_observer.IsDeleted());
+
+  if (opener_contents) {
+    opener_contents->SetDelegate(original_delegate);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       RunBeforeUnloadConfirmFrameDetachOnFullscreenExit) {
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
+  // TODO(mustaq@chromium.org): Why is it timing out on Wayland? Maybe for
+  // https://crbug.com/40761568?
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP();
+  }
+#endif
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Use a cross-origin iframe so that when beforeunload triggers a [Sync] Mojo
+  // call that blocks the child renderer, the parent renderer can still process
+  // ExecJs() to detach the iframe without deadlocking.
+  GURL opener_url = embedded_test_server()->GetURL("a.com", "/simple.html");
+  GURL iframe_url = embedded_test_server()->GetURL("b.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
+
+  content::WebContents* opener_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  ui_test_utils::BrowserCreatedObserver popup_observer;
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "window.w = window.open('about:blank', 'popup', "
+                              "'width=100,height=100');"));
+  BrowserWindowInterface* popup_browser = popup_observer.Wait();
+  ASSERT_TRUE(popup_browser);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(popup_browser, opener_url));
+  content::WebContents* popup_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(popup_contents);
+
+  EXPECT_TRUE(content::ExecJs(popup_contents, content::JsReplace(R"(
+        new Promise(resolve => {
+          let iframe = document.createElement('iframe');
+          iframe.src = $1;
+          iframe.onload = resolve;
+          document.body.appendChild(iframe);
+        });
+      )",
+                                                                 iframe_url)));
+
+  content::RenderFrameHost* child_rfh =
+      content::ChildFrameAt(popup_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+
+  EXPECT_TRUE(content::ExecJs(
+      child_rfh, "window.onbeforeunload = () => { return 'leave?'; };"));
+
+  // Focus and enter fullscreen on opener.
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser());
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
+    EXPECT_TRUE(
+        content::ExecJs(opener_contents, "document.body.requestFullscreen();"));
+    waiter.Wait();
+    EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  }
+
+  content::WebContentsDelegate* original_delegate =
+      opener_contents->GetDelegate();
+  DetachFrameOnFullscreenExitDelegate intercepting_delegate(original_delegate,
+                                                            popup_contents);
+  opener_contents->SetDelegate(&intercepting_delegate);
+
+  // Use FrameDeletedObserver to await asynchronous frame deletion across
+  // processes, since RenderFrameHost lacks GetWeakPtr() and the synchronous
+  // RunBeforeUnloadConfirm() is private to //content.
+  content::FrameDeletedObserver frame_deleted_observer(child_rfh);
+  content::ExecuteScriptAsync(child_rfh, "location.href = 'about:blank?1';");
+  frame_deleted_observer.Wait();
+  EXPECT_TRUE(frame_deleted_observer.IsDeleted());
+
+  if (opener_contents) {
+    opener_contents->SetDelegate(original_delegate);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       EnumerateDirectoryFrameDetachOnFullscreenExit) {
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
+  // TODO(mustaq@chromium.org): Why is it timing out on Wayland? Maybe for
+  // https://crbug.com/40761568?
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP();
+  }
+#endif
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL opener_url = embedded_test_server()->GetURL("a.com", "/simple.html");
+  GURL iframe_url = embedded_test_server()->GetURL("b.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
+
+  content::WebContents* opener_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  ui_test_utils::BrowserCreatedObserver popup_observer;
+  ASSERT_TRUE(content::ExecJs(opener_contents,
+                              "window.w = window.open('about:blank', 'popup', "
+                              "'width=100,height=100');"));
+  BrowserWindowInterface* popup_browser = popup_observer.Wait();
+  ASSERT_TRUE(popup_browser);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(popup_browser, opener_url));
+  content::WebContents* popup_contents =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(popup_contents);
+
+  EXPECT_TRUE(content::ExecJs(popup_contents, content::JsReplace(R"(
+        new Promise(resolve => {
+          let iframe = document.createElement('iframe');
+          iframe.src = $1;
+          iframe.onload = resolve;
+          document.body.appendChild(iframe);
+        });
+      )",
+                                                                 iframe_url)));
+
+  content::RenderFrameHost* child_rfh =
+      content::ChildFrameAt(popup_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+
+  // Focus and enter fullscreen on opener.
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser());
+  {
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
+    EXPECT_TRUE(
+        content::ExecJs(opener_contents, "document.body.requestFullscreen();"));
+    waiter.Wait();
+    EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  }
+
+  content::WebContentsDelegate* original_delegate =
+      opener_contents->GetDelegate();
+  DetachFrameOnFullscreenExitDelegate intercepting_delegate(original_delegate,
+                                                            popup_contents);
+  opener_contents->SetDelegate(&intercepting_delegate);
+  // `intercepting_delegate` lives on the stack, so it must be detached before
+  // this scope ends no matter how the test exits.
+  absl::Cleanup restore_delegate = [opener_contents, original_delegate] {
+    if (opener_contents) {
+      opener_contents->SetDelegate(original_delegate);
+    }
+  };
+
+  const base::FilePath& granted_dir = browser()->GetProfile()->GetPath();
+  content::ChildProcessSecurityPolicy* security_policy =
+      content::ChildProcessSecurityPolicy::GetInstance();
+  security_policy->GrantReadFile(child_rfh->GetProcess()->GetID(), granted_dir);
+  ASSERT_TRUE(security_policy->CanReadFile(child_rfh->GetProcess()->GetID(),
+                                           granted_dir));
+
+  content::test::MojoCapabilityControlTestHelper helper;
+  mojo::Remote<blink::mojom::FileChooser> file_chooser;
+  helper.GetInterface(child_rfh, file_chooser.BindNewPipeAndPassReceiver());
+
+  content::FrameDeletedObserver frame_deleted_observer(child_rfh);
+  base::test::TestFuture<blink::mojom::FileChooserResultPtr> future;
+  // EnumerateChosenDirectory() calls WebContentsImpl::EnumerateDirectory(),
+  // which calls ForSecurityDropFullscreen() to prevent fullscreen spoofing.
+  // Because `opener_contents` is in the opener chain of `popup_contents` and is
+  // currently in fullscreen, ForSecurityDropFullscreen() asks `opener_contents`
+  // to exit fullscreen.
+  file_chooser->EnumerateChosenDirectory(granted_dir, future.GetCallback());
+  frame_deleted_observer.Wait();
+  EXPECT_TRUE(frame_deleted_observer.IsDeleted());
+  // Ensure the listener is answered to avoid leaking the Mojo callback.
+  EXPECT_FALSE(future.Get());
 }
 
 // Tests the automatic fullscreen content setting in IWA and non-IWA contexts.

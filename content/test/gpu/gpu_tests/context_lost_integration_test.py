@@ -458,8 +458,12 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       [cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS]
     )
     self._NavigateAndWaitForLoad(test_path)
-    # Entering fullscreen requires a user gesture, so synthesize a real click
-    # on the button rather than calling requestFullscreen() from script.
+    # Entering fullscreen requires focus and user activation, so focus the tab
+    # and synthesize a real click on the button, rather than calling
+    # requestFullscreen() from script.
+    self.tab._inspector_backend._websocket.SyncRequest(
+      {'method': 'Page.bringToFront'}, timeout=60
+    )
     self.tab.action_runner.ClickElement(selector='#enterFullscreenButton')
     self._WaitForTabAndCheckCompletion()
 
