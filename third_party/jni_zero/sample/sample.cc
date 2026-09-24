@@ -73,7 +73,7 @@ static jni_zero::JniUniquePtr<NativeObject> JNI_Sample_CreateNativeObject(
 
 static jni_zero::JniUniquePtr<NativeObject> JNI_Sample_CreateNullNativeObject(
     JNIEnv* env) {
-  return jni_zero::JniUniquePtr<NativeObject>(nullptr);
+  return nullptr;
 }
 
 static jni_zero::JniRawPtr<NativeObject> JNI_Sample_BorrowNativeObject(
