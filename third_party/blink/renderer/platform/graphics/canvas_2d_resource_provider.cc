@@ -222,14 +222,13 @@ Canvas2DResourceProvider::WillDrawInternal() {
 
     resource_ = NewOrRecycledResource();
     if (must_preserve_content_on_copy_on_write_) {
-      auto dst_access = resource_->BeginAccess(/*readonly=*/false);
-      auto old_mailbox = old_resource_shared_image->GetSharedImage()->mailbox();
-      auto mailbox = resource()->GetSharedImage()->mailbox();
-      auto src_access = old_resource->BeginAccess(/*readonly=*/true);
-      RasterInterface()->CopySharedImage(old_mailbox, mailbox, 0, 0, 0, 0,
-                                         Size().width(), Size().height());
-      old_resource_shared_image->EndAccess(std::move(src_access));
-      resource_->EndAccess(std::move(dst_access));
+      auto [src_token, dst_token] = RasterInterface()->CopySharedImage(
+          old_resource_shared_image->GetSharedImage(),
+          old_resource_shared_image->acquire_sync_token(),
+          resource()->GetSharedImage(), resource()->acquire_sync_token(),
+          gfx::Rect(Size()), gfx::Point(0, 0));
+      old_resource_shared_image->SetReleaseSyncToken(src_token);
+      resource_->SetReleaseSyncToken(dst_token);
     } else {
       // If we're not copying over the previous contents, we need to ensure
       // that the image is cleared on the next BeginRasterCHROMIUM.

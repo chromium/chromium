@@ -197,6 +197,9 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // zero-parameter variant of WaitSyncToken().
   void WaitSyncToken(const gpu::SyncToken&) override;
 
+  const gpu::SyncToken& acquire_sync_token() const {
+    return acquire_sync_token_;
+  }
   std::unique_ptr<gpu::RasterScopedAccess> BeginAccess(bool readonly);
   void EndAccess(std::unique_ptr<gpu::RasterScopedAccess> access);
 
