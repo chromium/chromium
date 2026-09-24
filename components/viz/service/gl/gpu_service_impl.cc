@@ -86,6 +86,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/scudo_features.h"
+#include "base/android/scudo_purge_coordinator.h"
 #include "components/viz/service/gl/throw_uncaught_exception.h"
 #include "media/base/android/media_codec_util.h"
 #endif
@@ -298,6 +300,16 @@ GpuServiceImpl::GpuServiceImpl(
   bind_webnn_browser_host_ = std::move(init_params.bind_webnn_browser_host);
 
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!in_host_process()) {
+    scudo_purge_coordinator_ =
+        base::android::ScudoPurgeCoordinator::CreateIfEnabled();
+    if (scudo_purge_coordinator_) {
+      scudo_purge_coordinator_->Start();
+    }
+  }
+#endif
 }
 
 GpuServiceImpl::GpuServiceImpl()
@@ -340,6 +352,10 @@ GpuServiceImpl::~GpuServiceImpl() {
 
   if (watchdog_thread_)
     watchdog_thread_->OnGpuProcessTearDown();
+
+#if BUILDFLAG(IS_ANDROID)
+  scudo_purge_coordinator_.reset();
+#endif
 
   compositor_gpu_thread_.reset();
   media_gpu_channel_manager_.reset();
@@ -1153,6 +1169,11 @@ void GpuServiceImpl::OnBackgroundedOnMainThread() {
   }
 
   base::allocator::PartitionAllocSupport::Get()->OnBackgrounded();
+#if BUILDFLAG(IS_ANDROID)
+  if (scudo_purge_coordinator_) {
+    scudo_purge_coordinator_->OnBackgrounded();
+  }
+#endif
 }
 
 void GpuServiceImpl::OnForegrounded() {
@@ -1177,6 +1198,11 @@ void GpuServiceImpl::OnForegroundedOnMainThread() {
   }
   gpu_channel_manager_->OnApplicationForegounded();
   base::allocator::PartitionAllocSupport::Get()->OnForegrounded();
+#if BUILDFLAG(IS_ANDROID)
+  if (scudo_purge_coordinator_) {
+    scudo_purge_coordinator_->OnForegrounded();
+  }
+#endif
 }
 
 #if BUILDFLAG(IS_APPLE)

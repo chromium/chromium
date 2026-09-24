@@ -59,6 +59,12 @@
 #include "ui/gl/direct_composition_support.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+namespace base::android {
+class ScudoPurgeCoordinator;
+}  // namespace base::android
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace gpu {
 class DawnContextProvider;
 class GpuWatchdogThread;
@@ -572,6 +578,12 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   // out of the finch experiment as ::LoadedBlob() is not called in the next
   // browser start after the disk cache is cleared.
   const bool clear_shader_cache_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Owned and accessed exclusively on main_runner_.
+  std::unique_ptr<base::android::ScudoPurgeCoordinator>
+      scudo_purge_coordinator_;
+#endif
 
   base::WeakPtr<GpuServiceImpl> weak_ptr_;
   base::WeakPtrFactory<GpuServiceImpl> weak_ptr_factory_{this};
