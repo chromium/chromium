@@ -1079,13 +1079,16 @@ WebInputEventResult WebViewImpl::SendContextMenuEvent() {
 WebPagePopupImpl* WebViewImpl::OpenPagePopup(PagePopupClient* client) {
   CHECK(client);
 
-  // This guarantees there is never more than 1 PagePopup active at a time.
-  // CancelPagePopup may fire a synchronous change event when a select element
-  // is closed, but that event handler shouldn't be able to open another picker
-  // because it would require multiple user activations to be created and
-  // consumed within the same task.
+  // Make sure there is never more than one page popup active at a time.
   CancelPagePopup();
-  CHECK(!page_popup_);
+  // CancelPagePopup may fire a synchronous change event when a select element
+  // is closed, which may then try to open another page popup. We prevent this
+  // through this early return. Note that `WebPagePopupImpl::Create` call below
+  // asynchronously prevents multiple popups with a single user activation
+  // anyway.
+  if (page_popup_) {
+    return nullptr;
+  }
 
   LocalFrame* opener_frame = client->OwnerElement().GetDocument().GetFrame();
   WebLocalFrameImpl* web_opener_frame =

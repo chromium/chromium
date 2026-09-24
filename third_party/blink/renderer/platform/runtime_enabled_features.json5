@@ -4855,6 +4855,15 @@
       status: "stable",
     },
     {
+      // Kill switch for requiring and consuming transient user activation in
+      // the browser process when creating a form-control popup widget,
+      // guarding against compromised renderers opening popups without a user
+      // gesture.
+      // See https://crbug.com/506152584.
+      name: "PopupWidgetRequiresUserActivation",
+      status: "stable",
+    },
+    {
       name: "PositionOutsideTabSpanCheckSiblingNode",
       status: "stable",
     },

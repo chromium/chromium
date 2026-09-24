@@ -11186,6 +11186,17 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
     return;
   }
 
+  // Form-control popups require and consume transient user activation, which
+  // we enforce on the browser side to guard against compromised renderers.
+  CHECK(owner_);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPopupWidgetRequiresUserActivation) &&
+      !owner_->UpdateUserActivationState(
+          blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
+          blink::mojom::UserActivationNotificationType::kNone)) {
+    return;
+  }
+
   // We still need to allocate a widget routing id. Even though the renderer
   // doesn't receive it, the browser side still uses routing ids to track
   // widgets in various global tables.

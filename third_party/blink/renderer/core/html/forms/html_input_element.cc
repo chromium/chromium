@@ -2625,12 +2625,17 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
   if (!LocalFrame::HasTransientUserActivation(frame)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
-        "HTMLInputElement::showPicker() requires a user gesture.");
+        "HTMLInputElement::showPicker() requires user activation.");
     return;
   }
-  LocalFrame::ConsumeTransientUserActivation(frame);
 
+  if (!RuntimeEnabledFeatures::PopupWidgetRequiresUserActivationEnabled()) {
+    LocalFrame::ConsumeTransientUserActivation(frame);
+  }
   input_type_view_->OpenPopupView();
+  if (RuntimeEnabledFeatures::PopupWidgetRequiresUserActivationEnabled()) {
+    LocalFrame::ConsumeTransientUserActivation(frame);
+  }
 }
 
 bool HTMLInputElement::IsPickerVisible() const {
