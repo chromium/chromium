@@ -254,17 +254,34 @@ void VoiceIsolationHandler::ProcessCapturedAudioInternal(
   TRACE_EVENT("audio", "VoiceIsolationHandler::ProcessCapturedAudioInternal",
               "frames", audio_source.frames(), "channels",
               audio_source.channels());
+
   const media::AudioBus* delivered_bus = &audio_source;
-  if (!IsVoiceIsolationBypassed()) {
+  if (IsVoiceIsolationBypassed()) {
+    if (!was_previously_bypassed_) {
+      // Stop using voice_isolation, purge trapped lookahead frames immediately.
+      // Note: Because the voice isolation pipeline introduces lookahead and
+      // algorithmic delay (~10-20ms), immediately discarding buffered frames
+      // and forwarding raw audio introduces a minor time discontinuity.
+      // Dropping these lookahead frames is intentional to prevent stale or
+      // echoed speech from leaking when voice isolation is re-enabled.
+      was_previously_bypassed_ = true;
+      if (voice_isolation_) {
+        voice_isolation_->ClearBuffers();
+      }
+    }
+  } else {
     DCHECK(voice_isolation_);
     DCHECK_EQ(output_bus_->channels(), audio_source.channels());
     DCHECK_EQ(output_bus_->frames(), audio_source.frames());
+    was_previously_bypassed_ = false;
     voice_isolation_->ProcessAudio(audio_source, *output_bus_);
     delivered_bus = output_bus_.get();
   }
+
   if (debug_recorder_) {
     debug_recorder_->OnData(delivered_bus);
   }
+
   deliver_processed_audio_callback_.Run(*delivered_bus, audio_capture_time,
                                         audio_glitch_info);
 }
@@ -276,12 +293,6 @@ void VoiceIsolationHandler::SetVoiceIsolation(bool enabled) {
   }
   voice_isolation_enabled_ = enabled;
   if (!enabled) {
-    // TODO(crbug.com/544689562): Disabling/bypassing voice isolation leaves
-    // stranded audio inside the internal lookahead buffers or FIFOs. When
-    // re-enabled, this stale audio can be delivered belatedly alongside new
-    // audio, yielding audible glitches or echoes. We must reset or flush the
-    // internal state of media::VoiceIsolation when voice isolation is
-    // re-enabled or bypassed.
     bypass_voice_isolation_.store(true, std::memory_order_release);
   } else if (voice_isolation_) {
     // If initialization has already finished, activate processing immediately.
@@ -289,6 +300,7 @@ void VoiceIsolationHandler::SetVoiceIsolation(bool enabled) {
     // bypassed until OnComponentCreated() finishes creating `voice_isolation_`.
     bypass_voice_isolation_.store(false, std::memory_order_release);
   }
+
   SendLogMessage(base::StringPrintf(
       "%s({enabled=%s}) => bypass=%s", __func__, base::ToString(enabled),
       base::ToString(bypass_voice_isolation_.load(std::memory_order_relaxed))));

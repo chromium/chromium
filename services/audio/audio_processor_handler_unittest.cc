@@ -329,6 +329,7 @@ TEST_F(AudioProcessorHandlerTest,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
+    EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(0);
     EXPECT_CALL(deliver_callback_, Run(_, _, _))
         .WillOnce([&](const media::AudioBus& processed_bus,
                       base::TimeTicks capture_time,
@@ -346,10 +347,12 @@ TEST_F(AudioProcessorHandlerTest,
   remote->SetVoiceIsolation(false);
   remote.FlushForTesting();
 
-  // With voice isolation disabled, the mock component should not be called.
+  // With voice isolation disabled, the mock component should not process audio,
+  // and ClearBuffers() should be called once to purge lookahead frames.
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+    EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(1);
     EXPECT_CALL(deliver_callback_, Run(_, _, _))
         .WillOnce([&](const media::AudioBus& processed_bus,
                       base::TimeTicks capture_time,
@@ -371,6 +374,7 @@ TEST_F(AudioProcessorHandlerTest,
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
+    EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(0);
     EXPECT_CALL(deliver_callback_, Run(_, _, _))
         .WillOnce([&](const media::AudioBus& processed_bus,
                       base::TimeTicks capture_time,
@@ -1263,6 +1267,194 @@ TEST_F(AudioProcessorHandlerTest,
   EXPECT_FALSE(HasProcessingFifo(*audio_processor_handler));
   EXPECT_FALSE(VoiceIsolationHasProcessingThread(*audio_processor_handler));
   EXPECT_EQ(GetVoiceIsolationFifoSize(*audio_processor_handler), 0);
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerClearBuffersTriggeredOnTransitionToBypassed) {
+  auto mock_voice_isolation = std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* voice_isolation_mock_ptr =
+      mock_voice_isolation.get();
+
+  std::unique_ptr<VoiceIsolationHandler> handler =
+      CreateVoiceIsolationHandlerWithMock(std::move(mock_voice_isolation),
+                                          output_params_,
+                                          deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+
+  auto input_bus = media::AudioBus::Create(input_params_);
+  input_bus->Zero();
+
+  // 1. Initial active processing: voice isolation is enabled by default in the
+  // test constructor. ProcessAudio is called, ClearBuffers is NOT called.
+  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
+  EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(0);
+  EXPECT_CALL(deliver_callback_, Run(_, _, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+
+  // 2. Disable voice isolation.
+  handler->SetVoiceIsolation(false);
+
+  // 3. First captured frame after disabling: ON -> OFF transition triggers
+  // ClearBuffers() exactly once to purge stranded lookahead frames.
+  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+  EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(1);
+  EXPECT_CALL(deliver_callback_, Run(testing::Ref(*input_bus), _, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+
+  // 4. Subsequent frame while bypassed: ClearBuffers() must NOT be called again
+  // (idempotent, avoids redundant clearing work).
+  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+  EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(0);
+  EXPECT_CALL(deliver_callback_, Run(testing::Ref(*input_bus), _, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+
+  // 5. Re-enable voice isolation: processing resumes.
+  handler->SetVoiceIsolation(true);
+  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
+  EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(0);
+  EXPECT_CALL(deliver_callback_, Run(_, _, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+
+  // 6. Disable again: triggers ClearBuffers() once more on the next frame.
+  handler->SetVoiceIsolation(false);
+  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+  EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(1);
+  EXPECT_CALL(deliver_callback_, Run(testing::Ref(*input_bus), _, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                media::AudioGlitchInfo());
+  testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
+  testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerNoClearBuffersWhenBypassedFromStart) {
+  auto mock_voice_isolation = std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* voice_isolation_mock_ptr =
+      mock_voice_isolation.get();
+
+  std::unique_ptr<VoiceIsolationHandler> handler =
+      CreateVoiceIsolationHandlerWithMock(std::move(mock_voice_isolation),
+                                          output_params_,
+                                          deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+
+  // Disable before any audio frames are captured.
+  handler->SetVoiceIsolation(false);
+
+  auto input_bus = media::AudioBus::Create(input_params_);
+  input_bus->Zero();
+
+  // Since it was never actively processing (was_previously_bypassed_ was true),
+  // ClearBuffers() should not be called.
+  EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+  EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(0);
+  EXPECT_CALL(deliver_callback_, Run(testing::Ref(*input_bus), _, _)).Times(1);
+  handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                media::AudioGlitchInfo());
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationHandlerClearBuffersWithProcessingFifo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kWebRtcVoiceIsolationProcessingFifo);
+
+  auto mock_voice_isolation = std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* voice_isolation_mock_ptr =
+      mock_voice_isolation.get();
+
+  std::unique_ptr<VoiceIsolationHandler> handler =
+      CreateVoiceIsolationHandlerWithMock(std::move(mock_voice_isolation),
+                                          output_params_,
+                                          deliver_callback_.Get());
+  ASSERT_TRUE(handler);
+  handler->StartProcessing();
+
+  auto input_bus = media::AudioBus::Create(input_params_);
+  input_bus->Zero();
+
+  // 1. Process one frame with FIFO enabled.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
+    EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(0);
+    EXPECT_CALL(deliver_callback_, Run(_, _, _))
+        .WillOnce([&](const media::AudioBus&, base::TimeTicks,
+                      const media::AudioGlitchInfo&) { run_loop.Quit(); });
+
+    handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                  media::AudioGlitchInfo());
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
+    testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+  }
+
+  // 2. Disable voice isolation.
+  handler->SetVoiceIsolation(false);
+
+  // 3. When the next frame is processed on the FIFO thread, ClearBuffers() must
+  // be called once to purge lookahead frames.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+    EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(1);
+    EXPECT_CALL(deliver_callback_, Run(_, _, _))
+        .WillOnce([&](const media::AudioBus&, base::TimeTicks,
+                      const media::AudioGlitchInfo&) { run_loop.Quit(); });
+
+    handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                  media::AudioGlitchInfo());
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
+    testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+  }
+
+  // 4. Subsequent frame while bypassed: ClearBuffers() must NOT be called again
+  // (idempotent, avoids redundant clearing work on the FIFO thread).
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+    EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(0);
+    EXPECT_CALL(deliver_callback_, Run(_, _, _))
+        .WillOnce([&](const media::AudioBus&, base::TimeTicks,
+                      const media::AudioGlitchInfo&) { run_loop.Quit(); });
+
+    handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                  media::AudioGlitchInfo());
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
+    testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+  }
+
+  // 5. Re-enable voice isolation: processing resumes.
+  handler->SetVoiceIsolation(/*enabled=*/true);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
+    EXPECT_CALL(*voice_isolation_mock_ptr, ClearBuffers()).Times(0);
+    EXPECT_CALL(deliver_callback_, Run(_, _, _))
+        .WillOnce([&](const media::AudioBus&, base::TimeTicks,
+                      const media::AudioGlitchInfo&) { run_loop.Quit(); });
+
+    handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(),
+                                  media::AudioGlitchInfo());
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
+    testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+  }
+
+  handler->StopProcessing();
 }
 #endif
 

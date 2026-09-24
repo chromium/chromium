@@ -168,6 +168,11 @@ class VoiceIsolationHandler {
   // sequence and the real-time audio thread.
   std::atomic<bool> bypass_voice_isolation_{true};
 
+  // Tracks whether voice isolation was bypassed on the previous captured audio
+  // frame to detect ON -> OFF transitions and clear internal buffers. Only used
+  // in ProcessCapturedAudioInternal().
+  bool was_previously_bypassed_ = true;
+
   class StartupMetricsLogger;
 
   // Emits metrics for async startup. Non-null only while startup is in flight.
