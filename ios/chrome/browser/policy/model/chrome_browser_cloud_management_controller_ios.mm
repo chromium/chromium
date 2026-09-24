@@ -6,6 +6,7 @@
 
 #import <utility>
 
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/task_traits.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/client_data_delegate_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
+#import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -125,8 +127,8 @@ ChromeBrowserCloudManagementControllerIOS::GetReportingDelegateFactory() {
 std::unique_ptr<enterprise_reporting::SaasUsageReportingDelegateFactory>
 ChromeBrowserCloudManagementControllerIOS::
     GetSaasUsageReportingDelegateFactory() {
-  // SaaS usage reporting is not supported on iOS.
-  return nullptr;
+  return enterprise_reporting::SaasUsageReportingDelegateFactoryIOS::
+      CreateForBrowser();
 }
 
 std::unique_ptr<enterprise_reporting::BrowserLaunchEventController>
@@ -157,7 +159,6 @@ ChromeBrowserCloudManagementControllerIOS::CreateClientDataDelegate() {
 std::unique_ptr<client_certificates::CertificateProvisioningService>
 ChromeBrowserCloudManagementControllerIOS::
     CreateCertificateProvisioningService() {
-
   if (!certificate_store_) {
     certificate_store_ =
         std::make_unique<client_certificates::PrefsCertificateStore>(

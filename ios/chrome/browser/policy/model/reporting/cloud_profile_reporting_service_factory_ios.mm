@@ -9,17 +9,35 @@
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "components/enterprise/browser/reporting/reporting_features.h"
+#import "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
 #import "components/enterprise/device_attestation/device_attestation_service_factory.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/signals/model/ios_signals_aggregator_factory.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
+#import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/public/provider/chrome/browser/device_attestation/device_attestation_api.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace enterprise_reporting {
+
+namespace {
+
+std::unique_ptr<SaasUsageReportScheduler> CreateSaasUsageReportScheduler(
+    ProfileIOS* profile) {
+  if (!base::FeatureList::IsEnabled(kSaasUsageReporting)) {
+    return nullptr;
+  }
+  auto saas_usage_reporting_delegate_factory =
+      SaasUsageReportingDelegateFactoryIOS::CreateForProfile(profile);
+  return SaasUsageReportScheduler::Create(
+      "profile", saas_usage_reporting_delegate_factory.get());
+}
+
+}  // namespace
 
 // static
 CloudProfileReportingServiceFactoryIOS*
@@ -46,7 +64,8 @@ CloudProfileReportingServiceFactoryIOS::BuildServiceInstanceFor(
       enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(), profile->GetProfileName(),
       delegate_factory.GetReportSchedulerDelegate(profile),
-      IOSSignalsAggregatorFactory::GetForProfile(profile));
+      IOSSignalsAggregatorFactory::GetForProfile(profile),
+      CreateSaasUsageReportScheduler(profile));
 }
 
 CloudProfileReportingServiceFactoryIOS::CloudProfileReportingServiceFactoryIOS()

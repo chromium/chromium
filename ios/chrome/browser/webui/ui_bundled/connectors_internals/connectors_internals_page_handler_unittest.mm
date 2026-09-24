@@ -196,7 +196,8 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
             /*url_loader_factory=*/nullptr,
             /*profile_name=*/"",
             /*report_scheduler_delegate=*/nullptr,
-            /*signals_aggregator=*/nullptr);
+            /*signals_aggregator=*/nullptr,
+            /*saas_usage_report_scheduler=*/nullptr);
       }));
   std::unique_ptr<TestProfileIOS> test_profile = std::move(builder).Build();
 
@@ -321,9 +322,8 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
   ASSERT_TRUE(state);
   EXPECT_TRUE(state->is_enabled);
   ASSERT_TRUE(state->key_info);
-  EXPECT_EQ(
-      state->key_info->is_key_manager_initialized,
-      connectors_internals::mojom::KeyManagerInitializedValue::NO_KEY);
+  EXPECT_EQ(state->key_info->is_key_manager_initialized,
+            connectors_internals::mojom::KeyManagerInitializedValue::NO_KEY);
   EXPECT_NE(
       state->signals_json.find("\"test_signal_key\": \"test_signal_value\""),
       std::string::npos);
@@ -340,8 +340,7 @@ TEST_F(ConnectorsInternalsPageHandlerTest, DeleteDeviceTrustKey) {
 // a profile.
 TEST_F(ConnectorsInternalsPageHandlerTest,
        GetClientCertificateState_WithProfile) {
-  base::test::TestFuture<
-      connectors_internals::mojom::ClientCertificateStatePtr>
+  base::test::TestFuture<connectors_internals::mojom::ClientCertificateStatePtr>
       future;
   page_handler_->GetClientCertificateState(future.GetCallback());
   auto state = future.Take();
@@ -360,8 +359,7 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
   ConnectorsInternalsPageHandler null_profile_handler(
       null_profile_page_handler.BindNewPipeAndPassReceiver(), nullptr);
 
-  base::test::TestFuture<
-      connectors_internals::mojom::ClientCertificateStatePtr>
+  base::test::TestFuture<connectors_internals::mojom::ClientCertificateStatePtr>
       future;
   null_profile_page_handler->GetClientCertificateState(future.GetCallback());
   auto state = future.Take();
@@ -386,4 +384,3 @@ TEST_F(ConnectorsInternalsPageHandlerTest, GetProvisioningDomainState) {
 }
 
 }  // namespace
-

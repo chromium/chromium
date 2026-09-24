@@ -73,6 +73,7 @@ source_set("model") {
   deps = [
     ":constants",
     ":policy_util",
+    ":saas_usage_reporting",
     "//base",
     "//components/account_id",
     "//components/autofill/core/browser",
@@ -159,6 +160,8 @@ source_set("cloud_profile_reporting") {
 
   deps = [
     ":model",
+    ":saas_usage_reporting",
+    ":saas_usage_reporting_impl",
     "//base",
     "//components/enterprise",
     "//components/enterprise/browser/identifiers",
@@ -210,7 +213,6 @@ source_set("saas_usage_reporting_impl") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
   ]
-  visibility = [ ":unit_tests" ]
 }
 
 source_set("browser_agent") {
