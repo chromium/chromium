@@ -381,7 +381,7 @@ SimpleGeolocationRequest::~SimpleGeolocationRequest() {
 
   // If callback is not empty, request is cancelled.
   if (callback_) {
-    RecordUmaResponseTime(base::Time::Now() - request_started_at_, false);
+    RecordUmaResponseTime(base::TimeTicks::Now() - request_started_at_, false);
     RecordUmaResult(SIMPLE_GEOLOCATION_REQUEST_RESULT_CANCELLED, retries_);
   }
 
@@ -474,7 +474,7 @@ void SimpleGeolocationRequest::MakeRequest(
   request_url_ = GeolocationRequestURL(service_url_);
   timeout_timer_.Start(FROM_HERE, timeout_, this,
                        &SimpleGeolocationRequest::OnTimeout);
-  request_started_at_ = base::Time::Now();
+  request_started_at_ = base::TimeTicks::Now();
   StartRequest();
 }
 
@@ -533,7 +533,7 @@ void SimpleGeolocationRequest::OnSimpleURLLoaderComplete(
     return;
   }
 
-  const base::TimeDelta elapsed = base::Time::Now() - request_started_at_;
+  const base::TimeDelta elapsed = base::TimeTicks::Now() - request_started_at_;
   RecordUmaResponseTime(elapsed, success);
 
   RecordUmaResult(SIMPLE_GEOLOCATION_REQUEST_RESULT_SUCCESS, retries_);
@@ -567,7 +567,7 @@ void SimpleGeolocationRequest::OnTimeout() {
            : SIMPLE_GEOLOCATION_REQUEST_RESULT_FAILURE);
   RecordUmaResult(result, retries_);
   position_.status = Geoposition::STATUS_TIMEOUT;
-  const base::TimeDelta elapsed = base::Time::Now() - request_started_at_;
+  const base::TimeDelta elapsed = base::TimeTicks::Now() - request_started_at_;
   ReplyAndDestroySelf(elapsed, true /* server_error */);
   // "this" is already destroyed here.
 }

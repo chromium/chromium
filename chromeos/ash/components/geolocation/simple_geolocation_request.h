@@ -113,7 +113,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 
   // When request was actually started.
-  base::Time request_started_at_;
+  base::TimeTicks request_started_at_;
 
   base::TimeDelta retry_sleep_on_server_error_;
 
