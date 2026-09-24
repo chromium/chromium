@@ -201,6 +201,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // drawing them into their target.
   // Note a layer with filter is more expensive than two layers layers with
   // opacity blending, so always prefer to use additional layers if possible.
+  // Filters must not be set on the root layer.
   void SetFilters(std::vector<Filter> filters);
 
   // Set the rounded corner radii in layer space (same as `SetBounds`). It

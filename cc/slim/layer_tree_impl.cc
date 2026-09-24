@@ -579,7 +579,8 @@ void LayerTreeImpl::GenerateCompositorFrame(
        /*parent_transform_to_target=*/gfx::Transform(),
        /*parent_clip_in_target=*/nullptr, gfx::RectF(device_viewport_rect_),
        /*opacity=*/1.0f);
-  render_pass->filters = root_->GetFilters();
+  // The root layer should not have any filters applied.
+  CHECK(root_->GetFilters().IsEmpty());
 
   bool background_opaque = background_color_.isOpaque();
   bool viewport_fully_occluded =

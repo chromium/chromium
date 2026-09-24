@@ -363,6 +363,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // Set or get the list of filter effects to be applied to the contents of the
   // layer and its subtree (together as a single composited entity) when
   // drawing them into their target.
+  // Filters must not be set on the root layer.
   void SetFilters(const FilterOperations& filters);
   FilterOperations filters() const {
     return layer_tree_inputs() ? layer_tree_inputs()->filters
@@ -373,6 +374,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // Set or get the list of filters that should be applied to the content this
   // layer and its subtree will be drawn into. The effect is clipped by
   // backdrop_filter_bounds.
+  // Backdrop filters must not be set on the root layer.
   void SetBackdropFilters(const FilterOperations& filters);
   FilterOperations backdrop_filters() const {
     return layer_tree_inputs() ? layer_tree_inputs()->backdrop_filters
@@ -380,6 +382,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   }
 
   // For layer tree mode only.
+  // Backdrop filter bounds must not be set on the root layer.
   void SetBackdropFilterBounds(const SkPath& backdrop_filter_bounds);
   void SetBackdropFilterBounds(const gfx::RRectF& backdrop_filter_bounds) {
     SetBackdropFilterBounds(SkPath::RRect(SkRRect(backdrop_filter_bounds)));

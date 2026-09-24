@@ -184,16 +184,16 @@ TEST_F(LayerImplTest, VerifyNeedsUpdateDrawProperties) {
 
   // Related filter functions.
   VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(
-      host_impl()->active_tree()->SetFilterMutated(root->element_id(),
+      host_impl()->active_tree()->SetFilterMutated(layer->element_id(),
                                                    arbitrary_filters));
   VERIFY_NO_NEEDS_UPDATE_DRAW_PROPERTIES(
-      host_impl()->active_tree()->SetFilterMutated(root->element_id(),
+      host_impl()->active_tree()->SetFilterMutated(layer->element_id(),
                                                    arbitrary_filters));
   VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(
-      host_impl()->active_tree()->SetFilterMutated(root->element_id(),
+      host_impl()->active_tree()->SetFilterMutated(layer->element_id(),
                                                    FilterOperations()));
   VERIFY_NEEDS_UPDATE_DRAW_PROPERTIES(
-      host_impl()->active_tree()->SetFilterMutated(root->element_id(),
+      host_impl()->active_tree()->SetFilterMutated(layer->element_id(),
                                                    arbitrary_filters));
 
   // Related scrolling functions.

@@ -1226,6 +1226,10 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   base::flat_set<blink::ViewTransitionToken> capture_view_transition_tokens =
       active_tree()->GetCaptureViewTransitionTokens();
 
+  // The root surface should not have any filters applied to it.
+  CHECK(active_tree_->RootRenderSurface()->Filters().IsEmpty());
+  CHECK(active_tree_->RootRenderSurface()->BackdropFilters().IsEmpty());
+
   // Create the render passes in dependency order.
   size_t render_surface_list_size = frame->render_surface_list->size();
   for (size_t i = 0; i < render_surface_list_size; ++i) {

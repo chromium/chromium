@@ -2118,18 +2118,29 @@ SINGLE_THREAD_TEST_F(LayerTreeHostTestAnimationTransformMutatedUsingLayerLists);
 class LayerTreeHostTestAnimationFilterMutatedNotUsingLayerLists
     : public LayerTreeHostTest {
  protected:
+  void SetupTree() override {
+    root_ = Layer::Create();
+    child_ = Layer::Create();
+    root_->AddChild(child_);
+    layer_tree_host()->SetRootLayer(root_);
+    LayerTreeHostTest::SetupTree();
+  }
+
   void BeginTest() override {
-    Layer* root = layer_tree_host()->root_layer();
     FilterOperations filters;
-    EXPECT_EQ(FilterOperations(), root->filters());
+    EXPECT_EQ(FilterOperations(), child_->filters());
     filters.Append(FilterOperation::CreateOpacityFilter(0.5f));
     layer_tree_host()->SetElementFilterMutated(
-        root->element_id(), ElementListType::ACTIVE, filters);
+        child_->element_id(), ElementListType::ACTIVE, filters);
     // When not using layer lists, filters are just stored directly on the
     // layer.
-    EXPECT_EQ(filters, root->filters());
+    EXPECT_EQ(filters, child_->filters());
     EndTest();
   }
+
+ private:
+  scoped_refptr<Layer> root_;
+  scoped_refptr<Layer> child_;
 };
 
 SINGLE_THREAD_TEST_F(LayerTreeHostTestAnimationFilterMutatedNotUsingLayerLists);
@@ -2142,27 +2153,42 @@ class LayerTreeHostTestAnimationFilterMutatedUsingLayerLists
   }
 
  protected:
+  void SetupTree() override {
+    root_ = Layer::Create();
+    child_ = Layer::Create();
+    root_->AddChild(child_);
+    layer_tree_host()->SetRootLayer(root_);
+    LayerTreeHostTest::SetupTree();
+    CopyProperties(root_.get(), child_.get());
+    auto& effect_node = CreateEffectNode(child_.get());
+    effect_node.render_surface_reason = RenderSurfaceReason::kTest;
+  }
+
   void BeginTest() override {
-    Layer* root = layer_tree_host()->root_layer();
-    EXPECT_EQ(FilterOperations(), layer_tree_host()
-                                      ->property_trees()
-                                      ->effect_tree()
-                                      .FindNodeFromElementId(root->element_id())
-                                      ->filters);
+    EXPECT_EQ(FilterOperations(),
+              layer_tree_host()
+                  ->property_trees()
+                  ->effect_tree()
+                  .FindNodeFromElementId(child_->element_id())
+                  ->filters);
 
     FilterOperations filters;
     filters.Append(FilterOperation::CreateOpacityFilter(0.5f));
     layer_tree_host()->SetElementFilterMutated(
-        root->element_id(), ElementListType::ACTIVE, filters);
+        child_->element_id(), ElementListType::ACTIVE, filters);
 
     // The filter should have been set directly on the effect node instead.
     EXPECT_EQ(filters, layer_tree_host()
                            ->property_trees()
                            ->effect_tree()
-                           .FindNodeFromElementId(root->element_id())
+                           .FindNodeFromElementId(child_->element_id())
                            ->filters);
     EndTest();
   }
+
+ private:
+  scoped_refptr<Layer> root_;
+  scoped_refptr<Layer> child_;
 };
 
 SINGLE_THREAD_TEST_F(LayerTreeHostTestAnimationFilterMutatedUsingLayerLists);
