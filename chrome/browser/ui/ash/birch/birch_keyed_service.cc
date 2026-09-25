@@ -74,14 +74,19 @@ BirchKeyedService::BirchKeyedService(
     signin::IdentityManager* identity_manager,
     history::HistoryService* history_service,
     favicon::FaviconService* favicon_service,
-    send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_sync_service)
+    send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_sync_service,
+    syncer::SyncService* sync_service,
+    sync_sessions::SessionSyncService* session_sync_service)
     : profile_(profile),
       favicon_service_(favicon_service),
       calendar_provider_(
           std::make_unique<BirchCalendarProvider>(profile, identity_manager)),
       file_suggest_provider_(
           std::make_unique<BirchFileSuggestProvider>(profile)),
-      recent_tabs_provider_(std::make_unique<BirchRecentTabsProvider>(profile)),
+      recent_tabs_provider_(
+          std::make_unique<BirchRecentTabsProvider>(profile,
+                                                    sync_service,
+                                                    session_sync_service)),
       last_active_provider_(
           std::make_unique<BirchLastActiveProvider>(history_service)),
       most_visited_provider_(

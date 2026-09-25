@@ -9,11 +9,10 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/callback_list.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/session_sync_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -45,18 +44,22 @@ BirchTabItem::DeviceFormFactor GetTabItemFormFactor(
 
 }  // namespace
 
-BirchRecentTabsProvider::BirchRecentTabsProvider(Profile* profile)
-    : profile_(profile) {}
+BirchRecentTabsProvider::BirchRecentTabsProvider(
+    Profile* profile,
+    syncer::SyncService* sync_service,
+    sync_sessions::SessionSyncService* session_sync_service)
+    : profile_(profile),
+      sync_service_(sync_service),
+      session_sync_service_(CHECK_DEREF(session_sync_service)) {}
 
 BirchRecentTabsProvider::~BirchRecentTabsProvider() = default;
 
 void BirchRecentTabsProvider::RequestBirchDataFetch() {
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
-  // `sync_service_` can be null in some tests, so check that here.
+  // `sync_service_` is null when sync is disabled by command line, so check
+  // that here.
   bool tab_sync_enabled =
-      sync_service && sync_service->GetUserSettings()->GetSelectedTypes().Has(
-                          syncer::UserSelectableType::kTabs);
+      sync_service_ && sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kTabs);
   if (!tab_sync_enabled) {
     // Complete the request with an empty set of tabs when tab sync is
     // disabled
@@ -73,16 +76,14 @@ void BirchRecentTabsProvider::RequestBirchDataFetch() {
     return;
   }
 
-  auto* session_sync_service =
-      SessionSyncServiceFactory::GetInstance()->GetForProfile(profile_);
   sync_sessions::OpenTabsUIDelegate* open_tabs =
-      session_sync_service->GetOpenTabsUIDelegate();
+      session_sync_service_->GetOpenTabsUIDelegate();
 
   if (!open_tabs) {
     // When no open tabs delegate is available, return early and wait for a
     // foreign session change to occur before attempting to fetch tab items.
     foreign_sessions_subscription_ =
-        session_sync_service->SubscribeToForeignSessionsChanged(
+        session_sync_service_->SubscribeToForeignSessionsChanged(
             base::BindRepeating(
                 &BirchRecentTabsProvider::OnForeignSessionsChanged,
                 weak_factory_.GetWeakPtr()));

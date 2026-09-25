@@ -33,6 +33,14 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
+namespace sync_sessions {
+class SessionSyncService;
+}  // namespace sync_sessions
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace ash {
 
 class BirchCalendarProvider;
@@ -53,12 +61,14 @@ class BirchKeyedService : public KeyedService,
                           public BirchClient {
  public:
   // `favicon_service` must be non-null and must outlive `this`.
-  BirchKeyedService(Profile* profile,
-                    signin::IdentityManager* identity_manager,
-                    history::HistoryService* history_service,
-                    favicon::FaviconService* favicon_service,
-                    send_tab_to_self::SendTabToSelfSyncService*
-                        send_tab_to_self_sync_service);
+  BirchKeyedService(
+      Profile* profile,
+      signin::IdentityManager* identity_manager,
+      history::HistoryService* history_service,
+      favicon::FaviconService* favicon_service,
+      send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_sync_service,
+      syncer::SyncService* sync_service,
+      sync_sessions::SessionSyncService* session_sync_service);
   BirchKeyedService(const BirchKeyedService&) = delete;
   BirchKeyedService& operator=(const BirchKeyedService&) = delete;
   ~BirchKeyedService() override;

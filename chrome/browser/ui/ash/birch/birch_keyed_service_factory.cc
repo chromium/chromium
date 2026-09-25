@@ -70,7 +70,9 @@ BirchKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
                                            ServiceAccessType::EXPLICIT_ACCESS),
       FaviconServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      SendTabToSelfSyncServiceFactory::GetForProfile(profile));
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
+      SessionSyncServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace ash
