@@ -586,7 +586,10 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
   is_cleared_ = true;
   auto* image_provider = GetOrCreateCanvasImageProvider();
 
-  auto access = resource_->BeginAccess(/*readonly=*/false);
+  auto client_si = resource()->GetSharedImage();
+  auto access = client_si->BeginRasterAccess(RasterInterface(),
+                                             resource()->acquire_sync_token(),
+                                             /*readonly=*/false);
   gpu::raster::RasterInterface* ri = RasterInterface();
   SkColor4f background_color = GetAlphaType() == kOpaque_SkAlphaType
                                    ? SkColors::kBlack
@@ -614,7 +617,7 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
       /*msaa_sample_count=*/use_msaa ? 1 : 0,
       use_msaa ? gpu::raster::MsaaMode::kDMSAA : gpu::raster::MsaaMode::kNoMSAA,
       can_use_lcd_text, /*visible=*/true, GetColorSpace(),
-      /*hdr_headroom=*/0.f, resource()->GetSharedImage()->mailbox().name);
+      /*hdr_headroom=*/0.f, client_si->mailbox().name);
 
   ri->RasterCHROMIUM(list.get(), image_provider, size, full_raster_rect,
                      playback_rect, post_translate, post_scale,
@@ -623,7 +626,9 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
                      &max_op_size_hint, custom_callback);
 
   ri->EndRasterCHROMIUM();
-  resource()->EndAccess(std::move(access));
+  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
+  resource()->SetReleaseSyncToken(sync_token);
+  client_si->UpdateDestructionSyncToken(sync_token);
 }
 
 void Canvas2DResourceProvider::OnFlushForImage(
