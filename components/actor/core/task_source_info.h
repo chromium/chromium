@@ -26,6 +26,7 @@ struct TaskSourceInfo {
     kExperimentalActor = 2,
     kGlic = 3,
     kContextualTasks = 4,
+    kTtc = 5,
   };
 
   TaskSourceInfo(Client type, std::optional<SourceDefinedId> id);

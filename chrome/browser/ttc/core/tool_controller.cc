@@ -17,6 +17,8 @@
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/common/actor/action_result.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -28,11 +30,11 @@
 
 namespace ttc {
 
-ToolController::ToolController(Profile* profile) : profile_(profile) {}
+ToolController::ToolController(TtcKeyedService& service) : service_(service) {}
 
 ToolController::~ToolController() {
   if (!task_id_.is_null()) {
-    auto* actor_service = actor::ActorKeyedService::Get(profile_);
+    auto* actor_service = actor::ActorKeyedService::Get(GetProfile());
     CHECK(actor_service);
     actor_service->StopTask(task_id_,
                             actor::ActorTask::StoppedReason::kTaskComplete);
@@ -84,6 +86,10 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   return tools;
 }
 
+Profile* ToolController::GetProfile() {
+  return service_->profile();
+}
+
 void ToolController::EnsureTaskCreated(
     actor::ActorKeyedService* actor_service) {
   // TODO(b/552544497): Ideally the task could only be stopped by `this`, but
@@ -93,12 +99,11 @@ void ToolController::EnsureTaskCreated(
     return;
   }
 
-  // TODO(b/544821996): Create and use a new Client enum value.
   // TODO(b/544821996): Provide an ActorTaskDelegate.
-  task_id_ = actor_service->CreateTask(
-      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kExperimentalActor,
-                            "ai_overlay_dialog"),
-      actor::GetNullEnterprisePolicyChecker());
+  task_id_ = actor_service->CreateTaskWithOptions(
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc, "ttc"),
+      actor::GetNullEnterprisePolicyChecker(), /*options=*/nullptr,
+      /*delegate=*/nullptr, &service_->actor_ui_state_manager());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -125,7 +130,8 @@ void ToolController::OpenUrl(const base::DictValue& arguments,
   // TODO(b/561651267): Get BrowserWindowInterface* from SessionControllerImpl
   // (or a class that manages the active window for the session).
   BrowserWindowInterface* browser = nullptr;
-  if (auto* collection = ProfileBrowserCollection::GetForProfile(profile_)) {
+  if (auto* collection =
+          ProfileBrowserCollection::GetForProfile(GetProfile())) {
     browser = collection->GetLastActiveBrowser();
   }
   if (!browser) {
@@ -136,7 +142,7 @@ void ToolController::OpenUrl(const base::DictValue& arguments,
   }
 
   actor::ActorKeyedService* actor_service =
-      actor::ActorKeyedService::Get(profile_);
+      actor::ActorKeyedService::Get(GetProfile());
   if (!actor_service) {
     // No actor error code describes an unavailable ActorKeyedService.
     std::move(callback).Run(ToolResponse::Error("Something went wrong"));

@@ -49,7 +49,7 @@ std::unique_ptr<SessionView> MakeSessionView(
 SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
     : service_(service),
       session_view_(MakeSessionView(*this)),
-      tool_controller_(service.profile()) {
+      tool_controller_(service) {
   // Created here rather than in the initializer list because MakeConversation()
   // calls back into GetProfile() on this object.
   conversation_ =

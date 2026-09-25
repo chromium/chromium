@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -21,9 +21,13 @@ class Profile;
 
 namespace ttc {
 
+class TtcKeyedService;
+
 class ToolController {
  public:
-  explicit ToolController(Profile* profile);
+  // TODO(b/563468348): Change this to take a SessionController& instead once
+  // we remove the AiOverlayTools codepath.
+  explicit ToolController(TtcKeyedService& service);
   ~ToolController();
 
   void ProcessToolCall(const ToolRequest& tool_request,
@@ -34,6 +38,9 @@ class ToolController {
   std::vector<ToolDefinition> GetToolDefinitions();
 
  private:
+  Profile* GetProfile();
+
+  // Creates the actor task used to invoke tools, if one isn't already active.
   void EnsureTaskCreated(actor::ActorKeyedService* actor_service);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -44,7 +51,9 @@ class ToolController {
       actor::TabObservationStrategy strategy);
 #endif
 
-  raw_ptr<Profile> profile_;
+  // Indirectly owns this object (via SessionController).
+  const raw_ref<TtcKeyedService> service_;
+
   actor::TaskId task_id_;
   base::WeakPtrFactory<ToolController> weak_factory_{this};
 };

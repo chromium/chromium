@@ -26,6 +26,7 @@ namespace ttc {
 class Conversation;
 class SessionController;
 class SessionControllerImpl;
+class TtcActorUiStateManager;
 
 class TtcKeyedService : public KeyedService {
  public:
@@ -72,11 +73,18 @@ class TtcKeyedService : public KeyedService {
 
   SessionController* session_controller() { return session_controller_.get(); }
 
+  // The ActorUiStateManagerInterface implementation used by actor tasks created
+  // for TTC sessions.
+  TtcActorUiStateManager& actor_ui_state_manager();
+
   base::WeakPtr<TtcKeyedService> GetWeakPtr();
 
  private:
   raw_ptr<Profile> profile_;
   ConversationFactory conversation_factory_;
+  // Must outlive `session_controller_`, which indirectly holds a reference to
+  // it, as do the actor tasks created during a session.
+  std::unique_ptr<TtcActorUiStateManager> actor_ui_state_manager_;
   std::unique_ptr<SessionController> session_controller_;
 
   base::RepeatingCallbackList<void(ServiceState)> state_changed_callbacks_;

@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/app/public/make_conversation.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
+#include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 
 namespace ttc {
@@ -23,7 +25,8 @@ TtcKeyedService* TtcKeyedService::Get(content::BrowserContext* context) {
 TtcKeyedService::TtcKeyedService(Profile* profile,
                                  ConversationFactory conversation_factory)
     : profile_(profile),
-      conversation_factory_(std::move(conversation_factory)) {}
+      conversation_factory_(std::move(conversation_factory)),
+      actor_ui_state_manager_(std::make_unique<TtcActorUiStateManager>()) {}
 
 TtcKeyedService::~TtcKeyedService() = default;
 
@@ -73,6 +76,10 @@ std::unique_ptr<Conversation> TtcKeyedService::MakeConversation(
                             : MakeConversationImpl(session_controller);
   CHECK(conversation);
   return conversation;
+}
+
+TtcActorUiStateManager& TtcKeyedService::actor_ui_state_manager() {
+  return CHECK_DEREF(actor_ui_state_manager_.get());
 }
 
 base::WeakPtr<TtcKeyedService> TtcKeyedService::GetWeakPtr() {

@@ -35,6 +35,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/tool_controller.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/tools/generated_tool_definitions.h"
@@ -135,7 +136,12 @@ AiOverlayTools::AiOverlayTools(
       browser_(browser),
       page_context_monitor_(page_context_monitor) {
   if (features::kAiOverlayDialogUsesActor.Get()) {
-    tool_controller_ = std::make_unique<ToolController>(browser_->GetProfile());
+    // The actor backed tools are driven by TTC. Without it, fall back to the
+    // non-actor implementations below.
+    if (TtcKeyedService* service =
+            TtcKeyedService::Get(browser_->GetProfile())) {
+      tool_controller_ = std::make_unique<ToolController>(*service);
+    }
   }
 }
 
