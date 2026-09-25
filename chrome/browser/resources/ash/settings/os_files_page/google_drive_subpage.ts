@@ -107,15 +107,6 @@ export class SettingsGoogleDriveSubpageElement extends
         readonly: true,
         value: () => loadTimeData.getBoolean('enableDriveFsBulkPinning'),
       },
-
-      /**
-       * Indicates whether the `DriveFsMirroring` flag is enabled.
-       */
-      isDriveFsMirrorSyncEnabled_: {
-        type: Boolean,
-        readonly: true,
-        value: () => loadTimeData.getBoolean('enableDriveFsMirrorSync'),
-      },
     };
   }
 
@@ -192,7 +183,6 @@ export class SettingsGoogleDriveSubpageElement extends
   private updateContentCacheSizeInterval_: number = -1;
 
   declare private readonly isDriveFsBulkPinningEnabled_: boolean;
-  declare private readonly isDriveFsMirrorSyncEnabled_: boolean;
 
   /**
    * Returns the browser proxy page handler (to invoke functions).
@@ -611,11 +601,6 @@ export class SettingsGoogleDriveSubpageElement extends
    */
   private onCleanUpStorage_(): void {
     this.dialogType_ = ConfirmationDialogType.BULK_PINNING_CLEAN_UP_STORAGE;
-  }
-
-  /** Gets the mirror sync sub label. */
-  private getMirrorSyncDescription_(): string {
-    return this.i18n('googleDriveMirrorSyncDescription');
   }
 }
 

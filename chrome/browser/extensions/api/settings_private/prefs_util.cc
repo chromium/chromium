@@ -381,8 +381,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[drive::prefs::kDisableDriveOverCellular] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[drive::prefs::kDriveFsEnableMirrorSync] =
-      settings_api::PrefType::kBoolean;
 #endif
   (*s_allowlist)[::prefs::kDownloadBubblePartialViewEnabled] =
       settings_api::PrefType::kBoolean;

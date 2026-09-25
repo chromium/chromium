@@ -101,10 +101,6 @@ function updateVerboseLogging(enabled) {
   $('verbose-logging-toggle').checked = enabled;
 }
 
-function updateMirroring(enabled) {
-  $('mirroring-toggle').checked = enabled;
-}
-
 function updateBulkPinning(enabled) {
   $('bulk-pinning-toggle').checked = enabled;
 }
@@ -259,58 +255,6 @@ function updateOtherServiceLogsUrl(url) {
 }
 
 /**
- * Adds a new row to the syncing paths table upon successful completion.
- * @param {string} path The path that was synced.
- * @param {string} status The drive::FileError as a string without the
- *     "FILE_ERROR_" prefix.
- */
-function onAddSyncPath(path, status) {
-  $('mirroring-path-status').textContent = status;
-  if (status !== 'OK') {
-    console.error(`Cannot add sync path '${path}': ${status}`);
-    return;
-  }
-
-  // Avoid adding paths to the table if they already exist.
-  if ($(`mirroring-${path}`)) {
-    return;
-  }
-
-  const newRow = document.createElement('tr');
-  newRow.id = `mirroring-${path}`;
-  const deleteButton = createElementFromText('button', 'Delete');
-  deleteButton.addEventListener('click', function(e) {
-    e.preventDefault();
-    chrome.send('removeSyncPath', [path]);
-  });
-  const deleteCell = document.createElement('td');
-  deleteCell.appendChild(deleteButton);
-  newRow.appendChild(deleteCell);
-  const pathCell = createElementFromText('td', path);
-  newRow.appendChild(pathCell);
-  $('mirror-sync-paths').appendChild(newRow);
-}
-
-/**
- * Remove a path from the syncing table.
- * @param {string} path The path that was synced.
- * @param {string} status The drive::FileError as a string without the
- *     "FILE_ERROR_" prefix.
- */
-function onRemoveSyncPath(path, status) {
-  if (status !== 'OK') {
-    console.error(`Cannot remove sync path '${path}': ${status}`);
-    return;
-  }
-
-  if (!$(`mirroring-${path}`)) {
-    return;
-  }
-
-  $(`mirroring-${path}`).remove();
-}
-
-/**
  * Creates an element named |elementName| containing the content |text|.
  * @param {string} elementName Name of the new element to be created.
  * @param {string} text Text to be contained in the new element.
@@ -403,7 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
   addWebUiListener('updatePathConfigurations', updatePathConfigurations);
   addWebUiListener('updateBulkPinningVisible', updateBulkPinningVisible);
   addWebUiListener('updateVerboseLogging', updateVerboseLogging);
-  addWebUiListener('updateMirroring', updateMirroring);
   addWebUiListener('updateBulkPinning', updateBulkPinning);
   addWebUiListener('onBulkPinningProgress', onBulkPinningProgress);
   addWebUiListener('updateStartupArguments', updateStartupArguments);
@@ -414,8 +357,6 @@ document.addEventListener('DOMContentLoaded', () => {
   addWebUiListener('updateEventLog', updateEventLog);
   addWebUiListener('updateServiceLog', updateServiceLog);
   addWebUiListener('updateOtherServiceLogsUrl', updateOtherServiceLogsUrl);
-  addWebUiListener('onAddSyncPath', onAddSyncPath);
-  addWebUiListener('onRemoveSyncPath', onRemoveSyncPath);
   addWebUiListener(
       'updateStartupArgumentsStatus', updateStartupArgumentsStatus);
   addWebUiListener('updateResetStatus', updateResetStatus);
@@ -438,11 +379,6 @@ document.addEventListener('DOMContentLoaded', () => {
           'change',
           e => chrome.send('setVerboseLoggingEnabled', [e.target.checked]));
 
-  $('mirroring-toggle')
-      .addEventListener(
-          'change',
-          e => chrome.send('setMirroringEnabled', [e.target.checked]));
-
   $('bulk-pinning-toggle')
       .addEventListener(
           'change',
@@ -452,12 +388,6 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     $('arguments-status-text').textContent = 'applying...';
     chrome.send('setStartupArguments', [$('startup-arguments-input').value]);
-  });
-
-  $('mirror-path-form').addEventListener('submit', e => {
-    e.preventDefault();
-    $('mirroring-path-status').textContent = 'adding...';
-    chrome.send('addSyncPath', [$('mirror-path-input').value]);
   });
 
   $('button-enable-tracing')

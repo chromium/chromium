@@ -109,14 +109,6 @@ std::string ToString(const T x) {
   return (std::ostringstream() << drivefs::pinning::NiceNum << x).str();
 }
 
-std::string ToString(const drive::FileError error) {
-  std::string s = drive::FileErrorToString(error);
-  if (const std::string_view prefix = "FILE_ERROR_"; s.starts_with(prefix)) {
-    s.erase(0, prefix.size());
-  }
-  return s;
-}
-
 template <typename T>
 std::string ToPercent(const T num, const T total) {
   if (num >= 0 && total > 0) {
@@ -319,20 +311,6 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
             &DriveInternalsWebUIHandler::SetVerboseLoggingEnabled,
             weak_ptr_factory_.GetWeakPtr()));
     web_ui()->RegisterMessageCallback(
-        "setMirroringEnabled",
-        base::BindRepeating(&DriveInternalsWebUIHandler::SetMirroringEnabled,
-                            weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
-        "addSyncPath",
-        base::BindRepeating(&DriveInternalsWebUIHandler::ToggleSyncPath,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            drivefs::mojom::MirrorPathStatus::kStart));
-    web_ui()->RegisterMessageCallback(
-        "removeSyncPath",
-        base::BindRepeating(&DriveInternalsWebUIHandler::ToggleSyncPath,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            drivefs::mojom::MirrorPathStatus::kStop));
-    web_ui()->RegisterMessageCallback(
         "enableTracing",
         base::BindRepeating(&DriveInternalsWebUIHandler::SetTracingEnabled,
                             weak_ptr_factory_.GetWeakPtr(), true));
@@ -408,7 +386,6 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     UpdateCacheContentsSection();
     UpdateInFlightOperationsSection();
     UpdateDriveDebugSection();
-    UpdateMirrorSyncSection();
 
     // When the drive-internals page is reloaded by the reload key, the page
     // content is recreated, but this WebUI object is not (instead, OnPageLoaded
@@ -519,80 +496,6 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     } else {
       LOG(ERROR) << "Home directory not found";
     }
-  }
-
-  void UpdateMirrorSyncSection() {
-    if (!features::IsDriveFsMirroringEnabled()) {
-      SetSectionEnabled("mirror-sync-section", false);
-      return;
-    }
-
-    SetSectionEnabled("mirror-sync-section", true);
-
-    bool mirroring_enabled =
-        GetPrefs()->GetBoolean(drive::prefs::kDriveFsEnableMirrorSync);
-    FireWebUIListenerIfAllowed("updateMirroring",
-                               base::Value(mirroring_enabled));
-    SetSectionEnabled("mirror-sync-paths", mirroring_enabled);
-    SetSectionEnabled("mirror-path-form", mirroring_enabled);
-    if (!mirroring_enabled) {
-      return;
-    }
-
-    DriveIntegrationService* const service = GetIntegrationService();
-    if (!service) {
-      return;
-    }
-
-    service->GetSyncingPaths(
-        base::BindOnce(&DriveInternalsWebUIHandler::OnGetSyncingPaths,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnGetSyncingPaths(drive::FileError status,
-                         const std::vector<FilePath>& paths) {
-    if (status != drive::FILE_ERROR_OK) {
-      LOG(ERROR) << "Error retrieving syncing paths: " << status;
-      return;
-    }
-    for (const FilePath& sync_path : paths) {
-      FireWebUIListenerIfAllowed("onAddSyncPath",
-                                 base::Value(sync_path.value()),
-                                 base::Value(ToString(drive::FILE_ERROR_OK)));
-    }
-  }
-
-  void ToggleSyncPath(drivefs::mojom::MirrorPathStatus status,
-                      const base::ListValue& args) {
-    if (!features::IsDriveFsMirroringEnabled()) {
-      return;
-    }
-
-    DriveIntegrationService* const service = GetIntegrationService();
-    if (!service) {
-      return;
-    }
-
-    if (args.size() == 1 && args[0].is_string()) {
-      const FilePath sync_path(args[0].GetString());
-      auto callback =
-          base::BindOnce((status == drivefs::mojom::MirrorPathStatus::kStart)
-                             ? &DriveInternalsWebUIHandler::OnAddSyncPath
-                             : &DriveInternalsWebUIHandler::OnRemoveSyncPath,
-                         weak_ptr_factory_.GetWeakPtr(), sync_path);
-      service->ToggleSyncForPath(sync_path, status, std::move(callback));
-    }
-  }
-
-  void OnAddSyncPath(const FilePath& sync_path, drive::FileError status) {
-    FireWebUIListenerIfAllowed("onAddSyncPath", base::Value(sync_path.value()),
-                               base::Value(ToString(status)));
-  }
-
-  void OnRemoveSyncPath(const FilePath& sync_path, drive::FileError status) {
-    FireWebUIListenerIfAllowed("onRemoveSyncPath",
-                               base::Value(sync_path.value()),
-                               base::Value(ToString(status)));
   }
 
   void UpdateBulkPinningDeveloperSection() {
@@ -708,7 +611,6 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
         drive::prefs::kDriveFsWasLaunchedAtLeastOnce,
         drive::prefs::kDriveFsPinnedMigrated,
         drive::prefs::kDriveFsEnableVerboseLogging,
-        drive::prefs::kDriveFsEnableMirrorSync,
     };
 
     PrefService* const prefs = GetPrefs();
@@ -837,21 +739,6 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       GetPrefs()->SetBoolean(drive::prefs::kDriveFsEnableVerboseLogging,
                              enabled);
       RestartDrive(base::ListValue());
-    }
-  }
-
-  void SetMirroringEnabled(const base::ListValue& args) {
-    AllowJavascript();
-    DriveIntegrationService* const service = GetIntegrationService();
-    if (!service) {
-      return;
-    }
-
-    if (args.size() == 1 && args[0].is_bool()) {
-      bool enabled = args[0].GetBool();
-      GetPrefs()->SetBoolean(drive::prefs::kDriveFsEnableMirrorSync, enabled);
-      SetSectionEnabled("mirror-sync-paths", enabled);
-      SetSectionEnabled("mirror-path-form", enabled);
     }
   }
 

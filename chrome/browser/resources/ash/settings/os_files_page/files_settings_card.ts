@@ -47,7 +47,6 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
   static get properties() {
     return {
       bulkPinningPrefEnabled_: Boolean,
-      mirrorSyncPrefEnabled_: Boolean,
 
       driveDisabled_: Boolean,
 
@@ -55,14 +54,6 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
         type: Boolean,
         value: () => {
           return loadTimeData.getBoolean('enableDriveFsBulkPinning');
-        },
-        readOnly: true,
-      },
-
-      isMirrorSyncEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('enableDriveFsMirrorSync');
         },
         readOnly: true,
       },
@@ -113,15 +104,12 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
        */
       'updateDriveDisabled_(prefs.gdata.disabled.value)',
       'updateBulkPinningPrefEnabled_(prefs.drivefs.bulk_pinning_enabled.value)',
-      'updateMirrorSyncPrefEnabled_(prefs.drivefs.enable_mirror_sync.value)',
     ];
   }
 
   declare private bulkPinningPrefEnabled_: boolean;
-  declare private mirrorSyncPrefEnabled_: boolean;
   declare private driveDisabled_: boolean;
   declare private isBulkPinningEnabled_: boolean;
-  declare private isMirrorSyncEnabled_: boolean;
   private oneDriveBrowserProxy_: OneDriveBrowserProxy|null = null;
   declare private oneDriveConnectionState_: OneDriveConnectionState;
   private oneDriveEmailAddress_: string|null = null;
@@ -195,17 +183,12 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
     this.bulkPinningPrefEnabled_ = enabled;
   }
 
-  private updateMirrorSyncPrefEnabled_(enabled: boolean): void {
-    this.mirrorSyncPrefEnabled_ = enabled;
-  }
-
   private getGoogleDriveSubLabelInnerHtml_(): TrustedHTML {
     if (this.driveDisabled_) {
       return this.i18nAdvanced('googleDriveNotSignedInSublabel');
     }
 
-    return ((this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) ||
-            (this.isMirrorSyncEnabled_ && this.mirrorSyncPrefEnabled_)) ?
+    return (this.isBulkPinningEnabled_ && this.bulkPinningPrefEnabled_) ?
         this.i18nAdvanced('googleDriveFileSyncOnSublabel') :
         this.i18nAdvanced('googleDriveSignedInAs', {attrs: ['id']});
   }
