@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
+#include "chrome/browser/ui/startup/automation_infobar_delegate.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
@@ -128,6 +129,7 @@ struct TriggerRequirements {
 TriggerRequirements RequirementsFor(InfoBarType type) {
   switch (type) {
     case InfoBarType::kAlternateNav:
+    case InfoBarType::kAutomation:
     case InfoBarType::kBadFlags:
     case InfoBarType::kCollectedCookies:
     case InfoBarType::kDevTools:
@@ -191,26 +193,44 @@ void InfoBarInternalsHandler::PerformInfoBarAction(
 void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
   // Please keep the entries in alphabetical order, based on the type.
   std::vector<InfoBarEntryPtr> infobar_list;
+  // Adds an infobar exposing multiple buttons.
+  auto add_entry_with_actions =
+      [&infobar_list](
+          InfoBarType type, const std::string& name,
+          const std::string& description,
+          std::vector<std::pair<InfoBarAction, std::string>> actions) {
+        std::vector<InfoBarActionEntryPtr> action_entries;
+        for (auto& [action, label] : actions) {
+          action_entries.emplace_back(
+              InfoBarActionEntry::New(action, std::move(label)));
+        }
+        infobar_list.emplace_back(InfoBarEntry::New(type, name, description,
+                                                    std::move(action_entries)));
+      };
   // Adds an infobar exposing a single button. `action` defaults to showing the
   // infobar on the active tab (suitable for tab-scoped infobar);
   // pass kShowGlobally for infobars shown in global scope.
   // `action` describes what PerformInfoBarActionInternal() does for
   // this type - keep the two in sync.
-  auto add_entry = [&infobar_list](
+  auto add_entry = [&add_entry_with_actions](
                        InfoBarType type, const std::string& name,
                        const std::string& description,
                        InfoBarAction action = InfoBarAction::kShowForCurrentTab,
                        const std::string& label = "Trigger") {
-    std::vector<InfoBarActionEntryPtr> actions;
-    actions.emplace_back(InfoBarActionEntry::New(action, label));
-    infobar_list.emplace_back(
-        InfoBarEntry::New(type, name, description, std::move(actions)));
+    add_entry_with_actions(type, name, description, {{action, label}});
   };
   if (base::FeatureList::IsEnabled(features::kInfoBarInlineLinks)) {
     add_entry(InfoBarType::kAlternateNav, "Alternate Nav",
               "The Alternate Nav infobar is shown when a user searches for a "
               "term they may have meant to navigate to.");
   }
+  add_entry_with_actions(
+      InfoBarType::kAutomation, "Automation",
+      "The Automation infobar warns users when Chrome is controlled by "
+      "automated test software. This infobar can be shown globally "
+      "or on the active tab depending on the use case.",
+      {{InfoBarAction::kShowGlobally, "Trigger Globally"},
+       {InfoBarAction::kShowForCurrentTab, "Trigger Tab-scoped"}});
   add_entry(InfoBarType::kBadFlags, "Bad Flags",
             "The Bad Flags infobar warns users that they are running Chrome "
             "with an unsupported command-line flag.");
@@ -368,6 +388,43 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
       ChromeOmniboxNavigationObserver::ShowAlternativeNavInfoBar(
           web_contents, u"test", match, GURL("https://youtube.com/"));
       return true;
+    }
+    case InfoBarType::kAutomation: {
+      if (action == InfoBarAction::kShowForCurrentTab) {
+        if (infobars::IsInfoBarMigrated(
+                infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE)) {
+          if (!browser_infobar_manager || !active_tab) {
+            return false;
+          }
+          infobars::InfoBarShowParams params;
+          params.scope = infobars::InfoBarScope::kTab;
+          return browser_infobar_manager->Show(
+                     active_tab,
+                     infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE,
+                     std::move(params)) != nullptr;
+        } else {
+          auto* infobar_manager =
+              infobars::ContentInfoBarManager::FromWebContents(web_contents);
+          if (!infobar_manager) {
+            return false;
+          }
+          AutomationInfoBarDelegate::Create(infobar_manager);
+          return true;
+        }
+      } else if (action == InfoBarAction::kShowGlobally) {
+        if (infobars::IsInfoBarMigrated(
+                infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE)) {
+          if (!browser_infobar_manager) {
+            return false;
+          }
+          return browser_infobar_manager->ShowGlobally(
+              infobars::InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE);
+        } else {
+          AutomationInfoBarDelegate::Create();
+          return true;
+        }
+      }
+      return false;
     }
     case InfoBarType::kBadFlags: {
       ShowBadFlagsInfoBar(web_contents, IDS_BAD_FLAGS_WARNING_MESSAGE,

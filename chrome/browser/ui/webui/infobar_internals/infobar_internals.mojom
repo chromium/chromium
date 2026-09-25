@@ -10,6 +10,9 @@ enum InfoBarType {
   // Alternate nav infobar.
   kAlternateNav,
 
+  // Automation infobar.
+  kAutomation,
+
   // Bad flags infobar.
   kBadFlags,
 
