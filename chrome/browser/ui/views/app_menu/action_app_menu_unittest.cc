@@ -786,7 +786,7 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
   ASSERT_TRUE(block_section_view);
   ASSERT_EQ(block_section_view->children().size(), 3u);
 
-  // Verify text override is applied for incognito button.
+  // Verify short title is applied for incognito button in general mode.
   auto* incognito_button =
       views::AsViewClass<AppMenuBlockButton>(block_section_view->children()[2]);
   ASSERT_TRUE(incognito_button);
@@ -814,6 +814,49 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
   }
   ASSERT_TRUE(new_tab_icon);
   EXPECT_FALSE(new_tab_icon->GetImageModel().IsEmpty());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtonsIncognito) {
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ON_CALL(mock_window_interface_, GetProfile())
+      .WillByDefault(testing::Return(otr_profile));
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(0);
+  ASSERT_NE(block_item, nullptr);
+  ASSERT_EQ(block_item->children().size(), 1u);
+  auto* block_section_view =
+      views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
+  ASSERT_TRUE(block_section_view);
+  ASSERT_EQ(block_section_view->children().size(), 3u);
+
+  // Verify text override is applied for incognito button in Incognito mode.
+  auto* incognito_button =
+      views::AsViewClass<AppMenuBlockButton>(block_section_view->children()[2]);
+  ASSERT_TRUE(incognito_button);
+  views::Label* incognito_label = nullptr;
+  for (views::View* child : incognito_button->children()) {
+    if (auto* label = views::AsViewClass<views::Label>(child)) {
+      incognito_label = label;
+      break;
+    }
+  }
+  ASSERT_TRUE(incognito_label);
+  EXPECT_EQ(incognito_label->GetText(),
+            BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW)));
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

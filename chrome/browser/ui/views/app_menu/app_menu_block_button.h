@@ -35,6 +35,8 @@ class AppMenuBlockButton : public views::Button {
   void SetImageModel(const ui::ImageModel& image_model);
 
   // views::Button:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
 
  private:

@@ -394,6 +394,18 @@ TEST_F(ActionAppMenuManagerTest, BlockActionsIncognitoNewTabTextOverride) {
       new_tab_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
   ASSERT_NE(text_override, nullptr);
   EXPECT_EQ(*text_override, u"New Incognito tab");
+
+  ASSERT_GE(block_section->GetChildren().children().size(), 3u);
+  actions::BaseAction* incognito_window_action =
+      block_section->GetChildren().children()[2].get();
+  ASSERT_NE(incognito_window_action, nullptr);
+  EXPECT_EQ(incognito_window_action->GetActionItem()->GetActionId(),
+            kActionNewIncognitoWindow);
+
+  std::u16string* incognito_window_text_override =
+      incognito_window_action->GetProperty(AppMenuActionItem::kTextOverrideKey);
+  ASSERT_NE(incognito_window_text_override, nullptr);
+  EXPECT_EQ(*incognito_window_text_override, u"New Incognito window");
 }
 
 TEST_F(ActionAppMenuManagerTest,

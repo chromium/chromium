@@ -17,10 +17,12 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 
 ActionAppMenuTestBase::ActionAppMenuTestBase() = default;
 ActionAppMenuTestBase::~ActionAppMenuTestBase() = default;
@@ -67,26 +69,34 @@ void ActionAppMenuTestBase::SetUp() {
 
   // Create test ActionItems as children of a root ActionItem.
   auto root = actions::ActionItem::Builder().Build();
-  auto add_action = [&root, this](actions::ActionId action_id,
-                                  std::u16string text) {
-    root->AddChild(actions::ActionItem::Builder(
-                       base::BindRepeating(
-                           &MockActionCallback::Call,
-                           base::Unretained(&mock_action_invoked_), action_id))
-                       .SetActionId(action_id)
-                       .SetText(text)
-                       .SetTooltipText(text)
-                       .SetAccessibleName(text)
-                       .SetEnabled(true)
-                       .SetVisible(action_id != kActionUpgradeDialog &&
-                                   action_id != kActionGlobalError &&
-                                   action_id != kActionSetBrowserAsDefault)
-                       .Build());
+  auto add_action = [&root, this](
+                        actions::ActionId action_id, std::u16string text,
+                        std::optional<std::u16string> short_title =
+                            std::nullopt) {
+    auto item =
+        actions::ActionItem::Builder(
+            base::BindRepeating(&MockActionCallback::Call,
+                                base::Unretained(&mock_action_invoked_),
+                                action_id))
+            .SetActionId(action_id)
+            .SetText(text)
+            .SetTooltipText(text)
+            .SetAccessibleName(text)
+            .SetEnabled(true)
+            .SetVisible(action_id != kActionUpgradeDialog &&
+                        action_id != kActionGlobalError &&
+                        action_id != kActionSetBrowserAsDefault)
+            .Build();
+    if (short_title.has_value()) {
+      item->SetProperty(actions::kShortTitleTextKey, *short_title);
+    }
+    root->AddChild(std::move(item));
   };
 
   add_action(kActionNewTab, u"New Tab");
   add_action(kActionNewWindow, u"New Window");
-  add_action(kActionNewIncognitoWindow, u"New Incognito Window");
+  add_action(kActionNewIncognitoWindow, u"New Incognito Window",
+             l10n_util::GetStringUTF16(IDS_APP_MENU_INCOGNITO));
   add_action(kActionNewIsolatedWindow, u"New Isolated Window");
   add_action(kActionProfileSubmenu, u"Profile");
   add_action(kActionManageGoogleAccount, u"Manage your Google Account");

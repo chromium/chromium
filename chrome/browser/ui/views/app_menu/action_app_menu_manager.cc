@@ -531,7 +531,13 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
             section.AddAction(
                 kActionNewIncognitoWindow,
                 {.display_type = DisplayType::kBlock,
-                 .text_override = l10n_util::GetStringUTF16(IDS_INCOGNITO),
+                 .text_override =
+                     profile->IsIncognitoProfile()
+                         ? std::make_optional(
+                               BrowserActions::GetCleanTitleAndTooltipText(
+                                   l10n_util::GetStringUTF16(
+                                       IDS_NEW_INCOGNITO_WINDOW)))
+                         : std::nullopt,
                  .element_id = AppMenuModel::kIncognitoMenuItem});
           }
         }

@@ -32,10 +32,6 @@
 AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
     : views::Button(std::move(callback)) {
   const auto* provider = ChromeLayoutProvider::Get();
-  const int width =
-      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_WIDTH);
-  const int height =
-      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT);
   const int icon_size = provider->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE);
   const int between_spacing = provider->GetDistanceMetric(
@@ -47,7 +43,7 @@ AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
       views::BoxLayout::Orientation::kVertical,
       provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_ENTRY_BUTTON),
       between_spacing);
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   SetLayoutManager(std::move(layout));
@@ -55,7 +51,6 @@ AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_RIGHT_MOUSE_BUTTON);
 
-  SetPreferredSize(gfx::Size(width, height));
   SetBackground(views::CreateRoundedRectBackground(
       kColorAppMenuBlockButtonBackground, corner_radius));
   SetBorder(views::CreateRoundedRectBorder(1, corner_radius,
@@ -83,12 +78,27 @@ AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
   label_->SetEnabledColor(kColorAppMenuBlockButtonForeground);
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_->SetTextStyle(views::style::STYLE_BODY_5);
+  label_->SetMultiLine(true);
+  label_->SetMaxLines(2);
   label_->SetElideBehavior(gfx::ELIDE_TAIL);
   label_->GetViewAccessibility().SetIsIgnored(true);
   label_->SetProperty(views::kSkipAccessibilityPaintChecks, true);
 }
 
 AppMenuBlockButton::~AppMenuBlockButton() = default;
+
+gfx::Size AppMenuBlockButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const auto* provider = ChromeLayoutProvider::Get();
+  const int width =
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_WIDTH);
+  const int min_height =
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT);
+  const int preferred_height =
+      views::Button::CalculatePreferredSize(views::SizeBounds(width, {}))
+          .height();
+  return gfx::Size(width, std::max(min_height, preferred_height));
+}
 
 void AppMenuBlockButton::SetText(std::u16string_view text) {
   label_->SetText(std::u16string(text));
