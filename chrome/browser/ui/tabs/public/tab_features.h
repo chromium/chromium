@@ -75,6 +75,7 @@ class SearchPromotionNavigationObserver;
 class SecurityStateEventObserver;
 class SharedHighlightingPromo;
 class SidePanelRegistry;
+class TabCaptureContentsBorderHelper;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
 class ThumbnailTabHelper;
@@ -802,6 +803,9 @@ class TabFeatures {
 
   std::unique_ptr<web_app::WindowManagementContentSettingObserver>
       window_management_content_setting_observer_;
+
+  std::unique_ptr<TabCaptureContentsBorderHelper>
+      tab_capture_contents_border_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

@@ -667,6 +667,7 @@ if (!is_android) {
         "//chrome/browser/selection",
         "//chrome/browser/ui/views/frame:browser_view_header",
         "//chrome/browser/ui/views/js_optimization:impl",
+        "//chrome/browser/ui/views/tab_sharing",
         "//chrome/browser/ui/views/zoom",
       ]
     }

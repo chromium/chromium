@@ -94,7 +94,6 @@
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
-#include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
@@ -605,9 +604,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   }
 #endif
   tasks::TaskTabHelper::CreateForWebContents(web_contents);
-#if !BUILDFLAG(IS_ANDROID)
-  TabCaptureContentsBorderHelper::CreateForWebContents(web_contents);
-#endif  // BUILDFLAG(IS_ANDROID)
   TabContextDecryptionTokenTabHelper::CreateForWebContents(web_contents);
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
   auto* service = RevokedPermissionsServiceFactory::GetForProfile(profile);

@@ -115,6 +115,7 @@
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
+#include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "chrome/browser/ui/views/translate/translate_page_action_controller.h"
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/pwa_install_page_action.h"
@@ -810,6 +811,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   plugin_observer_ = GetUserDataFactory().CreateInstance<PluginObserver>(
       tab, tab, tab.GetContents());
 #endif
+
+  tab_capture_contents_border_helper_ =
+      GetUserDataFactory().CreateInstance<TabCaptureContentsBorderHelper>(tab,
+                                                                          tab);
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(

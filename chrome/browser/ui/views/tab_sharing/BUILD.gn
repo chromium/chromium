@@ -30,8 +30,11 @@ source_set("tab_sharing") {
     "//chrome/browser/ui/views/infobars",
     "//components/enterprise/buildflags",
     "//components/infobars/core",
+    "//components/tabs:public",
     "//content/public/browser",
     "//ui/base/metadata",
+    "//ui/base/unowned_user_data",
+    "//ui/gfx/geometry",
     "//ui/views",
   ]
 
@@ -46,7 +49,6 @@ source_set("tab_sharing") {
     "//chrome/browser/ui/views:layout_provider",
     "//components/enterprise/data_protection",
     "//components/infobars/content",
-    "//components/tabs:public",
     "//components/url_formatter",
     "//media/capture:capture_switches",
     "//ui/base",

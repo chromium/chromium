@@ -19,12 +19,29 @@ constexpr int kMinContentsBorderWidth = 20;
 constexpr int kMinContentsBorderHeight = 20;
 }  // namespace
 
+DEFINE_USER_DATA(TabCaptureContentsBorderHelper);
+
 TabCaptureContentsBorderHelper::TabCaptureContentsBorderHelper(
-    content::WebContents* web_contents)
-    : content::WebContentsUserData<TabCaptureContentsBorderHelper>(
-          *web_contents) {}
+    tabs::TabInterface& tab)
+    : tab_(tab),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 TabCaptureContentsBorderHelper::~TabCaptureContentsBorderHelper() = default;
+
+// static
+TabCaptureContentsBorderHelper* TabCaptureContentsBorderHelper::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+TabCaptureContentsBorderHelper* TabCaptureContentsBorderHelper::FromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  return From(tabs::TabInterface::MaybeGetFromContents(web_contents));
+}
 
 void TabCaptureContentsBorderHelper::OnCapturerAdded(
     CaptureSessionId capture_session_id) {
@@ -103,18 +120,11 @@ void TabCaptureContentsBorderHelper::Update() {
 #if !BUILDFLAG(IS_CHROMEOS)
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  content::WebContents* const web_contents = &GetWebContents();
-
-  BrowserWindowInterface* const browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
-  if (!browser) {
+  if (!tab_->GetBrowserWindowInterface()) {
     return;
   }
 
-  tabs::TabInterface* const tab_interface =
-      tabs::TabInterface::GetFromContents(web_contents);
-  const bool contents_border_needed =
-      tab_interface->IsVisible() && IsTabCapturing();
+  const bool contents_border_needed = tab_->IsVisible() && IsTabCapturing();
 
   if (contents_border_needed) {
     capture_location_change_callbacks_.Notify(GetBlueBorderLocation());
@@ -135,5 +145,3 @@ std::optional<gfx::Rect> TabCaptureContentsBorderHelper::GetBlueBorderLocation()
   return (session_to_bounds_.size() == 1u) ? session_to_bounds_.begin()->second
                                            : std::nullopt;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabCaptureContentsBorderHelper);

@@ -1089,7 +1089,6 @@ source_set("tab_helpers_impl") {
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/search",
-      "//chrome/browser/ui/views/tab_sharing",
       "//components/image_fetcher/core",
       "//components/omnibox/browser",
       "//components/web_modal",
