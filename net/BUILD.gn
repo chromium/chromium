@@ -136,6 +136,42 @@ source_set("net_features") {
   ]
 }
 
+# Separated from the net target to isolate the dependency on the generated
+# Pure header target containing data structures for Chrome Root Store and EV
+# Root CA metadata. Separated so that both component("net") and the generated
+# data source_set can depend on it without circular includes.
+source_set("chrome_root_store_types") {
+  visibility = [ ":*" ]
+  sources = [ "cert/internal/chrome_root_store_data.h" ]
+  public_deps = [ "//base" ]
+}
+
+# Encapsulates the generated chrome-root-store-inc.cc, signer-set-inc.cc, and
+# chrome-ev-roots-inc.cc files. Isolating these in a separate source_set
+# prevents component("net")'s 1,000+ source files from waiting on
+# root_store_tool and signer_set_tool generation actions (inputdeps), while
+# avoiding any circular includes (no allow_circular_includes_from required).
+source_set("chrome_root_store_data") {
+  visibility = [ ":*" ]
+  public = []
+  configs += [ ":net_internal_config" ]
+  sources = []
+  deps = [
+    ":chrome_root_store_types",
+    "//base",
+  ]
+  if (chrome_root_store_supported || is_fuchsia) {
+    deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_inc" ]
+    if (!is_android) {
+      sources += [ "cert/ev_root_ca_metadata_data.cc" ]
+    }
+  }
+  if (chrome_root_store_supported) {
+    sources += [ "cert/internal/trust_store_chrome_data.cc" ]
+    deps += [ "//net/data/ssl/chrome_root_store:gen_signer_set_inc" ]
+  }
+}
+
 component("net") {
   sources = [
     "base/address_family.cc",
@@ -1228,6 +1264,7 @@ component("net") {
   ]
 
   public_deps = [
+    ":chrome_root_store_types",
     ":disk_cache_buildflags",
     ":net_features",
     ":net_public_deps",
@@ -1630,8 +1667,6 @@ component("net") {
     deps += [
       "//base/version_info",
       "//net/cert:root_store_proto_lite",
-      "//net/data/ssl/chrome_root_store:gen_root_store_inc",
-      "//net/data/ssl/chrome_root_store:gen_signer_set_inc",
     ]
     if (is_win) {
       sources += [
@@ -1685,10 +1720,7 @@ component("net") {
   }
 
   if (is_fuchsia) {
-    deps += [
-      "//net/data/ssl/chrome_root_store:gen_root_store_inc",
-      "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp",
-    ]
+    deps += [ "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp" ]
     public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.net.interfaces:fuchsia.net.interfaces_hlcpp" ]
     sources += [
       "base/fuchsia/network_interface_cache.cc",
@@ -1945,6 +1977,8 @@ component("net") {
       "//sql",
     ]
   }
+
+  deps += [ ":chrome_root_store_data" ]
 }
 
 # Private dependencies for the //net component and for any build targets (e.g.

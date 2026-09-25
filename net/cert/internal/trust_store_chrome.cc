@@ -7,24 +7,20 @@
 #include <optional>
 
 #include "base/command_line.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
-#include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/root_store_proto_lite/signer_set.pb.h"
 #include "net/cert/time_conversions.h"
-#include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_values.h"
@@ -40,9 +36,6 @@
 namespace net {
 
 namespace {
-
-#include "net/data/ssl/chrome_root_store/chrome-root-store-inc.cc"
-#include "net/data/ssl/chrome_root_store/signer-set-inc.cc"
 
 std::optional<bssl::SignatureAlgorithm>
 SignerSignatureAlgorithmToBsslSignatureAlgorithm(
@@ -287,7 +280,7 @@ ChromeRootStoreData::CreateFromRootStoreProto(
 
 ChromeRootStoreData ChromeRootStoreData::CreateFromCompiledRootStore() {
   ChromeRootStoreData root_store_data(
-      kChromeRootCertList, kEutlRootCertList,
+      GetCompiledChromeRootCertList(), GetCompiledEutlRootCertList(),
       /*certs_are_static=*/true,
       /*version=*/CompiledChromeRootStoreVersion());
   if (base::FeatureList::IsEnabled(features::kVerifyMTCs)) {
@@ -714,7 +707,7 @@ TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore(
   // on the running chrome version.
   std::vector<std::vector<uint8_t>> trust_anchor_ids;
   for (const auto& anchor :
-       (cert_list_for_testing.empty() ? kChromeRootCertList
+       (cert_list_for_testing.empty() ? GetCompiledChromeRootCertList()
                                       : cert_list_for_testing)) {
     if (!anchor.trust_anchor_id.empty()) {
       trust_anchor_ids.emplace_back(base::ToVector(anchor.trust_anchor_id));
@@ -915,11 +908,11 @@ bool TrustStoreChrome::IsMtcCosignerPolicySatisfied(
 }
 
 int64_t CompiledChromeRootStoreVersion() {
-  return kRootStoreVersion;
+  return GetCompiledChromeRootStoreVersion();
 }
 
 int64_t CompiledSignerSetTimestampSeconds() {
-  return kSignerSetCompiledTimestampSeconds;
+  return GetCompiledSignerSetTimestampSeconds();
 }
 
 namespace {
@@ -1031,11 +1024,9 @@ bool ParseAndFilterSigner(const chrome_root_store::Signer& signer_proto,
   if (!signer_proto.key().empty()) {
     auto sha256_hash =
         crypto::SHA256Hash(base::as_byte_span(signer_proto.key()));
-    auto it = kSignerKeys.find(base::span<const uint8_t>(sha256_hash));
-    if (it != kSignerKeys.end()) {
+    if (auto key = FindCompiledSignerKey(sha256_hash)) {
       // This is safe since this is a key that's compiled in and static.
-      signer.key =
-          x509_util::CreateCryptoBufferFromStaticDataUnsafe(it->second);
+      signer.key = x509_util::CreateCryptoBufferFromStaticDataUnsafe(*key);
     } else {
       signer.key =
           x509_util::CreateCryptoBuffer(base::as_byte_span(signer_proto.key()));
@@ -1050,14 +1041,14 @@ bool ParseAndFilterSigner(const chrome_root_store::Signer& signer_proto,
                  << signer_proto.key_sha256();
       return false;
     }
-    auto it = kSignerKeys.find(base::span<const uint8_t>(sha256_hash));
-    if (it == kSignerKeys.end()) {
+    auto key = FindCompiledSignerKey(sha256_hash);
+    if (!key) {
       LOG(ERROR) << "Could not find key for key_sha256: "
                  << signer_proto.key_sha256();
       return false;
     }
     // This is safe since this is a key that's compiled in and static.
-    signer.key = x509_util::CreateCryptoBufferFromStaticDataUnsafe(it->second);
+    signer.key = x509_util::CreateCryptoBufferFromStaticDataUnsafe(*key);
   }
 
   std::optional<bssl::SignatureAlgorithm> sigalg =
@@ -1337,7 +1328,8 @@ ChromeRootStoreSignerSet::CreateFromProto(
 // static
 ChromeRootStoreSignerSet ChromeRootStoreSignerSet::CreateFromCompiled() {
   chrome_root_store::SignerSet proto;
-  CHECK(proto.ParseFromArray(kSignerSetProto.data(), kSignerSetProto.size()));
+  base::span<const uint8_t> proto_bytes = GetCompiledSignerSetProtoBytes();
+  CHECK(proto.ParseFromArray(proto_bytes.data(), proto_bytes.size()));
 
   // The compiled-in proto only contains key_sha256 hashes. When CreateFromProto
   // runs below, it automatically accesses the separate array of key spans

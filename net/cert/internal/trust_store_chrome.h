@@ -8,7 +8,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/transparent_hash.h"
@@ -17,6 +16,7 @@
 #include "crypto/sha2.h"
 #include "net/base/bssl_refcounted.h"
 #include "net/base/net_export.h"
+#include "net/cert/internal/chrome_root_store_data.h"
 #include "net/cert/root_store_proto_lite/signer_set.pb.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/boringssl/src/pki/path_builder.h"
@@ -33,43 +33,6 @@ class SignerSet;
 namespace net {
 
 class NetLogWithSource;
-
-// Represents a ConstraintSet for compiled-in version of the root store.
-// This is a separate struct from ChromeRootCertConstraints since the in-memory
-// representation parses the version constraints into a base::Version.
-// (base::Version can't be used in the compiled-in version since it isn't
-// constexpr.)
-struct StaticChromeRootCertConstraints {
-  std::optional<base::Time> sct_not_after;
-  std::optional<base::Time> sct_all_after;
-
-  std::optional<std::string_view> min_version;
-  std::optional<std::string_view> max_version_exclusive;
-
-  base::span<const std::string_view> permitted_dns_names;
-
-  std::optional<uint64_t> serial_not_after;
-  std::optional<uint64_t> serial_after;
-
-  std::optional<base::Time> validity_starts_not_after;
-  std::optional<base::Time> validity_starts_after;
-};
-
-struct ChromeRootCertInfo {
-  base::span<const uint8_t> root_cert_der;
-  base::span<const StaticChromeRootCertConstraints> constraints;
-  bool enforce_anchor_expiry;
-  // True if the certificate verifier should enforce X.509 constraints encoded
-  // in the certificate.
-  bool enforce_anchor_constraints;
-  // If non-empty, the binary representation of the Trust Anchor ID
-  // (https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html)
-  // associated with this anchor -- that is, a relative object identifier in
-  // binary representation. If empty, this anchor has no associated Trust Anchor
-  // ID.
-  base::span<const uint8_t> trust_anchor_id;
-  std::optional<int32_t> crs_root_id;
-};
 
 struct NET_EXPORT ChromeRootCertConstraints {
   ChromeRootCertConstraints();
