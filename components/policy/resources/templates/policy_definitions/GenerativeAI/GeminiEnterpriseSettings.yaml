@@ -34,7 +34,7 @@ future_on:
 - chrome_os
 
 features:
-  dynamic_refresh: true
+  dynamic_refresh: false
   per_profile: true
 
 type: dict
