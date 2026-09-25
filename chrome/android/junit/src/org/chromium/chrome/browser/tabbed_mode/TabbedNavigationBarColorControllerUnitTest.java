@@ -453,4 +453,31 @@ public class TabbedNavigationBarColorControllerUnitTest {
                 Color.RED,
                 (int) capturedColors.get(capturedColors.size() - 1));
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    public void testUpdateNavigationBarColor_NoOpWhenUnchanged() {
+        mNavColorController.setIsBottomChinEnabledForTesting(true);
+        when(mTab.getBackgroundColor()).thenReturn(Color.BLUE);
+        when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+
+        mNavColorController.updateActiveTabForTesting();
+        runColorUpdateAnimation();
+        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(Color.BLUE));
+
+        // Bottom-attached UI has the same color (Color.BLUE) as the active tab background.
+        mNavColorController.onBottomAttachedColorChanged(
+                Color.BLUE, /* forceShowDivider= */ false, /* disableAnimation= */ true);
+        Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
+
+        // Scrolling off the bottom-attached UI transitions mBottomAttachedUiColor from Color.BLUE
+        // to null, which resolves to the same active tab color (Color.BLUE). No animation or
+        // redundant setNavigationBarColor call should occur.
+        mNavColorController.onBottomAttachedColorChanged(
+                /* color= */ null, /* forceShowDivider= */ false, /* disableAnimation= */ false);
+        var animation = mNavColorController.getNavbarColorTransitionAnimationForTesting();
+        assertFalse(animation != null && animation.isRunning());
+        verify(mEdgeToEdgeSystemBarColorHelper, Mockito.never())
+                .setNavigationBarColor(Mockito.anyInt());
+    }
 }

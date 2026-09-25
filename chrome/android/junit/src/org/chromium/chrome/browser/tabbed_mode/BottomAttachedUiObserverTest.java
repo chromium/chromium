@@ -1081,6 +1081,47 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    public void testNavBarColorAnimationsBottomToolbar_DisabledWhenOffScreenWithJankImprovement() {
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
+        doReturn(0.0f).when(mBrowserControlsStateProvider).getBottomControlHiddenRatio();
+
+        when(mBottomControlsStacker.hasVisibleLayersOtherThan(
+                        eq(BottomControlsStacker.LayerType.BOTTOM_CHIN)))
+                .thenReturn(true);
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(
+                BOTTOM_CONTROLS_HEIGHT, /* bottomControlsMinHeight= */ 0);
+        mColorChangeObserver
+                .assertState(BROWSER_CONTROLS_COLOR, /* expectedForceShowDivider= */ false)
+                .assertDisabledAnimation(true);
+
+        // Scroll off bottom controls completely: hidden ratio becomes 1.0f.
+        // With sBottomControlsJankImprovement enabled, animation should still be disabled.
+        doReturn(1.0f).when(mBrowserControlsStateProvider).getBottomControlHiddenRatio();
+        mBottomAttachedUiObserver.onControlsOffsetChanged(
+                /* topOffset= */ 0,
+                /* topControlsMinHeightOffset= */ 0,
+                /* topControlsMinHeightChanged= */ false,
+                BOTTOM_CONTROLS_HEIGHT,
+                /* bottomControlsMinHeightOffset= */ 0,
+                /* bottomControlsMinHeightChanged= */ false,
+                /* requestNewFrame= */ false,
+                /* isVisibilityForced= */ false);
+        mColorChangeObserver
+                .assertState(/* expectedColor= */ null, /* expectedForceShowDivider= */ false)
+                .assertDisabledAnimation(true);
+
+        // Subsequent color update while still off-screen: animation should no longer be disabled.
+        mBottomAttachedUiObserver.onOmniboxSuggestionsBackgroundColorChanged(
+                OMNIBOX_SUGGESTIONS_COLOR);
+        mBottomAttachedUiObserver.onOmniboxSessionStateChange(true);
+        mColorChangeObserver
+                .assertState(OMNIBOX_SUGGESTIONS_COLOR, /* expectedForceShowDivider= */ false)
+                .assertDisabledAnimation(false);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.BOTTOM_SHEET_AS_BROWSER_CONTROLS)
     public void testAdaptsColorToBottomSheet_actsAsBrowserControls() {
         doReturn(true)

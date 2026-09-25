@@ -125,6 +125,7 @@ public class BottomAttachedUiObserver
     private boolean mAccessorySheetVisible;
     private @Nullable @ColorInt Integer mAccessorySheetColor;
     private boolean mNonBottomChinBottomControlsVisible;
+    private boolean mWasBottomBarVisible;
 
     /**
      * Build the observer that listens to changes in the UI bordering the bottom.
@@ -351,18 +352,19 @@ public class BottomAttachedUiObserver
                 !mNonBottomChinBottomControlsVisible && nonBottomChinBottomControlsVisible;
         mNonBottomChinBottomControlsVisible = nonBottomChinBottomControlsVisible;
 
-        if (disableAnimationsTabGroupToolbar) {
-            return true;
-        }
-
         boolean isBottomBarVisible =
                 (BottomBarConfigUtils.isBottomBarEnabled(mContext)
                                 || mBrowserControlsStateProvider.getControlsPosition()
                                         == ControlsPosition.BOTTOM)
                         && !BrowserControlsUtils.areBottomControlsOffScreen(
                                 mBrowserControlsStateProvider);
+        boolean disableAnimationsBottomBar =
+                isBottomBarVisible
+                        || (ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()
+                                && mWasBottomBarVisible);
+        mWasBottomBarVisible = isBottomBarVisible;
 
-        if (isBottomBarVisible) {
+        if (disableAnimationsTabGroupToolbar || disableAnimationsBottomBar) {
             return true;
         }
 
