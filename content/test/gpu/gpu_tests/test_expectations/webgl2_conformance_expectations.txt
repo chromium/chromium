@@ -1025,6 +1025,8 @@ crbug.com/332743717 [ chromeos chromeos-board-amd64-generic ] conformance2/canva
 crbug.com/332743717 [ android android-pixel-2 angle-disabled no-passthrough ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scissor.html [ Failure ]
 
+crbug.com/566046558 [ win ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
+
 
 
 
