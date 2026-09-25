@@ -61,7 +61,7 @@ public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
             PropertyModel model,
             int position) {
         super.populateModel(input, suggestion, model, position);
-        model.set(SuggestionViewProperties.ALLOW_WRAP_AROUND, false);
+        model.set(SuggestionViewProperties.TEXT_LINE_1_WRAP, false);
     }
 
     @VisibleForTesting

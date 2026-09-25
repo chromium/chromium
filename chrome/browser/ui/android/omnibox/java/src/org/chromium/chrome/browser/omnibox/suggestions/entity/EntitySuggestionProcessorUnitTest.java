@@ -58,6 +58,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -277,6 +278,28 @@ public class EntitySuggestionProcessorUnitTest {
     public void populateModel_suggestionTextDoesNotWrap() {
         SuggestionTestHelper suggHelper = createSuggestion("subject", "details", null, SEARCH_URL);
         processSuggestion(suggHelper);
-        assertFalse(suggHelper.mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND));
+        assertFalse(suggHelper.mModel.get(SuggestionViewProperties.TEXT_LINE_1_WRAP));
+    }
+
+    @Test
+    public void populateModel_secondaryTextWrapping_default() {
+        SuggestionTestHelper suggHelper = createSuggestion("subject", "details", null, SEARCH_URL);
+        processSuggestion(suggHelper);
+        assertFalse(suggHelper.mModel.get(SuggestionViewProperties.TEXT_LINE_2_WRAP));
+    }
+
+    @Test
+    public void populateModel_secondaryTextWrapping_enabled() {
+        var template = SuggestTemplateInfo.newBuilder().setWrapSecondaryText(true).build();
+        AutocompleteMatch suggestion =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY)
+                        .setDisplayText("subject")
+                        .setDescription("details")
+                        .setSerializedSuggestTemplate(template.toByteArray())
+                        .build();
+        PropertyModel model = mProcessor.createModel();
+        SuggestionTestHelper suggHelper = new SuggestionTestHelper(suggestion, model);
+        processSuggestion(suggHelper);
+        assertTrue(suggHelper.mModel.get(SuggestionViewProperties.TEXT_LINE_2_WRAP));
     }
 }

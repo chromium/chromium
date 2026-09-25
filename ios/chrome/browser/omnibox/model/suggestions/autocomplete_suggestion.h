@@ -40,6 +40,8 @@ typedef NS_ENUM(NSUInteger, SuggestTileType) {
 @property(nonatomic, readonly) NSAttributedString* detailText;
 /// Suggested number of lines to format `detailText`.
 @property(nonatomic, readonly) NSInteger numberOfLines;
+/// Whether `detailText` should be allowed to wrap to multiple lines.
+@property(nonatomic, readonly) BOOL wrapSecondaryText;
 
 /// Either nil or NSNumber-wrapped omnibox::GroupId.
 @property(nonatomic, readonly, strong) NSNumber* suggestionGroupId;

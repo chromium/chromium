@@ -549,10 +549,27 @@ public class BasicSuggestionProcessorUnitTest {
     public void searchSuggestions_searchQueriesCanWrapAroundWithFeatureEnabled() {
         mProcessor.onNativeInitialized();
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "");
-        assertEquals(true, mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND));
+        assertEquals(true, mModel.get(SuggestionViewProperties.TEXT_LINE_1_WRAP));
 
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
-        assertEquals(false, mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND));
+        assertEquals(false, mModel.get(SuggestionViewProperties.TEXT_LINE_1_WRAP));
+    }
+
+    @Test
+    public void searchSuggestions_secondaryTextWrapping() {
+        mProcessor.onNativeInitialized();
+        createSearchSuggestion(OmniboxSuggestionType.SEARCH_SUGGEST, "");
+        assertFalse(mModel.get(SuggestionViewProperties.TEXT_LINE_2_WRAP));
+
+        var template = SuggestTemplateInfo.newBuilder().setWrapSecondaryText(true).build();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.SEARCH_SUGGEST, "")
+                        .setIsSearch(true)
+                        .setSerializedSuggestTemplate(template.toByteArray())
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+        assertTrue(mModel.get(SuggestionViewProperties.TEXT_LINE_2_WRAP));
     }
 
     @Test

@@ -515,6 +515,16 @@ public class AutocompleteMatch {
         return mIconType;
     }
 
+    public @Nullable SuggestTemplateInfo getSuggestTemplate() {
+        return mSuggestTemplate;
+    }
+
+    public boolean shouldWrapSecondaryText() {
+        return mSuggestTemplate != null
+                && mSuggestTemplate.hasWrapSecondaryText()
+                && mSuggestTemplate.getWrapSecondaryText();
+    }
+
     /**
      * @return The image data for the image clipbaord suggestion. This data has already been
      *     validated in C++ and is safe to use in the browser process.

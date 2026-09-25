@@ -167,7 +167,16 @@ UIColor* DimColorIncognito() {
   return icon;
 }
 
+- (BOOL)wrapSecondaryText {
+  return _match.suggest_template &&
+         _match.suggest_template->has_wrap_secondary_text() &&
+         _match.suggest_template->wrap_secondary_text();
+}
+
 - (NSInteger)numberOfLines {
+  if (self.wrapSecondaryText) {
+    return 2;
+  }
   return 1;
 }
 
