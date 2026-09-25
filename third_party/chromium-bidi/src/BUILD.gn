@@ -18,10 +18,46 @@ import(
 import("../tools/build/bidi_module.gni")
 
 if (build_with_chromium) {
-  devtools_protocol_types_deps = [ "//third_party/blink/public/devtools_protocol:protocol_typescript_definitions" ]
+  devtools_protocol_declare_dts =
+      "$target_gen_dir/devtools_protocol_declare.d.ts"
+  devtools_protocol_ambient_dts =
+      "$target_gen_dir/devtools_protocol_ambient.d.ts"
   devtools_protocol_types_dir =
       "$root_gen_dir/third_party/blink/public/devtools_protocol/types"
+
+  generated_file("devtools_protocol_declare_dts") {
+    outputs = [ devtools_protocol_declare_dts ]
+    contents = [
+      "declare module 'devtools-protocol' {}",
+      "declare module 'devtools-protocol/types/protocol-mapping.js' {}",
+    ]
+  }
+
+  generated_file("devtools_protocol_ambient_dts") {
+    outputs = [ devtools_protocol_ambient_dts ]
+    _rel_dir = rebase_path(devtools_protocol_types_dir, target_gen_dir)
+    contents = [
+      "import type * as ProtocolModule from '$_rel_dir/protocol.js';",
+      "import type * as ProtocolMappingModule from '$_rel_dir/protocol-mapping.js';",
+      "declare module 'devtools-protocol' {",
+      "  export import Protocol = ProtocolModule.Protocol;",
+      "  export default Protocol;",
+      "}",
+      "declare module 'devtools-protocol/types/protocol-mapping.js' {",
+      "  export import ProtocolMapping = ProtocolMappingModule.ProtocolMapping;",
+      "  export default ProtocolMapping;",
+      "}",
+    ]
+  }
+
+  devtools_protocol_types_deps = [
+    ":devtools_protocol_ambient_dts",
+    ":devtools_protocol_declare_dts",
+    "//third_party/blink/public/devtools_protocol:protocol_typescript_definitions",
+  ]
   devtools_protocol_types_files = [
+    devtools_protocol_declare_dts,
+    devtools_protocol_ambient_dts,
     "$devtools_protocol_types_dir/protocol.d.ts",
     "$devtools_protocol_types_dir/protocol-mapping.d.ts",
   ]
@@ -52,6 +88,10 @@ ts_library("utils") {
     "utils/urlHelpers.ts",
     "utils/uuid.ts",
   ]
+  inputs = [
+    "../node_modules/mitt/index.d.ts",
+    "../node_modules/mitt/package.json",
+  ]
 }
 
 ts_library("cdp") {
@@ -63,7 +103,7 @@ ts_library("cdp") {
     "cdp/cdpMessage.ts",
   ]
   additional_type_definitions = devtools_protocol_types_files
-  deps = devtools_protocol_types_deps
+  deps = devtools_protocol_types_deps + [ ":utils_sources" ]
   ts_deps = [ ":utils" ]
 }
 
@@ -96,6 +136,24 @@ ts_library("protocol_parser") {
     "protocol-parser/generated/webdriver-bidi.ts",
     "protocol-parser/protocol-parser.ts",
   ]
+  inputs = [
+    "../node_modules/zod/index.d.cts",
+    "../node_modules/zod/package.json",
+    "../node_modules/zod/v3/ZodError.d.cts",
+    "../node_modules/zod/v3/errors.d.cts",
+    "../node_modules/zod/v3/external.d.cts",
+    "../node_modules/zod/v3/helpers/enumUtil.d.cts",
+    "../node_modules/zod/v3/helpers/errorUtil.d.cts",
+    "../node_modules/zod/v3/helpers/parseUtil.d.cts",
+    "../node_modules/zod/v3/helpers/partialUtil.d.cts",
+    "../node_modules/zod/v3/helpers/typeAliases.d.cts",
+    "../node_modules/zod/v3/helpers/util.d.cts",
+    "../node_modules/zod/v3/index.d.cts",
+    "../node_modules/zod/v3/locales/en.d.cts",
+    "../node_modules/zod/v3/standard-schema.d.cts",
+    "../node_modules/zod/v3/types.d.cts",
+  ]
+  deps = [ ":protocol_sources" ]
   ts_deps = [ ":protocol" ]
 }
 
@@ -158,7 +216,12 @@ ts_library("bidi_mapper") {
     "bidiMapper/modules/webExtension/WebExtensionProcessor.ts",
   ]
   additional_type_definitions = devtools_protocol_types_files
-  deps = devtools_protocol_types_deps
+  deps = devtools_protocol_types_deps + [
+           ":cdp_sources",
+           ":protocol_parser_sources",
+           ":protocol_sources",
+           ":utils_sources",
+         ]
   ts_deps = [
     ":cdp",
     ":protocol",
@@ -175,6 +238,7 @@ ts_library("bidi_tab") {
     "bidiTab/bidiTab.ts",
     "bidiTab/mapperTabPage.ts",
   ]
+  deps = [ ":bidi_mapper_sources" ]
   ts_deps = [ ":bidi_mapper" ]
 }
 
@@ -230,7 +294,14 @@ ts_library("unit_tests") {
     "utils/uuid.test.ts",
   ]
   additional_type_definitions = devtools_protocol_types_files
-  deps = devtools_protocol_types_deps
+  deps = devtools_protocol_types_deps + [
+           ":bidi_mapper_sources",
+           ":bidi_tab_sources",
+           ":cdp_sources",
+           ":protocol_parser_sources",
+           ":protocol_sources",
+           ":utils_sources",
+         ]
   ts_deps = [
     ":bidi_mapper",
     ":bidi_tab",
@@ -244,6 +315,10 @@ ts_library("unit_tests") {
 ts_library("chromium_bidi") {
   runs_in = "node"
   sources = [ "index.ts" ]
+  deps = [
+    ":bidi_mapper_sources",
+    ":protocol_sources",
+  ]
   ts_deps = [
     ":bidi_mapper",
     ":protocol",
