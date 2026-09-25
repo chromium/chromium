@@ -53,6 +53,7 @@ specific_include_rules = {
   ],
   '.*Test\\.java': [
     "+chrome/android",
+    "+chrome/test/android",
     "+ui/android",
     "+components",
     "+base",

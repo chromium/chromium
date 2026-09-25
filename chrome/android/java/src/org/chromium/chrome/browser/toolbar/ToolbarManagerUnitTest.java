@@ -160,6 +160,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -176,7 +177,6 @@ import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -215,6 +215,9 @@ import java.util.function.Supplier;
 public class ToolbarManagerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private BottomControlsStacker mBottomControlsStacker;
@@ -277,7 +280,6 @@ public class ToolbarManagerUnitTest {
     @Mock private InsetObserver mInsetObserver;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private AutocompleteController mAutocompleteController;
-    @Mock private IdentityManager mIdentityManager;
     @Mock private SigninManager mSigninManager;
     @Mock private SyncService mSyncService;
     @Mock private ActionRegistry mActionRegistry;
@@ -357,7 +359,6 @@ public class ToolbarManagerUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         AutocompleteController.setInstanceForTesting(mAutocompleteController);
-        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         SubscriptionEligibilityServiceFactory.setForTesting(mSubscriptionEligibilityService);
