@@ -127,6 +127,10 @@
 #include "components/payments/core/features.h"
 #include "components/skills/features.h"
 #include "content/public/browser/navigation_controller.h"
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_observer.h"
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
@@ -611,6 +615,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  desktop_session_duration_observer_ =
+      metrics::DesktopSessionDurationObserver::MaybeCreate(tab.GetContents());
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   inactive_window_mouse_event_controller_ =
@@ -973,6 +982,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 #if BUILDFLAG(IS_WIN)
   font_prewarmer_tab_helper_ =
       std::make_unique<FontPrewarmerTabHelper>(new_contents);
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  desktop_session_duration_observer_ =
+      metrics::DesktopSessionDurationObserver::MaybeCreate(new_contents);
 #endif
 }
 

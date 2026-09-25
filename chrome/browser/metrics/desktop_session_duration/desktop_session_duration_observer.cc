@@ -13,31 +13,28 @@ namespace metrics {
 DesktopSessionDurationObserver::DesktopSessionDurationObserver(
     content::WebContents* web_contents,
     DesktopSessionDurationTracker* service)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<DesktopSessionDurationObserver>(
-          *web_contents),
-      service_(service) {
+    : content::WebContentsObserver(web_contents), service_(service) {
   RegisterInputEventObserver(web_contents->GetPrimaryMainFrame());
 }
 
-DesktopSessionDurationObserver::~DesktopSessionDurationObserver() = default;
+DesktopSessionDurationObserver::~DesktopSessionDurationObserver() {
+  if (web_contents()) {
+    UnregisterInputEventObserver(web_contents()->GetPrimaryMainFrame());
+  }
+}
 
 // static
-DesktopSessionDurationObserver*
-DesktopSessionDurationObserver::CreateForWebContents(
+std::unique_ptr<DesktopSessionDurationObserver>
+DesktopSessionDurationObserver::MaybeCreate(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
 
-  if (!DesktopSessionDurationTracker::IsInitialized())
+  if (!DesktopSessionDurationTracker::IsInitialized()) {
     return nullptr;
-
-  DesktopSessionDurationObserver* observer = FromWebContents(web_contents);
-  if (!observer) {
-    observer = new DesktopSessionDurationObserver(
-        web_contents, DesktopSessionDurationTracker::Get());
-    web_contents->SetUserData(UserDataKey(), base::WrapUnique(observer));
   }
-  return observer;
+
+  return std::make_unique<DesktopSessionDurationObserver>(
+      web_contents, DesktopSessionDurationTracker::Get());
 }
 
 void DesktopSessionDurationObserver::RegisterInputEventObserver(
@@ -68,7 +65,5 @@ void DesktopSessionDurationObserver::RenderFrameHostChanged(
   UnregisterInputEventObserver(old_host);
   RegisterInputEventObserver(new_host);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(DesktopSessionDurationObserver);
 
 }  // namespace metrics

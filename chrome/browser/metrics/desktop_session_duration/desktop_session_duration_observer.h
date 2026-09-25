@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_DESKTOP_SESSION_DURATION_OBSERVER_H_
 #define CHROME_BROWSER_METRICS_DESKTOP_SESSION_DURATION_DESKTOP_SESSION_DURATION_OBSERVER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
 namespace metrics {
@@ -20,7 +21,6 @@ class DesktopSessionDurationTracker;
 // |DesktopSessionDurationTracker|.
 class DesktopSessionDurationObserver
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<DesktopSessionDurationObserver>,
       public content::RenderWidgetHost::InputEventObserver {
  public:
   DesktopSessionDurationObserver(content::WebContents* web_contents,
@@ -33,12 +33,10 @@ class DesktopSessionDurationObserver
 
   ~DesktopSessionDurationObserver() override;
 
-  static DesktopSessionDurationObserver* CreateForWebContents(
+  static std::unique_ptr<DesktopSessionDurationObserver> MaybeCreate(
       content::WebContents* web_contents);
 
  private:
-  friend class content::WebContentsUserData<DesktopSessionDurationObserver>;
-
   // Register / Unregister input event callback to given RenderFrameHost
   void RegisterInputEventObserver(content::RenderFrameHost* host);
   void UnregisterInputEventObserver(content::RenderFrameHost* host);
@@ -53,8 +51,6 @@ class DesktopSessionDurationObserver
                               content::RenderFrameHost* new_host) override;
 
   raw_ptr<DesktopSessionDurationTracker> service_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace metrics
