@@ -6,96 +6,14 @@
 
 #include <algorithm>
 
-#include "base/metrics/histogram_macros.h"
-#include "base/rand_util.h"
 #include "ipcz/block_allocator_pool.h"
+#include "ipcz/metrics.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/numeric/bits.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 
 namespace ipcz {
-
-namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(IpczBlockAllocationSize)
-enum class BlockAllocationSize {
-  kOther = 0,
-  k64B = 1,
-  k128B = 2,
-  k256B = 3,
-  k512B = 4,
-  k1KB = 5,
-  k2KB = 6,
-  k4KB = 7,
-  k8KB = 8,
-  k16KB = 9,
-  k32KB = 10,
-  k64KB = 11,
-  k128KB = 12,
-  k256KB = 13,
-  k512KB = 14,
-  k1MB = 15,
-  kMaxValue = k1MB,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:IpczBlockAllocationSize)
-
-BlockAllocationSize BlockSizeToBucket(size_t block_size) {
-  switch (block_size) {
-    case 64:
-      return BlockAllocationSize::k64B;
-    case 128:
-      return BlockAllocationSize::k128B;
-    case 256:
-      return BlockAllocationSize::k256B;
-    case 512:
-      return BlockAllocationSize::k512B;
-    case 1024:
-      return BlockAllocationSize::k1KB;
-    case 2048:
-      return BlockAllocationSize::k2KB;
-    case 4096:
-      return BlockAllocationSize::k4KB;
-    case 8192:
-      return BlockAllocationSize::k8KB;
-    case 16384:
-      return BlockAllocationSize::k16KB;
-    case 32768:
-      return BlockAllocationSize::k32KB;
-    case 65536:
-      return BlockAllocationSize::k64KB;
-    case 131072:
-      return BlockAllocationSize::k128KB;
-    case 262144:
-      return BlockAllocationSize::k256KB;
-    case 524288:
-      return BlockAllocationSize::k512KB;
-    case 1048576:
-      return BlockAllocationSize::k1MB;
-    default:
-      return BlockAllocationSize::kOther;
-  }
-}
-
-void RecordAllocateBlockResult(size_t block_size, bool success) {
-  if (!base::ShouldRecordSubsampledMetric(0.001)) {
-    return;
-  }
-  UMA_HISTOGRAM_BOOLEAN("Mojo.Ipcz.BufferPoolAllocateBlockResult", success);
-  const BlockAllocationSize bucket = BlockSizeToBucket(block_size);
-  if (success) {
-    UMA_HISTOGRAM_ENUMERATION("Mojo.Ipcz.BufferPoolAllocateBlockSuccessSize2",
-                              bucket);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Mojo.Ipcz.BufferPoolAllocateBlockFailureSize2",
-                              bucket);
-  }
-}
-
-}  // namespace
 
 BufferPool::BufferPool() = default;
 
@@ -205,7 +123,10 @@ Fragment BufferPool::AllocateBlock(size_t block_size) {
     absl::MutexLock lock(&mutex_);
     auto it = block_allocator_pools_.lower_bound(block_size);
     if (it == block_allocator_pools_.end()) {
-      RecordAllocateBlockResult(block_size, false);
+      metrics::RecordAllocateBlockResult(
+          metrics::BlockAllocationSource::kBufferPool,
+          /*block_size=*/block_size,
+          /*success=*/false);
       return {};
     }
 
@@ -216,7 +137,10 @@ Fragment BufferPool::AllocateBlock(size_t block_size) {
   }
 
   Fragment fragment = pool->Allocate();
-  RecordAllocateBlockResult(block_size, !fragment.is_null());
+  metrics::RecordAllocateBlockResult(
+      metrics::BlockAllocationSource::kBufferPool,
+      /*block_size=*/block_size,
+      /*success=*/!fragment.is_null());
   return fragment;
 }
 

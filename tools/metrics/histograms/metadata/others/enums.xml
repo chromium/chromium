@@ -246,8 +246,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="1 MB"/>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/ipcz/src/ipcz/buffer_pool.cc:IpczBlockAllocationSize)
--->
+<!-- LINT.ThenChange(//third_party/ipcz/src/ipcz/metrics.h:IpczBlockAllocationSize) -->
 
 <enum name="MissingFileRestoreResult">
   <int value="0" label="No candidate temp file found"/>

@@ -14,6 +14,7 @@
 #include "ipcz/fragment_descriptor.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
+#include "ipcz/metrics.h"
 #include "ipcz/node.h"
 #include "ipcz/node_link.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -96,6 +97,8 @@ uint32_t ToOffset(void* ptr, void* base) {
                                static_cast<uint8_t*>(base));
 }
 
+// Returns the power-of-2 block size required to fit a fragment of
+// `fragment_size` bytes.
 size_t GetBlockSizeForFragmentSize(size_t fragment_size) {
   return std::max(kMinFragmentSize, absl::bit_ceil(fragment_size));
 }
@@ -307,7 +310,7 @@ bool NodeLinkMemory::AddBlockBuffer(BufferId id,
   return buffer_pool_.AddBlockBuffer(id, std::move(mapping), {&allocator, 1});
 }
 
-Fragment NodeLinkMemory::AllocateFragment(size_t size) {
+Fragment NodeLinkMemory::AllocateFragmentInternal(size_t size) {
   if (size == 0 || size > kMaxFragmentSizeForBlockAllocation) {
     // TODO: Support an alternative allocation scheme for large requests.
     return {};
@@ -329,6 +332,21 @@ Fragment NodeLinkMemory::AllocateFragment(size_t size) {
   return fragment;
 }
 
+Fragment NodeLinkMemory::AllocateFragment(size_t size) {
+  Fragment fragment = AllocateFragmentInternal(size);
+  if (size == 0) {
+    return fragment;
+  }
+
+  const size_t block_size = size > kMaxFragmentSizeForBlockAllocation
+                                ? 0
+                                : GetBlockSizeForFragmentSize(size);
+  metrics::RecordAllocateBlockResult(metrics::BlockAllocationSource::kParcel,
+                                     block_size,
+                                     /*success=*/!fragment.is_null());
+  return fragment;
+}
+
 Fragment NodeLinkMemory::AllocateFragmentBestEffort(size_t size) {
   // TODO: Support an alternative allocation scheme for larger requests.
   const size_t ideal_block_size = GetBlockSizeForFragmentSize(size);
@@ -337,7 +355,7 @@ Fragment NodeLinkMemory::AllocateFragmentBestEffort(size_t size) {
   const size_t smallest_block_size = kMinBestEffortFallbackBlockSize;
   for (size_t block_size = largest_block_size;
        block_size >= smallest_block_size; block_size /= 2) {
-    const Fragment fragment = AllocateFragment(block_size);
+    const Fragment fragment = AllocateFragmentInternal(block_size);
     if (!fragment.is_null()) {
       return fragment;
     }

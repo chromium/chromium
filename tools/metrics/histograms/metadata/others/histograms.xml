@@ -3046,6 +3046,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mojo.Ipcz.ParcelAllocateBlockFailureSize"
+    enum="IpczBlockAllocationSize" expires_after="2027-02-01">
+  <owner>nafisabedin@google.com</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Logs the block size category of a failed shared memory allocation attempt
+    for an ipcz parcel.
+
+    Logged on every failed parcel shared memory allocation attempt in
+    NodeLinkMemory::AllocateFragment. Subsampled to 1/1000. Excludes best-effort
+    allocations (e.g. from the unused BeginPut/EndPut two-phase API).
+  </summary>
+</histogram>
+
+<histogram name="Mojo.Ipcz.ParcelAllocateBlockResult" enum="BooleanSuccess"
+    expires_after="2027-02-01">
+  <owner>nafisabedin@google.com</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Logs whether an ipcz parcel successfully allocated a shared memory fragment.
+    Logged on every parcel shared memory allocation attempt in
+    NodeLinkMemory::AllocateFragment. Subsampled to 1/1000. Excludes best-effort
+    allocations (e.g. from the unused BeginPut/EndPut two-phase API).
+  </summary>
+</histogram>
+
+<histogram name="Mojo.Ipcz.ParcelAllocateBlockSuccessSize"
+    enum="IpczBlockAllocationSize" expires_after="2027-02-01">
+  <owner>nafisabedin@google.com</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Logs the block size category requested by an ipcz parcel which successfully
+    allocated a shared memory fragment.
+
+    Note that this is the size asked for, not the size handed out. A request is
+    served by the smallest existing allocator that is at least as large, so the
+    shared memory actually consumed may exceed the bucket recorded here.
+
+    Logged on every successful parcel shared memory allocation attempt in
+    NodeLinkMemory::AllocateFragment. Subsampled to 1/1000. Excludes best-effort
+    allocations (e.g. from the unused BeginPut/EndPut two-phase API).
+  </summary>
+</histogram>
+
 <histogram name="Mojo.SharedMemoryVersion.SharedMemoryAllocationSucceeded"
     enum="Boolean" expires_after="2025-11-09">
   <owner>olivierli@chromium.org</owner>

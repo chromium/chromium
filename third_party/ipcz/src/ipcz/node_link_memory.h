@@ -204,6 +204,10 @@ class NodeLinkMemory : public RefCounted<NodeLinkMemory> {
   FragmentRef<RouterLinkState> InitializeRouterLinkStateFragment(
       const Fragment& fragment);
 
+  // Allocates a fragment of `size` bytes without recording any metrics for the
+  // attempt.
+  Fragment AllocateFragmentInternal(size_t size);
+
   const Ref<Node> node_;
   const LinkSide link_side_;
   const Features available_features_;
