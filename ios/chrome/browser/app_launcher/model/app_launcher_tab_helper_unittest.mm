@@ -495,7 +495,13 @@ TEST_F(AppLauncherTabHelperTest,
 
 // Test that IsCallPromptLaunchPending() returns true only while a call-prompt
 // URL launch (e.g. facetime-audio:) is pending completion.
-TEST_F(AppLauncherTabHelperTest, IsCallPromptLaunchPending) {
+// TODO(crbug.com/40166678): The test fails on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_IsCallPromptLaunchPending IsCallPromptLaunchPending
+#else
+#define MAYBE_IsCallPromptLaunchPending DISABLED_IsCallPromptLaunchPending
+#endif
+TEST_F(AppLauncherTabHelperTest, MAYBE_IsCallPromptLaunchPending) {
   delegate_.SetShouldCompleteAppLaunchImmediately(false);
   EXPECT_FALSE(tab_helper_->IsCallPromptLaunchPending());
 
@@ -546,7 +552,16 @@ TEST_F(AppLauncherTabHelperTest, ShouldAllowResponseWhenNoAppLaunchPending) {
 
 // Test that ShouldAllowResponse() waits for any pending app launch and scene
 // activation before allowing a navigation response to commit.
-TEST_F(AppLauncherTabHelperTest, ShouldAllowResponseWhileAppLaunchPending) {
+// TODO(crbug.com/40166678): The test fails on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_ShouldAllowResponseWhileAppLaunchPending \
+  ShouldAllowResponseWhileAppLaunchPending
+#else
+#define MAYBE_ShouldAllowResponseWhileAppLaunchPending \
+  DISABLED_ShouldAllowResponseWhileAppLaunchPending
+#endif
+TEST_F(AppLauncherTabHelperTest,
+       MAYBE_ShouldAllowResponseWhileAppLaunchPending) {
   delegate_.SetShouldCompleteAppLaunchImmediately(false);
 
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",

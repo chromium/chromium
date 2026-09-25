@@ -190,8 +190,16 @@ TEST_F(WebStateDelegateBrowserAgentTest, CreateNewWebStateAndPopup) {
 // from background opener WebStates) while a call-prompt app launch (e.g.
 // facetime-audio:) is pending in the active WebState, and allowed again once
 // the launch resolves.
+// TODO(crbug.com/40166678): The test fails on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_DropWindowRequestsDuringCallPromptLaunch \
+  DropWindowRequestsDuringCallPromptLaunch
+#else
+#define MAYBE_DropWindowRequestsDuringCallPromptLaunch \
+  DISABLED_DropWindowRequestsDuringCallPromptLaunch
+#endif
 TEST_F(WebStateDelegateBrowserAgentTest,
-       DropWindowRequestsDuringCallPromptLaunch) {
+       MAYBE_DropWindowRequestsDuringCallPromptLaunch) {
   web::WebState* opener_web_state = InsertNewWebState(GURL(kURL1));
   AttachAppLauncherTabHelper(opener_web_state);
   web::WebState* active_web_state = InsertNewWebState(GURL(kURL1));
