@@ -195,7 +195,6 @@ class MODULES_EXPORT BaseAudioContext
 
   void Dispose();
 
-
   size_t CurrentSampleFrame() const {
     return destination_handler_->CurrentSampleFrame();
   }
@@ -350,6 +349,14 @@ class MODULES_EXPORT BaseAudioContext
 
   // When the context goes away, reject any pending script promise resolvers.
   virtual void RejectPendingResolvers();
+
+  // Detaches all pending script promise resolvers when the context is being
+  // disposed by the garbage collector. This is called from Dispose() (a
+  // pre-finalizer), where allocating new objects (like DOMExceptions for
+  // rejecting promises) is prohibited. Detaching the resolvers ensures they
+  // don't attempt to access the context during their own disposal and avoids
+  // crashes from forbidden allocations.
+  virtual void DetachPendingResolvers();
 
   // Returns the window with which the instance is associated.
   LocalDOMWindow* GetWindow() const;

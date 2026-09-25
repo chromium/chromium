@@ -246,6 +246,7 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
 
   complete_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<AudioBuffer>>(
       script_state, exception_state.GetContext());
+  complete_resolver_->SuppressDetachCheck();
 
   // Allocate the AudioBuffer to hold the rendered result.
   float sample_rate = DestinationHandler().SampleRate();
@@ -357,6 +358,16 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
 
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
         script_state, exception_state.GetContext());
+
+    // When an OfflineAudioContext that has not started rendering is garbage
+    // collected, it may be collected in the same cycle as its pending
+    // suspend resolvers. In some GC configurations, the resolver's
+    // pre-finalizer may run before the context's, triggering a DCHECK that
+    // the resolver was not detached. Since OfflineAudioContext explicitly
+    // detaches these resolvers in its own Dispose/DetachPendingResolvers
+    // paths, it is safe to suppress this check.
+    resolver->SuppressDetachCheck();
+
     promise = resolver->Promise();
 
     scheduled_suspends_.insert(frame, resolver);
@@ -435,11 +446,13 @@ void OfflineAudioContext::FireCompletionEvent() {
     // promise too.
     DispatchEvent(*OfflineAudioCompletionEvent::Create(rendered_buffer));
     complete_resolver_->Resolve(rendered_buffer);
+    complete_resolver_ = nullptr;
   } else {
     // The resolver should be rejected when the execution context is gone.
     complete_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "the execution context does not exist"));
+    complete_resolver_ = nullptr;
   }
 
   is_rendering_started_ = false;
@@ -543,6 +556,27 @@ void OfflineAudioContext::RejectPendingResolvers() {
   }
 
   BaseAudioContext::RejectPendingResolvers();
+}
+
+void OfflineAudioContext::DetachPendingResolvers() {
+  DCHECK(IsMainThread());
+
+  {
+    base::AutoLock locker(suspend_frames_lock_);
+    scheduled_suspend_frames_.clear();
+  }
+
+  for (auto& entry : scheduled_suspends_) {
+    entry.value->SuppressDetachCheck();
+  }
+  scheduled_suspends_.clear();
+
+  if (complete_resolver_) {
+    complete_resolver_->SuppressDetachCheck();
+    complete_resolver_ = nullptr;
+  }
+
+  BaseAudioContext::DetachPendingResolvers();
 }
 
 bool OfflineAudioContext::IsPullingAudioGraph() const {

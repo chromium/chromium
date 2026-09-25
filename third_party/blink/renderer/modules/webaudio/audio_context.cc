@@ -240,6 +240,7 @@ AudioContext::SetSinkIdResolver::SetSinkIdResolver(
       resolver_(MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state)) {
   DCHECK(IsMainThread());
+  resolver_->SuppressDetachCheck();
 
   // Currently the only available AudioSinkOptions is a type of a silent sink,
   // which can be specified by an empty descriptor constructor.
@@ -325,6 +326,14 @@ void AudioContext::SetSinkIdResolver::Reject(v8::Local<v8::Value> value) {
   DCHECK(resolver_);
   resolver_->Reject(value);
   resolver_ = nullptr;
+}
+
+void AudioContext::SetSinkIdResolver::Detach() {
+  DCHECK(IsMainThread());
+  if (resolver_) {
+    resolver_->SuppressDetachCheck();
+    resolver_ = nullptr;
+  }
 }
 
 ScriptPromise<IDLUndefined> AudioContext::SetSinkIdResolver::GetPromise() {
@@ -855,6 +864,7 @@ ScriptPromise<IDLUndefined> AudioContext::resumeContext(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
+  resolver->SuppressDetachCheck();
   auto promise = resolver->Promise();
 
   std::optional<ResumeError> error = ResumeInternal();
@@ -1071,6 +1081,9 @@ void AudioContext::DidClose() {
   }
   deferred_resume_resolvers_.clear();
 
+  RejectPendingResumeResolversWithException(
+      "AudioContext closed before a pending resume() could complete.");
+
   if (auto* frame = GetLocalFrame()) {
     frame->RemoveVisibilityObserver(this);
   }
@@ -1080,6 +1093,30 @@ void AudioContext::DidClose() {
 
 bool AudioContext::IsContextCleared() const {
   return close_resolver_ || BaseAudioContext::IsContextCleared();
+}
+
+void AudioContext::DetachPendingResolvers() {
+  DCHECK(IsMainThread());
+
+  for (auto& resolver : set_sink_id_resolvers_) {
+    resolver->Detach();
+  }
+  set_sink_id_resolvers_.clear();
+
+  for (auto& resolver : deferred_resume_resolvers_) {
+    resolver->SuppressDetachCheck();
+  }
+  deferred_resume_resolvers_.clear();
+
+  {
+    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
+    for (auto& resolver : pending_resume_resolvers_) {
+      resolver->SuppressDetachCheck();
+    }
+    pending_resume_resolvers_.clear();
+  }
+
+  BaseAudioContext::DetachPendingResolvers();
 }
 
 void AudioContext::ScheduleInitialTransitionToRunning() {

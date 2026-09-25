@@ -114,6 +114,8 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   bool HasPendingActivity() const final;
 
  private:
+  void DetachPendingResolvers() override;
+
   // Fetch directly the destination handler.
   OfflineAudioDestinationHandler& DestinationHandler();
 

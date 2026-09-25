@@ -226,6 +226,25 @@ void BaseAudioContext::Dispose() {
   // BaseAudioContext is going away, so remove the context from the orphan
   // handlers.
   GetDeferredTaskHandler().ClearContextFromOrphanHandlers();
+
+  // Clear any pending resolvers without allocating DOMExceptions (which is
+  // forbidden during GC).
+  DetachPendingResolvers();
+}
+
+void BaseAudioContext::DetachPendingResolvers() {
+  for (auto& resolver : decode_audio_resolvers_) {
+    resolver->SuppressDetachCheck();
+  }
+  decode_audio_resolvers_.clear();
+
+  {
+    DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
+    for (auto& resolver : pending_promise_resolvers_) {
+      resolver->SuppressDetachCheck();
+    }
+    pending_promise_resolvers_.clear();
+  }
 }
 
 void BaseAudioContext::ContextLifecycleStateChanged(
@@ -394,6 +413,7 @@ ScriptPromise<AudioBuffer> BaseAudioContext::decodeAudioData(
 
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<AudioBuffer>>(
         script_state, exception_state.GetContext());
+    resolver->SuppressDetachCheck();
     auto promise = resolver->Promise();
     decode_audio_resolvers_.insert(resolver);
 
@@ -822,6 +842,7 @@ void BaseAudioContext::AddPendingPromiseResolver(
     ScriptPromiseResolver<IDLUndefined>* resolver) {
   DCHECK(IsMainThread());
 
+  resolver->SuppressDetachCheck();
   DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
   pending_promise_resolvers_.push_back(resolver);
 }

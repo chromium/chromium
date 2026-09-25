@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -3169,6 +3170,24 @@ TEST_F(AudioContextTest, SetSinkIdPermissionsPolicy) {
     ASSERT_TRUE(dom_exception);
     EXPECT_EQ(dom_exception->name(), "NotAllowedError");
   }
+}
+
+TEST_F(AudioContextTest, AudioContextGCWhilePendingPromise) {
+  ScopedAudioContextAsyncStateTransitionsForTest scoped_feature(true);
+  V8TestingScope scope;
+  {
+    AudioContext* audio_context = AudioContext::Create(
+        GetFrame().DomWindow(), AudioContextOptions::Create(),
+        ASSERT_NO_EXCEPTION);
+
+    // Create a pending promise in AudioContext (pending_promise_resolvers_).
+    audio_context->suspendContext(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+    EXPECT_EQ(audio_context->PendingPromiseResolverCountForTesting(), 1u);
+  }
+  // Trigger GC. BaseAudioContextTest tests the actual collection and Dispose()
+  // path since AudioContext::HasPendingActivity() keeps AudioContext alive
+  // while unclosed.
+  ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
 }  // namespace blink

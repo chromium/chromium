@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
 
@@ -145,6 +146,24 @@ TEST_F(OfflineAudioContextTest, EarlyCompletionZeroesDestinationBuffer) {
       EXPECT_EQ(sample, 0.0f);
     }
   }
+}
+
+TEST_F(OfflineAudioContextTest, OfflineGCWhilePendingPromise) {
+  V8TestingScope scope;
+  WeakPersistent<OfflineAudioContext> weak_context;
+  {
+    OfflineAudioContext* audio_context = OfflineAudioContext::Create(
+        GetFrame().DomWindow(), 1, 128, 44100, ASSERT_NO_EXCEPTION);
+    weak_context = audio_context;
+
+    // Create a pending promise in OfflineAudioContext (scheduled_suspends_).
+    audio_context->suspendContext(scope.GetScriptState(), 0.001,
+                                  ASSERT_NO_EXCEPTION);
+  }
+  // Trigger GC. This should call BaseAudioContext::Dispose, which for
+  // OfflineAudioContext calls DetachPendingResolvers.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_EQ(weak_context.Get(), nullptr);
 }
 
 }  // namespace blink

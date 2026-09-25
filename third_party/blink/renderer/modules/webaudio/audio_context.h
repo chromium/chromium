@@ -109,6 +109,9 @@ class MODULES_EXPORT AudioContext final
     // V8ThrowDOMException::CreateOrEmpty.
     void Reject(v8::Local<v8::Value>);
 
+    // Detaches the resolver without resolving or rejecting.
+    void Detach();
+
     ScriptPromise<IDLUndefined> GetPromise();
 
    private:
@@ -337,6 +340,7 @@ class MODULES_EXPORT AudioContext final
   };
 
   void Uninitialize() override;
+  void DetachPendingResolvers() override;
 
   // Returns the AutoplayPolicy currently applying to this instance.
   AutoplayPolicy::Type GetAutoplayPolicy() const;
