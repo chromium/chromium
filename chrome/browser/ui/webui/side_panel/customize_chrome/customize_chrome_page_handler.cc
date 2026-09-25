@@ -27,7 +27,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -35,15 +34,9 @@
 #include "chrome/browser/ui/search/ntp_user_data_types.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
-#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
-#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
-#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -58,6 +51,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/url_util.h"
@@ -67,6 +61,16 @@
 #include "ui/color/color_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
+#include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
+#include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
+#include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
+#endif
 
 namespace {
 
@@ -162,11 +166,13 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
       base::BindRepeating(
           &CustomizeChromePageHandler::UpdateMostVisitedSettings,
           base::Unretained(this)));
+#if !BUILDFLAG(IS_ANDROID)
   pref_change_registrar_.Add(
       ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
       base::BindRepeating(
           &CustomizeChromePageHandler::UpdateMostVisitedSettings,
           base::Unretained(this)));
+#endif
   pref_change_registrar_.Add(
       prefs::kNtpHiddenModules,
       base::BindRepeating(&CustomizeChromePageHandler::UpdateModulesSettings,
@@ -237,7 +243,7 @@ void CustomizeChromePageHandler::SetBackgroundImage(
   ntp_custom_background_service_->SetCustomBackgroundInfo(
       image_url, thumbnail_url, attribution_1, attribution_2, attribution_url,
       collection_id);
-  customize_chrome::MaybeDisableExtensionOverridingNtp(profile_);
+  MaybeDisableExtensionOverridingNtp();
 }
 
 void CustomizeChromePageHandler::SetDailyRefreshCollectionId(
@@ -248,7 +254,7 @@ void CustomizeChromePageHandler::SetDailyRefreshCollectionId(
       /* image_url */ GURL(), /* thumbnail_url */ GURL(),
       /* attribution_line_1= */ "", /* attribution_line_2= */ "",
       /* action_url= */ GURL(), collection_id);
-  customize_chrome::MaybeDisableExtensionOverridingNtp(profile_);
+  MaybeDisableExtensionOverridingNtp();
 }
 
 void CustomizeChromePageHandler::GetBackgroundCollections(
@@ -325,7 +331,7 @@ void CustomizeChromePageHandler::ChooseLocalCustomBackground(
 void CustomizeChromePageHandler::RemoveBackgroundImage() {
   if (ntp_custom_background_service_) {
     ntp_custom_background_service_->ResetCustomBackgroundInfo();
-    customize_chrome::MaybeDisableExtensionOverridingNtp(profile_);
+    MaybeDisableExtensionOverridingNtp();
   }
 }
 
@@ -380,6 +386,10 @@ void CustomizeChromePageHandler::UpdateTheme() {
   }
   theme->background_managed_by_policy =
       ntp_custom_background_service_->IsCustomBackgroundDisabledByPolicy();
+
+// BrowserThemePack, and therefore a .crx-based theme, only exists when full
+// extensions support is enabled.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (theme_service_->UsingExtensionTheme()) {
     const extensions::Extension* theme_extension =
         extensions::ExtensionRegistry::Get(profile_)
@@ -393,6 +403,7 @@ void CustomizeChromePageHandler::UpdateTheme() {
       theme->third_party_theme_info = std::move(third_party_theme_info);
     }
   }
+#endif
   page_->SetTheme(std::move(theme));
 }
 
@@ -529,6 +540,7 @@ void CustomizeChromePageHandler::UpdateMostVisitedSettings() {
 }
 
 void CustomizeChromePageHandler::OnBrowserWindowInterfaceChanged() {
+#if !BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     return;
   }
@@ -552,6 +564,7 @@ void CustomizeChromePageHandler::OnBrowserWindowInterfaceChanged() {
       new_tab_footer::NewTabFooterController::From(browser);
   CHECK(footer_controller);
   footer_controller_observation_.Observe(footer_controller);
+#endif
 }
 
 void CustomizeChromePageHandler::SetToolChipsVisible(bool visible) {
@@ -568,6 +581,7 @@ void CustomizeChromePageHandler::SetFooterVisible(bool visible) {
 }
 
 void CustomizeChromePageHandler::UpdateFooterSettings() {
+#if !BUILDFLAG(IS_ANDROID)
   auto management_notice_state =
       side_panel::mojom::ManagementNoticeState::New();
   management_notice_state->can_be_shown = false;
@@ -594,6 +608,7 @@ void CustomizeChromePageHandler::UpdateFooterSettings() {
       profile_->GetPrefs()->GetBoolean(
           prefs::kNTPFooterExtensionAttributionEnabled),
       std::move(management_notice_state));
+#endif
 }
 
 void CustomizeChromePageHandler::SetModulesVisible(bool visible) {
@@ -678,6 +693,12 @@ void CustomizeChromePageHandler::UpdateNtpManagedByName() {
   page_->NtpManagedByNameUpdated(name, description);
 }
 
+void CustomizeChromePageHandler::MaybeDisableExtensionOverridingNtp() {
+#if !BUILDFLAG(IS_ANDROID)
+  customize_chrome::MaybeDisableExtensionOverridingNtp(profile_);
+#endif
+}
+
 void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {
   switch (event) {
     case NTP_BACKGROUND_UPLOAD_CANCEL:
@@ -756,9 +777,13 @@ bool CustomizeChromePageHandler::IsEnterpriseShortcutsVisible() const {
 }
 
 bool CustomizeChromePageHandler::IsEnterpriseShortcutsEmpty() const {
+#if BUILDFLAG(IS_ANDROID)
+  return true;
+#else
   return profile_->GetPrefs()
       ->GetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList)
       .empty();
+#endif
 }
 
 void CustomizeChromePageHandler::OnNativeThemeUpdated(
@@ -862,12 +887,14 @@ void CustomizeChromePageHandler::OnTemplateURLServiceShuttingDown() {
   template_url_service_ = nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void CustomizeChromePageHandler::OnFooterVisibilityUpdated(bool visible) {
   if (!base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     return;
   }
   UpdateFooterSettings();
 }
+#endif
 
 void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,
                                               int index) {
@@ -885,7 +912,7 @@ void CustomizeChromePageHandler::FileSelected(const ui::SelectedFileInfo& file,
 
     profile_->set_last_selected_directory(file.path().DirName());
     ntp_custom_background_service_->SelectLocalBackgroundImage(file.path());
-    customize_chrome::MaybeDisableExtensionOverridingNtp(profile_);
+    MaybeDisableExtensionOverridingNtp();
   }
   select_file_dialog_ = nullptr;
   LogEvent(NTP_BACKGROUND_UPLOAD_DONE);
@@ -903,7 +930,9 @@ side_panel::mojom::NewTabPageType CustomizeChromePageHandler::GetNewTabPageType(
     const GURL& url) {
   if (NewTabPageUI::IsNewTabPageOrigin(url)) {
     return side_panel::mojom::NewTabPageType::kFirstPartyWebUI;
-  } else if (ntp_footer::IsExtensionNtp(url, profile_)) {
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  if (ntp_footer::IsExtensionNtp(url, profile_)) {
     return side_panel::mojom::NewTabPageType::kExtension;
   } else if (NewTabPageThirdPartyUI::IsNewTabPageOrigin(url)) {
     return side_panel::mojom::NewTabPageType::kThirdPartyWebUI;
@@ -914,6 +943,7 @@ side_panel::mojom::NewTabPageType CustomizeChromePageHandler::GetNewTabPageType(
                ? side_panel::mojom::NewTabPageType::kGuestMode
                : side_panel::mojom::NewTabPageType::kIncognito;
   }
+#endif
 
   return side_panel::mojom::NewTabPageType::kNone;
 }

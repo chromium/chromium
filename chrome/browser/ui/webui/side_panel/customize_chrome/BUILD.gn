@@ -51,7 +51,7 @@ source_set("mojom_traits") {
   ]
 }
 
-if (!is_android) {
+if (!is_android || enable_webui_ntp) {
   source_set("customize_chrome_ui") {
     public = [
       "customize_chrome_page_handler.h",
@@ -65,13 +65,18 @@ if (!is_android) {
       "//chrome/browser/new_tab_page",
       "//chrome/browser/search/background",
       "//chrome/browser/themes",
-      "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/webui/top_chrome",
       "//components/themes",
       "//components/user_education/webui",
       "//content/public/browser",
       "//mojo/public/cpp/bindings",
+      "//ui/webui/resources/cr_components/customize_color_scheme_mode:mojom",
+      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+      "//ui/webui/resources/cr_components/theme_color_picker:mojom",
     ]
+    if (!is_android) {
+      public_deps += [ "//chrome/browser/ui/views/new_tab_footer" ]
+    }
   }
 
   source_set("impl") {
@@ -96,40 +101,49 @@ if (!is_android) {
       "//chrome/browser/search/background",
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
-      "//chrome/browser/themes",
-      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/select_file_policy",
-      "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/ui/views/side_panel/customize_chrome",
-      "//chrome/browser/ui/webui:theme_handler",
       "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/customize_color_scheme_mode",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker:impl",
-      "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/new_tab_page",
       "//chrome/browser/ui/webui/new_tab_page:impl",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
-      "//chrome/browser/ui/webui/new_tab_page_third_party",
-      "//chrome/browser/ui/webui/new_tab_page_third_party:impl",
-      "//chrome/browser/ui/webui/ntp",
       "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search",
-      "//chrome/browser/ui/webui_browser:headers",
       "//chrome/common",
       "//components/ntp_tiles:pref_names",
       "//components/prefs",
       "//components/strings:components_strings",
+      "//extensions/strings",
       "//ui/strings:ui_strings",
       "//ui/webui",
       "//ui/webui/tracked_element",
     ]
+    if (!is_android) {
+      deps += [
+        "//chrome/browser/themes",
+        "//chrome/browser/ui:browser_window_header",
+        "//chrome/browser/ui/views/side_panel",
+        "//chrome/browser/ui/views/side_panel/customize_chrome",
+        "//chrome/browser/ui/webui:theme_handler",
+        "//chrome/browser/ui/webui/new_tab_footer",
+        "//chrome/browser/ui/webui/new_tab_page_third_party",
+        "//chrome/browser/ui/webui/new_tab_page_third_party:impl",
+        "//chrome/browser/ui/webui/ntp",
+        "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar",
+        "//chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search",
+        "//chrome/browser/ui/webui_browser:headers",
+      ]
+    }
   }
+}
 
+if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [ "customize_chrome_page_handler_unittest.cc" ]

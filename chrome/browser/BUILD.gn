@@ -1265,6 +1265,13 @@ source_set("core") {
     "//ui/webui/tracked_element",
   ]
 
+  if (enable_webui_ntp) {
+    deps += [
+      "//ui/webui/resources/cr_components/customize_color_scheme_mode:mojom",
+      "//ui/webui/resources/cr_components/theme_color_picker:mojom",
+    ]
+  }
+
   if (!is_android) {
     public_deps = [
       "//chrome/browser/ui/omnibox/omnibox_everywhere:impl",
@@ -2508,6 +2515,8 @@ source_set("browser") {
       "//chrome/browser/new_tab_page",
       "//chrome/browser/new_tab_page:impl",
       "//chrome/browser/ui/webui/ntp_microsoft_auth",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//chrome/browser/ui/webui/top_chrome:impl",
     ]
   }
 
@@ -2656,8 +2665,6 @@ source_set("browser") {
       "//chrome/browser/ui/webui/signin:login_ui_service_impl",
       "//chrome/browser/ui/webui/signin:signin_impl",
       "//chrome/browser/ui/webui/signin:signin_utils_impl",
-      "//chrome/browser/ui/webui/top_chrome",
-      "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/webui/user_education",
       "//chrome/browser/ui/webui/user_education_internals",
       "//chrome/browser/ui/webui/webui_gallery",
@@ -3583,14 +3590,12 @@ group("browser_generated_files") {
       "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
-      "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
       "//chrome/browser/ui/webui/data_sharing:mojo_bindings",
       "//chrome/browser/ui/webui/downloads:mojo_bindings",
       "//chrome/browser/ui/webui/drive_picker_host:mojo_bindings",
       "//chrome/browser/ui/webui/infobar_internals:mojo_bindings",
       "//chrome/browser/ui/webui/multistep_filter_internals:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_footer:mojo_bindings",
-      "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings",
       "//chrome/browser/ui/webui/ntp_microsoft_auth:shared",
       "//chrome/browser/ui/webui/ntp_microsoft_auth:untrusted",
@@ -3600,7 +3605,6 @@ group("browser_generated_files") {
       "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/comments:mojo_bindings",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings",
       "//chrome/browser/ui/webui/tab_search:mojo_bindings",
       "//chrome/browser/ui/webui/user_education_internals:mojo_bindings",
@@ -3617,6 +3621,13 @@ group("browser_generated_files") {
       public_deps +=
           [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
     }
+  }
+  if (!is_android || enable_webui_ntp) {
+    public_deps += [
+      "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
+      "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
+    ]
   }
   if (!is_android || is_desktop_android) {
     public_deps += [ "//chrome/browser/ui/webui/discards:mojo_bindings" ]

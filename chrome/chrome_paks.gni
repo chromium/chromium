@@ -160,7 +160,13 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/new_tab_page_third_party_resources.pak",
         "$root_gen_dir/chrome/new_tab_page_untrusted_resources.pak",
         "$root_gen_dir/chrome/new_tab_shared_resources.pak",
+        "$root_gen_dir/chrome/side_panel_customize_chrome_resources.pak",
       ]
+    }
+
+    # side_panel/shared is not NTP-specific; see chrome/browser/resources.
+    if (!is_android || enable_webui_ntp) {
+      sources += [ "$root_gen_dir/chrome/side_panel_shared_resources.pak" ]
     }
 
     deps = [
@@ -239,12 +245,10 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/side_panel_bookmarks_resources.pak",
         "$root_gen_dir/chrome/side_panel_comments_resources.pak",
         "$root_gen_dir/chrome/side_panel_commerce_resources.pak",
-        "$root_gen_dir/chrome/side_panel_customize_chrome_resources.pak",
         "$root_gen_dir/chrome/side_panel_history_clusters_resources.pak",
         "$root_gen_dir/chrome/side_panel_history_resources.pak",
         "$root_gen_dir/chrome/side_panel_read_anything_resources.pak",
         "$root_gen_dir/chrome/side_panel_reading_list_resources.pak",
-        "$root_gen_dir/chrome/side_panel_shared_resources.pak",
         "$root_gen_dir/chrome/side_panel_tabs_from_other_devices_resources.pak",
         "$root_gen_dir/chrome/signin_resources.pak",
         "$root_gen_dir/chrome/support_tool_resources.pak",

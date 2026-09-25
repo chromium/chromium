@@ -42,6 +42,7 @@ source_set("new_tab_page") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/new_tab_page",
     "//chrome/browser/search/background",
+    "//chrome/browser/themes",
     "//chrome/browser/ui/webui/customize_buttons:mojo_bindings",
     "//chrome/browser/ui/webui/new_tab_page/action_chips",
     "//chrome/browser/ui/webui/new_tab_page/action_chips:mojo_bindings",

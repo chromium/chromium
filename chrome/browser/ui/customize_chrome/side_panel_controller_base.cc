@@ -10,24 +10,20 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/grit/branded_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#else
-#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"  // nogncheck
-#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"  // nogncheck
-#endif
 
 namespace customize_chrome {
 
@@ -83,15 +79,9 @@ void SidePanelControllerBase::OnEntryWillHide(SidePanelEntry* entry,
 }
 
 bool SidePanelControllerBase::CanShowOnURL(const GURL& url) const {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/507919199): CustomizeChromePageHandler is not compiled on
-  // Android, so its support check is not available here yet.
-  return true;
-#else
   Profile* const profile = tab_->GetProfile();
   return CustomizeChromePageHandler::IsSupported(
       NtpCustomBackgroundServiceFactory::GetForProfile(profile), profile);
-#endif
 }
 
 void SidePanelControllerBase::DidFinishNavigation(

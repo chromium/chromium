@@ -94,6 +94,7 @@ export class AppElement extends AppElementBase {
       showEditTheme_: {type: Boolean},
       showFooter_: {type: Boolean},
       showFooterForManagedBrowser_: {type: Boolean},
+      toolbarCustomizationEnabled_: {type: Boolean},
     };
   }
 
@@ -119,6 +120,8 @@ export class AppElement extends AppElementBase {
   protected accessor showEditTheme_: boolean = true;
   protected accessor showFooter_: boolean = false;
   protected accessor showFooterForManagedBrowser_: boolean = false;
+  protected accessor toolbarCustomizationEnabled_: boolean =
+      loadTimeData.getBoolean('toolbarCustomizationEnabled');
 
   private listenerIds_: number[] = [];
   private apiProxy_: CustomizeChromeApiProxy =

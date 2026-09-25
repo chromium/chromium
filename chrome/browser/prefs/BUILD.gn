@@ -113,6 +113,7 @@ source_set("impl") {
     "//chrome/browser/subscription_eligibility",
     "//chrome/browser/sync",
     "//chrome/browser/task_manager",
+    "//chrome/browser/themes",
     "//chrome/browser/tips/core",
     "//chrome/browser/tracing",
     "//chrome/browser/ui:browser_ui_prefs",
@@ -462,6 +463,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/new_tab_page",
       "//chrome/browser/ui/webui/cr_components/most_visited",
+      "//chrome/browser/ui/webui/cr_components/theme_color_picker:impl",
       "//chrome/browser/ui/webui/new_tab_page",
       "//chrome/browser/ui/webui/new_tab_page:impl",
     ]
@@ -472,7 +474,6 @@ source_set("impl") {
       "//chrome/browser/indigo",
       "//chrome/browser/ui/read_anything:prefs",
       "//chrome/browser/ui/views/frame:glass_frame_service",
-      "//chrome/browser/ui/webui/cr_components/theme_color_picker:impl",
       "//chrome/browser/ui/webui/history",
       "//chrome/browser/ui/webui/tab_search",
     ]

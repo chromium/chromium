@@ -2,34 +2,43 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(!is_android)
+import("//ui/webui/webui_features.gni")
+
+# On Android this is pulled in by the WebUI NTP (enable_webui_ntp) and by
+# ai_overlay_dialog (is_desktop_android), which are separate build args.
+assert(!is_android || enable_webui_ntp || is_desktop_android)
 
 source_set("top_chrome") {
   sources = [
-    "per_profile_webui_tracker.h",
-    "preload_candidate_selector.h",
-    "preload_context.h",
-    "profile_preload_candidate_selector.h",
     "top_chrome_web_ui_controller.h",
     "top_chrome_webui_config.h",
     "untrusted_top_chrome_web_ui_controller.h",
-    "webui_contents_preload_manager.h",
-    "webui_contents_preload_state.h",
-    "webui_contents_warmup_level.h",
-    "webui_contents_warmup_level_recorder.h",
-    "webui_contents_wrapper.h",
   ]
 
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:webui_name_variants",
-    "//components/web_modal",
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",
     "//url",
   ]
+
+  if (!is_android) {
+    sources += [
+      "per_profile_webui_tracker.h",
+      "preload_candidate_selector.h",
+      "preload_context.h",
+      "profile_preload_candidate_selector.h",
+      "webui_contents_preload_manager.h",
+      "webui_contents_preload_state.h",
+      "webui_contents_warmup_level.h",
+      "webui_contents_warmup_level_recorder.h",
+      "webui_contents_wrapper.h",
+    ]
+    public_deps += [ "//components/web_modal" ]
+  }
 }
 
 # The implementation must be linked into the same binary as the public
@@ -39,114 +48,124 @@ source_set("impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   sources = [
-    "per_profile_webui_tracker.cc",
-    "preload_candidate_selector.cc",
-    "preload_context.cc",
-    "profile_preload_candidate_selector.cc",
     "top_chrome_web_ui_controller.cc",
     "top_chrome_webui_config.cc",
     "untrusted_top_chrome_web_ui_controller.cc",
-    "webui_contents_preload_manager.cc",
-    "webui_contents_preload_state.cc",
-    "webui_contents_warmup_level.cc",
-    "webui_contents_warmup_level_recorder.cc",
-    "webui_contents_wrapper.cc",
   ]
 
   deps = [
     ":top_chrome",
     "//base",
     "//chrome/app:generated_resources",
-    "//chrome/browser/page_load_metrics",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/task_manager",
-    "//chrome/browser/ui:browser_window_header",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/prefs",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/webui:log_web_ui_url",
     "//chrome/common",
-    "//components/performance_manager",
-    "//components/site_engagement/content",
     "//components/zoom",
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",
   ]
+
+  if (!is_android) {
+    sources += [
+      "per_profile_webui_tracker.cc",
+      "preload_candidate_selector.cc",
+      "preload_context.cc",
+      "profile_preload_candidate_selector.cc",
+      "webui_contents_preload_manager.cc",
+      "webui_contents_preload_state.cc",
+      "webui_contents_warmup_level.cc",
+      "webui_contents_warmup_level_recorder.cc",
+      "webui_contents_wrapper.cc",
+    ]
+    deps += [
+      "//chrome/browser/page_load_metrics",
+      "//chrome/browser/task_manager",
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/prefs",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/webui:log_web_ui_url",
+      "//components/performance_manager",
+      "//components/site_engagement/content",
+    ]
+  }
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "top_chrome_web_ui_controller_test_support.cc",
-    "top_chrome_web_ui_controller_test_support.h",
-    "webui_contents_preload_manager_test_api.cc",
-    "webui_contents_preload_manager_test_api.h",
-  ]
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "top_chrome_web_ui_controller_test_support.cc",
+      "top_chrome_web_ui_controller_test_support.h",
+      "webui_contents_preload_manager_test_api.cc",
+      "webui_contents_preload_manager_test_api.h",
+    ]
 
-  deps = [
-    ":top_chrome",
-    "//ui/base",
-    "//ui/gfx/geometry",
-    "//url",
-  ]
-}
+    deps = [
+      ":top_chrome",
+      "//ui/base",
+      "//ui/gfx/geometry",
+      "//url",
+    ]
+  }
 
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-  sources = [
-    "preload_context_browsertest.cc",
-    "webui_contents_preload_manager_browsertest.cc",
-  ]
-  deps = [
-    ":impl",
-    ":test_support",
-    ":top_chrome",
-    "//chrome/app:command_ids",
-    "//chrome/browser/page_load_metrics",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/side_panel",
-    "//chrome/common",
-    "//chrome/test:test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
-    "//ui/actions",
-    "//ui/gfx/geometry",
-    "//ui/views",
-    "//ui/views:test_support",
-  ]
-}
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    sources = [
+      "preload_context_browsertest.cc",
+      "webui_contents_preload_manager_browsertest.cc",
+    ]
+    deps = [
+      ":impl",
+      ":test_support",
+      ":top_chrome",
+      "//chrome/app:command_ids",
+      "//chrome/browser/page_load_metrics",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/side_panel",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/actions",
+      "//ui/gfx/geometry",
+      "//ui/views",
+      "//ui/views:test_support",
+    ]
+  }
 
-source_set("unit_tests") {
-  testonly = true
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-  sources = [
-    "per_profile_webui_tracker_unittest.cc",
-    "profile_preload_candidate_selector_unittest.cc",
-    "top_chrome_webui_config_unittest.cc",
-    "webui_contents_preload_manager_unittest.cc",
-    "webui_contents_wrapper_unittest.cc",
-  ]
-  deps = [
-    ":impl",
-    ":test_support",
-    ":top_chrome",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/test:test_support",
-    "//chrome/test/base:chrome_render_view_host_test_harness",
-    "//components/input",
-    "//components/site_engagement/content",
-    "//content/public/browser",
-    "//content/public/common",
-    "//content/test:test_support",
-    "//testing/gtest",
-  ]
+  source_set("unit_tests") {
+    testonly = true
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    sources = [
+      "per_profile_webui_tracker_unittest.cc",
+      "profile_preload_candidate_selector_unittest.cc",
+      "top_chrome_webui_config_unittest.cc",
+      "webui_contents_preload_manager_unittest.cc",
+      "webui_contents_wrapper_unittest.cc",
+    ]
+    deps = [
+      ":impl",
+      ":test_support",
+      ":top_chrome",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
+      "//components/input",
+      "//components/site_engagement/content",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

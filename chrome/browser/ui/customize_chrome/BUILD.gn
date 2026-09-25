@@ -29,8 +29,11 @@ source_set("customize_chrome_base") {
   public_deps = [ ":customize_chrome" ]
 
   deps = [
+    "//chrome/browser/search/background",
+
     # Does not actually depend on //ui/views for is_android.
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
   ]
 
   if (is_android) {
@@ -41,11 +44,7 @@ source_set("customize_chrome_base") {
     deps += [
       "//chrome/browser/android/thin_webview",
       "//chrome/browser/ui/side_panel/android",
-    ]
-  } else {
-    deps += [
-      "//chrome/browser/search/background",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
+      "//ui/android",
     ]
   }
 }

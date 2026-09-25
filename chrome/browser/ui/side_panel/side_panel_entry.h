@@ -209,7 +209,7 @@ class SidePanelEntry final : public ui::PropertyHandler {
 };
 
 #if BUILDFLAG(IS_ANDROID)
-// Title is retrieve from SidePanelHelper::GetActionItem() on non-Android.
+// Title is retrieved from SidePanelHelper::GetActionItem() on non-Android.
 extern const ui::ClassProperty<std::u16string*>* const kSidePanelTitleKey;
 #else
 extern const ui::ClassProperty<bool>* const

@@ -17,7 +17,6 @@
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
-#include "chrome/browser/ui/views/new_tab_footer/footer_controller_observer.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/search/ntp_logging_events.h"
@@ -34,6 +33,10 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/views/new_tab_footer/footer_controller_observer.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -69,8 +72,12 @@ class CustomizeChromePageHandler
       public ThemeServiceObserver,
       public NtpCustomBackgroundServiceObserver,
       public TemplateURLServiceObserver,
-      public ui::SelectFileDialog::Listener,
-      public new_tab_footer::NewTabFooterControllerObserver {
+      public ui::SelectFileDialog::Listener
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+      public new_tab_footer::NewTabFooterControllerObserver
+#endif
+{
  public:
   // Returns whether the page handler can be constructed. Used to decide whether
   // the sidepanel should be allowed to show.
@@ -150,6 +157,7 @@ class CustomizeChromePageHandler
   void UpdateNtpManagedByName() override;
 
  private:
+  void MaybeDisableExtensionOverridingNtp();
   void LogEvent(NTPLoggingEventType event);
   void UpdatePrefAndLogEvent(const char* pref_name,
                              bool new_value,
@@ -187,8 +195,10 @@ class CustomizeChromePageHandler
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
 
+#if !BUILDFLAG(IS_ANDROID)
   // new_tab_footer::NewTabFooterControllerObserver:
   void OnFooterVisibilityUpdated(bool visible) override;
+#endif
 
   // Called when the embedding BrowserWindowInterface has changed.
   void OnBrowserWindowInterfaceChanged();
@@ -228,9 +238,11 @@ class CustomizeChromePageHandler
   base::ScopedObservation<NtpCustomBackgroundService,
                           NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observation_{this};
+#if !BUILDFLAG(IS_ANDROID)
   base::ScopedObservation<new_tab_footer::NewTabFooterController,
                           new_tab_footer::NewTabFooterControllerObserver>
       footer_controller_observation_{this};
+#endif
 
   // Notifies this when the browser window context changes.
   base::CallbackListSubscription browser_window_changed_subscription_;

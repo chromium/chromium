@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ui/webui/webui_features.gni")
+
 source_set("theme_color_picker") {
   sources = [
     "customize_chrome_colors.cc",
@@ -17,7 +19,7 @@ source_set("theme_color_picker") {
   ]
 }
 
-if (!is_android) {
+if (!is_android || enable_webui_ntp) {
   source_set("impl") {
     sources = [
       "theme_color_picker_handler.cc",
@@ -47,7 +49,9 @@ if (!is_android) {
       "//ui/webui/resources/cr_components/theme_color_picker:mojom",
     ]
   }
+}
 
+if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [ "theme_color_picker_handler_unittest.cc" ]

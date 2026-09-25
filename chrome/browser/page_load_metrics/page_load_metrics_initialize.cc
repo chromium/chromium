@@ -99,7 +99,10 @@
 #include "chrome/browser/ui/read_anything/read_anything_soft_navigation_observer.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+// The //chrome/browser/ui/webui/top_chrome dep is in the !is_android block of
+// BUILD.gn, but that target now also exists on desktop-android, and gn check
+// does not evaluate the guard above.
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"  // nogncheck
 #include "chrome/common/webui_url_constants.h"
 #endif
 

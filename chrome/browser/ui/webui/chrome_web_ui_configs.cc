@@ -71,6 +71,7 @@
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 #if BUILDFLAG(ENABLE_WEBUI_CERTIFICATE_VIEWER)
@@ -128,7 +129,6 @@
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/side_panel/bookmarks/bookmarks_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/comments/comments_side_panel_ui.h"
-#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/ui/webui/side_panel/history/history_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
@@ -331,6 +331,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<RegionalCapabilitiesInternalsUIConfig>());
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   map.AddWebUIConfig(std::make_unique<NewTabPageUIConfig>());
+  map.AddWebUIConfig(std::make_unique<CustomizeChromeUIConfig>());
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 #if BUILDFLAG(ENABLE_WEBUI_CERTIFICATE_VIEWER)
@@ -358,7 +359,6 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<BookmarksUIConfig>());
   map.AddWebUIConfig(std::make_unique<ColorPipelineInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<CommentsSidePanelUIConfig>());
-  map.AddWebUIConfig(std::make_unique<CustomizeChromeUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<
           contextual_cueing_internals::ContextualCueingInternalsUIConfig>());

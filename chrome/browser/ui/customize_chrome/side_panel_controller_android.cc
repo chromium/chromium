@@ -30,11 +30,10 @@ SidePanelNativeView SidePanelControllerAndroid::CreateCustomizeChromeView(
   if (!web_contents_) {
     content::WebContents::CreateParams params(tab_->GetProfile());
     web_contents_ = content::WebContents::Create(params);
-    // TODO(crbug.com/507919199): Load kChromeUICustomizeChromeSidePanelURL.
-    web_contents_->GetController().LoadURL(GURL(chrome::kChromeUIVersionURL),
-                                           content::Referrer(),
-                                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                           /*extra_headers=*/std::string());
+    web_contents_->GetController().LoadURL(
+        GURL(chrome::kChromeUICustomizeChromeSidePanelURL), content::Referrer(),
+        ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+        /*extra_headers=*/std::string());
   }
 
   web_contents_host_->SetWebContents(web_contents_.get());

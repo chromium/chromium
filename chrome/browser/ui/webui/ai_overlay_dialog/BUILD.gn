@@ -35,6 +35,7 @@ source_set("ai_overlay_dialog") {
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/ai_overlay_dialog",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui/top_chrome",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/content",
     "//content/public/browser",
@@ -44,9 +45,6 @@ source_set("ai_overlay_dialog") {
     "//ui/webui",
     "//url",
   ]
-  if (!is_android) {
-    public_deps += [ "//chrome/browser/ui/webui/top_chrome" ]
-  }
 }
 
 source_set("impl") {

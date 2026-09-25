@@ -2159,7 +2159,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/settings:impl",
       "//chrome/browser/ui/webui/side_panel/bookmarks:impl",
       "//chrome/browser/ui/webui/side_panel/comments:impl",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome:impl",
       "//chrome/browser/ui/webui/side_panel/reading_list:impl",
       "//chrome/browser/ui/webui/side_panel/tabs_from_other_devices:impl",
       "//chrome/browser/ui/webui/signin:login_ui_service_impl",
@@ -2229,7 +2228,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/search_engine_choice",
       "//chrome/browser/ui/webui/side_panel/bookmarks",
       "//chrome/browser/ui/webui/side_panel/comments",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search",
       "//chrome/browser/ui/webui/side_panel/history",
@@ -2280,7 +2278,6 @@ static_library("ui") {
       # views/frame/browser_view.h).
       "//chrome/browser/ui/webui/side_panel/bookmarks:impl",
       "//chrome/browser/ui/webui/side_panel/reading_list:impl",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome:impl",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar",
       "//chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search",
 
@@ -2454,8 +2451,12 @@ static_library("ui") {
       "//chrome/browser/ui/search:impl",
       "//chrome/browser/ui/webui/new_tab_page:impl",
       "//chrome/browser/ui/webui/searchbox",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome:impl",
     ]
-    public_deps += [ "//chrome/browser/ui/webui/new_tab_page" ]
+    public_deps += [
+      "//chrome/browser/ui/webui/new_tab_page",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
+    ]
     allow_circular_includes_from += [
       # search:impl includes headers from //chrome/browser/ui (e.g.
       # browser_window.h, tab_modal_confirm_dialog.h) that can't be split out
@@ -2465,6 +2466,7 @@ static_library("ui") {
       # new_tab_page and new_tab_page:impl files include headers from
       # //chrome/browser/ui:ui that haven't been extracted yet.
       "//chrome/browser/ui/webui/new_tab_page:impl",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome:impl",
     ]
   }
 

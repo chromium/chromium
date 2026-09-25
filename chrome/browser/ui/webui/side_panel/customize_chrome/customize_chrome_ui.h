@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,8 +15,6 @@
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
-#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
-#include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
@@ -27,6 +26,11 @@
 #include "ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -55,13 +59,16 @@ class CustomizeChromeUIConfig
 class CustomizeChromeUI
     : public TopChromeWebUIController,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
+      public side_panel::mojom::CustomizeChromePageHandlerFactory,
       public customize_color_scheme_mode::mojom::
           CustomizeColorSchemeModeHandlerFactory,
-      public theme_color_picker::mojom::ThemeColorPickerHandlerFactory,
+      public theme_color_picker::mojom::ThemeColorPickerHandlerFactory
+#if !BUILDFLAG(IS_ANDROID)
+    ,
       public side_panel::customize_chrome::mojom::WallpaperSearchHandlerFactory,
-      public side_panel::mojom::CustomizeChromePageHandlerFactory,
-      public side_panel::customize_chrome::mojom::
-          CustomizeToolbarHandlerFactory {
+      public side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory
+#endif
+{
  public:
   explicit CustomizeChromeUI(content::WebUI* web_ui);
   CustomizeChromeUI(const CustomizeChromeUI&) = delete;
@@ -107,6 +114,7 @@ class CustomizeChromeUI
                      theme_color_picker::mojom::ThemeColorPickerHandlerFactory>
                          pending_receiver);
 
+#if !BUILDFLAG(IS_ANDROID)
   void BindInterface(
       mojo::PendingReceiver<
           side_panel::customize_chrome::mojom::WallpaperSearchHandlerFactory>
@@ -116,6 +124,7 @@ class CustomizeChromeUI
       mojo::PendingReceiver<
           side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory>
           receiver);
+#endif
 
   static constexpr std::string_view GetWebUIName() { return "CustomizeChrome"; }
 
@@ -148,6 +157,7 @@ class CustomizeChromeUI
       mojo::PendingReceiver<theme_color_picker::mojom::ThemeColorPickerHandler>
           handler) override;
 
+#if !BUILDFLAG(IS_ANDROID)
   // side_panel::customize_chrome::mojom::WallpaperSearchHandlerFactory:
   void CreateWallpaperSearchHandler(
       mojo::PendingRemote<
@@ -163,6 +173,7 @@ class CustomizeChromeUI
       mojo::PendingReceiver<
           side_panel::customize_chrome::mojom::CustomizeToolbarHandler> handler)
       override;
+#endif
 
   // image_decoder_ needs to be initialized before
   // wallpaper_search_handler_ so that the image decoder will be
@@ -185,6 +196,7 @@ class CustomizeChromeUI
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
+
   std::unique_ptr<CustomizeColorSchemeModeHandler>
       customize_color_scheme_mode_handler_;
   mojo::Receiver<customize_color_scheme_mode::mojom::
@@ -193,6 +205,8 @@ class CustomizeChromeUI
   std::unique_ptr<ThemeColorPickerHandler> theme_color_picker_handler_;
   mojo::Receiver<theme_color_picker::mojom::ThemeColorPickerHandlerFactory>
       theme_color_picker_handler_factory_receiver_{this};
+
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<WallpaperSearchBackgroundManager>
       wallpaper_search_background_manager_;
   std::unique_ptr<WallpaperSearchStringMap> wallpaper_search_string_map_;
@@ -204,6 +218,7 @@ class CustomizeChromeUI
   mojo::Receiver<
       side_panel::customize_chrome::mojom::CustomizeToolbarHandlerFactory>
       customize_toolbar_handler_factory_receiver_{this};
+#endif
   const int64_t id_;
 
   base::WeakPtrFactory<CustomizeChromeUI> weak_ptr_factory_{this};

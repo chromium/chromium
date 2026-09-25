@@ -234,6 +234,7 @@
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_pref_observer.h"
+#include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #if !BUILDFLAG(IS_ANDROID)
@@ -326,7 +327,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
-#include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
@@ -2031,6 +2031,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   NewTabFooterUI::RegisterProfilePrefs(registry);
 #endif  // !BUILDFLAG(IS_ANDROID)
   NewTabPageHandler::RegisterProfilePrefs(registry);
+  ThemeColorPickerHandler::RegisterProfilePrefs(registry);
   NewTabPageUI::RegisterProfilePrefs(registry);
   MostVisitedPrefObserver::RegisterProfilePrefs(registry);
   MostRelevantTabResumptionPageHandler::RegisterProfilePrefs(registry);
@@ -2083,7 +2084,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   StartupBrowserCreator::RegisterProfilePrefs(registry);
   tab_groups::saved_tab_groups::prefs::RegisterProfilePrefs(registry);
   tab_search_prefs::RegisterProfilePrefs(registry);
-  ThemeColorPickerHandler::RegisterProfilePrefs(registry);
   toolbar::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(IS_ANDROID)
 

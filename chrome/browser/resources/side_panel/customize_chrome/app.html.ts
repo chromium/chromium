@@ -23,6 +23,7 @@ export function getHtml(this: AppElement) {
       </customize-chrome-appearance>
     </div>
     <hr class="sp-cards-separator">
+    ${this.toolbarCustomizationEnabled_ ? html`
     <cr-button id="toolbarButton" class="section sp-card"
         @click="${this.onToolbarCustomizationButtonClick_}">
       <sp-heading hide-back-button id="toolbar-customization-heading">
@@ -33,6 +34,7 @@ export function getHtml(this: AppElement) {
       </sp-heading>
       <cr-icon icon="cr:chevron-right" slot="suffix-icon"></cr-icon>
     </cr-button>
+    ` : ''}
     ${this.ntpNextFeaturesEnabled_ && this.ntpNextDisablementEnabled_
       && this.aimPolicyEnabled_ && this.isSourceTabFirstPartyNtp_() ? html`
       <hr class="sp-cards-separator">
@@ -113,8 +115,10 @@ export function getHtml(this: AppElement) {
         page-name="wallpaper-search" id="wallpaperSearchPage">
     </customize-chrome-wallpaper-search>
   ` : ''}
+  ${this.toolbarCustomizationEnabled_ ? html`
   <customize-chrome-toolbar @back-click="${this.onBackClick_}"
       page-name="toolbar" id="toolbarPage"></customize-chrome-toolbar>
+  ` : ''}
 </cr-page-selector>
 <!--_html_template_end_-->`;
   // clang-format on

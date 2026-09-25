@@ -35,7 +35,15 @@ group("resources") {
       "new_tab_page_instant:resources",
       "new_tab_page_third_party:resources",
       "new_tab_shared:resources",
+      "side_panel/customize_chrome:resources",
     ]
+  }
+
+  # Unlike the targets above, side_panel/shared is not NTP-specific: it is also
+  # used by the bookmarks, reading list, history and other side panels, which
+  # are gated on !is_android. This matches the assert() in its BUILD.gn.
+  if (!is_android || enable_webui_ntp) {
+    public_deps += [ "side_panel/shared:resources" ]
   }
 
   if (enable_extensions_core) {
@@ -84,12 +92,10 @@ group("resources") {
       "side_panel/bookmarks:resources",
       "side_panel/comments:resources",
       "side_panel/commerce:resources",
-      "side_panel/customize_chrome:resources",
       "side_panel/history:resources",
       "side_panel/history_clusters:resources",
       "side_panel/read_anything:resources",
       "side_panel/reading_list:resources",
-      "side_panel/shared:resources",
       "side_panel/tabs_from_other_devices:resources",
       "signin:resources",
       "support_tool:resources",
