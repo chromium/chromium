@@ -226,7 +226,7 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     private Runnable mFallbackOnBackPressed;
     private int mLastCalledHandlerType = -1;
     private Supplier<Boolean> mIsGestureNavEnabledSupplier = SupplierUtils.alwaysFalse();
-    private @Nullable Supplier<Profile> mProfileSupplier;
+    private @Nullable Supplier<@Nullable Profile> mProfileSupplier;
     private final ObserverList<OnSystemNavigationObserver> mOnSystemNavigationObservers =
             new ObserverList<>();
 
@@ -391,7 +391,7 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     }
 
     /** Set a supplier to provide the current Profile. */
-    public void setProfileSupplier(Supplier<Profile> supplier) {
+    public void setProfileSupplier(Supplier<@Nullable Profile> supplier) {
         mProfileSupplier = supplier;
     }
 

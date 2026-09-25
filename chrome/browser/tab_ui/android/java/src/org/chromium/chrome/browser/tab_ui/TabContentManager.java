@@ -106,7 +106,7 @@ public class TabContentManager {
     private final ArrayList<ThumbnailChangeListener> mListeners = new ArrayList<>();
 
     private final boolean mSnapshotsEnabled;
-    private final TabFinder mTabFinder;
+    private final @Nullable TabFinder mTabFinder;
     private final Context mContext;
     private final TabWindowManager mTabWindowManager;
 
@@ -149,7 +149,7 @@ public class TabContentManager {
             Context context,
             BrowserControlsStateProvider browserControlsStateProvider,
             boolean snapshotsEnabled,
-            TabFinder tabFinder,
+            @Nullable TabFinder tabFinder,
             TabWindowManager tabWindowManager) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;

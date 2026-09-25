@@ -1190,7 +1190,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @param activity The current Context, used to retrieve the ActivityManager system service.
      * @param tab The current activity {@link Tab}.
      */
-    public void recordMultiWindowStateUkm(Activity activity, Tab tab) {
+    public void recordMultiWindowStateUkm(Activity activity, @Nullable Tab tab) {
         if (tab == null || tab.isIncognito() || tab.getWebContents() == null) return;
 
         new UkmRecorder(tab.getWebContents(), "Android.MultiWindowState")

@@ -10,6 +10,7 @@ import android.content.Intent;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
@@ -34,7 +35,7 @@ public class HistoryManagerUtils {
      *     HistoryManager}.
      * @param profile The currently visible {@link Profile}.
      */
-    public static void showHistoryManager(Activity activity, Tab tab, Profile profile) {
+    public static void showHistoryManager(Activity activity, @Nullable Tab tab, Profile profile) {
         Context appContext = ContextUtils.getApplicationContext();
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
             UrlConstantResolver urlConstantResolver =

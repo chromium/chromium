@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.init;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -821,6 +823,12 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         // TODO(crbug.com/40275690): Convert to a thrown exception if no asserts are discovered.
         assert mProfileProviderSupplier != null;
         return mProfileProviderSupplier;
+    }
+
+    /** Convenience wrapper. */
+    public Profile getOriginalProfile() {
+        var profileProvider = assumeNonNull(mProfileProviderSupplier).get();
+        return assumeNonNull(profileProvider).getOriginalProfile();
     }
 
     /**

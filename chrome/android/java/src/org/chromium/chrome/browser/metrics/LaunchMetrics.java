@@ -105,7 +105,7 @@ public class LaunchMetrics {
      *
      * @param webContents WebContents for the current Tab.
      */
-    public static void commitLaunchMetrics(WebContents webContents) {
+    public static void commitLaunchMetrics(@Nullable WebContents webContents) {
         for (HomeScreenLaunch launch : sHomeScreenLaunches) {
             WebappInfo webappInfo = launch.mWebappInfo;
             LaunchMetricsJni.get()
@@ -166,7 +166,7 @@ public class LaunchMetrics {
                 @JniType("std::string") String url,
                 int source,
                 @DisplayMode.EnumType int displayMode,
-                WebContents webContents);
+                @Nullable WebContents webContents);
 
         void recordHomePageLaunchMetrics(
                 boolean showHomeButton, boolean homepageIsNtp, GURL homepageGurl);

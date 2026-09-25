@@ -127,7 +127,7 @@ def prep_errorprone_run(enable_annotator, parser):
         '-g',
         '-parameters',
         '--release',
-        '17',
+        '25',
         '-encoding',
         'UTF-8',
         '-sourcepath',

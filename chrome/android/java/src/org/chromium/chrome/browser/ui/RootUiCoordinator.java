@@ -2957,7 +2957,7 @@ public class RootUiCoordinator
      *
      * @param savedInstanceState The {@link Bundle} that is used to restore the UI state.
      */
-    public void restoreUiState(Bundle savedInstanceState) {
+    public void restoreUiState(@Nullable Bundle savedInstanceState) {
         mActivityRecreationController.restoreUiState(savedInstanceState);
     }
 

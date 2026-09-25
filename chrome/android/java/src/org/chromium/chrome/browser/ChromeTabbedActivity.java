@@ -1670,7 +1670,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             // TODO(jinsukkim): Let these classes handle the registration by themselves.
             mCompositorViewHolder = assertNonNull(getCompositorViewHolderSupplier().get());
-            getTabObscuringHandler().addObserver(mCompositorViewHolder);
+            mRootUiCoordinator.getTabObscuringHandler().addObserver(mCompositorViewHolder);
 
             ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
             if (isTablet()) {
@@ -5439,7 +5439,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         TabObscuringHandler tabObscuringHandler = getTabObscuringHandler();
         if (tabObscuringHandler != null) {
-            getTabObscuringHandler().removeObserver(mCompositorViewHolder);
+            tabObscuringHandler.removeObserver(mCompositorViewHolder);
         }
 
         if (isTablet()) ChromeAccessibilityUtil.get().removeObserver(mCompositorViewHolder);

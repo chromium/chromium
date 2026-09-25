@@ -45,7 +45,7 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
             this::onEdgeToEdgeControllerChanged;
     private final Activity mActivity;
     private final BottomSheetController mBottomSheetController;
-    private final Supplier<BottomControlsLayer> mBottomControlsLayerSupplier;
+    private final Supplier<@Nullable BottomControlsLayer> mBottomControlsLayerSupplier;
     private final BottomSheetObserver mBottomSheetObserver =
             new BottomSheetObserver() {
                 @Override
@@ -129,7 +129,7 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
             Activity activity,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             BottomSheetController bottomSheetController,
-            Supplier<BottomControlsLayer> bottomControlsLayerSupplier) {
+            Supplier<@Nullable BottomControlsLayer> bottomControlsLayerSupplier) {
         mActivity = activity;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mBottomSheetController = bottomSheetController;

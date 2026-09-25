@@ -122,7 +122,7 @@ public class ActivityRecreationController {
      *
      * @param savedInstanceState The {@link Bundle} that is used to restore the UI state.
      */
-    public void restoreUiState(Bundle savedInstanceState) {
+    public void restoreUiState(@Nullable Bundle savedInstanceState) {
         LayoutManager layoutManager = mLayoutManagerSupplier.get();
         if (savedInstanceState == null || layoutManager == null) {
             return;

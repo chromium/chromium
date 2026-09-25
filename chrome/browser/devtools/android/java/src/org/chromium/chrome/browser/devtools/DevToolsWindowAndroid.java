@@ -9,6 +9,7 @@ import android.content.Context;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -28,7 +29,7 @@ public class DevToolsWindowAndroid {
     }
 
     public static boolean isDevToolsAllowedFor(
-            Context context, Profile profile, WebContents webContents) {
+            Context context, Profile profile, @Nullable WebContents webContents) {
         return isDevToolsAvailable(context)
                 && DevToolsWindowAndroidJni.get().isDevToolsAllowedFor(profile, webContents);
     }
@@ -62,7 +63,7 @@ public class DevToolsWindowAndroid {
     interface Natives {
         void openDevTools(WebContents webContents);
 
-        boolean isDevToolsAllowedFor(Profile profile, WebContents webContents);
+        boolean isDevToolsAllowedFor(Profile profile, @Nullable WebContents webContents);
 
         void attachToBrowser(WebContents webContents, long nativeBrowserWindowPtr);
     }
