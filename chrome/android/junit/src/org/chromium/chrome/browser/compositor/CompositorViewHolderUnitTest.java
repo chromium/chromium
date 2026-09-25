@@ -18,6 +18,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -55,6 +56,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -253,8 +255,12 @@ public class CompositorViewHolderUnitTest {
                         mIncognitoProfile,
                         0,
                         0,
-                        (id, incognito) ->
-                                spy(new MockTab(id, incognito ? mIncognitoProfile : mProfile)));
+                        (id, incognito) -> {
+                            MockTab tab =
+                                    spy(new MockTab(id, incognito ? mIncognitoProfile : mProfile));
+                            when(tab.isDetachedFromActivity()).thenReturn(false);
+                            return tab;
+                        });
         mTab = mTabModelSelector.addMockTab();
         mTabModelSelector.getModel(false).setIndex(0, TabSelectionType.FROM_NEW);
 
@@ -1879,5 +1885,38 @@ public class CompositorViewHolderUnitTest {
 
         // 3. Verify that the compositor is no longer in motion.
         assertFalse(mCompositorViewHolder.getInMotionSupplier().get());
+    }
+
+    @Test
+    public void testDetachFocusedOverlayViewReclaimsFocus() {
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+
+        mCompositorViewHolder.overrideTab(null);
+        View nativePageView = spy(new View(mContext));
+        when(mTab.getContentView()).thenReturn(mContentView);
+        when(mTab.getView()).thenReturn(nativePageView);
+        mCompositorViewHolder.onContentChanged();
+        assertEquals(mCompositorViewHolder, nativePageView.getParent());
+        assertFalse(mCompositorViewHolder.isFocusable());
+
+        doReturn(true).when(nativePageView).hasFocus();
+        clearInvocations(mCompositorViewHolder, mTab);
+
+        // Simulate NativePage detachment via onContentChanged() when TabImpl.getView() returns
+        // null because mIsDetachedFromActivity or mNativePage.isFrozen() is true.
+        when(mTab.getView()).thenReturn(null);
+        mCompositorViewHolder.onContentChanged();
+
+        assertTrue(mCompositorViewHolder.isFocusable());
+        InOrder inOrder = inOrder(mCompositorViewHolder);
+        inOrder.verify(mCompositorViewHolder).requestFocus();
+        inOrder.verify(mCompositorViewHolder).removeView(nativePageView);
+        verify(mTab, never()).removeObserver(any());
+
+        mCompositorViewHolder.shutDown();
+        verify(mContentView).setEventOffsetHandlerForDragDrop(null);
+        verify(mTab).removeObserver(any());
     }
 }

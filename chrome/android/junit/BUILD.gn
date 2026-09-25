@@ -856,6 +856,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/feed/FeedItemDecorationTest.java",
       "src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinatorTest.java",
       "src/org/chromium/chrome/browser/feed/FeedSurfaceMediatorTest.java",
+      "src/org/chromium/chrome/browser/feed/NtpFeedSurfaceLifecycleManagerTest.java",
     ]
 
     deps = [

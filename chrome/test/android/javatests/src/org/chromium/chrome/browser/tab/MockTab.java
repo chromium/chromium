@@ -163,6 +163,11 @@ public class MockTab extends TabImpl {
     }
 
     @Override
+    public boolean isDetachedFromActivity() {
+        return false;
+    }
+
+    @Override
     public void onLoadStarted(boolean toDifferentDocument) {
         super.onLoadStarted(toDifferentDocument);
     }

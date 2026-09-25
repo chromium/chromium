@@ -193,7 +193,7 @@ public class CompositorViewHolder extends FrameLayout
     private CompositorView mCompositorView;
 
     private boolean mContentOverlayVisiblity = true;
-    private boolean mCanBeFocusable;
+    private boolean mCanBeFocusable = true;
 
     /** A task to be performed after a resize event. */
     private @Nullable Runnable mPostHideKeyboardTask;
@@ -2055,13 +2055,16 @@ public class CompositorViewHolder extends FrameLayout
             // TODO(crbug.com/40770763): Look into enforcing the z-order of the views.
             addView(mView, 1);
             repositionTabViewForSideUi();
-            updateFocusability(false, /* blockDescendants= */ false);
-
             // Claim focus for the new view unless the user is currently using the URL bar.
             if (mUrlBar == null || !mUrlBar.hasFocus()) mView.requestFocus();
+            updateFocusability(/* focusable= */ false, /* blockDescendants= */ false);
         } else {
             if (mView.getParent() == this) {
                 updateFocusability(mCanBeFocusable, /* blockDescendants= */ false);
+                // Reclaim focus from the outgoing overlay view before removing it from the
+                // hierarchy. Otherwise, detaching a focused child view triggers ViewRootImpl
+                // to search from the root DecorView and focus the UrlBar (see clearChildFocus).
+                if (mView.hasFocus()) requestFocus();
 
                 if (webContents != null && !webContents.isDestroyed()) {
                     assumeNonNull(getContentView()).setVisibility(View.INVISIBLE);
@@ -2112,12 +2115,12 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     private void setTab(@Nullable Tab tab) {
-        if (tab != null) {
+        if (tab != null && !tab.isDetachedFromActivity()) {
             tab.loadIfNeeded(/* forceBackingSize= */ false);
         }
 
         View newView = tab != null ? tab.getView() : null;
-        if (mView == newView) return;
+        if (mView == newView && mTabVisible == tab) return;
 
         // TODO(dtrainor): Look into changing this only if the views differ, but still parse the
         // WebContents list even if they're the same.
