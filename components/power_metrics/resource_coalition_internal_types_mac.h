@@ -9,6 +9,8 @@
 
 #include <stdint.h>
 
+#include <array>
+
 // Comes from osfmk/mach/coalition.h
 #define COALITION_TYPE_RESOURCE (0)
 #define COALITION_TYPE_JETSAM (1)
@@ -59,7 +61,7 @@ struct coalition_resource_usage {
   uint64_t energy_billed_to_others;
   uint64_t cpu_ptime;
   uint64_t cpu_time_eqos_len; /* Stores the number of thread QoS types */
-  uint64_t cpu_time_eqos[COALITION_NUM_THREAD_QOS_TYPES];
+  std::array<uint64_t, COALITION_NUM_THREAD_QOS_TYPES> cpu_time_eqos;
   uint64_t cpu_instructions;
   uint64_t cpu_cycles;
   uint64_t fs_metadata_writes;

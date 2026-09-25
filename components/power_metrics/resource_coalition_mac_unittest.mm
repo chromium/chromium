@@ -4,6 +4,7 @@
 
 #include "components/power_metrics/resource_coalition_mac.h"
 
+#include <array>
 #include <optional>
 
 #include "base/compiler_specific.h"
@@ -139,7 +140,7 @@ TEST(ResourceCoalitionMacTest, Difference) {
             static_cast<uint64_t>(COALITION_NUM_THREAD_QOS_TYPES));
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    EXPECT_EQ(UNSAFE_TODO(diff.cpu_time_eqos[i]), 1U);
+    EXPECT_EQ(diff.cpu_time_eqos[i], 1U);
   }
 
   EXPECT_EQ(diff.cpu_instructions, 1U);
@@ -198,7 +199,7 @@ std::unique_ptr<coalition_resource_usage> GetCoalitionResourceUsageRateTestData(
                                           kIntervalDuration.InNanoseconds());
   test_data->energy = kExpectedPowerNW * kIntervalDuration.InSecondsF();
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    UNSAFE_TODO(test_data->cpu_time_eqos[i]) =
+    test_data->cpu_time_eqos[i] =
         scale_to_timebase(i * kExpectedQoSTimeBucketIdMultiplier *
                           kIntervalDuration.InNanoseconds());
   }
@@ -232,7 +233,7 @@ TEST(ResourceCoalitionMacTest, GetDataRate_NoEnergyImpact_Intel) {
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
     EXPECT_DOUBLE_EQ(i * kExpectedQoSTimeBucketIdMultiplier,
-                     UNSAFE_TODO(rate->qos_time_per_second[i]));
+                     rate->qos_time_per_second[i]);
   }
 }
 
@@ -262,7 +263,7 @@ TEST(ResourceCoalitionMacTest, GetDataRate_NoEnergyImpact_M1) {
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
     EXPECT_DOUBLE_EQ(i * kExpectedQoSTimeBucketIdMultiplier,
-                     UNSAFE_TODO(rate->qos_time_per_second[i]));
+                     rate->qos_time_per_second[i]);
   }
 }
 
@@ -290,7 +291,7 @@ TEST(ResourceCoalitionMacTest, GetDataRate_WithEnergyImpact_Intel) {
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
     EXPECT_DOUBLE_EQ(i * kExpectedQoSTimeBucketIdMultiplier,
-                     UNSAFE_TODO(rate->qos_time_per_second[i]));
+                     rate->qos_time_per_second[i]);
   }
 }
 
@@ -318,7 +319,7 @@ TEST(ResourceCoalitionMacTest, GetDataRate_WithEnergyImpact_M1) {
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
     EXPECT_DOUBLE_EQ(i * kExpectedQoSTimeBucketIdMultiplier,
-                     UNSAFE_TODO(rate->qos_time_per_second[i]));
+                     rate->qos_time_per_second[i]);
   }
 }
 
@@ -350,14 +351,14 @@ bool DataOverflowInvalidatesDiff(
 }
 
 bool DataOverflowInvalidatesDiff(
-    uint64_t (
-        coalition_resource_usage::*member_ptr)[COALITION_NUM_THREAD_QOS_TYPES],
+    std::array<uint64_t, COALITION_NUM_THREAD_QOS_TYPES>
+        coalition_resource_usage::* member_ptr,
     int index_to_check) {
   std::unique_ptr<coalition_resource_usage> t0_data =
       std::make_unique<coalition_resource_usage>();
   std::unique_ptr<coalition_resource_usage> t1_data =
       std::make_unique<coalition_resource_usage>();
-  auto* ptr = &UNSAFE_TODO((t1_data.get()->*member_ptr)[index_to_check]);
+  auto* ptr = &(t1_data.get()->*member_ptr)[index_to_check];
   return DataOverflowInvalidatesDiffImpl(std::move(t0_data), std::move(t1_data),
                                          ptr);
 }

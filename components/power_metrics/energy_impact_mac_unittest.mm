@@ -4,6 +4,8 @@
 
 #include "components/power_metrics/energy_impact_mac.h"
 
+#include <array>
+
 #include "base/base_paths.h"
 #include "base/compiler_specific.h"
 #include "base/path_service.h"
@@ -31,7 +33,7 @@ coalition_resource_usage MakeResourceUsageWithQOS(int qos_level,
                                                   base::TimeDelta cpu_time) {
   coalition_resource_usage result{};
   result.cpu_time_eqos_len = COALITION_NUM_THREAD_QOS_TYPES;
-  UNSAFE_TODO(result.cpu_time_eqos[qos_level]) = cpu_time.InNanoseconds();
+  result.cpu_time_eqos[qos_level] = cpu_time.InNanoseconds();
   return result;
 }
 

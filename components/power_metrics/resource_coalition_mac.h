@@ -14,6 +14,7 @@
 #include <mach/mach_time.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 
@@ -54,7 +55,7 @@ struct CoalitionResourceUsageRate {
   // Only available on M1 macs as of September 2021.
   double power_nw;
 
-  double qos_time_per_second[THREAD_QOS_LAST];
+  std::array<double, THREAD_QOS_LAST> qos_time_per_second = {};
 };
 
 // Returns rate of resource usage for a coalition, given the usage at

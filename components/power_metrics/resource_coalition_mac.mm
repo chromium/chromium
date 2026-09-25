@@ -124,14 +124,12 @@ coalition_resource_usage GetCoalitionResourceUsageDifference(
 
   ret.cpu_time_eqos_len = left.cpu_time_eqos_len;
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    if (UNSAFE_TODO(right.cpu_time_eqos[i]) >
-        UNSAFE_TODO(left.cpu_time_eqos[i])) {
+    if (right.cpu_time_eqos[i] > left.cpu_time_eqos[i]) {
       // TODO(fdoray): Investigate why this happens. In the meantime, pretend
       // that there was no CPU time at this QoS.
-      UNSAFE_TODO(ret.cpu_time_eqos[i]) = 0;
+      ret.cpu_time_eqos[i] = 0;
     } else {
-      UNSAFE_TODO(ret.cpu_time_eqos[i]) = UNSAFE_TODO(left.cpu_time_eqos[i]) -
-                                          UNSAFE_TODO(right.cpu_time_eqos[i]);
+      ret.cpu_time_eqos[i] = left.cpu_time_eqos[i] - right.cpu_time_eqos[i];
     }
   }
 
@@ -157,8 +155,7 @@ std::optional<CoalitionResourceUsageRate> GetCoalitionResourceUsageRate(
                begin.platform_idle_wakeups, begin.bytesread, begin.byteswritten,
                begin.gpu_time, begin.energy);
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    if (UNSAFE_TODO(end.cpu_time_eqos[i]) <
-        UNSAFE_TODO(begin.cpu_time_eqos[i])) {
+    if (end.cpu_time_eqos[i] < begin.cpu_time_eqos[i]) {
       end_greater_or_equal_begin = false;
     }
   }
@@ -200,8 +197,8 @@ std::optional<CoalitionResourceUsageRate> GetCoalitionResourceUsageRate(
   result.power_nw = get_rate_per_second(begin.energy, end.energy);
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i) {
-    UNSAFE_TODO(result.qos_time_per_second[i]) = get_time_rate_per_second(
-        UNSAFE_TODO(begin.cpu_time_eqos[i]), UNSAFE_TODO(end.cpu_time_eqos[i]));
+    result.qos_time_per_second[i] =
+        get_time_rate_per_second(begin.cpu_time_eqos[i], end.cpu_time_eqos[i]);
   }
 
   if (energy_impact_coefficients.has_value()) {
