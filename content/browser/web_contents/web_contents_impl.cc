@@ -9662,23 +9662,22 @@ void WebContentsImpl::ShowContextMenu(
 
 namespace {
 // Normalizes the line endings: \r\n -> \n, lone \r -> \n.
-std::u16string NormalizeLineBreaks(const std::u16string& source) {
-  static const base::NoDestructor<std::u16string> kReturnNewline(u"\r\n");
-  static const base::NoDestructor<std::u16string> kReturn(u"\r");
-  static const base::NoDestructor<std::u16string> kNewline(u"\n");
+std::u16string NormalizeLineBreaks(std::u16string_view source) {
+  static constexpr std::u16string_view kReturnNewline = u"\r\n";
+  static constexpr std::u16string_view kReturn = u"\r";
+  static constexpr std::u16string_view kNewline = u"\n";
 
   std::vector<std::u16string_view> pieces;
 
-  for (const auto& rn_line : base::SplitStringPieceUsingSubstr(
-           source, *kReturnNewline, base::KEEP_WHITESPACE,
+  for (std::u16string_view rn_line : base::SplitStringPieceUsingSubstr(
+           source, kReturnNewline, base::KEEP_WHITESPACE,
            base::SPLIT_WANT_ALL)) {
     auto r_lines = base::SplitStringPieceUsingSubstr(
-        rn_line, *kReturn, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    std::move(std::begin(r_lines), std::end(r_lines),
-              std::back_inserter(pieces));
+        rn_line, kReturn, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    pieces.insert(pieces.end(), r_lines.begin(), r_lines.end());
   }
 
-  return base::JoinString(pieces, *kNewline);
+  return base::JoinString(pieces, kNewline);
 }
 }  // namespace
 
@@ -12793,10 +12792,12 @@ WebContentsImpl::ParseDownloadHeaders(const std::string& headers) {
   download::DownloadUrlParameters::RequestHeadersType request_headers;
   for (std::string_view key_value : base::SplitStringPiece(
            headers, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    std::vector<std::string> pair = base::SplitString(
-        key_value, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (2ul == pair.size()) {
-      request_headers.push_back(make_pair(pair[0], pair[1]));
+    std::optional<std::pair<std::string_view, std::string_view>> pair =
+        base::SplitStringOnce(key_value, ':');
+    if (pair.has_value() && !pair->second.contains(':')) {
+      request_headers.emplace_back(
+          base::TrimWhitespaceASCII(pair->first, base::TRIM_ALL),
+          base::TrimWhitespaceASCII(pair->second, base::TRIM_ALL));
     }
   }
   return request_headers;
