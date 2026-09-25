@@ -1096,7 +1096,6 @@ source_set("tab_helpers_impl") {
   if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/boot_times_recorder",
-      "//chrome/browser/ash/child_accounts/time_limits",
       "//chrome/browser/ash/growth",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/ui/ash/google_one",

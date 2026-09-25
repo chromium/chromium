@@ -246,6 +246,9 @@ class GoogleOneOfferIphTabHelper;
 namespace ash {
 class CrosIsolatedWebAppEnabler;
 }  // namespace ash
+namespace ash::app_time {
+class WebTimeNavigationObserver;
+}  // namespace ash::app_time
 namespace mahi {
 class MahiTabHelper;
 }  // namespace mahi
@@ -766,6 +769,8 @@ class TabFeatures {
       cros_isolated_web_app_enabler_;
   std::unique_ptr<GeminiAppTabHelper> gemini_app_tab_helper_;
   std::unique_ptr<mahi::MahiTabHelper> mahi_tab_helper_;
+  std::unique_ptr<ash::app_time::WebTimeNavigationObserver>
+      web_time_navigation_observer_;
 #endif
 
 #if BUILDFLAG(ENABLE_RLZ)

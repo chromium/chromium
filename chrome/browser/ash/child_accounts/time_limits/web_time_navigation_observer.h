@@ -5,26 +5,31 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_NAVIGATION_OBSERVER_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_NAVIGATION_OBSERVER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
-class GURL;
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace ash::app_time {
 
 // Observes web contents for navigation events and notifies listeners.
-class WebTimeNavigationObserver
-    : public content::WebContentsUserData<WebTimeNavigationObserver>,
-      public content::WebContentsObserver {
+class WebTimeNavigationObserver : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(WebTimeNavigationObserver);
+
   struct NavigationInfo {
     base::Time navigation_finish_time;
 
@@ -48,13 +53,22 @@ class WebTimeNavigationObserver
         WebTimeNavigationObserver* observer) {}
   };
 
-  static void MaybeCreateForWebContents(content::WebContents* web_contents);
-  static void CreateForWebContents(content::WebContents* web_contents) = delete;
+  static std::unique_ptr<WebTimeNavigationObserver> MaybeCreate(
+      tabs::TabInterface& tab,
+      content::WebContents* web_contents);
+
+  static WebTimeNavigationObserver* From(tabs::TabInterface* tab);
+  static WebTimeNavigationObserver* FromWebContents(
+      content::WebContents* web_contents);
+  static const WebTimeNavigationObserver* FromWebContents(
+      const content::WebContents* web_contents);
 
   WebTimeNavigationObserver(const WebTimeNavigationObserver&) = delete;
   WebTimeNavigationObserver& operator=(const WebTimeNavigationObserver&) =
       delete;
   ~WebTimeNavigationObserver() override;
+
+  void OnDiscardContents(content::WebContents* new_contents);
 
   void AddObserver(EventListener* listener);
   void RemoveObserver(EventListener* listener);
@@ -66,13 +80,13 @@ class WebTimeNavigationObserver
   void WebContentsDestroyed() override;
 
  private:
-  friend class content::WebContentsUserData<WebTimeNavigationObserver>;
-
-  explicit WebTimeNavigationObserver(content::WebContents* web_contents);
+  WebTimeNavigationObserver(tabs::TabInterface& tab,
+                            content::WebContents* web_contents);
 
   base::ObserverList<EventListener> listeners_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  ui::ScopedUnownedUserData<WebTimeNavigationObserver>
+      scoped_unowned_user_data_;
 };
 
 }  // namespace ash::app_time

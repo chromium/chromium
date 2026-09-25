@@ -39,6 +39,9 @@ static_library("time_limits") {
     "//chromeos/ash/components/settings",
     "//components/policy/proto",
     "//components/services/app_service/public/cpp:instance_update",
+    "//components/tabs:public",
+    "//ui/base/unowned_user_data",
+    "//url",
   ]
 
   deps = [

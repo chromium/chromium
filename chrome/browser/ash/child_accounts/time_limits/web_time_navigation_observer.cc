@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_navigation_observer.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
@@ -17,23 +20,54 @@
 
 namespace ash::app_time {
 
+DEFINE_USER_DATA(WebTimeNavigationObserver);
+
 // static
-void WebTimeNavigationObserver::MaybeCreateForWebContents(
-    content::WebContents* web_contents) {
+std::unique_ptr<WebTimeNavigationObserver>
+WebTimeNavigationObserver::MaybeCreate(tabs::TabInterface& tab,
+                                       content::WebContents* web_contents) {
   CHECK(web_contents, base::NotFatalUntil::M160);
   if (!base::FeatureList::IsEnabled(
           ash::features::kUnicornChromeActivityReporting)) {
-    return;
+    return nullptr;
   }
 
-  if (!FromWebContents(web_contents)) {
-    web_contents->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new WebTimeNavigationObserver(web_contents)));
+  return base::WrapUnique(new WebTimeNavigationObserver(tab, web_contents));
+}
+
+// static
+WebTimeNavigationObserver* WebTimeNavigationObserver::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+WebTimeNavigationObserver* WebTimeNavigationObserver::FromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  return From(tabs::TabInterface::MaybeGetFromContents(web_contents));
+}
+
+// static
+const WebTimeNavigationObserver* WebTimeNavigationObserver::FromWebContents(
+    const content::WebContents* web_contents) {
+  return FromWebContents(const_cast<content::WebContents*>(web_contents));
+}
+
+WebTimeNavigationObserver::~WebTimeNavigationObserver() {
+  if (web_contents()) {
+    for (auto& listener : listeners_) {
+      listener.WebTimeNavigationObserverDestroyed(this);
+    }
   }
 }
 
-WebTimeNavigationObserver::~WebTimeNavigationObserver() = default;
+void WebTimeNavigationObserver::OnDiscardContents(
+    content::WebContents* new_contents) {
+  Observe(new_contents);
+}
 
 void WebTimeNavigationObserver::AddObserver(
     WebTimeNavigationObserver::EventListener* listener) {
@@ -71,13 +105,13 @@ void WebTimeNavigationObserver::WebContentsDestroyed() {
   for (auto& listener : listeners_) {
     listener.WebTimeNavigationObserverDestroyed(this);
   }
+  Observe(nullptr);
 }
 
 WebTimeNavigationObserver::WebTimeNavigationObserver(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents)
-    : content::WebContentsUserData<WebTimeNavigationObserver>(*web_contents),
-      content::WebContentsObserver(web_contents) {}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebTimeNavigationObserver);
+    : content::WebContentsObserver(web_contents),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 }  // namespace ash::app_time
