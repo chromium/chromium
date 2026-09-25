@@ -1977,8 +1977,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         for (Token tabGroupId : closingTabGroupIds) {
             for (TabGroupObserver obs : mTabGroupObservers) {
-                obs.didRemoveTabGroup(
-                        Tab.INVALID_TAB_ID, tabGroupId, DidRemoveTabGroupReason.CLOSE);
+                obs.didRemoveTabGroup(tabGroupId, DidRemoveTabGroupReason.CLOSE);
             }
         }
 
@@ -2485,8 +2484,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             }
 
             for (Token tabGroupId : candidateTabGroupIds) {
-                observer.didRemoveTabGroup(
-                        Tab.INVALID_TAB_ID, tabGroupId, DidRemoveTabGroupReason.MERGE);
+                observer.didRemoveTabGroup(tabGroupId, DidRemoveTabGroupReason.MERGE);
             }
         }
 
@@ -2625,20 +2623,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             boolean wasLastTabInGroup =
                     wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(tab, oldTabGroupId);
             if (wasLastTabInGroup && newTabGroupId == null) {
-                final @DidRemoveTabGroupReason int reason;
-                if (isPinned) {
-                    reason = DidRemoveTabGroupReason.PIN;
-                } else if (isMergingIntoGroup) {
-                    reason = DidRemoveTabGroupReason.MERGE;
-                } else {
-                    reason = DidRemoveTabGroupReason.UNGROUP;
-                }
+                @DidRemoveTabGroupReason
+                int reason =
+                        isPinned ? DidRemoveTabGroupReason.PIN : DidRemoveTabGroupReason.UNGROUP;
                 assumeNonNull(groupObservers);
                 groupObservers.rewind();
                 while (groupObservers.hasNext()) {
-                    groupObservers
-                            .next()
-                            .didRemoveTabGroup(Tab.INVALID_TAB_ID, oldTabGroupId, reason);
+                    groupObservers.next().didRemoveTabGroup(oldTabGroupId, reason);
                 }
             }
         }

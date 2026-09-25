@@ -349,11 +349,7 @@ public class StripLayoutHelper
 
                 @Override
                 public void didRemoveTabGroup(
-                        int oldRootId,
-                        @Nullable Token oldTabGroupId,
-                        @DidRemoveTabGroupReason int removalReason) {
-                    if (oldTabGroupId == null) return;
-
+                        Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
                     StripLayoutGroupTitle groupTitle = findGroupTitle(oldTabGroupId);
                     if (groupTitle == null || groupTitle.isDying()) {
                         clearClosingGroupTitleState(oldTabGroupId);

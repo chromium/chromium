@@ -216,9 +216,7 @@ public class TabSwitcherGroupSuggestionService {
 
                 @Override
                 public void didRemoveTabGroup(
-                        int oldRootId,
-                        @Nullable Token oldTabGroupId,
-                        @DidRemoveTabGroupReason int removalReason) {
+                        Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
                     clearSuggestions();
                 }
 

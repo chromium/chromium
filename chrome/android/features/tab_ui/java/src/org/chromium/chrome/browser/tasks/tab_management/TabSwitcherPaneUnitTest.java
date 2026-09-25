@@ -844,7 +844,7 @@ public class TabSwitcherPaneUnitTest {
 
         mTabGroupObserverCaptor
                 .getValue()
-                .didRemoveTabGroup(TAB_ID, groupId, DidRemoveTabGroupReason.CLOSE);
+                .didRemoveTabGroup(groupId, DidRemoveTabGroupReason.CLOSE);
         verify(mUserEducationHelper).requestShowIph(argThat(surfaceOnHideIph()));
     }
 
@@ -860,7 +860,7 @@ public class TabSwitcherPaneUnitTest {
 
         mTabGroupObserverCaptor
                 .getValue()
-                .didRemoveTabGroup(TAB_ID, groupId, DidRemoveTabGroupReason.CLOSE);
+                .didRemoveTabGroup(groupId, DidRemoveTabGroupReason.CLOSE);
         verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 
@@ -876,7 +876,7 @@ public class TabSwitcherPaneUnitTest {
 
         mTabGroupObserverCaptor
                 .getValue()
-                .didRemoveTabGroup(TAB_ID, groupId, DidRemoveTabGroupReason.CLOSE);
+                .didRemoveTabGroup(groupId, DidRemoveTabGroupReason.CLOSE);
         verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 
@@ -892,7 +892,7 @@ public class TabSwitcherPaneUnitTest {
 
         mTabGroupObserverCaptor
                 .getValue()
-                .didRemoveTabGroup(TAB_ID, groupId, DidRemoveTabGroupReason.CLOSE);
+                .didRemoveTabGroup(groupId, DidRemoveTabGroupReason.CLOSE);
         verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 
@@ -908,7 +908,7 @@ public class TabSwitcherPaneUnitTest {
 
         mTabGroupObserverCaptor
                 .getValue()
-                .didRemoveTabGroup(TAB_ID, groupId, DidRemoveTabGroupReason.UNGROUP);
+                .didRemoveTabGroup(groupId, DidRemoveTabGroupReason.UNGROUP);
         verify(mUserEducationHelper, never()).requestShowIph(any());
     }
 

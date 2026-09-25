@@ -838,7 +838,7 @@ public class TabListMediatorUnitTest {
 
         mTabGroupObserverCaptor
                 .getValue()
-                .didRemoveTabGroup(TAB1_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
+                .didRemoveTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
 
         verify(mTabGroupColorViewProvider).destroy();
     }
@@ -1634,7 +1634,7 @@ public class TabListMediatorUnitTest {
         mTabGroupObserverCaptor.getValue().didMergeTabToGroup(tab4, /* isDestinationTab= */ false);
         mTabGroupObserverCaptor
                 .getValue()
-                .didRemoveTabGroup(Tab.INVALID_TAB_ID, tabGroupId2, DidRemoveTabGroupReason.MERGE);
+                .didRemoveTabGroup(tabGroupId2, DidRemoveTabGroupReason.MERGE);
 
         assertThat(mModelList.size(), equalTo(1));
         assertThat(mModelList.indexFromTabGroupId(TAB_GROUP_ID), equalTo(0));
@@ -2260,7 +2260,7 @@ public class TabListMediatorUnitTest {
         // didRemoveTabGroup removes the TAB_GROUP card.
         mTabGroupObserverCaptor
                 .getValue()
-                .didRemoveTabGroup(TAB1_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
+                .didRemoveTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
 
         // Verify model list now contains two standalone tabs.
         assertEquals(2, mModelList.size());
@@ -2512,7 +2512,7 @@ public class TabListMediatorUnitTest {
         mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab1);
         mTabGroupObserverCaptor
                 .getValue()
-                .didRemoveTabGroup(TAB1_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
+                .didRemoveTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
         assertThat(mModelList.size(), equalTo(0));
 
         // Simulate undoing the closure of the group.
@@ -2564,7 +2564,7 @@ public class TabListMediatorUnitTest {
         mTabModelObserverCaptor.getValue().didRemoveTabForClosure(tab3);
         mTabGroupObserverCaptor
                 .getValue()
-                .didRemoveTabGroup(TAB1_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
+                .didRemoveTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
         assertThat(mModelList.size(), equalTo(0));
 
         // Simulate undoing the closure of the group.
@@ -6843,7 +6843,7 @@ public class TabListMediatorUnitTest {
         // Simulate the TabGroupModelFilter triggering group removal didRemoveTabGroup observer.
         mTabGroupObserverCaptor
                 .getValue()
-                .didRemoveTabGroup(TAB1_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
+                .didRemoveTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
 
         // Verify that the Group Header card is also removed, leaving the list empty.
         assertEquals(0, mModelList.size());

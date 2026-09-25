@@ -324,13 +324,9 @@ public final class TabGroupSyncLocalObserver {
 
             @Override
             public void didRemoveTabGroup(
-                    int oldRootId,
-                    @Nullable Token oldTabGroupId,
-                    @DidRemoveTabGroupReason int removalReason) {
+                    Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
                 if (!mIsObserving) return;
-                LogUtils.log(TAG, "didRemoveTabGroup, oldRootId " + oldRootId);
-                if (oldTabGroupId == null) return;
-
+                LogUtils.log(TAG, "didRemoveTabGroup, oldTabGroupId = " + oldTabGroupId);
                 LocalTabGroupId localTabGroupId = new LocalTabGroupId(oldTabGroupId);
                 if (removalReason == DidRemoveTabGroupReason.MERGE
                         || removalReason == DidRemoveTabGroupReason.UNGROUP) {

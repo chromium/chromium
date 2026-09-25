@@ -185,8 +185,7 @@ public class ModelTrackingOrchestrator {
 
                 @Override
                 public void didRemoveTabGroup(
-                        int oldRootId, @Nullable Token oldTabGroupId, int removalReason) {
-                    if (oldTabGroupId == null) return;
+                        Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
                     mGroupIncognitoStatus.remove(oldTabGroupId);
                 }
 

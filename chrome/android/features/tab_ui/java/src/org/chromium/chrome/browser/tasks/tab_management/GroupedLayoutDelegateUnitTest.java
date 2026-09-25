@@ -979,7 +979,7 @@ public class GroupedLayoutDelegateUnitTest {
         verify(mMediator).addTabCardToModel(eq(mTab1), anyInt());
 
         // Once didRemoveTabGroup is called, mRemovingTabGroupIds is cleared.
-        delegate.didRemoveTabGroup(TAB2_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
+        delegate.didRemoveTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
         assertEquals(0, mModelList.size());
     }
 
@@ -1486,18 +1486,9 @@ public class GroupedLayoutDelegateUnitTest {
         createAndAddGroupCardModel(TAB_GROUP_ID, TAB2_ID);
         assertEquals(2, mModelList.size());
 
-        mDelegate.didRemoveTabGroup(TAB2_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
+        mDelegate.didRemoveTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
         assertEquals(1, mModelList.size());
         assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
-    }
-
-    @Test
-    public void testDidRemoveTabGroup_NullGroupId_NoOp() {
-        createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
-        assertEquals(1, mModelList.size());
-
-        mDelegate.didRemoveTabGroup(TAB1_ID, null, DidRemoveTabGroupReason.CLOSE);
-        assertEquals(1, mModelList.size());
     }
 
     @Test
@@ -1521,7 +1512,7 @@ public class GroupedLayoutDelegateUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, groupCardModel));
         assertEquals(1, mModelList.size());
 
-        delegate.didRemoveTabGroup(TAB1_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
+        delegate.didRemoveTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
 
         assertEquals(0, mModelList.size());
     }

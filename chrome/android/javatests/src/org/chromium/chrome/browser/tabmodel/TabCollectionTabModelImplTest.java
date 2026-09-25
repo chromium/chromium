@@ -17,7 +17,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +31,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
@@ -87,9 +89,14 @@ public class TabCollectionTabModelImplTest {
     private static final String GROUP_1_TITLE = "Group 1 Title";
     private static final String GROUP_2_TITLE = "Group 2 Title";
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+
+    @Mock private TabModelActionListener mActionListener;
+    @Mock private TabGroupCollectionData mTabGroupCollectionData;
 
     private String mTestUrl;
     private TabModelSelector mTabModelSelector;
@@ -1200,7 +1207,7 @@ public class TabCollectionTabModelImplTest {
 
                     @Override
                     public void didRemoveTabGroup(
-                            int tabId, Token tabGroupId, @DidRemoveTabGroupReason int reason) {
+                            Token tabGroupId, @DidRemoveTabGroupReason int reason) {
                         assertEquals(tab1GroupId, tabGroupId);
                         assertEquals(DidRemoveTabGroupReason.UNGROUP, reason);
                         didRemoveTabGroupHelper.notifyCalled();
@@ -1487,7 +1494,7 @@ public class TabCollectionTabModelImplTest {
 
                                 @Override
                                 public void didRemoveTabGroup(
-                                        int tabId, Token tabGroupId, int reason) {
+                                        Token tabGroupId, @DidRemoveTabGroupReason int reason) {
                                     fail("didRemoveTabGroup should not be called.");
                                 }
                             };
@@ -1539,7 +1546,7 @@ public class TabCollectionTabModelImplTest {
 
                     @Override
                     public void didRemoveTabGroup(
-                            int tabId, Token tabGroupId, @DidRemoveTabGroupReason int reason) {
+                            Token tabGroupId, @DidRemoveTabGroupReason int reason) {
                         assertEquals(groupId, tabGroupId);
                         assertEquals(DidRemoveTabGroupReason.UNGROUP, reason);
                         didRemoveGroup.notifyCalled();
@@ -1571,18 +1578,17 @@ public class TabCollectionTabModelImplTest {
         assertNotNull(tab1.getTabGroupId());
         assertTabsInOrderAre(List.of(tab0, tab1));
 
-        TabModelActionListener listener = mock(TabModelActionListener.class);
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mCollectionModel.pinTab(tab1.getId(), /* showUngroupDialog= */ true, listener);
+                    mCollectionModel.pinTab(
+                            tab1.getId(), /* showUngroupDialog= */ true, mActionListener);
                 });
 
         onViewWaiting(withText(R.string.delete_tab_group_action)).perform(click());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    verify(listener)
+                    verify(mActionListener)
                             .onConfirmationDialogResult(
                                     eq(DialogType.SYNC),
                                     eq(ActionConfirmationResult.CONFIRMATION_POSITIVE));
@@ -1601,18 +1607,17 @@ public class TabCollectionTabModelImplTest {
         assertNotNull(tab1.getTabGroupId());
         assertTabsInOrderAre(List.of(tab0, tab1));
 
-        TabModelActionListener listener = mock(TabModelActionListener.class);
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mCollectionModel.pinTab(tab1.getId(), /* showUngroupDialog= */ true, listener);
+                    mCollectionModel.pinTab(
+                            tab1.getId(), /* showUngroupDialog= */ true, mActionListener);
                 });
 
         onViewWaiting(withText(R.string.cancel)).perform(click());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    verify(listener)
+                    verify(mActionListener)
                             .onConfirmationDialogResult(
                                     eq(DialogType.SYNC),
                                     eq(ActionConfirmationResult.CONFIRMATION_NEGATIVE));
@@ -1652,7 +1657,8 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didRemoveTabGroup(int tabId, Token tabGroupId, int reason) {
+                    public void didRemoveTabGroup(
+                            Token tabGroupId, @DidRemoveTabGroupReason int reason) {
                         fail("didRemoveTabGroup should not be called.");
                     }
                 };
@@ -1965,19 +1971,19 @@ public class TabCollectionTabModelImplTest {
         mCollectionModel.setTabGroupTitle(tabGroupId, staleTitle);
 
         String freshTitle = "Fresh Title";
-        TabGroupCollectionData mockData = mock(TabGroupCollectionData.class);
-        when(mockData.getTabGroupId()).thenReturn(tabGroupId);
-        when(mockData.getTitle()).thenReturn(freshTitle);
-        when(mockData.getColor()).thenReturn(TabGroupColorId.GREY);
-        when(mockData.isCollapsed()).thenReturn(false);
+        when(mTabGroupCollectionData.getTabGroupId()).thenReturn(tabGroupId);
+        when(mTabGroupCollectionData.getTitle()).thenReturn(freshTitle);
+        when(mTabGroupCollectionData.getColor()).thenReturn(TabGroupColorId.GREY);
+        when(mTabGroupCollectionData.isCollapsed()).thenReturn(false);
 
-        TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mockData});
+        TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mTabGroupCollectionData});
 
         assertEquals(freshTitle, TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
 
         mCollectionModel.setTabGroupTitle(tabGroupId, freshTitle);
 
-        TabGroupVisualDataStore.removeCachedGroups(new TabGroupCollectionData[] {mockData});
+        TabGroupVisualDataStore.removeCachedGroups(
+                new TabGroupCollectionData[] {mTabGroupCollectionData});
 
         assertEquals(
                 "SharedPreferences should be updated to match the cache/input",
@@ -2057,13 +2063,12 @@ public class TabCollectionTabModelImplTest {
         mCollectionModel.setTabGroupTitle(tabGroupId, titleA);
         assertEquals(titleA, mCollectionModel.getTabGroupTitle(tabGroupId));
 
-        TabGroupCollectionData mockData = mock(TabGroupCollectionData.class);
-        when(mockData.getTabGroupId()).thenReturn(tabGroupId);
-        when(mockData.getTitle()).thenReturn(titleA);
-        when(mockData.getColor()).thenReturn(TabGroupColorId.GREY);
-        when(mockData.isCollapsed()).thenReturn(false);
+        when(mTabGroupCollectionData.getTabGroupId()).thenReturn(tabGroupId);
+        when(mTabGroupCollectionData.getTitle()).thenReturn(titleA);
+        when(mTabGroupCollectionData.getColor()).thenReturn(TabGroupColorId.GREY);
+        when(mTabGroupCollectionData.isCollapsed()).thenReturn(false);
 
-        TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mockData});
+        TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mTabGroupCollectionData});
 
         try {
             mCollectionModel.setTabGroupTitle(tabGroupId, titleB);
@@ -2081,7 +2086,8 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.getTabGroupTitle(tabGroupId));
 
         } finally {
-            TabGroupVisualDataStore.removeCachedGroups(new TabGroupCollectionData[] {mockData});
+            TabGroupVisualDataStore.removeCachedGroups(
+                    new TabGroupCollectionData[] {mTabGroupCollectionData});
         }
     }
 
@@ -2189,13 +2195,12 @@ public class TabCollectionTabModelImplTest {
         final int color = TabGroupColorId.RED;
         final boolean collapsed = true;
 
-        TabGroupCollectionData mockData = mock(TabGroupCollectionData.class);
-        when(mockData.getTabGroupId()).thenReturn(tabGroupId);
-        when(mockData.getTitle()).thenReturn(title);
-        when(mockData.getColor()).thenReturn(color);
-        when(mockData.isCollapsed()).thenReturn(collapsed);
+        when(mTabGroupCollectionData.getTabGroupId()).thenReturn(tabGroupId);
+        when(mTabGroupCollectionData.getTitle()).thenReturn(title);
+        when(mTabGroupCollectionData.getColor()).thenReturn(color);
+        when(mTabGroupCollectionData.isCollapsed()).thenReturn(collapsed);
 
-        TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mockData});
+        TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mTabGroupCollectionData});
 
         try {
             mCollectionModel.setTabGroupVisualData(
@@ -2216,7 +2221,8 @@ public class TabCollectionTabModelImplTest {
                     collapsed,
                     TabGroupVisualDataStore.getTabGroupCollapsed(tabGroupId));
         } finally {
-            TabGroupVisualDataStore.removeCachedGroups(new TabGroupCollectionData[] {mockData});
+            TabGroupVisualDataStore.removeCachedGroups(
+                    new TabGroupCollectionData[] {mTabGroupCollectionData});
         }
     }
 
@@ -2235,7 +2241,7 @@ public class TabCollectionTabModelImplTest {
                 new TabGroupObserver() {
                     @Override
                     public void didRemoveTabGroup(
-                            int tabId, Token tabGroupId, @DidRemoveTabGroupReason int reason) {
+                            Token tabGroupId, @DidRemoveTabGroupReason int reason) {
                         assertEquals(groupId, tabGroupId);
                         assertEquals(DidRemoveTabGroupReason.CLOSE, reason);
                         didRemoveTabGroupHelper.notifyCalled();
@@ -2593,7 +2599,7 @@ public class TabCollectionTabModelImplTest {
                             new TabGroupObserver() {
                                 @Override
                                 public void didRemoveTabGroup(
-                                        int tabId, Token tabGroupId, int reason) {
+                                        Token tabGroupId, @DidRemoveTabGroupReason int reason) {
                                     assertEquals(groupId1, tabGroupId);
                                     assertEquals(DidRemoveTabGroupReason.MERGE, reason);
                                     didRemoveTabGroupHelper.notifyCalled();

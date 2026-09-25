@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
@@ -391,7 +392,7 @@ public class ModelTrackingOrchestratorUnitTest {
 
         observer.didCreateNewGroup(tab, mRegularTabModel);
 
-        observer.didRemoveTabGroup(1, groupId, 0);
+        observer.didRemoveTabGroup(groupId, DidRemoveTabGroupReason.CLOSE);
 
         observer.didChangeTabGroupColor(groupId, 0);
 

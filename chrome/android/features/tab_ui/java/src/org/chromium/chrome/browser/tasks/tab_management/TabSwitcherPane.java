@@ -81,9 +81,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
             new TabGroupObserver() {
                 @Override
                 public void didRemoveTabGroup(
-                        int oldRootId,
-                        @Nullable Token oldTabGroupId,
-                        @DidRemoveTabGroupReason int removalReason) {
+                        Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
                     onDidRemoveTabGroup(oldTabGroupId, removalReason);
                 }
 
@@ -438,7 +436,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
     }
 
     private void onDidRemoveTabGroup(
-            @Nullable Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
+            Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
         if (removalReason != DidRemoveTabGroupReason.CLOSE) return;
 
         TabModel tabModel = mTabModelSupplier.get();

@@ -15,7 +15,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-// TODO(crbug.com/434015906): Remove all references to RootId after TabCollections is launched.
 /** An interface to be notified about tab group changes on a {@link TabModel}. */
 @NullMarked
 public interface TabGroupObserver {
@@ -23,7 +22,8 @@ public interface TabGroupObserver {
     @IntDef({
         DidRemoveTabGroupReason.MERGE,
         DidRemoveTabGroupReason.UNGROUP,
-        DidRemoveTabGroupReason.CLOSE
+        DidRemoveTabGroupReason.CLOSE,
+        DidRemoveTabGroupReason.PIN
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface DidRemoveTabGroupReason {
@@ -149,17 +149,13 @@ public interface TabGroupObserver {
 
     /**
      * Called when a tab group is removed from the tab model. This could be the result of merging
-     * tabs, ungrouping tabs or closing tabs.
+     * tabs, ungrouping tabs, pinning tabs, or closing tabs.
      *
-     * @param oldRootId The root id the group previous used.
-     * @param oldTabGroupId The tab group ID the group previously used, may be null if being
-     *     re-used.
+     * @param oldTabGroupId The tab group ID the group previously used.
      * @param removalReason The {@link DidRemoveTabGroupReason} for the group being removed.
      */
     default void didRemoveTabGroup(
-            int oldRootId,
-            @Nullable Token oldTabGroupId,
-            @DidRemoveTabGroupReason int removalReason) {}
+            Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {}
 
     /**
      * Called when a tab group closure starts.

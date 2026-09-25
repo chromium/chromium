@@ -632,7 +632,7 @@ public class NestedLayoutDelegateUnitTest {
         verify(mMediator).clearTabGroupProperties(tab3Model);
         verify(mMediator, never()).updateTabGroupTitle(any());
 
-        mDelegate.didRemoveTabGroup(TAB1_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
+        mDelegate.didRemoveTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
         assertFalse(mDelegate.isRemovingTabGroup(TAB_GROUP_ID));
     }
 
@@ -777,7 +777,7 @@ public class NestedLayoutDelegateUnitTest {
 
         assertEquals(2, mModelList.size());
 
-        mDelegate.didRemoveTabGroup(TAB1_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
+        mDelegate.didRemoveTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
 
         assertEquals(1, mModelList.size());
         assertEquals(TabProperties.UiType.TAB, mModelList.get(0).type);
@@ -790,7 +790,7 @@ public class NestedLayoutDelegateUnitTest {
 
         assertEquals(1, mModelList.size());
 
-        mDelegate.didRemoveTabGroup(TAB1_ID, TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
+        mDelegate.didRemoveTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.CLOSE);
 
         assertEquals(1, mModelList.size());
         assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
