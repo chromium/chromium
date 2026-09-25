@@ -5,9 +5,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_coordinator.h"
 
 #import "base/ios/ios_util.h"
-#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_navigation_mediator.h"
@@ -28,7 +26,6 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_util.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -328,12 +325,6 @@
 - (ComposeboxInputPlatePosition)inputPlatePositionPreference {
   if (ShouldApplyOmniboxPopoutLayout(self.baseViewController)) {
     return ComposeboxInputPlatePosition::kiPad;
-  }
-
-  if (IsBottomOmniboxAvailable() &&
-      GetApplicationContext()->GetLocalState()->GetBoolean(
-          omnibox::kIsOmniboxInBottomPosition)) {
-    return ComposeboxInputPlatePosition::kBottom;
   }
 
   return ComposeboxInputPlatePosition::kTop;
