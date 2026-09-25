@@ -63,6 +63,13 @@ void AttachInfobarOverlayBrowserAgent(Browser* browser) {
               InfobarType::kInfobarTypeAutofillAiSaveEntity),
           /*modal_handler=*/nullptr));
 
+  browser_agent->AddInfobarInteractionHandler(
+      std::make_unique<InfobarInteractionHandler>(
+          InfobarType::kInfobarTypeContextualCue,
+          std::make_unique<ConfirmInfobarBannerInteractionHandler>(
+              InfobarType::kInfobarTypeContextualCue),
+          /*modal_handler=*/nullptr));
+
   browser_agent->AddInfobarInteractionHandler(std::make_unique<
                                               InfobarInteractionHandler>(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,

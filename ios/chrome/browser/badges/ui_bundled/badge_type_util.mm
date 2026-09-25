@@ -86,6 +86,7 @@ bool IsBadgeSupportedForInfobarType(InfobarType infobar_type) {
     case InfobarType::kInfobarTypeCollaborationOutOfDate:
     case InfobarType::kInfobarTypeSaveCvc:
     case InfobarType::kInfobarTypeReaderMode:
+    case InfobarType::kInfobarTypeContextualCue:
       return BadgeTypeForInfobarType(infobar_type) != kBadgeTypeNone;
   }
 }

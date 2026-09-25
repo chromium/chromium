@@ -34,6 +34,7 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
 
     case InfobarType::kInfobarTypeConfirm:
     case InfobarType::kInfobarTypeAutofillAiSaveEntity:
+    case InfobarType::kInfobarTypeContextualCue:
       switch (overlay_type) {
         case InfobarOverlayType::kBanner:
           return OverlayRequest::CreateWithConfig<
