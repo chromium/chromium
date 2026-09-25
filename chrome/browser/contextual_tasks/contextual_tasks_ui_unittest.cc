@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -61,6 +63,10 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "ui/webui/buildflags.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 using testing::_;
 using testing::Optional;
@@ -890,11 +896,50 @@ TEST_F(ContextualTasksUiTest, GetContextualTasksLoadTimeData) {
   base::DictValue load_time_data =
       ContextualTasksUI::GetContextualTasksLoadTimeData(profile_);
 
+  // Only set when the in-panel WebUI voice search UI in desktop Android is
+  // active. It drives audio wave simulation, since that UI cannot open its own
+  // microphone stream.
+  std::optional<bool> android_speech_recognition =
+      load_time_data.FindBool("androidSpeechRecognition");
+  ASSERT_TRUE(android_speech_recognition.has_value());
+  EXPECT_FALSE(android_speech_recognition.value());
+
+  // By default Android delegates to the platform voice recognition activity.
   std::optional<bool> is_system_voice_search_enabled =
       load_time_data.FindBool("isSystemVoiceSearchEnabled");
   ASSERT_TRUE(is_system_voice_search_enabled.has_value());
   EXPECT_EQ(is_system_voice_search_enabled.value(), !!BUILDFLAG(IS_ANDROID));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Covers the path the feature actually ships: a large-screen Android device
+// with the flag on, which swaps the platform voice recognition activity for
+// the in-panel WebUI voice search UI.
+TEST_F(ContextualTasksUiTest,
+       GetContextualTasksLoadTimeData_WebUiVoiceSearchOnLargeScreen) {
+  // `IsAndroidLargeFormFactor()` reads `ui::GetDeviceFormFactor()`, which
+  // reports the desktop form factor when `device_info::is_desktop()` is set.
+  base::android::device_info::set_is_desktop_for_testing(true);
+  base::ScopedClosureRunner reset_form_factor(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kContextualTasksWebUiVoiceSearchDesktopAndroid);
+
+  base::DictValue load_time_data =
+      ContextualTasksUI::GetContextualTasksLoadTimeData(profile_);
+
+  // The WebUI voice search UI is active, so it must simulate the audio wave
+  // rather than open a second microphone stream.
+  EXPECT_THAT(load_time_data.FindBool("androidSpeechRecognition"),
+              Optional(true));
+  // If androidSpeechRecognition is true, the platform recognition activity must
+  // not also be used.
+  EXPECT_THAT(load_time_data.FindBool("isSystemVoiceSearchEnabled"),
+              Optional(false));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 TEST_F(ContextualTasksUiTest,

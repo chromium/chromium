@@ -190,6 +190,9 @@ BASE_FEATURE(kContextualTasksWindowTracking, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksUploadChunking, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksWebUiVoiceSearchDesktopAndroid,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -247,6 +250,11 @@ bool GetIsContextualTasksWindowTrackingEnabled() {
 
 bool GetIsContextualTasksUploadChunkingEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksUploadChunking);
+}
+
+bool GetIsContextualTasksWebUiVoiceSearchDesktopAndroidEnabled() {
+  return base::FeatureList::IsEnabled(
+      kContextualTasksWebUiVoiceSearchDesktopAndroid);
 }
 
 bool GetContextualTasksSpatialModelToolbarLayoutEnabled() {

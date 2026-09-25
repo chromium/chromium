@@ -324,6 +324,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
       base::FeatureList::IsEnabled(ntp_features::kNtpCustomizeWebUiAndroid) ||
           !BUILDFLAG(IS_ANDROID));
   source->AddBoolean("isAndroid", BUILDFLAG(IS_ANDROID));
+  // On Android `webkitSpeechRecognition` is backed by `SpeechRecognitionImpl`,
+  // which owns the microphone itself. The shared composebox voice search UI
+  // uses this to simulate the audio wave and to interpret cumulative result
+  // snapshots. Kept separate from `isAndroid` so that voice behavior can be
+  // decoupled from Android-specific composebox styling.
+  source->AddBoolean("androidSpeechRecognition", BUILDFLAG(IS_ANDROID));
 
   source->AddBoolean("ntpRealboxNextEnabled",
                      ntp_realbox::IsNtpRealboxNextEnabled(profile));

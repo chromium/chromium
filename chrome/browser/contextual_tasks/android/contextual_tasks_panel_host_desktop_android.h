@@ -62,6 +62,10 @@ class ContextualTasksPanelHostDesktopAndroid
   void OnEntryShown(SidePanelEntry* entry) override;
 
   // content::WebContentsDelegate implementation:
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params,

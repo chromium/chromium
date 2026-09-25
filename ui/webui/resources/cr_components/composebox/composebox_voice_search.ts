@@ -284,7 +284,11 @@ export class ComposeboxVoiceSearchElement extends
 
   private accessor state_: State = State.UNINITIALIZED;
 
-  private readonly isAndroid_: boolean = getLoadTimeBoolean('isAndroid', false);
+  // True when `webkitSpeechRecognition` is backed by Android's
+  // `SpeechRecognitionImpl`, which owns the microphone itself and reports
+  // cumulative result snapshots.
+  private readonly androidSpeechRecognition_: boolean =
+      getLoadTimeBoolean('androidSpeechRecognition', false);
   private blurTimeoutId_: number|null = null;
   private listenerIds_: number[] = [];
   private pageHandler_: PageHandlerRemote =
@@ -314,7 +318,7 @@ export class ComposeboxVoiceSearchElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-    AudioProcessor.setSimulate(this.isAndroid_);
+    AudioProcessor.setSimulate(this.androidSpeechRecognition_);
     if (!this.metricSource) {
       this.searchboxHandler_.getPageClassification().then(({metricSource}) => {
         this.metricSource = metricSource || '';
@@ -602,7 +606,7 @@ export class ComposeboxVoiceSearchElement extends
     const speechResult = results[e.resultIndex];
     assert(speechResult);
 
-    if (this.isAndroid_) {
+    if (this.androidSpeechRecognition_) {
       // On Android, `SpeechRecognitionImpl` sends cumulative snapshots of the
       // entire utterance. The last item in `results` represents the current
       // full transcript.
@@ -670,7 +674,7 @@ export class ComposeboxVoiceSearchElement extends
       case State.RESULT_RECEIVED:
         // On Android, 'SpeechRecognitionImpl' always fires 'onEnd' when the
         // utterance finishes. Submit immediately if a transcript is present.
-        if (this.isAndroid_ && this.transcript_) {
+        if (this.androidSpeechRecognition_ && this.transcript_) {
           this.onFinalResult_(this.transcript_, /*forceSubmit=*/ true);
           return;
         }

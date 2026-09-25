@@ -672,7 +672,17 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set("windowTrackingEnabled",
            contextual_tasks::GetIsContextualTasksWindowTrackingEnabled());
   dict.Set("supportsLensButtonInComposebox", !BUILDFLAG(IS_ANDROID));
-  dict.Set("isSystemVoiceSearchEnabled", !!BUILDFLAG(IS_ANDROID));
+  // Android delegates voice search to the platform recognition activity.
+  // Large-screen Android can opt into the in-panel WebUI voice search UI
+  // instead; phone Clank always stays on the platform path.
+  const bool use_webui_voice_search =
+      contextual_tasks::IsAndroidLargeFormFactor() &&
+      contextual_tasks::
+          GetIsContextualTasksWebUiVoiceSearchDesktopAndroidEnabled();
+  dict.Set("isSystemVoiceSearchEnabled",
+           !!BUILDFLAG(IS_ANDROID) && !use_webui_voice_search);
+  // Drives audio wave simulation in the WebUI voice search UI in side panel.
+  dict.Set("androidSpeechRecognition", use_webui_voice_search);
   dict.Set("isUserFeedbackAllowed", IsUserFeedbackAllowed(profile));
   dict.Set("enableComposeboxJumpFix",
            contextual_tasks::GetEnableComposeboxJumpFix());

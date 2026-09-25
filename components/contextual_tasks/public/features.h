@@ -128,6 +128,12 @@ BASE_DECLARE_FEATURE(kContextualTasksWindowTracking);
 // Enables upload chunking for Contextual Tasks.
 BASE_DECLARE_FEATURE(kContextualTasksUploadChunking);
 
+// Enables the in-panel WebUI voice search UI on large-screen Android (tablet
+// and desktop form factors), instead of delegating to the platform voice
+// recognition activity. Has no effect on Android phones, or off Android, which
+// always uses the WebUI voice search UI.
+BASE_DECLARE_FEATURE(kContextualTasksWebUiVoiceSearchDesktopAndroid);
+
 // Enables composebox embedded in AIM main frame, new auth, and
 // new side panel and ghost loader for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksRearchitecture);
@@ -176,6 +182,8 @@ bool GetIsContextualTasksLazyFetchClusterInfoEnabled();
 bool GetIsContextualTasksWindowTrackingEnabled();
 
 bool GetIsContextualTasksUploadChunkingEnabled();
+
+bool GetIsContextualTasksWebUiVoiceSearchDesktopAndroidEnabled();
 
 bool GetContextualTasksSpatialModelToolbarLayoutEnabled();
 

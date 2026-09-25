@@ -108,6 +108,10 @@ bool ShouldShowSidePanel();
 // Returns true if running on Android mobile (phone form factor).
 bool IsAndroidMobileFormFactor();
 
+// Returns true if running on a large-screen Android device (tablet or desktop
+// form factor).
+bool IsAndroidLargeFormFactor();
+
 // Returns whether the provided URL is to a contextual tasks WebUI page.
 bool IsContextualTasksUrl(const GURL& url);
 
