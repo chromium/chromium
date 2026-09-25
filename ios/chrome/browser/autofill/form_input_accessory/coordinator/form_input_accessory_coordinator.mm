@@ -675,7 +675,7 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
       [UISheetPresentationControllerDetent mediumDetent],
       [UISheetPresentationControllerDetent largeDetent],
     ];
-    sheetPresentationController.prefersGrabberVisible = YES;
+    sheetPresentationController.prefersGrabberVisible = NO;
   }
 
   UIViewController* presenter = self.baseViewController;

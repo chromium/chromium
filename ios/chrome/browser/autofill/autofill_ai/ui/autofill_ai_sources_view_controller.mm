@@ -172,6 +172,9 @@ NSString* const kSourceCellReuseIdentifier = @"AutofillAiSourceCell";
   _tableView.dataSource = self;
   _tableView.delegate = self;
   _tableView.accessibilityIdentifier = kAutofillAISourcesTableViewId;
+  _tableView.tableHeaderView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
+  _tableView.sectionHeaderTopPadding = 0;
   [_tableView registerClass:[UITableViewCell class]
       forCellReuseIdentifier:kSourceCellReuseIdentifier];
   [self.view addSubview:_tableView];

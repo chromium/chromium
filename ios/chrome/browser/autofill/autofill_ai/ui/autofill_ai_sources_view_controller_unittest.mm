@@ -91,6 +91,8 @@ TEST_F(AutofillAiSourcesViewControllerTest, TestViewHierarchyAndSections) {
   UITableView* tableView = view_controller_.tableView;
   ASSERT_NE(tableView, nil);
   EXPECT_NSEQ(tableView.accessibilityIdentifier, kAutofillAISourcesTableViewId);
+  EXPECT_NE(tableView.tableHeaderView, nil);
+  EXPECT_EQ(tableView.sectionHeaderTopPadding, 0);
 
   UIBarButtonItem* closeButton =
       view_controller_.navigationItem.rightBarButtonItem;
