@@ -7,7 +7,9 @@
 
 import concurrent.futures
 import os
+import posixpath
 import re
+import subprocess
 
 import results
 from rules import Rule
@@ -46,7 +48,7 @@ class JavaChecker(object):
     self._allow_multiple_definitions = allow_multiple_definitions or []
     if added_imports:
       added_classset = self._PrescanImportFiles(added_imports)
-      self._PrescanFiles(added_classset)
+      self._PrescanFiles(added_classset, added_imports)
 
   def _GetClassFullName(self, filepath):
     """Get the full class name of a file with package name."""
@@ -75,29 +77,139 @@ class JavaChecker(object):
       return True
     return False
 
-  def _PrescanFiles(self, added_classset):
-    for root, dirs, files in os.walk(self._base_directory):
-      # Skip unwanted subdirectories. TODO(husky): it would be better to do
-      # this via the skip_child_includes flag in DEPS files. Maybe hoist this
-      # prescan logic into checkdeps.py itself?
-      # Modify dirs in-place with slice assignment to avoid recursing into them.
-      dirs[:] = [d for d in dirs if not self._IgnoreDir(d)]
+  def _ShouldIncludeRelPath(self, rel_path, target_filenames):
+    """Returns whether rel_path (with '/' separators) should be prescanned."""
+    if not rel_path.endswith('.java'):
+      return False
+    if (target_filenames is not None
+        and posixpath.basename(rel_path) not in target_filenames):
+      return False
+    parts = rel_path.split('/')
+    return not any(self._IgnoreDir(p) for p in parts[:-1])
 
-      java_files = [os.path.join(root, f) for f in files if f.endswith('.java')]
-      if not java_files:
-        continue
+  def _GetGitRepos(self, git_cmd):
+    """Returns self._base_directory plus any non-ignored subrepositories."""
+    repos = [self._base_directory]
+    # Note: `gclient recurse` takes ~6.0s because it parses DEPS and runs across
+    # all ~400 entries (mostly `third_party/` and CIPD packages that
+    # `_IgnoreDir` skips). Reading `.gitmodules` takes ~3ms and lets us filter
+    # out `_IgnoreDir` paths before spawning `git ls-files`.
+    gitmodules = os.path.join(self._base_directory, '.gitmodules')
+    if os.path.isfile(gitmodules):
+      out = subprocess.check_output(
+          [git_cmd, 'config', '--file', gitmodules, '--get-regexp', 'path'],
+          stderr=subprocess.DEVNULL,
+          text=True)
+      for line in out.splitlines():
+        parts = line.split(None, 1)
+        if len(parts) != 2:
+          continue
+        rel_repo = parts[1]
+        if any(self._IgnoreDir(p) for p in rel_repo.split('/')):
+          continue
+        repo_dir = os.path.join(self._base_directory, rel_repo)
+        if os.path.exists(os.path.join(repo_dir, '.git')):
+          repos.append(repo_dir)
+    return repos
 
-      with concurrent.futures.ThreadPoolExecutor() as executor:
-        # Read files in parallel.
-        futures_to_file = {
-            executor.submit(self._PrescanFile, os.path.join(root, f)): f
-            for f in java_files
-        }
-        for future in concurrent.futures.as_completed(futures_to_file):
-          full_class_name = future.result()
-          if full_class_name:
-            self._ProcessFile(
+  def _PrescanFilesWalk(self, added_classset, target_filenames):
+    """Fallback for non-git environments (e.g. Cog) using os.walk."""
+    # Use a single ThreadPoolExecutor across the walk so file reads on slow
+    # network filesystems (Cog) overlap with directory traversal rather than
+    # creating and joining a new pool per directory.
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+      futures_to_file = {}
+      for root, dirs, files in os.walk(self._base_directory):
+        # Skip unwanted subdirectories. TODO(husky): it would be better to do
+        # this via the skip_child_includes flag in DEPS files. Maybe hoist this
+        # prescan logic into checkdeps.py itself?
+        # Modify dirs in-place with slice assignment to avoid recursing into
+        # them.
+        dirs[:] = [d for d in dirs if not self._IgnoreDir(d)]
+        for f in files:
+          if (f in target_filenames if target_filenames is not None
+              else f.endswith('.java')):
+            filepath = os.path.join(root, f)
+            futures_to_file[executor.submit(self._PrescanFile, filepath)] = (
+                filepath)
+      for future in concurrent.futures.as_completed(futures_to_file):
+        full_class_name = future.result()
+        if full_class_name:
+          self._ProcessFile(
               futures_to_file[future], full_class_name, added_classset)
+
+  def _GetJavaFilesGit(self, target_filenames, added_imports):
+    """Returns a list of .java file paths to prescan using git ls-files.
+
+    Args:
+      target_filenames: If not None, a set of basenames (e.g. {'Foo.java'})
+          to restrict the returned files to.
+      added_imports: The ((file_path, (import_line, ...)), ...) iterable from
+          presubmit, used to ensure untracked local files are also included.
+    """
+    # Prefer `git ls-files` over `os.walk` when in a git checkout, as walking
+    # the entire Chromium tree (~33,000 directories) is much slower than
+    # reading the git index (~100-150ms). Note: `--others` is intentionally
+    # omitted because scanning untracked directories across the tree takes
+    # ~3.2s.
+    java_files = []
+    seen = set()
+    git_cmd = 'git.bat' if os.name == 'nt' else 'git'
+    repos = self._GetGitRepos(git_cmd)
+
+    def list_repo(repo):
+      return repo, subprocess.check_output(
+          [git_cmd, '-C', repo, 'ls-files', '-z', '--', '*.java'],
+          stderr=subprocess.DEVNULL,
+          text=True)
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+      repo_outputs = list(executor.map(list_repo, repos))
+    for repo, out in repo_outputs:
+      for rel_path in out.split('\0'):
+        if not self._ShouldIncludeRelPath(rel_path, target_filenames):
+          continue
+        full_path = os.path.normpath(os.path.join(repo, rel_path))
+        seen.add(os.path.normcase(os.path.abspath(full_path)))
+        java_files.append(full_path)
+    # `git ls-files` only lists tracked/staged files. Also include any
+    # untracked files from `added_imports` (e.g. during `git cl presubmit
+    # --force`).
+    for filepath, _ in (added_imports or []):
+      abs_path = os.path.abspath(filepath)
+      norm_path = os.path.normcase(abs_path)
+      if norm_path in seen or not os.path.isfile(filepath):
+        continue
+      rel_path = os.path.relpath(
+          abs_path, self._base_directory).replace(os.sep, '/')
+      if self._ShouldIncludeRelPath(rel_path, target_filenames):
+        seen.add(norm_path)
+        java_files.append(filepath)
+    return java_files
+
+  def _PrescanFiles(self, added_classset, added_imports=None):
+    if not self._verbose and not added_classset:
+      return
+    # `_GetClassFullName` always constructs `<package>.<filename_without_java>`,
+    # and when `not self._verbose`, `_ProcessFile` and `CheckLine` only ever
+    # inspect entries in `_classmap` whose key is in `added_classset`. Thus we
+    # only need to open and parse `.java` files whose basename matches the
+    # short class name of an entry in `added_classset` (typically a few files
+    # instead of all ~14,000 `.java` files in the tree).
+    target_filenames = (
+        None if self._verbose else
+        {c.rsplit('.', 1)[-1] + '.java' for c in added_classset})
+    if (os.getcwd().startswith('/google/cog/cloud')
+        or not os.path.exists(os.path.join(self._base_directory, '.git'))):
+      self._PrescanFilesWalk(added_classset, target_filenames)
+      return
+
+    java_files = self._GetJavaFilesGit(target_filenames, added_imports)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+      for filepath, full_class_name in zip(
+          java_files, executor.map(self._PrescanFile, java_files)):
+        if full_class_name:
+          self._ProcessFile(filepath, full_class_name, added_classset)
 
   def _PrescanImportFiles(self, added_imports):
     """Build a set of fully-qualified class affected by this patch.

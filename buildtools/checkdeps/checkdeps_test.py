@@ -7,12 +7,19 @@
 """
 
 import os
+import subprocess
+import tempfile
 import unittest
 
 
 import builddeps
 import checkdeps
 import results
+
+
+def _write(path, text):
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(text)
 
 
 class CheckDepsTest(unittest.TestCase):
@@ -289,10 +296,9 @@ class CheckDepsTest(unittest.TestCase):
     with tempfile.TemporaryDirectory() as temp_dir:
       subprocess.check_call(['git', 'init', '-q', temp_dir])
       deps_path = os.path.join(temp_dir, 'DEPS')
-      with open(deps_path, 'w') as f:
-        # Include expressions that trigger a SyntaxWarning in Python 3.11
-        # ("is" with a literal) and Python 3.12+ (invalid escape sequence).
-        f.write('x = (1 is 1)\ninclude_rules = ["+foo\\."]\n')
+      # Include expressions that trigger a SyntaxWarning in Python 3.11
+      # ("is" with a literal) and Python 3.12+ (invalid escape sequence).
+      _write(deps_path, 'x = (1 is 1)\ninclude_rules = ["+foo\\."]\n')
 
       script_path = os.path.join(
           self.deps_checker.base_directory, 'buildtools', 'checkdeps',
@@ -316,6 +322,86 @@ class CheckDepsTest(unittest.TestCase):
 
       # Verify that with the flag, there are no SyntaxWarnings.
       self.assertNotIn('SyntaxWarning', res_with_flag.stderr)
+
+  def testCheckAddedJavaImports(self):
+    with tempfile.TemporaryDirectory() as temp_dir:
+      # Set up a temporary git repository with DEPS rules allowing `+allowed`
+      # and disallowing `-disallowed`.
+      subprocess.check_call(['git', 'init', '-q', temp_dir])
+      _write(os.path.join(temp_dir, 'DEPS'),
+             'include_rules = ["+allowed", "-disallowed"]\n')
+      os.makedirs(os.path.join(temp_dir, 'allowed'))
+      os.makedirs(os.path.join(temp_dir, 'disallowed'))
+      os.makedirs(os.path.join(temp_dir, 'foo'))
+      allowed_java = os.path.join(temp_dir, 'allowed', 'Good.java')
+      disallowed_java = os.path.join(temp_dir, 'disallowed', 'Bad.java')
+      foo_java = os.path.join(temp_dir, 'foo', 'Foo.java')
+      _write(allowed_java,
+             'package org.chromium.allowed;\npublic class Good {}\n')
+      _write(disallowed_java,
+             'package org.chromium.disallowed;\npublic class Bad {}\n')
+      _write(foo_java, 'package org.chromium.foo;\npublic class Foo {}\n')
+      subprocess.check_call(
+          ['git', '-C', temp_dir, 'add', 'DEPS', 'allowed/Good.java',
+           'disallowed/Bad.java', 'foo/Foo.java'])
+
+      checker = checkdeps.DepsChecker(base_directory=temp_dir)
+
+      # Scenario 1: Importing a git-tracked class from an allowed directory
+      # (exercises the `git ls-files` + `target_filenames` fast path).
+      self.assertFalse(checker.CheckAddedJavaImports(
+          [[foo_java, ['import org.chromium.allowed.Good;']]]))
+
+      # Scenario 2: Importing a git-tracked class from a disallowed directory
+      # reports a DEPS violation with the resolved file path.
+      problems = checker.CheckAddedJavaImports(
+          [[foo_java, ['import org.chromium.disallowed.Bad;']]])
+      self.assertEqual(1, len(problems))
+      self.assertIn('disallowed/Bad.java', problems[0][2])
+
+      # Scenario 3: An untracked file included in `added_imports` (not yet in
+      # `git ls-files`) is still prescanned via the `added_imports` supplement.
+      untracked_bad = os.path.join(temp_dir, 'disallowed', 'UntrackedBad.java')
+      _write(untracked_bad, 'package org.chromium.disallowed;\n'
+                'public class UntrackedBad {}\n')
+      problems = checker.CheckAddedJavaImports([
+          [untracked_bad, ['import org.chromium.allowed.Good;']],
+          [foo_java, ['import org.chromium.disallowed.UntrackedBad;']],
+      ])
+      self.assertEqual(1, len(problems))
+      self.assertIn('disallowed/UntrackedBad.java', problems[0][2])
+
+      # Scenario 4: Classes inside a git subrepository declared in `.gitmodules`
+      # (e.g. `clank/` or `components/*/internal`) are discovered and checked.
+      subrepo_dir = os.path.join(temp_dir, 'disallowed', 'subrepo')
+      os.makedirs(subrepo_dir)
+      subprocess.check_call(['git', 'init', '-q', subrepo_dir])
+      subrepo_bad = os.path.join(subrepo_dir, 'SubBad.java')
+      _write(subrepo_bad,'package org.chromium.disallowed;\n'
+                'public class SubBad {}\n')
+      subprocess.check_call(['git', '-C', subrepo_dir, 'add', 'SubBad.java'])
+      _write(os.path.join(temp_dir, '.gitmodules'),
+             '[submodule "disallowed/subrepo"]\n\tpath = disallowed/subrepo\n')
+      problems = checker.CheckAddedJavaImports(
+          [[foo_java, ['import org.chromium.disallowed.SubBad;']]])
+      self.assertEqual(1, len(problems))
+      self.assertIn('disallowed/subrepo/SubBad.java', problems[0][2])
+
+      # Scenario 5: Non-git fallback (`os.walk` with `target_filenames`
+      # filtering) when `.git` is absent (e.g. Cog). Rename `.git` to a hidden
+      # directory rather than calling `shutil.rmtree` directly because `.git`
+      # object files are read-only on Windows (`TemporaryDirectory` resets
+      # permissions on cleanup).
+      os.rename(
+          os.path.join(temp_dir, '.git'),
+          os.path.join(temp_dir, '.git_disabled'))
+      self.assertFalse(checker.CheckAddedJavaImports(
+          [[foo_java, ['import org.chromium.allowed.Good;']]]))
+      problems = checker.CheckAddedJavaImports(
+          [[foo_java, ['import org.chromium.disallowed.Bad;']]])
+      self.assertEqual(1, len(problems))
+      self.assertIn('disallowed/Bad.java', problems[0][2])
+
 
 if __name__ == '__main__':
   unittest.main()
