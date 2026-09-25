@@ -148,6 +148,7 @@ class IOSChromePasswordManagerClient
       const std::u16string& filled_username) override;
   void ResetSubmissionTrackingAfterTouchToFill() override;
   bool IsPasswordChangeOngoing() override;
+  bool IsActorTaskActive() override;
   void MaybeReportEnterpriseLoginEvent(
       const GURL& url,
       bool is_federated,

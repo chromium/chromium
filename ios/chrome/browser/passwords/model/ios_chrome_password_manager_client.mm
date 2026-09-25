@@ -46,6 +46,8 @@
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -283,6 +285,16 @@ void IOSChromePasswordManagerClient::NotifySuccessfulLoginWithExistingPassword(
 
 bool IOSChromePasswordManagerClient::IsPasswordChangeOngoing() {
   return false;
+}
+
+bool IOSChromePasswordManagerClient::IsActorTaskActive() {
+  web::WebState* web_state = bridge_.webState;
+  if (!web_state) {
+    return false;
+  }
+  ActorTabHelper* actor_tab_helper = ActorTabHelper::FromWebState(web_state);
+  return actor_tab_helper && actor_tab_helper->GetControlState() ==
+                                 actor::ActorControlState::kActorControlled;
 }
 
 void IOSChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(

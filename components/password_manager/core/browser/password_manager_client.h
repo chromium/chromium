@@ -612,8 +612,7 @@ class PasswordManagerClient {
 
   virtual UndoPasswordChangeController* GetUndoPasswordChangeController();
 
-  // TODO(crbug.com/509852350): Figure out if this is needed on iOS and
-  //  implement it.
+  // Returns true if an actor task is actively actuating on the tab/web state.
   virtual bool IsActorTaskActive();
 
   // Notifies the client that a password fill event occurred.

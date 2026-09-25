@@ -6,6 +6,8 @@ include_rules = [
   "+ios/chrome/browser/device_reauth/model",
   "+ios/chrome/browser/enterprise/connectors/reporting",
   "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/intelligence/actor/model",
+  "+ios/chrome/browser/intelligence/actor/public",
   "+ios/chrome/browser/level_up/model",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/safe_browsing/model",
