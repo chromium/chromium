@@ -380,7 +380,8 @@ export class SearchboxMatchElement extends CrLitElement {
   }
 
   private onMatchMouseDown_(e: MouseEvent) {
-    if (this.match.keywordModel?.type === KeywordType.kInstant) {
+    if (this.virtualFocusEnabled ||
+        this.match.keywordModel?.type === KeywordType.kInstant) {
       e.preventDefault();  // Prevents default browser action (focus loss).
     }
     this.pageHandler_.onNavigationLikely(
