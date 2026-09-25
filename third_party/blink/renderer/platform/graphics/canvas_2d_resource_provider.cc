@@ -571,7 +571,6 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
   }
 
   EnsureResourceReadyForDraw();
-  auto access = resource_->BeginAccess(/*readonly=*/false);
   EnsureWriteAccess();
 
   cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback;
@@ -586,6 +585,7 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
   const bool needs_clear = !is_cleared_;
   is_cleared_ = true;
 
+  auto access = resource_->BeginAccess(/*readonly=*/false);
   gpu::raster::RasterInterface* ri = RasterInterface();
   SkColor4f background_color = GetAlphaType() == kOpaque_SkAlphaType
                                    ? SkColors::kBlack
