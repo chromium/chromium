@@ -13,7 +13,7 @@
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
 #include "partition_alloc/partition_alloc_check.h"
-#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_direct_map_extent.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/reservation_offset_table.h"

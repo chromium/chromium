@@ -12,6 +12,7 @@
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_address_space.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/reservation_offset_table.h"
 
 namespace partition_alloc::internal {

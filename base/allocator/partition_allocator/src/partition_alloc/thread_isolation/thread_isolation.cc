@@ -13,7 +13,7 @@
 #include "partition_alloc/internal/reservation_offset_table_internal.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_check.h"
-#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 
 #if PA_BUILDFLAG(ENABLE_PKEYS)
 #include "partition_alloc/thread_isolation/pkey.h"

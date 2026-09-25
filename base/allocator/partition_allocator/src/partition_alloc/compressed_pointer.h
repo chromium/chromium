@@ -13,6 +13,7 @@
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 
 #if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 

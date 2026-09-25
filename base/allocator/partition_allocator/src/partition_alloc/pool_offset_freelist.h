@@ -15,7 +15,6 @@
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/tagging.h"
 
 #if !PA_BUILDFLAG(PA_ARCH_CPU_BIG_ENDIAN)

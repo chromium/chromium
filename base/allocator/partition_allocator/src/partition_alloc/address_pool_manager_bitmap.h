@@ -16,6 +16,7 @@
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_lock.h"
 
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)

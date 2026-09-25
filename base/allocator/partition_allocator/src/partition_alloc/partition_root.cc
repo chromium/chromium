@@ -27,6 +27,7 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_bucket.h"
 #include "partition_alloc/partition_cookie.h"
 #include "partition_alloc/partition_oom.h"

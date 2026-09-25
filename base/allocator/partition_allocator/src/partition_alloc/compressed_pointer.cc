@@ -5,6 +5,7 @@
 #include "partition_alloc/compressed_pointer.h"
 
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 
 #if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 

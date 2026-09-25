@@ -13,6 +13,8 @@
 #include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/check.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/slot_address_and_size.h"
 #include "partition_alloc/slot_start.h"

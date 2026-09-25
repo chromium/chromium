@@ -9,7 +9,6 @@
 #include <bitset>
 #include <limits>
 
-#include "partition_alloc/address_pool_manager_types.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/internal/partition_address_space_internal.h"
@@ -18,6 +17,7 @@
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/thread_isolation/alignment.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"

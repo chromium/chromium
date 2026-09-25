@@ -21,7 +21,6 @@
 #include "partition_alloc/partition_alloc_base/apple/mach_logging.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_check.h"
-#include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/shim/early_zone_registration_utils_apple.h"
 

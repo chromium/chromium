@@ -497,6 +497,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_forward.h",
       "partition_alloc_hooks.cc",
       "partition_alloc_hooks.h",
+      "partition_alloc_public_constants.h",
       "partition_bucket.cc",
       "partition_bucket.h",
       "partition_cookie.cc",

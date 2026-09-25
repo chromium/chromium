@@ -5,7 +5,7 @@
 #include "partition_alloc/address_pool_manager_bitmap.h"
 
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 

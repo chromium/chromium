@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 
 namespace {
 

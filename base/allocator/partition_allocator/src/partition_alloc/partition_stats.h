@@ -11,7 +11,10 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_alloc_constants.h"
+
+#if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
+#include "partition_alloc/bucket_lookup.h"
+#endif
 
 namespace partition_alloc {
 

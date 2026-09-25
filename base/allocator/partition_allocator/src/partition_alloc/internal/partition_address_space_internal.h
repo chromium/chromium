@@ -12,6 +12,12 @@
 #include "partition_alloc/page_allocator_constants.h"
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
+
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE) && \
+    !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+#include <algorithm>
+#endif
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #include "partition_alloc/thread_isolation/thread_isolation.h"

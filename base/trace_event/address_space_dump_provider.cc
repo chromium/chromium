@@ -9,7 +9,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 
 namespace base::trace_event {
 

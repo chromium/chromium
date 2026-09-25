@@ -9,7 +9,6 @@
 #include <cstddef>
 #include <utility>
 
-#include "partition_alloc/address_pool_manager_types.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/page_allocator_constants.h"
@@ -17,12 +16,16 @@
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/alignment.h"
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #include "partition_alloc/thread_isolation/thread_isolation.h"
+#endif
+
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+#include <array>
 #endif
 
 // The feature is not applicable to 32-bit address space.

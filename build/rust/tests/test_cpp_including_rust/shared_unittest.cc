@@ -9,6 +9,8 @@
 
 #include "build/rust/tests/test_rust_shared_library/src/lib.rs.h"
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
