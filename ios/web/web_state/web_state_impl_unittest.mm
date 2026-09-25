@@ -1262,4 +1262,74 @@ TEST_F(WebStateImplTest, NavigationStartTrigger) {
   EXPECT_EQ(trigger_manager.last_trigger_name(), "navigation-start");
 }
 
+// Tests that RequestGeolocationPermissionWithDecisionHandler denies permission
+// for non-secure origins.
+TEST_F(WebStateImplTest, RequestGeolocationPermissionInsecureOrigin) {
+  std::unique_ptr<WebStateImpl> web_state =
+      std::make_unique<WebStateImpl>(WebState::CreateParams(GetBrowserState()));
+  FakeWebStateDelegate delegate;
+  delegate.SetPermissionDecision(PermissionDecisionGrant);
+  web_state->SetDelegate(&delegate);
+
+  __block bool called = false;
+  __block WKPermissionDecision result_decision = WKPermissionDecisionPrompt;
+  const GURL insecure_origin("http://insecure.example.com");
+
+  web_state->RequestGeolocationPermissionWithDecisionHandler(
+      insecure_origin, ^(WKPermissionDecision decision) {
+        called = true;
+        result_decision = decision;
+      });
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(result_decision, WKPermissionDecisionDeny);
+  // Delegate should not have been called for insecure origin.
+  EXPECT_TRUE(delegate.last_requested_geolocation_origin().is_empty());
+}
+
+// Tests that RequestGeolocationPermissionWithDecisionHandler forwards the
+// request to the delegate for secure origins.
+TEST_F(WebStateImplTest, RequestGeolocationPermissionSecureOriginWithDelegate) {
+  std::unique_ptr<WebStateImpl> web_state =
+      std::make_unique<WebStateImpl>(WebState::CreateParams(GetBrowserState()));
+  FakeWebStateDelegate delegate;
+  delegate.SetPermissionDecision(PermissionDecisionGrant);
+  web_state->SetDelegate(&delegate);
+
+  __block bool called = false;
+  __block WKPermissionDecision result_decision = WKPermissionDecisionPrompt;
+  const GURL secure_origin("https://secure.example.com");
+
+  web_state->RequestGeolocationPermissionWithDecisionHandler(
+      secure_origin, ^(WKPermissionDecision decision) {
+        called = true;
+        result_decision = decision;
+      });
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(result_decision, WKPermissionDecisionGrant);
+  EXPECT_EQ(delegate.last_requested_geolocation_origin(), secure_origin);
+}
+
+// Tests that RequestGeolocationPermissionWithDecisionHandler falls back to
+// prompt when no delegate is set.
+TEST_F(WebStateImplTest,
+       RequestGeolocationPermissionSecureOriginWithoutDelegate) {
+  std::unique_ptr<WebStateImpl> web_state =
+      std::make_unique<WebStateImpl>(WebState::CreateParams(GetBrowserState()));
+
+  __block bool called = false;
+  __block WKPermissionDecision result_decision = WKPermissionDecisionDeny;
+  const GURL secure_origin("https://secure.example.com");
+
+  web_state->RequestGeolocationPermissionWithDecisionHandler(
+      secure_origin, ^(WKPermissionDecision decision) {
+        called = true;
+        result_decision = decision;
+      });
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(result_decision, WKPermissionDecisionPrompt);
+}
+
 }  // namespace web

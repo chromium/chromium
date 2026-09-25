@@ -475,6 +475,14 @@ void WebStateImpl::RequestPermissionsWithDecisionHandler(
                                                          handler);
 }
 
+void WebStateImpl::RequestGeolocationPermissionWithDecisionHandler(
+    const GURL& origin,
+    PermissionDecisionHandler handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RealizedState()->RequestGeolocationPermissionWithDecisionHandler(origin,
+                                                                   handler);
+}
+
 #pragma mark - WebState implementation
 
 void WebStateImpl::SerializeToProto(proto::WebStateStorage& storage) const {

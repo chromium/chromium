@@ -304,6 +304,11 @@ class WebStateImpl final : public WebState {
                                              const GURL& origin,
                                              PermissionDecisionHandler handler);
 
+  // Requests the user's permission to access geolocation on `origin`.
+  void RequestGeolocationPermissionWithDecisionHandler(
+      const GURL& origin,
+      PermissionDecisionHandler handler);
+
   // WebState:
   void SerializeToProto(proto::WebStateStorage& storage) const final;
   void SerializeMetadataToProto(

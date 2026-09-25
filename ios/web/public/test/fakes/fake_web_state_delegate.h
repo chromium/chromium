@@ -115,6 +115,10 @@ class FakeWebStateDelegate : public WebStateDelegate {
       WebState* source,
       NSArray<NSNumber*>* permissions,
       WebStatePermissionDecisionHandler handler) override;
+  void RequestGeolocationPermission(
+      WebState* source,
+      const GURL& origin,
+      WebStatePermissionDecisionHandler handler) override;
 
   // Allows popups requested by a page with `opener_url`.
   void allow_popups(const GURL& opener_url) {
@@ -188,6 +192,12 @@ class FakeWebStateDelegate : public WebStateDelegate {
   // `HandlePermissionsDecisionRequest`.
   void ClearLastRequestedPermissions() { last_requested_permissions_ = nil; }
 
+  // Returns the last requested geolocation origin passed to
+  // `RequestGeolocationPermission`.
+  const GURL& last_requested_geolocation_origin() const {
+    return last_requested_geolocation_origin_;
+  }
+
   // Sets that permission decision the for next time
   // `HandlePermissionsDecisionRequest` is called.
   void SetPermissionDecision(PermissionDecision permission_decision) {
@@ -223,6 +233,7 @@ class FakeWebStateDelegate : public WebStateDelegate {
   std::unique_ptr<FakeProxyAuthenticationRequest>
       last_proxy_authentication_request_;
   NSArray<NSNumber*>* last_requested_permissions_;
+  GURL last_requested_geolocation_origin_;
   bool should_allow_app_launching_ = false;
   PermissionDecision permission_decision_ = PermissionDecisionDeny;
   bool should_handle_permission_decision_ = true;

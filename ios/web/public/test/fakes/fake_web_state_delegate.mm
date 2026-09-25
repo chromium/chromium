@@ -155,4 +155,14 @@ void FakeWebStateDelegate::HandlePermissionsDecisionRequest(
   }
 }
 
+void FakeWebStateDelegate::RequestGeolocationPermission(
+    WebState* source,
+    const GURL& origin,
+    WebStatePermissionDecisionHandler handler) {
+  last_requested_geolocation_origin_ = origin;
+  if (should_handle_permission_decision_) {
+    handler(permission_decision_);
+  }
+}
+
 }  // namespace web

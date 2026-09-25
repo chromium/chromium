@@ -55,6 +55,19 @@
 
 namespace web {
 
+// Converts a PermissionDecision to a WKPermissionDecision.
+WKPermissionDecision ConvertToWKPermissionDecision(
+    web::PermissionDecision decision) {
+  switch (decision) {
+    case web::PermissionDecisionShowDefaultPrompt:
+      return WKPermissionDecisionPrompt;
+    case web::PermissionDecisionGrant:
+      return WKPermissionDecisionGrant;
+    case web::PermissionDecisionDeny:
+      return WKPermissionDecisionDeny;
+  }
+}
+
 class WebStateImpl::RealizedWebState::PendingSession {
  public:
   PendingSession(proto::WebStateStorage storage,
@@ -1001,22 +1014,29 @@ void WebStateImpl::RealizedWebState::RequestPermissionsWithDecisionHandler(
     return;
   }
   if (delegate_) {
-    WebStatePermissionDecisionHandler web_state_decision_handler =
-        ^(PermissionDecision decision) {
-          switch (decision) {
-            case PermissionDecisionShowDefaultPrompt:
-              web_view_decision_handler(WKPermissionDecisionPrompt);
-              break;
-            case PermissionDecisionGrant:
-              web_view_decision_handler(WKPermissionDecisionGrant);
-              break;
-            case PermissionDecisionDeny:
-              web_view_decision_handler(WKPermissionDecisionDeny);
-              break;
-          }
-        };
-    delegate_->HandlePermissionsDecisionRequest(owner_, permissions,
-                                                web_state_decision_handler);
+    delegate_->HandlePermissionsDecisionRequest(
+        owner_, permissions, ^(PermissionDecision decision) {
+          web_view_decision_handler(ConvertToWKPermissionDecision(decision));
+        });
+  } else {
+    web_view_decision_handler(WKPermissionDecisionPrompt);
+  }
+}
+
+void WebStateImpl::RealizedWebState::
+    RequestGeolocationPermissionWithDecisionHandler(
+        const GURL& origin,
+        PermissionDecisionHandler web_view_decision_handler) {
+  if (!security_state::IsSchemeCryptographic(origin) &&
+      !security_state::IsOriginLocalhostOrFile(origin)) {
+    web_view_decision_handler(WKPermissionDecisionDeny);
+    return;
+  }
+  if (delegate_) {
+    delegate_->RequestGeolocationPermission(
+        owner_, origin, ^(PermissionDecision decision) {
+          web_view_decision_handler(ConvertToWKPermissionDecision(decision));
+        });
   } else {
     web_view_decision_handler(WKPermissionDecisionPrompt);
   }

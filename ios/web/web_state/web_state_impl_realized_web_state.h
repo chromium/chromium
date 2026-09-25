@@ -229,6 +229,10 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
       NSArray<NSNumber*>* permissions,
       const GURL& origin,
       PermissionDecisionHandler web_view_decision_handler);
+  // Requests the user's permission to access geolocation on `origin`.
+  void RequestGeolocationPermissionWithDecisionHandler(
+      const GURL& origin,
+      PermissionDecisionHandler web_view_decision_handler);
 
   // NavigationManagerDelegate:
   void ClearDialogs() final;
