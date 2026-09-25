@@ -59,7 +59,10 @@ void ColorProfile::ComputeSkColorSpace() {
   // If there was no CICP data, then use the ICC profile.
   sk_color_space_ = SkColorSpace::Make(profile_);
   if (sk_color_space_) {
-    is_sk_color_space_exact_ = true;
+    // The A2B transform has higher priority than the matrix/TRC transform.  See
+    // ICC.1-2022-05 section 8.10 precedence order of tag usage,
+    // https://crbug.com/565075167.
+    is_sk_color_space_exact_ = !profile_.has_A2B;
     return;
   }
 
