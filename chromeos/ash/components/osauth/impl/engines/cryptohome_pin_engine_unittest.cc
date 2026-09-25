@@ -20,7 +20,6 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -87,7 +86,7 @@ TEST_F(CryptohomePinEngineTest, GetFactor) {
 TEST_F(CryptohomePinEngineTest, StandardSuccessfulAuthenticate) {
   AccountId id =
       AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("fakegaia"));
-  user_manager_.AddGaiaUser(id, user_manager::UserType::kRegular);
+  ASSERT_TRUE(user_session_test_environment_->AddRegularUser(id));
   user_manager::KnownUser known_user(&prefs_);
   known_user.SetStringPref(id, prefs::kQuickUnlockPinSalt, "test salt");
 
@@ -124,7 +123,7 @@ TEST_F(CryptohomePinEngineTest, StandardSuccessfulAuthenticate) {
 TEST_F(CryptohomePinEngineTest, StandardFailedAuthenticate) {
   AccountId id =
       AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("fakegaia"));
-  user_manager_.AddGaiaUser(id, user_manager::UserType::kRegular);
+  ASSERT_TRUE(user_session_test_environment_->AddRegularUser(id));
   user_manager::KnownUser known_user(&prefs_);
   known_user.SetStringPref(id, prefs::kQuickUnlockPinSalt, "test salt");
 

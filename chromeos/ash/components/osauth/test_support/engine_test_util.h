@@ -4,6 +4,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_TEST_SUPPORT_ENGINE_TEST_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_TEST_SUPPORT_ENGINE_TEST_UTIL_H_
 
+#include <memory>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
@@ -12,7 +14,7 @@
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,7 +32,8 @@ class EngineTestBase : public ::testing::Test {
   ash::MockUserDataAuthClient mock_udac_;
   CryptohomeCoreImpl core_;
   TestingPrefServiceSimple prefs_;
-  user_manager::FakeUserManager user_manager_{&prefs_};
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedStubInstallAttributes install_attributes{
       ash::StubInstallAttributes::CreateConsumerOwned()};

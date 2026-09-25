@@ -4,16 +4,17 @@
 
 #include "chromeos/ash/components/osauth/test_support/engine_test_util.h"
 
+#include <memory>
+
 namespace ash {
 
 EngineTestBase::EngineTestBase() : core_(&mock_udac_) {
-  user_manager::FakeUserManager::RegisterPrefs(prefs_.registry());
-  user_manager_.Initialize();
+  ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+      prefs_.registry());
+  user_session_test_environment_ =
+      std::make_unique<ash::test::UserSessionTestEnvironment>(&prefs_);
 }
 
-EngineTestBase::~EngineTestBase() {
-  user_manager_.Shutdown();
-  user_manager_.Destroy();
-}
+EngineTestBase::~EngineTestBase() = default;
 
 }  // namespace ash

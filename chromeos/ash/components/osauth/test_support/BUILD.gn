@@ -17,7 +17,7 @@ static_library("test_support") {
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/osauth/impl",
     "//components/prefs:test_support",
-    "//components/user_manager:test_support",
+    "//components/session_manager/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

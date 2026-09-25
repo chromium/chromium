@@ -26,9 +26,8 @@
 #include "chromeos/ash/components/osauth/test_support/mock_auth_factor_engine_factory.h"
 #include "chromeos/ash/components/osauth/test_support/mock_auth_factor_status_consumer.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/user_manager_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,11 +47,14 @@ using testing::StrictMock;
 
 class AuthHubTestBase : public ::testing::Test {
  protected:
-  AuthHubTestBase() {
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
-    user_manager_ =
-        std::make_unique<user_manager::FakeUserManager>(&local_state_);
-    user_manager_->Initialize();
+  AuthHubTestBase() = default;
+  ~AuthHubTestBase() override = default;
+
+  void SetUp() override {
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
     factors_cache_ = std::make_unique<AuthFactorPresenceCache>(&local_state_);
     parts_ = AuthPartsImpl::CreateTestInstance();
     parts_->SetAuthHub(std::make_unique<AuthHubImpl>(factors_cache_.get()));
@@ -64,7 +66,15 @@ class AuthHubTestBase : public ::testing::Test {
     SetupEngineForNextInit();
   }
 
-  ~AuthHubTestBase() override { user_manager_->Destroy(); }
+  void TearDown() override {
+    // Alias objects owned by `parts_`; clear before it is destroyed.
+    engine_observer_ = nullptr;
+    engine_ = nullptr;
+    engine_factory_ = nullptr;
+    parts_.reset();
+    factors_cache_.reset();
+    user_session_test_environment_.reset();
+  }
 
   void SetupEngineForNextInit() {
     testing::Mock::VerifyAndClearExpectations(engine_factory_.get());
@@ -122,16 +132,16 @@ class AuthHubTestBase : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   TestingPrefServiceSimple local_state_;
-  std::unique_ptr<AuthFactorPresenceCache> factors_cache_;
   ash::ScopedStubInstallAttributes install_attributes{
       ash::StubInstallAttributes::CreateConsumerOwned()};
-  std::unique_ptr<user_manager::FakeUserManager> user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  std::unique_ptr<AuthFactorPresenceCache> factors_cache_;
   std::unique_ptr<AuthPartsImpl> parts_;
 
   raw_ptr<MockAuthFactorEngineFactory> engine_factory_ = nullptr;
   raw_ptr<MockAuthFactorEngine> engine_ = nullptr;
-  raw_ptr<AuthFactorEngine::FactorEngineObserver, AcrossTasksDanglingUntriaged>
-      engine_observer_ = nullptr;
+  raw_ptr<AuthFactorEngine::FactorEngineObserver> engine_observer_ = nullptr;
   std::optional<AuthFactorEngine::UsageAllowed> engine_usage_;
 };
 
@@ -157,7 +167,10 @@ TEST_F(AuthHubTestMode, CheckEnsureInitialized) {
 
 class AuthHubTestVector : public AuthHubTestBase {
  protected:
-  AuthHubTestVector() {
+  AuthHubTestVector() = default;
+
+  void SetUp() override {
+    AuthHubTestBase::SetUp();
     account_ = AccountId::FromUserEmail("user1@example.com");
     attempt_ = AuthAttemptVector{account_, AuthPurpose::kLogin};
   }
@@ -171,9 +184,8 @@ class AuthHubTestVector : public AuthHubTestBase {
         });
 
     EXPECT_CALL(attempt_consumer_, OnUserAuthAttemptConfirmed(_, _))
-        .WillOnce([&](AuthHubConnector* connector,
+        .WillOnce([&](AuthHubConnector*,
                       raw_ptr<AuthFactorStatusConsumer>& out_consumer) {
-          connector_ = connector;
           out_consumer = &status_consumer_;
         });
   }
@@ -194,7 +206,6 @@ class AuthHubTestVector : public AuthHubTestBase {
 
   AccountId account_;
   AuthAttemptVector attempt_;
-  raw_ptr<AuthHubConnector, AcrossTasksDanglingUntriaged> connector_ = nullptr;
   StrictMock<MockAuthAttemptConsumer> attempt_consumer_;
   StrictMock<MockAuthFactorStatusConsumer> status_consumer_;
   FactorsStatusMap factors_state_;
@@ -277,6 +288,10 @@ TEST_F(AuthHubTestVector, TestSwitchingModeWaitingForAuth) {
   EXPECT_CALL(attempt_consumer_, OnUserAuthAttemptCancelled());
   ExpectEngineStop();
   SetupEngineForNextInit();
+
+  // The mode switch destroys the AuthHubAttemptHandler that `engine_observer_`
+  // now points at; ExpectEngineStart() below rebinds it.
+  engine_observer_ = nullptr;
 
   AuthHub::Get()->InitializeForMode(AuthHubMode::kInSession);
   testing::Mock::VerifyAndClearExpectations(&attempt_consumer_);

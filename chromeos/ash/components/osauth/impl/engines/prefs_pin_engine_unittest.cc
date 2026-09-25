@@ -18,7 +18,6 @@
 #include "chromeos/ash/components/osauth/test_support/mock_auth_factor_engine.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,7 +86,7 @@ TEST_F(PrefsPinEngineTest, GetFactor) {
 TEST_F(PrefsPinEngineTest, StandardSuccessfulAuthenticate) {
   AccountId id =
       AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("fakegaia"));
-  user_manager_.AddGaiaUser(id, user_manager::UserType::kRegular);
+  ASSERT_TRUE(user_session_test_environment_->AddRegularUser(id));
   const std::string pin("12345");
   AddPinToPrefs(pin);
 
@@ -111,7 +110,7 @@ TEST_F(PrefsPinEngineTest, StandardSuccessfulAuthenticate) {
 TEST_F(PrefsPinEngineTest, StandardFailedAuthenticate) {
   AccountId id =
       AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("fakegaia"));
-  user_manager_.AddGaiaUser(id, user_manager::UserType::kRegular);
+  ASSERT_TRUE(user_session_test_environment_->AddRegularUser(id));
   const std::string pin("12345"), wrong_pin("23456");
   AddPinToPrefs(pin);
 
@@ -136,7 +135,7 @@ TEST_F(PrefsPinEngineTest, StandardFailedAuthenticate) {
 TEST_F(PrefsPinEngineTest, FailuresLeadingToLockout) {
   AccountId id =
       AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("fakegaia"));
-  user_manager_.AddGaiaUser(id, user_manager::UserType::kRegular);
+  ASSERT_TRUE(user_session_test_environment_->AddRegularUser(id));
   const std::string pin("12345"), wrong_pin("23456");
   AddPinToPrefs(pin);
 
@@ -178,7 +177,7 @@ TEST_F(PrefsPinEngineTest, FailuresLeadingToLockout) {
 TEST_F(PrefsPinEngineTest, LockoutClearedAfterAuth) {
   AccountId id =
       AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("fakegaia"));
-  user_manager_.AddGaiaUser(id, user_manager::UserType::kRegular);
+  ASSERT_TRUE(user_session_test_environment_->AddRegularUser(id));
   const std::string pin("12345"), wrong_pin("23456");
   AddPinToPrefs(pin);
 
