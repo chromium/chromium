@@ -5,13 +5,16 @@
 #include "chrome/browser/ui/android/exclusive_access/exclusive_access_bubble_android.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/android/jni_string.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/android/exclusive_access/exclusive_access_context_android.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/fullscreen_control/fullscreen_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -310,6 +313,117 @@ TEST_F(ExclusiveAccessBubbleAndroidTest,
   EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
   bubble.Update(params, base::DoNothing());
   EXPECT_FALSE(bubble.params().has_download);
+}
+
+TEST(ExclusiveAccessBubbleAndroidOriginElisionTest, GetOriginString) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kFullscreenBubbleShowOrigin);
+
+  struct TestCase {
+    const char* url;
+    std::optional<std::u16string> expected;
+  } const kTestCases[] = {
+      // 1. Standard origin well within the 40-character budget (no elision).
+      {"https://example.com", u"example.com"},
+      {"http://example.com", u"http://example.com"},
+
+      // 2. Exactly 40 characters (https scheme omitted by security formatter):
+      // "abcdefghijklmnopqrstuvwxyz01.example.com" has 28 + 1 + 11 = 40 chars.
+      {"https://abcdefghijklmnopqrstuvwxyz01.example.com",
+       u"abcdefghijklmnopqrstuvwxyz01.example.com"},
+
+      // 3. Exceeds budget: front-elides leading characters to fit within 40
+      // chars.
+      {"https://a.sub.1234567890123456789012345.example.com",
+       u"\u2026b.1234567890123456789012345.example.com"},
+
+      // 4. Realistic spoof attempt: an attacker using Google-themed subdomains.
+      // Front-elides leading subdomains while keeping the trailing registrable
+      // domain within the 40-char budget.
+      {"http://accounts.google.com.signin.verify.device-check.signin-attempt-4."
+       "evil.example",
+       u"\u2026ice-check.signin-attempt-4.evil.example"},
+
+      // 5. Max-length single label (63 chars) immediately preceding the eTLD+1.
+      {"https://"
+       "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa."
+       "evil.example",
+       u"\u2026aaaaaaaaaaaaaaaaaaaaaaaaaa.evil.example"},
+
+      // 6. Non-standard port preservation.
+      {"http://verylongsubdomainprefix.evil.example:8080",
+       u"\u2026rylongsubdomainprefix.evil.example:8080"},
+
+      // 7. Extremely long registrable domain (> 39 chars).
+      {"https://"
+       "a-very-long-domain-name-that-exceeds-forty-characters-all-by-itself."
+       "example",
+       u"\u2026-forty-characters-all-by-itself.example"},
+
+      // 8. IP address and intranet host.
+      {"http://192.168.1.1:8080", u"http://192.168.1.1:8080"},
+      {"http://localhost:8080", u"http://localhost:8080"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    url::Origin origin = url::Origin::Create(GURL(test_case.url));
+    std::optional<std::u16string> actual =
+        ExclusiveAccessBubbleAndroid::GetOriginStringForTesting(origin);
+    EXPECT_EQ(actual, test_case.expected)
+        << "Failed for URL: " << test_case.url;
+    if (actual.has_value()) {
+      EXPECT_LE(actual->size(), 40u)
+          << "Exceeded 40 char budget for URL: " << test_case.url;
+    }
+  }
+
+  // Opaque origin returns std::nullopt.
+  EXPECT_EQ(
+      ExclusiveAccessBubbleAndroid::GetOriginStringForTesting(url::Origin()),
+      std::nullopt);
+}
+
+TEST(ExclusiveAccessBubbleAndroidOriginElisionTest,
+     FeatureDisabledReturnsNullopt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kFullscreenBubbleShowOrigin);
+
+  EXPECT_EQ(ExclusiveAccessBubbleAndroid::GetOriginStringForTesting(
+                url::Origin::Create(GURL("https://example.com"))),
+            std::nullopt);
+}
+
+TEST_F(ExclusiveAccessBubbleAndroidTest, LongOriginIsElidedInBubbleNotice) {
+  ExclusiveAccessBubbleParams params;
+  params.type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
+  params.origin = url::Origin::Create(
+      GURL("http://accounts.google.com.signin.verify.device-check."
+           "signin-attempt-4.evil.example"));
+
+  auto mock_bridge = std::make_unique<MockBridge>();
+  auto* mock_bridge_ptr = mock_bridge.get();
+
+  std::u16string captured_text;
+  EXPECT_CALL(*mock_bridge_ptr, IsVisible()).WillOnce(Return(false));
+  EXPECT_CALL(*mock_bridge_ptr, IsKeyboardConnected()).WillOnce(Return(true));
+  EXPECT_CALL(*mock_bridge_ptr, Update(_))
+      .WillOnce(testing::SaveArg<0>(&captured_text));
+  EXPECT_CALL(*mock_bridge_ptr, Show()).Times(1);
+
+  ExclusiveAccessBubbleAndroid bubble(params, base::DoNothing(),
+                                      std::move(mock_bridge));
+  testing::Mock::VerifyAndClearExpectations(mock_bridge_ptr);
+
+  std::u16string expected_text =
+      exclusive_access_bubble::GetInstructionTextForType(
+          EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
+          l10n_util::GetStringUTF16(IDS_APP_ESC_KEY),
+          u"\u2026ice-check.signin-attempt-4.evil.example",
+          /*has_download=*/false, /*notify_overridden=*/false);
+  EXPECT_EQ(captured_text, expected_text);
+  EXPECT_EQ(captured_text.find(u"accounts.google.com"), std::u16string::npos);
 }
 
 }  // namespace

@@ -39,6 +39,7 @@ found in the LICENSE file.
       android:layout_marginTop="@dimen/snackbar_message_margin"
       android:layout_marginBottom="@dimen/snackbar_message_margin"
       android:layout_weight="1"
+      android:ellipsize="end"
       android:textAlignment="viewStart"
       android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline.Light" />
 

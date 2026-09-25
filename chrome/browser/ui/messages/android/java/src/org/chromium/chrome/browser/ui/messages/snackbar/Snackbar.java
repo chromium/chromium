@@ -333,7 +333,8 @@ public class Snackbar {
         return mActionData;
     }
 
-    boolean getDefaultLines() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public boolean getDefaultLines() {
         return mDefaultLines;
     }
 
@@ -386,7 +387,8 @@ public class Snackbar {
     /**
      * @return Whether the snackbar is high priority.
      */
-    boolean isHighPriority() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public boolean isHighPriority() {
         return mIsHighPriority;
     }
 

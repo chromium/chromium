@@ -11,20 +11,36 @@
 #include "components/fullscreen_control/fullscreen_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
 
 // Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/ExclusiveAccessBubble_jni.h"
 
 namespace {
+
+// Maximum character length for the origin displayed in the Android exclusive
+// access notice snackbar. Longer origins are front-elided so that leading
+// subdomains cannot push the registrable domain and exit instructions off
+// screen.
+constexpr size_t kMaxOriginLength = 40;
+
 std::optional<std::u16string> GetOriginString(const url::Origin& origin) {
   if (origin.opaque() ||
       !base::FeatureList::IsEnabled(features::kFullscreenBubbleShowOrigin)) {
     return std::nullopt;
   }
 
-  return url_formatter::FormatOriginForSecurityDisplay(
+  std::u16string formatted = url_formatter::FormatOriginForSecurityDisplay(
       origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
+  if (formatted.size() <= kMaxOriginLength) {
+    return formatted;
+  }
+
+  return gfx::StringSlicer(formatted, gfx::kEllipsisUTF16,
+                           /*elide_in_middle=*/false,
+                           /*elide_at_beginning=*/true)
+      .CutString(kMaxOriginLength - 1, /*insert_ellipsis=*/true);
 }
 
 class BridgeImpl : public ExclusiveAccessBubbleAndroid::Bridge {
@@ -204,6 +220,13 @@ std::u16string ExclusiveAccessBubbleAndroid::GetBubbleText(
 
 bool ExclusiveAccessBubbleAndroid::IsVisible() const {
   return bridge_->IsVisible();
+}
+
+// static
+std::optional<std::u16string>
+ExclusiveAccessBubbleAndroid::GetOriginStringForTesting(
+    const url::Origin& origin) {
+  return GetOriginString(origin);
 }
 
 void ExclusiveAccessBubbleAndroid::RunHideCallbackIfNeeded(

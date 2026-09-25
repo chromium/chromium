@@ -35,11 +35,19 @@ public class ExclusiveAccessBubbleTest {
     @Test
     public void testBubbleShowAndHide() {
         ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
 
         Assert.assertFalse(bubble.isVisible());
         bubble.update("Test text");
         Assert.assertTrue(bubble.isVisible());
-        Mockito.verify(mSnackbarManager, Mockito.times(1)).showSnackbar(Mockito.any());
+        Mockito.verify(mSnackbarManager, Mockito.times(1)).showSnackbar(snackbarCaptor.capture());
+        Assert.assertTrue(snackbarCaptor.getValue().isHighPriority());
+        Assert.assertFalse(snackbarCaptor.getValue().getDefaultLines());
+
+        // Dynamic update while visible should also preserve non-default line limit.
+        bubble.update("Updated text");
+        Mockito.verify(mSnackbarManager, Mockito.times(2)).showSnackbar(snackbarCaptor.capture());
+        Assert.assertFalse(snackbarCaptor.getValue().getDefaultLines());
 
         bubble.hide();
         Assert.assertFalse(bubble.isVisible());
