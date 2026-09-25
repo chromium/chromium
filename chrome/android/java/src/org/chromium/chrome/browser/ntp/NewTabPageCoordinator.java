@@ -30,6 +30,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.TriState;
 import org.chromium.base.TriStateUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -104,6 +105,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -166,6 +168,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final int mNtpSearchBoxTopMarginWithoutLogo;
     private final boolean mEnableLogs;
     private final int mSearchBoxMaxWidth;
+    private final boolean mIsAim3pEntrypointEnabled;
 
     private @Nullable LogoCoordinator mLogoCoordinator;
     private @Nullable NtpSearchBox mNtpSearchBox;
@@ -176,6 +179,11 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private CallbackController mCallbackController = new CallbackController();
     private @Nullable SearchEngineIconObserver mSearchEngineIconObserver;
     private @Nullable SearchEngineNameObserver mSearchEngineNameObserver;
+    private @Nullable NullableObservableSupplier<AiModeButtonUiConfig>
+            mAiModeButtonUiConfigSupplier;
+    private @Nullable Callback<@Nullable AiModeButtonUiConfig>
+            mAiModeButtonUiConfigSupplierObserver;
+    private @Nullable AiModeButtonUiConfig mAiModeButtonUiConfig;
     private @Nullable HomeModulesCoordinator mHomeModulesCoordinator;
     private @Nullable ViewGroup mHomeModulesContainer;
     private SetupListManager.@Nullable Observer mSetupListObserver;
@@ -302,6 +310,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mSearchEngineService = SearchEngineService.getForProfile(mProfile);
         mSearchProviderInfoDelegate = new SearchProviderInfoDelegate(templateUrlService);
+
+        mIsAim3pEntrypointEnabled = OmniboxFeatures.isAim3pEntrypointEnabled();
 
         Resources resources = mActivity.getResources();
         mNtpSearchBoxTopMarginWithoutLogo =
@@ -430,6 +440,13 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         initializeSearchBoxTextView();
 
+        if (mIsAim3pEntrypointEnabled) {
+            mAiModeButtonUiConfigSupplier = mSearchEngineService.getAiModeButtonUiConfigSupplier();
+            mAiModeButtonUiConfigSupplierObserver = this::onAiModeButtonUiConfigChanged;
+            mAiModeButtonUiConfigSupplier.addObserver(
+                    mAiModeButtonUiConfigSupplierObserver,
+                    MonotonicObservableSupplier.NotifyBehavior.NOTIFY_ON_ADD);
+        }
         initializeComposeplateFlags(mProfile);
         if (mCanShowComposeplateButton == TriState.TRUE) {
             initializeComposeplate();
@@ -564,12 +581,12 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     /** Returns whether the AI Mode button can be shown on NTPs. */
     private boolean canShowAiModeButtonOnNtp() {
-        if (mSearchProviderInfoDelegate.getSearchProviderIsGoogle()) {
-            return ComposeplateUtils.canShowComposeplateButtonOnNtp(mProfile);
+        if (!mIsAim3pEntrypointEnabled) {
+            return mSearchProviderInfoDelegate.getSearchProviderIsGoogle()
+                    && ComposeplateUtils.canShowComposeplateButtonOnNtp(mProfile);
         }
 
-        // TODO(https://crbug.com/561995440): Updates logic for 3p DSE.
-        return false;
+        return ComposeplateUtils.canShowComposeplateButtonOnNtp(mAiModeButtonUiConfig != null);
     }
 
     @VisibleForTesting
@@ -801,14 +818,11 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * @param isGoogle Whether the search provider is Google.
      */
     void setSearchProviderInfo(boolean hasLogo, boolean isGoogle) {
-        boolean isDseChanged = isDseChanged(isGoogle);
+        boolean isSearchProviderIsGoogleChanged =
+                mSearchProviderInfoDelegate.getSearchProviderIsGoogle() != isGoogle;
         // Always calls mSearchProviderInfoDelegate.setSearchProviderInfo() as the first one to
         // prevent it is being skipped.
         if (!mSearchProviderInfoDelegate.setSearchProviderInfo(hasLogo, isGoogle) && mInitialized) {
-            // Currently this is no op. This is because when #setSearchProviderInfo() returns false;
-            // isDseChanged will be false too, and #updateComposeplate() will early exits when
-            // isDseChanged is false.
-            updateComposeplate(isDseChanged);
             return;
         }
 
@@ -821,25 +835,23 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         // visibility of Logo is handled by LogoCoordinator.
         setSearchBoxTextAppearance();
 
-        updateComposeplate(isDseChanged);
+        if (!mIsAim3pEntrypointEnabled) {
+            updateComposeplate(isSearchProviderIsGoogleChanged);
+        }
 
         onUrlFocusAnimationChanged();
 
         mSnapshotTileGridChanged = true;
     }
 
-    private boolean isDseChanged(boolean isGoogle) {
-        // TODO(https://crbug.com/561995440): Handles check of whether the DSE is changed.
-        return mSearchProviderInfoDelegate.getSearchProviderIsGoogle() != isGoogle;
-    }
-
     /**
-     * @param isDseChanged: Whether the default search engine is changed.
+     * @param isSearchProviderIsGoogleChanged: Whether the default search engine is Google is
+     *     changed.
      */
-    private void updateComposeplate(boolean isDseChanged) {
+    private void updateComposeplate(boolean isSearchProviderIsGoogleChanged) {
         // Skips if the flag hasn't been initialized since the initialization of the following
         // components will be called again in #initialize().
-        if (mCanShowComposeplateButton == TriState.NOT_SET || !isDseChanged) {
+        if (mCanShowComposeplateButton == TriState.NOT_SET || !isSearchProviderIsGoogleChanged) {
             return;
         }
 
@@ -856,6 +868,43 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
 
         maybeUpdateAiModeButton();
+
+        if (previousCanShowComposeplateButton != mCanShowComposeplateButton) {
+            // When the AI mode button's visibility is changed, the height of search box might be
+            // changed.
+            setSearchBoxHeightBoundsVerticalInset();
+            // Updates the composeplate view's visibility.
+            updateActionButtonVisibility();
+        }
+    }
+
+    /** Called when the default search engine's AiModeButtonUiConfig is changed. */
+    private void onAiModeButtonUiConfigChanged(
+            @Nullable AiModeButtonUiConfig aiModeButtonUiConfig) {
+        if (mAiModeButtonUiConfig == aiModeButtonUiConfig) return;
+
+        mAiModeButtonUiConfig = aiModeButtonUiConfig;
+
+        // Skips if the flag hasn't been initialized since the initialization of the following
+        // components will be called again in #initialize(). Note that the config above must be
+        // cached before this early return, since #initializeComposeplateFlags() relies on it.
+        if (mCanShowComposeplateButton == TriState.NOT_SET) return;
+
+        // When search engine is changed, the visibility of the composeplate button and
+        // mCanShowComposeplateButton might be changed too, recalculate its value.
+        int previousCanShowComposeplateButton = mCanShowComposeplateButton;
+        initializeComposeplateFlags(mProfile);
+        if (previousCanShowComposeplateButton != TriState.TRUE
+                && mCanShowComposeplateButton == TriState.TRUE
+                && mComposeplateCoordinator == null) {
+            // If the composeplate view is enabled while mComposeplateCoordinator hasn't
+            // been initialized yet, initialize it now.
+            initializeComposeplate();
+        }
+
+        if (mCanShowComposeplateButton == TriState.TRUE && mAiModeButtonUiConfig != null) {
+            maybeUpdateAiModeButton();
+        }
 
         if (previousCanShowComposeplateButton != mCanShowComposeplateButton) {
             // When the AI mode button's visibility is changed, the height of search box might be
@@ -1415,6 +1464,13 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         if (mSearchEngineIconObserver != null) {
             mSearchEngineService.removeIconObserver(mSearchEngineIconObserver);
             mSearchEngineIconObserver = null;
+        }
+
+        if (mAiModeButtonUiConfigSupplier != null
+                && mAiModeButtonUiConfigSupplierObserver != null) {
+            mAiModeButtonUiConfigSupplier.removeObserver(mAiModeButtonUiConfigSupplierObserver);
+            mAiModeButtonUiConfigSupplier = null;
+            mAiModeButtonUiConfigSupplierObserver = null;
         }
 
         if (mSigninPromoCoordinator != null) {

@@ -88,6 +88,8 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
     private final SettableNullableObservableSupplier<AiModeButtonUiConfig>
             mAiModeButtonUiConfigSupplier = ObservableSuppliers.createNullable();
 
+    private boolean mIsAiModeButtonUiConfigOverriddenForTesting;
+
     private long mNativeSearchEngineServiceAndroid;
 
     private @Nullable SearchEngineMetadata mDefaultSearchEngineMetadata;
@@ -211,6 +213,10 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
 
     @CalledByNative
     void onAiModeButtonUiConfigChanged(@Nullable AiModeButtonUiConfig config) {
+        // Native pushes a config only to an eligible client, which a test device isn't. Tests fake
+        // one via #setAiModeButtonUiConfigForTesting(), so don't let native overwrite it.
+        if (mIsAiModeButtonUiConfigOverriddenForTesting) return;
+
         mAiModeButtonUiConfigSupplier.set(config);
     }
 
@@ -225,6 +231,24 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
      */
     public NullableObservableSupplier<AiModeButtonUiConfig> getAiModeButtonUiConfigSupplier() {
         return mAiModeButtonUiConfigSupplier;
+    }
+
+    /**
+     * Fakes the AI Mode entry point configuration of the current default search engine, as native
+     * only provides one to an eligible client. Subsequent updates from native are ignored, so that
+     * an eligibility change can't clear the config mid-test.
+     *
+     * @param config The config to supply, or null to surface no AI Mode entry point.
+     */
+    public void setAiModeButtonUiConfigForTesting(@Nullable AiModeButtonUiConfig config) {
+        @Nullable AiModeButtonUiConfig oldConfig = mAiModeButtonUiConfigSupplier.get();
+        mIsAiModeButtonUiConfigOverriddenForTesting = true;
+        mAiModeButtonUiConfigSupplier.set(config);
+        ResettersForTesting.register(
+                () -> {
+                    mIsAiModeButtonUiConfigOverriddenForTesting = false;
+                    mAiModeButtonUiConfigSupplier.set(oldConfig);
+                });
     }
 
     /** Add observer to be notified whenever the default search engine name changes. */

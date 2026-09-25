@@ -189,6 +189,7 @@ public class NewTabPageTest {
         ComposeboxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxBridgeJni);
         when(mComposeboxBridgeJni.isFuseboxEligibleForProfile(any())).thenReturn(true);
         mActivityTestRule.startOnBlankPage();
+        NewTabPageTestUtils.fakeGoogleAiModeButtonUiConfig();
         TemplateUrlService originalService =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->

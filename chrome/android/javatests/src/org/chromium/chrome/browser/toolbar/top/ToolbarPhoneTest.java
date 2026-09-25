@@ -760,6 +760,11 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     public void testGetLocationBarOffsetForFocusAnimation() {
+        // The NTP observes the AI Mode entry point config, so the mock must supply one. Suppliers
+        // are bound to the thread they're created on, so create it on the UI thread.
+        doReturn(ThreadUtils.runOnUiThreadBlocking(() -> ObservableSuppliers.createNullable()))
+                .when(mSearchEngineService)
+                .getAiModeButtonUiConfigSupplier();
         SearchEngineService.setInstanceForTesting(mSearchEngineService);
 
         // Test focus on non-NTP pages.

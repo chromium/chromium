@@ -119,6 +119,53 @@ public class ComposeplateUtilsUnitTest {
     }
 
     @Test
+    public void testCanShowComposeplateButtonOnNtp_AiModeButtonUiConfig() {
+        // Case 1: mobile, the default search engine provides an AiModeButtonUiConfig, and the
+        // composeplate button should be shown.
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertTrue(
+                ComposeplateUtils.canShowComposeplateButtonOnNtp(
+                        /* hasAiModeButtonUiConfig= */ true));
+
+        // Case 2: mobile, the default search engine doesn't provide an AiModeButtonUiConfig, and
+        // the composeplate button should not be shown.
+        assertFalse(
+                ComposeplateUtils.canShowComposeplateButtonOnNtp(
+                        /* hasAiModeButtonUiConfig= */ false));
+
+        // Case 3: Desktop, the default search engine provides an AiModeButtonUiConfig, but the
+        // composeplate button should not be shown.
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertFalse(
+                ComposeplateUtils.canShowComposeplateButtonOnNtp(
+                        /* hasAiModeButtonUiConfig= */ true));
+
+        // Case 4: Desktop, the default search engine doesn't provide an AiModeButtonUiConfig, and
+        // the composeplate button should not be shown.
+        assertFalse(
+                ComposeplateUtils.canShowComposeplateButtonOnNtp(
+                        /* hasAiModeButtonUiConfig= */ false));
+
+        // Verifies that the native eligibility check isn't consulted: the presence of the
+        // AiModeButtonUiConfig is the only signal, since native doesn't provide one to an
+        // ineligible client.
+        DeviceInfo.setIsDesktopForTesting(false);
+        when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(false);
+        assertTrue(
+                ComposeplateUtils.canShowComposeplateButtonOnNtp(
+                        /* hasAiModeButtonUiConfig= */ true));
+    }
+
+    @Test
+    public void testCanShowComposeplateButtonOnDevice() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertTrue(ComposeplateUtils.canShowComposeplateButtonOnDevice());
+
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertFalse(ComposeplateUtils.canShowComposeplateButtonOnDevice());
+    }
+
+    @Test
     public void testApplyWhiteBackgroundAndShadow() {
         // Verifies the apply case.
         ComposeplateUtils.applyWhiteBackground(mContext, mView, /* apply= */ true);

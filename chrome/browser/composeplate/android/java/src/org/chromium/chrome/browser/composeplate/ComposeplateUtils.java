@@ -46,12 +46,29 @@ public class ComposeplateUtils {
     }
 
     /**
-     * Returns whether the composeplate button can be shown on NTPs.
+     * Returns whether the composeplate button can be shown on NTPs when the AI Mode entry point is
+     * limited to Google.
      *
      * @param profile The current profile.
      */
     public static boolean canShowComposeplateButtonOnNtp(Profile profile) {
-        return !DeviceInfo.isDesktop() && isComposeplateEnabled(profile);
+        return canShowComposeplateButtonOnDevice() && isComposeplateEnabled(profile);
+    }
+
+    /**
+     * Returns whether the composeplate button can be shown on NTPs when the AI Mode entry point is
+     * allowed for third party search engines.
+     *
+     * @param hasAiModeButtonUiConfig Whether the default search engine provides an {@code
+     *     AiModeButtonUiConfig}.
+     */
+    public static boolean canShowComposeplateButtonOnNtp(boolean hasAiModeButtonUiConfig) {
+        return hasAiModeButtonUiConfig && canShowComposeplateButtonOnDevice();
+    }
+
+    /** Returns whether the composeplate button can be shown on the device type. */
+    public static boolean canShowComposeplateButtonOnDevice() {
+        return !DeviceInfo.isDesktop();
     }
 
     /**

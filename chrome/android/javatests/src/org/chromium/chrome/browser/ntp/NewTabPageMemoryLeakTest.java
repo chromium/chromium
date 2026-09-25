@@ -66,6 +66,7 @@ public class NewTabPageMemoryLeakTest {
     public void setUp() throws Exception {
         ComposeplateUtils.setIsEnabledForTesting(true);
         mActivityTestRule.startOnBlankPage();
+        NewTabPageTestUtils.fakeGoogleAiModeButtonUiConfig();
         var templateUrlService =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
