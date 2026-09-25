@@ -371,6 +371,15 @@ TEST_F(AccessibilityTest, AXPositionComparisonOperators) {
   EXPECT_TRUE(paragraph_before == paragraph_start);
   EXPECT_TRUE(paragraph_after == paragraph_end);
   EXPECT_TRUE(paragraph_start < paragraph_end);
+
+  const auto before_paragraph =
+      AXPosition::CreatePositionBeforeObject(*paragraph);
+  const auto after_paragraph =
+      AXPosition::CreatePositionAfterObject(*paragraph);
+  EXPECT_LT(before_paragraph, paragraph_end);
+  EXPECT_GT(paragraph_end, before_paragraph);
+  EXPECT_LT(paragraph_start, after_paragraph);
+  EXPECT_GT(after_paragraph, paragraph_start);
 }
 
 TEST_F(AccessibilityTest, AXPositionOperatorBool) {
@@ -678,6 +687,84 @@ TEST_F(AccessibilityTest, AXPositionFromDOMPositionWithWhiteSpace) {
   EXPECT_EQ(ax_static_text, ax_position_before_white_space.ContainerObject());
   EXPECT_EQ(5, ax_position_before_white_space.TextOffset());
   EXPECT_EQ(nullptr, ax_position_before_white_space.ChildAfterTreePosition());
+}
+
+TEST_F(AccessibilityTest, PositionInWhitespaceWithoutAXObject) {
+  for (bool with_span : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "with_span=" << with_span);
+    SetBodyInnerHTML(with_span ? "<div id='div'><span>\n<img alt='Image'>\n"
+                                 "</span></div>"
+                               : "<div id='div'>\n<img alt='Image'>\n</div>");
+    GetAXObjectCache().UpdateAXForAllDocuments();
+    const Node* div = GetElementById("div");
+    const Node* parent = with_span ? div->firstChild() : div;
+    const auto* ax_div = GetAXObjectByElementId("div");
+    if (with_span) {
+      const auto* ax_span = GetAXObjectCache().Get(parent);
+      ASSERT_NE(nullptr, ax_span);
+      ASSERT_FALSE(ax_span->IsIncludedInTree());
+    }
+    for (bool at_start : {false, true}) {
+      const Node* whitespace =
+          at_start ? parent->firstChild() : parent->lastChild();
+      ASSERT_TRUE(whitespace->IsTextNode());
+      ASSERT_FALSE(GetAXObjectCache().Get(whitespace));
+      for (auto direction : {AXPositionAdjustmentBehavior::kMoveLeft,
+                             AXPositionAdjustmentBehavior::kMoveRight}) {
+        SCOPED_TRACE(testing::Message()
+                     << "at_start=" << at_start
+                     << " direction=" << static_cast<int>(direction));
+        const auto position = AXPosition::FromPosition(
+            Position(whitespace, 0), GetAXObjectCache(),
+            TextAffinity::kDownstream, direction);
+        ASSERT_TRUE(position.IsValid());
+        EXPECT_EQ(at_start ? AXPosition::CreateFirstPositionInObject(*ax_div)
+                           : AXPosition::CreateLastPositionInObject(*ax_div),
+                  position);
+      }
+    }
+  }
+}
+
+TEST_F(AccessibilityTest, PositionInWhitespaceInsideExcludedAncestors) {
+  SetBodyInnerHTML(
+      "<div><p id='before'>Before</p><span><span>\n"
+      "<img id='image' alt='Image'>\n</span></span>"
+      "<p id='after'>After</p></div>");
+  GetAXObjectCache().UpdateAXForAllDocuments();
+  const Node* image = GetElementById("image");
+  for (const Node* span :
+       {image->parentNode(), image->parentNode()->parentNode()}) {
+    const auto* ax_span = GetAXObjectCache().Get(span);
+    ASSERT_NE(nullptr, ax_span);
+    ASSERT_FALSE(ax_span->IsIncludedInTree());
+  }
+  for (bool at_start : {false, true}) {
+    const Node* whitespace =
+        at_start ? image->previousSibling() : image->nextSibling();
+    ASSERT_TRUE(whitespace->IsTextNode());
+    ASSERT_FALSE(GetAXObjectCache().Get(whitespace));
+    const auto* previous =
+        at_start
+            ? GetAXObjectCache().Get(GetElementById("before")->firstChild())
+            : GetAXObjectByElementId("image");
+    const auto* next = GetAXObjectByElementId(at_start ? "image" : "after");
+    for (auto direction : {AXPositionAdjustmentBehavior::kMoveLeft,
+                           AXPositionAdjustmentBehavior::kMoveRight}) {
+      SCOPED_TRACE(testing::Message()
+                   << "at_start=" << at_start
+                   << " direction=" << static_cast<int>(direction));
+      const auto position =
+          AXPosition::FromPosition(Position(whitespace, 0), GetAXObjectCache(),
+                                   TextAffinity::kDownstream, direction);
+      ASSERT_TRUE(position.IsValid());
+      const auto expected =
+          direction == AXPositionAdjustmentBehavior::kMoveLeft
+              ? AXPosition::CreatePositionAfterObject(*previous)
+              : AXPosition::CreatePositionBeforeObject(*next);
+      EXPECT_EQ(expected, position);
+    }
+  }
 }
 
 TEST_F(AccessibilityTest, AXPositionsWithPreservedLeadingWhitespace) {
@@ -1335,6 +1422,53 @@ TEST_F(AccessibilityTest, FromPositionInARIAHidden) {
   EXPECT_EQ(ax_container, ax_position_right.ContainerObject());
   EXPECT_EQ(2, ax_position_right.ChildIndex());
   EXPECT_EQ(ax_after, ax_position_right.ChildAfterTreePosition());
+}
+
+TEST_F(AccessibilityTest, FromPositionInExcludedARIAHidden) {
+  for (bool with_image : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "with_image=" << with_image);
+    SetBodyInnerHTML(with_image ? R"HTML(
+        <div role="main" id="container">
+          <img id="before" alt="Image">
+          <p id="hidden" aria-hidden="true">Aria-hidden.</p>
+          <p id="after">After aria-hidden.</p>
+        </div>
+        )HTML"
+                                : R"HTML(
+        <div role="main" id="container">
+          <p id="before">Before aria-hidden.</p>
+          <p id="hidden" aria-hidden="true">Aria-hidden.</p>
+          <p id="after">After aria-hidden.</p>
+        </div>
+        )HTML");
+    GetAXObjectCache().UpdateAXForAllDocuments();
+    const Node* hidden = GetElementById("hidden");
+    const auto* ax_hidden = GetAXObjectByElementId("hidden");
+    ASSERT_NE(nullptr, ax_hidden);
+    ASSERT_FALSE(ax_hidden->IsIncludedInTree());
+    const auto* ax_before = GetAXObjectByElementId("before");
+    const auto expected_left =
+        with_image ? AXPosition::CreatePositionAfterObject(*ax_before)
+                   : AXPosition::CreateLastPositionInObject(
+                         *ax_before->FirstChildIncludingIgnored());
+    const auto expected_right = AXPosition::CreatePositionBeforeObject(
+        *GetAXObjectByElementId("after"));
+
+    for (const auto& position :
+         {Position::FirstPositionInNode(*hidden), Position::BeforeNode(*hidden),
+          Position::AfterNode(*hidden)}) {
+      const auto left = AXPosition::FromPosition(
+          position, GetAXObjectCache(), TextAffinity::kDownstream,
+          AXPositionAdjustmentBehavior::kMoveLeft);
+      ASSERT_TRUE(left.IsValid());
+      EXPECT_EQ(expected_left, left);
+      const auto right = AXPosition::FromPosition(
+          position, GetAXObjectCache(), TextAffinity::kDownstream,
+          AXPositionAdjustmentBehavior::kMoveRight);
+      ASSERT_TRUE(right.IsValid());
+      EXPECT_EQ(expected_right, right);
+    }
+  }
 }
 
 //
