@@ -253,14 +253,13 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 - (BOOL)backgroundApplication {
   XCUIApplication* currentApplication = [[XCUIApplication alloc] init];
   // Tell the system to background the app.
-  // TODO(crbug.com/540470551): pressButton:XCUIDeviceButtonHome is broken on
-  // < iOS 27 when Xcode 27 is installed. Use springboard activation workaround.
-  if (@available(iOS 27, *)) {
-    [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];
-  } else {
-    [[[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]
-        activate];
-  }
+  // `-[XCUIDevice pressButton:XCUIDeviceButtonHome]` -- and by extension
+  // `[EarlGrey backgroundApplication]` -- is unreliable across form factors.
+  // It fails under Stage Manager on iPad, drops events on multi-display devices
+  // like the Duo, and breaks across Xcode releases. Activating SpringBoard
+  // directly backgrounds the application consistently.
+  [[[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]
+      activate];
   BOOL (^conditionBlock)(void) = ^BOOL {
     return currentApplication.state == XCUIApplicationStateRunningBackground ||
            currentApplication.state ==
