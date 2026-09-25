@@ -170,10 +170,10 @@ void AtMemoryBottomSheetBridge::OnChildSuggestionsShown(JNIEnv* env,
   controller_->OnChildSuggestionsShown(parent_position);
 }
 
-void AtMemoryBottomSheetBridge::OnChildSuggestionSelected(JNIEnv* env,
+void AtMemoryBottomSheetBridge::OnChildSuggestionAccepted(JNIEnv* env,
                                                           int parent_position,
                                                           int child_position) {
-  controller_->OnChildSuggestionSelected(parent_position, child_position);
+  controller_->OnChildSuggestionAccepted(parent_position, child_position);
 }
 
 bool AtMemoryBottomSheetBridge::IsSearching(JNIEnv* env) {

@@ -261,7 +261,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
     }
 
     private void onFlyoutSuggestionClicked(int parentPosition, int childPosition) {
-        mDelegate.onChildSuggestionClicked(parentPosition, childPosition);
+        mDelegate.onChildSuggestionAccepted(parentPosition, childPosition);
     }
 
     @Override

@@ -62,7 +62,7 @@ public class AtMemoryBottomSheetCoordinator {
 
         void onChildSuggestionsShown(int parentPosition);
 
-        void onChildSuggestionClicked(int parentPosition, int childPosition);
+        void onChildSuggestionAccepted(int parentPosition, int childPosition);
 
         boolean isSearching();
     }

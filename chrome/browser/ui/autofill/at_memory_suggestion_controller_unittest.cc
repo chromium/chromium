@@ -354,7 +354,7 @@ TEST_F(AtMemorySuggestionControllerTest, DelegateRouting) {
               OnSuggestionsShown(ElementsAreArray(parent.children), _));
   controller->OnChildSuggestionsShown(0);
 
-  // OnChildSuggestionSelected routes to DidAcceptSuggestion for child.
+  // OnChildSuggestionAccepted routes to DidAcceptSuggestion for child.
   EXPECT_CALL(
       mock_delegate,
       DidAcceptSuggestion(
@@ -363,7 +363,7 @@ TEST_F(AtMemorySuggestionControllerTest, DelegateRouting) {
               &AutofillSuggestionDelegate::SuggestionMetadata::multi_index,
               std::vector<size_t>{0, 0}),
           _, _));
-  controller->OnChildSuggestionSelected(0, 0);
+  controller->OnChildSuggestionAccepted(0, 0);
 
   // IsSearching routes to IsSearching on delegate.
   EXPECT_CALL(mock_delegate, IsSearching).WillOnce(testing::Return(true));

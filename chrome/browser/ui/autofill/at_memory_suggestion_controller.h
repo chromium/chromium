@@ -84,7 +84,7 @@ class AtMemorySuggestionController : public AutofillSuggestionController {
   void OnSuggestionAccepted(int position);
   void OnSuggestionDismissed(int position);
   void OnChildSuggestionsShown(int parent_position);
-  void OnChildSuggestionSelected(int parent_position, int child_position);
+  void OnChildSuggestionAccepted(int parent_position, int child_position);
   bool IsSearching() const;
 
   void SetBridgeForTesting(std::unique_ptr<AtMemoryBottomSheetBridge> bridge);

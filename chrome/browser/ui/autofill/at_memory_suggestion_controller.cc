@@ -277,7 +277,7 @@ void AtMemorySuggestionController::OnChildSuggestionsShown(
   }
 }
 
-void AtMemorySuggestionController::OnChildSuggestionSelected(
+void AtMemorySuggestionController::OnChildSuggestionAccepted(
     int parent_position,
     int child_position) {
   if (parent_position < 0 ||

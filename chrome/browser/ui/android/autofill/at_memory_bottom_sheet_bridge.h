@@ -58,7 +58,7 @@ class AtMemoryBottomSheetBridge {
   void OnSuggestionAccepted(JNIEnv* env, int position);
   void OnSuggestionDismissed(JNIEnv* env, int position);
   void OnChildSuggestionsShown(JNIEnv* env, int parent_position);
-  void OnChildSuggestionSelected(JNIEnv* env,
+  void OnChildSuggestionAccepted(JNIEnv* env,
                                  int parent_position,
                                  int child_position);
   bool IsSearching(JNIEnv* env);

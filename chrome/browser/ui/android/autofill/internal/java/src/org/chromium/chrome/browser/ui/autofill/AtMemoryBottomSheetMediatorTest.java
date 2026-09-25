@@ -313,7 +313,7 @@ public class AtMemoryBottomSheetMediatorTest {
         PropertyModel flyoutModel = mMediator.getFlyoutModel();
         flyoutModel.get(FlyoutProperties.ON_SUGGESTION_CLICKED).onResult(1);
 
-        verify(mDelegate).onChildSuggestionClicked(1, 1);
+        verify(mDelegate).onChildSuggestionAccepted(1, 1);
     }
 
     @Test

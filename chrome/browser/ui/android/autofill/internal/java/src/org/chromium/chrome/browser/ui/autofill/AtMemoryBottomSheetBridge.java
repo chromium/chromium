@@ -156,10 +156,10 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
     }
 
     @Override
-    public void onChildSuggestionClicked(int parentPosition, int childPosition) {
+    public void onChildSuggestionAccepted(int parentPosition, int childPosition) {
         if (mNativeAtMemoryBottomSheetBridge != 0) {
             AtMemoryBottomSheetBridgeJni.get()
-                    .onChildSuggestionSelected(
+                    .onChildSuggestionAccepted(
                             mNativeAtMemoryBottomSheetBridge, parentPosition, childPosition);
         }
     }
@@ -186,7 +186,7 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
 
         void onChildSuggestionsShown(long nativeAtMemoryBottomSheetBridge, int parentPosition);
 
-        void onChildSuggestionSelected(
+        void onChildSuggestionAccepted(
                 long nativeAtMemoryBottomSheetBridge, int parentPosition, int childPosition);
 
         boolean isSearching(long nativeAtMemoryBottomSheetBridge);
