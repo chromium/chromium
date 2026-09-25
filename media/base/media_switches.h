@@ -415,6 +415,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kNoPauseMediaOnHeadphoneUnplug);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPauseMediaOnSystemSleepAndroid);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kRequestSystemAudioFocus);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kSkipMediaCodecReallocation);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kStrictMediaCodecAudioDecoderSupport);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(
     kUseMediaCryptoRequiresSecureDecoderComponent);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAudioLatencyFromHAL);

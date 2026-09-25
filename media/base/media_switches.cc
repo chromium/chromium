@@ -1365,6 +1365,13 @@ BASE_FEATURE(kRequestSystemAudioFocus, base::FEATURE_ENABLED_BY_DEFAULT);
 // are already met.
 BASE_FEATURE(kSkipMediaCodecReallocation, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Restricts MediaCodecAudioDecoder from handling unencrypted Vorbis, FLAC,
+// Opus, and non-xHE-AAC audio, preventing unintended fallback when built-in
+// software decoders fail to initialize. Remove and replace with constructor
+// arguments for tests after M154.
+BASE_FEATURE(kStrictMediaCodecAudioDecoderSupport,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allow the video decoder (MediaCodecVideoDecoder) to query the MediaCrypto
 // object with a mime type to see if a secure decoder component is required.
 // If disabled, we use the fallback Widevine L1/L3 security level check.

@@ -238,6 +238,12 @@ class AudioDecoderTest
       disabled_features.push_back(kDirectOpusAudioDecoding);
     }
 
+#if BUILDFLAG(IS_ANDROID)
+    if (decoder_type_ == AudioDecoderType::kMediaCodec) {
+      disabled_features.push_back(kStrictMediaCodecAudioDecoderSupport);
+    }
+#endif
+
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     if (!IsSupported()) {
       GTEST_SKIP() << "Unsupported platform.";
