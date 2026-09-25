@@ -97,7 +97,7 @@ class TabModelObserverJniBridge {
 
   void OnTabGroupRemoving(JNIEnv* env, base::Token group_id);
 
-  void OnTabGroupMoved(JNIEnv* env, base::Token group_id, int old_index);
+  void OnTabGroupMoved(JNIEnv* env, base::Token group_id);
 
   void OnTabGroupVisualsChanged(JNIEnv* env, base::Token group_id);
 

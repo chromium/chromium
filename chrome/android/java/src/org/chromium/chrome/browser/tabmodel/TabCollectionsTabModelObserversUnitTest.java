@@ -863,7 +863,7 @@ public class TabCollectionsTabModelObserversUnitTest {
 
         reset(mTabModelObserver);
         mTabModel.moveGroupToIndex(groupId, 1);
-        verify(mTabModelObserver).onTabGroupMoved(eq(groupId), eq(0));
+        verify(mTabModelObserver).onTabGroupMoved(eq(groupId));
     }
 
     // onTabGroupVisualsChanged

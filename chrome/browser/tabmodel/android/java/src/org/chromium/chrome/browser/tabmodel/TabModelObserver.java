@@ -306,9 +306,8 @@ public interface TabModelObserver {
      * {@link TabGroupObserver} for tab groups over this interface and method.
      *
      * @param groupId The ID of the group that was moved.
-     * @param oldIndex The previous index of the group in the tab strip.
      */
-    default void onTabGroupMoved(Token groupId, int oldIndex) {}
+    default void onTabGroupMoved(Token groupId) {}
 
     /**
      * Called after a tab group's visual data (title, color, etc.) is changed. Note that new code

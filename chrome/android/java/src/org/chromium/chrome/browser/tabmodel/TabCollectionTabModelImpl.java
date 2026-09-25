@@ -983,7 +983,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
         modelObservers.rewind();
         while (modelObservers.hasNext()) {
-            modelObservers.next().onTabGroupMoved(tabGroupId, oldIndex);
+            modelObservers.next().onTabGroupMoved(tabGroupId);
         }
     }
 

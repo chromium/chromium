@@ -110,8 +110,7 @@ class TabGroupsEventRouter::PlatformDelegate : public TabModelListObserver,
     owner_->DispatchGroupRemoved(group_id);
   }
 
-  void OnTabGroupMoved(tab_groups::TabGroupId group_id,
-                       int old_index) override {
+  void OnTabGroupMoved(tab_groups::TabGroupId group_id) override {
     owner_->DispatchGroupMoved(group_id);
   }
 

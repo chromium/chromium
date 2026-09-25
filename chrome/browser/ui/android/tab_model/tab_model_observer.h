@@ -104,7 +104,7 @@ class TabModelObserver {
   virtual void OnTabGroupRemoving(tab_groups::TabGroupId group_id);
 
   // Called after a tab group has been moved to a new position.
-  virtual void OnTabGroupMoved(tab_groups::TabGroupId group_id, int old_index);
+  virtual void OnTabGroupMoved(tab_groups::TabGroupId group_id);
 
   // Called after a tab group's visual data has been changed.
   virtual void OnTabGroupVisualsChanged(tab_groups::TabGroupId group_id);

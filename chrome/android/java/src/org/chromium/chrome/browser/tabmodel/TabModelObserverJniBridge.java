@@ -247,10 +247,10 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void onTabGroupMoved(Token groupId, int oldIndex) {
+    public final void onTabGroupMoved(Token groupId) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()
-                .onTabGroupMoved(mNativeTabModelObserverJniBridge, groupId, oldIndex);
+                .onTabGroupMoved(mNativeTabModelObserverJniBridge, groupId);
     }
 
     @Override
@@ -379,9 +379,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 long nativeTabModelObserverJniBridge, @JniType("base::Token") Token groupId);
 
         void onTabGroupMoved(
-                long nativeTabModelObserverJniBridge,
-                @JniType("base::Token") Token groupId,
-                int oldIndex);
+                long nativeTabModelObserverJniBridge, @JniType("base::Token") Token groupId);
 
         void onTabGroupVisualsChanged(
                 long nativeTabModelObserverJniBridge, @JniType("base::Token") Token groupId);
