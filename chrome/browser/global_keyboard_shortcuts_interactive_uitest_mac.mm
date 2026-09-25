@@ -6,6 +6,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/global_keyboard_shortcuts_mac.h"
@@ -128,6 +129,9 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, CopyPasteOmnibox) {
   // Cmd+L focuses the omnibox and selects all the text.
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_L,
                                NSEventModifierFlagCommand));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return location_bar->IsFocusWithin() && omnibox_view->IsSelectAll();
+  }));
 
   // The first typed letter overrides the existing contents.
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_A,
@@ -135,32 +139,46 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, CopyPasteOmnibox) {
   // The second typed letter just appends.
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_B,
                                /*flags=*/0));
-  ASSERT_EQ(omnibox_view->GetText(), u"ab");
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return omnibox_view->GetText() == u"ab"; }));
 
   // Cmd+A selects the contents.
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_A,
                                NSEventModifierFlagCommand));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return omnibox_view->IsSelectAll(); }));
+
+  [NSPasteboard.generalPasteboard clearContents];
 
   // Cmd+C copies the contents.
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_C,
                                NSEventModifierFlagCommand));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return [[NSPasteboard.generalPasteboard
+        stringForType:NSPasteboardTypeString] isEqualToString:@"ab"];
+  }));
 
   // The first typed letter overrides the existing contents.
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_C,
                                /*flags=*/0));
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_D,
                                /*flags=*/0));
-  ASSERT_EQ(omnibox_view->GetText(), u"cd");
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return omnibox_view->GetText() == u"cd"; }));
 
   // Cmd + left arrow moves to the beginning. It should not perform history
   // navigation because the firstResponder is not a WebContents..
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_LEFT,
                                NSEventModifierFlagCommand));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return omnibox_view->GetSelectionBounds() == gfx::Range(0, 0);
+  }));
 
   // Cmd+V pastes the contents.
   SendEvent(SynthesizeKeyEvent(ns_window, /*keydown=*/true, ui::VKEY_V,
                                NSEventModifierFlagCommand));
-  EXPECT_EQ(omnibox_view->GetText(), u"abcd");
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return omnibox_view->GetText() == u"abcd"; }));
 }
 
 // Tests that the shortcut to reopen a previous tab works.

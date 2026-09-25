@@ -1074,6 +1074,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         // In case paste changed only selection.
         this.omniboxViewState.selection = this.getMojoSelection();
         unelided = this.unelideAndUpdateSelection(UnelisionGesture.OTHER);
+        ++this.omniboxViewState.uiVersion;
       }
       this.sendInputToBrowser(unelided, /*paste=*/ true);
     }
@@ -1110,6 +1111,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.maybeClearAccessibilityPseudoFocus_();
     if (this.mouseButtonDown_ !== 0) {
       return;
+    }
+    if (this.hasFocus()) {
+      // Sync selection changes that happen without a keyup event (e.g., Edit >
+      // Select All menu action, mouse/touch gestures, key repeat, accessibility
+      // actions).
+      this.checkForSelectionChange_();
     }
     this.updateAdjustedCopyResult_();
   }
