@@ -28,12 +28,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -57,6 +59,15 @@ const char* GetAnalysisPolicy() {
       enterprise_connectors::kDlpTag, enterprise_connectors::kMalwareTag);
   return policy.c_str();
 }
+
+// The network request connector uses an audit-only policy schema.
+constexpr char kNetworkRequestPolicy[] = R"({
+  "audit": {
+    "tab_domain": ["*"],
+    "request_domain": ["*"]
+  },
+  "tags": ["dlp"]
+})";
 
 }  // namespace
 
@@ -145,6 +156,21 @@ IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest,
             nullptr);
   EXPECT_NE(DataProtectionNavigationController::FromWebContents(contents()),
             nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(DataProtectionNavigationControllerTest,
+                       SafeBrowsingDisabled_PolicyUnset_NoObserver) {
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                  false);
+  ASSERT_FALSE(enterprise_connectors::IsReferrerChainNeededForEnterprise(
+      browser()->GetProfile()));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), main_url(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  EXPECT_FALSE(safe_browsing::SafeBrowsingNavigationObserver::FromWebContents(
+      contents()));
 }
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
@@ -253,6 +279,9 @@ class DataProtectionNavigationControllerPolicyTest
     enterprise_connectors::test::ClearAnalysisConnector(
         browser()->GetProfile()->GetPrefs(),
         enterprise_connectors::AnalysisConnector::PRINT);
+    enterprise_connectors::test::ClearAnalysisConnector(
+        browser()->GetProfile()->GetPrefs(),
+        enterprise_connectors::AnalysisConnector::NETWORK_REQUEST);
     enterprise_connectors::test::SetOnSecurityEventReporting(
         browser()->GetProfile()->GetPrefs(), false);
     browser()->GetProfile()->GetPrefs()->ClearPref(
@@ -282,6 +311,40 @@ IN_PROC_BROWSER_TEST_P(DataProtectionNavigationControllerPolicyTest,
   ASSERT_EQ(chain.size(), 2u);
   ASSERT_EQ(chain[0].url(), main_url());
   ASSERT_EQ(chain[1].url(), secondary_url());
+}
+
+IN_PROC_BROWSER_TEST_P(DataProtectionNavigationControllerPolicyTest,
+                       IsReferrerChainNeededForEnterprise) {
+  EXPECT_FALSE(enterprise_connectors::IsReferrerChainNeededForEnterprise(
+      browser()->GetProfile()));
+
+  EnablePolicy();
+
+  EXPECT_TRUE(enterprise_connectors::IsReferrerChainNeededForEnterprise(
+      browser()->GetProfile()));
+}
+
+IN_PROC_BROWSER_TEST_P(DataProtectionNavigationControllerPolicyTest,
+                       SafeBrowsingDisabled_NewTabRecordsReferrerChain) {
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                  false);
+  EnablePolicy();
+  ASSERT_FALSE(safe_browsing::IsSafeBrowsingEnabled(
+      *browser()->GetProfile()->GetPrefs()));
+
+  // The observer is attached at tab creation, so open a new tab after the
+  // policy is set. Use a page that actually exists: error pages are not
+  // recorded by the observer.
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_TRUE(safe_browsing::SafeBrowsingNavigationObserver::FromWebContents(
+      contents()));
+
+  auto chain = enterprise_connectors::GetReferrerChain(url, *contents());
+  ASSERT_FALSE(chain.empty());
+  EXPECT_EQ(chain[0].url(), url);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -314,6 +377,11 @@ INSTANTIATE_TEST_SUITE_P(
           enterprise_connectors::test::SetAnalysisConnector(
               prefs, enterprise_connectors::AnalysisConnector::PRINT,
               GetAnalysisPolicy());
+        }),
+        base::BindRepeating([](PrefService* prefs) {
+          enterprise_connectors::test::SetAnalysisConnector(
+              prefs, enterprise_connectors::AnalysisConnector::NETWORK_REQUEST,
+              kNetworkRequestPolicy);
         }),
         base::BindRepeating([](PrefService* prefs) {
           enterprise_connectors::test::SetOnSecurityEventReporting(prefs, true);

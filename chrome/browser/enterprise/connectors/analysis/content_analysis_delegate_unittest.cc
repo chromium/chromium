@@ -1953,7 +1953,8 @@ TEST_F(ContentAnalysisDelegateReferrerChainTest, UnaffectedByNavigations) {
       contents(), HostContentSettingsMapFactory::GetForProfile(profile()),
       safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
           GetForBrowserContext(profile()),
-      profile()->GetPrefs(), /*has_safe_browsing_service=*/true);
+      profile()->GetPrefs(), /*has_safe_browsing_service=*/true,
+      /*is_referrer_chain_needed_for_enterprise=*/false);
 
   // Navigate to the referring page.
   content::WebContentsTester::For(contents())

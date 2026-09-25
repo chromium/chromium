@@ -27,6 +27,7 @@
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
+#include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
@@ -553,7 +554,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       web_contents, HostContentSettingsMapFactory::GetForProfile(profile),
       safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
           GetForBrowserContext(profile),
-      profile->GetPrefs(), g_browser_process->safe_browsing_service());
+      profile->GetPrefs(), g_browser_process->safe_browsing_service(),
+      enterprise_connectors::IsReferrerChainNeededForEnterprise(profile));
 #endif
   site_protection::SiteProtectionMetricsObserver::CreateForWebContents(
       web_contents);

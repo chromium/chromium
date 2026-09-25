@@ -902,7 +902,8 @@ TEST_P(SBBrowserUrlLoaderThrottleTest, VerifyRedirectIpAddressRecorded) {
 
   SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
       local_web_contents, settings_map.get(), &observer_manager, &pref_service,
-      /*has_safe_browsing_service=*/true);
+      /*has_safe_browsing_service=*/true,
+      /*is_referrer_chain_needed_for_enterprise=*/false);
 
   // Simulate starting request for the original URL.
   url_ = GURL("https://original.example.com/");

@@ -11,6 +11,7 @@
 class GURL;
 
 namespace content {
+class BrowserContext;
 class WebContents;
 }  // namespace content
 
@@ -19,6 +20,11 @@ class DownloadItem;
 }  // namespace download
 
 namespace enterprise_connectors {
+
+// Returns true if any Enterprise Connector or real-time URL check policy that
+// relies on referrer chains is enabled for `browser_context`.
+bool IsReferrerChainNeededForEnterprise(
+    content::BrowserContext* browser_context);
 
 // This function returns a `safe_browsing::ReferrerChain` to be used for DLP
 // checks or reporting for enterprise functionality.

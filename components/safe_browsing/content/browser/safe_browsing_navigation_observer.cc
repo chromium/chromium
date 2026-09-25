@@ -54,13 +54,15 @@ void SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
     HostContentSettingsMap* host_content_settings_map,
     SafeBrowsingNavigationObserverManager* observer_manager,
     PrefService* prefs,
-    bool has_safe_browsing_service) {
+    bool has_safe_browsing_service,
+    bool is_referrer_chain_needed_for_enterprise) {
   if (FromWebContents(web_contents))
     return;
 
   if (observer_manager &&
-      safe_browsing::SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
-          prefs, has_safe_browsing_service)) {
+      (SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
+           prefs, has_safe_browsing_service) ||
+       is_referrer_chain_needed_for_enterprise)) {
     web_contents->SetUserData(
         kWebContentsUserDataKey,
         std::make_unique<SafeBrowsingNavigationObserver>(

@@ -1178,4 +1178,48 @@ TEST_F(SBNavigationObserverTest, SanitizesDataUrls) {
             "A2368FB9B5FF3EDDF2860EF4998750024F7E4C6E2697F77269A13ADC84DCAD0E");
 }
 
+TEST_F(SBNavigationObserverTest,
+       MaybeCreateForWebContents_SafeBrowsingDisabledEnterpriseNotNeeded) {
+  pref_service_.SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  std::unique_ptr<content::WebContents> test_web_contents =
+      CreateTestWebContents();
+
+  SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
+      test_web_contents.get(), settings_map_.get(),
+      navigation_observer_manager_.get(), &pref_service_,
+      /*has_safe_browsing_service=*/true,
+      /*is_referrer_chain_needed_for_enterprise=*/false);
+  EXPECT_FALSE(
+      SafeBrowsingNavigationObserver::FromWebContents(test_web_contents.get()));
+}
+
+TEST_F(SBNavigationObserverTest,
+       MaybeCreateForWebContents_SafeBrowsingDisabledEnterpriseNeeded) {
+  pref_service_.SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  std::unique_ptr<content::WebContents> test_web_contents =
+      CreateTestWebContents();
+
+  SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
+      test_web_contents.get(), settings_map_.get(),
+      navigation_observer_manager_.get(), &pref_service_,
+      /*has_safe_browsing_service=*/false,
+      /*is_referrer_chain_needed_for_enterprise=*/true);
+  EXPECT_TRUE(
+      SafeBrowsingNavigationObserver::FromWebContents(test_web_contents.get()));
+}
+
+TEST_F(SBNavigationObserverTest,
+       MaybeCreateForWebContents_NoObserverManagerEnterpriseNeeded) {
+  std::unique_ptr<content::WebContents> test_web_contents =
+      CreateTestWebContents();
+
+  SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
+      test_web_contents.get(), settings_map_.get(),
+      /*observer_manager=*/nullptr, &pref_service_,
+      /*has_safe_browsing_service=*/true,
+      /*is_referrer_chain_needed_for_enterprise=*/true);
+  EXPECT_FALSE(
+      SafeBrowsingNavigationObserver::FromWebContents(test_web_contents.get()));
+}
+
 }  // namespace safe_browsing

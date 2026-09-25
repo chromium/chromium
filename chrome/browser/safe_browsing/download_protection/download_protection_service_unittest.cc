@@ -3801,7 +3801,8 @@ TEST_F(DownloadProtectionServiceTest,
       web_contents(), HostContentSettingsMapFactory::GetForProfile(profile()),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile()),
-      profile()->GetPrefs(), g_browser_process->safe_browsing_service());
+      profile()->GetPrefs(), g_browser_process->safe_browsing_service(),
+      /*is_referrer_chain_needed_for_enterprise=*/false);
 
   // Simulate 6 user interactions
   SimulateLinkClick(GURL("http://example.com/0"));
@@ -3846,7 +3847,8 @@ TEST_F(DownloadProtectionServiceTest, VerifyReferrerChainLength) {
       web_contents(), HostContentSettingsMapFactory::GetForProfile(profile()),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile()),
-      profile()->GetPrefs(), g_browser_process->safe_browsing_service());
+      profile()->GetPrefs(), g_browser_process->safe_browsing_service(),
+      /*is_referrer_chain_needed_for_enterprise=*/false);
 
   // Simulate 6 user interactions
   SimulateLinkClick(GURL("http://example.com/0"));
