@@ -40,7 +40,8 @@ namespace font_data_service {
 
 namespace {
 
-const int kTypefaceCacheSize = 128;
+constexpr size_t kTypefaceCacheSize = 128;
+constexpr size_t kUnmatchedFamilyCacheSize = 64;
 
 std::optional<std::string> CanonicalizeFontFamilyNameForCache(
     std::optional<std::string> name) {
@@ -88,6 +89,7 @@ UNSAFE_BUFFER_USAGE std::vector<std::string> bcp47ArrayToVector(
 
 FontDataManager::FontDataManager()
     : typeface_cache_(kTypefaceCacheSize),
+      unmatched_families_(kUnmatchedFamilyCacheSize),
 #if !BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_FREETYPE)
       custom_fnt_mgr_(SkFontMgr_New_Custom_Empty()),
 #endif
@@ -198,6 +200,9 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyle(
   if (typeface_result) {
     return *typeface_result;
   }
+  if (IsKnownUnmatchedFamily(request)) {
+    return nullptr;
+  }
 
   // Proxy the font request to the font service.
   mojom::TypefaceStylePtr style(mojom::TypefaceStyle::New());
@@ -205,21 +210,20 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyle(
   style->width = requested_style.width();
   style->slant = ConvertToMojomFontStyle(requested_style.slant());
 
-  mojom::MatchFamilyNameResultPtr match_result;
+  mojom::MatchFamilyNameResponsePtr response;
   {
     TRACE_EVENT1("fonts", "FontDataManager::onMatchFamilyStyle", "family_name",
                  cpp_requested_family_name);
     GetRemoteFontDataService().MatchFamilyName(cpp_requested_family_name,
-                                               std::move(style), &match_result);
+                                               std::move(style), &response);
   }
-
-  auto typeface = CreateTypefaceFromMatchResult(std::move(match_result));
 
   // Update the cache with the resulting typeface even in case of a failure to
   // avoid calling the font service again. Failed typeface will go to the font
   // fallback stack.
+  sk_sp<SkTypeface> typeface =
+      CreateTypefaceFromMatchResponse(request, std::move(response));
   AddToCache(request, typeface);
-
   return typeface;
 }
 
@@ -410,7 +414,7 @@ void FontDataManager::PrewarmFamilyOnWorker(
   SkFontStyle requested_style;
   MatchFamilyRequest request(family_name, requested_style.weight(),
                              requested_style.width(), requested_style.slant());
-  if (TryGetFromCache(request)) {
+  if (TryGetFromCache(request) || IsKnownUnmatchedFamily(request)) {
     if (completion_callback) {
       std::move(completion_callback).Run();
     }
@@ -426,9 +430,10 @@ void FontDataManager::PrewarmFamilyOnWorker(
       base::BindOnce(
           [](sk_sp<FontDataManager> font_data_manager,
              MatchFamilyRequest request, base::OnceClosure completion_callback,
-             mojom::MatchFamilyNameResultPtr match_result) {
-            auto typeface = font_data_manager->CreateTypefaceFromMatchResult(
-                std::move(match_result));
+             mojom::MatchFamilyNameResponsePtr response) {
+            sk_sp<SkTypeface> typeface =
+                font_data_manager->CreateTypefaceFromMatchResponse(
+                    request, std::move(response));
             if (typeface) {
               font_data_manager->AddToCache(request, std::move(typeface));
             }
@@ -579,6 +584,40 @@ void FontDataManager::AddToCache(
     sk_sp<SkTypeface> typeface) const {
   base::AutoLock locked(typeface_cache_lock_);
   typeface_cache_.Put(std::move(request), typeface);
+}
+
+sk_sp<SkTypeface> FontDataManager::CreateTypefaceFromMatchResponse(
+    const MatchFamilyRequest& request,
+    mojom::MatchFamilyNameResponsePtr response) const {
+  if (!response) {
+    return nullptr;
+  }
+  if (response->is_result()) {
+    return CreateTypefaceFromMatchResult(std::move(response->get_result()));
+  }
+  if (response->is_failure() &&
+      response->get_failure() == mojom::MatchFamilyNameFailure::kNoSuchFamily) {
+    AddUnmatchedFamily(request);
+  }
+  return nullptr;
+}
+
+bool FontDataManager::IsKnownUnmatchedFamily(
+    const MatchFamilyRequest& request) const {
+  if (!request.name || request.name->empty()) {
+    return false;
+  }
+  base::AutoLock locked(unmatched_families_lock_);
+  return unmatched_families_.Get(*request.name) != unmatched_families_.end();
+}
+
+void FontDataManager::AddUnmatchedFamily(
+    const MatchFamilyRequest& request) const {
+  if (!request.name || request.name->empty()) {
+    return;
+  }
+  base::AutoLock locked(unmatched_families_lock_);
+  unmatched_families_.Put(std::string(*request.name));
 }
 
 FontDataManager::MatchFamilyRequest::MatchFamilyRequest(

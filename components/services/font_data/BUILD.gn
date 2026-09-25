@@ -21,6 +21,7 @@ source_set("lib") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//components/services/font_data/public/mojom",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",

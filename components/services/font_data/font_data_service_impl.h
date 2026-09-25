@@ -11,6 +11,8 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/hashing_lru_cache.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sequence_checker.h"
@@ -23,6 +25,11 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace font_data_service {
+
+// Lets FontDataServiceImpl remember family names that have no font and tell
+// renderers so, so that neither side repeats the lookup for other styles of
+// the same family. Acts as a kill switch for both caches.
+BASE_DECLARE_FEATURE(kCacheUnmatchedFontFamilies);
 
 // FontDataService (receiver) manages font requests from the renderer.
 // Does the following:
@@ -54,6 +61,9 @@ class FontDataServiceImpl : public mojom::FontDataService {
 
   size_t GetCacheSizeForTesting() const {
     return typeface_to_asset_index_.size();
+  }
+  size_t GetUnmatchedFamilyCountForTesting() const {
+    return unmatched_families_.size();
   }
 
   // FontDataService:
@@ -109,6 +119,18 @@ class FontDataServiceImpl : public mojom::FontDataService {
   // Gets or generate an ID that uniquely represents `path`.
   uint64_t GetUniqueFileId(base::FilePath path);
 
+  struct MatchResult {
+    sk_sp<SkTypeface> typeface;
+    // True when the font manager has nothing for the family in any style.
+    bool no_such_family = false;
+  };
+
+  // Asks the font manager for `family_name` in `style`. With
+  // kCacheUnmatchedFontFamilies, families it has nothing for are remembered and
+  // later calls for them return no_such_family without asking it again.
+  MatchResult MatchFamily(const std::string& family_name,
+                          const SkFontStyle& style);
+
   // Prepares a MatchFamilyNameResult representing `typeface` that can be sent
   // over mojo from `MatchFamilyName*` calls.
   mojom::MatchFamilyNameResultPtr CreateMatchFamilyNameResult(
@@ -121,6 +143,13 @@ class FontDataServiceImpl : public mojom::FontDataService {
   // The default font manager in the browser that creates the SkTypeface. On
   // Windows, this would be the DWrite font manager (SkFontMgr_DirectWrite).
   sk_sp<SkFontMgr> font_manager_;
+
+  // Family names the font manager has no match for, see MatchFamily(). The
+  // font manager caches its matches but not its misses, and looking a missing
+  // family up again can be expensive (with Fontconfig it walks every
+  // installed font), which every new renderer would otherwise trigger for the
+  // same handful of other-platform families in common font stacks.
+  base::HashingLRUCacheSet<std::string> unmatched_families_;
 
   // Wrapper that binds the SkStreamAsset and its shared memory
   // map region. Used by the `assets_` cache.

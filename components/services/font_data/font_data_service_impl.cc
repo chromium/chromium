@@ -15,10 +15,12 @@
 #include "base/containers/heap_array.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/font_utils.h"
@@ -28,6 +30,8 @@
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace font_data_service {
+
+BASE_FEATURE(kCacheUnmatchedFontFamilies, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -60,6 +64,8 @@ enum class FontDataServiceIPC {
 constexpr int kMemoryMapCacheSize = 128;
 
 BASE_FEATURE(kDumpOnOOBFontDataServiceCache, base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr size_t kUnmatchedFamilyCacheSize = 64;
 
 base::SequencedTaskRunner* GetFontDataServiceTaskRunner() {
   static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
@@ -97,6 +103,7 @@ FontDataServiceImpl::MappedAsset::~MappedAsset() = default;
 
 FontDataServiceImpl::FontDataServiceImpl()
     : font_manager_(skia::DefaultFontMgr()),
+      unmatched_families_(kUnmatchedFamilyCacheSize),
       local_font_matcher_(LocalFontMatcher::Create()) {
   CHECK(font_manager_);
 }
@@ -271,11 +278,44 @@ void FontDataServiceImpl::MatchFamilyName(const std::string& family_name,
   // family request.
   SkFontStyle sk_font_style(style->weight, style->width,
                             ConvertToFontStyle(style->slant));
-  sk_sp<SkTypeface> typeface =
-      font_manager_->matchFamilyStyle(family_name.c_str(), sk_font_style);
+  MatchResult match = MatchFamily(family_name, sk_font_style);
+  mojom::MatchFamilyNameResultPtr result =
+      CreateMatchFamilyNameResult(match.typeface, family_name, sk_font_style);
+  if (result) {
+    std::move(callback).Run(
+        mojom::MatchFamilyNameResponse::NewResult(std::move(result)));
+    return;
+  }
+  std::move(callback).Run(mojom::MatchFamilyNameResponse::NewFailure(
+      match.no_such_family ? mojom::MatchFamilyNameFailure::kNoSuchFamily
+                           : mojom::MatchFamilyNameFailure::kNoMatch));
+}
 
-  std::move(callback).Run(
-      CreateMatchFamilyNameResult(typeface, family_name, sk_font_style));
+FontDataServiceImpl::MatchResult FontDataServiceImpl::MatchFamily(
+    const std::string& family_name,
+    const SkFontStyle& style) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const bool cache_unmatched =
+      !family_name.empty() &&
+      base::FeatureList::IsEnabled(kCacheUnmatchedFontFamilies);
+  std::string key;
+  if (cache_unmatched) {
+    key =
+        base::UTF16ToUTF8(base::i18n::FoldCase(base::UTF8ToUTF16(family_name)));
+    if (unmatched_families_.Get(key) != unmatched_families_.end()) {
+      return {.no_such_family = true};
+    }
+  }
+
+  MatchResult result;
+  result.typeface = font_manager_->matchFamilyStyle(family_name.c_str(), style);
+  // SkFontMgr::matchFamilyStyle() returns the closest style of the family, so
+  // a null result means the family itself is unknown, whatever the style.
+  if (!result.typeface && cache_unmatched) {
+    result.no_such_family = true;
+    unmatched_families_.Put(std::move(key));
+  }
+  return result;
 }
 
 void FontDataServiceImpl::MatchFamilyNameCharacter(

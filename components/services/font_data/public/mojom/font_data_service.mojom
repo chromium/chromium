@@ -61,6 +61,28 @@ struct MatchFamilyNameResult {
   bool synthetic_oblique;
 };
 
+// Why MatchFamilyName() produced no typeface. The renderer caches both
+// failures, but with different scope.
+enum MatchFamilyNameFailure {
+  // The host font manager has no usable typeface for this family and style,
+  // or the match could not be serialized. Says nothing about other styles of
+  // the same family, so the renderer caches it for this (family, style) only.
+  kNoMatch,
+  // The host font manager has no typeface for this family in any style:
+  // SkFontMgr::matchFamilyStyle() returned null, and it returns the closest
+  // style whenever the family exists. The renderer may answer later requests
+  // for this family, in any style, without calling the service again. Only
+  // reported while kCacheUnmatchedFontFamilies is enabled; otherwise such
+  // requests get kNoMatch.
+  kNoSuchFamily,
+};
+
+// Either the matched typeface or the reason there is none.
+union MatchFamilyNameResponse {
+  MatchFamilyNameResult result;
+  MatchFamilyNameFailure failure;
+};
+
 // Loads and resolves fonts from the renderer to the browser (embedder). Takes
 // requests by font family name and style and resolves it with the matching
 // typeface.
@@ -68,11 +90,14 @@ struct MatchFamilyNameResult {
 // Created on renderer process startup when constructing the font manager.
 interface FontDataService {
 
-  // Returns the best match for |family_name| and |style|.
-  // On error, returns null.
+  // Returns the closest typeface the host font manager has for |family_name|
+  // in |style|, or a MatchFamilyNameFailure saying how far the renderer may
+  // cache the miss. |family_name| is the name as the page wrote it; the host
+  // matches it case-insensitively. Called synchronously from layout and
+  // asynchronously by the renderer's font prewarmer.
   [Sync]
   MatchFamilyName(string family_name, TypefaceStyle style) =>
-     (MatchFamilyNameResult? result);
+     (MatchFamilyNameResponse response);
 
   // Returns the best match for |family_name| and |style| for a given
   // |character| in the languages described by |bcp47s|.

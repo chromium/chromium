@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/services/font_data/public/mojom/font_data_service.mojom.h"
@@ -197,7 +198,7 @@ TEST_F(FontDataServiceImplUnitTest, FamiliesThatRequireMatchingStyles) {
 #endif
 
 TEST_F(FontDataServiceImplUnitTest, MatchFamilyName) {
-  mojom::MatchFamilyNameResultPtr out_result;
+  mojom::MatchFamilyNameResponsePtr response;
 #if BUILDFLAG(IS_WIN)
   std::string family_name = "Segoe UI";
 #else
@@ -207,23 +208,101 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyName) {
 
   font_service_->MatchFamilyName(
       family_name, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
-      &out_result);
+      &response);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 0u);
-  EXPECT_TRUE(out_result->typeface_data->is_font_file());
-  EXPECT_TRUE(
-      out_result->typeface_data->get_font_file()->file_handle.IsValid());
+  EXPECT_TRUE(response->get_result()->typeface_data->is_font_file());
+  EXPECT_TRUE(response->get_result()
+                  ->typeface_data->get_font_file()
+                  ->file_handle.IsValid());
 #else
   // For now, on other platforms we always hit the memory region fallback, and
   // therefore also adds to the cache.
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 1u);
-  EXPECT_TRUE(out_result->typeface_data->is_region());
-  EXPECT_TRUE(out_result->typeface_data->get_region().IsValid());
+  EXPECT_TRUE(response->get_result()->typeface_data->is_region());
+  EXPECT_TRUE(response->get_result()->typeface_data->get_region().IsValid());
 #endif
 }
 
+TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameNoSuchFamily) {
+  mojom::MatchFamilyNameResponsePtr response;
+#if BUILDFLAG(IS_WIN)
+  std::string family_name = "Segoe UI";
+#else
+  std::string family_name = "Arimo";
+#endif
+
+  // A family that exists is never reported as missing.
+  font_service_->MatchFamilyName(
+      family_name, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
+      &response);
+  EXPECT_TRUE(response->is_result());
+
+  // A family that does not exist is, for every style.
+  font_service_->MatchFamilyName(
+      "Font From Elsewhere",
+      CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman), &response);
+  ASSERT_TRUE(response->is_failure());
+  EXPECT_EQ(response->get_failure(),
+            mojom::MatchFamilyNameFailure::kNoSuchFamily);
+  font_service_->MatchFamilyName(
+      "Font From Elsewhere",
+      CreateTypefaceStyle(700, 5, mojom::TypefaceSlant::kItalic), &response);
+  ASSERT_TRUE(response->is_failure());
+  EXPECT_EQ(response->get_failure(),
+            mojom::MatchFamilyNameFailure::kNoSuchFamily);
+}
+
+TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameNoSuchFamilyIgnoresCase) {
+  mojom::MatchFamilyNameResponsePtr response;
+  font_service_->MatchFamilyName(
+      "Font From Elsewhere",
+      CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman), &response);
+  ASSERT_TRUE(response->is_failure());
+  EXPECT_EQ(response->get_failure(),
+            mojom::MatchFamilyNameFailure::kNoSuchFamily);
+  EXPECT_EQ(impl_.GetUnmatchedFamilyCountForTesting(), 1u);
+
+  font_service_->MatchFamilyName(
+      "FONT from elsewhere",
+      CreateTypefaceStyle(700, 5, mojom::TypefaceSlant::kItalic), &response);
+  ASSERT_TRUE(response->is_failure());
+  EXPECT_EQ(response->get_failure(),
+            mojom::MatchFamilyNameFailure::kNoSuchFamily);
+  EXPECT_EQ(impl_.GetUnmatchedFamilyCountForTesting(), 1u);
+
+  // Non-ASCII names are folded too.
+  font_service_->MatchFamilyName(
+      "СКОРБЬ СХОДИТ ЩЕДРОТ",
+      CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman), &response);
+  ASSERT_TRUE(response->is_failure());
+  EXPECT_EQ(response->get_failure(),
+            mojom::MatchFamilyNameFailure::kNoSuchFamily);
+  EXPECT_EQ(impl_.GetUnmatchedFamilyCountForTesting(), 2u);
+  font_service_->MatchFamilyName(
+      "скорбь сходит щедрот",
+      CreateTypefaceStyle(700, 5, mojom::TypefaceSlant::kItalic), &response);
+  ASSERT_TRUE(response->is_failure());
+  EXPECT_EQ(response->get_failure(),
+            mojom::MatchFamilyNameFailure::kNoSuchFamily);
+  EXPECT_EQ(impl_.GetUnmatchedFamilyCountForTesting(), 2u);
+}
+
+// With the kill switch off the service never claims a family is missing, which
+// also keeps renderers from caching the miss across styles.
+TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameNoSuchFamilyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kCacheUnmatchedFontFamilies);
+  mojom::MatchFamilyNameResponsePtr response;
+  font_service_->MatchFamilyName(
+      "Font From Elsewhere",
+      CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman), &response);
+  ASSERT_TRUE(response->is_failure());
+  EXPECT_EQ(response->get_failure(), mojom::MatchFamilyNameFailure::kNoMatch);
+}
+
 TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameMemoryCacheSize) {
-  mojom::MatchFamilyNameResultPtr out_result;
+  mojom::MatchFamilyNameResponsePtr response;
 #if BUILDFLAG(IS_WIN)
   std::string family_name = "Segoe UI";
 #else
@@ -235,15 +314,15 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameMemoryCacheSize) {
   // There should be one entry added to the cache.
   font_service_->MatchFamilyName(
       family_name, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
-      &out_result);
-  EXPECT_TRUE(out_result->typeface_data->is_region());
-  EXPECT_TRUE(out_result->typeface_data->get_region().IsValid());
+      &response);
+  EXPECT_TRUE(response->get_result()->typeface_data->is_region());
+  EXPECT_TRUE(response->get_result()->typeface_data->get_region().IsValid());
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 1u);
 
   // Call with the same family name and style. Cache should stay the same
   font_service_->MatchFamilyName(
       family_name, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
-      &out_result);
+      &response);
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 1u);
 
   // Call with a different family name. Cache should increase.
@@ -255,28 +334,28 @@ TEST_F(FontDataServiceImplUnitTest, MatchFamilyNameMemoryCacheSize) {
 #endif
   font_service_->MatchFamilyName(
       family_name, CreateTypefaceStyle(400, 5, mojom::TypefaceSlant::kRoman),
-      &out_result);
+      &response);
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 2u);
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/462090356): Find an available font in Linux/ChromeOS with
   // multiples axes.
-  EXPECT_EQ(out_result->variation_position->coordinateCount, 2u);
-  EXPECT_EQ(out_result->variation_position->coordinates.size(), 2u);
+  EXPECT_EQ(response->get_result()->variation_position->coordinateCount, 2u);
+  EXPECT_EQ(response->get_result()->variation_position->coordinates.size(), 2u);
 #endif
 
   // Call with a different font style. Cache should increase.
   font_service_->MatchFamilyName(
       family_name, CreateTypefaceStyle(600, 5, mojom::TypefaceSlant::kOblique),
-      &out_result);
+      &response);
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 3u);
 
   // Call with a gibberish family name. Cache should be the same. Result should
   // be nullptr.
   font_service_->MatchFamilyName(
       "not a real font",
-      CreateTypefaceStyle(600, 5, mojom::TypefaceSlant::kOblique), &out_result);
+      CreateTypefaceStyle(600, 5, mojom::TypefaceSlant::kOblique), &response);
   EXPECT_EQ(impl_.GetCacheSizeForTesting(), 3u);
-  EXPECT_EQ(out_result.get(), nullptr);
+  EXPECT_TRUE(response->is_failure());
 }
 
 // The Linux/ChromeOS SkFontMgr doesn't support MatchFamilyStyleCharacter().

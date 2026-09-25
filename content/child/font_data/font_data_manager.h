@@ -139,6 +139,17 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr,
   void AddToCache(const MatchFamilyRequest& request,
                   sk_sp<SkTypeface> typeface) const;
 
+  // Returns the typeface in `response`, if any, and remembers the family as
+  // unmatched when the service says it does not exist.
+  sk_sp<SkTypeface> CreateTypefaceFromMatchResponse(
+      const MatchFamilyRequest& request,
+      mojom::MatchFamilyNameResponsePtr response) const;
+
+  // Families the service has no font for in any style, keyed by the
+  // canonical name in `request`. Requests for them skip the service.
+  bool IsKnownUnmatchedFamily(const MatchFamilyRequest& request) const;
+  void AddUnmatchedFamily(const MatchFamilyRequest& request) const;
+
   struct MatchFamilyRequestHash {
     size_t operator()(const MatchFamilyRequest& key) const {
       return base::HashCombine(0ull, key.name, key.weight, key.width,
@@ -162,6 +173,7 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr,
   mutable base::Lock mapped_files_lock_;
   mutable base::Lock family_names_lock_;
   mutable base::Lock typeface_cache_lock_;
+  mutable base::Lock unmatched_families_lock_;
 
   // Cache of the font requests to existing typefaces. Allows replying directly
   // with a typeface for a match request that was already made.
@@ -170,6 +182,11 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr,
                                 MatchFamilyRequestHash,
                                 MatchFamilyRequestEqual>
       typeface_cache_ GUARDED_BY(typeface_cache_lock_);
+
+  // Family names the font service has no font for, see
+  // IsKnownUnmatchedFamily().
+  mutable base::HashingLRUCacheSet<std::string> unmatched_families_
+      GUARDED_BY(unmatched_families_lock_);
 
   // Cache of the shared memory region by GUID to known font mappings. Allows
   // reusing a pre-existing shared memory region if it contains the data
