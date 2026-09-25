@@ -10,7 +10,9 @@
 #include <utility>
 
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -472,6 +474,44 @@ TEST(AXNodeDataTest, BitFieldsConfidenceCheck) {
             sizeof(AXNodeData::state) * 8);
   EXPECT_LT(static_cast<size_t>(ax::mojom::Action::kMaxValue),
             sizeof(AXNodeData::actions) * 8);
+}
+
+TEST(AXNodeDataTest, IsValidAXNodeDataFromRenderer) {
+  // Test IsValidAXNodeIDFromRenderer directly.
+  EXPECT_TRUE(IsValidAXNodeIDFromRenderer(1));
+  EXPECT_TRUE(IsValidAXNodeIDFromRenderer(42));
+  EXPECT_TRUE(IsValidAXNodeIDFromRenderer(kInvalidAXNodeID));
+  EXPECT_TRUE(IsValidAXNodeIDFromRenderer(kFirstGeneratedRendererNodeID));
+  EXPECT_TRUE(IsValidAXNodeIDFromRenderer(kFirstGeneratedRendererNodeID - 1));
+  EXPECT_TRUE(IsValidAXNodeIDFromRenderer(kLastGeneratedRendererNodeID));
+
+  EXPECT_FALSE(IsValidAXNodeIDFromRenderer(kFirstGeneratedBrowserNodeID));
+  EXPECT_FALSE(IsValidAXNodeIDFromRenderer(-100));
+  EXPECT_FALSE(IsValidAXNodeIDFromRenderer(kLastGeneratedBrowserNodeID));
+  EXPECT_FALSE(IsValidAXNodeIDFromRenderer(kInitialEmptyDocumentRootNodeID));
+
+  // Test AXNodeData.HasValidAXNodeIDsFromRenderer.
+  AXNodeData valid_node;
+  valid_node.id = 1;
+  valid_node.child_ids = {2, 3, kFirstGeneratedRendererNodeID};
+  EXPECT_TRUE(valid_node.HasValidAXNodeIDsFromRenderer());
+
+  AXNodeData invalid_node_id;
+  invalid_node_id.id = kFirstGeneratedBrowserNodeID;
+  EXPECT_FALSE(invalid_node_id.HasValidAXNodeIDsFromRenderer());
+
+  AXNodeData invalid_child_id;
+  invalid_child_id.id = 1;
+  invalid_child_id.child_ids = {2, kInitialEmptyDocumentRootNodeID};
+  EXPECT_FALSE(invalid_child_id.HasValidAXNodeIDsFromRenderer());
+
+  // When feature flag is disabled, all IDs are accepted.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ::features::kAccessibilityCheckAXNodeIDs);
+  EXPECT_TRUE(IsValidAXNodeIDFromRenderer(kFirstGeneratedBrowserNodeID));
+  EXPECT_TRUE(invalid_node_id.HasValidAXNodeIDsFromRenderer());
+  EXPECT_TRUE(invalid_child_id.HasValidAXNodeIDsFromRenderer());
 }
 
 }  // namespace ui

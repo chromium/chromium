@@ -29,6 +29,9 @@ struct AX_BASE_EXPORT AXUpdatesAndEvents {
 
   ~AXUpdatesAndEvents();
 
+  // Returns true if all node IDs are valid from an untrusted renderer.
+  bool HasValidAXNodeIDsFromRenderer() const;
+
   // The unique ID of the accessibility tree this event bundle applies to.
   AXTreeID ax_tree_id;
 

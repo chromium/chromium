@@ -11597,6 +11597,15 @@ void RenderFrameHostImpl::HandleAXEvents(
     return;
   }
 
+  if (!updates_and_events.HasValidAXNodeIDsFromRenderer() ||
+      !location_and_scroll_updates.HasValidAXNodeIDsFromRenderer()) {
+    if (report_bad_message_callback) {
+      std::move(report_bad_message_callback)
+          .Run("Invalid AXNodeID from renderer.");
+    }
+    return;
+  }
+
   // Don't process this IPC if either we're waiting on a reset and this IPC
   // doesn't have the matching token ID.
   // The token prevents obsolete data from being processed.
@@ -11730,6 +11739,14 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
       reset_token != kAccessibilityResetTokenForTesting) {
     std::move(report_bad_message_callback)
         .Run("Unexpected accessibility message.");
+    return;
+  }
+
+  if (!changes.HasValidAXNodeIDsFromRenderer()) {
+    if (report_bad_message_callback) {
+      std::move(report_bad_message_callback)
+          .Run("Invalid AXNodeID from renderer.");
+    }
     return;
   }
 

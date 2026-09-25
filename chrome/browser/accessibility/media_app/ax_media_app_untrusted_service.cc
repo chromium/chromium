@@ -1312,7 +1312,13 @@ void AXMediaAppUntrustedService::OnPageOcred(
           // TODO(b/319536234): Validate tree ID.
           // !tree_update.has_tree_data ||
           // ui::AXTreeIDUnknown() == tree_update.tree_data.tree_id ||
-          ui::kInvalidAXNodeID == tree_update.root_id)) {
+          ui::kInvalidAXNodeID == tree_update.root_id) &&
+      mojo::IsInMessageDispatch()) {
+    mojo::ReportBadMessage("OnPageOcred() bad tree update from Screen AI.");
+    return;
+  }
+  if (!tree_update.HasValidAXNodeIDsFromRenderer() &&
+      mojo::IsInMessageDispatch()) {
     mojo::ReportBadMessage("OnPageOcred() bad tree update from Screen AI.");
     return;
   }

@@ -47,6 +47,10 @@
 
 class SkBitmap;
 
+namespace ash::test {
+class TestAXMediaAppUntrustedService;
+}  // namespace ash::test
+
 namespace content {
 
 class RenderFrameHost;
@@ -136,6 +140,9 @@ class AXMediaAppUntrustedService
   void PushDirtyPage(const std::string& dirty_page_id);
   std::optional<std::string> PopDirtyPage();
   virtual void OcrNextDirtyPageIfAny();
+
+ private:
+  friend class ash::test::TestAXMediaAppUntrustedService;
 
   size_t min_pages_per_batch_ = 2u;
   size_t pages_ocred_on_initial_load_ = 0u;

@@ -402,6 +402,9 @@ struct AX_BASE_EXPORT AXNodeData final {
   bool HasChildTreeID() const;
   std::optional<AXTreeID> GetChildTreeID() const;
 
+  // Returns true if all node IDs are valid from an untrusted renderer.
+  bool HasValidAXNodeIDsFromRenderer() const;
+
   // Return a string representation of this data, for debugging.
   std::string ToString(bool verbose = true) const;
 

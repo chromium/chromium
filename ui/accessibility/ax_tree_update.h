@@ -62,6 +62,9 @@ struct AX_BASE_EXPORT AXTreeUpdate {
 
   void AccumulateSize(AXNodeData::AXNodeDataSize& node_data_size) const;
 
+  // Returns true if all node IDs are valid from an untrusted renderer.
+  bool HasValidAXNodeIDsFromRenderer() const;
+
   // If |has_tree_data| is true, the value of |tree_data| should be used
   // to update the tree data, otherwise it should be ignored.
   bool has_tree_data = false;

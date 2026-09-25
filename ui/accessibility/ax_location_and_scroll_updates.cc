@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
 
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_relative_bounds.h"
 
 namespace ui {
@@ -27,5 +28,19 @@ AXLocationAndScrollUpdates::AXLocationAndScrollUpdates(
 AXLocationAndScrollUpdates& AXLocationAndScrollUpdates::operator=(
     AXLocationAndScrollUpdates&& other) = default;
 AXLocationAndScrollUpdates::~AXLocationAndScrollUpdates() = default;
+
+bool AXLocationAndScrollUpdates::HasValidAXNodeIDsFromRenderer() const {
+  for (const AXLocationChange& change : location_changes) {
+    if (!IsValidAXNodeIDFromRenderer(change.id)) {
+      return false;
+    }
+  }
+  for (const AXScrollChange& change : scroll_changes) {
+    if (!IsValidAXNodeIDFromRenderer(change.id)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 }  // namespace ui

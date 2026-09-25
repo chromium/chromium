@@ -479,6 +479,23 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
+                       OnPageOcredWithInvalidNodeId) {
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  ui::AXTreeUpdate tree_update;
+  tree_update.root_id = ui::kFirstGeneratedBrowserNodeID;
+  ui::AXNodeData node;
+  node.id = ui::kFirstGeneratedBrowserNodeID;
+  tree_update.nodes.push_back(node);
+
+  service_->OnPageOcredForTesting("page1", tree_update);
+
+  EXPECT_EQ("OnPageOcred() bad tree update from Screen AI.",
+            bad_message_observer.WaitForBadMessage());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
                        PageMetadataUpdatedWithDeleteAndUndoDelete) {
   service_->DisableStatusNodesForTesting();
   service_->DisablePostamblePageForTesting();

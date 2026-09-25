@@ -100,6 +100,11 @@ class TestAXMediaAppUntrustedService : public AXMediaAppUntrustedService {
   void PushDirtyPageForTesting(const std::string& dirty_page_id);
   std::string PopDirtyPageForTesting();
 
+  void OnPageOcredForTesting(const std::string& dirty_page_id,
+                             const ui::AXTreeUpdate& tree_update) {
+    OnPageOcred(dirty_page_id, tree_update);
+  }
+
  protected:
   void OcrNextDirtyPageIfAny() override;
 

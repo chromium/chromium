@@ -13,6 +13,8 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 namespace content {
 namespace {
@@ -70,6 +72,12 @@ void RenderAccessibilityHost::HandleAXEvents(
     }
     return;
   }
+  if (!updates_and_events.HasValidAXNodeIDsFromRenderer() ||
+      !location_and_scroll_updates.HasValidAXNodeIDsFromRenderer()) {
+    mojo::ReportBadMessage("Invalid AXNodeID from renderer.");
+    std::move(callback).Run();
+    return;
+  }
   // Post the HandleAXEvents task onto the UI thread, and then when that
   // finishes, post back the response callback onto this runner (to satisfy
   // the mojo contract).
@@ -95,6 +103,10 @@ void RenderAccessibilityHost::HandleAXLocationChanges(
     uint32_t reset_token) {
   if (g_renderer_serialization_experiment_enabled.load(
           std::memory_order_relaxed)) {
+    return;
+  }
+  if (!changes.HasValidAXNodeIDsFromRenderer()) {
+    mojo::ReportBadMessage("Invalid AXNodeID from renderer.");
     return;
   }
   GetUIThreadTaskRunner({})->PostTask(

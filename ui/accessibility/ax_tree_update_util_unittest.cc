@@ -5,7 +5,9 @@
 #include "ui/accessibility/ax_tree_update_util.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/ax_updates_and_events.h"
 
 namespace ui {
 
@@ -281,6 +283,76 @@ TEST(AXTreeUpdateUtilTest, MergeAXTreeUpdates_AtLeastTwoMerges) {
   for (int i = 0; i < 3; i++) {
     EXPECT_EQ(i, dst[0].nodes[i].id);
   }
+}
+
+TEST(AXTreeUpdateUtilTest, IsValidAXTreeUpdateFromRenderer) {
+  AXTreeUpdate valid_update;
+  valid_update.root_id = 1;
+  valid_update.node_id_to_clear = kInvalidAXNodeID;
+  AXNodeData node;
+  node.id = 1;
+  node.child_ids = {2};
+  valid_update.nodes.push_back(node);
+  EXPECT_TRUE(valid_update.HasValidAXNodeIDsFromRenderer());
+
+  AXTreeUpdate invalid_root;
+  invalid_root.root_id = kFirstGeneratedBrowserNodeID;
+  EXPECT_FALSE(invalid_root.HasValidAXNodeIDsFromRenderer());
+
+  AXTreeUpdate invalid_clear;
+  invalid_clear.node_id_to_clear = kFirstGeneratedBrowserNodeID;
+  EXPECT_FALSE(invalid_clear.HasValidAXNodeIDsFromRenderer());
+
+  AXTreeUpdate invalid_node;
+  invalid_node.root_id = 1;
+  AXNodeData bad_node;
+  bad_node.id = kFirstGeneratedBrowserNodeID;
+  invalid_node.nodes.push_back(bad_node);
+  EXPECT_FALSE(invalid_node.HasValidAXNodeIDsFromRenderer());
+}
+
+TEST(AXTreeUpdateUtilTest, IsValidAXLocationAndScrollUpdatesFromRenderer) {
+  AXLocationAndScrollUpdates valid_updates;
+  AXLocationChange loc;
+  loc.id = 1;
+  valid_updates.location_changes.push_back(loc);
+  AXScrollChange scroll(2, 0, 0);
+  valid_updates.scroll_changes.push_back(scroll);
+  EXPECT_TRUE(valid_updates.HasValidAXNodeIDsFromRenderer());
+
+  AXLocationAndScrollUpdates invalid_loc;
+  AXLocationChange bad_loc;
+  bad_loc.id = kFirstGeneratedBrowserNodeID;
+  invalid_loc.location_changes.push_back(bad_loc);
+  EXPECT_FALSE(invalid_loc.HasValidAXNodeIDsFromRenderer());
+
+  AXLocationAndScrollUpdates invalid_scroll;
+  AXScrollChange bad_scroll(kFirstGeneratedBrowserNodeID, 0, 0);
+  invalid_scroll.scroll_changes.push_back(bad_scroll);
+  EXPECT_FALSE(invalid_scroll.HasValidAXNodeIDsFromRenderer());
+}
+
+TEST(AXTreeUpdateUtilTest, IsValidAXUpdatesAndEventsFromRenderer) {
+  AXUpdatesAndEvents valid;
+  AXTreeUpdate update;
+  update.root_id = 1;
+  valid.updates.push_back(update);
+  AXEvent event;
+  event.id = 1;
+  valid.events.push_back(event);
+  EXPECT_TRUE(valid.HasValidAXNodeIDsFromRenderer());
+
+  AXUpdatesAndEvents invalid_update;
+  AXTreeUpdate bad_update;
+  bad_update.root_id = kFirstGeneratedBrowserNodeID;
+  invalid_update.updates.push_back(bad_update);
+  EXPECT_FALSE(invalid_update.HasValidAXNodeIDsFromRenderer());
+
+  AXUpdatesAndEvents invalid_event;
+  AXEvent bad_event;
+  bad_event.id = kFirstGeneratedBrowserNodeID;
+  invalid_event.events.push_back(bad_event);
+  EXPECT_FALSE(invalid_event.HasValidAXNodeIDsFromRenderer());
 }
 
 }  // namespace ui

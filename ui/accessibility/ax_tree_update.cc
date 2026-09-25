@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_checks.h"
 #include "ui/accessibility/ax_tree_data.h"
 
@@ -95,6 +96,21 @@ void AXTreeUpdate::AccumulateSize(
   for (const auto& node : nodes) {
     node.AccumulateSize(node_data_size);
   }
+}
+
+bool AXTreeUpdate::HasValidAXNodeIDsFromRenderer() const {
+  if (!IsValidAXNodeIDFromRenderer(node_id_to_clear)) {
+    return false;
+  }
+  if (!IsValidAXNodeIDFromRenderer(root_id)) {
+    return false;
+  }
+  for (const AXNodeData& node : nodes) {
+    if (!node.HasValidAXNodeIDsFromRenderer()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace ui

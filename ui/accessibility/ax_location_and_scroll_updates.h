@@ -58,6 +58,9 @@ struct AX_BASE_EXPORT AXLocationAndScrollUpdates {
 
   ~AXLocationAndScrollUpdates();
 
+  // Returns true if all node IDs are valid from an untrusted renderer.
+  bool HasValidAXNodeIDsFromRenderer() const;
+
   std::vector<AXLocationChange> location_changes;
   std::vector<AXScrollChange> scroll_changes;
 };

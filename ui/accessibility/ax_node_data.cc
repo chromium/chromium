@@ -897,6 +897,18 @@ bool AXNodeData::SupportsExpandCollapse() const {
   return ui::SupportsExpandCollapse(role);
 }
 
+bool AXNodeData::HasValidAXNodeIDsFromRenderer() const {
+  if (!IsValidAXNodeIDFromRenderer(id)) {
+    return false;
+  }
+  for (AXNodeID child_id : child_ids) {
+    if (!IsValidAXNodeIDFromRenderer(child_id)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // TODO(accessibility) Consider reusing code from AXTreeFormatterBlink, where
 // the |verbose| parameter alters the property filter. Would remove ~800 lines.
 std::string AXNodeData::ToString(bool verbose) const {

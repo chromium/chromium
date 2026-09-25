@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_updates_and_events.h"
 
 #include "ui/accessibility/ax_event.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 
 namespace ui {
 
@@ -15,5 +16,19 @@ AXUpdatesAndEvents& AXUpdatesAndEvents::operator=(AXUpdatesAndEvents&& other) =
     default;
 
 AXUpdatesAndEvents::~AXUpdatesAndEvents() = default;
+
+bool AXUpdatesAndEvents::HasValidAXNodeIDsFromRenderer() const {
+  for (const AXTreeUpdate& update : updates) {
+    if (!update.HasValidAXNodeIDsFromRenderer()) {
+      return false;
+    }
+  }
+  for (const AXEvent& event : events) {
+    if (!IsValidAXNodeIDFromRenderer(event.id)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 }  // namespace ui
