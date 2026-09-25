@@ -1196,18 +1196,30 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return mDataSharingTabManager;
     }
 
-    /** Returns the {@link LoadingFullscreenCoordinator} to control loading over the activity. */
+    /**
+     * Returns the {@link LoadingFullscreenCoordinator} to control loading over the activity,
+     * creating it if needed, or null if it cannot be created because this coordinator has been
+     * destroyed.
+     */
     public @Nullable LoadingFullscreenCoordinator getLoadingFullscreenCoordinator() {
-        if (ChromeFeatureList.sAndroidStartupImprovements.isEnabled()
-                && mLoadingFullscreenCoordinator == null) {
-            initLoadingFullscreenCoordinator();
-        }
+        initLoadingFullscreenCoordinator();
         return mLoadingFullscreenCoordinator;
     }
 
+    /**
+     * Creates the {@link LoadingFullscreenCoordinator} if it does not exist yet.
+     *
+     * <p>This is called eagerly from {@link #onInflationComplete()}, or lazily by {@link
+     * #getLoadingFullscreenCoordinator()} the first time a client asks for it. It is a no-op once
+     * the coordinator exists or after {@link #onDestroy()}: the loading view stub is consumed by
+     * the first inflation and the activity is gone, so the coordinator must not be resurrected.
+     */
     private void initLoadingFullscreenCoordinator() {
+        if (mActivity == null) return;
+        if (mLoadingFullscreenCoordinator != null) return;
+
         ViewStub loadingStub = mActivity.findViewById(R.id.loading_stub);
-        assert loadingStub != null;
+        if (loadingStub == null) return;
 
         loadingStub.setLayoutResource(R.layout.loading_fullscreen);
         loadingStub.inflate();
@@ -1440,7 +1452,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
         initCommerceSubscriptionsService();
 
-        new OneShotCallback<>(mProfileSupplier, this::initCollaborationDelegatesOnProfile);
+        new OneShotCallback<>(
+                mProfileSupplier,
+                mCallbackController.makeCancelable(this::initCollaborationDelegatesOnProfile));
 
         if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity)) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_BAR_NTP)) {

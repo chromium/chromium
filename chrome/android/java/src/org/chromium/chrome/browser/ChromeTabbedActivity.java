@@ -1663,9 +1663,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             TabbedStartupWindowPolicyDelegate.getInstance().initializeWithNative(originalProfile);
 
-            if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
-                recordFirstAppLaunchTimestampIfNeeded();
-            }
+            // Deliberately not deferred to onDeferredStartup(): this timestamp is not just a
+            // metric, it gates feature eligibility (e.g. the Setup List time window, which treats
+            // a missing timestamp as "inactive"), and deferred startup is not guaranteed to run.
+            recordFirstAppLaunchTimestampIfNeeded();
+
             // TODO(jinsukkim): Let these classes handle the registration by themselves.
             mCompositorViewHolder = assertNonNull(getCompositorViewHolderSupplier().get());
             getTabObscuringHandler().addObserver(mCompositorViewHolder);
@@ -1691,6 +1693,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
                 mSuggestionEventObserver =
                         new SuggestionEventObserver(mTabModelSelector, mHubManagerSupplier);
+                // Deferring only the promotion coordinator splits the suggestion producer (the
+                // observer above, still eager) from its consumer. This is safe today only because
+                // Android never constructs a native SuggestionDelegateBridge, so nothing pushes
+                // suggestions into Java; the live path is the pull-based getCachedSuggestions(),
+                // which is not deferred. If the delegate bridge is ever restored, suggestions
+                // arriving before this runs would be synthesized as UserResponse.REJECTED against
+                // an empty observer list, poisoning throttling and UKM: undo this deferral then.
                 if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
                     initGroupSuggestionsPromotionCoordinator();
                 }
@@ -4130,7 +4139,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 getProfileProviderSupplier(), getWindowAndroid());
 
         if (ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
-            recordFirstAppLaunchTimestampIfNeeded();
             if (FindsFeatures.sChromeFinds.isEnabled()) {
                 initFindsManager(originalProfile);
             }
