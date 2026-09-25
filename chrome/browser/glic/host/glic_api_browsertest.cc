@@ -1641,7 +1641,8 @@ class GlicApiTestRuntimeFeatureOff : public GlicApiTest {
 IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
                        testErrorShownOnMojoPipeError) {
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
-  ExecuteJsTest();
+  ExecuteJsTest(
+      {.params = base::Value(base::DictValue().Set("triggerError", true))});
 
   if (!features::IsGlicNoWebviewEnabled()) {
     ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
@@ -1657,7 +1658,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
                               "document.querySelector('#reload').click();");
 
   ASSERT_OK(WaitUntilGuestIsShowing());
-  ExecuteJsTest();
+  ExecuteJsTest(
+      {.params = base::Value(base::DictValue().Set("triggerError", false))});
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest,

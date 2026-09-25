@@ -1165,10 +1165,14 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testErrorShownOnMojoPipeError() {
-    // Calling getModelQualityClientId triggers a mojo pipe error because the
-    // runtime feature is disabled.
-    (this.host as GlicBrowserHostImpl)
-        .clientRemote.requestWithResponse('getModelQualityClientId', undefined);
+    if (this.testParams?.triggerError) {
+      // Calling getModelQualityClientId triggers a mojo pipe error because the
+      // runtime feature is disabled.
+      (this.host as GlicBrowserHostImpl)
+          .clientRemote
+          .requestWithResponse('getModelQualityClientId', undefined)
+          .catch(() => {});
+    }
   }
 
   async testPanelActiveWithMicrophone() {

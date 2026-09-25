@@ -446,7 +446,7 @@ class GlicApiBrowserTestMixin : public T {
         return;
       }
 
-      ASSERT_TRUE(result.is_ok());
+      ASSERT_TRUE(result.is_ok()) << result;
       if (result.is_dict()) {
         content::EvalJsResult result_copy = result;
         const base::DictValue& dict = result_copy.ExtractDict();
