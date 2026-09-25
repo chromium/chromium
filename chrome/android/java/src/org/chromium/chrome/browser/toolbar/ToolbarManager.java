@@ -1027,7 +1027,7 @@ public class ToolbarManager
         ThemeColorProvider overviewModeThemeColorProvider = mAppThemeColorProvider;
 
         Runnable requestFocusRunnable = compositorViewHolder::requestFocus;
-        ThemeColorProvider menuButtonThemeColorProvider =
+        ThemeColorProvider themeColorProvider =
                 mIsCustomTab
                         ? mCustomTabThemeColorProvider
                         : browsingModeThemeColorProviderWithAdjustableTint;
@@ -1053,7 +1053,7 @@ public class ToolbarManager
                         requestFocusRunnable,
                         canShowUpdateBadge,
                         isInOverviewModeSupplier,
-                        menuButtonThemeColorProvider,
+                        themeColorProvider,
                         mIncognitoStateProvider,
                         menuButtonStateSupplier,
                         onMenuButtonClicked,
@@ -1094,7 +1094,7 @@ public class ToolbarManager
                             mLayoutStateProviderSupplier,
                             mActivityTabProvider.asObservable(),
                             mTabModelSelectorSupplier,
-                            browsingModeThemeColorProviderWithAdjustableTint,
+                            themeColorProvider,
                             mIncognitoStateProvider);
         }
 
@@ -1158,7 +1158,7 @@ public class ToolbarManager
                             },
                             this::onHomeButtonMenuClick,
                             HomepagePolicyManager::isHomepageLocationManaged,
-                            browsingModeThemeColorProviderWithAdjustableTint,
+                            themeColorProvider,
                             mIncognitoStateProvider,
                             mActionRegistry);
         }
@@ -1263,7 +1263,7 @@ public class ToolbarManager
                 createTopToolbarCoordinator(
                         controlContainer,
                         buttonDataProviders,
-                        browsingModeThemeColorProviderWithAdjustableTint,
+                        themeColorProvider,
                         mIncognitoStateProvider,
                         initializeWithIncognitoColors,
                         mConstraintsSupplier,
@@ -2174,7 +2174,7 @@ public class ToolbarManager
     private TopToolbarCoordinator createTopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
             List<ButtonDataProvider> buttonDataProviders,
-            ThemeColorProvider browsingModeThemeColorProvider,
+            ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             boolean initializeWithIncognitoColors,
             NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
@@ -2197,7 +2197,7 @@ public class ToolbarManager
                         mUserEducationHelper,
                         buttonDataProviders,
                         mLayoutStateProviderSupplier,
-                        browsingModeThemeColorProvider,
+                        themeColorProvider,
                         incognitoStateProvider,
                         mMenuButtonCoordinator,
                         assertNonNull(mMenuButtonCoordinator.getMenuButtonHelperSupplier()),

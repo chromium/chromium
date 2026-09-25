@@ -324,6 +324,8 @@ public class CustomTabToolbarButtonsViewBinder
         if (minimizeButtonHidden && visFlipper.maybeFlipVisibility()) {
             // If button visibility got flipped, run this method again to reflect the change.
             inflateAndPositionToolbarElements(view, model, visFlipper);
+        } else {
+            updateAllButtonsTint(view, model.get(TINT));
         }
     }
 

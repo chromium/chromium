@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
@@ -67,6 +68,7 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
@@ -385,6 +387,21 @@ public class CustomTabToolbarUnitTest {
 
         var incognitoImageView = mToolbar.ensureIncognitoImageViewInflated();
         assertEquals(View.VISIBLE, incognitoImageView.getVisibility());
+    }
+
+    @Test
+    public void testOnTintChanged_NotifiesColorSchemeChanged() {
+        var observer = Mockito.mock(CustomTabToolbar.OnColorSchemeChangedObserver.class);
+        mToolbar.setOnColorSchemeChangedObserver(observer);
+
+        int initialColor = mToolbar.getBackground().getColor();
+        var tint =
+                ThemeUtils.getThemedToolbarIconTint(
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME);
+        mToolbar.onTintChanged(tint, tint, BrandedColorScheme.LIGHT_BRANDED_THEME);
+
+        assertEquals(BrandedColorScheme.LIGHT_BRANDED_THEME, mToolbar.getBrandedColorScheme());
+        verify(observer).onColorSchemeChanged(initialColor, BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

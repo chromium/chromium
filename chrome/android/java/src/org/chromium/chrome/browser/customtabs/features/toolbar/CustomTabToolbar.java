@@ -699,22 +699,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void updateButtonsTint() {
-        // TODO(crbug.com/402213312): Remove tinting code here once it's fully MVC-ified.
-        updateButtonTint(mCloseButton);
-        if (mMinimizeButton != null) {
-            updateButtonTint(mMinimizeButton);
-        }
-        if (mCustomButtonsParent != null) {
-            int numCustomActionButtons = mCustomButtonsParent.getChildCount();
-            for (int i = 0; i < numCustomActionButtons; i++) {
-                View actionButton = mCustomButtonsParent.getChildAt(i);
-                if (actionButton instanceof ImageButton button) {
-                    updateButtonTint(button);
-                }
-            }
-        }
-        ImageButton maximizeButton = findViewById(R.id.custom_tabs_sidepanel_maximize);
-        if (maximizeButton != null) updateButtonTint(maximizeButton);
         updateButtonTint(mLocationBar.getSecurityButton());
     }
 
@@ -746,6 +730,18 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return mBrandedColorScheme;
     }
 
+    @Override
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        if (tint == null) return;
+        mBrandedColorScheme = brandedColorScheme;
+        mTint = activityFocusTint != null ? activityFocusTint : tint;
+        mLocationBar.updateColors();
+        notifyColorSchemeChanged();
+    }
+
     /**
      * For extending classes to override and carry out the changes related with the primary color
      * for the current tab changing.
@@ -758,7 +754,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         final int startColor = background.getColor();
         final int endColor = getToolbarDataProvider().getPrimaryColor();
 
-        if (background.getColor() == endColor) return;
+        if (background.getColor() == endColor) {
+            updateColorsForBackground(endColor);
+            return;
+        }
 
         mBrandColorTransitionAnimation =
                 ValueAnimator.ofFloat(0, 1)
@@ -804,11 +803,15 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
     private void updateColorsForBackground(@ColorInt int background) {
         final @BrandedColorScheme int brandedColorScheme =
-                OmniboxResourceProvider.getBrandedColorScheme(
-                        getContext(), isIncognitoBranded(), background);
-        if (mBrandedColorScheme == brandedColorScheme) return;
+                mThemeColorProvider != null && mThemeColorProvider.getTint() != null
+                        ? mThemeColorProvider.getBrandedColorScheme()
+                        : OmniboxResourceProvider.getBrandedColorScheme(
+                                getContext(), isIncognitoBranded(), background);
         mBrandedColorScheme = brandedColorScheme;
-        mTint = ThemeUtils.getThemedToolbarIconTint(getContext(), mBrandedColorScheme);
+        mTint =
+                mThemeColorProvider != null && mThemeColorProvider.getTint() != null
+                        ? mThemeColorProvider.getTint()
+                        : ThemeUtils.getThemedToolbarIconTint(getContext(), mBrandedColorScheme);
         mLocationBar.updateColors();
         setToolbarHairlineColor(background);
         notifyToolbarColorChanged(background);
