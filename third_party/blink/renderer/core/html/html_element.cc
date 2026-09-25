@@ -2119,8 +2119,11 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
     }
 
     // We only restore focus for popover=auto/hint, and only for the first
-    // popover in the stack. If there's nothing showing, restore focus.
-    should_restore_focus = !original_document.TopmostPopoverOrHint();
+    // popover in the stack (so we restore focus if there's no popover showing
+    // now), except for <menulist> elements which restore focus for each
+    // submenu level.
+    should_restore_focus = !original_document.TopmostPopoverOrHint() ||
+                           IsA<HTMLMenuListElement>(this);
 
     // Add this popover to the appropriate popover stack.
     CHECK(!append_to_stack->Contains(this));
