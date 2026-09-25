@@ -513,6 +513,20 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPHONE_DUO_27_1",
+    identifier = "iPhone Duo 27.1",
+    mixins = [
+        "ios_runtime_cache_27_1",
+    ],
+    args = [
+        "--platform",
+        "iPhone Duo",
+        "--version",
+        "27.1",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPHONE_14_PLUS_18_5",
     identifier = "iPhone 14 Plus 18.5",
     mixins = [

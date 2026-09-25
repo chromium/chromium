@@ -1830,7 +1830,6 @@ fyi_ios_builder(
             "mac_26_arm64",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_27_beta",
             "xctest",
         ],
     ),
