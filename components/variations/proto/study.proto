@@ -28,7 +28,7 @@ message Study {
 
   // DEPRECATED: Prefer end_date instead.
   // The expiry date of the study in Unix time format. (Seconds since midnight
-  // January 1, 1970 UTC). See: http://en.wikipedia.org/wiki/Unix_time
+  // January 1, 1970 UTC). See: https://en.wikipedia.org/wiki/Unix_time
   //
   // A study that has expired will be disabled, and users will be assigned
   // groups based on the default_experiment_name. This will take precedence over
@@ -222,7 +222,7 @@ message Study {
   repeated Experiment experiment = 9;
 
   // Possible Chrome release channels.
-  // See: http://dev.chromium.org/getting-involved/dev-channel
+  // See: https://dev.chromium.org/getting-involved/dev-channel
   enum Channel {
     // UNKNOWN value is defined here for the benefit of code using this enum
     // type, but is not actually meant to be encoded in the protobuf.
@@ -325,12 +325,12 @@ message Study {
   // Next tag: 28
   message Filter {
     // The start date of the study in Unix time format. (Seconds since midnight
-    // January 1, 1970 UTC). See: http://en.wikipedia.org/wiki/Unix_time
+    // January 1, 1970 UTC). See: https://en.wikipedia.org/wiki/Unix_time
     // Ex: 1330893974  (corresponds to 2012-03-04 20:46:14Z)
     int64 start_date = 1;
 
     // The end date of the study in Unix time format. (Seconds since midnight
-    // January 1, 1970 UTC). See: http://en.wikipedia.org/wiki/Unix_time
+    // January 1, 1970 UTC). See: https://en.wikipedia.org/wiki/Unix_time
     // Ex: 1330893974  (corresponds to 2012-03-04 20:46:14Z)
     // Mutually exclusive with expiry_date. The difference between end_date and
     // expiry_date is that, when end_date is past, the field trial will not be
@@ -553,6 +553,13 @@ message Study {
     // consistency.
     // Supported starting with version 142.0.7444.48.
     STICKY_AFTER_QUERY = 2;
+
+    // Like ACTIVATE_ON_QUERY, but if this study was applied in a runtime
+    // mutable way, it will also inherit the activation state from the trial it
+    // is overriding (if any). In particular, if it is overriding a trial that
+    // was already activated, then the study will be immediately activated.
+    // Otherwise, this study will be activated when its state is queried.
+    ACTIVATE_ON_QUERY_RUNTIME_INHERIT = 3;
   }
 
   // Activation type for this study. Defaults to ACTIVATE_ON_QUERY if omitted.

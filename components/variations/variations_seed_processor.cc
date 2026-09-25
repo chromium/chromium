@@ -172,9 +172,10 @@ void RegisterVariationIds(base::PassKey<VariationsSeedProcessor> pass_key,
 }
 
 // Whether the given study should be activated on startup.
-bool ShouldActivate(const Study& study,
-                    const std::string group_name,
-                    StickyActivationManager& sticky_activation_manager) {
+bool ShouldActivateOnStartup(
+    const Study& study,
+    const std::string group_name,
+    StickyActivationManager& sticky_activation_manager) {
   switch (study.activation_type()) {
     case Study::ACTIVATE_ON_STARTUP:
       return true;
@@ -182,6 +183,8 @@ bool ShouldActivate(const Study& study,
       return false;
     case Study::STICKY_AFTER_QUERY:
       return sticky_activation_manager.ShouldActivate(study.name(), group_name);
+    case Study::ACTIVATE_ON_QUERY_RUNTIME_INHERIT:
+      return false;
     case Study_ActivationType_Study_ActivationType_INT_MIN_SENTINEL_DO_NOT_USE_:
     case Study_ActivationType_Study_ActivationType_INT_MAX_SENTINEL_DO_NOT_USE_:
       // Part of the enum but won't be seen in practice. See processed_study.cc.
@@ -204,16 +207,16 @@ void ForceExperimentState(
 void AssociateDefaultFeatures(const Study& study,
                               base::FieldTrial* trial,
                               base::FeatureList* feature_list) {
-  // Note: We only compute feature associations for ACTIVATE_ON_QUERY studies,
-  // since these associations are only used to determine that the trial has
-  // been queried when the feature is queried.
-  // Note: We only compute feature associations for ACTIVATE_ON_QUERY and
-  // STICKY_AFTER_QUERY studies, since these associations are only used to
-  // ensure that the trial is activated when the feature is queried
+  // Note: We only compute feature associations for ACTIVATE_ON_QUERY,
+  // ACTIVATE_ON_QUERY_RUNTIME_INHERIT, and STICKY_AFTER_QUERY studies since
+  // these associations are only used to ensure that the trial is activated when
+  // the feature is queried.
   switch (study.activation_type()) {
     case Study::ACTIVATE_ON_STARTUP:
       return;
     case Study::ACTIVATE_ON_QUERY:
+      // fall-through:
+    case Study::ACTIVATE_ON_QUERY_RUNTIME_INHERIT:
       // fall-through:
     case Study::STICKY_AFTER_QUERY:
       break;
@@ -497,12 +500,12 @@ VariationsSeedProcessor::CreateTrialFromStudyImpl(
 
       // Note: Do not activate simulated trials. Activation is a no-op for them
       // (they are not registered and their group choice is already finalized),
-      // but ShouldActivate() has side effects for STICKY_AFTER_QUERY studies:
-      // it mutates StickyActivationManager's state and CHECK-fails once
-      // monitoring has started (i.e. after startup). A simulation must not
+      // but ShouldActivateOnStartup() has side effects for STICKY_AFTER_QUERY
+      // studies: it mutates StickyActivationManager's state and CHECK-fails
+      // once monitoring has started (i.e. after startup). A simulation must not
       // affect the real activation state.
-      if (!simulated && ShouldActivate(study, experiment.name(),
-                                       *sticky_activation_manager_)) {
+      if (!simulated && ShouldActivateOnStartup(study, experiment.name(),
+                                                *sticky_activation_manager_)) {
         // This call must happen after all params have been registered for the
         // trial. Otherwise, since we look up params by trial and group name,
         // the params won't be registered under the correct key.
@@ -590,7 +593,7 @@ VariationsSeedProcessor::CreateTrialFromStudyImpl(
 
   // Note: Do not activate simulated trials. See the note above.
   if (!simulated &&
-      ShouldActivate(study, group_name, *sticky_activation_manager_)) {
+      ShouldActivateOnStartup(study, group_name, *sticky_activation_manager_)) {
     // This call must happen after all params have been registered for the
     // trial. Otherwise, since we look up params by trial and group name, the
     // params won't be registered under the correct key.

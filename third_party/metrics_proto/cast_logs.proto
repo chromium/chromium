@@ -208,7 +208,8 @@ message CastLogsProto {
     // event and histogram.
     fixed64 name_hash = 1;
 
-    // The timestamp for the event, in milliseconds.
+    // A within-session timestamp for the event, in milliseconds.  Do not treat
+    // as an absolute timestamp.
     int64 time_msec = 2;
 
     // The Cast receiver app ID related with this event.

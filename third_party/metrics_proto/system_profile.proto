@@ -748,6 +748,7 @@ message SystemProfileProto {
   // enrolled in.
   // All metrics reported in this upload can potentially be influenced by the
   // field trial.
+  // Next tag: 4
   message FieldTrial {
     // The name of the field trial, as a 32-bit identifier.
     // Currently, the identifier is a hash of the field trial's name.
@@ -756,6 +757,13 @@ message SystemProfileProto {
     // The user's group within the field trial, as a 32-bit identifier.
     // Currently, the identifier is a hash of the group's name.
     fixed32 group_id = 2;
+
+    // Whether the field trial was applied in a runtime mutable way (rather
+    // than at startup Finch assignment). Note that this may mean that a
+    // previously reported field trial has stopped being applied and reported
+    // as a result of this runtime mutable field trial -- there will not be
+    // separate entries with the same name_id.
+    bool runtime_mutable = 3;
   }
 
   repeated FieldTrial field_trial = 9;
