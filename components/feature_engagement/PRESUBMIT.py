@@ -21,6 +21,7 @@ def _CommonChecks(input_api, output_api):
   results.extend(_CheckNoComparatorAny(input_api, output_api))
   results.extend(_CheckNoRedundantNamespaceQualifier(input_api, output_api))
   results.extend(_CheckAlwaysTrueInUsedOrTrigger(input_api, output_api))
+  results.extend(_CheckEventConfigComparatorAndWindow(input_api, output_api))
   return results
 
 def _CheckFeatureListSorting(input_api, output_api):
@@ -264,7 +265,6 @@ def _CheckNoRedundantNamespaceQualifier(input_api, output_api):
 
   return results
 
-
 def _CheckAlwaysTrueInUsedOrTrigger(input_api, output_api):
   """Warns when used or trigger EventConfig uses kAlwaysTrue or equivalent."""
   results = []
@@ -299,3 +299,28 @@ def _CheckAlwaysTrueInUsedOrTrigger(input_api, output_api):
 
   return results
 
+
+def _CheckEventConfigComparatorAndWindow(input_api, output_api):
+  """Checks that EventConfig uses an ANY comparator iff window is 0."""
+  results = []
+  any_comp_re = input_api.re.compile(_ANY_COMPARATOR_PATTERN)
+
+  for f in _IterAffectedCppFiles(input_api):
+    local_path = f.LocalPath()
+    for line_num, stmt in _IterChangedStatements(input_api, f):
+      for _, args in _ExtractEventConfigs(input_api, stmt):
+        comparator = args[1]
+        window = args[2]
+        is_any = bool(any_comp_re.fullmatch(comparator))
+        is_zero_window = bool(input_api.re.fullmatch(r'0[uU]?', window))
+        if is_any != is_zero_window:
+          message = (
+              f'{local_path}:{line_num}: EventConfig must use an ANY '
+              f'comparator (e.g. kAlwaysTrue) if and only if window is 0 '
+              f'(found comparator `{comparator}` with window `{window}`). '
+              f'See https://chromium.googlesource.com/chromium/src/+/main/'
+              f'components/feature_engagement/README.md#comparator for details.'
+          )
+          results.append(output_api.PresubmitError(message))
+
+  return results

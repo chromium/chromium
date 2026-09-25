@@ -206,7 +206,7 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
       'components/feature_engagement/public/feature_configurations.cc',
       [],
       [(45, 'config.trigger = EventConfig('
-            '"iph_feature_trigger", Comparator(ANY, 0), 90, 90);')])]
+            '"iph_feature_trigger", Comparator(ANY, 0), 0, 90);')])]
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
     errors = [r for r in results if r.type == 'Error']
     self.assertEqual(1, len(errors))
@@ -221,7 +221,7 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
       'components/feature_engagement/public/feature_configurations.cc',
       [],
       [(48, 'config.used = EventConfig('
-            '"iph_feature_used", Comparator(ANY, 0), 90, 90);')])]
+            '"iph_feature_used", Comparator(ANY, 0), 0, 90);')])]
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
     errors = [r for r in results if r.type == 'Error']
     self.assertEqual(1, len(errors))
@@ -236,7 +236,7 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
       'components/feature_engagement/public/feature_configurations.cc',
       [],
       [(52, 'config.event_configs.insert('
-            'EventConfig("other_event", Comparator(ANY, 0), 30, 30));')])]
+            'EventConfig("other_event", Comparator(ANY, 0), 0, 30));')])]
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
     self.assertEqual(1, len(results))
     self.assertEqual('Error', results[0].type)
@@ -251,11 +251,11 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
       'components/feature_engagement/public/feature_configurations.cc',
       [],
       [(45, 'config.trigger = EventConfig('
-            '"iph_feature_trigger", kAlwaysTrue, 90, 90);'),
+            '"iph_feature_trigger", kAlwaysTrue, 0, 90);'),
        (48, 'config.used = EventConfig('
-            '"iph_feature_used", kAlwaysTrue, 90, 90);'),
+            '"iph_feature_used", kAlwaysTrue, 0, 90);'),
        (52, 'config.event_configs.insert('
-            'EventConfig("other_event", kAlwaysTrue, 30, 30));')])]
+            'EventConfig("other_event", kAlwaysTrue, 0, 30));')])]
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
     errors = [r for r in results if r.type == 'Error']
     self.assertEqual(0, len(errors))
@@ -379,6 +379,45 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
       self.assertEqual('Warning', res.type)
       self.assertIn('passive data recording only', res.message)
 
+  def testEventConfigComparatorAndWindow_Valid(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(10, 'config.trigger = EventConfig('
+            '"iph_trigger", kAlwaysTrue, /* window= */ 0, 90);'),
+       (11, 'config.used = EventConfig('
+            '"iph_used", Comparator(EQUAL, 0), 90, 90);')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(0, len(errors))
+
+  def testEventConfigComparatorAndWindow_AlwaysTrueWithNonZeroWindow(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(10, 'config.trigger = EventConfig('
+            '"iph_trigger", kAlwaysTrue, 90, 90);'),
+       (15, 'config.used = EventConfig('
+            '"iph_used", kNoRestrictions, 360, 360);')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(2, len(errors))
+    self.assertIn('if and only if window is 0', errors[0].message)
+    self.assertIn('if and only if window is 0', errors[1].message)
+
+  def testEventConfigComparatorAndWindow_ZeroWindowWithNonAnyComparator(self):
+    input_api = MockInputApi()
+    input_api.files = [MockFile(
+      'components/feature_engagement/public/feature_configurations.cc',
+      [],
+      [(20, 'config.used = EventConfig('
+            '"iph_used", Comparator(EQUAL, 0), 0, 90);')])]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(1, len(results))
+    self.assertEqual('Error', results[0].type)
+    self.assertIn('if and only if window is 0', results[0].message)
 
 if __name__ == '__main__':
   unittest.main()
