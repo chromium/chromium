@@ -2813,17 +2813,8 @@ IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
   }
 }
 
-// TODO(crbug.com/482434165, crbug.com/563615151): Flaky test on Win and Mac
-// builders.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_InterleavedAction_OutOfTurnNavigation \
-  DISABLED_InterleavedAction_OutOfTurnNavigation
-#else
-#define MAYBE_InterleavedAction_OutOfTurnNavigation \
-  InterleavedAction_OutOfTurnNavigation
-#endif
 IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
-                       MAYBE_InterleavedAction_OutOfTurnNavigation) {
+                       InterleavedAction_OutOfTurnNavigation) {
   const OutOfTurnTestParam& param = GetParam();
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
@@ -2862,9 +2853,37 @@ IN_PROC_BROWSER_TEST_P(OutOfTurnNavigationBrowserTest,
   nav_observer.Wait();
 
   if (param.expects_permission_granted) {
-    ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
-    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
-    EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
+    ASSERT_EQ(result.Get().size(), 1u);
+    // The action and the out-of-turn navigation race, so we handle multiple
+    // outcomes below.
+    if (IsOk(*result.Get()[0].result)) {
+      // The click was not interrupted by the navigation committing before
+      // time-of-use validation, and returned kOk.
+      if (param.ui_prompt_type == UiPromptType::kNone) {
+        // A navigation that needs no prompt is not tied to the action
+        // sequence, so it can't be canceled by the click finishing and must
+        // have succeeded.
+        EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+        EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
+      } else {
+        // A prompted navigation either:
+        // - was resumed before the click finished and committed while or
+        //   after the click ran (PageTool::OnRenderFrameHostChanged reports
+        //   kOk), so it succeeded; or
+        // - was still waiting on the prompt when the click finished, which
+        //   invalidated the action-sequence-bound WeakPtr that the prompt
+        //   response relies on, so it was canceled.
+        EXPECT_EQ(
+            web_contents()->GetLastCommittedURL(),
+            nav_observer.last_navigation_succeeded() ? target_url : start_url);
+      }
+    } else {
+      // The navigation committed before the click's time-of-use validation,
+      // so the click failed with kFrameWentAway and the navigation succeeded.
+      ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
+      EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+      EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
+    }
   } else {
     ExpectOkResult(result);
     EXPECT_FALSE(nav_observer.last_navigation_succeeded());
