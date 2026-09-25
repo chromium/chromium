@@ -642,11 +642,6 @@ inline constexpr char kNewHorizontalPinnedTabStylingName[] =
 inline constexpr char kNewHorizontalPinnedTabStylingDescription[] =
     "Enables the updated pinned tab style in the new horizontal tab strip.";
 
-inline constexpr char kEnableSeamlessSigninName[] = "Enable Seamless Sign-in";
-inline constexpr char kEnableSeamlessSigninDescription[] =
-    "Enables the Seamless Sign-in flow that signs in the user without showing "
-    "an additional bottom sheet when the sign-in promo button is clicked.";
-
 inline constexpr char kEnableActivitylessSigninAllEntryPointName[] =
     "Enable activityless sign-in for all entry points";
 inline constexpr char kEnableActivitylessSigninAllEntryPointDescription[] =

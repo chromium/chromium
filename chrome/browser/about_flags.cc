@@ -4462,28 +4462,6 @@ const FeatureEntry::FeatureVariation kMagiChromePasskeySignInVariations[] = {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kSeamlessSigninTwoButtonsContinue[] = {
-    {"seamless-signin-promo-type", "twoButtons"},
-    {"seamless-signin-string-type", "continueButton"}};
-const FeatureEntry::FeatureParam kSeamlessSigninCompactContinue[] = {
-    {"seamless-signin-promo-type", "compact"},
-    {"seamless-signin-string-type", "continueButton"}};
-const FeatureEntry::FeatureParam kSeamlessSigninTwoButtonsSignin[] = {
-    {"seamless-signin-promo-type", "twoButtons"},
-    {"seamless-signin-string-type", "signinButton"}};
-const FeatureEntry::FeatureParam kSeamlessSigninCompactSignin[] = {
-    {"seamless-signin-promo-type", "compact"},
-    {"seamless-signin-string-type", "signinButton"}};
-const FeatureEntry::FeatureVariation kSeamlessSigninVariations[] = {
-    {"with two buttons layout and \"Continue as\" button (group 1)",
-     kSeamlessSigninTwoButtonsContinue, nullptr},
-    {"with compact layout and \"Continue as\" button (group 2)",
-     kSeamlessSigninCompactContinue, nullptr},
-    {"with two buttons layout and \"Sign in as\" button (group 3)",
-     kSeamlessSigninTwoButtonsSignin, nullptr},
-    {"with compact layout and \"Sign in as\" button (group 4)",
-     kSeamlessSigninCompactSignin, nullptr}};
-
 const FeatureEntry::FeatureParam kCrossDeviceSigninDefaultUrl[] = {
     {"url", "https://www.google.com/chrome/go-mobile"},
 };
@@ -11893,12 +11871,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"enable-seamless-signin", flag_descriptions::kEnableSeamlessSigninName,
-     flag_descriptions::kEnableSeamlessSigninDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kEnableSeamlessSignin,
-                                    kSeamlessSigninVariations,
-                                    "SeamlessSigninVariations")},
-
     {"cross-device-signin", flag_descriptions::kCrossDeviceSigninName,
      flag_descriptions::kCrossDeviceSigninDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kCrossDeviceSignin,

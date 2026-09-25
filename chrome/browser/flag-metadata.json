@@ -4420,11 +4420,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-seamless-signin",
-    "owners": [ "myuu@google.com", "chrome-signin-mobile-team@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-segmentation-internals-survey",
     "owners": ["ssid@chromium.org", "chrome-segmentation-team@google.com" ],
     "expiry_milestone": 132

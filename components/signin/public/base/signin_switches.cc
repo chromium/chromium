@@ -575,31 +575,6 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kEnablePreferencesAccountStorage,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kEnableSeamlessSignin, base::FEATURE_ENABLED_BY_DEFAULT);
-// Determines the sign-in promo UI that is shown when kEnableSeamlessSignin is
-// enabled.
-constexpr base::FeatureParam<SeamlessSigninPromoType>::Option
-    kSeamlessSigninPromoTypes[] = {
-        {SeamlessSigninPromoType::kCompact, "compact"},
-        {SeamlessSigninPromoType::kTwoButtons, "twoButtons"},
-};
-constexpr base::FeatureParam<SeamlessSigninPromoType> kSeamlessSigninPromoType{
-    &kEnableSeamlessSignin, "seamless-signin-promo-type",
-    SeamlessSigninPromoType::kCompact, &kSeamlessSigninPromoTypes};
-// Determines the sign-in promo strings that are shown when
-// kEnableSeamlessSignin is enabled.
-constexpr base::FeatureParam<SeamlessSigninStringType>::Option
-    kSeamlessSigninStringTypes[] = {
-        {SeamlessSigninStringType::kContinueButton, "continueButton"},
-        {SeamlessSigninStringType::kSigninButton, "signinButton"},
-};
-constexpr base::FeatureParam<SeamlessSigninStringType>
-    kSeamlessSigninStringType{
-        &kEnableSeamlessSignin, "seamless-signin-string-type",
-        SeamlessSigninStringType::kContinueButton, &kSeamlessSigninStringTypes};
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kEnableSearchAIModeSigninPromo, base::FEATURE_DISABLED_BY_DEFAULT);
 // The delay we allow for the AIM search result to load before we display the

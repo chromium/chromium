@@ -70,9 +70,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
      * ChromePreferenceKeys#SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME} and {@link
      * ChromePreferenceKeys#SIGNIN_PROMO_NTP_LAST_SHOWN_TIME} to allow the promo card to show again.
      */
-    // TODO(crbug.com/469775981): make this private once Seamless sign-in is launched and the class
-    // SignInPromo has been removed.
-    public static void resetNtpSyncPromoLimitsIfHiddenForTooLong() {
+    static void resetNtpSyncPromoLimitsIfHiddenForTooLong() {
         final long currentTime = TimeUtils.currentTimeMillis();
         final long resetAfterMs = NTP_SYNC_PROMO_RESET_AFTER_DAYS * DateUtils.DAY_IN_MILLIS;
         final long lastShownTime =
@@ -235,12 +233,6 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
                         == null
                 ? PromoState.NONE
                 : PromoState.SIGNIN;
-    }
-
-    // TODO(crbug.com/448227402): Remove this after removing the class SignInPromo once Seamless
-    // Sign-in is launched.
-    public static long getSuppressionPeriodMs() {
-        return SUPPRESSION_PERIOD_MS;
     }
 
     private static boolean isPromoSuppressed() {

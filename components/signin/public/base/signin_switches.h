@@ -461,33 +461,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kOAuthMultiloginYoutubeCookieBindingEnforced);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnableSeamlessSignin);
-enum class SeamlessSigninPromoType {
-  // Compact design with a single button to sign in and a dropdown icon for
-  // changing account.
-  kCompact,
-  // Design with a button to sign in and a button for changing account, similar
-  // to the current promo.
-  kTwoButtons,
-};
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<SeamlessSigninPromoType>
-    kSeamlessSigninPromoType;
-enum class SeamlessSigninStringType {
-  // Strings with "Sign in to Chrome" in the title and "Continue as" in the
-  // primary button
-  kContinueButton,
-  // Strings with "Sign in to Chrome" in the description and "Sign in as" in the
-  // primary button
-  kSigninButton,
-};
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<SeamlessSigninStringType>
-    kSeamlessSigninStringType;
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableSearchAIModeSigninPromo);
