@@ -40,5 +40,7 @@ specific_include_rules = {
   ".*unittest\\.cc": [
     "+ash/test/ash_test_base.h",
     "+chromeos/ash/components/settings",
+    "+components/account_id",
+    "+google_apis/gaia",
   ]
 }

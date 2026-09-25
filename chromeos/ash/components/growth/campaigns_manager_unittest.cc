@@ -33,8 +33,9 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -277,7 +278,11 @@ class CampaignsManagerTest : public testing::Test {
     testing::Test::SetUp();
 
     InitializePrefService();
-    InitializeUserManager();
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_->registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            local_state_.get());
 
     campaigns_manager_ =
         std::make_unique<CampaignsManager>(&mock_client_, local_state_.get());
@@ -286,10 +291,8 @@ class CampaignsManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    // Clean up user manager.
-    fake_user_manager_->Shutdown();
-    fake_user_manager_->Destroy();
-    fake_user_manager_.reset();
+    campaigns_manager_.reset();
+    user_session_test_environment_.reset();
 
     testing::Test::TearDown();
   }
@@ -406,7 +409,8 @@ class CampaignsManagerTest : public testing::Test {
   }
 
   void VerifyOwnerAccountValid(bool is_valid) {
-    const AccountId& owner_account_id = fake_user_manager_->GetOwnerAccountId();
+    const AccountId& owner_account_id =
+        user_manager::UserManager::Get()->GetOwnerAccountId();
     ASSERT_EQ(is_valid, owner_account_id.is_valid());
   }
 
@@ -594,10 +598,11 @@ class CampaignsManagerTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestingPrefServiceSimple> pref_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<CampaignsManager> campaigns_manager_;
   // A sub-class might override this from `InitializeScopedFeatureList`.
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<user_manager::FakeUserManager> fake_user_manager_;
 
  private:
   void InitializePrefService() {
@@ -614,13 +619,6 @@ class CampaignsManagerTest : public testing::Test {
         kTestPref1, base::ListValue().Append("v0").Append("v1"));
     pref_->registry()->RegisterStringPref(kTestPref2, "v2");
     pref_->registry()->RegisterBooleanPref(kTestPref3, true);
-  }
-
-  void InitializeUserManager() {
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_->registry());
-    fake_user_manager_ =
-        std::make_unique<user_manager::FakeUserManager>(local_state_.get());
-    fake_user_manager_->Initialize();
   }
 };
 

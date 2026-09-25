@@ -21,3 +21,9 @@ include_rules = [
   "+ash/webui/grit/ash_print_management_resources.h",
   "+ash/webui/grit/ash_personalization_app_resources.h"
 ]
+
+specific_include_rules = {
+  ".*unittest\\.cc": [
+    "+components/session_manager/test",
+  ],
+}

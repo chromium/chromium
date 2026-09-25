@@ -9,13 +9,38 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+constexpr AccountId::Literal kAffiliatedUserAccount =
+    AccountId::Literal::FromUserEmailGaiaId("user1@gmail.com",
+                                            GaiaId::Literal("fakegaia1"));
+constexpr AccountId::Literal kUnaffiliatedUserAccount =
+    AccountId::Literal::FromUserEmailGaiaId("user2@gmail.com",
+                                            GaiaId::Literal("fakegaia2"));
+
+template <size_t N>
+void CheckPrefsSyncableFlags(const PrefService& prefs,
+                             const std::array<const char*, N>& pref_names,
+                             bool expect_sync) {
+  for (const char* pref_name : pref_names) {
+    const auto* pref = prefs.FindPreference(pref_name);
+    ASSERT_TRUE(pref) << pref_name;
+    const uint32_t flags = pref->registration_flags();
+    bool is_syncable =
+        (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF) != 0;
+    EXPECT_EQ(expect_sync, is_syncable);
+  }
+}
 
 class BocaRoleUtilTest : public testing::Test {
  public:
@@ -23,56 +48,58 @@ class BocaRoleUtilTest : public testing::Test {
   ~BocaRoleUtilTest() override = default;
 
   void SetUp() override {
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
-    ash::boca_util::RegisterPrefs(local_state_.registry());
-    user_manager_ =
-        std::make_unique<user_manager::FakeUserManager>(&local_state_);
-    user_manager_->Initialize();
-    affiliated_user_ = user_manager_->AddGaiaUser(
-        affiliated_user_account_, user_manager::UserType::kRegular);
-    user_manager_->SetUserPolicyStatus(affiliated_user_account_,
-                                       /*is_managed=*/true,
-                                       /*is_affiliated=*/true);
-    unaffiliated_user_ = user_manager_->AddGaiaUser(
-        unaffiliated_user_account_, user_manager::UserType::kRegular);
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    ash::boca_util::RegisterPrefs(affiliated_user_prefs_.registry());
+    ash::boca_util::RegisterPrefs(unaffiliated_user_prefs_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+    affiliated_user_ =
+        user_session_test_environment_->AddRegularUser(kAffiliatedUserAccount);
+    ASSERT_TRUE(affiliated_user_);
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        kAffiliatedUserAccount,
+        /*is_managed=*/true,
+        /*is_affiliated=*/true);
+    unaffiliated_user_ = user_session_test_environment_->AddRegularUser(
+        kUnaffiliatedUserAccount);
+    ASSERT_TRUE(unaffiliated_user_);
+    user_manager::UserManager::Get()->OnUserProfileCreated(
+        kAffiliatedUserAccount, &affiliated_user_prefs_);
+    user_manager::UserManager::Get()->OnUserProfileCreated(
+        kUnaffiliatedUserAccount, &unaffiliated_user_prefs_);
   }
 
   void TearDown() override {
+    user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
+        kUnaffiliatedUserAccount);
+    user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
+        kAffiliatedUserAccount);
     affiliated_user_ = nullptr;
     unaffiliated_user_ = nullptr;
-    user_manager_->Destroy();
-    user_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
-  template <size_t N>
-  void CheckPrefsSyncableFlags(const std::array<const char*, N>& pref_names,
-                               bool expect_sync) {
-    for (const char* pref_name : pref_names) {
-      const auto* pref = local_state_.FindPreference(pref_name);
-      ASSERT_TRUE(pref) << pref_name;
-      const uint32_t flags = pref->registration_flags();
-      bool is_syncable =
-          (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF) != 0;
-      EXPECT_EQ(expect_sync, is_syncable);
-    }
-  }
-  const AccountId affiliated_user_account_ =
-      AccountId::FromUserEmailGaiaId("user1@gmail.com", GaiaId("fakegaia1"));
-  const AccountId unaffiliated_user_account_ =
-      AccountId::FromUserEmailGaiaId("user2@gmail.com", GaiaId("fakegaia2"));
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple local_state_;
-  raw_ptr<const user_manager::User> affiliated_user_;
-  raw_ptr<const user_manager::User> unaffiliated_user_;
-  std::unique_ptr<user_manager::FakeUserManager> user_manager_;
+  // Profile prefs, one per user so values cannot leak between them.
+  TestingPrefServiceSimple affiliated_user_prefs_;
+  TestingPrefServiceSimple unaffiliated_user_prefs_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<const user_manager::User> affiliated_user_ = nullptr;
+  raw_ptr<const user_manager::User> unaffiliated_user_ = nullptr;
 };
 
 TEST_F(BocaRoleUtilTest, TestCheckPrefsSyncableFlags) {
+  TestingPrefServiceSimple prefs;
+  ash::boca_util::RegisterPrefs(prefs.registry());
+
   constexpr auto kSyncablePrefs = std::to_array<const char*>(
       {ash::prefs::kClassManagementToolsOOBEAccessCountSetting,
        ash::prefs::kClassManagementToolsKioskReceiverCodes});
-  CheckPrefsSyncableFlags(kSyncablePrefs, /*expect_sync=*/true);
+  CheckPrefsSyncableFlags(prefs, kSyncablePrefs, /*expect_sync=*/true);
 
   constexpr auto kNonSyncablePrefs = std::to_array<const char*>(
       {ash::prefs::kClassManagementToolsAvailabilitySetting,
@@ -81,42 +108,36 @@ TEST_F(BocaRoleUtilTest, TestCheckPrefsSyncableFlags) {
        ash::prefs::kClassManagementToolsClassroomEligibilitySetting,
        ash::prefs::kClassManagementToolsViewScreenEligibilitySetting,
        ash::prefs::kClassManagementToolsNetworkRestrictionSetting});
-  CheckPrefsSyncableFlags(kNonSyncablePrefs, /*expect_sync=*/false);
+  CheckPrefsSyncableFlags(prefs, kNonSyncablePrefs, /*expect_sync=*/false);
 }
 
 TEST_F(BocaRoleUtilTest, TestDisabledForUnAffliatedUser) {
-  user_manager_->OnUserProfileCreated(unaffiliated_user_account_,
-                                      &local_state_);
   EXPECT_FALSE(ash::boca_util::IsEnabled(unaffiliated_user_));
 }
 
 TEST_F(BocaRoleUtilTest, TestBocaDisabledFromPref) {
-  user_manager_->OnUserProfileCreated(affiliated_user_account_, &local_state_);
-  local_state_.SetString(ash::prefs::kClassManagementToolsAvailabilitySetting,
-                         "disabled");
+  affiliated_user_prefs_.SetString(
+      ash::prefs::kClassManagementToolsAvailabilitySetting, "disabled");
   EXPECT_FALSE(ash::boca_util::IsEnabled(affiliated_user_));
 }
 
 TEST_F(BocaRoleUtilTest, TestBocaDisabledByDefaultFromPref) {
-  user_manager_->OnUserProfileCreated(affiliated_user_account_, &local_state_);
-  local_state_.SetString(ash::prefs::kClassManagementToolsAvailabilitySetting,
-                         "");
+  affiliated_user_prefs_.SetString(
+      ash::prefs::kClassManagementToolsAvailabilitySetting, "");
   EXPECT_FALSE(ash::boca_util::IsEnabled(affiliated_user_));
 }
 
 TEST_F(BocaRoleUtilTest, TestBocaSetTeacherFromPref) {
-  user_manager_->OnUserProfileCreated(affiliated_user_account_, &local_state_);
-  local_state_.SetString(ash::prefs::kClassManagementToolsAvailabilitySetting,
-                         "teacher");
+  affiliated_user_prefs_.SetString(
+      ash::prefs::kClassManagementToolsAvailabilitySetting, "teacher");
   EXPECT_TRUE(ash::boca_util::IsEnabled(affiliated_user_));
   EXPECT_TRUE(ash::boca_util::IsProducer(affiliated_user_));
   EXPECT_FALSE(ash::boca_util::IsConsumer(affiliated_user_));
 }
 
 TEST_F(BocaRoleUtilTest, TestBocaSetStudentFromPref) {
-  user_manager_->OnUserProfileCreated(affiliated_user_account_, &local_state_);
-  local_state_.SetString(ash::prefs::kClassManagementToolsAvailabilitySetting,
-                         "student");
+  affiliated_user_prefs_.SetString(
+      ash::prefs::kClassManagementToolsAvailabilitySetting, "student");
   EXPECT_TRUE(ash::boca_util::IsEnabled(affiliated_user_));
   EXPECT_FALSE(ash::boca_util::IsProducer(affiliated_user_));
   EXPECT_TRUE(ash::boca_util::IsConsumer(affiliated_user_));

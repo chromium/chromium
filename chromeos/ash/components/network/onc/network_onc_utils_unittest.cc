@@ -23,16 +23,25 @@
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/components/onc/variable_expander.h"
 #include "chromeos/test/chromeos_test_utils.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::onc {
 
 namespace test_utils = ::chromeos::onc::test_utils;
+
+namespace {
+
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("account@test.com",
+                                            GaiaId::Literal("fakegaia"));
+
+}  // namespace
 
 class ONCUtilsTest : public testing::Test {
  public:
@@ -42,19 +51,14 @@ class ONCUtilsTest : public testing::Test {
   ~ONCUtilsTest() override = default;
 
   void SetUp() override {
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
-    auto fake_user_manager =
-        std::make_unique<user_manager::FakeUserManager>(&local_state_);
-    auto account_id =
-        AccountId::FromUserEmailGaiaId("account@test.com", GaiaId("fakegaia"));
-    const user_manager::User* user = fake_user_manager->AddGaiaUser(
-        account_id, user_manager::UserType::kRegular);
-    fake_user_manager->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-    fake_user_manager->SwitchActiveUser(account_id);
-
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+    const user_manager::User* user =
+        user_session_test_environment_->AddRegularUser(kTestAccountId);
+    ASSERT_TRUE(user);
+    user_session_test_environment_->LogIn(kTestAccountId);
 
     network_handler_test_helper_ =
         std::make_unique<ash::NetworkHandlerTestHelper>();
@@ -66,13 +70,14 @@ class ONCUtilsTest : public testing::Test {
 
   void TearDown() override {
     network_handler_test_helper_.reset();
-    scoped_user_manager_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
 };
 
