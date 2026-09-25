@@ -22,7 +22,7 @@ TEST(FuzzerConfigTest, DictOnly) {
   base::FilePath exe_path;
   base::PathService::Get(base::FILE_EXE, &exe_path);
   std::string launcher_path =
-    exe_path.DirName().Append("check_fuzzer_config.py").value();
+      exe_path.DirName().Append("check_fuzzer_config.py").value();
 
   std::string output;
   base::CommandLine cmd(
@@ -37,17 +37,26 @@ TEST(FuzzerConfigTest, DictOnly) {
   EXPECT_EQ(fuzzer_args[0], "dict=test_dict_only.dict");
 }
 
-
 TEST(FuzzerConfigTest, ConfigOnly) {
   // Test of .options file for fuzzer with libfuzzer_options and without dict.
   base::FilePath exe_path;
   base::PathService::Get(base::FILE_EXE, &exe_path);
   std::string launcher_path =
-    exe_path.DirName().Append("check_fuzzer_config.py").value();
+      exe_path.DirName().Append("check_fuzzer_config.py").value();
 
   std::string output;
+
+  // When using the FuzzTest LLVM wrapper, only the wrapped binary has an
+  // options file.
+#if BUILDFLAG(USE_CENTIPEDE)
+  std::string options_filename =
+      "test_config_only_LLVMFuzzer_TestOneInput_fuzzer.options";
+#else
+  std::string options_filename = "test_config_only.options";
+#endif
+
   base::CommandLine cmd(
-      std::vector<std::string>({launcher_path, "test_config_only.options"}));
+      std::vector<std::string>({launcher_path, options_filename}));
   bool success = base::GetAppOutputAndError(cmd, &output);
   EXPECT_TRUE(success);
   std::vector<std::string> fuzzer_args = base::SplitString(
@@ -59,13 +68,12 @@ TEST(FuzzerConfigTest, ConfigOnly) {
   EXPECT_EQ(fuzzer_args[1], "max_len=1024");
 }
 
-
 TEST(FuzzerConfigTest, ConfigAndDict) {
   // Test of .options file for fuzzer with options file and dictionary.
   base::FilePath exe_path;
   base::PathService::Get(base::FILE_EXE, &exe_path);
   std::string launcher_path =
-    exe_path.DirName().Append("check_fuzzer_config.py").value();
+      exe_path.DirName().Append("check_fuzzer_config.py").value();
 
   std::string output;
   base::CommandLine cmd(std::vector<std::string>(
@@ -88,7 +96,7 @@ TEST(FuzzerConfigTest, ConfigAndSeedCorpus) {
   base::FilePath exe_path;
   base::PathService::Get(base::FILE_EXE, &exe_path);
   std::string launcher_path =
-    exe_path.DirName().Append("check_fuzzer_config.py").value();
+      exe_path.DirName().Append("check_fuzzer_config.py").value();
 
   std::string output;
   base::CommandLine cmd(std::vector<std::string>(
@@ -103,7 +111,7 @@ TEST(FuzzerConfigTest, ConfigAndSeedCorpus) {
 
   // Test seed_corpus archive.
   launcher_path =
-    exe_path.DirName().Append("check_seed_corpus_archive.py").value();
+      exe_path.DirName().Append("check_seed_corpus_archive.py").value();
 
   cmd = base::CommandLine(std::vector<std::string>(
       {launcher_path, "test_config_and_seed_corpus_seed_corpus.zip"}));
@@ -120,13 +128,12 @@ TEST(FuzzerConfigTest, ConfigAndSeedCorpus) {
 #endif
 }
 
-
 TEST(FuzzerConfigTest, ConfigAndSeedCorpuses) {
   // Test of .options file for fuzzer with libfuzzer_options and seed corpuses.
   base::FilePath exe_path;
   base::PathService::Get(base::FILE_EXE, &exe_path);
   std::string launcher_path =
-    exe_path.DirName().Append("check_fuzzer_config.py").value();
+      exe_path.DirName().Append("check_fuzzer_config.py").value();
 
   std::string output;
   base::CommandLine cmd(std::vector<std::string>(
@@ -141,7 +148,7 @@ TEST(FuzzerConfigTest, ConfigAndSeedCorpuses) {
 
   // Test seed_corpus archive.
   launcher_path =
-    exe_path.DirName().Append("check_seed_corpus_archive.py").value();
+      exe_path.DirName().Append("check_seed_corpus_archive.py").value();
 
   cmd = base::CommandLine(std::vector<std::string>(
       {launcher_path, "test_config_and_seed_corpuses_seed_corpus.zip"}));
@@ -158,13 +165,12 @@ TEST(FuzzerConfigTest, ConfigAndSeedCorpuses) {
 #endif  // BUILDFLAG(ARCHIVE_SEED_CORPUS)
 }
 
-
 TEST(FuzzerConfigTest, DictSubdir) {
   // Test of auto-generated .options file for fuzzer with dict in sub-directory.
   base::FilePath exe_path;
   base::PathService::Get(base::FILE_EXE, &exe_path);
   std::string launcher_path =
-    exe_path.DirName().Append("check_fuzzer_config.py").value();
+      exe_path.DirName().Append("check_fuzzer_config.py").value();
 
   std::string output;
   base::CommandLine cmd(std::vector<std::string>(

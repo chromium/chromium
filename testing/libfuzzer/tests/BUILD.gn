@@ -61,6 +61,7 @@ test("fuzzing_unittests") {
       ]
       if (use_centipede) {
         data_deps += [
+          ":test_config_only_LLVMFuzzer_TestOneInput_fuzzer__generate",
           ":wrapped_llvm_crashing_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
           ":wrapped_llvm_stub_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
         ]
