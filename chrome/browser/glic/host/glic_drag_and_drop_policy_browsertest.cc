@@ -40,11 +40,13 @@
 namespace glic {
 namespace {
 
-class GlicDragAndDropPolicyTest : public GlicDragAndDropTestBase {
+class GlicDragAndDropPolicyTest : public GlicDragAndDropTestBase,
+                                  public testing::WithParamInterface<bool> {
  public:
   GlicDragAndDropPolicyTest()
       : GlicDragAndDropTestBase(
-            GlicTestJsPath("./glic_drag_and_drop_policy_browsertest.js")) {}
+            GlicTestJsPath("./glic_drag_and_drop_policy_browsertest.js"),
+            GetParam()) {}
 
   void SetUpOnMainThread() override {
     GlicDragAndDropTestBase::SetUpOnMainThread();
@@ -99,7 +101,7 @@ class GlicDragAndDropPolicyTest : public GlicDragAndDropTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testDragAndDropDlp) {
+IN_PROC_BROWSER_TEST_P(GlicDragAndDropPolicyTest, testDragAndDropDlp) {
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(
           &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
@@ -142,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testDragAndDropDlp) {
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testDragAndDropDlpBlocked) {
+IN_PROC_BROWSER_TEST_P(GlicDragAndDropPolicyTest, testDragAndDropDlpBlocked) {
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(
           &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
@@ -209,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testDragAndDropDlpBlocked) {
 #else
 #define MAYBE_testWebToGlicDragDlpBlocked testWebToGlicDragDlpBlocked
 #endif
-IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
+IN_PROC_BROWSER_TEST_P(GlicDragAndDropPolicyTest,
                        MAYBE_testWebToGlicDragDlpBlocked) {
   enterprise_connectors::test::SetAnalysisConnector(
       GetProfile()->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY,
@@ -329,6 +331,13 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
                                       GlicDragAndDropValidationResult::kSuccess,
                                       1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicDragAndDropPolicyTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NoWebview" : "Webview";
+                         });
 
 }  // namespace
 }  // namespace glic

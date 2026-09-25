@@ -94,12 +94,13 @@ bool GlicView::CanDragEnter(content::WebContents* source,
   if (!base::FeatureList::IsEnabled(features::kGlicDragAndDropFileUpload)) {
     return false;
   }
-  // Check for local files or URLs.
+  // Check for local files, URLs, or image contents.
   bool has_files = !data.filenames.empty() || !data.file_system_files.empty();
-  bool has_url = !data.url_infos.empty();
+  bool has_web_data = !data.url_infos.empty() || !data.file_contents.empty();
 
-  return has_files || (has_url && base::FeatureList::IsEnabled(
-                                      features::kGlicWebDragAndDropFileUpload));
+  return has_files ||
+         (has_web_data && base::FeatureList::IsEnabled(
+                              features::kGlicWebDragAndDropFileUpload));
 }
 
 void GlicView::ContentsZoomChange(bool zoom_in) {

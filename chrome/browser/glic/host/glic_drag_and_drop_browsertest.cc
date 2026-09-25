@@ -16,14 +16,16 @@
 namespace glic {
 namespace {
 
-class GlicDragAndDropBrowserTest : public GlicDragAndDropTestBase {
+class GlicDragAndDropBrowserTest : public GlicDragAndDropTestBase,
+                                   public testing::WithParamInterface<bool> {
  public:
   GlicDragAndDropBrowserTest()
       : GlicDragAndDropTestBase(
-            GlicTestJsPath("./glic_drag_and_drop_browsertest.js")) {}
+            GlicTestJsPath("./glic_drag_and_drop_browsertest.js"),
+            GetParam()) {}
 };
 
-IN_PROC_BROWSER_TEST_F(GlicDragAndDropBrowserTest, testDragAndDropFile) {
+IN_PROC_BROWSER_TEST_P(GlicDragAndDropBrowserTest, testDragAndDropFile) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
                        OpenGlicForActiveTab());
   Host* glic_host = &glic_instance->host();
@@ -54,6 +56,13 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropBrowserTest, testDragAndDropFile) {
 
   ContinueJsTest();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicDragAndDropBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NoWebview" : "Webview";
+                         });
 
 }  // namespace
 }  // namespace glic

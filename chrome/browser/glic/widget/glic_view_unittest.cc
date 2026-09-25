@@ -79,6 +79,11 @@ TEST_F(GlicViewTest, CanDragEnter) {
   drop_data.text.reset();
   drop_data.html = u"<b>test html</b>";
   EXPECT_FALSE(glic_view->CanDragEnter(nullptr, drop_data, ops));
+
+  // DropData with image file_contents should be accepted.
+  drop_data.html.reset();
+  drop_data.file_contents = {0x89, 'P', 'N', 'G'};
+  EXPECT_TRUE(glic_view->CanDragEnter(nullptr, drop_data, ops));
 }
 
 TEST_F(GlicViewTest, CanDragEnter_Disabled) {

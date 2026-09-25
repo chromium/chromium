@@ -584,12 +584,17 @@ bool IsProcessHostForGlic(content::RenderProcessHost* process_host) {
 }
 
 content::WebContents* GetGlicGuestWebContents(
-    content::WebContents* webui_contents) {
-  if (!webui_contents) {
+    content::WebContents* web_contents) {
+  if (!web_contents) {
     return nullptr;
   }
-  auto* data = GlicWebUiData::FromWebContents(webui_contents);
-  return data ? data->guest_contents() : nullptr;
+  if (auto* data = GlicWebUiData::FromWebContents(web_contents)) {
+    return data->guest_contents();
+  }
+  if (IsGlicGuest(web_contents)) {
+    return web_contents;
+  }
+  return nullptr;
 }
 
 GlicUI* GetGlicUiForGuest(content::WebContents* guest_contents) {

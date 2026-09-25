@@ -96,9 +96,10 @@ void BindGlicWebClientHandler(
 // main WebUI.
 bool IsProcessHostForGlic(content::RenderProcessHost* process_host);
 
-// Returns the guest web contents if `webui_contents` is the glic host.
+// Returns the guest web contents if `web_contents` is the glic host or already
+// the glic guest.
 content::WebContents* GetGlicGuestWebContents(
-    content::WebContents* webui_contents);
+    content::WebContents* web_contents);
 
 // If `guest_contents` is the glic guest, do glic-specific setup and return
 // true, otherwise return false.

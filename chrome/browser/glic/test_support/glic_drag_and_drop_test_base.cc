@@ -22,16 +22,21 @@
 
 namespace glic {
 
-GlicDragAndDropTestBase::GlicDragAndDropTestBase(GlicTestJsPath js_test_file)
-    : GlicApiBrowserTest(js_test_file) {
-  feature_list_.InitWithFeatures({features::kGlicDragAndDropFileUpload,
-                                  features::kGlicWebDragAndDropFileUpload},
-                                 {
-  // TODO(b/559775860): Fails with GlicNoWebview enabled on these platforms.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-                                     features::kGlicNoWebview
-#endif
-                                 });
+GlicDragAndDropTestBase::GlicDragAndDropTestBase(GlicTestJsPath js_test_file,
+                                                 bool enable_no_webview)
+    : GlicApiBrowserTest(js_test_file), is_no_webview_(enable_no_webview) {
+  std::vector<base::test::FeatureRef> enabled_features = {
+      features::kGlicDragAndDropFileUpload,
+      features::kGlicWebDragAndDropFileUpload};
+  std::vector<base::test::FeatureRef> disabled_features;
+
+  if (enable_no_webview) {
+    enabled_features.push_back(features::kGlicNoWebview);
+  } else {
+    disabled_features.push_back(features::kGlicNoWebview);
+  }
+
+  feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 GlicDragAndDropTestBase::~GlicDragAndDropTestBase() = default;

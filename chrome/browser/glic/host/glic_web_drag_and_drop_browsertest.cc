@@ -40,11 +40,13 @@
 namespace glic {
 namespace {
 
-class GlicWebDragAndDropBrowserTest : public GlicDragAndDropTestBase {
+class GlicWebDragAndDropBrowserTest : public GlicDragAndDropTestBase,
+                                      public testing::WithParamInterface<bool> {
  public:
   GlicWebDragAndDropBrowserTest()
       : GlicDragAndDropTestBase(
-            GlicTestJsPath("./glic_web_drag_and_drop_browsertest.js")) {}
+            GlicTestJsPath("./glic_web_drag_and_drop_browsertest.js"),
+            GetParam()) {}
 };
 
 // Linux does not natively support direct in-memory FileContents retrieval
@@ -58,7 +60,7 @@ class GlicWebDragAndDropBrowserTest : public GlicDragAndDropTestBase {
 #else
 #define MAYBE_testWebToGlicDragMaterialization testWebToGlicDragMaterialization
 #endif
-IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
+IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
                        MAYBE_testWebToGlicDragMaterialization) {
   base::HistogramTester histogram_tester;
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
@@ -141,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
 #define MAYBE_testWebToGlicDragMaterializationFromDetached \
   testWebToGlicDragMaterializationFromDetached
 #endif
-IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
+IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
                        MAYBE_testWebToGlicDragMaterializationFromDetached) {
   base::HistogramTester histogram_tester;
   enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
@@ -221,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
 #define MAYBE_testWebToGlicDragStripsDomDropPayload \
   testWebToGlicDragStripsDomDropPayload
 #endif
-IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
+IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
                        MAYBE_testWebToGlicDragStripsDomDropPayload) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
                        OpenGlicForActiveTab());
@@ -260,6 +262,13 @@ IN_PROC_BROWSER_TEST_F(GlicWebDragAndDropBrowserTest,
 
   ContinueJsTest();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicWebDragAndDropBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NoWebview" : "Webview";
+                         });
 
 }  // namespace
 }  // namespace glic

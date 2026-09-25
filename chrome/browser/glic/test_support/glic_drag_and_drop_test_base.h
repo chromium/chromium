@@ -22,8 +22,10 @@ namespace glic {
 
 class GlicDragAndDropTestBase : public GlicApiBrowserTest {
  public:
-  explicit GlicDragAndDropTestBase(GlicTestJsPath js_test_file);
+  GlicDragAndDropTestBase(GlicTestJsPath js_test_file, bool enable_no_webview);
   ~GlicDragAndDropTestBase() override;
+
+  bool IsNoWebview() const { return is_no_webview_; }
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
@@ -45,6 +47,7 @@ class GlicDragAndDropTestBase : public GlicApiBrowserTest {
 #endif
 
  private:
+  bool is_no_webview_ = false;
   base::test::ScopedFeatureList feature_list_;
 };
 
