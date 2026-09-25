@@ -3553,7 +3553,8 @@ bool TabStripModel::ContextMenuCommandToBrowserCommand(int cmd_id,
 }
 
 int TabStripModel::GetIndexOfNextWebContentsOpenedBy(
-    const gfx::Range& block_tab_range) const {
+    const gfx::Range& block_tab_range,
+    base::FunctionRef<bool(int)> is_eligible) const {
   CHECK(ContainsIndex(block_tab_range.start()));
   CHECK(ContainsIndex(block_tab_range.end() - 1));
 
@@ -3565,7 +3566,8 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedBy(
     int current_index = block_tab_range.end();
     for (auto it = at(GetTabAtIndex(current_index)); it != end();
          ++it, ++current_index) {
-      if (block_tabs.contains(static_cast<tabs::TabModel*>(*it)->opener())) {
+      if (block_tabs.contains(static_cast<tabs::TabModel*>(*it)->opener()) &&
+          is_eligible(current_index)) {
         return current_index;
       }
     }
@@ -3576,7 +3578,8 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedBy(
     auto reverse_start_it = at(GetTabAtIndex(current_index));
     for (auto it = std::make_reverse_iterator(++reverse_start_it); it != rend();
          ++it, --current_index) {
-      if (block_tabs.contains(static_cast<tabs::TabModel*>(*it)->opener())) {
+      if (block_tabs.contains(static_cast<tabs::TabModel*>(*it)->opener()) &&
+          is_eligible(current_index)) {
         return current_index;
       }
     }
@@ -3586,7 +3589,8 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedBy(
 }
 
 int TabStripModel::GetIndexOfNextWebContentsOpenedByOpenerOf(
-    const gfx::Range& block_tab_range) const {
+    const gfx::Range& block_tab_range,
+    base::FunctionRef<bool(int)> is_eligible) const {
   CHECK(ContainsIndex(block_tab_range.start()));
   CHECK(ContainsIndex(block_tab_range.end() - 1));
 
@@ -3608,7 +3612,8 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedByOpenerOf(
     int current_index = block_tab_range.end();
     for (auto it = at(GetTabAtIndex(current_index)); it != end();
          ++it, ++current_index) {
-      if (block_openers.contains(static_cast<tabs::TabModel*>(*it)->opener())) {
+      if (block_openers.contains(static_cast<tabs::TabModel*>(*it)->opener()) &&
+          is_eligible(current_index)) {
         return current_index;
       }
     }
@@ -3619,7 +3624,8 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedByOpenerOf(
     auto reverse_start_it = at(GetTabAtIndex(current_index));
     for (auto it = std::make_reverse_iterator(++reverse_start_it); it != rend();
          ++it, --current_index) {
-      if (block_openers.contains(static_cast<tabs::TabModel*>(*it)->opener())) {
+      if (block_openers.contains(static_cast<tabs::TabModel*>(*it)->opener()) &&
+          is_eligible(current_index)) {
         return current_index;
       }
     }
@@ -3629,7 +3635,8 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedByOpenerOf(
 }
 
 std::optional<int> TabStripModel::GetNextExpandedActiveTab(
-    const gfx::Range& block_tab_range) const {
+    const gfx::Range& block_tab_range,
+    base::FunctionRef<bool(int)> is_eligible) const {
   // Check tabs from the end of the block.
   if (block_tab_range.end() < static_cast<size_t>(count())) {
     int current_index = block_tab_range.end();
@@ -3637,8 +3644,9 @@ std::optional<int> TabStripModel::GetNextExpandedActiveTab(
          ++it, ++current_index) {
       tabs::TabInterface* tab = *it;
       std::optional<tab_groups::TabGroupId> current_group = tab->GetGroup();
-      if (!current_group.has_value() ||
-          (!IsGroupCollapsed(current_group.value()))) {
+      if ((!current_group.has_value() ||
+           (!IsGroupCollapsed(current_group.value()))) &&
+          is_eligible(current_index)) {
         return current_index;
       }
     }
@@ -3651,8 +3659,9 @@ std::optional<int> TabStripModel::GetNextExpandedActiveTab(
          ++it, --current_index) {
       tabs::TabInterface* tab = *it;
       std::optional<tab_groups::TabGroupId> current_group = tab->GetGroup();
-      if (!current_group.has_value() ||
-          (!IsGroupCollapsed(current_group.value()))) {
+      if ((!current_group.has_value() ||
+           (!IsGroupCollapsed(current_group.value()))) &&
+          is_eligible(current_index)) {
         return current_index;
       }
     }
@@ -3666,7 +3675,7 @@ std::optional<int> TabStripModel::GetNextExpandedActiveTab(
   CHECK(group_model()->ContainsTabGroup(collapsing_group));
   gfx::Range group_tab_indices =
       group_model()->GetTabGroup(collapsing_group)->ListTabs();
-  return GetNextExpandedActiveTab(group_tab_indices);
+  return GetNextExpandedActiveTab(group_tab_indices, [](int) { return true; });
 }
 
 void TabStripModel::ForgetAllOpeners() {
@@ -5845,89 +5854,120 @@ std::optional<int> TabStripModel::DetermineNewSelectedIndex(
     block_size = collection->TabCountRecursive();
   }
 
-  gfx::Range block_tabs = gfx::Range(start_index, start_index + block_size);
+  const gfx::Range block_tabs =
+      gfx::Range(start_index, start_index + block_size);
 
-  // First preference is a tab the block opened.
-  int new_selected_index = GetIndexOfNextWebContentsOpenedBy(block_tabs);
-  if (new_selected_index != TabStripModel::kNoTab &&
-      !IsTabCollapsed(new_selected_index)) {
-    return GetTabIndexAfterClosing(new_selected_index, block_tabs);
-  }
+  // Applies the ranked preferences in order, considering only the tabs that the
+  // caller deems selectable. `focused_group` restricts the candidates to the
+  // tabs the user is allowed to activate while that group is focused; when it
+  // is nullopt every tab outside the block is a candidate.
+  auto find_candidate =
+      [this, &block_tabs, start_index, block_size,
+       &tab_or_collection](std::optional<tab_groups::TabGroupId> focused_group)
+      -> std::optional<int> {
+    // Focus mode is the only restriction that applies to a tab which is
+    // otherwise a legitimate selection, so it is kept separate from the
+    // visibility check below.
+    auto is_valid_for_focus = [this, &focused_group](int index) {
+      if (!ContainsIndex(index)) {
+        return false;
+      }
+      return !focused_group.has_value() ||
+             tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
+                 GetTabAtIndex(index), focused_group);
+    };
 
-  // Second preference is a tab the block's opener opened.
-  new_selected_index = GetIndexOfNextWebContentsOpenedByOpenerOf(block_tabs);
+    auto is_eligible = [this, &is_valid_for_focus](int index) {
+      return !IsTabCollapsed(index) && is_valid_for_focus(index);
+    };
 
-  if (new_selected_index != TabStripModel::kNoTab &&
-      !IsTabCollapsed(new_selected_index)) {
-    return GetTabIndexAfterClosing(new_selected_index, block_tabs);
-  }
-
-  // Third preference is the block's opener.
-  for (size_t i = block_tabs.start(); i < block_tabs.end(); ++i) {
-    tabs::TabInterface* opener = GetTabModelAtIndex(i)->opener();
-    int opener_index = opener ? GetIndexOfTab(opener) : TabStripModel::kNoTab;
-    if (opener_index != TabStripModel::kNoTab &&
-        !block_tabs.Contains(gfx::Range(opener_index)) &&
-        !IsTabCollapsed(opener_index)) {
-      return GetTabIndexAfterClosing(opener_index, block_tabs);
-    }
-  }
-
-  // Fourth preference is a tab that belongs in the same parent collection as
-  // `tab_or_collection`.
-  const tabs::TabCollection* parent_collection_detached_object = nullptr;
-  if (std::holds_alternative<tabs::DanglingUntriagedTabInterface>(
-          tab_or_collection)) {
-    tabs::TabInterface* tab =
-        std::get<tabs::DanglingUntriagedTabInterface>(tab_or_collection);
-    parent_collection_detached_object = tab->GetParentCollection();
-  } else {
-    tabs::TabCollection* collection =
-        std::get<tabs::DanglingUntriagedTabCollection>(tab_or_collection);
-    parent_collection_detached_object = collection->GetParentCollection();
-  }
-
-  // Check if either the right of the block is present in
-  // `parent_collection_range` or the left of the block.
-  if (parent_collection_detached_object->type() ==
-          tabs::TabCollection::Type::GROUP ||
-      parent_collection_detached_object->type() ==
-          tabs::TabCollection::Type::SPLIT) {
-    const int first_tab_index = GetIndexOfTab(
-        parent_collection_detached_object->GetTabAtIndexRecursive(0));
-    const gfx::Range parent_collection_range =
-        gfx::Range(first_tab_index,
-                   first_tab_index +
-                       parent_collection_detached_object->TabCountRecursive());
-
-    if (parent_collection_range.end() != block_tabs.end()) {
-      return GetTabIndexAfterClosing(start_index + block_size, block_tabs);
+    // First preference is a tab the block opened.
+    int new_selected_index =
+        GetIndexOfNextWebContentsOpenedBy(block_tabs, is_eligible);
+    if (new_selected_index != kNoTab) {
+      return GetTabIndexAfterClosing(new_selected_index, block_tabs);
     }
 
-    if (parent_collection_range.start() != block_tabs.start()) {
-      return GetTabIndexAfterClosing(start_index - 1, block_tabs);
+    // Second preference is a tab the block's opener opened.
+    new_selected_index =
+        GetIndexOfNextWebContentsOpenedByOpenerOf(block_tabs, is_eligible);
+    if (new_selected_index != kNoTab) {
+      return GetTabIndexAfterClosing(new_selected_index, block_tabs);
     }
-  }
 
-  // When focus mode is active, prioritize selecting a tab within the focused
-  // group so that tab removals/detaches preserve focus state.
-  const std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
-  if (focused_group) {
-    const TabGroup* group = group_model_->GetTabGroup(*focused_group);
-    if (group) {
-      const gfx::Range group_range = group->ListTabs();
-      for (uint32_t i = group_range.start(); i < group_range.end(); ++i) {
-        if (!block_tabs.Contains(gfx::Range(i, i + 1))) {
-          return GetTabIndexAfterClosing(i, block_tabs);
-        }
+    // Third preference is the block's opener.
+    for (size_t i = block_tabs.start(); i < block_tabs.end(); ++i) {
+      tabs::TabInterface* opener = GetTabModelAtIndex(i)->opener();
+      int opener_index = opener ? GetIndexOfTab(opener) : kNoTab;
+      if (opener_index != kNoTab &&
+          !block_tabs.Contains(gfx::Range(opener_index)) &&
+          is_eligible(opener_index)) {
+        return GetTabIndexAfterClosing(opener_index, block_tabs);
       }
     }
-  }
 
-  // Try to pick an uncollapsed index.
-  std::optional<int> next_available = GetNextExpandedActiveTab(block_tabs);
-  if (next_available.has_value()) {
-    return GetTabIndexAfterClosing(next_available.value(), block_tabs);
+    // Fourth preference is a tab that belongs in the same parent collection as
+    // `tab_or_collection`. A sibling is used even when it is collapsed, because
+    // the block itself was collapsed in that case, so only the focus
+    // restriction applies here.
+    const tabs::TabCollection* parent_collection_detached_object = nullptr;
+    if (std::holds_alternative<tabs::DanglingUntriagedTabInterface>(
+            tab_or_collection)) {
+      tabs::TabInterface* tab =
+          std::get<tabs::DanglingUntriagedTabInterface>(tab_or_collection);
+      parent_collection_detached_object = tab->GetParentCollection();
+    } else {
+      tabs::TabCollection* collection =
+          std::get<tabs::DanglingUntriagedTabCollection>(tab_or_collection);
+      parent_collection_detached_object = collection->GetParentCollection();
+    }
+
+    // Check if either the right of the block is present in
+    // `parent_collection_range` or the left of the block.
+    if (parent_collection_detached_object->type() ==
+            tabs::TabCollection::Type::GROUP ||
+        parent_collection_detached_object->type() ==
+            tabs::TabCollection::Type::SPLIT) {
+      const int first_tab_index = GetIndexOfTab(
+          parent_collection_detached_object->GetTabAtIndexRecursive(0));
+      const gfx::Range parent_collection_range = gfx::Range(
+          first_tab_index,
+          first_tab_index +
+              parent_collection_detached_object->TabCountRecursive());
+
+      if (parent_collection_range.end() != block_tabs.end() &&
+          is_valid_for_focus(start_index + block_size)) {
+        return GetTabIndexAfterClosing(start_index + block_size, block_tabs);
+      }
+
+      if (parent_collection_range.start() != block_tabs.start() &&
+          is_valid_for_focus(start_index - 1)) {
+        return GetTabIndexAfterClosing(start_index - 1, block_tabs);
+      }
+    }
+
+    // Try to pick an uncollapsed index.
+    std::optional<int> next_available =
+        GetNextExpandedActiveTab(block_tabs, is_eligible);
+    if (next_available.has_value()) {
+      return GetTabIndexAfterClosing(next_available.value(), block_tabs);
+    }
+
+    return std::nullopt;
+  };
+
+  // First search for a candidate valid under the current focus state
+  // (restricted to the focused group's tabs and pinned tabs when a group is
+  // focused). If a group is focused and no valid candidate remains (e.g. the
+  // focused group is closing and there are no pinned tabs), focus mode is
+  // ending so retry across all tabs.
+  const std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
+  std::optional<int> new_selected_index = find_candidate(focused_group);
+  if (!new_selected_index.has_value() && focused_group.has_value()) {
+    new_selected_index = find_candidate(std::nullopt);
+  }
+  if (new_selected_index.has_value()) {
+    return new_selected_index;
   }
 
   // Otherwise, prefer picking the tab after the last tab in the block.

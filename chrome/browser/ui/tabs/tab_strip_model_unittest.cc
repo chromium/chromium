@@ -1282,11 +1282,11 @@ TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
 
   // If there is a next adjacent item, then the index should be of that item.
   EXPECT_EQ(2, tabstrip()->GetIndexOfNextWebContentsOpenedByOpenerOf(
-                   gfx::Range(1, 2)));
+                   gfx::Range(1, 2), [](int) { return true; }));
   // If the last tab in the opener tree is closed, the preceding tab in the same
   // tree should be selected.
   EXPECT_EQ(4, tabstrip()->GetIndexOfNextWebContentsOpenedByOpenerOf(
-                   gfx::Range(5, 6)));
+                   gfx::Range(5, 6), [](int) { return true; }));
 
   // Tests the method that finds the last tab opened by the same opener in the
   // strip (this is the insertion index for the next background tab for the
@@ -1295,17 +1295,17 @@ TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
 
   // For a tab that has opened no other tabs, the return value should always be
   // -1...
-  EXPECT_EQ(-1,
-            tabstrip()->GetIndexOfNextWebContentsOpenedBy(gfx::Range(1, 2)));
+  EXPECT_EQ(-1, tabstrip()->GetIndexOfNextWebContentsOpenedBy(
+                    gfx::Range(1, 2), [](int) { return true; }));
   EXPECT_EQ(-1,
             tabstrip()->GetIndexOfLastWebContentsOpenedBy(raw_contents1, 3));
 
   // ForgetAllOpeners should destroy all opener relationships.
   tabstrip()->ForgetAllOpeners();
-  EXPECT_EQ(-1,
-            tabstrip()->GetIndexOfNextWebContentsOpenedBy(gfx::Range(1, 2)));
-  EXPECT_EQ(-1,
-            tabstrip()->GetIndexOfNextWebContentsOpenedBy(gfx::Range(5, 6)));
+  EXPECT_EQ(-1, tabstrip()->GetIndexOfNextWebContentsOpenedBy(
+                    gfx::Range(1, 2), [](int) { return true; }));
+  EXPECT_EQ(-1, tabstrip()->GetIndexOfNextWebContentsOpenedBy(
+                    gfx::Range(5, 6), [](int) { return true; }));
   EXPECT_EQ(-1, tabstrip()->GetIndexOfLastWebContentsOpenedBy(raw_opener, 1));
 
   // Specify the last tab as the opener of the others.
@@ -1321,12 +1321,12 @@ TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
 
   // If there is a next adjacent item, then the index should be of that item.
   EXPECT_EQ(2, tabstrip()->GetIndexOfNextWebContentsOpenedByOpenerOf(
-                   gfx::Range(1, 2)));
+                   gfx::Range(1, 2), [](int) { return true; }));
 
   // If the last tab in the opener tree is closed, the preceding tab in the same
   // opener tree should be selected.
   EXPECT_EQ(3, tabstrip()->GetIndexOfNextWebContentsOpenedByOpenerOf(
-                   gfx::Range(4, 5)));
+                   gfx::Range(4, 5), [](int) { return true; }));
 
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());
@@ -2052,9 +2052,9 @@ TEST_F(TabStripModelTest, TestInsertionIndexDetermination) {
 
   // The opener API should work...
   EXPECT_EQ(3, tabstrip()->GetIndexOfNextWebContentsOpenedByOpenerOf(
-                   gfx::Range(2, 3)));
+                   gfx::Range(2, 3), [](int) { return true; }));
   EXPECT_EQ(2, tabstrip()->GetIndexOfNextWebContentsOpenedByOpenerOf(
-                   gfx::Range(3, 4)));
+                   gfx::Range(3, 4), [](int) { return true; }));
   EXPECT_EQ(3, tabstrip()->GetIndexOfLastWebContentsOpenedBy(raw_opener, 1));
 
   // Now open a foreground tab from a link. It should be opened adjacent to the
@@ -2093,10 +2093,10 @@ TEST_F(TabStripModelTest, TestInsertionIndexDetermination) {
   EXPECT_EQ(raw_fg_nonlink_contents, tabstrip()->GetActiveWebContents());
 
   // Verify that all opener relationships are forgotten.
-  EXPECT_EQ(-1,
-            tabstrip()->GetIndexOfNextWebContentsOpenedBy(gfx::Range(2, 3)));
-  EXPECT_EQ(-1,
-            tabstrip()->GetIndexOfNextWebContentsOpenedBy(gfx::Range(3, 4)));
+  EXPECT_EQ(-1, tabstrip()->GetIndexOfNextWebContentsOpenedBy(
+                    gfx::Range(2, 3), [](int) { return true; }));
+  EXPECT_EQ(-1, tabstrip()->GetIndexOfNextWebContentsOpenedBy(
+                    gfx::Range(3, 4), [](int) { return true; }));
   EXPECT_EQ(-1, tabstrip()->GetIndexOfLastWebContentsOpenedBy(raw_opener, 1));
 
   tabstrip()->CloseAllTabs();
@@ -3163,6 +3163,79 @@ TEST_F(TabStripModelTest, ClosingTabInFocusedGroupSelectsAdjacentTab) {
   tabstrip()->CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(1, tabstrip()->active_index());
   EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
+}
+
+TEST_F(TabStripModelTest,
+       ClosingTabInFocusedGroupSkipsOutsideOpenerForSurvivingGroup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  PrepareTabs(tabstrip(), 4);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
+  tabstrip()->EnterFocusMode(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Activate tab 1 in the focused group and set ungrouped tab 0 as its opener.
+  tabstrip()->ActivateTabAt(1);
+  tabstrip()->SetOpenerOfTabAt(1, tabstrip()->GetTabAtIndex(0));
+
+  // Closing tab 1 should skip its outside opener (tab 0) and select the
+  // surviving tab in the focused group (formerly index 2, now index 1).
+  tabstrip()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(1, tabstrip()->active_index());
+  EXPECT_EQ(group_id, tabstrip()->GetFocusedGroup());
+}
+
+TEST_F(TabStripModelTest, ClosingLastTabInFocusedGroupRestoresGlobalSelection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  PrepareTabs(tabstrip(), 3);
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1});
+  tabstrip()->EnterFocusMode(group_id);
+  ASSERT_EQ(group_id, tabstrip()->GetFocusedGroup());
+
+  // Set ungrouped tab 2 as opened by tab 1 so global fallback prefers tab 2
+  // over tab 0.
+  tabs::TabInterface* expected_next_tab = tabstrip()->GetTabAtIndex(2);
+  tabstrip()->SetOpenerOfTabAt(2, tabstrip()->GetTabAtIndex(1));
+
+  // Close the only tab in the focused group. Selection should fall back to
+  // global selection rules (selecting `expected_next_tab`) and exit focus mode.
+  tabstrip()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(expected_next_tab, tabstrip()->GetActiveTab());
+  EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+}
+
+TEST_F(TabStripModelTest,
+       ClosingPinnedTabAdjacentToCollapsedGroupWithFocusActive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+
+  PrepareTabs(tabstrip(), 4);
+  tabstrip()->SetTabPinned(0, true);
+
+  tab_groups::TabGroupId collapsed_group = tabstrip()->AddToNewGroup({1});
+  tabstrip()->ChangeTabGroupVisuals(
+      collapsed_group, tab_groups::TabGroupVisualData(
+                           u"Collapsed", tab_groups::TabGroupColorId::kBlue,
+                           /*is_collapsed=*/true));
+
+  tab_groups::TabGroupId focused_group = tabstrip()->AddToNewGroup({2, 3});
+  tabstrip()->EnterFocusMode(focused_group);
+  ASSERT_EQ(focused_group, tabstrip()->GetFocusedGroup());
+
+  // Activate the pinned tab (index 0), which is valid in focus mode.
+  tabstrip()->ActivateTabAt(0);
+  ASSERT_EQ(0, tabstrip()->active_index());
+  ASSERT_EQ(focused_group, tabstrip()->GetFocusedGroup());
+
+  // Close the pinned tab (index 0). Selection must skip the adjacent collapsed
+  // non-focused group (now index 0) and select the first tab in the focused
+  // group (now index 1), preserving focus mode.
+  tabstrip()->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(1, tabstrip()->active_index());
+  EXPECT_EQ(focused_group, tabstrip()->GetFocusedGroup());
 }
 
 TEST_F(TabStripModelTest, RotateFocusedGroup) {

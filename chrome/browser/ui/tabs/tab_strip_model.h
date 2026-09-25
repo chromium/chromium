@@ -18,6 +18,7 @@
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -865,22 +866,28 @@ class TabStripModel {
   static bool ContextMenuCommandToBrowserCommand(int cmd_id, int* browser_cmd);
 
   // Returns the index of the next tab spawned by the specified tabs in
-  // `block_tab_range`.
+  // `block_tab_range`. Indices rejected by `is_eligible` are skipped, and the
+  // scan continues.
   int GetIndexOfNextWebContentsOpenedBy(
-      const gfx::Range& block_tab_range) const;
+      const gfx::Range& block_tab_range,
+      base::FunctionRef<bool(int)> is_eligible) const;
 
   // Returns the index of the next tab spawned by the opener of the specified
-  // tabs in `block_tab_range`.
+  // tabs in `block_tab_range`. Indices rejected by `is_eligible` are skipped,
+  // and the scan continues.
   int GetIndexOfNextWebContentsOpenedByOpenerOf(
-      const gfx::Range& block_tab_range) const;
+      const gfx::Range& block_tab_range,
+      base::FunctionRef<bool(int)> is_eligible) const;
 
   // Finds the next available tab to switch to as the active tab starting at
   // a block of tabs. The methods will check the indices to
   // the right of the block before checking the indices to the left of the
-  // block. Index within the block cannot be returned. Returns std::nullopt if
+  // block. Index within the block cannot be returned. Indices rejected by
+  // `is_eligible` are skipped, and the scan continues. Returns std::nullopt if
   // there are no valid tabs.
   std::optional<int> GetNextExpandedActiveTab(
-      const gfx::Range& block_tab_range) const;
+      const gfx::Range& block_tab_range,
+      base::FunctionRef<bool(int)> is_eligible) const;
   std::optional<int> GetNextExpandedActiveTab(
       tab_groups::TabGroupId collapsing_group) const;
 
