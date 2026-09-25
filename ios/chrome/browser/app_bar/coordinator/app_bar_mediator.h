@@ -31,6 +31,7 @@ class PrefService;
 class ProfileIOS;
 @protocol SceneCommands;
 @class SceneLayoutState;
+@class SceneState;
 @protocol SettingsCommands;
 @protocol TabGridCommands;
 @class TabGridState;
@@ -84,6 +85,9 @@ class WebStateList;
 
 // The layout state of the scene.
 @property(nonatomic, weak) SceneLayoutState* layoutState;
+
+// The scene state used to gate UI updates until the scene UI is enabled.
+@property(nonatomic, weak) SceneState* sceneState;
 
 // The regular FullscreenCommands handler.
 @property(nonatomic, weak) id<FullscreenCommands> regularFullscreenHandler;

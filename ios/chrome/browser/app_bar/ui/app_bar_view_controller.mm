@@ -946,13 +946,16 @@ UIColor* AssistantHighlightBackgroundColor() {
 
   _assistantButton.configuration = configuration;
 
-  // Update constraints to point to the current imageView
-  if (_assistantHighlightConstraints) {
+  // Update constraints to point to the current imageView if needed.
+  if (_assistantHighlightConstraints &&
+      _assistantHighlightConstraints.firstObject.secondItem !=
+          _assistantButton.imageView) {
     [NSLayoutConstraint deactivateConstraints:_assistantHighlightConstraints];
     _assistantHighlightConstraints = nil;
   }
 
-  if (_assistantHighlightView && _assistantButton.imageView) {
+  if (!_assistantHighlightConstraints && _assistantHighlightView &&
+      _assistantButton.imageView) {
     _assistantHighlightConstraints = @[
       [_assistantHighlightView.centerXAnchor
           constraintEqualToAnchor:_assistantButton.imageView.centerXAnchor],
@@ -969,8 +972,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   _assistantButton.enabled = _buttonsEnabled && _assistantButtonEnabled;
   [self updateAssistantButtonAccessibilityLabel];
   // Force a configuration update to refresh accessibility traits.
-  [_assistantButton setNeedsUpdateConfiguration];
-  [_assistantButton layoutIfNeeded];
+  [_assistantButton updateConfiguration];
 }
 
 // Returns a new "Assistant" button.

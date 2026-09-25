@@ -50,6 +50,8 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_passkey.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
@@ -135,6 +137,7 @@ inline LayoutStateAssistantPassKey PassKey() {
                               IncognitoStateObserver,
                               LensOverlayStateNotifierObserver,
                               PrefObserverDelegate,
+                              SceneStateObserver,
                               SearchEngineObserving,
                               TabGridStateObserving,
                               ToolbarButtonMenuFactoryDelegate,
@@ -403,8 +406,22 @@ inline LayoutStateAssistantPassKey PassKey() {
   [self updateConsumer];
 }
 
+- (void)setSceneState:(SceneState*)sceneState {
+  if (_sceneState == sceneState) {
+    return;
+  }
+  [_sceneState removeObserver:self];
+  _sceneState = sceneState;
+  [_sceneState addObserver:self];
+  if (_sceneState.UIEnabled) {
+    [self updateConsumer];
+  }
+}
+
 - (void)disconnect {
   self.consumer = nil;
+  [_sceneState removeObserver:self];
+  _sceneState = nil;
   _regularButtonMenuFactory = nil;
   _incognitoButtonMenuFactory = nil;
   self.currentTabGroup = nullptr;
@@ -493,31 +510,6 @@ inline LayoutStateAssistantPassKey PassKey() {
     self.currentTabGroup = GetGroupForActiveWebState(webStateList);
   }
 
-  switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly:
-    case WebStateListChange::Type::kMove:
-    case WebStateListChange::Type::kReplace:
-      // Do nothing when web state count is the same.
-      break;
-    case WebStateListChange::Type::kDetach:
-    case WebStateListChange::Type::kInsert:
-      [self updateConsumer];
-      break;
-    case WebStateListChange::Type::kGroupCreate:
-      break;
-    case WebStateListChange::Type::kGroupVisualDataUpdate:
-      break;
-    case WebStateListChange::Type::kGroupMove: {
-      const WebStateListChangeGroupMove& move =
-          change.As<WebStateListChangeGroupMove>();
-      if (move.moved_group() == self.currentTabGroup) {
-        [self updateConsumer];
-      }
-      break;
-    }
-    case WebStateListChange::Type::kGroupDelete:
-      break;
-  }
   [self updateConsumer];
 }
 
@@ -525,6 +517,12 @@ inline LayoutStateAssistantPassKey PassKey() {
   if (!_tabGridState.tabGridVisible) {
     self.currentTabGroup = GetGroupForActiveWebState(webStateList);
   }
+  [self updateConsumer];
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneStateDidEnableUI:(SceneState*)sceneState {
   [self updateConsumer];
 }
 
@@ -624,6 +622,9 @@ inline LayoutStateAssistantPassKey PassKey() {
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
+  if (![self isUIEnabled]) {
+    return;
+  }
   BOOL incognito = self.currentWebStateList == _incognitoWebStateList;
   ToolbarButtonMenuFactory* buttonMenuFactory =
       incognito ? _incognitoButtonMenuFactory : _regularButtonMenuFactory;
@@ -829,9 +830,14 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 #pragma mark - Private
 
+// Returns YES if the scene UI is enabled (or if no SceneState is attached).
+- (BOOL)isUIEnabled {
+  return !_sceneState || _sceneState.UIEnabled;
+}
+
 // Updates the consumer with the current state of the web state list.
 - (void)updateConsumer {
-  if (!self.consumer || !self.currentWebStateList) {
+  if (!self.consumer || !self.currentWebStateList || ![self isUIEnabled]) {
     return;
   }
 
@@ -898,6 +904,9 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 // Updates the buttons in the tab grid.
 - (void)updateButtonsForCurrentTabGridPage {
+  if (![self isUIEnabled]) {
+    return;
+  }
   TabGridPage page = _currentPage == TabGridPageTabGroups
                          ? _tabGridState.originPage
                          : _currentPage;
@@ -1046,6 +1055,9 @@ inline LayoutStateAssistantPassKey PassKey() {
 // Updates the assistant button state based on eligibility and applies it to the
 // consumer.
 - (void)updateAssistantButton {
+  if (!self.consumer || ![self isUIEnabled]) {
+    return;
+  }
   AppBarAssistantButtonState state = AppBarAssistantButtonState::kAccount;
   if ([self isGeminiEligible]) {
     state = AppBarAssistantButtonState::kAsk;

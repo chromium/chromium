@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/lens_overlay_state_notifier.h"
@@ -2599,5 +2600,30 @@ TEST_F(AppBarMediatorTest, TestWebStateListBatchOperation) {
     }
   }
 
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that consumer updates are deferred while SceneState.UIEnabled is NO
+// and performed once SceneState.UIEnabled transitions to YES.
+TEST_F(AppBarMediatorTest, TestConsumerUpdatesDeferredUntilSceneUIEnabled) {
+  SceneState* scene_state = [[SceneState alloc] init];
+  ASSERT_FALSE(scene_state.UIEnabled);
+  mediator_.sceneState = scene_state;
+
+  // Use a strict mock to verify no consumer methods are invoked while
+  // UIEnabled is NO (including when setting consumer or inserting a WebState).
+  id deferred_consumer = OCMStrictProtocolMock(@protocol(TestAppBarConsumer));
+  mediator_.consumer = deferred_consumer;
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  regular_browser_->GetWebStateList()->InsertWebState(std::move(web_state));
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(deferred_consumer);
+
+  // Switch back to consumer_ (still while UIEnabled is NO, so no update yet),
+  // then enable UI and verify updateConsumer synchronizes the state.
+  mediator_.consumer = consumer_;
+  OCMExpect([consumer_ updateTabCount:1]);
+  scene_state.UIEnabled = YES;
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
