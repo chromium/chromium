@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/customize_chrome/side_panel_controller_android.h"
 
+#include <android/input.h>
+#include <android/keycodes.h>
+
 #include <optional>
 #include <vector>
 
@@ -12,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/android/thin_webview/tab_thin_web_view_host.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -23,15 +27,20 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/test/android/side_panel_android_browser_test_base.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/search/ntp_features.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/base_window.h"
+#include "ui/events/android/key_event_android.h"
 #include "url/gurl.h"
 
 namespace {
@@ -68,6 +77,18 @@ void WaitUntilCustomizeChromeShowing(SidePanelUI* side_panel_ui) {
   ASSERT_TRUE(base::test::RunUntil([side_panel_ui]() {
     return side_panel_ui->IsSidePanelEntryShowing(CustomizeChromeKey());
   })) << "Customize Chrome never became the showing side panel entry.";
+}
+
+input::NativeWebKeyboardEvent CreateKeyDownEvent(int key_code,
+                                                 int android_meta_state,
+                                                 int blink_modifiers) {
+  ui::KeyEventAndroid key_event(AKEY_EVENT_ACTION_DOWN, key_code,
+                                android_meta_state);
+  return input::NativeWebKeyboardEvent(
+      jni_zero::AttachCurrentThread(), key_event.GetJavaObject(),
+      blink::WebInputEvent::Type::kRawKeyDown, blink_modifiers,
+      base::TimeTicks::Now(), key_code, /*scancode=*/0,
+      /*unicode_character=*/0, /*is_system_key=*/false);
 }
 
 }  // namespace
@@ -224,4 +245,45 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelAndroidBrowserTest,
       side_panel_contents->GetTopLevelNativeWindow();
   EXPECT_NE(nullptr, dst_side_panel_window);
   EXPECT_NE(src_side_panel_window, dst_side_panel_window);
+}
+
+// When focus is inside the Customize Chrome ThinWebView, its WebContents is
+// attached to the ThinWebView's internal WindowAndroid rather than the
+// Activity's WindowAndroid. `TabThinWebViewHost` must forward
+// `PreHandleKeyboardEvent()` and `HandleKeyboardEvent()` to the tab's
+// `WebContentsDelegate` (using the tab's `WebContents`) so that browser
+// shortcuts like Ctrl+T still reach the host Activity.
+IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelAndroidBrowserTest,
+                       KeyboardShortcuts_ForwardedToHostActivity) {
+  tabs::TabInterface* tab = OpenTabWithCustomizeChromeEntry();
+  auto* controller = GetCustomizeChromeController(tab);
+  ASSERT_NE(nullptr, controller);
+
+  ShowCustomizeChrome(tab);
+
+  content::WebContents* side_panel_contents =
+      controller->GetWebContentsForTesting();
+  ASSERT_NE(nullptr, side_panel_contents);
+  content::WebContentsDelegate* delegate = side_panel_contents->GetDelegate();
+  ASSERT_NE(nullptr, delegate);
+
+  // Browser-priority shortcuts (e.g. F6) are handled in PreHandleKeyboardEvent
+  // before reaching the renderer.
+  input::NativeWebKeyboardEvent f6_event =
+      CreateKeyDownEvent(AKEYCODE_F6, /*android_meta_state=*/0,
+                         blink::WebInputEvent::kNoModifiers);
+  EXPECT_EQ(content::KeyboardEventProcessingResult::HANDLED,
+            delegate->PreHandleKeyboardEvent(side_panel_contents, f6_event));
+
+  // Page-deferring shortcuts (e.g. Ctrl+T) pass through PreHandleKeyboardEvent
+  // and open a new tab in HandleKeyboardEvent once not consumed by the
+  // renderer.
+  const int initial_tab_count = tab_list_->GetTabCount();
+  input::NativeWebKeyboardEvent ctrl_t_event = CreateKeyDownEvent(
+      AKEYCODE_T, AMETA_CTRL_ON, blink::WebInputEvent::kControlKey);
+  EXPECT_EQ(
+      content::KeyboardEventProcessingResult::NOT_HANDLED,
+      delegate->PreHandleKeyboardEvent(side_panel_contents, ctrl_t_event));
+  EXPECT_TRUE(delegate->HandleKeyboardEvent(side_panel_contents, ctrl_t_event));
+  EXPECT_EQ(initial_tab_count + 1, tab_list_->GetTabCount());
 }

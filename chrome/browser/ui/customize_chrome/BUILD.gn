@@ -65,14 +65,18 @@ if (is_android) {
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/side_panel/test/android:browser_test_support",
+      "//components/input",
       "//components/search",
       "//components/sessions:session_id",
       "//components/tabs:public",
       "//content/public/browser",
       "//content/test:test_support",
       "//testing/gtest",
+      "//third_party/blink/public/common:headers",
+      "//third_party/jni_zero",
       "//ui/android",
       "//ui/base",
+      "//ui/events",
     ]
   }
 }
