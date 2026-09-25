@@ -2063,6 +2063,16 @@ void NativeWidgetNSWindowBridge::SetCALayerParams(
   if (pending_alpha_value_.has_value()) {
     window_.alphaValue = pending_alpha_value_.value();
     pending_alpha_value_ = std::nullopt;
+
+    // Now that the window has visually transitioned from invisible to visible,
+    // inform observers that the window's occlusion state has changed. AppKit
+    // does not post notifications when `alphaValue` changes, so without this
+    // notification, manual occlusion detection (e.g.
+    // WebContentsOcclusionCheckerMac) could miss that this window can now
+    // occlude other windows beneath it which is needed for glass frame.
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSWindowDidChangeOcclusionStateNotification
+                      object:window_];
   }
 
   if (invalidate_shadow_on_frame_swap_) {

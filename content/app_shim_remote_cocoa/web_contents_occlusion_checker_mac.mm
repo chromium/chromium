@@ -16,6 +16,7 @@
 #include "base/mac/mac_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 
@@ -70,6 +71,19 @@ bool IsEmergencyShutoffEnabled() {
     case kShutoffMacOS26StageManager:
       return is_macos26 && is_stage_manager_enabled;
   }
+}
+
+bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
+  if ([view.identifier
+          isEqualToString:remote_cocoa::kOpaqueFrameBackgroundViewIdentifier]) {
+    return true;
+  }
+  for (NSView* subview in [view subviews]) {
+    if (WindowHasOpaqueFrameBackgroundView(subview)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -483,7 +497,13 @@ bool IsEmergencyShutoffEnabled() {
   // Non-opaque windows still hide what's beneath them as long as they paint
   // an opaque background (embedders clear -isOpaque just to get rounded
   // corners).
-  return [[window backgroundColor] alphaComponent] >= 1.0;
+  if ([[window backgroundColor] alphaComponent] >= 1.0) {
+    return YES;
+  }
+  // Browser windows with a glass frame are non-opaque and have a clear
+  // background to enable the glass frame effect, but paint an opaque
+  // background view behind the client area.
+  return WindowHasOpaqueFrameBackgroundView([window contentView]);
 }
 
 // Returns YES if `window` is occluded, either according to macOS or via

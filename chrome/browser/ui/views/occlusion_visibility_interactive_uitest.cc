@@ -64,11 +64,6 @@ class OcclusionVisibilityInteractiveUITest : public InteractiveBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(OcclusionVisibilityInteractiveUITest,
                        MAYBE_OcclusionTriggersVisiblityChange) {
-  // TODO(crbug.com/539963779): Re-enable test when glass frame is enabled
-  if (features::IsGlassFrameEnabled()) {
-    GTEST_SKIP() << "Windows are translucent when glass frame is enabled and "
-                    "thus times out when testing for occlusion";
-  }
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
 
