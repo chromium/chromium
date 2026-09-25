@@ -279,10 +279,11 @@ class DesktopWebSearchZpsSection : public Section {
 };
 
 // An experimental alternative for `DesktopWebSearchZpsSection` that excludes
-// all but contextual matches. It's intended as a full replacement instead
-// of modifying that section, for simplicity and ease of removal after
-// experimentation.
-// - up to `contextual_action_limit` + `contextual_search_limit` total.
+// all but contextual matches and cross-device tabs. It's intended as a full
+// replacement instead of modifying that section, for simplicity and ease of
+// removal after experimentation.
+// - up to 1 + `contextual_action_limit` + `contextual_search_limit` total.
+//  - up to 1 cross-device tab suggestion.
 //  - up to `contextual_action_limit` contextual search action suggestions.
 //  - up to `contextual_search_limit` contextual search suggestions.
 class DesktopWebSearchZpsContextualOnlySection : public Section {

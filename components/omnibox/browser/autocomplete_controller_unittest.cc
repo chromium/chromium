@@ -2275,6 +2275,55 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ContextualSuggestionsAndLens) {
   }
 }
 
+TEST_F(AutocompleteControllerTest,
+       UpdateResult_ContextualSuggestionsPreservesCrossDeviceTab) {
+  // Enable contextual suggestions with ablation of other suggestions.
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      contextual_search_config;
+  contextual_search_config.Get().contextual_zps_limit = 3;
+  contextual_search_config.Get().show_open_lens_action = false;
+  contextual_search_config.Get()
+      .contextual_suggestions_ablate_others_when_present = true;
+
+  EXPECT_CALL(*provider_client(), AreLensEntrypointsVisible())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*provider_client(), IsPagePaywalled())
+      .WillRepeatedly(testing::Return(false));
+
+  AutocompleteInput zps_input(u"", 0u, metrics::OmniboxEventProto::OTHER,
+                              TestSchemeClassifier());
+  zps_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  AutocompleteMatch cross_device_match;
+  cross_device_match.type = AutocompleteMatchType::CROSS_DEVICE_TAB;
+  cross_device_match.suggestion_group_id = omnibox::GROUP_CROSS_DEVICE_TABS;
+  cross_device_match.relevance = 100;
+  cross_device_match.destination_url = GURL("https://example.com/tab");
+  cross_device_match.contents = u"cross_device";
+  cross_device_match.contents_class = {
+      {0, AutocompleteMatch::ACMatchClassification::NONE}};
+
+  AutocompleteMatch personalized_match =
+      CreatePersonalizedZeroPrefixMatch("zps_base", 1450);
+
+  AutocompleteMatch contextual_match =
+      CreateContextualSearchMatch(u"zps_contextual");
+
+  // 1. Sync pass before async contextual search matches arrive.
+  EXPECT_THAT(controller_.SimulateAutocompletePass(
+                  /*sync=*/true, /*done=*/false,
+                  {cross_device_match, personalized_match}, zps_input),
+              testing::ElementsAre("cross_device", "zps_base"));
+
+  // 2. Async pass when contextual search matches arrive. Personalized zero
+  // suggest is ablated, but the cross-device tab remains present at the top.
+  EXPECT_THAT(controller_.SimulateAutocompletePass(
+                  /*sync=*/false, /*done=*/true,
+                  {cross_device_match, personalized_match, contextual_match}),
+              testing::ElementsAre("cross_device", "zps_contextual"));
+}
+
 TEST_F(AutocompleteControllerTest, UpdateResult_HasContextualChips) {
   AutocompleteInput zps_input(u"", 0u, metrics::OmniboxEventProto::OTHER,
                               TestSchemeClassifier());

@@ -612,8 +612,12 @@ DesktopWebSearchZpsContextualOnlySection::
         const omnibox::GroupConfigMap& group_configs,
         size_t contextual_action_limit,
         size_t contextual_search_limit)
-    : Section(contextual_action_limit + contextual_search_limit,
+    : Section(1 + contextual_action_limit + contextual_search_limit,
               {
+                  Group(1,
+                        {
+                            {omnibox::GROUP_CROSS_DEVICE_TABS, 1},
+                        }),
                   Group(contextual_action_limit,
                         {
                             {omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION,

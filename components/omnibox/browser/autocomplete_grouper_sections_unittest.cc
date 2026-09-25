@@ -2374,6 +2374,22 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsContextualSuggestionsOnly) {
         // Nothing but contextual action and contextual search matches.
         {96, 95, 93});
   }
+  {
+    SCOPED_TRACE("ZPS contextual search matches with cross-device tab");
+    test(
+        {
+            CreateMatch(100, omnibox::GROUP_CROSS_DEVICE_TABS),
+            CreateMatch(99, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(98, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
+            CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(94, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
+            CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        // Cross-device tab at the top, followed by contextual matches.
+        {100, 96, 95, 93});
+  }
 }
 
 TEST(AutocompleteGrouperSectionsTest, DesktopComposeboxZpsSection) {
