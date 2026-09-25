@@ -22,6 +22,9 @@
 
 namespace {
 
+// Vertical spacing above the manage enhanced autofill section.
+constexpr CGFloat kManageSectionHeaderHeight = 16.0;
+
 // Section identifiers for the diffable data source.
 enum SectionIdentifier {
   // Section displaying granular fill items.
@@ -59,6 +62,9 @@ enum ItemIdentifier {
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  self.tableView.tableHeaderView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
+  self.tableView.sectionHeaderTopPadding = 0;
 
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
@@ -150,8 +156,18 @@ enum ItemIdentifier {
   return 0.0;
 }
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  return nil;
+}
+
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].unsignedIntegerValue);
+  if (sectionIdentifier == kManageSection) {
+    return kManageSectionHeaderHeight;
+  }
   return 0.0;
 }
 
