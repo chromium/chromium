@@ -4006,16 +4006,26 @@ void Element::UpdateSubtreeBloomFilterAfterInsert() {
 }
 
 void Element::UpdateSubtreeBloomFilterAfterChildRemoval() {
-  Element* first_child = ElementTraversal::FirstChild(*this);
-  if (first_child && first_child->nextSibling()) {
-    // Two or more children left; don't do anything, and don't propagate.
-    // Note that this may leave stale bits in the filter.
-    return;
+  // Removal updates are opportunistic. Keep stale bits rather than
+  // scan a potentially large amount of children to determine whether
+  // zero or one element children remain.
+  constexpr unsigned kMaxNonElementChildrenToScan = 32;
+  unsigned non_element_children = 0;
+  Element* element_child = nullptr;
+  for (Node& child : NodeTraversal::ChildrenOf(*this)) {
+    if (auto* element = DynamicTo<Element>(child)) {
+      if (element_child) {
+        return;
+      }
+      element_child = element;
+    } else if (++non_element_children > kMaxNonElementChildrenToScan) {
+      return;
+    }
   }
 
-  // Zero or one children left.
+  // Zero or one element children left.
   TinyBloomFilter new_bloom_filter =
-      first_child ? first_child->attribute_or_class_bloom_ : 0;
+      element_child ? element_child->attribute_or_class_bloom_ : 0;
   new_bloom_filter |= RecomputeLocalBloomFilter();
   if (attribute_or_class_bloom_ == new_bloom_filter) {
     // No need to do anything, nor traverse upwards.

@@ -51,6 +51,54 @@ class ElementTest : public EditingTestBase {
   ScopedFocusgroupForTest focusgroup_enabled{true};
 };
 
+TEST_F(ElementTest, BloomFilterRemovalScansNonElementChildren) {
+  SetBodyContent(R"HTML(
+    <div>
+      <span class="removed"></span>
+      text
+      <span class="remaining"></span>
+    </div>
+  )HTML");
+
+  Element* parent = GetDocument().body()->firstElementChild();
+  Element* removed = parent->firstElementChild();
+  const AtomicString removed_class("removed");
+  const AtomicString remaining_class("remaining");
+  ASSERT_NE(Element::FilterForString(removed_class) &
+                Element::FilterForString(remaining_class),
+            Element::FilterForString(removed_class));
+
+  parent->RemoveChild(removed);
+
+  EXPECT_FALSE(parent->CouldHaveClass(removed_class));
+  EXPECT_TRUE(parent->CouldHaveClass(remaining_class));
+}
+
+TEST_F(ElementTest, BloomFilterRemovalFindsMultipleElementChildren) {
+  SetBodyContent(R"HTML(
+    <div>
+      <span class="removed"></span>
+      text
+      <span class="first"></span>
+      text
+      <span class="second"></span>
+    </div>
+  )HTML");
+
+  Element* parent = GetDocument().body()->firstElementChild();
+  Element* removed = parent->firstElementChild();
+  const AtomicString first_class("first");
+  const AtomicString second_class("second");
+  ASSERT_NE(Element::FilterForString(first_class) &
+                Element::FilterForString(second_class),
+            Element::FilterForString(second_class));
+
+  parent->RemoveChild(removed);
+
+  EXPECT_TRUE(parent->CouldHaveClass(first_class));
+  EXPECT_TRUE(parent->CouldHaveClass(second_class));
+}
+
 TEST_F(ElementTest, FocusableDesignMode) {
   Document& document = GetDocument();
   DCHECK(IsA<HTMLHtmlElement>(document.documentElement()));
