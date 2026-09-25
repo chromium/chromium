@@ -16,8 +16,6 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.night_mode.NightModeMetrics;
-import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
@@ -37,8 +35,6 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
     static final String PREF_UI_THEME_PREF = "ui_theme_pref";
     private static final String PREF_UI_THEME_PREF_LIGHT = "ui_theme_pref_light";
     private static final String PREF_UI_THEME_PREF_DARK = "ui_theme_pref_dark";
-
-    public static final String KEY_THEME_SETTINGS_ENTRY = "theme_settings_entry";
 
     private boolean mWebContentsDarkModeEnabled;
 
@@ -75,15 +71,6 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
                     return true;
                 });
 
-        // TODO(crbug.com/40198953): Notify feature engagement system that settings were opened.
-        // Record entry point metrics if this fragment is freshly created.
-        if (savedInstanceState == null) {
-            assert getArguments() != null && getArguments().containsKey(KEY_THEME_SETTINGS_ENTRY)
-                    : "<theme_settings_entry> is missing in args.";
-            NightModeMetrics.recordThemeSettingsEntry(
-                    getArguments().getInt(KEY_THEME_SETTINGS_ENTRY));
-        }
-
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
             WebContentsDarkModeMessageController.notifyEventSettingsOpened(getProfile());
@@ -112,14 +99,6 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(ThemeSettingsFragment.class.getName(), 0) {
-                private final Bundle mExtras = new Bundle();
-
-                {
-                    mExtras.putInt(
-                            ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
-                            ThemeSettingsEntry.SETTINGS);
-                }
-
                 @Override
                 public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
                     String prefFragment = ThemeSettingsFragment.class.getName();
@@ -134,8 +113,7 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
                             PREF_UI_THEME_PREF,
                             0,
                             defaultTitle,
-                            defaultSummary,
-                            mExtras);
+                            defaultSummary);
 
                     String lightTitle =
                             NightModeUtils.getThemeSettingTitle(context, ThemeType.LIGHT);
@@ -146,8 +124,7 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
                             PREF_UI_THEME_PREF,
                             1,
                             lightTitle,
-                            null,
-                            mExtras);
+                            null);
                     String darkTitle = NightModeUtils.getThemeSettingTitle(context, ThemeType.DARK);
                     addEntryForKey(
                             indexData,
@@ -156,8 +133,7 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
                             PREF_UI_THEME_PREF,
                             2,
                             darkTitle,
-                            null,
-                            mExtras);
+                            null);
                 }
 
                 private void addEntryForKey(
@@ -167,8 +143,7 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
                         String highlightKey,
                         int subViewPos,
                         String title,
-                        @Nullable String summary,
-                        Bundle extras) {
+                        @Nullable String summary) {
                     String id = getUniqueId(key);
                     indexData.addEntry(
                             id,
@@ -176,13 +151,7 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
                                     .setSummary(summary)
                                     .setHighlightKey(highlightKey)
                                     .setSubViewPos(subViewPos)
-                                    .setArguments(extras)
                                     .build());
-                }
-
-                @Override
-                public Bundle getExtras() {
-                    return mExtras;
                 }
             };
 }

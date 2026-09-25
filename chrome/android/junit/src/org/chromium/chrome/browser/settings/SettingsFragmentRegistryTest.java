@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.commerce.PriceNotificationSettingsFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicActorLoginPermissionsFragment;
-import org.chromium.chrome.browser.night_mode.NightModeMetrics;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.ExtendedPreloadingSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
@@ -407,15 +406,6 @@ public class SettingsFragmentRegistryTest {
 
     @Test
     public void testParseUrlArgumentsPopulatesDefaultMandatoryExtras() {
-        // Verify that parsing a theme settings URL without explicit query
-        // parameters automatically populates the mandatory
-        // theme_settings_entry extra expected by ThemeSettingsFragment.
-        Bundle bundle = SettingsFragmentRegistry.parseUrlArguments("chrome://settings/theme");
-        assertTrue(bundle.containsKey(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
-        assertEquals(
-                NightModeMetrics.ThemeSettingsEntry.SETTINGS,
-                bundle.getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
-
         // Verify that parsing an autofill options URL without explicit query
         // parameters automatically populates the mandatory
         // autofill-options-referrer extra expected by AutofillOptionsFragment.
@@ -745,11 +735,11 @@ public class SettingsFragmentRegistryTest {
     @Test
     public void testResolveAppliesRouteDefaults() {
         SettingsFragmentRegistry.Resolution resolution =
-                SettingsFragmentRegistry.resolve("chrome://settings/theme");
-        assertEquals(ThemeSettingsFragment.class, resolution.fragmentClass);
+                SettingsFragmentRegistry.resolve("chrome://settings/autofill/settings");
+        assertEquals(AutofillOptionsFragment.class, resolution.fragmentClass);
         assertEquals(
-                NightModeMetrics.ThemeSettingsEntry.SETTINGS,
-                resolution.args.getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
+                AutofillOptionsReferrer.SETTINGS,
+                resolution.args.getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
     }
 
     @Test

@@ -1856,17 +1856,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.DarkTheme.ThemeSettingsEntry"
-    enum="AndroidThemeSettingsEntry" expires_after="2023-04-16">
-  <owner>nemco@google.com</owner>
-  <owner>wenyufu@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Entry that navigate the user into the Theme Settings. Recorded when the
-    Theme settings is opened.
-  </summary>
-</histogram>
-
 <histogram name="Android.DefaultBrowserPromo.Click"
     enum="DefaultBrowserPromoSourceType" expires_after="2027-03-01">
   <owner>xinyiji@chromium.org</owner>

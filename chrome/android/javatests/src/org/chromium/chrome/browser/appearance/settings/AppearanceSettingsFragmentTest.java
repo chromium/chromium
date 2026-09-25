@@ -54,7 +54,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
@@ -428,9 +427,6 @@ public class AppearanceSettingsFragmentTest {
         launchSettings();
 
         final var uiThemePref = assertSettingsExists(PREF_UI_THEME, ThemeSettingsFragment.class);
-        Assert.assertEquals(
-                ThemeSettingsEntry.SETTINGS,
-                uiThemePref.getExtras().getInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY));
 
         final var context = mSettings.getContext();
         Assert.assertEquals(

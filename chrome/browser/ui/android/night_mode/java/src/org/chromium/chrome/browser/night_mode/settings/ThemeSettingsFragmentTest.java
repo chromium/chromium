@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -29,13 +28,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.ThemeType;
@@ -97,7 +94,7 @@ public class ThemeSettingsFragmentTest {
     @SmallTest
     @Feature({"Themes"})
     public void testSelectThemes() {
-        launchThemeSettings(ThemeSettingsEntry.SETTINGS);
+        launchThemeSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     int expectedDefaultTheme = ThemeType.SYSTEM_DEFAULT;
@@ -143,7 +140,7 @@ public class ThemeSettingsFragmentTest {
     @Feature({"Themes"})
     @EnableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
     public void testDarkenWebsiteButton() {
-        launchThemeSettings(ThemeSettingsEntry.SETTINGS);
+        launchThemeSettings();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     int expectedDefaultTheme = ThemeType.SYSTEM_DEFAULT;
@@ -223,25 +220,16 @@ public class ThemeSettingsFragmentTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
-    @Test
-    @SmallTest
-    public void testStartThemeSettings_FromAutoDarkMessages() {
-        launchThemeSettings(ThemeSettingsEntry.AUTO_DARK_MODE_MESSAGE);
-    }
-
-    private void launchThemeSettings(@ThemeSettingsEntry Integer settingsEntry) {
-        Bundle args = new Bundle();
-        args.putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY, settingsEntry);
+    private void launchThemeSettings() {
         mSettingsTestRule.launchPreference(
                 ThemeSettingsFragment.class,
-                args,
+                /* fragmentArgs= */ null,
                 (fragment) -> ((ThemeSettingsFragment) fragment).setProfile(mProfile));
 
         mFragment = (ThemeSettingsFragment) mSettingsTestRule.getPreferenceFragment();
         mPreference =
                 (RadioButtonGroupThemePreference)
                         mFragment.findPreference(ThemeSettingsFragment.PREF_UI_THEME_PREF);
-        assertThemeSettingsEntryRecorded(settingsEntry);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
@@ -266,20 +254,5 @@ public class ThemeSettingsFragmentTest {
         Assert.assertTrue(buttonTitle + " button should be checked.", getButton(index).isChecked());
         Assert.assertTrue(
                 "Buttons except " + buttonTitle + " should be unchecked.", isRestUnchecked(index));
-    }
-
-    private void assertThemeSettingsEntryRecorded(int sample) {
-        Assert.assertEquals(
-                "<Android.DarkTheme.ThemeSettingsEntry> should be recorded once.",
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.DarkTheme.ThemeSettingsEntry"));
-        Assert.assertEquals(
-                "<Android.DarkTheme.ThemeSettingsEntry> should be recorded once for sample <"
-                        + sample
-                        + ">.",
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.DarkTheme.ThemeSettingsEntry", sample));
     }
 }

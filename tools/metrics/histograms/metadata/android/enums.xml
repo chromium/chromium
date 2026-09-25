@@ -490,12 +490,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/side_ui/internal/android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiResizeHandler.java:AndroidSideUiResizeHandleTouchState) -->
 
-<enum name="AndroidThemeSettingsEntry">
-  <summary>See Android.DarkTheme.ThemeSettingsEntry.</summary>
-  <int value="0" label="Settings"/>
-  <int value="1" label="Auto dark mode message"/>
-</enum>
-
 <!-- LINT.IfChange(AndroidVerticalTabsDragDropResult) -->
 
 <enum name="AndroidVerticalTabsDragDropResult">

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.night_mode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -298,7 +297,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
     private void verifyLaunchSettings(int numTimes) {
         verify(mMockSettingsNavigation, times(numTimes))
-                .startSettings(eq(mMockActivity), eq(ThemeSettingsFragment.class), notNull());
+                .startSettings(eq(mMockActivity), eq(ThemeSettingsFragment.class));
     }
 
     // Message sent tests.

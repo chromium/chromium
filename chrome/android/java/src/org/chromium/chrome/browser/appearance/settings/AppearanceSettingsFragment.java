@@ -23,9 +23,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarConstants;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
-import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
@@ -73,7 +71,6 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         mUseProfileUserPrefs = DeviceInfo.isDesktop();
         initBookmarkBarPref();
         initToolbarShortcutPref();
-        initUiThemePref();
         initTabPositionPref();
     }
 
@@ -277,16 +274,6 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                 (shouldShow) -> {
                     if (!shouldShow) removePreference(PREF_TOOLBAR_SHORTCUT);
                 });
-    }
-
-    private void initUiThemePref() {
-        // LINT.IfChange(InitPrefUiTheme)
-        findPreference(PREF_UI_THEME)
-                .getExtras()
-                .putInt(
-                        ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
-                        ThemeSettingsEntry.SETTINGS);
-        // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/settings/MainSettings.java:InitPrefUiTheme)
     }
 
     private void removePreference(String prefKey) {

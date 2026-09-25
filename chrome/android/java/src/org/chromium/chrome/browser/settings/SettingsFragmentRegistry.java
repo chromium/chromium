@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.glic.GlicSettings;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
-import org.chromium.chrome.browser.night_mode.NightModeMetrics;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.ExtendedPreloadingSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
@@ -293,17 +292,7 @@ public class SettingsFragmentRegistry {
         // Appearance
         registerMapping("/appearance", AppearanceSettingsFragment.class);
         registerMapping("/bookmarkBar", BookmarkBarSettingsFragment.class);
-        registerMapping("/theme", ThemeSettingsFragment.class)
-                // The page asserts on its entry point extra.
-                .withDefaults(
-                        bundle -> {
-                            if (!bundle.containsKey(
-                                    ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY)) {
-                                bundle.putInt(
-                                        ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
-                                        NightModeMetrics.ThemeSettingsEntry.SETTINGS);
-                            }
-                        });
+        registerMapping("/theme", ThemeSettingsFragment.class);
         registerMapping("/toolbar", AdaptiveToolbarSettingsFragment.class);
 
         // Accessibility

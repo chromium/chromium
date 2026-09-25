@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.night_mode;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
@@ -20,7 +19,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -208,12 +206,8 @@ public class WebContentsDarkModeMessageController {
      * settings page is opened to show users where to change the auto-dark settings.
      */
     private static void onOptOutPrimaryAction(Activity activity) {
-        Bundle args = new Bundle();
-        args.putInt(
-                ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
-                ThemeSettingsEntry.AUTO_DARK_MODE_MESSAGE);
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(activity, ThemeSettingsFragment.class, args);
+                .startSettings(activity, ThemeSettingsFragment.class);
     }
 
     /**
@@ -353,12 +347,8 @@ public class WebContentsDarkModeMessageController {
 
     /** Open settings */
     private static void openSettings(Context context) {
-        Bundle args = new Bundle();
-        args.putInt(
-                ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
-                ThemeSettingsEntry.AUTO_DARK_MODE_DIALOG);
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(context, ThemeSettingsFragment.class, args);
+                .startSettings(context, ThemeSettingsFragment.class);
     }
 
     /** Returns link-formatted message text for the auto dark dialog. */
