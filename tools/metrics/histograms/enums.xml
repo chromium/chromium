@@ -10908,7 +10908,6 @@ from previous Chrome versions.
   <int value="-1225073446" label="RightEdgeGoesForwardGestureNav:disabled"/>
   <int value="-1224962996" label="PwaImprovedSplashScreen:disabled"/>
   <int value="-1224843921" label="DevToolsTabTarget:enabled"/>
-  <int value="-1224643496" label="EnableClipboardDataControlsAndroid:disabled"/>
   <int value="-1224312575"
       label="AutofillEnableAllowlistForBmoCardCategoryBenefits:disabled"/>
   <int value="-1223003562" label="CCTAdaptiveButton:enabled"/>
@@ -20992,7 +20991,6 @@ from previous Chrome versions.
   <int value="1858385315" label="ChromeHomeBottomNavLabels:enabled"/>
   <int value="1858523835" label="VerifyDidCommitParams:enabled"/>
   <int value="1859016750" label="Conch:disabled"/>
-  <int value="1859378256" label="EnableClipboardDataControlsAndroid:enabled"/>
   <int value="1859864175" label="AppDeduplicationServiceFondue:enabled"/>
   <int value="1860171143" label="ActorLiveNotification:disabled"/>
   <int value="1860349258" label="EnableFastInkForSoftwareCursor:enabled"/>
