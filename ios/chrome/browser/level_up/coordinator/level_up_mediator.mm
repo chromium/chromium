@@ -218,63 +218,98 @@
 
 // Configures the task stat.
 - (void)configureTaskStat:(NSArray<LevelUpTask*>*)allTasks {
+  if (![self.consumer respondsToSelector:@selector(setStats:)]) {
+    return;
+  }
+
   NSMutableArray<LevelUpStat*>* stats = [[NSMutableArray alloc] init];
 
+  if (LevelUpStat* stat = [self tabsDeclutteredStat]) {
+    [stats addObject:stat];
+  }
+
+  if (LevelUpStat* stat = [self passwordsAutofilledStat]) {
+    [stats addObject:stat];
+  }
+
+  if (LevelUpStat* stat = [self passwordsVerifiedStat]) {
+    [stats addObject:stat];
+  }
+
+  if (LevelUpStat* stat = [self photoSearchesPerformedStat]) {
+    [stats addObject:stat];
+  }
+
+  [self.consumer setStats:stats];
+}
+
+- (LevelUpStat*)tabsDeclutteredStat {
   int tabsDecluttered =
       _levelUpService->GetStatValue(LevelUpTaskStatType::kTabsDecluttered);
-  NSString* title1 = l10n_util::GetPluralNSStringF(
+  if (tabsDecluttered <= 0) {
+    return nil;
+  }
+
+  NSString* title = l10n_util::GetPluralNSStringF(
       IDS_IOS_LEVEL_UP_STAT_TABS_DECLUTTERED, tabsDecluttered);
-  NSString* subtitle1 =
+  NSString* subtitle =
       l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_SUBTITLE_TABS_DECLUTTERED);
-  LevelUpStat* stat1 =
-      [[LevelUpStat alloc] initWithTitle:title1
-                                subtitle:subtitle1
+  return
+      [[LevelUpStat alloc] initWithTitle:title
+                                subtitle:subtitle
                          imageLottieName:@"tabs_decluttered"
                                     type:LevelUpTaskStatType::kTabsDecluttered];
-  [stats addObject:stat1];
+}
 
+- (LevelUpStat*)passwordsAutofilledStat {
   int passwordsAutofilled =
       _levelUpService->GetStatValue(LevelUpTaskStatType::kPasswordsAutofilled);
-  NSString* title2 = l10n_util::GetPluralNSStringF(
+  if (passwordsAutofilled <= 0) {
+    return nil;
+  }
+  NSString* title = l10n_util::GetPluralNSStringF(
       IDS_IOS_LEVEL_UP_STAT_PASSWORDS_AUTOFILLED, passwordsAutofilled);
-  NSString* subtitle2 = l10n_util::GetNSString(
+  NSString* subtitle = l10n_util::GetNSString(
       IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PASSWORDS_AUTOFILLED);
-  LevelUpStat* stat2 = [[LevelUpStat alloc]
-        initWithTitle:title2
-             subtitle:subtitle2
+  return [[LevelUpStat alloc]
+        initWithTitle:title
+             subtitle:subtitle
       imageLottieName:@"typing_saved"
                  type:LevelUpTaskStatType::kPasswordsAutofilled];
-  [stats addObject:stat2];
+}
 
+- (LevelUpStat*)passwordsVerifiedStat {
   int passwordsVerified =
       _levelUpService->GetStatValue(LevelUpTaskStatType::kPasswordsVerified);
-  NSString* title3 = l10n_util::GetPluralNSStringF(
+  if (passwordsVerified <= 0) {
+    return nil;
+  }
+  NSString* title = l10n_util::GetPluralNSStringF(
       IDS_IOS_LEVEL_UP_STAT_PASSWORDS_VERIFIED, passwordsVerified);
-  NSString* subtitle3 =
+  NSString* subtitle =
       l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PASSWORDS_VERIFIED);
-  LevelUpStat* stat3 = [[LevelUpStat alloc]
-        initWithTitle:title3
-             subtitle:subtitle3
+  return [[LevelUpStat alloc]
+        initWithTitle:title
+             subtitle:subtitle
       imageLottieName:@"passwords_verified"
                  type:LevelUpTaskStatType::kPasswordsVerified];
-  [stats addObject:stat3];
+}
 
+- (LevelUpStat*)photoSearchesPerformedStat {
   int photoSearchesPerformed = _levelUpService->GetStatValue(
       LevelUpTaskStatType::kPhotoSearchesPerformed);
-  NSString* title4 = l10n_util::GetPluralNSStringF(
+  if (photoSearchesPerformed <= 0) {
+    return nil;
+  }
+  NSString* title = l10n_util::GetPluralNSStringF(
       IDS_IOS_LEVEL_UP_STAT_PHOTO_SEARCHES_PERFORMED, photoSearchesPerformed);
-  NSString* subtitle4 = l10n_util::GetNSString(
+  NSString* subtitle = l10n_util::GetNSString(
       IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PHOTO_SEARCHES_PERFORMED);
-  LevelUpStat* stat4 = [[LevelUpStat alloc]
-        initWithTitle:title4
-             subtitle:subtitle4
+  return [[LevelUpStat alloc]
+        initWithTitle:title
+             subtitle:subtitle
       imageLottieName:@"photo_searches_performed"
                  type:LevelUpTaskStatType::kPhotoSearchesPerformed];
-  [stats addObject:stat4];
-
-  if ([self.consumer respondsToSelector:@selector(setStats:)]) {
-    [self.consumer setStats:stats];
-  }
 }
 
 - (BOOL)toggleProgressUpdates {
