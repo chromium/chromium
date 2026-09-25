@@ -288,7 +288,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
 
         Tab mockTab = mock();
 
-        observer.willMergeTabToGroup(mockTab, 0, null);
+        observer.didMergeTabToGroup(mockTab, /* isDestinationTab= */ false);
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         reset(mSuggestionLifecycleObserverHandler);

@@ -44,16 +44,6 @@ public interface TabGroupObserver {
     }
 
     /**
-     * This method is called before a tab is moved to form a group or moved into an existed group.
-     *
-     * @param movedTab The {@link Tab} which will be moved. If a group will be merged to a tab or
-     *     another group, this is the last tab of the merged group.
-     * @param newRootId The new root id of the group after merge.
-     * @param tabGroupId The tab group id of the group merged to.
-     */
-    default void willMergeTabToGroup(Tab movedTab, int newRootId, @Nullable Token tabGroupId) {}
-
-    /**
      * This method is called before a group is moved.
      *
      * @param tabGroupId The tab group id of the group being moved.
@@ -148,17 +138,6 @@ public interface TabGroupObserver {
      */
     default void didChangeTabGroupCollapsed(
             Token tabGroupId, boolean isCollapsed, boolean animate) {}
-
-    /**
-     * When a tab group's root id needs to change because the tab whose id was previously being used
-     * as the root ids is no longer part of the group. This could be a tab deletion that has not yet
-     * been committed. Undo operations will not reverse this operation, as it does not have any user
-     * facing effects.
-     *
-     * @param oldRootId The previous root id.
-     * @param newRootId The new root id.
-     */
-    default void didChangeGroupRootId(int oldRootId, int newRootId) {}
 
     /**
      * Called when a tab group is about to be removed from the tab model (e.g. as a result of

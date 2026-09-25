@@ -194,8 +194,7 @@ public class TabSwitcherGroupSuggestionService {
     private final TabGroupObserver mTabGroupObserver =
             new TabGroupObserver() {
                 @Override
-                public void willMergeTabToGroup(
-                        Tab movedTab, int newRootId, @Nullable Token tabGroupId) {
+                public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
                     clearSuggestions();
                 }
 

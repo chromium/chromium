@@ -1054,19 +1054,11 @@ public class TabCollectionTabModelImplTest {
         List<Tab> tabs = List.of(tab0, tab1);
         assertTabsInOrderAre(tabs);
 
-        CallbackHelper willMergeTabToGroupHelper = new CallbackHelper();
         CallbackHelper didMergeTabToGroupHelper = new CallbackHelper();
         CallbackHelper didCreateNewGroupHelper = new CallbackHelper();
 
         TabGroupObserver observer =
                 new TabGroupObserver() {
-                    @Override
-                    public void willMergeTabToGroup(Tab movedTab, int newRootId, Token tabGroupId) {
-                        assertEquals(tab0, movedTab);
-                        assertNotNull(tabGroupId);
-                        willMergeTabToGroupHelper.notifyCalled();
-                    }
-
                     @Override
                     public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
                         assertEquals(tab0, movedTab);
@@ -1093,7 +1085,6 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.removeTabGroupObserver(observer);
                 });
 
-        willMergeTabToGroupHelper.waitForOnly();
         didMergeTabToGroupHelper.waitForOnly();
         didCreateNewGroupHelper.waitForOnly();
 

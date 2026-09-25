@@ -1730,19 +1730,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             observers.next().didAddTab(tab, type, creationState, selectTab);
         }
         if (groupWithParent) {
-            // TODO(crbug.com/434015906): The sequencing here is incorrect as the tab is
-            // already
-            // grouped at this point; however, current clients don't care and we may be
-            // able to
-            // remove `willMergeTabToGroup` from the observer interface entirely one tab
-            // collections
-            // is fully launched.
-
-            // Wait until after didAddTab before notifying observers so the tabs are
-            // present in the
+            // Wait until after didAddTab before notifying observers so the tabs are present in the
             // collection.
             for (TabGroupObserver observer : mTabGroupObservers) {
-                observer.willMergeTabToGroup(tab, Tab.INVALID_TAB_ID, tabGroupId);
                 observer.didMergeTabToGroup(tab, /* isDestinationTab= */ false);
             }
         }
@@ -2583,11 +2573,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         if (isMergingIntoGroup) {
             assumeNonNull(newTabGroupId);
-            assumeNonNull(groupObservers);
-            groupObservers.rewind();
-            while (groupObservers.hasNext()) {
-                groupObservers.next().willMergeTabToGroup(tab, Tab.INVALID_TAB_ID, newTabGroupId);
-            }
             if (getLastShownTabForGroup(newTabGroupId) == null) {
                 setLastShownTabForGroup(newTabGroupId, tab);
             }
