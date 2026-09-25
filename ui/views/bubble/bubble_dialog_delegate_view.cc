@@ -462,7 +462,7 @@ BubbleDialogDelegate::BubbleDialogDelegate(BubbleAnchor anchor,
                                            BubbleBorder::Shadow shadow,
                                            bool autosize)
     : arrow_(arrow),
-      shadow_(shadow),
+      shadow_config_({.shadow_type = shadow}),
       autosize_(autosize),
       close_on_deactivate_pins_(std::make_unique<CloseOnDeactivatePin::Pins>()),
       bubble_created_time_(base::TimeTicks::Now()) {
@@ -632,6 +632,10 @@ std::unique_ptr<FrameView> BubbleDialogDelegate::CreateFrameView(
   std::unique_ptr<BubbleBorder> border =
       std::make_unique<BubbleBorder>(arrow(), GetShadow());
   border->set_background_color(background_color());
+  if (shadow_config_.elevation.has_value()) {
+    border->set_md_shadow_elevation(shadow_config_.elevation.value());
+  }
+  border->set_avoid_shadow_overlap(shadow_config_.avoid_overlap_shadow);
 
   if (GetParams().round_corners) {
     border->set_rounded_corners(gfx::RoundedCornersF(GetCornerRadius()));
@@ -725,7 +729,7 @@ BubbleBorder::Shadow BubbleDialogDelegate::GetShadow() const {
   if (!Widget::IsWindowCompositingSupported()) {
     return BubbleBorder::Shadow::NO_SHADOW;
   }
-  return shadow_;
+  return shadow_config_.shadow_type;
 }
 
 View* BubbleDialogDelegate::GetAnchorView() const {

@@ -386,8 +386,28 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // Bubbles may optionally have a shadow. Only some platforms support drawing
   // custom shadows on a bubble.
 
+  struct ShadowConfiguration {
+    BubbleBorder::Shadow shadow_type = BubbleBorder::DIALOG_SHADOW;
+    // Custom MD shadow elevation. A null value yields the default BubbleBorder
+    // MD shadow.
+    std::optional<int> elevation = std::nullopt;
+    // Whether to avoid the bubble's shadow overlapping the anchor.
+    bool avoid_overlap_shadow = false;
+  };
+
   BubbleBorder::Shadow GetShadow() const;
-  void set_shadow(BubbleBorder::Shadow shadow) { shadow_ = shadow; }
+  // Returns the shadow configuration as set. Unlike GetShadow(), this does not
+  // account for platform support (e.g. window compositing).
+  const ShadowConfiguration& shadow_config() const { return shadow_config_; }
+  void set_shadow_config(const ShadowConfiguration& shadow_config) {
+    shadow_config_ = shadow_config;
+  }
+  // DEPRECATED: Use set_shadow_config() instead. Existing callers will be
+  // migrated and this method removed. Only updates the shadow type; other
+  // ShadowConfiguration fields are left unchanged.
+  void set_shadow(BubbleBorder::Shadow shadow) {
+    shadow_config_.shadow_type = shadow;
+  }
 
   // Call this method to inform BubbleDialogDelegate that the return value of
   // GetAnchorRect() has changed. You only need to do this if you have
@@ -694,7 +714,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void SetResolvedHighlightedElement(ui::TrackedElement* element);
 
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;
-  BubbleBorder::Shadow shadow_;
+  ShadowConfiguration shadow_config_;
   ui::ColorVariant color_ = ui::kColorBubbleBackground;
   raw_ptr<Widget> anchor_widget_ = nullptr;
   ui::SafeElementReference anchor_tracked_element_;
