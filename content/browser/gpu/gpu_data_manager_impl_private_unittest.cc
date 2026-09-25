@@ -487,7 +487,7 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
-  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+  if (manager->supports_gpu_mode_hardware_gl()) {
     EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
   } else {
     EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
@@ -502,10 +502,6 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
 // kGL for the hardware fallback.
 TEST_F(GpuDataManagerImplPrivateTest,
        UpdateGpuPreferences_GraphiteModeFallbackIsGL) {
-  if constexpr (!GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
-    GTEST_SKIP() << "HARDWARE_GL isn't supported";
-  }
-
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
@@ -515,6 +511,9 @@ TEST_F(GpuDataManagerImplPrivateTest,
 #endif
 
   ScopedGpuDataManagerImplPrivate manager;
+  if (!manager->supports_gpu_mode_hardware_gl()) {
+    GTEST_SKIP() << "HARDWARE_GL isn't supported";
+  }
   ASSERT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   gpu::GpuPreferences prefs;
@@ -534,10 +533,6 @@ TEST_F(GpuDataManagerImplPrivateTest,
 // GL mode: gr_context_type is kGL and there are no hardware fallbacks left.
 TEST_F(GpuDataManagerImplPrivateTest,
        UpdateGpuPreferences_GLModeNoHardwareFallback) {
-  if constexpr (!GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
-    GTEST_SKIP() << "HARDWARE_GL isn't supported";
-  }
-
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kDisableSkiaGraphite);
@@ -548,6 +543,9 @@ TEST_F(GpuDataManagerImplPrivateTest,
 #endif
 
   ScopedGpuDataManagerImplPrivate manager;
+  if (!manager->supports_gpu_mode_hardware_gl()) {
+    GTEST_SKIP() << "HARDWARE_GL isn't supported";
+  }
   ASSERT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
   gpu::GpuPreferences prefs;
@@ -566,10 +564,6 @@ TEST_F(GpuDataManagerImplPrivateTest,
 // hardware types since no hardware modes remain.
 TEST_F(GpuDataManagerImplPrivateTest,
        UpdateGpuPreferences_AfterGraphiteFallbackToGL) {
-  if constexpr (!GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
-    GTEST_SKIP() << "HARDWARE_GL isn't supported";
-  }
-
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
@@ -579,6 +573,9 @@ TEST_F(GpuDataManagerImplPrivateTest,
 #endif
 
   ScopedGpuDataManagerImplPrivate manager;
+  if (!manager->supports_gpu_mode_hardware_gl()) {
+    GTEST_SKIP() << "HARDWARE_GL isn't supported";
+  }
   ASSERT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
@@ -604,10 +601,6 @@ TEST_F(GpuDataManagerImplPrivateTest,
     GTEST_SKIP();
   }
 
-  if constexpr (!GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
-    GTEST_SKIP() << "HARDWARE_GL isn't supported";
-  }
-
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
@@ -615,6 +608,9 @@ TEST_F(GpuDataManagerImplPrivateTest,
   feature_list.InitAndEnableFeature(features::kVulkan);
 
   ScopedGpuDataManagerImplPrivate manager;
+  if (!manager->supports_gpu_mode_hardware_gl()) {
+    GTEST_SKIP() << "HARDWARE_GL isn't supported";
+  }
   ASSERT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   gpu::GpuPreferences prefs;
@@ -676,7 +672,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
       gpu::kGpuFeatureStatusDisabled;
 
   manager->UpdateGpuFeatureInfo(gpu_feature_info, std::nullopt);
-  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+  if (manager->supports_gpu_mode_hardware_gl()) {
     EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
   } else {
     EXPECT_EQ(gpu::GpuMode::DISPLAY_COMPOSITOR, manager->GetGpuMode());
@@ -745,7 +741,7 @@ TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShaderForGanesh) {
                                     });
 
   ScopedGpuDataManagerImplPrivate manager;
-  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+  if (manager->supports_gpu_mode_hardware_gl()) {
     EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
     manager->FallBackToNextGpuMode();
@@ -760,7 +756,7 @@ TEST_F(GpuDataManagerImplPrivateTest, ExplicitFallbackToSwiftShaderForGanesh) {
       switches::kEnableUnsafeSwiftShader);
 
   ScopedGpuDataManagerImplPrivate manager;
-  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+  if (manager->supports_gpu_mode_hardware_gl()) {
     EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
     // An extra fallback is required if this platform supports Ganesh.
@@ -780,7 +776,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableUnsafeSwiftShader);
   ScopedGpuDataManagerImplPrivate manager;
-  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+  if (manager->supports_gpu_mode_hardware_gl()) {
     EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
     // An extra fallback is required if this platform supports Ganesh.
@@ -804,7 +800,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
   feature_list.InitAndDisableFeature(features::kAllowSwiftShaderFallback);
 
   ScopedGpuDataManagerImplPrivate manager;
-  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+  if (manager->supports_gpu_mode_hardware_gl()) {
     EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
     // An extra fallback is required if this platform supports Ganesh.
@@ -824,7 +820,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
-  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+  if (manager->supports_gpu_mode_hardware_gl()) {
     // An extra fallback is required if this platform supports Ganesh.
     manager->FallBackToNextGpuMode();
   }
@@ -846,7 +842,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
-  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+  if (manager->supports_gpu_mode_hardware_gl()) {
     // An extra fallback is required if this platform supports Ganesh.
     manager->FallBackToNextGpuMode();
   }
@@ -870,7 +866,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
 
   manager->FallBackToNextGpuMode();
 
-  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+  if (manager->supports_gpu_mode_hardware_gl()) {
     // An extra fallback is required if this platform supports Ganesh.
     manager->FallBackToNextGpuMode();
   }
@@ -895,7 +891,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
-  if constexpr (GpuDataManagerImplPrivate::kSupportsGpuModeHardwareGL) {
+  if (manager->supports_gpu_mode_hardware_gl()) {
     // An extra fallback is required if this platform supports Ganesh.
     manager->FallBackToNextGpuMode();
   }
