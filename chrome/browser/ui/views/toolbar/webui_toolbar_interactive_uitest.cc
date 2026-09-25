@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/views/toolbar/reload_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_and_views_toolbar_interactive_uitest_base.h"
+#include "chrome/browser/ui/views/toolbar/webui_battery_saver_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -111,6 +112,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -3109,11 +3111,44 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
 
   // Click the battery saver button in the overflow menu and wait for the
   // overflow menu to close.
-  //
-  // TODO(crbug.com/491791965): Also verify that the battery saver bubble is
-  // shown once clicking the overflow menu item is wired up to open the bubble.
   ASSERT_TRUE(ClickOverflowMenuItem(*overflow_menu,
                                     IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER));
+
+  // The button is hidden when the overflow menu item is clicked, so the browser
+  // has to ask the WebUI to display it before the bubble can be anchored to it.
+  ASSERT_TRUE(
+      WaitForTrackedElementVisible(kToolbarBatterySaverButtonElementId));
+
+  WebUIBatterySaverControl& battery_saver_control =
+      GetWebUIToolbarWebView(browser())->battery_saver_control_for_testing();
+
+  // The bubble should be shown once the button becomes visible.
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return battery_saver_control.bubble_for_testing() != nullptr;
+  }));
+
+  // The bubble must be anchored to the button itself, rather than falling back
+  // to the toolbar as a whole. The element is looked up again here rather than
+  // reusing the one above, since showing the bubble may have destroyed and
+  // recreated it.
+  ui::TrackedElement* battery_saver_element =
+      WaitForTrackedElementVisible(kToolbarBatterySaverButtonElementId);
+  ASSERT_TRUE(battery_saver_element);
+  views::BubbleDialogModelHost* bubble =
+      battery_saver_control.bubble_for_testing();
+  EXPECT_EQ(bubble->GetAnchorRect(), battery_saver_element->GetScreenBounds());
+
+  // The button must stay visible for as long as the bubble is anchored to it,
+  // even though it would otherwise overflow at this window size.
+  EXPECT_TRUE(WaitForTrackedElements(
+      {kToolbarOverflowButtonElementId, kToolbarBatterySaverButtonElementId},
+      {kToolbarForwardButtonElementId}));
+
+  // Closing the bubble should allow the button to overflow again.
+  bubble->Close();
+  EXPECT_TRUE(WaitForTrackedElements(
+      {kToolbarOverflowButtonElementId},
+      {kToolbarForwardButtonElementId, kToolbarBatterySaverButtonElementId}));
 }
 
 // Test clicking the media button when it appears on the overflow menu.

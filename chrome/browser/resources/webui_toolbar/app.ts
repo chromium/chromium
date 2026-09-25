@@ -448,6 +448,7 @@ export class ToolbarAppElement extends AppElementBase {
     batterySaverControlState: {
       shouldBeShown:
           getTypedBoolean(ToolbarStateKey.BATTERY_SAVER_BUTTON_VISIBLE),
+      preventOverflow: false,
     },
     locationBarState: {
       omniboxViewState: {

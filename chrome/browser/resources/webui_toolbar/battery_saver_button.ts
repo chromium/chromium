@@ -48,6 +48,7 @@ export class BatterySaverButtonElement extends BatterySaverButtonElementBase {
 
   override accessor state: BatterySaverControlState = {
     shouldBeShown: false,
+    preventOverflow: false,
   };
 
   protected getLabel_(): string {

@@ -34,6 +34,15 @@ export interface OverflowableButtonState {
   isContextMenuVisible?: boolean;
 
   /**
+   * When present and true, the button will never be hidden due to overflow.
+   * If `shouldBeShown` is false, should be undefined or null.
+   *
+   * Distinct from `isContextMenuVisible`, as that also drives accessibility
+   * state, though it is used when showing bubbles, under similar circumstances.
+   */
+  preventOverflow?: boolean|null;
+
+  /**
    * Ignored if `isContextMenuVisible` is not present. If this field is present,
    * invoking OverflowableButtonMixin.showContextMenuAndPreventOverflow() will
    * cause the class to keep `state.isContextMenuVisible` set to true until the
@@ -103,11 +112,23 @@ export const OverflowableButtonMixin =
           return this.state.shouldBeShown ?? true;
         }
 
+        /**
+         * True if the button is currently not allowed to overflow, either
+         * because the browser has set `preventOverflow` or because its context
+         * menu is showing.
+         */
+        private shouldPreventOverflow_(): boolean {
+          // These use `=== true` because both can be undefined or bool, and
+          // `preventOverflow` may also be null, when `shouldBeShown` is false.
+          return this.state.preventOverflow === true ||
+              this.state.isContextMenuVisible === true;
+        }
+
         setToMinWidth() {
           // The minimum width hides the button using `overflow-display-none`.
 
-          // If context menu is visible, leave at full width.
-          if (this.state.isContextMenuVisible) {
+          // If overflow is currently prevented, leave at full width.
+          if (this.shouldPreventOverflow_()) {
             return;
           }
           this.classList.add('overflow-display-none');
@@ -121,9 +142,9 @@ export const OverflowableButtonMixin =
           // initial setToMinWidth() call, and only if shouldBeShown() returns
           // true.
 
-          // If context menu is visible, should already be at preferred width,
-          // so do nothing.
-          if (this.state.isContextMenuVisible) {
+          // If overflow is currently prevented, should already be at preferred
+          // width, so do nothing.
+          if (this.shouldPreventOverflow_()) {
             return;
           }
           this.setToPreferredWidth();
@@ -196,21 +217,23 @@ export const OverflowableButtonMixin =
           if (changedProperties.has('state')) {
             const oldState = changedProperties.get('state');
 
-            // When there's a context menu visible, control is not allowed to
-            // overflow.
-            if (this.state.isContextMenuVisible) {
+            // When overflow is prevented, this class should never hide the
+            // control. Note that the child class may still be hiding the
+            // control itself, based on `shouldBeShown`.
+            if (this.shouldPreventOverflow_()) {
               this.setToPreferredWidth();
             }
 
             // Need to run a layout if this is the first state update, if the
-            // visibility of `this` changed, or if the visibility of the context
-            // menu changed. Technically don't need to do a layout if the
-            // context menu became visible when the button was not overflowed,
-            // but that's a bit tricky to check.
+            // visibility of `this` changed, or if the control's ability to
+            // overflow changed. Technically we don't need to do a layout if the
+            // control is no longer allowed to overflow but wasn't overflowed in
+            // the first place, but that's a bit tricky to check.
             if (!oldState ||
                 oldState.shouldBeShown !== this.state.shouldBeShown ||
                 oldState.isContextMenuVisible !==
-                    this.state.isContextMenuVisible) {
+                    this.state.isContextMenuVisible ||
+                oldState.preventOverflow !== this.state.preventOverflow) {
               this.fire('request-layout');
             }
           }

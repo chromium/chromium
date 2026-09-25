@@ -188,6 +188,9 @@ class WebUIToolbarWebView
   WebUISplitTabsControl& split_tabs_control_for_testing() {
     return split_tabs_control_;
   }
+  WebUIBatterySaverControl& battery_saver_control_for_testing() {
+    return battery_saver_control_;
+  }
 
   void SetIsMaximizedOrFullscreen(bool maximized_or_fullscreen);
   void SetBackForwardEnabled(int command_id, bool enabled);
