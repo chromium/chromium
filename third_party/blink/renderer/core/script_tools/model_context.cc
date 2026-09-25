@@ -522,7 +522,7 @@ void ModelContext::OnToolFailed(ScriptToolExecutedCallback callback,
       blink::BindOnce(std::move(callback), base::unexpected(std::move(error))));
 }
 
-bool ModelContext::ExecuteTool(const base::UnguessableToken& invocation_id,
+bool ModelContext::ExecuteTool(base::UnguessableToken invocation_id,
                                const String& name,
                                const String& input_arguments,
                                ScriptToolExecutedCallback tool_executed_cb) {
@@ -576,7 +576,7 @@ bool ModelContext::ExecuteTool(const base::UnguessableToken& invocation_id,
   return success;
 }
 
-bool ModelContext::CancelTool(const base::UnguessableToken& invocation_id) {
+bool ModelContext::CancelTool(base::UnguessableToken invocation_id) {
   CHECK(document_->IsActive());
 
   // It's possible for `invocation_id` to not match any pending execution, for
@@ -691,7 +691,7 @@ void ModelContext::DidFinishParsing() {
 //     but respondWith() isn't called, an error is reported back to the agent.)
 void ModelContext::ExecuteDeclarativeTool(
     DeclarativeWebMCPTool* tool,
-    const base::UnguessableToken& invocation_id,
+    base::UnguessableToken invocation_id,
     const String& input_arguments,
     AbortController* abort_controller,
     ScriptToolExecutedCallback tool_executed_cb) {
@@ -747,7 +747,7 @@ void ModelContext::ExecuteDeclarativeTool(
 // waits for the promise to resolve, JSON-stringifies the result, and passes
 // it to OnToolExecuted().
 bool ModelContext::ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
-                                 const base::UnguessableToken& invocation_id,
+                                 base::UnguessableToken invocation_id,
                                  const String& name,
                                  const String& input_arguments,
                                  AbortController* abort_controller,

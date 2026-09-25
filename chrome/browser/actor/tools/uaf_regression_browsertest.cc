@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/actor/core/actor_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -222,6 +226,62 @@ IN_PROC_BROWSER_TEST_F(ActorUafRegressionBrowserTest,
 
   // Frame detachment during mouse move event dispatch should be handled cleanly
   // without crashing the renderer.
+  ASSERT_TRUE(result.Wait());
+}
+
+class ActorUafRegressionScriptToolBrowserTest
+    : public ActorUafRegressionBrowserTest {
+ public:
+  ActorUafRegressionScriptToolBrowserTest() {
+    features_.InitWithFeatures(
+        {blink::features::kWebMCP, actor::kGlicActorEnableScriptTools}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// Regression test for UAF in ScriptTool and ModelContext.
+// See crbug.com/513147880.
+IN_PROC_BROWSER_TEST_F(ActorUafRegressionScriptToolBrowserTest,
+                       ScriptToolExecute_HandlesSynchronousFrameDetachment) {
+  SetupAbaFrames("/actor/script_tool_uaf_inner.html");
+  RenderFrameHost* inner_rfh = GetInnerRfh();
+  ASSERT_TRUE(inner_rfh);
+
+  std::unique_ptr<ToolRequest> action =
+      MakeScriptToolRequest(*inner_rfh, "detach_on_execute", "{}");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  // This should not crash the renderer.
+  ASSERT_TRUE(result.Wait());
+}
+
+// Regression test for UAF in ScriptTool and ModelContext.
+// See crbug.com/513147880.
+IN_PROC_BROWSER_TEST_F(ActorUafRegressionScriptToolBrowserTest,
+                       ScriptToolCancel_HandlesSynchronousFrameDetachment) {
+  SetupAbaFrames("/actor/script_tool_uaf_inner.html");
+  RenderFrameHost* inner_rfh = GetInnerRfh();
+  ASSERT_TRUE(inner_rfh);
+
+  content::DOMMessageQueue message_queue(web_contents());
+  std::unique_ptr<ToolRequest> action =
+      MakeScriptToolRequest(*inner_rfh, "hang", "{}");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"hang_started\"", message);
+
+  // The page's `abort` / `toolcancel` handler synchronously detaches the
+  // local-root frame running the tool while ScriptTool::Cancel and
+  // ToolExecutor::CancelTool are on the stack.
+  actor_task().CancelOngoingActions(mojom::ActionResultCode::kActionsCancelled);
+
+  // This should not crash the renderer.
   ASSERT_TRUE(result.Wait());
 }
 

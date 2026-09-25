@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    function detachMidFrame() {
+      const mid = parent.parent.document.getElementById('mid');
+      if (mid) {
+        mid.remove();
+      }
+    }
+
+    document.modelContext.registerTool({
+      name: 'detach_on_execute',
+      description: 'synchronously detaches frame during execute()',
+      inputSchema: { type: 'object', properties: {} },
+      execute: () => {
+        detachMidFrame();
+        return new Promise(() => {});
+      },
+    });
+
+    document.modelContext.registerTool({
+      name: 'hang',
+      description: 'never resolves; detaches frame on abort/toolcancel',
+      inputSchema: { type: 'object', properties: {} },
+      execute: (input, options) => {
+        if (options && options.signal) {
+          options.signal.addEventListener('abort', detachMidFrame);
+        }
+        window.domAutomationController.send('hang_started');
+        return new Promise(() => {});
+      },
+    });
+
+    window.addEventListener('toolcancel', detachMidFrame);
+  </script>
+</body>
+</html>

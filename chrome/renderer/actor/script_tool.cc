@@ -110,8 +110,13 @@ ScriptTool::ScriptTool(content::RenderFrame& frame,
 ScriptTool::~ScriptTool() = default;
 
 void ScriptTool::Execute(ToolFinishedCallback callback) {
+  // ExecuteScriptTool() synchronously invokes page JavaScript, which may detach
+  // the owning frame or spin a nested message loop that cancels/destroys
+  // `this`. Copy `execution_id_` onto the stack so the reference passed into
+  // Blink remains valid across re-entrancy.
+  const base::UnguessableToken execution_id = execution_id_.value();
   frame_->GetWebFrame()->GetDocument().ExecuteScriptTool(
-      execution_id_.value(), blink::WebString::FromUtf8(action_->name),
+      execution_id, blink::WebString::FromUtf8(action_->name),
       blink::WebString::FromUtf8(action_->input_arguments),
       base::BindOnce(&OnToolExecuted, action_->name, action_->input_arguments)
           .Then(std::move(callback)));
@@ -122,10 +127,12 @@ void ScriptTool::Cancel() {
     return;
   }
   // CancelScriptTool() synchronously dispatches DOM events that might destroy
-  // the owning frame and this tool. Use a weak pointer to detect if `this` is
-  // still valid.
+  // the owning frame and this tool. Copy `execution_id_` onto the stack so the
+  // reference passed into Blink stays valid, and use a weak pointer to detect
+  // if `this` is still valid before resetting `execution_id_`.
+  const base::UnguessableToken execution_id = execution_id_.value();
   base::WeakPtr<ScriptTool> weak_this = weak_ptr_factory_.GetWeakPtr();
-  frame_->GetWebFrame()->GetDocument().CancelScriptTool(execution_id_.value());
+  frame_->GetWebFrame()->GetDocument().CancelScriptTool(execution_id);
   if (weak_this) {
     execution_id_.reset();
   }

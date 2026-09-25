@@ -157,7 +157,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
   std::optional<ScriptToolDeclaration> GetScriptToolDeclaration(
       const String& name) const;
 
-  bool ExecuteTool(const base::UnguessableToken& invocation_id,
+  bool ExecuteTool(base::UnguessableToken invocation_id,
                    const String& name,
                    const String& input_arguments,
                    ScriptToolExecutedCallback tool_executed_cb);
@@ -167,7 +167,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
       const base::UnguessableToken& invocation_id,
       CrossDocumentScriptToolResultCallback result_callback);
 
-  bool CancelTool(const base::UnguessableToken& invocation_id);
+  bool CancelTool(base::UnguessableToken invocation_id);
 
   void RegisterDeclarativeTool(DeclarativeWebMCPTool* tool);
   void PauseExecution();
@@ -206,13 +206,13 @@ class CORE_EXPORT ModelContext : public EventTarget,
   bool IsModelContextAllowed() const;
 
   bool ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
-                     const base::UnguessableToken& invocation_id,
+                     base::UnguessableToken invocation_id,
                      const String& name,
                      const String& input_arguments,
                      AbortController* abort_controller,
                      ScriptToolExecutedCallback tool_executed_cb);
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
-                              const base::UnguessableToken& invocation_id,
+                              base::UnguessableToken invocation_id,
                               const String& input_arguments,
                               AbortController* abort_controller,
                               ScriptToolExecutedCallback tool_executed_cb);
