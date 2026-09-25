@@ -87,8 +87,8 @@ class DevToolsSession : public protocol::FrontendChannel,
   };
 
   // For root sessions (see also private constructor for children).
-  DevToolsSession(DevToolsAgentHostClient* client, Mode mode);
-  ~DevToolsSession() override;
+  CONTENT_EXPORT DevToolsSession(DevToolsAgentHostClient* client, Mode mode);
+  CONTENT_EXPORT ~DevToolsSession() override;
 
   void SetAgentHost(DevToolsAgentHostImpl* agent_host);
   void SetRuntimeResumeCallback(base::OnceClosure runtime_resume);

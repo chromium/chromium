@@ -257,7 +257,8 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   }
   session->CreateAndAddHandler<protocol::TracingHandler>(
       this, GetIOContext(), /* root_session */ nullptr,
-      session->GetClient()->IsTrusted());
+      // Browser-target sessions are always trusted (enforced above).
+      /*is_trusted=*/true);
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)
   session->CreateAndAddHandler<protocol::NativeProfilingHandler>();
