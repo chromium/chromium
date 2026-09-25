@@ -87,7 +87,8 @@ template("fuzzer_test") {
     # migrated to FUZZ_TEST. See crbug.com/505034799 for more details.
     _use_fuzztest_llvm_wrapper =
         _is_fuzztest_compatible && use_centipede && !_exclude_main &&
-        !defined(invoker.seed_corpus) && !defined(invoker.dict)
+        !defined(invoker.seed_corpus) && !defined(invoker.seed_corpuses) &&
+        !defined(invoker.dict)
 
     # If using centipede and able to define a main function, wrap the LLVM
     # fuzzer with fuzztest's wrapper and build it as a "native" fuzztest.
