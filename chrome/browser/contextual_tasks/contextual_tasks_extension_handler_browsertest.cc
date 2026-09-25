@@ -38,6 +38,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
@@ -49,11 +50,13 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
+#include "ui/events/base_event_utils.h"
 
 namespace contextual_tasks {
 
@@ -143,6 +146,17 @@ class ContextualTasksExtensionHandlerBrowserTestBase
                 }));
   }
   ~ContextualTasksExtensionHandlerBrowserTestBase() override = default;
+
+  void SimulateUserInteraction() {
+    blink::WebMouseEvent mouse_event(blink::WebInputEvent::Type::kMouseDown,
+                                     blink::WebInputEvent::kNoModifiers,
+                                     ui::EventTimeForNow());
+    mouse_event.button = blink::WebMouseEvent::Button::kLeft;
+    web_contents_->GetPrimaryMainFrame()
+        ->GetRenderWidgetHost()
+        ->SimulateUserInteraction(mouse_event);
+    ASSERT_TRUE(web_contents_->HasRecentInteraction());
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -723,6 +737,7 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<uint8_t> serialized_message(size);
   request.SerializeToArray(serialized_message.data(), size);
 
+  SimulateUserInteraction();
   handler_->OnWebviewMessage(serialized_message);
   run_loop.Run();
 }
@@ -810,6 +825,7 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<uint8_t> serialized_message(size);
   request.SerializeToArray(serialized_message.data(), size);
 
+  SimulateUserInteraction();
   handler_->OnWebviewMessage(serialized_message);
   run_loop.Run();
 }
@@ -898,6 +914,7 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<uint8_t> serialized_message(size);
   request.SerializeToArray(serialized_message.data(), size);
 
+  SimulateUserInteraction();
   handler_->OnWebviewMessage(serialized_message);
   run_loop.Run();
 }
@@ -989,6 +1006,7 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<uint8_t> serialized_message(size);
   request.SerializeToArray(serialized_message.data(), size);
 
+  SimulateUserInteraction();
   handler_->OnWebviewMessage(serialized_message);
   run_loop.Run();
 }
@@ -1012,8 +1030,165 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<uint8_t> serialized_message(size);
   request.SerializeToArray(serialized_message.data(), size);
 
+  SimulateUserInteraction();
   handler_->OnWebviewMessage(serialized_message);
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    OnWebviewMessage_OnSubmitQueryRequest_WithoutRecentInteraction_DoesNotRespond) {
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents_);
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+
+  NiceMock<MockLensOverlayController> mock_overlay(tab, mock_lens_controller_,
+                                                   profile->GetPrefs());
+  NiceMock<lens::MockLensOverlayQueryController> mock_query_controller(nullptr);
+
+  EXPECT_CALL(*mock_lens_controller_, lens_overlay_controller())
+      .WillRepeatedly(Return(&mock_overlay));
+  EXPECT_CALL(*mock_lens_controller_, lens_overlay_query_controller())
+      .WillRepeatedly(Return(&mock_query_controller));
+  EXPECT_CALL(*mock_lens_controller_, IsCurrentTabSameOrigin())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_overlay, HasRegionSelection()).WillRepeatedly(Return(true));
+
+  base::UnguessableToken overlay_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo file_info;
+  file_info.file_token = overlay_token;
+  file_info.is_implicit_upload = true;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(42);
+  file_info.request_id = req_id;
+  file_info.input_data = std::make_unique<lens::ContextualInputData>();
+  file_info.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
+
+  std::vector<contextual_search::FileInfo> file_infos = {file_info};
+  EXPECT_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
+      .WillRepeatedly(Return(file_infos));
+
+  handler_->GetOrCreateInputStateModelForTesting()->SetLensCrop(
+      "data:image/png;base64,test_crop");
+
+  // Ensure no user interaction was simulated on web_contents_.
+  ASSERT_FALSE(web_contents_->HasRecentInteraction());
+
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        if (message.has_value()) {
+          EXPECT_FALSE(message->has_on_submit_query_response());
+        }
+      });
+
+  lens::SearchToClientMessage request;
+  request.mutable_on_submit_query_request();
+  const size_t size = request.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  request.SerializeToArray(serialized_message.data(), size);
+
+  handler_->OnWebviewMessage(serialized_message);
+  mock_page_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    OnWebviewMessage_OnSubmitQueryRequest_ReplayWithoutNewInteraction_DoesNotRespond) {
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents_);
+  Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+
+  NiceMock<MockLensOverlayController> mock_overlay(tab, mock_lens_controller_,
+                                                   profile->GetPrefs());
+  NiceMock<lens::MockLensOverlayQueryController> mock_query_controller(nullptr);
+
+  EXPECT_CALL(*mock_lens_controller_, lens_overlay_controller())
+      .WillRepeatedly(Return(&mock_overlay));
+  EXPECT_CALL(*mock_lens_controller_, lens_overlay_query_controller())
+      .WillRepeatedly(Return(&mock_query_controller));
+  EXPECT_CALL(*mock_lens_controller_, IsCurrentTabSameOrigin())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_overlay, HasRegionSelection()).WillRepeatedly(Return(true));
+
+  base::UnguessableToken overlay_token = base::UnguessableToken::Create();
+  contextual_search::FileInfo file_info;
+  file_info.file_token = overlay_token;
+  file_info.is_implicit_upload = true;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(42);
+  file_info.request_id = req_id;
+  file_info.input_data = std::make_unique<lens::ContextualInputData>();
+  file_info.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
+
+  std::vector<contextual_search::FileInfo> file_infos = {file_info};
+  EXPECT_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
+      .WillRepeatedly(Return(file_infos));
+
+  lens::LensOverlayVisualSearchInteractionData mock_vsint;
+  mock_vsint.set_interaction_type(
+      lens::LensOverlayInteractionRequestMetadata::REGION_SEARCH);
+  mock_vsint.mutable_zoomed_crop()->mutable_crop()->set_center_x(0.35f);
+  EXPECT_CALL(*mock_session_handle_, GetVisualSearchInteractionData(_, _))
+      .WillRepeatedly(Return(std::make_optional(mock_vsint)));
+
+  handler_->GetOrCreateInputStateModelForTesting()->SetLensCrop(
+      "data:image/png;base64,test_crop");
+
+  lens::SearchToClientMessage request;
+  request.mutable_on_submit_query_request();
+  const size_t size = request.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  request.SerializeToArray(serialized_message.data(), size);
+
+  // 1. Simulate user interaction for the first submission.
+  SimulateUserInteraction();
+
+  base::RunLoop run_loop1;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        if (!message.has_value() || !message->has_on_submit_query_response()) {
+          return;
+        }
+        EXPECT_EQ(1, message->on_submit_query_response().added_contexts_size());
+        run_loop1.Quit();
+      });
+
+  handler_->OnWebviewMessage(serialized_message);
+  run_loop1.Run();
+
+  // 2. Replay the same OnSubmitQueryRequest WITHOUT a new user interaction.
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        if (message.has_value()) {
+          EXPECT_FALSE(message->has_on_submit_query_response());
+        }
+      });
+  handler_->OnWebviewMessage(serialized_message);
+  mock_page_.FlushForTesting();
+
+  // 3. Simulate a new user interaction and verify submission succeeds again.
+  SimulateUserInteraction();
+
+  base::RunLoop run_loop2;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        if (!message.has_value() || !message->has_on_submit_query_response()) {
+          return;
+        }
+        EXPECT_EQ(1, message->on_submit_query_response().added_contexts_size());
+        run_loop2.Quit();
+      });
+
+  handler_->OnWebviewMessage(serialized_message);
+  run_loop2.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,

@@ -13,6 +13,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/aim_message_poster.h"
@@ -288,6 +289,7 @@ class ContextualTasksExtensionHandler
   std::optional<base::Uuid> task_id_;
   omnibox::ToolMode active_tool_ = omnibox::TOOL_MODE_UNSPECIFIED;
   omnibox::ModelMode active_model_ = omnibox::MODEL_MODE_UNSPECIFIED;
+  base::TimeTicks last_handled_submit_interaction_time_{};
 
   bool is_lens_crop_mounted_ = false;
   std::string last_lens_crop_data_uri_;

@@ -258,6 +258,21 @@ void ContextualTasksExtensionHandler::RecordTimeToHandshakeComplete() {
 }
 
 void ContextualTasksExtensionHandler::HandleOnSubmitQueryRequest() {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  // Require a recent user interaction on the page before attaching context.
+  if (!web_contents || !web_contents->HasRecentInteraction()) {
+    return;
+  }
+
+  // Prevent replay by ensuring each submission consumes a new interaction.
+  base::TimeTicks last_interaction =
+      web_contents->GetLastInteractionTimeTicks();
+  if (last_interaction <= last_handled_submit_interaction_time_) {
+    return;
+  }
+  last_handled_submit_interaction_time_ = last_interaction;
+
   lens::ClientToSearchMessage response_message;
   auto* submit_response = response_message.mutable_on_submit_query_response();
 

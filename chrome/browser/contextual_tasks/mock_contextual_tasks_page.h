@@ -94,6 +94,7 @@ class MockContextualTasksExtensionPage : public mojom::ExtensionPage {
   ~MockContextualTasksExtensionPage() override;
 
   mojo::PendingRemote<mojom::ExtensionPage> BindAndGetRemote();
+  void FlushForTesting() { receiver_.FlushForTesting(); }
 
   MOCK_METHOD(void,
               PostAimMessage,
