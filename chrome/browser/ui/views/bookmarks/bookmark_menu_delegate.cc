@@ -850,6 +850,28 @@ void BookmarkMenuDelegate::AddBookmarkNode(const bookmarks::BookmarkNode* node,
                                            size_t new_index) {
   const BookmarkParentFolder new_parent_folder =
       BookmarkParentFolder::FromFolderNode(node->parent());
+  std::optional<size_t> insertion_idx =
+      AdjustInsertionIndex(new_parent_folder, new_parent_menu, new_index);
+  if (!insertion_idx) {
+    return;
+  }
+
+  // The "other" bookmarks folder is built with a header. The new node's menu
+  // is inserted relative to that.
+  if (new_parent_folder.as_permanent_folder() ==
+      BookmarkParentFolder::PermanentFolderType::kOtherNode) {
+    CHECK(other_node_menu_separator_);
+    *insertion_idx +=
+        SubmenuIndexOf(new_parent_menu, other_node_menu_separator_) + 1;
+  }
+
+  BuildNodeMenuItemAt(node, new_parent_menu, *insertion_idx);
+}
+
+std::optional<size_t> BookmarkMenuDelegate::AdjustInsertionIndex(
+    const BookmarkParentFolder& folder,
+    views::MenuItemView* parent_menu,
+    size_t new_index) {
   size_t insertion_idx = new_index;
 
   // The bookmark bar view creates individual menus for bookmarks in the
@@ -857,14 +879,13 @@ void BookmarkMenuDelegate::AddBookmarkNode(const bookmarks::BookmarkNode* node,
   // single menu, which uses a node offset. This offset should be applied to
   // `new_index` to ensure the moved node's menu item appears in the right
   // spot in the overflow menu.
-  if (auto node_to_start_child_idx =
-          node_start_child_idx_map_.find(new_parent_folder);
+  if (auto node_to_start_child_idx = node_start_child_idx_map_.find(folder);
       node_to_start_child_idx != node_start_child_idx_map_.end()) {
     // If `new_index` is less than the menu's start index, this means that
     // the moved bookmark isn't in its parent's menu. The client will reorder
     // the menu in the bookmarks bar. Therefore, we skip the update.
     if (new_index < node_to_start_child_idx->second) {
-      return;
+      return std::nullopt;
     }
     insertion_idx -= node_to_start_child_idx->second;
   }
@@ -872,7 +893,7 @@ void BookmarkMenuDelegate::AddBookmarkNode(const bookmarks::BookmarkNode* node,
   // If the bookmark is embedded in a larger menu not controlled by this (e.g.,
   // App menu), then the bookmark's menu item is inserted relative to the
   // "Bookmarks" title.
-  if (new_parent_menu == parent_menu_item_) {
+  if (parent_menu == parent_menu_item_) {
     if (bookmarks_title_) {
       insertion_idx += SubmenuIndexOf(parent_menu_item_, bookmarks_title_) + 1;
     }
@@ -884,16 +905,7 @@ void BookmarkMenuDelegate::AddBookmarkNode(const bookmarks::BookmarkNode* node,
     }
   }
 
-  // The "other" bookmarks folder is built with a header. The new node's menu
-  // is inserted relative to that.
-  if (new_parent_folder.as_permanent_folder() ==
-      BookmarkParentFolder::PermanentFolderType::kOtherNode) {
-    CHECK(other_node_menu_separator_);
-    insertion_idx +=
-        SubmenuIndexOf(new_parent_menu, other_node_menu_separator_) + 1;
-  }
-
-  BuildNodeMenuItemAt(node, new_parent_menu, insertion_idx);
+  return insertion_idx;
 }
 
 // TODO(crbug.com/382711086): This should be updated to also remove

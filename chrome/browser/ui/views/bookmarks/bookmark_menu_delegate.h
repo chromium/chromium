@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_MENU_DELEGATE_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <variant>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
@@ -163,8 +165,7 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   void DidRemoveBookmarks() override;
   void OnContextMenuClosed() override;
 
- private:
-  friend class BookmarkMenuDelegateTest;
+ protected:
   class BookmarkFolderOrURL {
    public:
     explicit BookmarkFolderOrURL(const bookmarks::BookmarkNode* node);
@@ -201,26 +202,49 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
         folder_or_url_;
   };
 
-  typedef std::map<int, BookmarkFolderOrURL> MenuIDToNodeMap;
-  typedef std::map<BookmarkFolderOrURL, raw_ptr<views::MenuItemView>>
-      NodeToMenuMap;
+  // Returns whether the menu should close if 'delete' is selected.
+  virtual bool ShouldCloseOnRemove(const BookmarkFolderOrURL& node) const;
 
-  struct DropParams {
-    BookmarkParentFolder drop_parent;
-    size_t index_to_drop_at = 0;
-  };
+  // Maps an index in the bookmark model onto the index at which the
+  // corresponding menu item should be inserted. The two differ because a menu
+  // may show only a slice of `folder` (bookmarks that overflow the bookmark
+  // bar), and because a menu may contain non-bookmark items that precede the
+  // bookmarks (e.g. the app menu's "Bookmarks" title, or the managed bookmarks
+  // folder).
+  //
+  // `folder` is the model parent the node is being added to. `parent_menu` is
+  // the menu item that will receive the new child item. `new_index` is the
+  // node's index among `folder`'s children *in the model*, not in the menu.
+  //
+  // Returns the index within `parent_menu`, or nullopt if the node falls
+  // before the range `parent_menu` displays, in which case no menu item should
+  // be added.
+  virtual std::optional<size_t> AdjustInsertionIndex(
+      const BookmarkParentFolder& folder,
+      views::MenuItemView* parent_menu,
+      size_t new_index);
 
-  bool IsDropValid(const BookmarkFolderOrURL* target,
-                   const views::MenuDelegate::DropPosition* position);
+  // Brings the non-bookmark menu items this class owns back in sync with the
+  // model after bookmarks have been added or removed. E.g., removes the
+  // separator in the "other" bookmarks folder once it has no more children.
+  //
+  // Subclasses that own additional non-bookmark items should override this,
+  // call the base implementation first, and append their own updated menus to
+  // the result. Overrides must not call `ChildrenChanged()` themselves:
+  // returning a menu here hands that responsibility to the caller, which
+  // batches the notifications and knows when it is safe to issue them (it is
+  // not safe while a drag loop is running).
+  //
+  // Returns every menu whose children changed.
+  virtual std::vector<raw_ref<views::MenuItemView>>
+  GetAndUpdateStaleMenuArtifacts();
 
-  // Computes the parent and the index at which the dragged/copied node will
-  // be dropped. Returns `std::nullopt` if the drop is not valid.
-  std::optional<DropParams> GetDropParams(
-      views::MenuItemView* menu,
-      views::MenuDelegate::DropPosition* position);
+ private:
+  friend class BookmarkMenuDelegateTest;
 
-  // Returns whether the menu should close id 'delete' is selected.
-  bool ShouldCloseOnRemove(const BookmarkFolderOrURL& node) const;
+  using MenuIDToNodeMap = std::map<int, BookmarkFolderOrURL>;
+  using NodeToMenuMap =
+      std::map<BookmarkFolderOrURL, raw_ptr<views::MenuItemView>>;
 
   // Creates a menu. This uses BuildMenu() to recursively populate the menu.
   views::MenuItemView* CreateMenu(const BookmarkParentFolder& parent,
@@ -238,24 +262,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   void BuildMenuForFolder(const BookmarkParentFolder& folder,
                           const ui::ImageModel& icon,
                           views::MenuItemView* parent_menu);
-  void BuildMenuForFolderAt(const BookmarkParentFolder& folder,
-                            const ui::ImageModel& icon,
-                            views::MenuItemView* parent_menu,
-                            size_t index);
-
-  // Builds a menu item for the provided bookmark url, adding it to
-  // `parent_menu`.
-  void BuildMenuForURLAt(const bookmarks::BookmarkNode* node,
-                         views::MenuItemView* parent_menu,
-                         size_t index);
-
-  // Build a menu item for the providied bookmark folder or url, adding it to
-  // `parent_menu`.
-  void BuildNodeMenuItem(const bookmarks::BookmarkNode* node,
-                         views::MenuItemView* parent_menu);
-  void BuildNodeMenuItemAt(const bookmarks::BookmarkNode* node,
-                           views::MenuItemView* parent_menu,
-                           size_t index);
 
   // Creates an entry in menu for each child node of `folder` starting at
   // `start_child_index`.
@@ -266,10 +272,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   // Registers the necessary mappings for |menu| and |node|.
   void AddMenuToMaps(views::MenuItemView* menu,
                      const BookmarkFolderOrURL& node);
-
-  // Escapes ampersands within |title| if necessary, depending on
-  // |menu_uses_mnemonics_|.
-  std::u16string MaybeEscapeLabel(const std::u16string& title);
 
   // Returns |next_menu_id_| and increments it by
   // `AppMenuModel::kNumUnboundedMenuTypes`. This allows for interleaved command
@@ -290,13 +292,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
                        views::MenuItemView* new_parent_menu,
                        size_t new_index);
 
-  // Updates non-bookmark node menu items that are managed by this controller.
-  // E.g., removes the separator in the "other" bookmarks folder if there are no
-  // more child bookmarks.
-  // Returns a list of menus whose children changed. The caller is responsible
-  // for invoking `ChildrenChanged` on them.
-  std::vector<raw_ref<views::MenuItemView>> GetAndUpdateStaleMenuArtifacts();
-
   // Adds or removes the bookmarks title + separator as necessary.
   // Returns the updated menu if there were changes; otherwise, returns null.
   views::MenuItemView* UpdateBookmarksTitle();
@@ -304,10 +299,47 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   void BuildBookmarksTitle(size_t index);
   void RemoveBookmarksTitle();
 
+  void BuildMenuForFolderAt(const BookmarkParentFolder& folder,
+                            const ui::ImageModel& icon,
+                            views::MenuItemView* parent_menu,
+                            size_t index);
+
+  // Builds a menu item for the provided bookmark url, adding it to
+  // `parent_menu`.
+  void BuildMenuForURLAt(const bookmarks::BookmarkNode* node,
+                         views::MenuItemView* parent_menu,
+                         size_t index);
+
+  // Build a menu item for the providied bookmark folder or url, adding it to
+  // `parent_menu`.
+  void BuildNodeMenuItem(const bookmarks::BookmarkNode* node,
+                         views::MenuItemView* parent_menu);
+  void BuildNodeMenuItemAt(const bookmarks::BookmarkNode* node,
+                           views::MenuItemView* parent_menu,
+                           size_t index);
+
+  // Escapes ampersands within |title| if necessary, depending on
+  // |menu_uses_mnemonics_|.
+  std::u16string MaybeEscapeLabel(const std::u16string& title);
+
   // Adds or removes the separator of the "other" bookmarks folder as necessary.
   // Returns the updated menu if there were changes; otherwise, returns null.
   views::MenuItemView* UpdateOtherNodeSeparator();
   void BuildOtherNodeMenuHeader(views::MenuItemView* menu);
+
+  bool IsDropValid(const BookmarkFolderOrURL* target,
+                   const views::MenuDelegate::DropPosition* position);
+
+  struct DropParams {
+    BookmarkParentFolder drop_parent;
+    size_t index_to_drop_at = 0;
+  };
+
+  // Computes the parent and the index at which the dragged/copied node will
+  // be dropped. Returns `std::nullopt` if the drop is not valid.
+  std::optional<DropParams> GetDropParams(
+      views::MenuItemView* menu,
+      views::MenuDelegate::DropPosition* position);
 
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<Profile> profile_;
@@ -320,12 +352,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
 
   // Current menu.
   raw_ptr<views::MenuItemView> menu_;
-
-  // Data for the drop.
-  bookmarks::BookmarkNodeData drop_data_;
-
-  // Used when a context menu is shown.
-  std::unique_ptr<BookmarkContextMenu> context_menu_;
 
   // If non-NULL this is the |parent| passed to BuildFullMenu and is NOT owned
   // by us.
@@ -366,6 +392,12 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   // BookmarkMenuDelegate will be the root, client code does not currently
   // enable mnemonics.
   bool menu_uses_mnemonics_ = false;
+
+  // Data for the drop.
+  bookmarks::BookmarkNodeData drop_data_;
+
+  // Used when a context menu is shown.
+  std::unique_ptr<BookmarkContextMenu> context_menu_;
 
   base::ScopedObservation<BookmarkContextMenu, BookmarkContextMenuObserver>
       bookmark_context_menu_observation_{this};
