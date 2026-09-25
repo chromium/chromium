@@ -30,6 +30,6 @@ source_set("page_handler") {
     "//components/private_ai/common",
     "//components/private_ai/phosphor",
     "//components/version_info",
-    "//services/network/public/mojom",
+    "//services/network/public/cpp",
   ]
 }

@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "services/network/public/cpp/network_context_getter.h"
 
 class Profile;
 
@@ -19,6 +20,8 @@ class PrivateAiServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static PrivateAiService* GetForProfile(Profile* profile);
   static PrivateAiServiceFactory* GetInstance();
+  static network::NetworkContextGetter CreateNetworkContextGetter(
+      Profile* profile);
 
   PrivateAiServiceFactory(const PrivateAiServiceFactory&) = delete;
   PrivateAiServiceFactory& operator=(const PrivateAiServiceFactory&) = delete;

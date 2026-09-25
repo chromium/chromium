@@ -21,7 +21,7 @@
 #include "components/private_ai/testing/fake_private_ai_network_driver.h"
 #include "components/private_ai/testing/fake_token_manager.h"
 #include "net/base/proxy_string_util.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,7 +47,7 @@ class ConnectionProxyTest : public testing::Test {
   }
 
   std::unique_ptr<Connection> CreateInnerConnection(
-      network::mojom::NetworkContext* context) {
+      network::NetworkContextGetter context_getter) {
     auto connection = std::make_unique<FakeConnection>(base::DoNothing());
     inner_connection_ = connection.get();
     if (on_inner_connection_created_) {

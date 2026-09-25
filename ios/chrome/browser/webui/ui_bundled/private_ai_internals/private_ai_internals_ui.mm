@@ -86,8 +86,16 @@ void PrivateAiInternalsUI::BindInterface(
         network::mojom::NetworkContextParams::New());
   }
 
+  auto network_context_getter = base::BindRepeating(
+      [](base::WeakPtr<PrivateAiInternalsUI> self)
+          -> network::mojom::NetworkContext* {
+        return self ? self->network_context_.get() : nullptr;
+      },
+      weak_ptr_factory_.GetWeakPtr());
+
   page_handler_ = std::make_unique<private_ai::PrivateAiInternalsPageHandler>(
-      token_manager, network_context_.get(), private_ai_service->GetClient(),
-      private_ai_service->GetLogger(), &oak_session_driver_ios_,
-      &network_driver_ios_, ::GetChannel(), std::move(receiver));
+      token_manager, std::move(network_context_getter),
+      private_ai_service->GetClient(), private_ai_service->GetLogger(),
+      &oak_session_driver_ios_, &network_driver_ios_, ::GetChannel(),
+      std::move(receiver));
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -27,6 +28,18 @@ PrivateAiService* PrivateAiServiceFactory::GetForProfile(Profile* profile) {
 PrivateAiServiceFactory* PrivateAiServiceFactory::GetInstance() {
   static base::NoDestructor<PrivateAiServiceFactory> instance;
   return instance.get();
+}
+
+// static
+network::NetworkContextGetter
+PrivateAiServiceFactory::CreateNetworkContextGetter(Profile* profile) {
+  return base::BindRepeating(
+      [](base::WeakPtr<Profile> profile) -> network::mojom::NetworkContext* {
+        return profile
+                   ? profile->GetDefaultStoragePartition()->GetNetworkContext()
+                   : nullptr;
+      },
+      profile->GetWeakPtr());
 }
 
 PrivateAiServiceFactory::PrivateAiServiceFactory()
@@ -57,9 +70,8 @@ PrivateAiServiceFactory::BuildServiceInstanceForBrowserContext(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       std::move(network_driver), std::move(oak_session_driver),
-      profile->GetDefaultStoragePartition()->GetNetworkContext(),
-      kPrivateAiUrl.Get(), PrivateAiService::GetApiKey(channel),
-      kPrivateAiProxyServerUrl.Get(),
+      CreateNetworkContextGetter(profile), kPrivateAiUrl.Get(),
+      PrivateAiService::GetApiKey(channel), kPrivateAiProxyServerUrl.Get(),
       base::FeatureList::IsEnabled(kPrivateAiUseTokenAttestation), channel);
 }
 

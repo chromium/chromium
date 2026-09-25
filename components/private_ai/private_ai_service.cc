@@ -4,6 +4,8 @@
 
 #include "components/private_ai/private_ai_service.h"
 
+#include <utility>
+
 #include "base/sequence_checker.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/common/private_ai_logger.h"
@@ -19,6 +21,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/version_info/channel.h"
 #include "google_apis/google_api_keys.h"
+#include "services/network/public/cpp/network_context_getter.h"
 
 namespace private_ai {
 
@@ -43,7 +46,7 @@ PrivateAiService::PrivateAiService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<PrivateAiNetworkDriver> network_driver,
     std::unique_ptr<PrivateAiOakSessionDriver> oak_session_driver,
-    network::mojom::NetworkContext* network_context,
+    network::NetworkContextGetter network_context_getter,
     const std::string& url,
     const std::string& api_key,
     const std::string& proxy_url,
@@ -66,10 +69,10 @@ PrivateAiService::PrivateAiService(
   token_manager_ = std::make_unique<phosphor::TokenManagerImpl>(
       std::move(token_fetcher), &logger_);
 
-  client_ =
-      Client::Create(url, api_key, proxy_url, use_token_attestation,
-                     network_context, GetTokenManager(), GetLogger(),
-                     oak_session_driver_.get(), network_driver_.get(), channel);
+  client_ = Client::Create(url, api_key, proxy_url, use_token_attestation,
+                           std::move(network_context_getter), GetTokenManager(),
+                           GetLogger(), oak_session_driver_.get(),
+                           network_driver_.get(), channel);
 }
 
 PrivateAiService::~PrivateAiService() {

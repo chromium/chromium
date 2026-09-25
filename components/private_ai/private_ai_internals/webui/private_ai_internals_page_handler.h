@@ -15,10 +15,7 @@
 #include "components/version_info/channel.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-namespace network::mojom {
-class NetworkContext;
-}  // namespace network::mojom
+#include "services/network/public/cpp/network_context_getter.h"
 
 namespace private_ai {
 
@@ -34,7 +31,7 @@ class PrivateAiInternalsPageHandler
  public:
   explicit PrivateAiInternalsPageHandler(
       phosphor::TokenManager* token_manager,
-      network::mojom::NetworkContext* network_context,
+      network::NetworkContextGetter network_context_getter,
       Client* private_ai_client,
       PrivateAiLogger* private_ai_logger,
       PrivateAiOakSessionDriver* oak_session_driver,
@@ -93,7 +90,7 @@ class PrivateAiInternalsPageHandler
   raw_ptr<PrivateAiOakSessionDriver> oak_session_driver_;
   raw_ptr<PrivateAiNetworkDriver> network_driver_;
   std::unique_ptr<Client> webui_client_;
-  raw_ptr<network::mojom::NetworkContext> network_context_;
+  network::NetworkContextGetter network_context_getter_;
   version_info::Channel channel_;
   mojo::Receiver<private_ai_internals::mojom::PrivateAiInternalsPageHandler>
       receiver_;

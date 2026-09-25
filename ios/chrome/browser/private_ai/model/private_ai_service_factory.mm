@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/private_ai/model/private_ai_service_factory.h"
 
 #import "base/feature_list.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "components/private_ai/features.h"
 #import "components/private_ai/ios/private_ai_network_driver_ios.h"
@@ -57,7 +58,8 @@ std::unique_ptr<KeyedService> PrivateAiServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile), &bsa_factory,
       profile->GetSharedURLLoaderFactory(), std::move(network_driver),
       std::move(oak_session_driver),
-      /*network_context=*/nullptr, private_ai::kPrivateAiUrl.Get(),
+      /*network_context_getter=*/base::NullCallback(),
+      private_ai::kPrivateAiUrl.Get(),
       private_ai::PrivateAiService::GetApiKey(::GetChannel()),
       private_ai::kPrivateAiProxyServerUrl.Get(),
       base::FeatureList::IsEnabled(private_ai::kPrivateAiUseTokenAttestation),

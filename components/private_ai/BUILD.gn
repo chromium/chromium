@@ -81,6 +81,7 @@ source_set("private_ai") {
     ":features",
     "//components/private_ai/mojom",
     "//components/streaming_client",
+    "//services/network/public/cpp",
   ]
   deps = [
     ":proto",
@@ -100,7 +101,6 @@ source_set("private_ai") {
     "//mojo/public/cpp/system",
     "//net",
     "//services/cert_verifier/public/mojom",
-    "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//third_party/boringssl",
     "//third_party/oak:oak_proto",

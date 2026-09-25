@@ -7,6 +7,7 @@
 
 #import <memory>
 
+#import "base/memory/weak_ptr.h"
 #import "components/private_ai/ios/private_ai_network_driver_ios.h"
 #import "components/private_ai/ios/private_ai_oak_session_driver_ios.h"
 #import "components/private_ai/private_ai_internals/webui/private_ai_internals.mojom.h"
@@ -41,6 +42,7 @@ class PrivateAiInternalsUI : public web::WebUIIOSController {
   private_ai::PrivateAiNetworkDriverIOS network_driver_ios_;
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   std::unique_ptr<private_ai::PrivateAiInternalsPageHandler> page_handler_;
+  base::WeakPtrFactory<PrivateAiInternalsUI> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_UI_H_

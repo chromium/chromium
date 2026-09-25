@@ -52,7 +52,7 @@ class PrivateAiServiceBrowserTest : public PlatformBrowserTest {
               IdentityManagerFactory::GetForProfile(profile),
               profile->GetDefaultStoragePartition()
                   ->GetURLLoaderFactoryForBrowserProcess(),
-              profile->GetDefaultStoragePartition()->GetNetworkContext(),
+              PrivateAiServiceFactory::CreateNetworkContextGetter(profile),
               kPrivateAiUrl.Get(),
               PrivateAiService::GetApiKey(chrome::GetChannel()),
               kPrivateAiProxyServerUrl.Get(),

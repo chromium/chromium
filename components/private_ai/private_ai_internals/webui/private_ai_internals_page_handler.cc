@@ -35,7 +35,7 @@
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "components/version_info/channel.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/cpp/network_context_getter.h"
 
 namespace private_ai {
 
@@ -79,7 +79,7 @@ base::expected<ProtoResponseType, std::string> ParseResponse(
 
 PrivateAiInternalsPageHandler::PrivateAiInternalsPageHandler(
     phosphor::TokenManager* token_manager,
-    network::mojom::NetworkContext* network_context,
+    network::NetworkContextGetter network_context_getter,
     Client* private_ai_client,
     PrivateAiLogger* private_ai_logger,
     PrivateAiOakSessionDriver* oak_session_driver,
@@ -92,7 +92,7 @@ PrivateAiInternalsPageHandler::PrivateAiInternalsPageHandler(
       private_ai_logger_(private_ai_logger),
       oak_session_driver_(oak_session_driver),
       network_driver_(network_driver),
-      network_context_(network_context),
+      network_context_getter_(std::move(network_context_getter)),
       channel_(channel),
       receiver_(this, std::move(receiver)) {
   CHECK(private_ai_logger_);
@@ -121,7 +121,7 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
 
   webui_client_ =
       Client::Create(url, effective_api_key, proxy_url, use_token_attestation,
-                     network_context_, token_manager_, &webui_logger_,
+                     network_context_getter_, token_manager_, &webui_logger_,
                      oak_session_driver_, network_driver_, channel_);
   std::move(callback).Run();
 }

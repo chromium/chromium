@@ -4,8 +4,11 @@
 
 #include "components/private_ai/testing/test_private_ai_service.h"
 
+#include <utility>
+
 #include "components/private_ai/private_ai_network_driver.h"
 #include "components/private_ai/private_ai_oak_session_driver.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace private_ai {
@@ -13,7 +16,7 @@ namespace private_ai {
 TestPrivateAiService::TestPrivateAiService(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::mojom::NetworkContext* network_context,
+    network::NetworkContextGetter network_context_getter,
     const std::string& url,
     const std::string& api_key,
     const std::string& proxy_url,
@@ -27,7 +30,7 @@ TestPrivateAiService::TestPrivateAiService(
                        std::move(url_loader_factory),
                        std::move(network_driver),
                        std::move(oak_session_driver),
-                       network_context,
+                       std::move(network_context_getter),
                        url,
                        api_key,
                        proxy_url,

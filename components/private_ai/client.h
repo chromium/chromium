@@ -17,11 +17,8 @@
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/status_code.h"
 #include "components/version_info/channel.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "url/gurl.h"
-
-namespace network::mojom {
-class NetworkContext;
-}  // namespace network::mojom
 
 namespace private_ai {
 
@@ -53,7 +50,8 @@ class Client {
   // `api_key`: The API key for the PrivateAI service.
   // `proxy_url_string`: Optional URL for the proxy server.
   // `use_token_attestation`: Whether to use token attestation.
-  // `network_context`: The network context to use for connections.
+  // `network_context_getter`: Callback to get the network context to use for
+  // connections.
   // `token_manager`: Required if `use_token_attestation` is true.
   // `logger`: The logger for the client.
   // `oak_session_driver`: Interface for platform-specific capabilities related
@@ -66,7 +64,7 @@ class Client {
       const std::string& api_key,
       const std::string& proxy_url_string,
       bool use_token_attestation,
-      network::mojom::NetworkContext* network_context,
+      network::NetworkContextGetter network_context_getter,
       phosphor::TokenManager* token_manager,
       PrivateAiLogger* logger,
       PrivateAiOakSessionDriver* oak_session_driver,

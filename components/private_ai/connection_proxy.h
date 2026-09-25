@@ -18,6 +18,7 @@
 #include "components/private_ai/private_ai_network_driver.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
@@ -45,9 +46,9 @@ network::mojom::CustomProxyConfigPtr CreateCustomProxyConfig(
 // the inner connection using the provided `InnerConnectionFactory`.
 class ConnectionProxy : public Connection {
  public:
-  // Factory for creating the inner connection given a NetworkContext.
+  // Factory for creating the inner connection given a NetworkContextGetter.
   using InnerConnectionFactory = base::OnceCallback<std::unique_ptr<Connection>(
-      network::mojom::NetworkContext*)>;
+      network::NetworkContextGetter)>;
 
   ConnectionProxy(const GURL& proxy_url,
                   PrivateAiLogger* logger,

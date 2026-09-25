@@ -24,7 +24,7 @@
 #include "components/private_ai/secure_channel.h"
 #include "components/private_ai/secure_channel_impl.h"
 #include "net/base/url_util.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/cpp/network_context_getter.h"
 
 namespace private_ai {
 
@@ -46,13 +46,13 @@ std::unique_ptr<Connection> CreateConnectionStack(
     base::RepeatingCallback<void(StatusCode)> on_disconnect,
     base::OnceClosure on_established,
     version_info::Channel channel,
-    network::mojom::NetworkContext* network_context) {
+    network::NetworkContextGetter network_context_getter) {
   std::unique_ptr<SecureChannel::Factory> secure_channel_factory;
   if (secure_channel_override) {
     secure_channel_factory = secure_channel_override.Run();
   } else {
     secure_channel_factory = std::make_unique<SecureChannelImpl::FactoryImpl>(
-        url, network_context, logger, oak_session_driver);
+        url, std::move(network_context_getter), logger, oak_session_driver);
   }
 
   std::unique_ptr<Connection> connection = std::make_unique<ConnectionBasic>(
@@ -72,13 +72,13 @@ std::unique_ptr<Connection> CreateConnectionStack(
 
 ConnectionFactoryImpl::ConnectionFactoryImpl(
     const GURL& url,
-    network::mojom::NetworkContext* network_context,
+    network::NetworkContextGetter network_context_getter,
     PrivateAiLogger* logger,
     PrivateAiOakSessionDriver* oak_session_driver,
     PrivateAiNetworkDriver* network_driver,
     version_info::Channel channel)
     : url_(url),
-      network_context_(network_context),
+      network_context_getter_(std::move(network_context_getter)),
       logger_(logger),
       oak_session_driver_(oak_session_driver),
       network_driver_(network_driver),
@@ -114,11 +114,11 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
   if (!proxy_url_.is_valid()) {
     logger_->LogInfo(FROM_HERE,
                      "Creating connection to Private AI server (direct).");
-    CHECK(network_context_);
+    CHECK(network_context_getter_);
     connection = CreateConnectionStack(
         url_, feature_name, logger_, token_manager_, secure_channel_override_,
         oak_session_driver_, on_disconnect, std::move(on_established), channel_,
-        network_context_);
+        network_context_getter_);
   } else {
     logger_->LogInfo(FROM_HERE,
                      "Creating connection to Private AI server via proxy: " +

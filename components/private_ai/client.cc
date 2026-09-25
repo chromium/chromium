@@ -17,7 +17,7 @@
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
 #include "net/base/url_util.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -29,7 +29,7 @@ std::unique_ptr<Client> Client::Create(
     const std::string& api_key,
     const std::string& proxy_url_string,
     bool use_token_attestation,
-    network::mojom::NetworkContext* network_context,
+    network::NetworkContextGetter network_context_getter,
     phosphor::TokenManager* token_manager,
     PrivateAiLogger* logger,
     PrivateAiOakSessionDriver* oak_session_driver,
@@ -39,8 +39,8 @@ std::unique_ptr<Client> Client::Create(
   GURL formatted_url = Client::FormatUrl(url, api_key);
 
   auto connection_factory = std::make_unique<ConnectionFactoryImpl>(
-      formatted_url, network_context, logger, oak_session_driver,
-      network_driver, channel);
+      formatted_url, std::move(network_context_getter), logger,
+      oak_session_driver, network_driver, channel);
 
   if (use_token_attestation) {
     connection_factory->EnableTokenAttestation(token_manager);

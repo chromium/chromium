@@ -22,7 +22,6 @@
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/internal_webui_config.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -85,12 +84,12 @@ void PrivateAiInternalsUI::BindInterface(
   auto* token_manager = private_ai_service->GetTokenManager();
   CHECK(token_manager);
 
-  auto* network_context =
-      profile->GetDefaultStoragePartition()->GetNetworkContext();
   page_handler_ = std::make_unique<PrivateAiInternalsPageHandler>(
-      token_manager, network_context, private_ai_service->GetClient(),
-      private_ai_service->GetLogger(), &oak_session_driver_content_,
-      &network_driver_content_, chrome::GetChannel(), std::move(receiver));
+      token_manager,
+      PrivateAiServiceFactory::CreateNetworkContextGetter(profile),
+      private_ai_service->GetClient(), private_ai_service->GetLogger(),
+      &oak_session_driver_content_, &network_driver_content_,
+      chrome::GetChannel(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PrivateAiInternalsUI)

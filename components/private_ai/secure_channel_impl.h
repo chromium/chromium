@@ -26,7 +26,7 @@
 #include "components/private_ai/secure_channel.h"
 #include "components/private_ai/secure_session.h"
 #include "components/private_ai/transport.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 #include "url/gurl.h"
 
@@ -37,7 +37,7 @@ class SecureChannelImpl : public SecureChannel {
   class FactoryImpl : public SecureChannel::Factory {
    public:
     FactoryImpl(const GURL& url,
-                network::mojom::NetworkContext* network_context,
+                network::NetworkContextGetter network_context_getter,
                 PrivateAiLogger* logger,
                 PrivateAiOakSessionDriver* oak_session_driver);
     ~FactoryImpl() override;
@@ -47,7 +47,7 @@ class SecureChannelImpl : public SecureChannel {
 
    private:
     const GURL url_;
-    raw_ptr<network::mojom::NetworkContext> network_context_;
+    network::NetworkContextGetter network_context_getter_;
     raw_ptr<PrivateAiLogger> logger_;
     raw_ptr<PrivateAiOakSessionDriver> oak_session_driver_;
   };

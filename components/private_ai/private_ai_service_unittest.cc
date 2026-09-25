@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -74,7 +75,10 @@ class PrivateAiServiceTest : public testing::Test {
 
     private_ai_service_ = std::make_unique<TestPrivateAiService>(
         identity_test_env_.identity_manager(),
-        std::move(shared_url_loader_factory), &test_network_context_,
+        std::move(shared_url_loader_factory),
+        base::BindRepeating(
+            [](network::mojom::NetworkContext* context) { return context; },
+            base::Unretained(&test_network_context_)),
         "dummy.com", PrivateAiService::GetApiKey(version_info::Channel::STABLE),
         "dummy-proxy.com",
         /*use_token_attestation=*/false,
