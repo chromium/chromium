@@ -30,6 +30,7 @@ using ::testing::Return;
 class MockAccountSettingSyncBridge : public AccountSettingSyncBridge {
  public:
   using AccountSettingSyncBridge::AccountSettingSyncBridge;
+  MOCK_METHOD(bool, IsDataLoaded, (), (const, override));
   MOCK_METHOD(base::Value, GetSetting, (std::string_view), (const, override));
   MOCK_METHOD(std::optional<bool>,
               GetBooleanSetting,
@@ -75,6 +76,14 @@ class AccountSettingServiceTest : public testing::Test {
   std::unique_ptr<AccountSettingServiceImpl> service_;
   raw_ptr<MockAccountSettingSyncBridge> bridge_;  // Owned by the `service_`
 };
+
+TEST_F(AccountSettingServiceTest, IsLoaded) {
+  ON_CALL(bridge(), IsDataLoaded()).WillByDefault(Return(false));
+  EXPECT_FALSE(service().IsLoaded());
+
+  ON_CALL(bridge(), IsDataLoaded()).WillByDefault(Return(true));
+  EXPECT_TRUE(service().IsLoaded());
+}
 
 TEST_F(AccountSettingServiceTest, GetBoolean) {
   EXPECT_THAT(service().GetBoolean(kWalletPrivacyContextualSurfacing),

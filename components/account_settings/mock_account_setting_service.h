@@ -18,6 +18,7 @@ class MockAccountSettingService : public AccountSettingService {
 
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
+  MOCK_METHOD(bool, IsLoaded, (), (const, override));
   MOCK_METHOD(std::optional<bool>,
               GetBoolean,
               (const AccountSetting&),

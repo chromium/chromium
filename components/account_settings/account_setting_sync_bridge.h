@@ -36,6 +36,10 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Returns whether the bridge has finished loading the initial data from
+  // `store_`. Virtual for testing.
+  virtual bool IsDataLoaded() const;
+
   // Returns the value for the setting of the given `name` if the bridge
   // is aware of any such setting. Otherwise, an empty value is returned.
   // Virtual for testing.
@@ -85,6 +89,8 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
   // A copy of the settings from the `store_`, used for synchronous access.
   // Keyed by `AccountSettingSpecifics::name`.
   base::flat_map<std::string, sync_pb::AccountSettingSpecifics> settings_;
+
+  bool is_data_loaded_ = false;
 
   base::ObserverList<AccountSettingSyncBridge::Observer> observers_;
 

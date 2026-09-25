@@ -54,6 +54,10 @@ void AccountSettingServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+bool AccountSettingServiceImpl::IsLoaded() const {
+  return sync_bridge_ && sync_bridge_->IsDataLoaded();
+}
+
 std::optional<bool> AccountSettingServiceImpl::GetBoolean(
     const AccountSetting& setting) const {
   CHECK(setting.type == base::Value::Type::BOOLEAN);

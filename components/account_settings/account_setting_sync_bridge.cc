@@ -62,6 +62,10 @@ void AccountSettingSyncBridge::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+bool AccountSettingSyncBridge::IsDataLoaded() const {
+  return is_data_loaded_;
+}
+
 base::Value AccountSettingSyncBridge::GetSetting(std::string_view name) const {
   auto it = settings_.find(name);
   if (it == settings_.end()) {
@@ -223,6 +227,7 @@ void AccountSettingSyncBridge::StartSyncingWithDataAndMetadata(
   }
   settings_ = base::flat_map<std::string, sync_pb::AccountSettingSpecifics>(
       std::move(processed_entries));
+  is_data_loaded_ = true;
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
   observers_.Notify(&Observer::OnDataLoadedFromDisk);
 }

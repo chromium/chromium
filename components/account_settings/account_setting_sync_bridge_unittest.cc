@@ -147,11 +147,13 @@ TEST_F(AccountSettingSyncBridgeTest, ModelReadyToSync_InitialSync) {
       .WillRepeatedly(base::test::RunClosure(run_loop.QuitClosure()));
 
   RecreateBridge();
+  EXPECT_FALSE(bridge().IsDataLoaded());
 
   MockObserver o(&bridge());
   EXPECT_CALL(o, OnDataLoadedFromDisk);
 
   run_loop.Run();
+  EXPECT_TRUE(bridge().IsDataLoaded());
 }
 
 TEST_F(AccountSettingSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {

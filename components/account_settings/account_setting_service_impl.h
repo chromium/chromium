@@ -28,6 +28,7 @@ class AccountSettingServiceImpl : public AccountSettingService,
   // AccountSettingService:
   void AddObserver(AccountSettingService::Observer* observer) override;
   void RemoveObserver(AccountSettingService::Observer* observer) override;
+  bool IsLoaded() const override;
   std::optional<bool> GetBoolean(const AccountSetting& setting) const override;
   std::optional<int> GetInteger(const AccountSetting& setting) const override;
   std::optional<std::string> GetString(

@@ -6,7 +6,9 @@
 
 namespace account_settings {
 
-MockAccountSettingService::MockAccountSettingService() = default;
+MockAccountSettingService::MockAccountSettingService() {
+  ON_CALL(*this, IsLoaded).WillByDefault(testing::Return(true));
+}
 
 MockAccountSettingService::~MockAccountSettingService() = default;
 

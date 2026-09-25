@@ -42,6 +42,10 @@ class AccountSettingService : public KeyedService {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  // Returns whether account settings data has finished loading from the local
+  // cache.
+  virtual bool IsLoaded() const = 0;
+
   // Returns a value for the specified `setting` and type if exists, otherwise
   // returns `nullopt`.
   virtual std::optional<bool> GetBoolean(
