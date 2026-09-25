@@ -64,6 +64,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLinuxPortal
   }
 
  private:
+  friend class TestableSelectFileDialogLinuxPortal;
   // Glob-style patterns are indicated by 0, MIME types by 1. Patterns are
   // case-sensitive.
   using DbusFilterPattern = std::tuple<uint32_t, std::string>;

@@ -102,6 +102,8 @@ SelectFileDialogLinuxPortal::~SelectFileDialogLinuxPortal() {
 
 void SelectFileDialogLinuxPortal::ListenerDestroyed() {
   weak_factory_.InvalidateWeakPtrs();
+  file_chooser_request_.reset();
+  UnparentOnInvoker();
   if (fallback_dialog_) {
     fallback_dialog_->ListenerDestroyed();
     fallback_dialog_.reset();
@@ -191,8 +193,9 @@ void SelectFileDialogLinuxPortal::OnPortalAvailable(
     delegate->ExportWindowHandle(
         host_->GetAcceleratedWidget(),
         base::BindOnce(
-            &SelectFileDialogLinuxPortal::SelectFileImplWithParentHandle, this,
-            title, default_path, filter_set, default_extension));
+            &SelectFileDialogLinuxPortal::SelectFileImplWithParentHandle,
+            weak_factory_.GetWeakPtr(), title, default_path, filter_set,
+            default_extension));
   } else {
     // No parent or no delegate, so just use a blank parent handle.
     SelectFileImplWithParentHandle(title, default_path, filter_set,
@@ -290,9 +293,10 @@ void SelectFileDialogLinuxPortal::SelectFileImplWithParentHandle(
   invoker_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SelectFileDialogLinuxPortal::SelectFileImplOnMainThread,
-                     this, std::move(title), std::move(default_path),
-                     default_path_exists, std::move(filter_set),
-                     std::move(default_extension), std::move(parent_handle)));
+                     weak_factory_.GetWeakPtr(), std::move(title),
+                     std::move(default_path), default_path_exists,
+                     std::move(filter_set), std::move(default_extension),
+                     std::move(parent_handle)));
 }
 
 void SelectFileDialogLinuxPortal::SelectFileImplOnMainThread(
@@ -502,7 +506,11 @@ void SelectFileDialogLinuxPortal::DialogCreatedOnInvoker() {
   if (!host_) {
     return;
   }
+  scoped_refptr<SelectFileDialogLinuxPortal> hold_this(this);
   host_->ReleaseCapture();
+  if (!host_) {
+    return;
+  }
   reenable_window_event_handling_ =
       static_cast<views::DesktopWindowTreeHostLinux*>(host_.get())
           ->DisableEventListening();

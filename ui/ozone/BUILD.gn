@@ -276,6 +276,7 @@ source_set("ozone_switches") {
     "//media/mojo/services",
     "//ui/base/clipboard:clipboard_test",
     "//ui/display:display_unittests",
+    "//ui/shell_dialogs:shell_dialogs_unittests",
   ]
 }
 

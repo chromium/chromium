@@ -4,12 +4,18 @@
 
 #include "ui/shell_dialogs/select_file_dialog_linux_portal.h"
 
+#include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/env.h"
+#include "ui/aura/window_tree_host_platform.h"
+#include "ui/display/test/test_screen.h"
+#include "ui/ozone/public/ozone_switches.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
 namespace ui {
@@ -29,6 +35,24 @@ class MockSelectFileDialogListener : public SelectFileDialog::Listener {
   void FileSelectionCanceled() override {}
 };
 
+class FakeWindowTreeHost : public aura::WindowTreeHostPlatform {
+ public:
+  explicit FakeWindowTreeHost(base::OnceClosure on_release_capture)
+      : on_release_capture_(std::move(on_release_capture)) {
+    window()->Init(ui::LAYER_NOT_DRAWN);
+  }
+  ~FakeWindowTreeHost() override = default;
+
+  void ReleaseCapture() override {
+    if (on_release_capture_) {
+      std::move(on_release_capture_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_release_capture_;
+};
+
 }  // namespace
 
 class SelectFileDialogLinuxPortalTest : public testing::Test {
@@ -37,6 +61,11 @@ class SelectFileDialogLinuxPortalTest : public testing::Test {
   ~SelectFileDialogLinuxPortalTest() override = default;
 
   void SetUp() override {
+    // The test may run without a display server, so use the headless Ozone
+    // platform.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kOzonePlatform, "headless");
+    env_ = aura::Env::CreateInstance();
     listener_ = std::make_unique<MockSelectFileDialogListener>();
   }
 
@@ -57,6 +86,9 @@ class SelectFileDialogLinuxPortalTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC};
+  display::test::TestScreen test_screen_{/*create_display=*/true,
+                                         /*register_screen=*/true};
+  std::unique_ptr<aura::Env> env_;
   std::unique_ptr<MockSelectFileDialogListener> listener_;
 
  private:
@@ -80,10 +112,15 @@ class TestableSelectFileDialogLinuxPortal : public SelectFileDialogLinuxPortal {
  public:
   explicit TestableSelectFileDialogLinuxPortal(Listener* listener)
       : SelectFileDialogLinuxPortal(listener,
-                                    std::unique_ptr<ui::SelectFilePolicy>()) {}
+                                    std::unique_ptr<ui::SelectFilePolicy>()) {
+    invoker_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+  }
 
+  using SelectFileDialogLinuxPortal::DialogCreatedOnInvoker;
+  using SelectFileDialogLinuxPortal::host_;
   using SelectFileDialogLinuxPortal::listener_;
   using SelectFileDialogLinuxPortal::ListenerDestroyed;
+  using SelectFileDialogLinuxPortal::reenable_window_event_handling_;
 
   base::WeakPtr<SelectFileDialogLinuxPortal> GetWeakPtrForTesting() {
     return SelectFileDialogLinuxPortal::GetWeakPtrForTesting();
@@ -121,6 +158,10 @@ TEST_F(SelectFileDialogLinuxPortalTest,
   auto dialog = base::MakeRefCounted<TestableSelectFileDialogLinuxPortal>(
       listener_.get());
 
+  bool reenabled_events = false;
+  dialog->reenable_window_event_handling_ =
+      base::BindOnce([](bool* flag) { *flag = true; }, &reenabled_events);
+
   base::WeakPtr<SelectFileDialogLinuxPortal> weak_ptr =
       dialog->GetWeakPtrForTesting();
   EXPECT_TRUE(weak_ptr);
@@ -130,6 +171,7 @@ TEST_F(SelectFileDialogLinuxPortalTest,
 
   EXPECT_FALSE(weak_ptr);
   EXPECT_FALSE(dialog->listener_);
+  EXPECT_TRUE(reenabled_events);
 }
 
 // Tests that weak pointer invalidation prevents callbacks from multiple racing
@@ -167,6 +209,51 @@ TEST_F(SelectFileDialogLinuxPortalTest,
 
   dbus_thread_1.Stop();
   dbus_thread_2.Stop();
+}
+
+// Regression test for crbug.com/565349184: Releasing capture in
+// DialogCreatedOnInvoker() can synchronously cancel a tab drag, deactivate the
+// tab, and destroy the dialog before ReleaseCapture() returns.
+TEST_F(SelectFileDialogLinuxPortalTest,
+       DialogDestroyedDuringReleaseCaptureInDialogCreatedOnInvoker) {
+  auto dialog = base::MakeRefCounted<TestableSelectFileDialogLinuxPortal>(
+      listener_.get());
+  base::WeakPtr<SelectFileDialogLinuxPortal> weak_dialog =
+      dialog->GetWeakPtrForTesting();
+
+  FakeWindowTreeHost host(base::BindOnce(
+      [](scoped_refptr<TestableSelectFileDialogLinuxPortal>* dialog_ref) {
+        (*dialog_ref)->ListenerDestroyed();
+        dialog_ref->reset();
+      },
+      &dialog));
+  dialog->host_ = host.GetWeakPtr();
+
+  TestableSelectFileDialogLinuxPortal* raw_dialog = dialog.get();
+  raw_dialog->DialogCreatedOnInvoker();
+
+  EXPECT_FALSE(dialog);
+  EXPECT_FALSE(weak_dialog);
+}
+
+// Tests that if the WindowTreeHost is destroyed synchronously during
+// ReleaseCapture(), DialogCreatedOnInvoker() safely returns without
+// dereferencing a null host pointer.
+TEST_F(SelectFileDialogLinuxPortalTest,
+       HostDestroyedDuringReleaseCaptureInDialogCreatedOnInvoker) {
+  auto dialog = base::MakeRefCounted<TestableSelectFileDialogLinuxPortal>(
+      listener_.get());
+
+  std::unique_ptr<FakeWindowTreeHost> host;
+  host = std::make_unique<FakeWindowTreeHost>(base::BindOnce(
+      [](std::unique_ptr<FakeWindowTreeHost>* host_ptr) { host_ptr->reset(); },
+      &host));
+  dialog->host_ = host->GetWeakPtr();
+
+  dialog->DialogCreatedOnInvoker();
+
+  EXPECT_FALSE(host);
+  EXPECT_FALSE(dialog->host_);
 }
 
 }  // namespace ui
