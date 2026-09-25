@@ -1212,7 +1212,7 @@
       // behaviors are triggered. It should not affect behavior.
       // This flag shipped in M155 and can be removed in M158.
       name: "CleanUpActivationBehavior",
-      status: "stable",
+      status: "experimental",
     },
     {
       // Set currentTarget to null after dispatch for EventTarget.
