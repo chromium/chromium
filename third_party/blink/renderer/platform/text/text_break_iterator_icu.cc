@@ -107,8 +107,8 @@ class LineBreakIteratorPool final {
  private:
   static const size_t kCapacity = 4;
 
-  typedef std::pair<AtomicString, icu::BreakIterator*> Entry;
-  typedef Vector<Entry, kCapacity> Pool;
+  using Entry = std::pair<AtomicString, icu::BreakIterator*>;
+  using Pool = Vector<Entry, kCapacity>;
   Pool pool_;
   HashMap<icu::BreakIterator*, AtomicString> vended_iterators_;
 

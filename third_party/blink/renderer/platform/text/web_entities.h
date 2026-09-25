@@ -65,7 +65,7 @@ class PLATFORM_EXPORT WebEntities {
   String ConvertEntitiesInString(const String&) const;
 
  private:
-  typedef HashMap<int, String> EntitiesMapType;
+  using EntitiesMapType = HashMap<int, String>;
   // An internal object that maps the Unicode character to corresponding
   // entity notation.
   EntitiesMapType entities_map_;

@@ -34,7 +34,7 @@
 
 namespace blink {
 
-typedef icu::BreakIterator TextBreakIterator;
+using TextBreakIterator = icu::BreakIterator;
 
 const int kTextBreakDone = -1;
 
