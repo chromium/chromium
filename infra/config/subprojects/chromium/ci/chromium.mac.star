@@ -660,7 +660,12 @@ ci.thin_tester(
             ),
             # TODO(crbug.com/436628295): tests are <3x slower on VM
             "content_browsertests": targets.per_test_modification(
-                mixins = "mac_26_arm64",
+                mixins = [
+                    targets.mixin(
+                        enable_rts_filtering = True,
+                    ),
+                    "mac_26_arm64",
+                ],
                 remove_mixins = "mac_26_vm_optional",
             ),
             # TODO(crbug.com/436628295): test fails on VM

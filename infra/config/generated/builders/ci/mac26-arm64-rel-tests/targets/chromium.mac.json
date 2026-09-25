@@ -453,6 +453,7 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
+        "enable_rts_filtering": true,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
