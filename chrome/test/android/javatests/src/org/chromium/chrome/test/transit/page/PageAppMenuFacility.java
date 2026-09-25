@@ -15,9 +15,11 @@ import org.chromium.chrome.browser.tabbed_mode.TabbedAppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.transit.AppMenuSubmenuFacility;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
+import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.TabGroupsSubmenuFacility;
 import org.chromium.chrome.test.transit.bookmarks.BookmarksPhoneStation;
 import org.chromium.chrome.test.transit.bookmarks.BookmarksTabletStation;
+import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.TabGroupListBottomSheetFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageAppMenuFacility;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
@@ -145,6 +147,16 @@ public class PageAppMenuFacility<HostPageStationT extends CtaPageStation>
                 .enterFacility(
                         new TabGroupListBottomSheetFacility<>(
                                 new ArrayList<>(tabGroupIds), /* isNewTabGroupRowVisible= */ true));
+    }
+
+    /**
+     * Select "Add to new group" from the app menu when no other valid destination groups exist.
+     * This opens the New Tab Group creation dialog directly without showing the bottom sheet.
+     */
+    public NewTabGroupDialogFacility<HostPageStationT> selectAddToNewGroupWithoutBottomSheet() {
+        assertNotNull(mAddToGroup);
+        assert !TabbedAppMenuPropertiesDelegate.isSubmenusEnabled(mHostStation.getActivity());
+        return Journeys.beginNewTabGroupUiFlow(mAddToGroup.scrollToAndSelectTo());
     }
 
     /**

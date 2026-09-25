@@ -24,8 +24,10 @@ import org.chromium.base.Token;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabsPinnedStatusCondition;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
@@ -40,7 +42,8 @@ import java.util.List;
  *
  * @param <HostStationT> the type of station this is scoped to.
  */
-public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitcherStation>
+public class TabSwitcherTabCardContextMenuFacility<
+                HostStationT extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity>>
         extends ScrollableFacility<HostStationT> {
     // TODO(crbug.com/467931387): R.id.tab_group_action_menu_list implies tab group-related
     //  operations. Rename to something more appropriate.
@@ -132,10 +135,13 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
     }
 
     /** Click Select tab and open List Editor. */
-    public TabSwitcherListEditorFacility<HostStationT> selectTab() {
+    @SuppressWarnings("unchecked")
+    public <S extends TabSwitcherStation> TabSwitcherListEditorFacility<S> selectTab() {
         return selectTab
                 .scrollToAndSelectTo()
-                .enterFacility(new TabSwitcherListEditorFacility<>(List.of(mTabId), List.of()));
+                .enterFacility(
+                        (TabSwitcherListEditorFacility<S>)
+                                new TabSwitcherListEditorFacility<>(List.of(mTabId), List.of()));
     }
 
     /** Click Close tab. */

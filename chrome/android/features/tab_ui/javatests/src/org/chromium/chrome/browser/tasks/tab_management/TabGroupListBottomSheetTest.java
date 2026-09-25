@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -19,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -315,5 +319,93 @@ public class TabGroupListBottomSheetTest {
                 .clickTabGroup(groupCardWindow2.getTitle());
 
         TransitAsserts.assertFinalDestinations(tabSwitcher1, tabSwitcher2);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({
+        // "Add to tab group" menu item doesn't exist if the submenu is enabled in the app menu.
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    })
+    public void testAppMenu_tabInOnlyExistingGroup_createsNewGroupDirectly() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        WebPageStation pageStation =
+                Journeys.prepareTabs(firstPage, 2, 0, "about:blank", WebPageStation::newBuilder);
+
+        RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
+        TabSwitcherGroupCardFacility groupCard = Journeys.mergeAllTabsToNewGroup(tabSwitcher);
+
+        WebPageStation groupedWebPage = groupCard.clickCard().openNewRegularTab().loadAboutBlank();
+        Token originalGroupId = groupedWebPage.getTab().getTabGroupId();
+
+        groupedWebPage
+                .openRegularTabAppMenu()
+                .selectAddToNewGroupWithoutBottomSheet()
+                .inputName("SplitOutGroup")
+                .pressDoneToExit();
+
+        assertNotNull(groupedWebPage.getTab().getTabGroupId());
+        assertNotEquals(originalGroupId, groupedWebPage.getTab().getTabGroupId());
+        assertFinalDestination(groupedWebPage);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    @DisableFeatures({
+        // "Add to tab group" menu item doesn't exist if the submenu is enabled in the app menu.
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU,
+        ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    })
+    public void testAppMenu_onlyRemoteGroupExists_opensBottomSheetAndRestoresGroup() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        RegularTabSwitcherStation tabSwitcher =
+                Journeys.createAndHideSavedTabGroup(
+                        firstPage, "HiddenRemoteGroup", /* numTabs= */ 2);
+
+        WebPageStation activePage = tabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
+        assertCurrentTabIsNotInGroup(activePage);
+
+        activePage
+                .openRegularTabAppMenu()
+                .selectAddToGroupWithBottomSheet()
+                .clickTabGroup("HiddenRemoteGroup");
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Token mergedGroupId = activePage.getTab().getTabGroupId();
+                    assertNotNull(mergedGroupId);
+                    assertEquals(3, activePage.getTabModel().getTabsInGroup(mergedGroupId).size());
+                });
+        assertFinalDestination(activePage);
+    }
+
+    @Test
+    @MediumTest
+    public void testTabCardContextMenu_tabInOnlyGroup_createsNewGroupDirectly() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        WebPageStation pageStation =
+                Journeys.prepareTabs(firstPage, 2, 0, "about:blank", WebPageStation::newBuilder);
+
+        RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
+        TabSwitcherGroupCardFacility groupCard = Journeys.mergeAllTabsToNewGroup(tabSwitcher);
+        Tab firstGroupedTab =
+                ThreadUtils.runOnUiThreadBlocking(() -> tabSwitcher.getTabModel().getTabAt(0));
+        Token originalGroupId = firstGroupedTab.getTabGroupId();
+
+        var groupDialog = groupCard.clickCard();
+        groupDialog
+                .openTabCardContextMenuAtPos(0)
+                .clickAddTabToNewGroup()
+                .inputName("SplitFromContextMenu")
+                .pressDoneToExit();
+
+        assertNotNull(firstGroupedTab.getTabGroupId());
+        assertNotEquals(originalGroupId, firstGroupedTab.getTabGroupId());
+        groupDialog.pressBackArrowToExit();
+        assertFinalDestination(tabSwitcher);
     }
 }

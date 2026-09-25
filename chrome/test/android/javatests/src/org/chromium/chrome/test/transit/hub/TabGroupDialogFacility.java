@@ -6,6 +6,7 @@ package org.chromium.chrome.test.transit.hub;
 
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -21,6 +22,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.base.test.util.VeryLongPressAction;
+import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -180,5 +183,23 @@ public class TabGroupDialogFacility<
     /** Returns {@link String} containing the title of the group. */
     public String getTitle() {
         return mTitle;
+    }
+
+    /**
+     * Long-presses the tab card at {@code cardIndex} inside the TabGridDialog to open its {@link
+     * TabSwitcherTabCardContextMenuFacility}.
+     */
+    public TabSwitcherTabCardContextMenuFacility<HostStationT> openTabCardContextMenuAtPos(
+            int cardIndex) {
+        VeryLongPressAction longPress =
+                new VeryLongPressAction(/* longPressMultiple= */ 2.5f, isDisplayed());
+        return runTo(
+                        () ->
+                                ViewActionOnDescendant.performOnRecyclerViewNthItem(
+                                        tabsListElement.getViewSpec().getViewMatcher(),
+                                        cardIndex,
+                                        longPress))
+                .enterFacility(
+                        new TabSwitcherTabCardContextMenuFacility<>(mTabIdsInGroup.get(cardIndex)));
     }
 }
