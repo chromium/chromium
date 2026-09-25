@@ -17140,17 +17140,35 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
       break;
     case base::TERMINATION_STATUS_OOM:
     case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
-#if BUILDFLAG(IS_CHROMEOS)
-    case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
-      if (exit_code == RESULT_CODE_KILLED_BAD_MESSAGE) {
-        break;
-      }
-#endif
 #if BUILDFLAG(IS_ANDROID)
     case base::TERMINATION_STATUS_OOM_PROTECTED:
 #endif
       reason = "oom";
       break;
+#if BUILDFLAG(IS_CHROMEOS)
+    case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
+      // On ChromeOS, GetTerminationStatus() maps any SIGKILL to
+      // TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM, even when the process was
+      // killed by the browser (e.g. via TerminateInternal() for a bad IPC
+      // message, or via GetKnownDeadTerminationStatus() while reaping an
+      // unresponsive or shutting-down renderer). Check |is_oom|,
+      // |is_unresponsive|, and |exit_code| before attributing the kill to OOM.
+      if (is_oom) {
+        reason = "oom";
+      } else if (is_unresponsive) {
+        reason = "unresponsive";
+      } else if (exit_code == RESULT_CODE_KILLED_BAD_MESSAGE) {
+        // Report bad-message kills as generic crashes with no reason.
+      } else if (exit_code == RESULT_CODE_NORMAL_EXIT ||
+                 exit_code == RESULT_CODE_KILLED) {
+        // An intentional browser-initiated shutdown or Task Manager kill that
+        // was reaped with SIGKILL should not be reported.
+        return;
+      } else {
+        reason = "oom";
+      }
+      break;
+#endif
     default:
       // Other termination statuses do not indicate a crash.
       return;

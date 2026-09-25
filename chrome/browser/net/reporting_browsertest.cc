@@ -890,7 +890,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
   EXPECT_EQ(reason, nullptr);
 }
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_POSIX)
 IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
                        DISABLED_ON_ASAN(CrashReportProcessWasKilledBySigkill)) {
   content::WebContents* contents =
@@ -921,7 +921,6 @@ IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
-  // Verify that the crash report was generated with no reason.
   const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
@@ -935,9 +934,75 @@ IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
   ASSERT_NE(url, nullptr);
   EXPECT_EQ(*url, main_url.spec());
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, an external SIGKILL on a responsive renderer is mapped to
+  // TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM and reported as "oom".
+  ASSERT_NE(reason, nullptr);
+  EXPECT_EQ("oom", *reason);
+#else
   EXPECT_EQ(reason, nullptr);
+#endif
 }
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_P(
+    CrashReportingBrowserTest,
+    DISABLED_ON_ASAN(CrashReportUnresponsiveProcessWasKilledBySigkill)) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+
+  content::WebContentsConsoleObserver console_observer(contents);
+  console_observer.SetPattern("infiniteLoop");
+  ExecuteInfiniteLoopScriptAsync(frame);
+  ASSERT_TRUE(console_observer.Wait());
+
+  content::RenderProcessHost* rph = frame->GetProcess();
+  content::RenderProcessHostWatcher watcher(
+      rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  // Mark the widget as unresponsive before killing the process with SIGKILL.
+  content::SimulateUnresponsiveRenderer(contents, frame->GetRenderWidgetHost());
+
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  ASSERT_EQ(0, kill(rph->GetProcess().Pid(), SIGKILL));
+  watcher.Wait();
+  EXPECT_FALSE(watcher.did_exit_normally());
+  EXPECT_TRUE(contents->IsCrashed());
+
+  upload_response()->WaitForRequest();
+  base::ListValue response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  ASSERT_FALSE(response.empty());
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify that even when terminated with SIGKILL (which maps to
+  // TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM on ChromeOS), an unresponsive
+  // renderer is reported with reason: "unresponsive" rather than "oom".
+  const base::DictValue& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::DictValue* body = report.FindDict("body");
+  ASSERT_NE(body, nullptr);
+  const std::string* reason = body->FindString("reason");
+
+  ASSERT_NE(type, nullptr);
+  EXPECT_EQ("crash", *type);
+
+  ASSERT_NE(url, nullptr);
+  EXPECT_EQ(*url, main_url.spec());
+
+  ASSERT_NE(reason, nullptr);
+  EXPECT_EQ("unresponsive", *reason);
+}
+#endif  // BUILDFLAG(IS_POSIX)
 
 IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
                        DISABLED_ON_ASAN(NoCrashReportForTaskManagerKill)) {
