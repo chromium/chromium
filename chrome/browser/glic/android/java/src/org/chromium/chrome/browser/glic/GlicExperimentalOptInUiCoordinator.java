@@ -5,11 +5,19 @@
 package org.chromium.chrome.browser.glic;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.Outline;
+import android.graphics.drawable.ColorDrawable;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.ViewGroup;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewOutlineProvider;
+import android.view.Window;
 import android.widget.FrameLayout;
+
+import androidx.activity.ComponentDialog;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
@@ -55,6 +63,20 @@ public class GlicExperimentalOptInUiCoordinator {
     private @Nullable ThinWebView mThinWebView;
     private @Nullable ContentView mContentView;
     private @Nullable ChromeImageButton mCloseButton;
+
+    // The dialog window is wider than ModalDialogView, so its background shows as a strip on each
+    // side of the web contents. Clear it; the card draws the rounded corners instead.
+    private final ModalDialogManager.ModalDialogManagerObserver mDialogObserver =
+            new ModalDialogManager.ModalDialogManagerObserver() {
+                @Override
+                public void onDialogCreated(PropertyModel model, @Nullable ComponentDialog dialog) {
+                    if (model != mModel || dialog == null) return;
+                    Window window = dialog.getWindow();
+                    if (window != null) {
+                        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    }
+                }
+            };
 
     private final ModalDialogProperties.Controller mDialogController =
             new ModalDialogProperties.Controller() {
@@ -165,7 +187,20 @@ public class GlicExperimentalOptInUiCoordinator {
         cardContainer.addView(
                 mThinWebView.getView(),
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        cardContainer.setLayoutParams(new ViewGroup.LayoutParams(mTargetWidthPx, mTargetHeightPx));
+        cardContainer.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        mTargetWidthPx, mTargetHeightPx, Gravity.CENTER_HORIZONTAL));
+        int cornerRadiusPx =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.dialog_corner_radius);
+        cardContainer.setOutlineProvider(
+                new ViewOutlineProvider() {
+                    @Override
+                    public void getOutline(View view, Outline outline) {
+                        outline.setRoundRect(
+                                0, 0, view.getWidth(), view.getHeight(), cornerRadiusPx);
+                    }
+                });
+        cardContainer.setClipToOutline(true);
 
         // The close button is overlaid on top of the web contents rather than using
         // ModalDialogProperties.TITLE_CLOSE_BUTTON_*. This dialog has no title, so the shared
@@ -186,8 +221,10 @@ public class GlicExperimentalOptInUiCoordinator {
                         .with(ModalDialogProperties.CONTROLLER, mDialogController)
                         .with(ModalDialogProperties.CUSTOM_VIEW, cardContainer)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
+                        .with(ModalDialogProperties.MAX_HEIGHT, mTargetHeightPx)
                         .build();
 
+        mModalDialogManager.addObserver(mDialogObserver);
         mModalDialogManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
         mContentView.requestFocus();
         return true;
@@ -209,6 +246,7 @@ public class GlicExperimentalOptInUiCoordinator {
 
     private void destroy() {
         mNativePtr = 0;
+        mModalDialogManager.removeObserver(mDialogObserver);
         if (mThinWebView != null) {
             mThinWebView.destroy();
             mThinWebView = null;

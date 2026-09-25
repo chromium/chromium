@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.glic;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -14,9 +15,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
+import androidx.activity.ComponentDialog;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
@@ -24,6 +30,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -242,6 +249,10 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
         assertEquals(
                 getDimensionPixelSize(R.dimen.glic_experimental_opt_in_dialog_max_height),
                 params.height);
+        assertEquals(
+                params.height,
+                coordinator.getPropertyModelForTesting().get(ModalDialogProperties.MAX_HEIGHT));
+        assertEquals(Gravity.CENTER_HORIZONTAL, ((FrameLayout.LayoutParams) params).gravity);
     }
 
     @Test
@@ -260,6 +271,27 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
                 getDimensionPixelSize(
                         R.dimen.glic_experimental_opt_in_dialog_non_scrollable_max_height),
                 params.height);
+        assertEquals(
+                params.height,
+                coordinator.getPropertyModelForTesting().get(ModalDialogProperties.MAX_HEIGHT));
+    }
+
+    @Test
+    public void testShow_ClearsWindowBackgroundAndRoundsCard() {
+        GlicExperimentalOptInUiCoordinator coordinator =
+                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+        assertNotNull(coordinator);
+        PropertyModel model = coordinator.getPropertyModelForTesting();
+        assertTrue(model.get(ModalDialogProperties.CUSTOM_VIEW).getClipToOutline());
+
+        ArgumentCaptor<ModalDialogManager.ModalDialogManagerObserver> observer =
+                ArgumentCaptor.forClass(ModalDialogManager.ModalDialogManagerObserver.class);
+        verify(mModalDialogManager).addObserver(observer.capture());
+        ComponentDialog dialog = new ComponentDialog(mActivity);
+        observer.getValue().onDialogCreated(model, dialog);
+        assertEquals(
+                Color.TRANSPARENT,
+                ((ColorDrawable) dialog.getWindow().getDecorView().getBackground()).getColor());
     }
 
     private ViewGroup.LayoutParams getCardLayoutParams(
