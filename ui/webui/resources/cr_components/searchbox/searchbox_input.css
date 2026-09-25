@@ -28,17 +28,31 @@
   box-sizing: border-box;
   field-sizing: content;
   line-height: 24px;
-  max-height: 190px;
+  /* Fits 7 lines of text (7 * 24px) plus the input's block padding. Content
+   * beyond that scrolls, which is when the scrollbar becomes visible. */
+  max-height: 194px;
   overflow-y: auto;
   overflow-x: hidden;
   padding-top: calc((var(--cr-searchbox-height) - 24px) / 2);
   resize: none;
-  scrollbar-width: none;
   white-space: pre-wrap;
 }
 
+/* The scrollbar is only rendered once the input content overflows its max
+ * height, e.g. while a long voice transcription is being shown or when the
+ * typed text grows past the last visible line. */
 :host([multi-line-enabled]) #input::-webkit-scrollbar {
-  display: none;
+  width: 7px;
+}
+
+:host([multi-line-enabled]) #input::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+:host([multi-line-enabled]) #input::-webkit-scrollbar-thumb {
+  background: var(--color-cr-searchbox-input-scrollbar-thumb,
+      rgb(127, 127, 127));
+  border-radius: 100px;
 }
 
 :is(input, textarea) {
