@@ -432,6 +432,9 @@ ci.builder(
                     shards = 12,
                 ),
             ),
+            "blink_wpt_tests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
             "browser_tests": targets.mixin(
                 enable_rts_filtering = True,
                 swarming = targets.swarming(
