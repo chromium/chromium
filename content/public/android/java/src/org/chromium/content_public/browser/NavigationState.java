@@ -36,6 +36,7 @@ public class NavigationState {
     private final @NetError int mErrorCode;
     private final @Nullable String mErrorDescription;
     private final @Nullable Map<String, String> mResponseHeaders;
+    private final @Nullable PageState mCommittedPageState;
 
     private static final String TAG = "NavigationState";
 
@@ -60,6 +61,7 @@ public class NavigationState {
             @Nullable String errorDescription,
             @Nullable Map<String, String> responseHeaders,
             boolean started,
+            @Nullable PageState committedPageState,
             NavigationHandle navigationHandle) {
         mUrl = url;
         mIsRendererInitiated = isRendererInitiated;
@@ -83,6 +85,7 @@ public class NavigationState {
         }
 
         mStarted = started;
+        mCommittedPageState = committedPageState;
         mNavigationHandle = navigationHandle;
     }
 
@@ -154,6 +157,10 @@ public class NavigationState {
     public long getNavigationStartMs() {
         assert mStarted;
         return mNavigationStartMs;
+    }
+
+    public @Nullable PageState getCommittedPageState() {
+        return mCommittedPageState;
     }
 
     public NavigationHandle getNavigation() {

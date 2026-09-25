@@ -18,6 +18,7 @@ import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwNavigation;
 import org.chromium.android_webview.AwPage;
 import org.chromium.android_webview.AwWebContentsObserver;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.annotations.Nullable;
@@ -76,8 +77,11 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
 
         int callCount = onPageFinishedHelper.getCallCount();
         Page page = new MockPage();
-        mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
-                page, frameId, mExampleURL, true, LifecycleState.ACTIVE);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
+                            page, frameId, mExampleURL, true, LifecycleState.ACTIVE);
+                });
         mWebContentsObserver.didStopLoading(mExampleURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         Assert.assertEquals(
@@ -94,10 +98,17 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
         Assert.assertEquals(page, awPageWithLoadEventFired.getInternalPageForTesting());
 
         callCount = onPageFinishedHelper.getCallCount();
-        mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
-                new MockPage(), frameId, mUnreachableWebDataUrl, false, LifecycleState.ACTIVE);
-        mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
-                new MockPage(), frameId, mSyncURL, true, LifecycleState.ACTIVE);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
+                            new MockPage(),
+                            frameId,
+                            mUnreachableWebDataUrl,
+                            false,
+                            LifecycleState.ACTIVE);
+                    mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
+                            new MockPage(), frameId, mSyncURL, true, LifecycleState.ACTIVE);
+                });
         mWebContentsObserver.didStopLoading(mSyncURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         Assert.assertEquals(
@@ -146,8 +157,11 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
                 !fragmentNavigation,
                 !isRendererInitiated,
                 PageTransition.TYPED);
-        mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
-                new MockPage(), frameId, mSyncURL, true, LifecycleState.ACTIVE);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mWebContentsObserver.didFinishLoadInPrimaryMainFrame(
+                            new MockPage(), frameId, mSyncURL, true, LifecycleState.ACTIVE);
+                });
         mWebContentsObserver.didStopLoading(mSyncURL, true);
         onPageFinishedHelper.waitForCallback(callCount);
         onPageFinishedHelper.waitForCallback(callCount);
@@ -247,7 +261,10 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
                         transition,
                         /* hasUserGesture= */ false,
                         /* isReload= */ false);
-        mWebContentsObserver.didStartNavigationInPrimaryMainFrame(navigation);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mWebContentsObserver.didStartNavigationInPrimaryMainFrame(navigation);
+                });
 
         // Check that onNavigationStarted() is called correctly.
         AwNavigation awNavigationStart = mNavigationListener.getLastStartedNavigation();
@@ -293,7 +310,10 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
                 /* isSameOrigin= */ true,
                 new HashMap<>(),
                 /* ignoredDuplicateNavigationCount= */ 0);
-        mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(navigation);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(navigation);
+                });
 
         // Check that onNavigationCompleted() is called correctly.
         AwNavigation awNavigationComplete = mNavigationListener.getLastCompletedNavigation();

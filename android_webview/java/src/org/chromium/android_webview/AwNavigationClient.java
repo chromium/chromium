@@ -4,19 +4,28 @@
 
 package org.chromium.android_webview;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.UiThread;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.NavigationState;
 import org.chromium.content_public.browser.Page;
+import org.chromium.content_public.browser.PageState;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
+import java.util.function.Supplier;
+
+import javax.annotation.concurrent.GuardedBy;
 
 /** Routes notifications about navigations from AwWebContentsObserver and AwContents to listeners */
 @NullMarked
@@ -45,10 +54,23 @@ public class AwNavigationClient implements Page.PageDeletionListener {
     // - The app unfortunately can tell if they store a weak reference to the navigation object,
     //   but there's no need for them to do that here: strongly referencing the object doesn't
     //   leak the WebView or anything.
+    @GuardedBy("mMapLock")
     private final WeakHashMap<NavigationHandle, WeakReference<AwNavigation>> mNavigationMap =
             new WeakHashMap<>();
+
+    @GuardedBy("mMapLock")
+    private final WeakHashMap<NavigationState, WeakReference<AwNavigationState>>
+            mNavigationStateMap = new WeakHashMap<>();
+
     // Similar reason as above, but between Page and AwPage.
+    @GuardedBy("mMapLock")
     private final WeakHashMap<Page, WeakReference<AwPage>> mPageMap = new WeakHashMap<>();
+
+    @GuardedBy("mMapLock")
+    private final WeakHashMap<PageState, WeakReference<AwPageState>> mPageStateMap =
+            new WeakHashMap<>();
+
+    private final Object mMapLock = new Object();
 
     /**
      * Adds a listener to the list. The listener will not be added if it has already been added to
@@ -88,28 +110,36 @@ public class AwNavigationClient implements Page.PageDeletionListener {
         mNavigationListeners.add(listener);
     }
 
+    @UiThread
     public void onNavigationStarted(NavigationHandle navigation) {
+        ThreadUtils.assertOnUiThread();
         AwNavigation awNavigation = getOrUpdateAwNavigationFor(navigation);
         for (AwNavigationListener listener : mNavigationListeners) {
             listener.onNavigationStarted(awNavigation);
         }
     }
 
+    @UiThread
     public void onNavigationRedirected(NavigationHandle navigation) {
+        ThreadUtils.assertOnUiThread();
         AwNavigation awNavigation = getOrUpdateAwNavigationFor(navigation);
         for (AwNavigationListener listener : mNavigationListeners) {
             listener.onNavigationRedirected(awNavigation);
         }
     }
 
+    @UiThread
     public void onNavigationCompleted(NavigationHandle navigation) {
+        ThreadUtils.assertOnUiThread();
         AwNavigation awNavigation = getOrUpdateAwNavigationFor(navigation);
         for (AwNavigationListener listener : mNavigationListeners) {
             listener.onNavigationCompleted(awNavigation);
         }
     }
 
+    @UiThread
     public void onNavigationVisible(NavigationHandle navigation) {
+        ThreadUtils.assertOnUiThread();
         AwNavigation awNavigation = getOrUpdateAwNavigationFor(navigation);
         for (AwNavigationListener listener : mNavigationListeners) {
             listener.onNavigationVisible(awNavigation);
@@ -117,8 +147,10 @@ public class AwNavigationClient implements Page.PageDeletionListener {
     }
 
     // Page.PageDeletionListener implementation
+    @UiThread
     @Override
     public void onWillDeletePage(Page page) {
+        ThreadUtils.assertOnUiThread();
         if (!page.isPrerendering()) {
             AwPage awPage = getAwPageFor(page);
             for (AwNavigationListener listener : mNavigationListeners) {
@@ -127,82 +159,157 @@ public class AwNavigationClient implements Page.PageDeletionListener {
         }
     }
 
+    @UiThread
     public void onPageLoadEventFired(Page page) {
+        ThreadUtils.assertOnUiThread();
         AwPage awPage = getAwPageFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
             listener.onPageLoadEventFired(awPage);
         }
     }
 
+    @UiThread
     public void onPageDOMContentLoadedEventFired(Page page) {
+        ThreadUtils.assertOnUiThread();
         AwPage awPage = getAwPageFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
             listener.onPageDOMContentLoadedEventFired(awPage);
         }
     }
 
+    @UiThread
     @CalledByNative
     public void onFirstContentfulPaint(Page page, long durationMs) {
+        ThreadUtils.assertOnUiThread();
         AwPage awPage = getAwPageFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
             listener.onFirstContentfulPaint(awPage, durationMs);
         }
     }
 
+    @UiThread
     @CalledByNative
     public void onLargestContentfulPaint(Page page, long durationMs) {
+        ThreadUtils.assertOnUiThread();
         AwPage awPage = getAwPageFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
             listener.onLargestContentfulPaint(awPage, durationMs);
         }
     }
 
+    @UiThread
     @CalledByNative
     public void onPerformanceMark(
             Page page, @JniType("std::string") String markName, long markTimeMs) {
+        ThreadUtils.assertOnUiThread();
         AwPage awPage = getAwPageFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
             listener.onPerformanceMark(awPage, markName, markTimeMs);
         }
     }
 
+    /**
+     * A generic method which will fetch an existing wrapped Navigation/State or Page/State object
+     * if it exists, if it doesn't exist or the existing WeakReference entry is invalid it will
+     * compute a new Navigation/State or Page/State object.
+     *
+     * @param <Key> The key type of the map (e.g. NavigationHandle or Page)
+     * @param <Value> The value type of the map (wrapped version of Key type)
+     * @param map The map storing existing objects
+     * @param key The actual key of type <Key> param
+     * @param factory A supplier which creates a new object
+     * @return The final AW wrapped object
+     */
+    private static <Key, Value> Value computeIfAbsent(
+            WeakHashMap<Key, WeakReference<Value>> map, Key key, Supplier<Value> factory) {
+
+        WeakReference<Value> ref = map.get(key);
+        if (ref != null) {
+            Value value = ref.get();
+            if (value != null) {
+                return value;
+            }
+        }
+
+        Value value = factory.get();
+        map.put(key, new WeakReference<>(value));
+        return value;
+    }
+
+    @UiThread
     public AwNavigation getOrUpdateAwNavigationFor(NavigationHandle navigation) {
-        WeakReference<AwNavigation> awNavigationRef = mNavigationMap.get(navigation);
         AwPage awPage =
                 navigation.getCommittedPage() == null
                         ? null
                         : getAwPageFor(navigation.getCommittedPage());
-        if (awNavigationRef != null) {
-            AwNavigation awNavigation = awNavigationRef.get();
-            if (awNavigation != null) {
-                // We're reusing an existing AwNavigation, but the AwPage associated with it might
-                // have changed (e.g. if the AwNavigation was created at navigation start it will
-                // be constructed with a null page value, but then it commits a page and needs to
-                // be updated).
-                awNavigation.setPage(awPage);
-                return awNavigation;
-            }
+        synchronized (mMapLock) {
+            AwNavigation awNavigation =
+                    computeIfAbsent(
+                            mNavigationMap,
+                            navigation,
+                            () ->
+                                    new AwNavigation(
+                                            navigation, awPage, this::getAwNavigationStateFor));
+            awNavigation.setPage(awPage);
+            return awNavigation;
         }
-        AwNavigation awNavigation = new AwNavigation(navigation, awPage);
-        mNavigationMap.put(navigation, new WeakReference<>(awNavigation));
-        return awNavigation;
     }
 
+    @AnyThread
     private AwPage getAwPageFor(Page page) {
-        WeakReference<AwPage> awPageRef = mPageMap.get(page);
-        if (awPageRef != null) {
-            AwPage awPage = awPageRef.get();
-            if (awPage != null) {
-                return awPage;
+        AwPage awPage;
+        synchronized (mMapLock) {
+            WeakReference<AwPage> pageRef = mPageMap.get(page);
+            if (pageRef != null && pageRef.get() != null) {
+                return pageRef.get();
+            } else {
+                awPage = new AwPage(page, this::getAwPageStateFor);
+                mPageMap.put(page, new WeakReference<>(awPage));
             }
         }
-        AwPage awPage = new AwPage(page);
-        // We only keep track of pages that have been the primary page (either the current primary
-        // page, or a previously primary but now bfcached / pending deletion page).
-        assert !page.isPrerendering();
-        // Make sure we always track deletion of a non-prerendering page.
-        page.setPageDeletionListener(this);
-        mPageMap.put(page, new WeakReference<>(awPage));
+        // getAwPageFor can be called from any thread, but isPrerendering and
+        // setPageDeletionListener is not thread safe and must only be called from the UI
+        // thread, most of the time this will only be called on the UI thread and no overhead is
+        // introduced due to a new AwPage only being created by the @UiThread callbacks above but
+        // can be called from a background thread when a developer calls
+        // NavigationState#snapshotState and the corresponding AwPage is no longer valid in the
+        // mPageMap.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assert !page.isPrerendering();
+                    page.setPageDeletionListener(this);
+                });
         return awPage;
+    }
+
+    @AnyThread
+    public AwNavigationState getAwNavigationStateFor(
+            NavigationHandle navigation, AwNavigation awNavigation) {
+        NavigationState navigationState = navigation.getMostRecentNavigationState();
+
+        @Nullable AwPageState awPageState;
+
+        @Nullable PageState pageState = navigationState.getCommittedPageState();
+        if (pageState != null) {
+            AwPage awPage = getAwPageFor(pageState.getPage());
+            awPageState = getAwPageStateFor(awPage, pageState);
+        } else {
+            awPageState = null;
+        }
+
+        synchronized (mMapLock) {
+            return computeIfAbsent(
+                    mNavigationStateMap,
+                    navigationState,
+                    () -> new AwNavigationState(navigationState, awNavigation, awPageState));
+        }
+    }
+
+    @AnyThread
+    public AwPageState getAwPageStateFor(AwPage awPage, PageState pageState) {
+        synchronized (mMapLock) {
+            return computeIfAbsent(
+                    mPageStateMap, pageState, () -> new AwPageState(pageState, awPage));
+        }
     }
 }

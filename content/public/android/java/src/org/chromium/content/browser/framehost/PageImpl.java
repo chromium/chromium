@@ -110,6 +110,6 @@ public class PageImpl implements Page {
 
     /** Take a snapshot of the current state of Page */
     private void takePageSnapshot() {
-        mMostRecentPageState = new PageState(mUrl);
+        mMostRecentPageState = new PageState(this, mUrl);
     }
 }

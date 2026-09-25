@@ -19,7 +19,9 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwNavigation;
+import org.chromium.android_webview.AwNavigationState;
 import org.chromium.android_webview.AwPage;
+import org.chromium.android_webview.AwPageState;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -155,7 +157,11 @@ public class AwNavigationTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlSync(
                 mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
         AwPage initialPage = mNavigationListener.getLastCompletedNavigation().getPage();
+        AwNavigationState navigationState =
+                mNavigationListener.getLastCompletedNavigation().snapshotState();
+        AwPageState pageState = navigationState.getPageState();
         Assert.assertNotNull(initialPage);
+        Assert.assertNotNull(pageState);
 
         // Navigate to fragment
         mActivityTestRule.loadUrlSync(
@@ -164,11 +170,13 @@ public class AwNavigationTest extends AwParameterizedTest {
                 fragmentUrl);
 
         AwNavigation navigation = mNavigationListener.getLastCompletedNavigation();
+        navigationState = navigation.snapshotState();
         Assert.assertNotNull(navigation);
         Assert.assertEquals(fragmentUrl, navigation.getUrl());
         Assert.assertTrue(navigation.isSameDocument());
         Assert.assertTrue(navigation.didCommit());
         Assert.assertSame(initialPage, navigation.getPage());
+        Assert.assertSame(pageState.getPage(), navigationState.getPageState().getPage());
     }
 
     @Test

@@ -18,12 +18,18 @@ import org.chromium.url.GURL;
 public class PageState {
 
     private final GURL mUrl;
+    private final Page mPage;
 
-    public PageState(GURL url) {
+    public PageState(Page page, GURL url) {
+        mPage = page;
         mUrl = url;
     }
 
     public GURL getUrl() {
         return mUrl;
+    }
+
+    public Page getPage() {
+        return mPage;
     }
 }
