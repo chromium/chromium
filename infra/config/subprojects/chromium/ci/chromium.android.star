@@ -874,7 +874,7 @@ ci.builder(
                      "All/PaymentHandlerEnforceFullDelegationTest.WhenEnabled_ShowPaymentSheet_WhenDisabled_Reject/1"),
                 ],
                 swarming = targets.swarming(
-                    shards = 6,
+                    shards = 12,
                 ),
             ),
             "base_unittests": targets.mixin(
