@@ -1516,20 +1516,19 @@ if (use_aura) {
     ]
     public_deps = [
       "//base",
-      "//ui/aura",
-      "//ui/base/dragdrop/mojom",
       "//ui/gfx/geometry",
     ]
     deps = [
       "//content/public/browser",
       "//content/test:test_support",
       "//testing/gtest",
+      "//ui/aura",
+      "//ui/base",
+      "//ui/base/clipboard:file_info",
       "//ui/base/dragdrop:types",
+      "//ui/base/dragdrop/mojom",
       "//url",
     ]
-    if (is_win) {
-      deps += [ "//ui/base" ]
-    }
   }
 }
 
