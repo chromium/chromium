@@ -194,6 +194,9 @@ suite('URL preload', function() {
           '1',
           [
             createFolder('11', []),
+            createFolder(
+                'folder-uuid-12', [createItem('121')],
+                {legacy: {id: BigInt(12)}}),
           ],
           {
             permanentFolderType: PermanentFolderType.kBookmarkBar,
@@ -222,6 +225,17 @@ suite('URL preload', function() {
     const state = Store.getInstance().data;
     assertEquals('2', state.selectedFolder);
     assertDeepEquals(['21'], getDisplayedList(state));
+  });
+
+  test('loading a legacy folder id URL selects that folder', async function() {
+    // The browser opens the bookmark manager using the legacy numeric id
+    // (e.g. from the bookmark bar context menu).
+    await setupWithUrl('/?id=12');
+    const state = Store.getInstance().data;
+    assertEquals('folder-uuid-12', state.selectedFolder);
+    assertDeepEquals(['121'], getDisplayedList(state));
+    await microtasksFinished();
+    assertEquals('chrome://bookmarks/?id=folder-uuid-12', window.location.href);
   });
 
   test(
