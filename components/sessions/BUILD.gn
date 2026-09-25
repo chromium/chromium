@@ -109,6 +109,7 @@ source_set("shared") {
     "core/command_storage_manager.cc",
     "core/command_storage_manager.h",
     "core/command_storage_manager_delegate.h",
+    "core/command_storage_read_status.h",
     "core/live_tab.cc",
     "core/live_tab.h",
     "core/live_tab_context.h",

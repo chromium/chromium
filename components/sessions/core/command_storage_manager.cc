@@ -88,9 +88,9 @@ void OnBackendReadFinished(
     CommandStorageBackend::ReadCommandsResult result) {
   if (saved_result) {
     saved_result->data.commands = DeepCopyCommands(result.commands);
-    saved_result->data.error_reading = result.error_reading;
+    saved_result->data.status = result.status;
   }
-  std::move(callback).Run(std::move(result.commands), result.error_reading);
+  std::move(callback).Run(std::move(result.commands), result.status);
 }
 
 // Called when the encrypted backend has finished reading commands, and it is
@@ -101,7 +101,8 @@ void CompareCleartextAndEncryptedReadResults(
     const CommandStorageBackend::ReadCommandsResult& encrypted_result) {
   SessionReadComparisonResult comparison_result =
       SessionReadComparisonResult::kMatch;
-  if (cleartext_result->data.error_reading != encrypted_result.error_reading) {
+  if (IsCommandStorageReadError(cleartext_result->data.status) !=
+      IsCommandStorageReadError(encrypted_result.status)) {
     comparison_result = SessionReadComparisonResult::kErrorMismatch;
   } else if (!CommandsEqual(cleartext_result->data.commands,
                             encrypted_result.commands)) {
@@ -131,8 +132,8 @@ void OnEncryptedBackendReadFinishedWithPreferEncrypted(
   if (cleartext_result) {
     CompareCleartextAndEncryptedReadResults(cleartext_result, result);
   }
-  if (!result.error_reading && !result.commands.empty()) {
-    std::move(callback).Run(std::move(result.commands), result.error_reading);
+  if (!IsCommandStorageReadError(result.status) && !result.commands.empty()) {
+    std::move(callback).Run(std::move(result.commands), result.status);
     if (GetEncryptSessionStorageStage() ==
         EncryptSessionStorageStage::kWriteEncryptedReadPreferEncrypted) {
       // Make a best effort to delete the old cleartext file (leftover from
@@ -146,11 +147,15 @@ void OnEncryptedBackendReadFinishedWithPreferEncrypted(
 
   // Fallback to the cleartext backend.
   if (cleartext_result) {
-    if (!cleartext_result->data.error_reading) {
+    if (!IsCommandStorageReadError(cleartext_result->data.status)) {
       std::move(callback).Run(std::move(cleartext_result->data.commands),
-                              cleartext_result->data.error_reading);
-    } else {  // Both backends had errors.
-      std::move(callback).Run(std::move(result.commands), result.error_reading);
+                              cleartext_result->data.status);
+    } else {
+      // The cleartext read failed and the encrypted read produced no usable
+      // commands. In prefer-encrypted mode the encrypted store is the primary
+      // target, so report its status. Note this can be a non-error status
+      // (e.g. kNoFile) even though the cleartext read failed.
+      std::move(callback).Run(std::move(result.commands), result.status);
     }
   } else {
     // Fallback to cleartext in stage kWriteEncryptedReadPreferEncrypted.

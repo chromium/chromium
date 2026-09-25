@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Decryption Unavailable"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/sessions/core/command_storage_backend.h:ReadStatus) -->
+<!-- LINT.ThenChange(//components/sessions/core/command_storage_read_status.h:CommandStorageReadStatus) -->
 
 <!-- LINT.IfChange(CommandStorageWriteStatus) -->
 

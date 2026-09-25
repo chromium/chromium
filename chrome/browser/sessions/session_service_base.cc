@@ -582,7 +582,7 @@ void SessionServiceBase::OnBrowserActivated(BrowserWindowInterface* browser) {
 void SessionServiceBase::OnGotSessionCommands(
     sessions::GetLastSessionCallback callback,
     std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
-    bool read_error) {
+    sessions::CommandStorageReadStatus status) {
   std::vector<std::unique_ptr<sessions::SessionWindow>> valid_windows;
   SessionID active_window_id = SessionID::InvalidValue();
   std::string platform_session_id;
@@ -596,7 +596,7 @@ void SessionServiceBase::OnGotSessionCommands(
   InitializePlatformSessionIfNeeded(platform_session_id, discarded_window_ids);
 
   std::move(callback).Run(std::move(valid_windows), active_window_id,
-                          read_error);
+                          sessions::IsCommandStorageReadError(status));
 }
 
 void SessionServiceBase::BuildCommandsForTab(

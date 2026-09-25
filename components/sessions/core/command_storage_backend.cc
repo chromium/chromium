@@ -135,7 +135,7 @@ class SessionFileReader {
  public:
   typedef sessions::SessionCommand::id_type id_type;
   typedef sessions::SessionCommand::size_type size_type;
-  using ReadStatus = CommandStorageBackend::ReadStatus;
+  using ReadStatus = CommandStorageReadStatus;
 
   SessionFileReader(const SessionFileReader&) = delete;
   SessionFileReader& operator=(const SessionFileReader&) = delete;
@@ -163,7 +163,7 @@ class SessionFileReader {
     // in that it also contains an indication of what type of error occurred.
     // This is useful for reporting and debugging.
     std::vector<std::unique_ptr<sessions::SessionCommand>> commands;
-    CommandStorageBackend::ReadStatus status = ReadStatus::kUnknown;
+    CommandStorageReadStatus status = ReadStatus::kUnknown;
   };
 
   // Reads the state of commands from the specified file.
@@ -268,7 +268,7 @@ SessionFileReader::ReadResult SessionFileReader::Read() {
     }
   }
 
-  LOG_IF(ERROR, CommandStorageBackend::IsError(next_result.status))
+  LOG_IF(ERROR, IsCommandStorageReadError(next_result.status))
       << "Commands successfully read before error: "
       << full_result.commands.size()
       << ", bytes successfully read from file before error: " << bytes_read_;
@@ -278,7 +278,7 @@ SessionFileReader::ReadResult SessionFileReader::Read() {
   return full_result;
 }
 
-CommandStorageBackend::ReadStatus SessionFileReader::ReadHeader() {
+CommandStorageReadStatus SessionFileReader::ReadHeader() {
   // This function advances |file| and should only be called once.
   DCHECK(!did_check_header_);
   did_check_header_ = true;
@@ -325,7 +325,7 @@ CommandStorageBackend::ReadStatus SessionFileReader::ReadHeader() {
   }
 }
 
-CommandStorageBackend::ReadStatus SessionFileReader::ReadToMarker() {
+CommandStorageReadStatus SessionFileReader::ReadToMarker() {
   // It's expected this is only called if the marker is supported.
   DCHECK(IsHeaderValid());
 
@@ -336,9 +336,8 @@ CommandStorageBackend::ReadStatus SessionFileReader::ReadToMarker() {
     }
   }
 
-  return CommandStorageBackend::IsError(result.status)
-             ? result.status
-             : ReadStatus::kFileInvalid;
+  return IsCommandStorageReadError(result.status) ? result.status
+                                                  : ReadStatus::kFileInvalid;
 }
 
 SessionFileReader::ReadResult SessionFileReader::ReadCommand() {
@@ -605,7 +604,7 @@ CommandStorageBackend::ReadLastSessionCommands() {
 
   CommandStorageBackend::ReadCommandsResult result;
   result.commands = std::move(read_result.commands);
-  result.error_reading = IsError(read_result.status);
+  result.status = read_result.status;
   return result;
 }
 
@@ -617,7 +616,7 @@ void CommandStorageBackend::DeleteLastSession() {
         << last_session_info_->path;
     base::DeleteFile(last_session_info_->path);
   }
-  last_session_info_ = base::unexpected(ReadStatus::kNoFile);
+  last_session_info_ = base::unexpected(CommandStorageReadStatus::kNoFile);
 }
 
 void CommandStorageBackend::MoveCurrentSessionToLastSession() {
@@ -631,7 +630,7 @@ void CommandStorageBackend::MoveCurrentSessionToLastSession() {
         SessionInfo{*last_or_current_path_with_valid_marker_, timestamp_};
     last_or_current_path_with_valid_marker_.reset();
   } else {
-    last_session_info_ = base::unexpected(ReadStatus::kNoFile);
+    last_session_info_ = base::unexpected(CommandStorageReadStatus::kNoFile);
   }
   VLOG(1) << "CommandStorageBackend::MoveCurrentSessionToLastSession, moved "
              "current session to: "
@@ -782,25 +781,25 @@ CommandStorageBackend::WriteStatus CommandStorageBackend::AppendCommandToFile(
   return WriteStatus::kSuccess;
 }
 
-base::expected<CommandStorageBackend::SessionInfo,
-               CommandStorageBackend::ReadStatus>
+base::expected<CommandStorageBackend::SessionInfo, CommandStorageReadStatus>
 CommandStorageBackend::FindLastSessionFile() const {
   // Determine the session with the most recent timestamp. This is called
   // at startup, before a file has been opened for writing.
   DCHECK(!open_file_);
   int files_read = 0;
-  ReadStatus invalid_file_status = ReadStatus::kNoFile;
+  CommandStorageReadStatus invalid_file_status =
+      CommandStorageReadStatus::kNoFile;
   for (const SessionInfo& session : GetSessionFilesSortedByReverseTimestamp()) {
     ++files_read;
-    const ReadStatus marker_status =
+    const CommandStorageReadStatus marker_status =
         SessionFileReader::GetMarkerStatus(session.path, encryptor_.get());
-    if (marker_status == ReadStatus::kSuccess) {
+    if (marker_status == CommandStorageReadStatus::kSuccess) {
       base::UmaHistogramCounts100(
           GetHistogramName("FindLastSessionFile", "Found", "FilesRead"),
           files_read);
       return session;
     }
-    if (invalid_file_status == ReadStatus::kNoFile) {
+    if (invalid_file_status == CommandStorageReadStatus::kNoFile) {
       invalid_file_status = marker_status;
     }
   }

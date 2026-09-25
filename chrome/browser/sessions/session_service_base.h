@@ -23,6 +23,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/content/session_tab_helper_delegate.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
+#include "components/sessions/core/command_storage_read_status.h"
 #include "components/sessions/core/session_service_commands.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 #include "content/public/browser/web_contents.h"
@@ -239,7 +240,7 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   void OnGotSessionCommands(
       sessions::GetLastSessionCallback callback,
       std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
-      bool read_error);
+      sessions::CommandStorageReadStatus status);
 
   // Adds commands to commands that will recreate the state of the specified
   // tab. This adds at most kMaxNavigationCountToPersist navigations (in each

@@ -17,6 +17,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sessions/core/command_storage_features.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
@@ -206,9 +207,9 @@ TEST_P(CommandStorageManagerTest, GetLastSessionCommands) {
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
       }));
   test_helper.RunMessageLoopUntilBackendDone();
 
@@ -251,9 +252,9 @@ TEST_P(CommandStorageManagerTest,
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
       }));
   test_helper.RunMessageLoopUntilBackendDone();
 
@@ -430,9 +431,9 @@ TEST_P(CommandStorageManagerTest, MoveCurrentSessionToLastSession) {
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
       }));
   test_helper.RunMessageLoopUntilBackendDone();
 
@@ -525,9 +526,9 @@ TEST_P(CommandStorageManagerTest, SaveTwiceWithReset) {
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
       }));
   test_helper.RunMessageLoopUntilBackendDone();
   EXPECT_FALSE(error);
@@ -564,9 +565,9 @@ TEST_P(CommandStorageManagerTest, SaveTwiceWithoutReset) {
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
       }));
   test_helper.RunMessageLoopUntilBackendDone();
   EXPECT_FALSE(error);
@@ -638,9 +639,9 @@ TEST_P(CommandStorageManagerTest, EncryptedReadMatch) {
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
       }));
   test_helper.RunMessageLoopUntilBackendDone();
 
@@ -694,9 +695,9 @@ TEST_P(CommandStorageManagerTest, EncryptedReadErrorWithBadEncryptedFile) {
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
       }));
   test_helper.RunMessageLoopUntilBackendDone();
 
@@ -747,9 +748,9 @@ TEST_P(CommandStorageManagerTest, EncryptedReadErrorWithMissingEncryptedFile) {
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
       }));
   test_helper.RunMessageLoopUntilBackendDone();
 
@@ -813,9 +814,9 @@ TEST_P(CommandStorageManagerTest, EncryptedReadCommandsMismatch) {
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
       }));
   test_helper.RunMessageLoopUntilBackendDone();
 
@@ -853,9 +854,9 @@ TEST_P(CommandStorageManagerTest, DeleteLastSession) {
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
       }));
   test_helper.RunMessageLoopUntilBackendDone();
 
@@ -961,9 +962,9 @@ TEST_P(CommandStorageManagerTest, FallbackToCleartextOnMissingEncryptedFile) {
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error, &finished](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
         finished = true;
       }));
   // Do not use RunMessageLoopUntilBackendDone() here, because we have 2 read
@@ -1031,9 +1032,9 @@ TEST_P(CommandStorageManagerTest, FallbackToCleartextOnCorruptedEncryptedFile) {
   manager2.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error, &finished](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
         finished = true;
       }));
   // Do not use RunMessageLoopUntilBackendDone() here, because we have 2 read
@@ -1099,9 +1100,9 @@ TEST_P(CommandStorageManagerTest, FallbackToCleartextFailsWithNoCleartextFile) {
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error, &finished](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
         finished = true;
       }));
   // Do not use RunMessageLoopUntilBackendDone() here, because we have 2 read
@@ -1158,9 +1159,9 @@ TEST_P(CommandStorageManagerTest,
   manager.GetLastSessionCommands(base::BindLambdaForTesting(
       [&commands, &error, &finished](
           std::vector<std::unique_ptr<SessionCommand>> commands_out,
-          bool error_out) {
+          CommandStorageReadStatus status_out) {
         commands = std::move(commands_out);
-        error = error_out;
+        error = IsCommandStorageReadError(status_out);
         finished = true;
       }));
   EXPECT_TRUE(base::test::RunUntil([&]() { return finished; }));
@@ -1173,6 +1174,54 @@ TEST_P(CommandStorageManagerTest,
 
   EXPECT_TRUE(GetCleartextSessionFiles().empty());
   EXPECT_FALSE(GetEncryptedSessionFiles().empty());
+}
+
+TEST_P(CommandStorageManagerTest, GetLastSessionCommandsReportsReadStatus) {
+  TestCommandStorageManagerDelegate delegate;
+  {  // Setup by writing commands to the backend.
+    CommandStorageManager manager(GetParam().session_type, path_, &delegate,
+                                  os_crypt_async_.get(), backend_task_runner_);
+    CommandStorageManagerTestHelper test_helper(&manager);
+    manager.AppendRebuildCommand({std::make_unique<SessionCommand>(101, 0)});
+    manager.AppendRebuildCommand({std::make_unique<SessionCommand>(102, 0)});
+    manager.Save();
+    test_helper.RunMessageLoopUntilBackendDone();
+  }
+
+  // Read the commands back with a new manager.
+  CommandStorageManager manager(GetParam().session_type, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
+  CommandStorageManagerTestHelper test_helper(&manager);
+  base::test::TestFuture<std::vector<std::unique_ptr<SessionCommand>>,
+                         CommandStorageReadStatus>
+      future;
+  manager.GetLastSessionCommands(future.GetCallback());
+  auto [commands, status] = future.Take();
+  // `future` already waited for the read, but in the prefer-encrypted stages a
+  // successful read also posts a task to delete the leftover cleartext file.
+  // Let it finish before `temp_dir_` is torn down.
+  test_helper.RunMessageLoopUntilBackendDone();
+
+  EXPECT_EQ(CommandStorageReadStatus::kSuccess, status);
+  ASSERT_EQ(2U, commands.size());
+  EXPECT_EQ(101U, commands[0]->id());
+  EXPECT_EQ(102U, commands[1]->id());
+}
+
+TEST_P(CommandStorageManagerTest, GetLastSessionCommandsReportsNoFile) {
+  TestCommandStorageManagerDelegate delegate;
+  CommandStorageManager manager(GetParam().session_type, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
+
+  base::test::TestFuture<std::vector<std::unique_ptr<SessionCommand>>,
+                         CommandStorageReadStatus>
+      future;
+  manager.GetLastSessionCommands(future.GetCallback());
+  auto [commands, status] = future.Take();
+
+  // Nothing was ever written, so there is no file. This is not an error.
+  EXPECT_EQ(CommandStorageReadStatus::kNoFile, status);
+  EXPECT_FALSE(IsCommandStorageReadError(status));
 }
 
 std::string TestParamNameGenerator(
