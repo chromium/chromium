@@ -38940,12 +38940,15 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGrid.Drag{ActionType}">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
   <description>User drags a tab to reorder it. {ActionType}</description>
   <token key="ActionType">
     <variant name="" summary="aggregated"/>
     <variant name=".DropToMerge"
+        summary="(Obsolete) Users use drop-to-merge to combine a single tab
+                 and a group or two groups."/>
+    <variant name=".DropToMergeV2"
         summary="Users use drop-to-merge to combine a single tab and a group
                  or two groups."/>
     <variant name=".RemoveFromGroup.TabGridDialogFromStrip"
@@ -39102,14 +39105,17 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroup.Created{ActionType}">
-  <owner>yusufo@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
   <description>Users created a new tab group. {ActionType}</description>
   <token key="ActionType">
     <variant name="" summary="aggregated"/>
     <variant name=".DeveloperRequestedNewTab"
         summary="Users tapped on a link with a target=_blank"/>
     <variant name=".DropToMerge"
+        summary="(Obsolete) Users dragged a single tab and dropped it on
+                 another single tab to create a group."/>
+    <variant name=".DropToMergeV2"
         summary="Users dragged a single tab and dropped it on another single
                  tab to create a group."/>
     <variant name=".OpenInNewTab"

@@ -41,6 +41,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,6 +59,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -142,9 +144,11 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     private View mArchivedMsgItemView;
     private TabGridItemTouchHelperCallback mItemTouchHelperCallback;
     private TabListModel mModel;
+    private UserActionTester mActionTester;
 
     @Before
     public void setUp() {
+        mActionTester = new UserActionTester();
         Handler handler = new Handler(Looper.getMainLooper());
 
         doCallback(
@@ -230,6 +234,11 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         CallbackUtils.emptyRunnable());
         mItemTouchHelperCallback.setupCallback(THRESHOLD, MERGE_AREA_THRESHOLD, THRESHOLD);
         mItemTouchHelperCallback.setRecyclerView(mRecyclerView);
+    }
+
+    @After
+    public void tearDown() {
+        mActionTester.tearDown();
     }
 
     @Test
@@ -1222,6 +1231,27 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         verify(mTabModel).mergeTabsToGroup(TAB1_ID, TAB2_ID);
         verify(mTabGroupCreationDialogManager)
                 .showDialog(mTabModel.getTabById(TAB2_ID).getTabGroupId(), mTabModel);
+        assertEquals(1, mActionTester.getActionCount("TabGroup.Created.DropToMergeV2"));
+        assertEquals(0, mActionTester.getActionCount("TabGrid.Drag.DropToMergeV2"));
+    }
+
+    @Test
+    public void onTabMergeToGroup_mergeWithExistingGroup() {
+        doReturn(false).when(mTabModel).willMergingCreateNewGroup(any());
+
+        // Simulate the selection of card#1 in TabListModel.
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        // Simulate hovering on card#2.
+        mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
+
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        verify(mTabModel).mergeTabsToGroup(TAB1_ID, TAB2_ID);
+        verify(mTabGroupCreationDialogManager, never()).showDialog(any(), any());
+        assertEquals(0, mActionTester.getActionCount("TabGroup.Created.DropToMergeV2"));
+        assertEquals(1, mActionTester.getActionCount("TabGrid.Drag.DropToMergeV2"));
     }
 
     @Test

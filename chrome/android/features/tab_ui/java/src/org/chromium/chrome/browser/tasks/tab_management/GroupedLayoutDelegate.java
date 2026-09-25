@@ -12,7 +12,6 @@ import android.util.Pair;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -388,29 +387,20 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
         if (groupTabs.isEmpty()) return;
 
-        boolean mergedSourceCard =
-                mUseTabGroupCardType
-                        ? didMergeTabToGroupByToken(movedTab, isDestinationTab, groupTabs)
-                        : didMergeTabToGroupLegacy(tabModel, movedTab, isDestinationTab, groupTabs);
-        if (!mergedSourceCard) return;
-
-        // TODO(crbug.com/434246302): These metrics are probably wrong as it looks
-        // like they get emitted per-tab merged, rather than per-group merged.
-        if (groupTabs.size() == 2) {
-            // When users use drop-to-merge to create a group.
-            RecordUserAction.record("TabGroup.Created.DropToMerge");
+        if (mUseTabGroupCardType) {
+            didMergeTabToGroupByToken(movedTab, isDestinationTab, groupTabs);
         } else {
-            RecordUserAction.record("TabGrid.Drag.DropToMerge");
+            didMergeTabToGroupLegacy(tabModel, movedTab, isDestinationTab, groupTabs);
         }
     }
 
-    private boolean didMergeTabToGroupByToken(
+    private void didMergeTabToGroupByToken(
             Tab movedTab, boolean isDestinationTab, List<Tab> groupTabs) {
         Pair<Integer, Integer> positions =
                 getIndexesForMergeToGroupByToken(movedTab, isDestinationTab, groupTabs);
         int desIndex = positions.first;
         int srcIndex = positions.second;
-        if (!mModelList.isValidIndex(desIndex)) return false;
+        if (!mModelList.isValidIndex(desIndex)) return;
 
         if (srcIndex == TabModel.INVALID_TAB_INDEX) {
             // Update the destination group card.
@@ -421,20 +411,19 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
                 // another tab joins an existing group, the group card stays in its spot.
                 mModelList.moveItem(desIndex, getInsertionIndexOfTab(movedTab));
             }
-            return false;
+            return;
         }
 
-        if (!mModelList.isValidIndex(srcIndex)) return false;
+        if (!mModelList.isValidIndex(srcIndex)) return;
 
         // Remove the merged source card and update the destination group card.
         mModelList.removeAt(srcIndex);
         desIndex = srcIndex > desIndex ? desIndex : mModelList.getTabIndexBefore(desIndex);
         mMediator.updateTab(desIndex, movedTab, /* isUpdatingId= */ true, /* quickMode= */ false);
-        return true;
     }
 
     // TODO(crbug.com/517544602): Delete when removing the flag.
-    private boolean didMergeTabToGroupLegacy(
+    private void didMergeTabToGroupLegacy(
             TabModel tabModel, Tab movedTab, boolean isDestinationTab, List<Tab> groupTabs) {
         Pair<Integer, Integer> positions =
                 getIndexesForMergeToGroupLegacy(tabModel, movedTab, isDestinationTab, groupTabs);
@@ -459,11 +448,11 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
             mMediator.updateTab(desIndex, lastShownTab, true, false);
             int targetIndex = getInsertionIndexOfTab(lastShownTab);
             mModelList.moveItem(desIndex, targetIndex);
-            return false;
+            return;
         }
 
         if (!mModelList.isValidIndex(srcIndex) || !mModelList.isValidIndex(desIndex)) {
-            return false;
+            return;
         }
 
         // We merged the source group to the destination group. Remove the source
@@ -476,7 +465,6 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         if (newSelectedTabInMergedGroup != null) {
             mMediator.updateTab(desIndex, newSelectedTabInMergedGroup, true, false);
         }
-        return true;
     }
 
     @Override

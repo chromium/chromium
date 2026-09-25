@@ -695,7 +695,10 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
         tabModel.mergeTabsToGroup(selectedCard.getId(), hoveredCard.getId());
 
         if (willMergingCreateNewGroup) {
+            RecordUserAction.record("TabGroup.Created.DropToMergeV2");
             mTabGroupCreationDialogManager.showDialog(hoveredCard.getTabGroupId(), tabModel);
+        } else {
+            RecordUserAction.record("TabGrid.Drag.DropToMergeV2");
         }
 
         // If user has used drop-to-merge, send a signal to disable
