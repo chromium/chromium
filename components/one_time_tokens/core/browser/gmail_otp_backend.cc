@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -42,7 +43,10 @@ GmailOtpBackendImpl::GmailOtpBackendImpl(
       coordinator_(std::make_unique<EmailOneTimeTokenFetchCoordinator>(*this)),
       notification_cache_(
           kNotificationExpirationDuration,
-          &OneTimeTokenBackendNotification::notification_received_timeticks) {}
+          &OneTimeTokenBackendNotification::notification_received_timeticks),
+      one_time_token_cache_(kGmailTokenCacheDuration,
+                            &OneTimeToken::on_device_arrival_time,
+                            OneTimeTokenCacheProjection()) {}
 
 GmailOtpBackendImpl::~GmailOtpBackendImpl() = default;
 
@@ -97,6 +101,15 @@ ExpiringSubscription GmailOtpBackendImpl::SubscribeToTickles(
   }
 
   return subscription;
+}
+
+std::vector<OneTimeToken> GmailOtpBackendImpl::GetCachedOneTimeTokens() const {
+  return base::ToVector(one_time_token_cache_.GetItems());
+}
+
+std::vector<OneTimeToken>
+GmailOtpBackendImpl::PurgeExpiredAndGetCachedOneTimeTokens() {
+  return base::ToVector(one_time_token_cache_.PurgeExpiredAndGetItems());
 }
 
 void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
@@ -252,6 +265,7 @@ void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
   }
 
   const OneTimeToken& token = reply.value();
+  one_time_token_cache_.PurgeExpiredAndAdd(token);
   LOG_OTT(log_sink_) << "Gmail OTP backend retrieval succeeded. Notifying "
                         "subscribers.";
   subscription_manager_.Notify(base::ok(token));

@@ -6,7 +6,10 @@
 #define COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_GMAIL_OTP_BACKEND_H_
 
 #include <memory>
+#include <optional>
 #include <set>
+#include <string_view>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -39,6 +42,9 @@ class OneTimeTokenLogSink;
 inline constexpr base::TimeDelta kNotificationExpirationDuration =
     base::Minutes(3);
 
+// Duration after which tokens expire in the internal token cache.
+inline constexpr base::TimeDelta kGmailTokenCacheDuration = base::Minutes(1);
+
 class EmailOneTimeTokenFetcher;
 class UserDataProcessingConsentFetcher;
 
@@ -69,6 +75,12 @@ class GmailOtpBackend : public KeyedService {
   [[nodiscard]] virtual ExpiringSubscription SubscribeToTickles(
       base::Time expiration,
       TickleCallback callback) = 0;
+
+  // Returns all cached one-time tokens, without filtering for expiration.
+  virtual std::vector<OneTimeToken> GetCachedOneTimeTokens() const = 0;
+
+  // Purges expired tokens and returns the remaining cached one-time tokens.
+  virtual std::vector<OneTimeToken> PurgeExpiredAndGetCachedOneTimeTokens() = 0;
 
   // Called when a new OTP is received via the OneTimeToken notification.
   virtual void OnIncomingOneTimeTokenBackendNotification(
@@ -102,6 +114,10 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
   ExpiringSubscription SubscribeToTickles(base::Time expiration,
                                           TickleCallback callback) override;
 
+  std::vector<OneTimeToken> GetCachedOneTimeTokens() const override;
+
+  std::vector<OneTimeToken> PurgeExpiredAndGetCachedOneTimeTokens() override;
+
   void OnIncomingOneTimeTokenBackendNotification(
       const OneTimeTokenBackendNotification& notification) override;
 
@@ -117,6 +133,25 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
   OneTimeTokenLogSink* GetLogSink() const override;
 
  private:
+  // Keys used by `one_time_token_cache_` to identify and deduplicate tokens.
+  // Unlike a direct comparison of `OneTimeToken` objects, this key explicitly
+  // captures the identity of a token for caching purposes: `value` and
+  // `sender_address`, while intentionally ignoring arrival time.
+  struct OneTimeTokenCacheKey {
+    std::string value;
+    std::optional<std::string> sender_address;
+    bool operator==(const OneTimeTokenCacheKey&) const = default;
+  };
+
+  // Projection functor used by `ExpiringCache` to project a `OneTimeToken` to
+  // its `OneTimeTokenCacheKey`. This allows the cache to detect duplicates
+  // without requiring `OneTimeToken` to define a global `operator==`.
+  struct OneTimeTokenCacheProjection {
+    OneTimeTokenCacheKey operator()(const OneTimeToken& token) const {
+      return {token.value(), token.sender_address()};
+    }
+  };
+
   void ProcessCachedNotifications();
 
   void RetrieveGmailOtp(const OneTimeTokenBackendNotification& notification,
@@ -152,6 +187,13 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
                    notification_received_timeticks),
       OneTimeTokenBackendNotification::EncryptedMessageReferenceProjection>
       notification_cache_;
+
+  // Tokens that were already fetched, so that requests created shortly after an
+  // OTP arrived can still be served with it.
+  ExpiringCache<OneTimeToken,
+                decltype(&OneTimeToken::on_device_arrival_time),
+                OneTimeTokenCacheProjection>
+      one_time_token_cache_;
 
   // Active fetchers for Gmail OTPs, keyed by their unique
   // encrypted_message_reference.

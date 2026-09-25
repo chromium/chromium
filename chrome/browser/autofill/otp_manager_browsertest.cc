@@ -99,6 +99,16 @@ class FakeGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
   }
 
   // one_time_tokens::GmailOtpBackend:
+  std::vector<one_time_tokens::OneTimeToken> GetCachedOneTimeTokens()
+      const override {
+    return {};
+  }
+
+  std::vector<one_time_tokens::OneTimeToken>
+  PurgeExpiredAndGetCachedOneTimeTokens() override {
+    return {};
+  }
+
   void OnIncomingOneTimeTokenBackendNotification(
       const one_time_tokens::OneTimeTokenBackendNotification& notification)
       override {}

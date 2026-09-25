@@ -103,9 +103,9 @@ void GmailOtpRetriever::Start() {
     return;
   }
 
-  // Note: OneTimeTokenService caches tokens for 3 minutes. It does not clear
-  // them upon use. If a user triggers a "Resend OTP" flow within those 3
-  // minutes, this will return the originally cached token rather than waiting
+  // Note: OneTimeTokenService caches tokens for 1 minute. It does not clear
+  // them upon use. If a user triggers a "Resend OTP" flow within that 1
+  // minute, this will return the originally cached token rather than waiting
   // for the new one. This relies on the assumption that previously sent tokens
   // typically remain valid for the duration of the cache.
   std::vector<OneTimeToken> cached_tokens;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/containers/extend.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -45,10 +46,15 @@ OneTimeTokenLogSink* OneTimeTokenServiceImpl::log_sink() {
 void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
   std::vector<OneTimeToken> recent_tokens =
       base::ToVector(cache_.PurgeExpiredAndGetItems());
-  // The tokens in `cache_` are sorted by `on_device_arrival_time` in ascending
-  // order. We want to deliver the most recent token first, but `callback` does
-  // not strictly guarantee this order, because multiple backends may
-  // need to be asked in parallel in the future.
+  if (gmail_.backend) {
+    std::vector<OneTimeToken> gmail_tokens =
+        gmail_.backend->PurgeExpiredAndGetCachedOneTimeTokens();
+    base::Extend(recent_tokens, std::move(gmail_tokens));
+  }
+  // The tokens in `cache_` and `gmail_.backend` are sorted by
+  // `on_device_arrival_time` in ascending order. We sort the combined list so
+  // that we can deliver the most recent token first.
+  std::ranges::sort(recent_tokens, {}, &OneTimeToken::on_device_arrival_time);
   for (const auto& token : base::Reversed(recent_tokens)) {
     OneTimeTokenSource source;
     switch (token.type()) {
@@ -117,7 +123,17 @@ ExpiringSubscription OneTimeTokenServiceImpl::SubscribeToTickles(
 
 std::vector<OneTimeToken> OneTimeTokenServiceImpl::GetCachedOneTimeTokens()
     const {
-  return base::ToVector(cache_.GetItems());
+  std::vector<OneTimeToken> tokens = base::ToVector(cache_.GetItems());
+  if (gmail_.backend) {
+    std::vector<OneTimeToken> gmail_tokens =
+        gmail_.backend->GetCachedOneTimeTokens();
+    base::Extend(tokens, std::move(gmail_tokens));
+  }
+  // The tokens in `cache_` and `gmail_.backend` are sorted by
+  // `on_device_arrival_time` in ascending order. We sort the combined list so
+  // that we can deliver the most recent token first.
+  std::ranges::sort(tokens, {}, &OneTimeToken::on_device_arrival_time);
+  return tokens;
 }
 
 bool OneTimeTokenServiceImpl::HasPendingRequests(
@@ -237,9 +253,6 @@ void OneTimeTokenServiceImpl::RetrieveGmailOtpIfNeeded(base::Time expiration) {
 
 void OneTimeTokenServiceImpl::OnResponseFromGmailOtpBackend(
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply) {
-  if (reply.has_value()) {
-    cache_.PurgeExpiredAndAdd(*reply);
-  }
   gmail_subscription_manager_.Notify(OneTimeTokenSource::kGmail,
                                      std::move(reply));
 }

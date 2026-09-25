@@ -28,6 +28,14 @@ class MockGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
               SubscribeToTickles,
               (base::Time expiration, TickleCallback callback),
               (override));
+  MOCK_METHOD(std::vector<one_time_tokens::OneTimeToken>,
+              GetCachedOneTimeTokens,
+              (),
+              (const, override));
+  MOCK_METHOD(std::vector<one_time_tokens::OneTimeToken>,
+              PurgeExpiredAndGetCachedOneTimeTokens,
+              (),
+              (override));
 
   MOCK_METHOD(void,
               OnIncomingOneTimeTokenBackendNotification,

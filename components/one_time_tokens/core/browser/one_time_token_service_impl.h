@@ -108,6 +108,8 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
     }
   };
 
+  // Internal cache of tokens, now effectively used only for SMS OTPs as Gmail
+  // OTPs are managed in the GmailOtpBackend's cache.
   ExpiringCache<OneTimeToken,
                 decltype(&OneTimeToken::on_device_arrival_time),
                 CacheProjection>
