@@ -4,6 +4,8 @@
 
 #include "components/browser_ui/client_certificate/android/ssl_client_certificate_request.h"
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/content_browser_client.h"
@@ -15,9 +17,13 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
+#include "net/base/host_port_pair.h"
+#include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/client_cert_identity.h"
+#include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_info.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -138,6 +144,61 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsPrerenderTest,
   // certificate's dialog count.
   EXPECT_EQ(1u,
             GetCountOfSSLClientCertificateSelectorForTesting(web_contents()));
+}
+
+// A ClientCertificateDelegate which records when it is destroyed.
+class TestClientCertificateDelegate
+    : public content::ClientCertificateDelegate {
+ public:
+  explicit TestClientCertificateDelegate(bool* destroyed)
+      : destroyed_(destroyed) {}
+  ~TestClientCertificateDelegate() override { *destroyed_ = true; }
+
+  void ContinueWithCertificate(scoped_refptr<net::X509Certificate> cert,
+                               scoped_refptr<net::SSLPrivateKey> key) override {
+  }
+
+ private:
+  raw_ptr<bool> destroyed_;
+};
+
+using SSLClientCertPendingRequestsTest = content::ContentBrowserTest;
+
+// Verifies that when a request cannot be started because the WebContents is
+// not attached to a window, the request is dropped immediately, it is not
+// counted towards the dialog limit, and it does not block subsequent requests
+// from being processed.
+IN_PROC_BROWSER_TEST_F(SSLClientCertPendingRequestsTest,
+                       RequestWithoutWindowDoesNotBlockQueue) {
+  // A WebContents which is not attached to any window.
+  std::unique_ptr<content::WebContents> detached_web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(
+          shell()->web_contents()->GetBrowserContext()));
+
+  auto first_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  first_info->host_and_port = net::HostPortPair("a.test", 443);
+  bool first_destroyed = false;
+  base::OnceClosure first_cancel = ShowSSLClientCertificateSelector(
+      detached_web_contents.get(), first_info.get(),
+      std::make_unique<TestClientCertificateDelegate>(&first_destroyed));
+
+  // The request could not be started, so it is dropped (cancelled) right away
+  // and does not count as a displayed dialog.
+  EXPECT_TRUE(first_destroyed);
+  EXPECT_EQ(0u, GetCountOfSSLClientCertificateSelectorForTesting(
+                    detached_web_contents.get()));
+
+  // A subsequent request must not be left stuck in the pending queue.
+  auto second_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
+  second_info->host_and_port = net::HostPortPair("b.test", 443);
+  bool second_destroyed = false;
+  base::OnceClosure second_cancel = ShowSSLClientCertificateSelector(
+      detached_web_contents.get(), second_info.get(),
+      std::make_unique<TestClientCertificateDelegate>(&second_destroyed));
+
+  EXPECT_TRUE(second_destroyed);
+  EXPECT_EQ(0u, GetCountOfSSLClientCertificateSelectorForTesting(
+                    detached_web_contents.get()));
 }
 
 }  // namespace

@@ -154,7 +154,7 @@ ui::WindowAndroid* GetWindowFromWebContents(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SSLClientCertPendingRequests);
 
-static void StartClientCertificateRequest(
+static bool StartClientCertificateRequest(
     std::unique_ptr<ClientCertRequest> request,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -162,7 +162,7 @@ static void StartClientCertificateRequest(
   ui::WindowAndroid* window = GetWindowFromWebContents(web_contents);
   if (window == nullptr) {
     LOG(ERROR) << "Could not get Window";
-    return;
+    return false;
   }
 
   // Build the |key_types| JNI parameter, as a String[]
@@ -176,7 +176,7 @@ static void StartClientCertificateRequest(
           env, request->cert_request_info()->cert_authorities);
   if (principals_ref.is_null()) {
     LOG(ERROR) << "Could not create principals array (byte[][])";
-    return;
+    return false;
   }
 
   // Pass the address of the delegate through to Java.
@@ -186,11 +186,12 @@ static void StartClientCertificateRequest(
           env, request_id, window, key_types, principals_ref,
           request->cert_request_info()->host_and_port.host(),
           request->cert_request_info()->host_and_port.port())) {
-    return;
+    return false;
   }
 
   // Ownership was transferred to Java.
   std::ignore = request.release();
+  return true;
 }
 
 void SSLClientCertPendingRequests::AddRequest(
@@ -246,15 +247,23 @@ void SSLClientCertPendingRequests::PumpRequests() {
     return;
   }
 
-  active_request_ = true;
-  std::unique_ptr<ClientCertRequest> next =
-      std::move(pending_requests_.front());
-  pending_requests_.pop();
-
   // Check if this page is allowed to show any more client cert dialogs.
-  if (!dialog_policy_.MaxExceeded()) {
-    dialog_policy_.IncrementCount();
-    StartClientCertificateRequest(std::move(next), web_contents());
+  if (dialog_policy_.MaxExceeded()) {
+    auto should_keep = [](auto* req) { return false; };
+    FilterPendingRequests(should_keep);
+    return;
+  }
+
+  while (!pending_requests_.empty()) {
+    std::unique_ptr<ClientCertRequest> next =
+        std::move(pending_requests_.front());
+    pending_requests_.pop();
+
+    if (StartClientCertificateRequest(std::move(next), web_contents())) {
+      active_request_ = true;
+      dialog_policy_.IncrementCount();
+      return;
+    }
   }
 }
 
