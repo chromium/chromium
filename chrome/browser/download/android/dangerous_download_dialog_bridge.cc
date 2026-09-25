@@ -9,12 +9,15 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/download_dialog_utils.h"
+#include "chrome/browser/download/download_ui_model.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,16 +28,19 @@
 #include "chrome/browser/download/android/jni_headers/DangerousDownloadDialogBridge_jni.h"
 
 namespace {
-// Gets the "download domain" string shown in the dialog. Currently, this is
-// derived from the download URL.
 std::u16string GetDownloadDomain(download::DownloadItem* item) {
-  const GURL& url = item->GetURL();
-  if (url::Origin::Create(url).opaque()) {
-    // Return empty string for downloads from opaque origins.
-    return std::u16string();
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kMaliciousApkDownloadCheck)) {
+    const GURL& url = item->GetURL();
+    if (url::Origin::Create(url).opaque()) {
+      // Return empty string for downloads from opaque origins.
+      return std::u16string();
+    }
+    return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+        url);
   }
-  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-      url);
+
+  return DownloadUIModel::GetDownloadDomainForDisplay(item);
 }
 }  // namespace
 
@@ -117,6 +123,12 @@ void DangerousDownloadDialogBridge::Cancelled(
   if (!download->IsDone()) {
     DownloadController::ScheduleRemoveDownloadItem(download);
   }
+}
+
+// static
+std::u16string DangerousDownloadDialogBridge::GetDownloadDomainForTesting(
+    download::DownloadItem* item) {
+  return GetDownloadDomain(item);
 }
 
 DEFINE_JNI(DangerousDownloadDialogBridge)

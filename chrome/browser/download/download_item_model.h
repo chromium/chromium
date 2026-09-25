@@ -119,6 +119,7 @@ class DownloadItemModel : public DownloadUIModel,
   GURL GetURL() const override;
   bool HasUserGesture() const override;
   offline_items_collection::FailState GetLastFailState() const override;
+  std::u16string GetDownloadDomainForDisplay() const override;
 
 #if !BUILDFLAG(IS_ANDROID)
   bool IsCommandEnabled(const DownloadCommands* download_commands,
