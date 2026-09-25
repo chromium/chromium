@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -35,7 +37,7 @@ class AwRequestMatcher {
   bool Matches(const network::ResourceRequest& request) const;
 
  private:
-  std::vector<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
+  const std::vector<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
       url_patterns_;
 };
 

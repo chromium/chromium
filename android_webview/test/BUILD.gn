@@ -871,6 +871,7 @@ test("android_webview_unittests") {
     "../browser/gfx/test/invalidate_test.cc",
     "../browser/gfx/test/rendering_test.cc",
     "../browser/gfx/test/rendering_test.h",
+    "../browser/http_headers/aw_header_interceptor_store_unittest.cc",
     "../browser/http_headers/aw_origin_matched_header_unittest.cc",
     "../browser/lifecycle/aw_contents_lifecycle_notifier_unittest.cc",
     "../browser/metrics/android_metrics_log_uploader_unittest.cc",

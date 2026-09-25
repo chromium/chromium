@@ -575,6 +575,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/gfx/JavaBrowserViewRendererHelper.java",
       "java/src/org/chromium/android_webview/gfx/RectUtils.java",
       "java/src/org/chromium/android_webview/gfx/RootBeginFrameSourceWebView.java",
+      "java/src/org/chromium/android_webview/http_headers/AwHeaderInterceptor.java",
       "java/src/org/chromium/android_webview/media_integrity/AwMediaIntegrityServiceFactory.java",
       "java/src/org/chromium/android_webview/media_integrity/AwMediaIntegrityServiceImpl.java",
       "java/src/org/chromium/android_webview/metrics/AndroidMetricsLogConsumer.java",

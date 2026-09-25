@@ -143,6 +143,8 @@ source_set("browser") {
     "file_system_access/aw_file_system_access_permission_context.h",
     "find_helper.cc",
     "find_helper.h",
+    "http_headers/aw_header_interceptor_store.cc",
+    "http_headers/aw_header_interceptor_store.h",
     "http_headers/aw_origin_matched_header.cc",
     "http_headers/aw_origin_matched_header.h",
     "icon_helper.cc",
