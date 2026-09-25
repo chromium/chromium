@@ -51,6 +51,10 @@ using WrlRuntimeDispatchClass = Microsoft::WRL::RuntimeClass<
 
 }  // namespace
 
+namespace test {
+class LegacyAppCommandWebImplTest;
+}  // namespace test
+
 // The `IDispatchImpl` class implements `IDispatch` for interface
 // `TDualInterface`, where `TDualInterface` is a dual interface. The IDispatch
 // implementation relies on the typelib/typeinfo for interface `TDualInterface`.
@@ -287,6 +291,19 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
                                      &LegacyAppCommandWebImpl::SendPing));
 
   // Overrides for IAppCommandWeb.
+  //
+  // `get_status` returns:
+  // * `COMMAND_STATUS_INIT` if the command has not been launched, including
+  //   when `execute` failed to launch it.
+  // * `COMMAND_STATUS_RUNNING` while the command is being monitored.
+  // * `COMMAND_STATUS_COMPLETE` if the command exited while being monitored;
+  //   `get_exitCode` then returns `S_OK` and the exit code.
+  // * `COMMAND_STATUS_ERROR` if monitoring timed out before the command exited.
+  //   The command process is not terminated. `get_exitCode` returns `S_FALSE`
+  //   and this status does not change even if the process exits later.
+  //
+  // `get_exitCode` returns `S_FALSE` and leaves `exit_code` unmodified unless
+  // the status is `COMMAND_STATUS_COMPLETE`.
   IFACEMETHODIMP get_status(UINT* status) override;
   IFACEMETHODIMP get_exitCode(DWORD* exit_code) override;
   IFACEMETHODIMP get_output(BSTR* output) override;
@@ -317,7 +334,7 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
   }
 
  private:
-  friend class LegacyAppCommandWebImplTest;
+  friend class test::LegacyAppCommandWebImplTest;
 
   static void SendPing(UpdaterScope scope,
                        const std::string& app_id,

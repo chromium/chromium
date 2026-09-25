@@ -23,11 +23,13 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/test/unit_test_util.h"
@@ -98,6 +100,14 @@ class LegacyAppCommandWebImplTest : public testing::Test {
     return MakeAndInitializeComObject<LegacyAppCommandWebImpl>(
         app_command_web, GetUpdaterScopeForTesting(), app_id, command_id,
         std::move(ping_sender));
+  }
+
+  // Overrides the monitoring timeout of the `AppCommandRunner` owned by
+  // `app_command_web`. Must be called before `execute`.
+  static void SetAppCommandTimeout(
+      Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& app_command_web,
+      base::TimeDelta timeout) {
+    app_command_web->app_command_runner_.value()->SetTimeoutForTesting(timeout);
   }
 
   void WaitForUpdateCompletion(
@@ -377,6 +387,83 @@ TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
   EXPECT_EQ(error_params.error_code, 999);
   EXPECT_EQ(error_params.extra_code1, 0);
   std::move(callback).Run(update_client::Error::NONE);
+}
+
+TEST_F(LegacyAppCommandWebImplTest, CommandTimedOutStatus) {
+  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+    return;
+  }
+
+  PingFuture ping_future;
+  Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
+  base::CommandLine command_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
+
+  command_line.AppendSwitchNative(kTestEventToWaitOn, L"%1");
+  command_line.AppendSwitchNative(kTestExitCode, L"%2");
+
+  ASSERT_HRESULT_SUCCEEDED(CreateAppCommandWeb(
+      kAppId1, kCmdId1,
+      command_line.GetCommandLineStringWithUnsafeInsertSequences(),
+      PingSenderFromFuture(ping_future), app_command_web));
+
+  // The effective monitoring timeout is rounded up to the one-second interval
+  // at which the AppCommand is polled.
+  SetAppCommandTimeout(app_command_web, base::Milliseconds(100));
+
+  test::EventHolder event_holder(test::CreateWaitableEventForTest());
+
+  // The child process blocks on `event_holder` until signaled below, so it
+  // outlives the monitoring timeout. No `ASSERT_*` may follow this point, so
+  // that the child is always released.
+  ASSERT_HRESULT_SUCCEEDED(app_command_web->execute(
+      base::win::ScopedVariant(event_holder.name.c_str()),
+      base::win::ScopedVariant(L"999"), base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant));
+
+  EXPECT_TRUE(test::WaitFor([&] {
+    UINT status = 0;
+    EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
+    return status == COMMAND_STATUS_ERROR;
+  }));
+
+  // `get_exitCode` must not report a value, nor touch the out-param.
+  constexpr DWORD kSentinel = 0xDEADBEEF;
+  DWORD exit_code = kSentinel;
+  EXPECT_EQ(app_command_web->get_exitCode(&exit_code), S_FALSE);
+  EXPECT_EQ(exit_code, kSentinel);
+
+  // The timeout is not fatal to the child, and the timeout ping is sent
+  // without waiting for the child to exit.
+  EXPECT_TRUE(app_command_web->process().IsRunning());
+  EXPECT_TRUE(ping_future.Wait());
+  if (ping_future.IsReady()) {
+    auto [scope, app_id, command_id, error_params, callback] =
+        ping_future.Take();
+    EXPECT_EQ(scope, GetUpdaterScopeForTesting());
+    EXPECT_EQ(app_id, base::WideToUTF8(kAppId1));
+    EXPECT_EQ(command_id, base::WideToUTF8(kCmdId1));
+    EXPECT_EQ(error_params.error_code, HRESULT_FROM_WIN32(ERROR_TIMEOUT));
+    EXPECT_EQ(error_params.extra_code1, kErrorAppCommandTimedOut);
+    std::move(callback).Run(update_client::Error::NONE);
+  }
+
+  event_holder.event.Signal();
+  int child_exit_code = 0;
+  EXPECT_TRUE(app_command_web->process().WaitForExit(&child_exit_code));
+  EXPECT_EQ(child_exit_code, 999);
+
+  // The status is latched: the child exiting later does not change it.
+  UINT status = 0;
+  EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
+  EXPECT_EQ(status, COMMAND_STATUS_ERROR);
+  EXPECT_EQ(app_command_web->get_exitCode(&exit_code), S_FALSE);
+  EXPECT_EQ(exit_code, kSentinel);
 }
 
 TEST_F(LegacyAppCommandWebImplTest, CheckLegacyTypeLibAndInterfaceExist) {

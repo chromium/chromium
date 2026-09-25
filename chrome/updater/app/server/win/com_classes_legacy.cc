@@ -1265,9 +1265,12 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
 
   if (!is_valid) {
     *status = COMMAND_STATUS_INIT;
+  } else if (!app_command_runner_.value()->TimedWait()) {
+    *status = COMMAND_STATUS_RUNNING;
+  } else if (app_command_runner_.value()->exit_code().has_value()) {
+    *status = COMMAND_STATUS_COMPLETE;
   } else {
-    *status = app_command_runner_.value()->TimedWait() ? COMMAND_STATUS_COMPLETE
-                                                       : COMMAND_STATUS_RUNNING;
+    *status = COMMAND_STATUS_ERROR;
   }
 
   return S_OK;
@@ -1278,17 +1281,17 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_exitCode(DWORD* exit_code) {
     return E_INVALIDARG;
   }
 
-  base::Process process_dup = process();
-  if (!process_dup.IsValid()) {
+  if (!app_command_runner_.has_value()) {
     return S_FALSE;
   }
 
-  int code = -1;
-  if (!process_dup.WaitForExitWithTimeout(base::TimeDelta(), &code)) {
+  const std::optional<DWORD> runner_exit_code =
+      app_command_runner_.value()->exit_code();
+  if (!runner_exit_code.has_value()) {
     return S_FALSE;
   }
 
-  *exit_code = code;
+  *exit_code = *runner_exit_code;
   return S_OK;
 }
 
@@ -1356,8 +1359,9 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
       base::BindOnce(
           [](PingSender ping_sender, UpdaterScope scope,
              const std::string& app_id, const std::string& command_id,
-             update_client::Callback callback, base::Process process,
-             HRESULT hr, base::OnceClosure done) {
+             update_client::Callback callback,
+             scoped_refptr<AppCommandRunner> app_command_runner, HRESULT hr,
+             base::OnceClosure done) {
             auto error_params = [&]() -> ErrorParams {
               if (FAILED(hr)) {
                 VLOG(2) << __func__ << ": AppCommand failed to launch: " << hr;
@@ -1367,12 +1371,16 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
                 };
               }
 
-              int exit_code = -1;
-              if (process.WaitForExitWithTimeout(kWaitForAppInstaller,
-                                                 &exit_code)) {
-                VLOG(2) << "AppCommand completed: " << exit_code;
+              // Blocks until the runner stops monitoring the command, which is
+              // bounded by the runner's monitoring timeout. Use the runner's
+              // latched exit code so that the ping agrees with `get_status` and
+              // `get_exitCode`.
+              app_command_runner->Wait();
+              if (const std::optional<DWORD> exit_code =
+                      app_command_runner->exit_code()) {
+                VLOG(2) << "AppCommand completed: " << *exit_code;
                 return {
-                    .error_code = exit_code,
+                    .error_code = static_cast<int>(*exit_code),
                     .extra_code1 = 0,
                 };
               }
@@ -1400,7 +1408,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
                         << " completed or was skipped: " << error;
               },
               LegacyAppCommandWebImplPtr(this)),
-          this->process(), hr));
+          app_command_runner_.value(), hr));
   return hr;
 }
 

@@ -139,7 +139,7 @@ bool IsSecureAppCommandExePath(UpdaterScope scope,
 }  // namespace
 
 AppCommandRunner::AppCommandRunner(const std::wstring& app_id)
-    : app_id_(app_id) {}
+    : app_id_(app_id), timeout_(kWaitForAppInstaller) {}
 AppCommandRunner::~AppCommandRunner() = default;
 
 // static
@@ -214,6 +214,14 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
 HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
                               base::FunctionRef<std::wstring()> get_caller_sid,
                               base::Process& process) {
+  // Reset before any early return, so that a failed `Run` does not leave the
+  // output or exit code of a previous `Run` visible.
+  {
+    base::AutoLock lock{lock_};
+    output_ = {};
+    exit_code_ = std::nullopt;
+  }
+
   AppCommandStartEvent start_event;
   start_event.SetAppId(base::WideToUTF8(app_id_));
 
@@ -253,10 +261,6 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
     return E_INVALIDARG;
   }
 
-  {
-    base::AutoLock lock{lock_};
-    output_ = {};
-  }
   command_completed_event_.Reset();
 
   // Holds the result of the IPC to retrieve the process and hr from
@@ -286,7 +290,7 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
           FROM_HERE,
           base::BindOnce(
               [](scoped_refptr<AppCommandRunner> obj,
-                 const std::wstring& command_line,
+                 const std::wstring& command_line, base::TimeDelta timeout,
                  scoped_refptr<GetAppOutputWithExitCodeAndTimeoutResult> result)
                   -> HRESULT {
                 base::LaunchOptions options = {};
@@ -299,8 +303,8 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
                 int exit_code = -1;
                 if (base::GetAppOutputWithExitCodeAndTimeout(
                         command_line,
-                        /*include_stderr=*/true, nullptr, &exit_code,
-                        kWaitForAppInstaller, options,
+                        /*include_stderr=*/true, nullptr, &exit_code, timeout,
+                        options,
                         [&](const base::Process& process,
                             std::string_view partial_output) {
                           if (!result->process) {
@@ -333,12 +337,16 @@ HRESULT AppCommandRunner::Run(base::span<const std::wstring> substitutions,
 
                 return S_OK;
               },
-              base::WrapRefCounted(this), command_line, result)
+              base::WrapRefCounted(this), command_line, timeout_, result)
               .Then(base::BindOnce(
                   [](scoped_refptr<AppCommandRunner> obj,
                      scoped_refptr<GetAppOutputWithExitCodeAndTimeoutResult>
                          result,
                      AppCommandEndEvent end_event, HRESULT hr) {
+                    if (result->exit_code.has_value()) {
+                      base::AutoLock lock{obj->lock_};
+                      obj->exit_code_ = static_cast<DWORD>(*result->exit_code);
+                    }
                     result->hr = hr;
                     result->process_event.Signal();
                     obj->command_completed_event_.Signal();
@@ -375,8 +383,21 @@ std::string AppCommandRunner::output() {
   return output_;
 }
 
+std::optional<DWORD> AppCommandRunner::exit_code() const {
+  base::AutoLock lock{lock_};
+  return exit_code_;
+}
+
 bool AppCommandRunner::TimedWait(base::TimeDelta wait_delta) {
   return command_completed_event_.TimedWait(wait_delta);
+}
+
+void AppCommandRunner::Wait() {
+  command_completed_event_.Wait();
+}
+
+void AppCommandRunner::SetTimeoutForTesting(base::TimeDelta timeout) {
+  timeout_ = timeout;
 }
 
 // static

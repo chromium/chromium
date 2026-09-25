@@ -1894,6 +1894,11 @@ using the `status` method of `IAppCommandWeb`. When the status is
 `COMMAND_STATUS_COMPLETE`, the `exitCode` method can be used to get the process
 exit code.
 
+Commands are monitored for up to 15 minutes (`kWaitForAppInstaller`). If the
+command has not exited by then, the status becomes `COMMAND_STATUS_ERROR` and
+remains so, and `exitCode` returns `S_FALSE` without setting the exit code. The
+command process is not terminated and may continue to run.
+
 #### Command-Line Format
 * for system applications, the executable path has to be a child of
 `%ProgramFiles%` or `%ProgramFiles(x86)%` for security, since it runs elevated.

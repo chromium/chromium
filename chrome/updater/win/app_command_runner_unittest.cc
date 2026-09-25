@@ -717,6 +717,7 @@ TEST_P(AppCommandOutputTest, TestCases) {
       app_command_runner->TimedWait(TestTimeouts::action_max_timeout()));
   EXPECT_FALSE(process.IsRunning());
   EXPECT_EQ(app_command_runner->output(), GetParam().expected_output);
+  EXPECT_EQ(app_command_runner->exit_code(), 0U);
 }
 
 }  // namespace updater
