@@ -68,8 +68,7 @@ public class SiteSettingsTestHelper {
             new String[] {"binary_radio_button", "os_permissions_warning_extra"};
     public static final String[] BINARY_RADIO_BUTTON_WITH_OS_WARNING_EXTRA_AND_INFO_TEXT =
             new String[] {"info_text", "binary_radio_button", "os_permissions_warning_extra"};
-    public static final String[] CLEAR_BROWSING_DATA_LINK =
-            new String[] {"clear_browsing_data_link", "clear_browsing_divider"};
+    public static final String[] CLEAR_BROWSING_DATA_LINK = {"clear_browsing_data_link"};
 
     public static BrowserContextHandle getBrowserContextHandle() {
         return ProfileManager.getLastUsedRegularProfile();

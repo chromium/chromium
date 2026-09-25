@@ -96,10 +96,6 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
      * are laid out.
      */
     protected void updateContainment() {
-        if (!getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
-            return;
-        }
-
         if (mPreferenceUpdateObserver != null) {
             notifyPreferencesUpdated();
             return;

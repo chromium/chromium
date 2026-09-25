@@ -6,12 +6,8 @@ found in the LICENSE file.
 -->
 
 <PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Link to the Clear Browsing Data dialog. -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="clear_browsing_data_link" />
-    <Preference
-        android:key="clear_browsing_divider"
-        android:layout="@layout/horizontal_divider"/>
 </PreferenceScreen>

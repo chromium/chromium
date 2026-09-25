@@ -215,11 +215,6 @@ public interface SiteSettingsDelegate {
      */
     boolean isRelatedWebsiteSetsUiEnabled();
 
-    /**
-     * @return whether the settings containment feature is enabled.
-     */
-    boolean isSettingsContainmentEnabled();
-
     /** Enable/Disable unused site permission autorevocation. */
     void setPermissionAutorevocationEnabled(boolean isEnabled);
 }

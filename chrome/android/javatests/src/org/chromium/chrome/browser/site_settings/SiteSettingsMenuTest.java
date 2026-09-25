@@ -71,9 +71,6 @@ public class SiteSettingsMenuTest {
         "anti_abuse_things_to_consider_section_one"
     };
 
-    private static final String[] CLEAR_BROWSING_DATA_LINK_WITH_CONTAINMENT =
-            new String[] {"clear_browsing_data_link"};
-
     private static final String[] NULL_ARRAY = new String[0];
 
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -168,7 +165,8 @@ public class SiteSettingsMenuTest {
     @Feature({"Preferences"})
     public void testOnlyExpectedPreferencesAllSites() {
         SiteSettingsTestHelper.checkPreferencesForCategory(
-                SiteSettingsCategory.Type.ALL_SITES, CLEAR_BROWSING_DATA_LINK_WITH_CONTAINMENT);
+                SiteSettingsCategory.Type.ALL_SITES,
+                SiteSettingsTestHelper.CLEAR_BROWSING_DATA_LINK);
     }
 
     @Test

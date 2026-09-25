@@ -47,7 +47,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
 
     // The keys for each category shown on the Site Settings page
     // are defined in the SiteSettingsCategory. The only exception is the permission autorevocation
-    // switch at the bottom of the page and its top divider.
+    // switch at the bottom of the page.
     @VisibleForTesting
     public static final String PERMISSION_AUTOREVOCATION_PREF = "permission_autorevocation";
 
@@ -82,14 +82,6 @@ public class SiteSettings extends BaseSiteSettingsFragment
     }
 
     private void configurePreferences() {
-        // TODO(crbug.com/439911511): Remove the divider directly form the layout.
-        if (getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
-            Preference divider = findPreference("divider");
-            if (divider != null) {
-                getPreferenceScreen().removePreference(divider);
-            }
-        }
-
         // Remove unsupported settings categories.
         for (@SiteSettingsCategory.Type int type = 0;
                 type < SiteSettingsCategory.Type.NUM_ENTRIES;
@@ -279,9 +271,6 @@ public class SiteSettings extends BaseSiteSettingsFragment
     public static void updateDynamicPreferences(
             Context context, SiteSettingsDelegate delegate, SettingsIndexData indexData) {
         String prefFragment = SiteSettings.class.getName();
-
-        // Always remove the divider as the search is based on containment style.
-        indexData.removeEntry(PreferenceParser.createUniqueId(prefFragment, "divider"));
 
         for (@Type int prefCategory = 0; prefCategory < Type.NUM_ENTRIES; prefCategory++) {
             if (SiteSettingsCategory.contentSettingsType(prefCategory) < 0) continue;

@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.settings.SearchUtils.handleSearchNavigation;
 import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultTextColorLink;
@@ -521,15 +520,8 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     private void addPreferencesFromXml() {
         if (mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES) {
             SettingsUtils.addPreferencesFromResource(this, R.xml.all_site_preferences_v2);
-            // TODO(crbug.com/439911511): Remove the divider directly form the layout.
-            if (getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
-                Preference divider = findPreference("clear_browsing_divider");
-                if (divider != null) {
-                    getPreferenceScreen().removePreference(divider);
-                }
-            }
-            ChromeBasePreference clearBrowsingDataLink = findPreference(PREF_CLEAR_BROWSING_DATA);
-            assertNonNull(clearBrowsingDataLink);
+            ChromeBasePreference clearBrowsingDataLink =
+                    assumeNonNull(findPreference(PREF_CLEAR_BROWSING_DATA));
             if (!getSiteSettingsDelegate().canLaunchClearBrowsingDataDialog()) {
                 getPreferenceScreen().removePreference(clearBrowsingDataLink);
                 return;
