@@ -39,6 +39,7 @@ TEST_F(WebUIToolbarLayoutCssHelperTest, GenerateLayoutConstantsCss) {
   EXPECT_TRUE(css.find("--omnibox-primary-font-family:") != std::string::npos);
   EXPECT_TRUE(css.find("--omnibox-primary-font-weight:400;") !=
               std::string::npos);
+  EXPECT_TRUE(css.find("--glic-button-font-family:") != std::string::npos);
 }
 
 TEST_F(WebUIToolbarLayoutCssHelperTest, ShouldHandleRequest) {

@@ -60,6 +60,8 @@ enum ContextMenuType {
   kPinnedActionSidePanelShowComments,
   // App Menu Button
   kAppMenu,
+  // Glic Button
+  kGlic,
 };
 
 struct BackForwardButtonState {
@@ -272,6 +274,21 @@ struct BatterySaverControlState {
   // Whether the button should be shown.
   // Corresponds to `OverflowableButtonState.shouldBeShown`.
   bool should_be_shown;
+};
+
+// State of the Glic button in the toolbar.
+struct GlicButtonState {
+  // Whether the Glic panel is currently open.
+  bool open = false;
+  // Whether the Glic button should be shown in the toolbar (i.e., when it is
+  // both pinned and eligible to be displayed in the toolbar).
+  bool should_show = false;
+  // Whether the context menu is currently visible.
+  bool is_context_menu_visible = false;
+  // Dynamic nudge label to display in the button when a nudge is active, if
+  // available. This string is for display only and must not be
+  // programmatically parsed.
+  string? nudge_label;
 };
 
 // The type of icon state for the app menu. These values drive the visual
@@ -870,6 +887,9 @@ struct NavigationControlsState {
 
   // This is true if we're in touch mode.
   bool touch_ui = false;
+
+  // State of the Glic button in the toolbar.
+  GlicButtonState glic_button_state;
 };
 
 enum FocusRequestTarget {

@@ -14,6 +14,8 @@
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -44,6 +46,7 @@
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/webui_toolbar_resources.h"
 #include "chrome/grit/webui_toolbar_resources_map.h"
@@ -206,6 +209,10 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
       {"clearButtonTooltip", IDS_OMNIBOX_CLEAR_ALL},
       {"forwardButtonAccName", IDS_ACCNAME_FORWARD},
       {"forwardButtonTooltip", IDS_TOOLTIP_FORWARD},
+      {"glicButtonAccName", IDS_GLIC_BUTTON_ENTRYPOINT_LABEL},
+      {"glicButtonLabel", IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL},
+      {"glicButtonTooltip", IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP},
+      {"glicButtonTooltipClose", IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE},
       {"homeButtonAccName", IDS_ACCNAME_HOME},
       {"homeButtonTooltip", IDS_TOOLTIP_HOME},
       {"locationAccName", IDS_ACCNAME_LOCATION},
@@ -249,6 +256,12 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
                      features::IsWebUIPinnedToolbarActionsEnabled());
   source->AddBoolean("enableAppMenuButton",
                      features::IsWebUIAppMenuButtonEnabled());
+
+  // Glic button is enabled only when both the WebUI Glic flag is active and
+  // the current profile is eligible for Glic.
+  source->AddBoolean("enableGlicButton",
+                     features::IsWebUIGlicButtonEnabled() &&
+                         glic::GlicEnabling::IsProfileEligible(profile));
   source->AddBoolean(
       "enableAvatarButton",
       features::IsWebUIAvatarButtonEnabled() &&
@@ -280,6 +293,9 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   webui_toolbar::PopulateSplitTabsDataSource(source);
 
   source->AddResourcePaths(kWebuiToolbarSharedResources);
+  // Referenced by `chrome/browser/resources/webui_toolbar/glic_button.html.ts`.
+  source->AddResourcePath("images/glic_button_alt_icon.png",
+                          IDR_GLIC_BUTTON_ALT_ICON);
 
   // Handles chrome.send() calls that records non-timestamp histograms.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
@@ -578,6 +594,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        kPinnedToolbarActionShowSidePanelContextualTasksElementId,
        kPinnedToolbarActionSendTabToSelfElementId,
        kToolbarAvatarButtonElementId,
+       kGlicButtonElementId,
        kToolbarPerformanceInterventionButtonElementId,
        PermissionChipView::kPermissionRequestChipElementId,
        PermissionChipView::kIndicatorChipElementId,

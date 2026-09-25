@@ -496,16 +496,21 @@ void ToolbarView::Init() {
           features::GlicToolbarButtonLocation::kLeftOfProfileChipWithBackground;
   if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile()) &&
       !is_glic_left_of_profile) {
-    InitGlicContainer();
+    if (features::IsWebUIGlicButtonEnabled() && toolbar_webview_) {
+      glic_button_ = toolbar_webview_->GetGlicControl();
+    } else {
+      InitGlicContainer();
 
-    glic_button_ = AddChildView(CreateGlicButton());
-    std::unique_ptr<ToolbarDivider> glic_button_divider =
-        std::make_unique<ToolbarDivider>();
-    glic_button_divider_ = AddChildView(std::move(glic_button_divider));
-    glic_button_divider_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::VH(
-            0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
+      glic_button_view_ = AddChildView(CreateGlicButton());
+      glic_button_ = glic_button_view_;
+      std::unique_ptr<ToolbarDivider> glic_button_divider =
+          std::make_unique<ToolbarDivider>();
+      glic_button_divider_ = AddChildView(std::move(glic_button_divider));
+      glic_button_divider_->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(
+              0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
+    }
   }
 
   if (extensions_container) {
@@ -584,17 +589,22 @@ void ToolbarView::Init() {
 
   if (is_glic_left_of_profile &&
       glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
-    InitGlicContainer();
+    if (features::IsWebUIGlicButtonEnabled() && toolbar_webview_) {
+      glic_button_ = toolbar_webview_->GetGlicControl();
+    } else {
+      InitGlicContainer();
 
-    glic_button_ = AddChildView(CreateGlicButton());
-    // The left margin is needed to ensure proper spacing before the
-    // separator. The right margin is needed for spacing between the glic and
-    // actor icons. The space between glic and profile should also be 5 but that
-    // is handled by the profile margins.
-    glic_button_->SetProperty(views::kMarginsKey,
-                              gfx::Insets()
+      glic_button_view_ = AddChildView(CreateGlicButton());
+      glic_button_ = glic_button_view_;
+      // The left margin is needed to ensure proper spacing before the
+      // separator. The right margin is needed for spacing between the glic and
+      // actor icons. The space between glic and profile should also be 5 but
+      // that is handled by the profile margins.
+      glic_button_view_->SetProperty(
+          views::kMarginsKey, gfx::Insets()
                                   .set_left(kGlicButtonMargin)
                                   .set_right(kInsideBorderAroundGlicButtons));
+    }
     UpdateGlicButtonVisibility();
   }
 
@@ -814,16 +824,18 @@ std::unique_ptr<glic::ToolbarGlicButton> ToolbarView::CreateGlicButton() {
 }
 
 void ToolbarView::OnGlicButtonClicked() {
+  CHECK(glic_button_view_);
   glic::GlicSplitButtonController::From(browser_view_->browser())
       ->OnGlicButtonClicked();
 
-  ExecuteHideToolbarNudge(glic_button_);
+  ExecuteHideToolbarNudge(glic_button_view_);
   // Reset state manually since there wont be a mouse up event as the
   // animation moves the button out of the way.
-  glic_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
+  glic_button_view_->SetState(views::Button::ButtonState::STATE_NORMAL);
 }
 
 void ToolbarView::OnGlicButtonDismissed() {
+  CHECK(glic_button_view_);
   CHECK(glic_split_button_controller_);
   glic::GlicNudgeController* nudge_controller =
       glic_split_button_controller_->nudge_controller();
@@ -831,7 +843,7 @@ void ToolbarView::OnGlicButtonDismissed() {
   nudge_controller->OnNudgeActivity(glic::GlicNudgeActivity::kNudgeDismissed);
 
   // Force hide the button when pressed, bypassing locked expansion mode.
-  ExecuteHideToolbarNudge(glic_button_);
+  ExecuteHideToolbarNudge(glic_button_view_);
 }
 
 void ToolbarView::OnGlicButtonAnimationEnded() {
@@ -877,13 +889,19 @@ void ToolbarView::OnTriggerGlicNudgeUI(glic::NudgeParams params) {
   }
   if (!params.label.empty()) {
     glic_button_->SetNudgeLabel(std::move(params.label));
-    ShowToolbarNudge(glic_button_);
+    if (glic_button_view_) {
+      ShowToolbarNudge(glic_button_view_);
+    } else {
+      glic_button_->SetIsShowingNudge(true);
+    }
   }
 }
 
 void ToolbarView::OnHideGlicNudgeUI() {
-  if (glic_button_) {
-    HideToolbarNudge(glic_button_);
+  if (glic_button_view_) {
+    HideToolbarNudge(glic_button_view_);
+  } else if (glic_button_) {
+    glic_button_->SetIsShowingNudge(false);
   }
 }
 
@@ -894,31 +912,31 @@ void ToolbarView::SetGlicActorNudgeLabel(const std::u16string& nudge_label) {
 }
 
 void ToolbarView::TriggerGlicActorNudge(const std::u16string& nudge_label) {
-  if (!glic_button_ || !glic_actor_task_icon_) {
+  if (!glic_button_view_ || !glic_actor_task_icon_) {
     return;
   }
   if (GetIsShowingGlicNudge()) {
     // If the glic button is showing, start the hide animation in parallel to
     // the show actor nudge animation.
-    HideToolbarNudge(glic_button_);
+    HideToolbarNudge(glic_button_view_);
     OnGlicButtonAnimationEnded();
   }
   ShowGlicActorNudge(nudge_label);
 }
 
 void ToolbarView::ShowGlicActorNudge(const std::u16string nudge_label) {
-  if (!glic_button_ || !glic_actor_task_icon_) {
+  if (!glic_button_view_ || !glic_actor_task_icon_) {
     return;
   }
   // Start animation for minimizing the glic button.
-  glic_button_->Collapse();
+  glic_button_view_->Collapse();
   ShowGlicActorTaskIcon();
   glic_actor_task_icon_->ShowNudgeLabel(nudge_label);
   ShowToolbarNudge(glic_actor_task_icon_);
 }
 
 void ToolbarView::ShowGlicActorTaskIcon() {
-  if (!glic_button_ || !glic_actor_task_icon_ ||
+  if (!glic_button_view_ || !glic_actor_task_icon_ ||
       !glic_actor_button_container_) {
     return;
   }
@@ -928,12 +946,13 @@ void ToolbarView::ShowGlicActorTaskIcon() {
     HideToolbarNudge(glic_actor_task_icon_);
     return;
   }
-  glic_button_ =
-      glic_actor_button_container_->InsertGlicButton(glic_button_.get());
+  glic_button_view_ =
+      glic_actor_button_container_->InsertGlicButton(glic_button_view_.get());
+  glic_button_ = glic_button_view_;
   SetGlicActorShowState(true);
   SetGlicShowState(true);
-  glic_button_->Collapse();
-  glic_button_->SetSplitButtonCornerStyling();
+  glic_button_view_->Collapse();
+  glic_button_view_->SetSplitButtonCornerStyling();
   UpdateGlicActorButtonContainerBorders();
 
   if (glic_actor_task_icon_->GetAnimationMode() ==
@@ -1006,7 +1025,7 @@ bool ToolbarView::IsActorTaskListBubbleShowing() {
 }
 
 void ToolbarView::FinalizeHideGlicActorTaskIcon() {
-  if (!glic_button_ || !glic_actor_task_icon_ ||
+  if (!glic_button_view_ || !glic_actor_task_icon_ ||
       !glic_actor_button_container_) {
     return;
   }
@@ -1022,23 +1041,26 @@ void ToolbarView::FinalizeHideGlicActorTaskIcon() {
   if (glic_button_divider_) {
     insertion_index = GetIndexOf(glic_button_divider_).value();
   }
-  glic_button_ = AddChildViewAt(std::move(glic_button_.get()), insertion_index);
+  glic_button_view_ = AddChildViewAt(glic_button_view_.get(), insertion_index);
+  glic_button_ = glic_button_view_;
   glic_actor_button_container_->SetVisible(false);
-  glic_button_->Expand();
-  glic_button_->ResetSplitButtonCornerStyling();
+  glic_button_view_->Expand();
+  glic_button_view_->ResetSplitButtonCornerStyling();
   // Reset the animation mode for the next time the icon is shown.
   glic_actor_task_icon_->SetAnimationMode(glic::AnimationMode::kEntry);
   UpdateGlicActorButtonContainerBorders();
 }
 
 void ToolbarView::UpdateGlicActorButtonContainerBorders() {
-  CHECK(glic_button_);
+  if (!glic_button_view_) {
+    return;
+  }
 
   // Force a background repaint.
   if (glic_actor_task_icon_) {
     glic_actor_task_icon_->RefreshBackground();
   }
-  glic_button_->RefreshBackground();
+  glic_button_view_->RefreshBackground();
 }
 
 void ToolbarView::ExecuteShowToolbarNudge(glic::GlicButtonInterface* button) {
@@ -1048,8 +1070,8 @@ void ToolbarView::ExecuteShowToolbarNudge(glic::GlicButtonInterface* button) {
 
   // Only change the margins between the GlicButton and nudges that are NOT
   // coming from the GlicActorTaskIcon.
-  if (glic_button_ && glic_button_->GetVisible() && button != glic_button_ &&
-      button != glic_actor_task_icon_) {
+  if (glic_button_view_ && glic_button_view_->GetVisible() &&
+      button != glic_button_view_ && button != glic_actor_task_icon_) {
     const int space_between_buttons = kLargeSpaceBetweenButtons;
     gfx::Insets margin;
     margin.set_right(space_between_buttons);
@@ -1068,7 +1090,7 @@ void ToolbarView::ExecuteHideToolbarNudge(glic::GlicButtonInterface* button) {
 
   // Since the glic button is still visible in it's hidden state we need to have
   // a special case to query if it's in its Hide state.
-  if (button == glic_button_ && button->GetWidthFactor() == 0.0) {
+  if (button == glic_button_view_ && button->GetWidthFactor() == 0.0) {
     return;
   }
 
@@ -1322,7 +1344,7 @@ ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
 }
 
 views::LabelButton* ToolbarView::GetGlicButton() {
-  return glic_button_;
+  return glic_button_view_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1520,7 +1542,7 @@ void ToolbarView::ChildVisibilityChanged(views::View* child) {
       base::UmaHistogramBoolean("Toolbar.Overflow.HomeButton", true);
     }
   }
-  if (child == glic_button_ || child == glic_actor_button_container_ ||
+  if (child == glic_button_view_ || child == glic_actor_button_container_ ||
       child == avatar_) {
     PositionContextualTasksButton();
   }
@@ -1604,9 +1626,9 @@ void ToolbarView::InitLayout() {
             0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
   }
 
-  if (glic_button_ &&
+  if (glic_button_view_ &&
       base::FeatureList::IsEnabled(features::kToolbarGlicButtonResizing)) {
-    glic_button_->SetProperty(
+    glic_button_view_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(
             views::LayoutOrientation::kHorizontal,
@@ -1812,10 +1834,11 @@ void ToolbarView::PositionContextualTasksButton() {
             features::GlicToolbarButtonLocation::
                 kLeftOfProfileChipWithBackground;
     views::View* anchor = nullptr;
-    if (glic_button_ && glic_button_->GetVisible() && is_glic_left_of_profile) {
-      anchor = (glic_button_->parent() == this)
-                   ? static_cast<views::View*>(glic_button_)
-                   : static_cast<views::View*>(glic_button_->parent());
+    if (glic_button_view_ && glic_button_view_->GetVisible() &&
+        is_glic_left_of_profile) {
+      anchor = (glic_button_view_->parent() == this)
+                   ? static_cast<views::View*>(glic_button_view_)
+                   : static_cast<views::View*>(glic_button_view_->parent());
     } else if (avatar_) {
       anchor = avatar_;
     } else {

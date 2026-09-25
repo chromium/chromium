@@ -38,6 +38,7 @@ source_set("toolbar") {
     "toolbar_divider.h",
     "toolbar_glic_actor_task_icon.h",
     "toolbar_glic_button.h",
+    "toolbar_glic_button_interface.h",
     "toolbar_glic_constants.h",
     "toolbar_icon_container_view.h",
     "toolbar_ink_drop_util.h",
@@ -46,6 +47,7 @@ source_set("toolbar") {
     "webui_avatar_toolbar_button.h",
     "webui_back_forward_control.h",
     "webui_battery_saver_control.h",
+    "webui_glic_control.h",
     "webui_home_control.h",
     "webui_media_toolbar_button.h",
     "webui_overflow_button.h",
@@ -200,6 +202,7 @@ source_set("impl") {
     "webui_avatar_toolbar_button.cc",
     "webui_back_forward_control.cc",
     "webui_battery_saver_control.cc",
+    "webui_glic_control.cc",
     "webui_home_control.cc",
     "webui_media_toolbar_button.cc",
     "webui_overflow_button.cc",
@@ -236,6 +239,7 @@ source_set("impl") {
     "//chrome/browser/external_protocol",
     "//chrome/browser/favicon",
     "//chrome/browser/feedback",
+    "//chrome/browser/glic",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/browser_ui/activity_list_bubble:controller",
     "//chrome/browser/glic/browser_ui/activity_list_bubble:ui",
@@ -650,6 +654,7 @@ if (toolkit_views) {
       "toolbar_controller_unittest.cc",
       "toolbar_ink_drop_util_unittest.cc",
       "webui_battery_saver_control_unittest.cc",
+      "webui_glic_control_unittest.cc",
     ]
 
     deps = [

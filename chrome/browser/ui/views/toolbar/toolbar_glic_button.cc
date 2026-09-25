@@ -271,8 +271,24 @@ void ToolbarGlicButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   }
 }
 
+void ToolbarGlicButton::SetIsShowingNudge(bool is_showing) {
+  GlicButton<ToolbarButton>::SetIsShowingNudge(is_showing);
+}
+
 bool ToolbarGlicButton::GetIsShowingNudge() const {
   return width_state_ == WidthState::kNudge;
+}
+
+void ToolbarGlicButton::SetNudgeLabel(std::string label) {
+  GlicButton<ToolbarButton>::SetNudgeLabel(std::move(label));
+}
+
+void ToolbarGlicButton::SetVisible(bool visible) {
+  GlicButton<ToolbarButton>::SetVisible(visible);
+}
+
+void ToolbarGlicButton::SetGlicPanelIsOpen(bool open) {
+  GlicButton<ToolbarButton>::SetGlicPanelIsOpen(open);
 }
 
 void ToolbarGlicButton::ResetSplitButtonCornerStyling() {

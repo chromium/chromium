@@ -12,6 +12,7 @@ import './performance_intervention_button.js';
 import './pinned_toolbar_actions.js';
 import './extensions.js';
 import './app_menu_button.js';
+import './glic_button.js';
 import './avatar_button.js';
 import './media_button.js';
 import './overflow_button.js';
@@ -63,7 +64,7 @@ import {
   SplitTabActiveLocation,
 } from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {IconType} from '/shared/icon_handle.mojom-webui.js';
-import type {OmniboxAction, LocationBarState, PageActionState, PermissionChipState, PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import type {GlicButtonState, OmniboxAction, LocationBarState, PageActionState, PermissionChipState, PermissionDashboardState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {AdjustOmniboxTextForCopyResult, InitialState, OverflowMenuItem, ToolbarUIServiceInterface} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {PermissionChipElement} from '/shared/permission_chip.js';
 import type {PermissionDashboardElement} from '/shared/permission_dashboard.js';
@@ -71,6 +72,7 @@ import type {PermissionDashboardElement} from '/shared/permission_dashboard.js';
 import {INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
 import {AppMenuButtonElement} from './app_menu_button.js';
 import {BatterySaverButtonElement} from './battery_saver_button.js';
+import {GlicButtonElement} from './glic_button.js';
 import {ContentSettingIconElement} from './content_setting_icon.js';
 import {ContentSettingsIconsElement} from './content_settings_icons.js';
 import type {ExtensionsElement} from './extensions.js';
@@ -115,6 +117,7 @@ export {
   CrLazyIconset,
   EventDispositionFlag,
   FocusRequestTarget,
+  GlicButtonElement,
   getClickSourceType,
   getContextMenuSourceType,
   getTrustedHTML,
@@ -159,6 +162,7 @@ export type {
   ExtensionsElement,
   FocusRequestHandle,
   FocusRequestListener,
+  GlicButtonState,
   IconFromTableElement,
   InitialState,
   KeyedActionState,
@@ -335,6 +339,7 @@ export class ToolbarAppElement extends AppElementBase {
       isBackForwardButtonEnabled_: {type: Boolean},
       isPinnedToolbarActionsEnabled_: {type: Boolean},
       isExtensionsContainerEnabled_: {type: Boolean},
+      isGlicButtonEnabled_: {type: Boolean},
       isAvatarButtonEnabled_: {type: Boolean},
       isPerformanceInterventionButtonEnabled_: {type: Boolean},
       isMediaButtonEnabled_: {type: Boolean},
@@ -363,6 +368,8 @@ export class ToolbarAppElement extends AppElementBase {
       loadTimeData.getBoolean('enablePinnedToolbarActions');
   protected accessor isExtensionsContainerEnabled_: boolean =
       loadTimeData.getBoolean('enableExtensionsContainer');
+  protected accessor isGlicButtonEnabled_: boolean =
+      loadTimeData.getBoolean('enableGlicButton');
   protected accessor isAvatarButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableAvatarButton');
   protected accessor isPerformanceInterventionButtonEnabled_: boolean =
@@ -502,6 +509,12 @@ export class ToolbarAppElement extends AppElementBase {
       enabled: true,
       shouldBeShown: false,
       isContextMenuVisible: false,
+    },
+    glicButtonState: {
+      open: false,
+      shouldShow: false,
+      isContextMenuVisible: false,
+      nudgeLabel: null,
     },
     layoutConstantsVersion:
         getTypedInteger(ToolbarStateKey.LAYOUT_CONSTANTS_VERSION),
@@ -719,6 +732,7 @@ export class ToolbarAppElement extends AppElementBase {
       '#pinnedToolbarActions',
       '#battery-saver',
       '#performance-intervention',
+      '#glic-button',
       '#avatar',
       '#media',
       '#overflow',

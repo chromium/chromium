@@ -413,6 +413,23 @@ TEST_F(ToolbarUIServiceTest, TestOnAvatarButtonMousePressed) {
   service().OnAvatarButtonMousePressed();
 }
 
+// Tests that calling OnGlicButtonClicked() calls the delegate.
+TEST_F(ToolbarUIServiceTest, TestOnGlicButtonClicked) {
+  EXPECT_CALL(delegate(), OnGlicButtonClicked());
+
+  service().OnGlicButtonClicked();
+}
+
+// Tests that GlicButtonState updates in NavigationControlsState are received.
+TEST_F(ToolbarUIServiceTest, TestGlicButtonStateUpdate) {
+  navigation_controls_state()->glic_button_state->open = true;
+  navigation_controls_state()->glic_button_state->should_show = true;
+  PushNavigationControlsStateUpdate();
+
+  ASSERT_TRUE(observer()->state->glic_button_state->open);
+  ASSERT_TRUE(observer()->state->glic_button_state->should_show);
+}
+
 }  // namespace
 
 }  // namespace toolbar_ui_api

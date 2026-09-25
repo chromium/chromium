@@ -212,6 +212,7 @@ class MockToolbarUIServiceDelegate
               (bool is_mouse_interaction),
               (override));
   MOCK_METHOD(void, OnMediaButtonMousePressed, (), (override));
+  MOCK_METHOD(void, OnGlicButtonClicked, (), (override));
 };
 
 class MockBrowserControlsServiceDelegate

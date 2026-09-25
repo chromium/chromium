@@ -80,6 +80,12 @@ ${this.isBackForwardButtonEnabled_ ? html`
     </media-button>
   ` : ''}
   </if>
+  ${this.isGlicButtonEnabled_ ? html`
+    <glic-button id="glic-button"
+        .state="${this.navigationControlsState_.glicButtonState}"
+        .hidden="${!this.navigationControlsState_.glicButtonState.shouldShow}">
+    </glic-button>
+  ` : ''}
   ${this.isAvatarButtonEnabled_ ? html`
     <avatar-button id="avatar"
         .state="${this.navigationControlsState_.avatarControlState}">

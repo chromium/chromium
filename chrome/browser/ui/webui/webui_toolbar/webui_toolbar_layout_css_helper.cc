@@ -268,6 +268,9 @@ std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
   AddFontVariables("--toolbar-button", CONTEXT_TOOLBAR_BUTTON,
                    views::style::STYLE_PRIMARY, typography_provider,
                    css_string);
+  AddFontVariables("--glic-button", views::style::CONTEXT_BUTTON_MD,
+                   views::style::STYLE_BODY_3_EMPHASIS, typography_provider,
+                   css_string);
   AddFontVariables("--drag-template", views::style::CONTEXT_BUTTON,
                    views::style::STYLE_PRIMARY, typography_provider,
                    css_string);

@@ -74,6 +74,7 @@ class LabelButton;
 
 namespace glic {
 class ToolbarGlicButton;
+class ToolbarGlicButtonInterface;
 class ToolbarGlicActorTaskIcon;
 class GlicButtonInterface;
 class GlicSplitButtonController;
@@ -197,6 +198,8 @@ class ToolbarView : public views::AccessiblePaneView,
   MediaToolbarButton* media_button() const { return media_button_; }
   HomeButton* home_button() const { return home_; }
 
+  // Returns the native Views Glic button, or nullptr if the Glic button is not
+  // created or is rendered by the WebUI toolbar (`features::kWebUIGlicButton`).
   views::LabelButton* GetGlicButton();
 
   // TODO(crbug.com/513238408): Remove this once toolbar layout/overflow is
@@ -437,7 +440,9 @@ class ToolbarView : public views::AccessiblePaneView,
   // The button currently holding the lock to be shown/hidden.
   raw_ptr<glic::GlicButtonInterface> locked_expansion_button_ = nullptr;
   raw_ptr<GlicAndActorButtonsContainer> glic_actor_button_container_ = nullptr;
-  raw_ptr<glic::ToolbarGlicButton> glic_button_ = nullptr;
+  raw_ptr<glic::ToolbarGlicButton> glic_button_view_ = nullptr;
+  // An alias for `glic_button_view_` or `toolbar_webview_->GetGlicControl()`.
+  raw_ptr<glic::ToolbarGlicButtonInterface> glic_button_ = nullptr;
   raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
   raw_ptr<ToolbarDivider> glic_button_divider_ = nullptr;
   std::unique_ptr<ActorTaskListBubble> actor_task_list_bubble_;

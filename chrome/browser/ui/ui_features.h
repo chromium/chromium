@@ -349,6 +349,10 @@ bool IsWebUIAvatarButtonEnabled();
 BASE_DECLARE_FEATURE(kWebUIMediaButton);
 bool IsWebUIMediaButtonEnabled();
 
+// Controls whether the WebUI version of the Glic Button is used.
+BASE_DECLARE_FEATURE(kWebUIGlicButton);
+bool IsWebUIGlicButtonEnabled();
+
 bool IsWebUIPerformanceInterventionButtonEnabled();
 
 bool IsWebUIAppMenuButtonEnabled();

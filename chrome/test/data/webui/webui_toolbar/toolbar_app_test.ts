@@ -189,6 +189,12 @@ function createMockNavigationState() {
       isContextMenuVisible: false,
       windowIsMaximizedOrFullscreen: false,
     },
+    glicButtonState: {
+      open: false,
+      shouldShow: false,
+      isContextMenuVisible: false,
+      nudgeLabel: null as string | null,
+    },
     layoutConstantsVersion: 0,
     pinnedToolbarActionsState: [],
   };

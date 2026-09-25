@@ -120,6 +120,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void OnPerformanceInterventionButtonMousePressed() = 0;
     virtual void OnMediaButtonClicked(bool is_mouse_interaction) = 0;
     virtual void OnMediaButtonMousePressed() = 0;
+    virtual void OnGlicButtonClicked() = 0;
   };
 
   ToolbarUIService(
@@ -229,6 +230,9 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void OnPerformanceInterventionButtonMousePressed() override;
   void OnMediaButtonClicked(bool is_mouse_interaction) override;
   void OnMediaButtonMousePressed() override;
+  // Handles click events from the WebUI Glic button by forwarding them to the
+  // delegate.
+  void OnGlicButtonClicked() override;
 
  private:
   mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIService> service_;

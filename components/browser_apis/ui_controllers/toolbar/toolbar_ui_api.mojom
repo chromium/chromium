@@ -30,7 +30,7 @@ interface ToolbarUIObserver {
   OnFocusRequested(FocusRequestTarget target);
 
   // Requests that JavaScript show the split tabs menu. Although the browser
-  // process is responsivle for showing the menu, only the WebUI can determine
+  // process is responsible for showing the menu, only the WebUI can determine
   // the button's location and ensure it's visible before anchoring.
   ShowSplitTabsContextMenu();
 };
@@ -266,4 +266,7 @@ interface ToolbarUIService {
 
   // Called when the media button is pressed (e.g. pointerdown).
   OnMediaButtonMousePressed();
+
+  // Called when the Glic button is clicked to toggle or open the Glic panel.
+  OnGlicButtonClicked();
 };

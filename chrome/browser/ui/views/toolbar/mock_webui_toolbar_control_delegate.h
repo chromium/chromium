@@ -116,6 +116,10 @@ class MockWebUIToolbarControlDelegate
               (toolbar_ui_api::mojom::AvatarControlStatePtr),
               (override));
   MOCK_METHOD(void,
+              OnGlicButtonStateChanged,
+              (toolbar_ui_api::mojom::GlicButtonStatePtr state),
+              (override));
+  MOCK_METHOD(void,
               OnMediaControlStateChanged,
               (toolbar_ui_api::mojom::MediaControlStatePtr),
               (override));

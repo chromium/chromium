@@ -458,4 +458,10 @@ void ToolbarUIService::OnMediaButtonMousePressed() {
     delegate_->OnMediaButtonMousePressed();
   }
 }
+
+void ToolbarUIService::OnGlicButtonClicked() {
+  if (delegate_) {
+    delegate_->OnGlicButtonClicked();
+  }
+}
 }  // namespace toolbar_ui_api

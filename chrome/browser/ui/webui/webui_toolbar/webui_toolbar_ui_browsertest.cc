@@ -237,6 +237,7 @@ class MockToolbarUIDelegate
               (bool is_mouse_interaction),
               (override));
   MOCK_METHOD(void, OnMediaButtonMousePressed, (), (override));
+  MOCK_METHOD(void, OnGlicButtonClicked, (), (override));
   MOCK_METHOD((base::expected<std::monostate, mojo_base::mojom::ErrorPtr>),
               OnOmniboxAction,
               (toolbar_ui_api::mojom::OmniboxActionPtr action_ptr),
