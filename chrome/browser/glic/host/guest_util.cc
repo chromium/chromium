@@ -368,6 +368,15 @@ GURL GetGuestURL(content::BrowserContext* browser_context) {
   return GetLocalizedGuestURL(url);
 }
 
+base::TimeDelta GetMaxLoadingTime() {
+  int max_loading_time_ms = features::kGlicMaxLoadingTimeMs.Get();
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kGlicDev)) {
+    // Bump up timeout value, as dev server may be slow.
+    max_loading_time_ms *= 100;
+  }
+  return base::Milliseconds(std::max(0, max_loading_time_ms));
+}
+
 url::Origin GetGuestOrigin(content::BrowserContext* browser_context) {
   return url::Origin::Create(GetGuestURL(browser_context));
 }

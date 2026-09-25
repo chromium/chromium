@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_HOST_GUEST_UTIL_H_
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -61,6 +62,10 @@ bool IsGuestOriginAllowed(const url::Origin& origin,
                           content::BrowserContext* browser_context);
 bool IsAdminBlockedUrl(const GURL& url);
 bool IsFrameAllowedGlicApi(content::RenderFrameHost& frame_host);
+
+// Returns the maximum time to wait for the guest web client to load before
+// timing out.
+base::TimeDelta GetMaxLoadingTime();
 
 // Returns the StoragePartitionConfig for the Glic webview storage partition.
 content::StoragePartitionConfig GetGlicStoragePartitionConfig(

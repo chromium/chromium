@@ -7,11 +7,13 @@
 #include <memory>
 #include <string_view>
 
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -60,6 +62,23 @@ void ClickOverlayElement(content::WebContents* overlay_contents,
       )",
                                   std::string(query_selector).c_str()));
 }
+
+class TestHostObserver : public Host::Observer {
+ public:
+  explicit TestHostObserver(Host& host) { observation_.Observe(&host); }
+
+  void ClientLoadErrorOccurred(ClientLoadErrorReason reason) override {
+    last_error_reason_ = reason;
+  }
+
+  std::optional<ClientLoadErrorReason> last_error_reason() const {
+    return last_error_reason_;
+  }
+
+ private:
+  base::ScopedObservation<Host, Host::Observer> observation_{this};
+  std::optional<ClientLoadErrorReason> last_error_reason_;
+};
 
 }  // namespace
 
@@ -591,6 +610,77 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   EXPECT_EQ(manager.state(),
             GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
   EXPECT_EQ(manager.active_web_contents(), manager.guest_contents());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       LoadingTimesOutWhenGuestDoesNotConnect) {
+  GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
+                                       /*initially_hidden=*/false);
+  manager.SetVisibility(content::Visibility::VISIBLE);
+  EXPECT_EQ(manager.state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
+  EXPECT_TRUE(manager.loading_timer_for_testing().IsRunning());
+
+  // Fire loading timeout.
+  manager.loading_timer_for_testing().FireNow();
+
+  EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kError);
+  EXPECT_EQ(manager.state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
+  auto overlay_state = manager.GetOverlayStateForTesting();
+  ASSERT_TRUE(overlay_state && overlay_state->is_error());
+  EXPECT_EQ(overlay_state->get_error(), mojom::ErrorPanelType::kError);
+  EXPECT_FALSE(manager.loading_timer_for_testing().IsRunning());
+  EXPECT_TRUE(manager.ShouldReloadOnShow());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       LoadingTimerCancelledWhenGuestBecomesReady) {
+  GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
+                                       /*initially_hidden=*/false);
+  manager.SetVisibility(content::Visibility::VISIBLE);
+  EXPECT_TRUE(manager.loading_timer_for_testing().IsRunning());
+
+  // Guest client connects.
+  manager.OnWebClientCreated();
+  EXPECT_FALSE(manager.loading_timer_for_testing().IsRunning());
+  EXPECT_EQ(manager.state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       LoadingTimerCancelledWhenPanelHidden) {
+  GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
+                                       /*initially_hidden=*/false);
+  manager.SetVisibility(content::Visibility::VISIBLE);
+  EXPECT_TRUE(manager.loading_timer_for_testing().IsRunning());
+
+  // Hiding the panel cancels the loading timer.
+  manager.SetVisibility(content::Visibility::HIDDEN);
+  EXPECT_FALSE(manager.loading_timer_for_testing().IsRunning());
+
+  // Showing the panel restarts the loading timer if still unready.
+  manager.SetVisibility(content::Visibility::VISIBLE);
+  EXPECT_TRUE(manager.loading_timer_for_testing().IsRunning());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       LoadingTimeoutShowsErrorPanelAndNotifiesHost) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->overlay_contents());
+
+  TestHostObserver observer(instance->host());
+  EXPECT_FALSE(observer.last_error_reason().has_value());
+
+  ASSERT_TRUE(manager->loading_timer_for_testing().IsRunning());
+  manager->loading_timer_for_testing().FireNow();
+
+  EXPECT_EQ(observer.last_error_reason(),
+            ClientLoadErrorReason::kClientLoadTimeout);
+  EXPECT_EQ(manager->error_type(), mojom::ErrorPanelType::kError);
+  ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kError));
 }
 
 }  // namespace glic

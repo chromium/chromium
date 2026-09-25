@@ -226,6 +226,8 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     return overlay_deletion_timer_;
   }
 
+  base::OneShotTimer& loading_timer_for_testing() { return loading_timer_; }
+
  private:
   // Ensures that the overlay WebContents exists and returns it.
   content::WebContents* EnsureOverlayContents();
@@ -290,6 +292,14 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   // Updates the performance traits tracker with actuation state changes.
   void UpdateActuationTracker();
 
+  // Starts or stops the loading timeout timer based on visibility, guest
+  // readiness, and active error state.
+  void UpdateLoadingTimer();
+
+  // Invoked when the loading timeout expires without the guest client
+  // connecting.
+  void OnLoadingTimeout();
+
   void OnZoomLevelChange();
   void OnProfileReadyStateChanged();
   void UpdateForProfileReadyState(bool is_initial);
@@ -330,6 +340,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   base::CallbackListSubscription profile_ready_subscription_;
 
   base::OneShotTimer overlay_deletion_timer_;
+  base::OneShotTimer loading_timer_;
 
   base::WeakPtrFactory<GlicNoWebviewContentsManager> weak_ptr_factory_{this};
 };

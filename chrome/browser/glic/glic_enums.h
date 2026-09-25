@@ -196,11 +196,12 @@ enum class ClientLoadErrorReason {
   // The web client loaded but reported a fatal error.
   kClientError = 10,
 
-  // Timeouts owned by the chrome://glic host page. These have no counterpart
-  // in the no-webview world, where the browser's own invocation watchdog
-  // (WaitForClientConnectedTask) owns the deadline instead.
+  // Timeouts when waiting for the web client to connect or become ready.
+  // In the webview world, these are owned by the chrome://glic host page.
+  // In the no-webview world, GlicNoWebviewContentsManager owns the load
+  // timeout.
 
-  // The host page gave up waiting for the web client to connect.
+  // The host page or manager gave up waiting for the web client to connect.
   kClientLoadTimeout = 11,
 
   // A warmed client never became ready after the panel was shown.

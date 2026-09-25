@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_net_log.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic_overlay_ui.h"
@@ -655,9 +656,10 @@ void GlicNoWebviewContentsManager::UpdateDisplayState() {
         !overlay_manager_.error_type().has_value()) {
       ScheduleOverlayDeletion(base::Milliseconds(0));
     }
-    return;
+  } else {
+    TransitionTo(desired);
   }
-  TransitionTo(desired);
+  UpdateLoadingTimer();
 }
 
 void GlicNoWebviewContentsManager::OnGuestNavigationStarted() {
@@ -666,6 +668,10 @@ void GlicNoWebviewContentsManager::OnGuestNavigationStarted() {
   guest_ready_.Set(false);
   is_guest_error_ = false;
   UpdateClientLoadFailed();
+  // Allow the full loading time after navigation. UpdateDisplayState() will
+  // start the timer.
+  loading_timer_.Stop();
+  UpdateDisplayState();
 }
 
 void GlicNoWebviewContentsManager::OnGuestNavigated(
@@ -930,6 +936,28 @@ void GlicNoWebviewContentsManager::UpdateActuationTracker() {
   }
   glic::GlicPerfTraitsTracker::GetInstance()->NotifyActuationStateChanged(
       guest_contents(), state);
+}
+
+void GlicNoWebviewContentsManager::UpdateLoadingTimer() {
+  bool should_run_timer = is_visible_ && !guest_ready_.get() &&
+                          !overlay_manager_.error_type().has_value();
+  if (should_run_timer) {
+    if (!loading_timer_.IsRunning()) {
+      loading_timer_.Start(
+          FROM_HERE, GetMaxLoadingTime(),
+          base::BindOnce(&GlicNoWebviewContentsManager::OnLoadingTimeout,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+  } else {
+    loading_timer_.Stop();
+  }
+}
+
+void GlicNoWebviewContentsManager::OnLoadingTimeout() {
+  SetErrorState(mojom::ErrorPanelType::kError);
+  if (host_) {
+    host_->ClientLoadErrorOccurred(ClientLoadErrorReason::kClientLoadTimeout);
+  }
 }
 
 }  // namespace glic
