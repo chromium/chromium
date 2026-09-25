@@ -259,6 +259,9 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
           external_data_dir, store.get()));
   if (force_immediate_load) {
     store->LoadImmediately();
+    if (extension_install_store) {
+      extension_install_store->LoadImmediately();
+    }
   }
 
   // TODO(crbug.com/452305191): Create the right store for ChromeOS.
