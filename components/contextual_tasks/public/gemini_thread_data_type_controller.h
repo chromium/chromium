@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "components/sync/service/data_type_controller.h"
 
 namespace contextual_tasks {
@@ -16,7 +17,8 @@ class ContextualTasksService;
 class GeminiThreadDataTypeController : public syncer::DataTypeController {
  public:
   GeminiThreadDataTypeController(
-      ContextualTasksService* contextual_tasks_service,
+      base::RepeatingCallback<ContextualTasksService*()>
+          contextual_tasks_service_getter,
       std::unique_ptr<syncer::DataTypeControllerDelegate>
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::DataTypeControllerDelegate>
@@ -29,7 +31,8 @@ class GeminiThreadDataTypeController : public syncer::DataTypeController {
       const PreconditionContext& context) const override;
 
  private:
-  raw_ptr<ContextualTasksService> contextual_tasks_service_;
+  base::RepeatingCallback<ContextualTasksService*()>
+      contextual_tasks_service_getter_;
 };
 
 }  // namespace contextual_tasks

@@ -4,6 +4,7 @@
 
 #include "components/contextual_tasks/public/gemini_thread_data_type_controller.h"
 
+#include "base/functional/bind.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/data_type_controller.h"
@@ -25,11 +26,17 @@ class GeminiThreadDataTypeControllerTest : public testing::Test {
         std::make_unique<NiceMock<MockContextualTasksService>>();
 
     controller_ = std::make_unique<GeminiThreadDataTypeController>(
-        contextual_tasks_service_.get(),
+        base::BindRepeating(
+            &GeminiThreadDataTypeControllerTest::GetContextualTasksService,
+            base::Unretained(this)),
         std::make_unique<syncer::FakeDataTypeControllerDelegate>(
             syncer::GEMINI_THREAD),
         std::make_unique<syncer::FakeDataTypeControllerDelegate>(
             syncer::GEMINI_THREAD));
+  }
+
+  ContextualTasksService* GetContextualTasksService() {
+    return contextual_tasks_service_.get();
   }
 
  protected:
@@ -50,6 +57,15 @@ TEST_F(GeminiThreadDataTypeControllerTest, PreconditionsMetWhenEligible) {
 TEST_F(GeminiThreadDataTypeControllerTest, StopAndKeepDataWhenIneligible) {
   ON_CALL(*contextual_tasks_service_, IsGeminiThreadsEligible)
       .WillByDefault(testing::Return(false));
+  EXPECT_EQ(
+      syncer::DataTypeController::PreconditionState::kMustStopAndKeepData,
+      controller_->GetPreconditionState(
+          syncer::DataTypeController::PreconditionContext(
+              signin::AccountManagedStatusFinderOutcome::kConsumerGmail)));
+}
+
+TEST_F(GeminiThreadDataTypeControllerTest, StopAndKeepDataWhenServiceIsNull) {
+  contextual_tasks_service_.reset();
   EXPECT_EQ(
       syncer::DataTypeController::PreconditionState::kMustStopAndKeepData,
       controller_->GetPreconditionState(

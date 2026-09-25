@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/contextual_tasks/public/ai_thread_data_type_controller.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/data_type.h"
 
@@ -168,8 +168,9 @@ class CommonControllerBuilder {
   void SetConsentAuditor(consent_auditor::ConsentAuditor* consent_auditor);
   void SetCollaborationService(
       collaboration::CollaborationService* collaboration_service);
-  void SetContextualTasksService(
-      contextual_tasks::ContextualTasksService* contextual_tasks_service);
+  void SetContextualTasksServiceGetter(
+      base::RepeatingCallback<contextual_tasks::ContextualTasksService*()>
+          contextual_tasks_service_getter);
   void SetPersonalCollaborationDataService(
       data_sharing::personal_collaboration_data::
           PersonalCollaborationDataService*
@@ -421,8 +422,8 @@ class CommonControllerBuilder {
       family_link_settings_service_;
   SafeOptional<raw_ptr<collaboration::CollaborationService>>
       collaboration_service_;
-  SafeOptional<raw_ptr<contextual_tasks::ContextualTasksService>>
-      contextual_tasks_service_;
+  base::RepeatingCallback<contextual_tasks::ContextualTasksService*()>
+      contextual_tasks_service_getter_;
   SafeOptional<raw_ptr<data_sharing::personal_collaboration_data::
                            PersonalCollaborationDataService>>
       personal_collaboration_data_service_;

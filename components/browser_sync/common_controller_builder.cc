@@ -182,6 +182,23 @@ ContactInfoDelegateFromDataService(autofill::AutofillWebDataService* service) {
       ->GetControllerDelegate();
 }
 
+base::WeakPtr<syncer::DataTypeControllerDelegate> AiThreadDelegateFromGetter(
+    const base::RepeatingCallback<contextual_tasks::ContextualTasksService*()>&
+        contextual_tasks_service_getter) {
+  contextual_tasks::ContextualTasksService* service =
+      contextual_tasks_service_getter.Run();
+  return service ? service->GetAiThreadControllerDelegate() : nullptr;
+}
+
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+GeminiThreadDelegateFromGetter(
+    const base::RepeatingCallback<contextual_tasks::ContextualTasksService*()>&
+        contextual_tasks_service_getter) {
+  contextual_tasks::ContextualTasksService* service =
+      contextual_tasks_service_getter.Run();
+  return service ? service->GetGeminiThreadControllerDelegate() : nullptr;
+}
+
 // Helper function that deals will null (e.g. tests, iOS webview).
 base::WeakPtr<syncer::SyncableService> SyncableServiceForPrefs(
     sync_preferences::PrefServiceSyncable* prefs_service,
@@ -264,9 +281,10 @@ void CommonControllerBuilder::SetCollaborationService(
   collaboration_service_.Set(collaboration_service);
 }
 
-void CommonControllerBuilder::SetContextualTasksService(
-    contextual_tasks::ContextualTasksService* contextual_tasks_service) {
-  contextual_tasks_service_.Set(contextual_tasks_service);
+void CommonControllerBuilder::SetContextualTasksServiceGetter(
+    base::RepeatingCallback<contextual_tasks::ContextualTasksService*()>
+        contextual_tasks_service_getter) {
+  contextual_tasks_service_getter_ = std::move(contextual_tasks_service_getter);
 }
 
 void CommonControllerBuilder::SetPersonalCollaborationDataService(
@@ -345,7 +363,6 @@ void CommonControllerBuilder::SetPasswordStore(
   profile_password_store_.Set(profile_password_store);
   account_password_store_.Set(account_password_store);
 }
-
 
 void CommonControllerBuilder::SetPrefService(PrefService* pref_service) {
   pref_service_.Set(pref_service);
@@ -436,7 +453,8 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 
   if (!disabled_types.Has(syncer::AUTOFILL_WALLET_METADATA) &&
       !disabled_types.Has(syncer::AUTOFILL_WALLET_DATA)) {
-    add_controller(CreateAutofillWalletMetadataDataTypeController(sync_service));
+    add_controller(
+        CreateAutofillWalletMetadataDataTypeController(sync_service));
   }
 
 #if !BUILDFLAG(IS_IOS)
@@ -475,16 +493,15 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 
   if (!disabled_types.Has(syncer::INCOMING_PASSWORD_SHARING_INVITATION) &&
       !disabled_types.Has(syncer::PASSWORDS)) {
-    add_controller(
-        CreateIncomingPasswordSharingInvitationDataTypeController(sync_service));
+    add_controller(CreateIncomingPasswordSharingInvitationDataTypeController(
+        sync_service));
   }
 
   if (!disabled_types.Has(syncer::OUTGOING_PASSWORD_SHARING_INVITATION) &&
       !disabled_types.Has(syncer::PASSWORDS)) {
-    add_controller(
-        CreateOutgoingPasswordSharingInvitationDataTypeController(sync_service));
+    add_controller(CreateOutgoingPasswordSharingInvitationDataTypeController(
+        sync_service));
   }
-
 
   if (!disabled_types.Has(syncer::PREFERENCES)) {
     add_controller(CreatePreferencesDataTypeController(channel));
@@ -819,7 +836,6 @@ std::unique_ptr<syncer::DataTypeController> CommonControllerBuilder::
       sync_service, password_sender_service_.value(), pref_service_.value());
 }
 
-
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreatePreferencesDataTypeController(
     version_info::Channel channel) {
@@ -1133,41 +1149,41 @@ CommonControllerBuilder::CreateSharedCommentDataTypeController() {
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreateAiThreadDataTypeController() {
   if (!base::FeatureList::IsEnabled(syncer::kSyncAIThread) ||
-      !contextual_tasks_service_.value() || !aim_eligibility_service_.value()) {
-    return nullptr;
-  }
-  syncer::DataTypeControllerDelegate* delegate =
-      contextual_tasks_service_.value()->GetAiThreadControllerDelegate().get();
-  if (!delegate) {
+      !aim_eligibility_service_.value() || !contextual_tasks_service_getter_) {
     return nullptr;
   }
   return std::make_unique<contextual_tasks::AIThreadDataTypeController>(
       aim_eligibility_service_.value(),
-      /*delegate_for_full_sync_mode= */
-      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
-      /*delegate_for_transport_mode= */
-      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate));
+      /*delegate_for_full_sync_mode=*/
+      std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindRepeating(&AiThreadDelegateFromGetter,
+                              contextual_tasks_service_getter_)),
+      /*delegate_for_transport_mode=*/
+      std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindRepeating(&AiThreadDelegateFromGetter,
+                              contextual_tasks_service_getter_)));
 }
 
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreateGeminiThreadDataTypeController() {
   if (!base::FeatureList::IsEnabled(syncer::kSyncGeminiThread) ||
-      !contextual_tasks_service_.value()) {
-    return nullptr;
-  }
-  syncer::DataTypeControllerDelegate* delegate =
-      contextual_tasks_service_.value()
-          ->GetGeminiThreadControllerDelegate()
-          .get();
-  if (!delegate) {
+      !contextual_tasks_service_getter_) {
     return nullptr;
   }
   return std::make_unique<contextual_tasks::GeminiThreadDataTypeController>(
-      /*contextual_tasks_service=*/contextual_tasks_service_.value(),
-      /*delegate_for_full_sync_mode= */
-      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
-      /*delegate_for_transport_mode= */
-      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate));
+      contextual_tasks_service_getter_,
+      /*delegate_for_full_sync_mode=*/
+      std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindRepeating(&GeminiThreadDelegateFromGetter,
+                              contextual_tasks_service_getter_)),
+      /*delegate_for_transport_mode=*/
+      std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindRepeating(&GeminiThreadDelegateFromGetter,
+                              contextual_tasks_service_getter_)));
 }
 
 std::unique_ptr<syncer::DataTypeController>
@@ -1291,8 +1307,8 @@ CommonControllerBuilder::CreateFamilyLinkSettingsDataTypeController(
   return std::make_unique<FamilyLinkSettingsDataTypeController>(
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel),
       data_type_store_service_.value()->GetStoreFactory(),
-      family_link_settings_service_.value()->AsWeakPtr(),
-      pref_service_.value(), sync_service);
+      family_link_settings_service_.value()->AsWeakPtr(), pref_service_.value(),
+      sync_service);
 }
 #endif
 

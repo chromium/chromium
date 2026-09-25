@@ -4,6 +4,10 @@
 
 #include "components/contextual_tasks/public/gemini_thread_data_type_controller.h"
 
+#include <utility>
+
+#include "base/check.h"
+#include "base/functional/callback.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/data_type_controller.h"
@@ -11,7 +15,8 @@
 namespace contextual_tasks {
 
 GeminiThreadDataTypeController::GeminiThreadDataTypeController(
-    ContextualTasksService* contextual_tasks_service,
+    base::RepeatingCallback<ContextualTasksService*()>
+        contextual_tasks_service_getter,
     std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::DataTypeControllerDelegate>
@@ -19,7 +24,10 @@ GeminiThreadDataTypeController::GeminiThreadDataTypeController(
     : DataTypeController(syncer::GEMINI_THREAD,
                          std::move(delegate_for_full_sync_mode),
                          std::move(delegate_for_transport_mode)),
-      contextual_tasks_service_(contextual_tasks_service) {}
+      contextual_tasks_service_getter_(
+          std::move(contextual_tasks_service_getter)) {
+  CHECK(contextual_tasks_service_getter_);
+}
 
 GeminiThreadDataTypeController::~GeminiThreadDataTypeController() = default;
 
@@ -29,7 +37,10 @@ GeminiThreadDataTypeController::GetPreconditionState(
   // TODO(crbug.com/493203504): Add sync integration test.
   // TODO(crbug.com/493853682): Add in listener to update according to
   // Gemini thread eligibility.
-  if (contextual_tasks_service_->IsGeminiThreadsEligible()) {
+  ContextualTasksService* contextual_tasks_service =
+      contextual_tasks_service_getter_.Run();
+  if (contextual_tasks_service &&
+      contextual_tasks_service->IsGeminiThreadsEligible()) {
     return syncer::DataTypeController::PreconditionState::kPreconditionsMet;
   }
   return syncer::DataTypeController::PreconditionState::kMustStopAndKeepData;

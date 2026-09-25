@@ -10,6 +10,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -183,6 +184,16 @@ autofill::AddressDataManager* GetAddressDataManager(Profile* profile) {
   return pdm ? &pdm->address_data_manager() : nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+contextual_tasks::ContextualTasksService* GetContextualTasksService(
+    base::WeakPtr<Profile> profile) {
+  return profile
+             ? contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+                   profile.get())
+             : nullptr;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 syncer::DataTypeController::TypeVector CreateCommonControllers(
     Profile* profile,
     syncer::SyncService* sync_service) {
@@ -229,8 +240,10 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
 #if !BUILDFLAG(IS_ANDROID)
   builder.SetAimEligibilityService(
       AimEligibilityServiceFactory::GetForProfile(profile));
-  builder.SetContextualTasksService(
-      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile));
+  // A callback is needed here to decouple `SyncServiceFactory` from
+  // `ContextualTasksServiceFactory` and prevent dependency cycles.
+  builder.SetContextualTasksServiceGetter(
+      base::BindRepeating(&GetContextualTasksService, profile->GetWeakPtr()));
 #endif
   builder.SetDataSharingService(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile));
@@ -551,9 +564,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(browser_sync::UserEventServiceFactory::GetInstance());
   DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
-#if !BUILDFLAG(IS_ANDROID)
-  DependsOn(contextual_tasks::ContextualTasksServiceFactory::GetInstance());
-#endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(CrossDeviceThemeTrackerFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
