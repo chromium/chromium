@@ -443,6 +443,108 @@ TEST_F(ContextMenuControllerTest, WritingDirectionFromPlugin) {
                 ContextMenuData::kCheckableMenuItemChecked);
 }
 
+TEST_F(ContextMenuControllerTest, TranslateFromPlugin) {
+  frame_test_helpers::LoadFrame(LocalMainFrame(), R"HTML(data:text/html,
+  <html>
+    <body>
+      <embed id="plugin-generic" type="application/x-webkit-test-webplugin"></embed>
+      <embed id="plugin-pdf" type="application/pdf"></embed>
+      <embed id="plugin-chrome-pdf" type="application/x-google-chrome-pdf"></embed>
+      <embed id="plugin-pdf-uppercase" type="APPLICATION/PDF"></embed>
+    </body>
+  </html>
+  )HTML");
+
+  Document* document = GetDocument();
+
+  Element* plugin_generic =
+      document->getElementById(AtomicString("plugin-generic"));
+  auto* embedded_generic =
+      DynamicTo<LayoutEmbeddedContent>(plugin_generic->GetLayoutObject());
+  ASSERT_TRUE(embedded_generic && embedded_generic->Plugin());
+  auto* test_plugin_generic = DynamicTo<ContextMenuControllerTestPlugin>(
+      embedded_generic->Plugin()->Plugin());
+  ASSERT_TRUE(test_plugin_generic);
+  test_plugin_generic->SetAttributesForTesting(
+      {/*can_copy=*/true, /*selected_text=*/"some text"});
+
+  ASSERT_TRUE(ShowContextMenuForElement(
+      plugin_generic, ui::mojom::blink::MenuSourceType::kMouse));
+  ContextMenuData context_menu_data_generic =
+      GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data_generic.edit_flags &
+                ContextMenuDataEditFlags::kCanTranslate,
+            0);
+  EXPECT_EQ(context_menu_data_generic.edit_flags &
+                ContextMenuDataEditFlags::kCanCopy,
+            ContextMenuDataEditFlags::kCanCopy);
+
+  Element* plugin_pdf = document->getElementById(AtomicString("plugin-pdf"));
+  auto* embedded_pdf =
+      DynamicTo<LayoutEmbeddedContent>(plugin_pdf->GetLayoutObject());
+  ASSERT_TRUE(embedded_pdf && embedded_pdf->Plugin());
+  auto* test_plugin_pdf = DynamicTo<ContextMenuControllerTestPlugin>(
+      embedded_pdf->Plugin()->Plugin());
+  ASSERT_TRUE(test_plugin_pdf);
+  test_plugin_pdf->SetAttributesForTesting(
+      {/*can_copy=*/true, /*selected_text=*/"some text"});
+
+  ASSERT_TRUE(ShowContextMenuForElement(
+      plugin_pdf, ui::mojom::blink::MenuSourceType::kMouse));
+  ContextMenuData context_menu_data_pdf =
+      GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data_pdf.edit_flags &
+                ContextMenuDataEditFlags::kCanTranslate,
+            ContextMenuDataEditFlags::kCanTranslate);
+  EXPECT_EQ(context_menu_data_pdf.edit_flags &
+                ContextMenuDataEditFlags::kCanCopy,
+            ContextMenuDataEditFlags::kCanCopy);
+
+  Element* plugin_chrome_pdf =
+      document->getElementById(AtomicString("plugin-chrome-pdf"));
+  auto* embedded_chrome_pdf =
+      DynamicTo<LayoutEmbeddedContent>(plugin_chrome_pdf->GetLayoutObject());
+  ASSERT_TRUE(embedded_chrome_pdf && embedded_chrome_pdf->Plugin());
+  auto* test_plugin_chrome_pdf = DynamicTo<ContextMenuControllerTestPlugin>(
+      embedded_chrome_pdf->Plugin()->Plugin());
+  ASSERT_TRUE(test_plugin_chrome_pdf);
+  test_plugin_chrome_pdf->SetAttributesForTesting(
+      {/*can_copy=*/true, /*selected_text=*/"some text"});
+
+  ASSERT_TRUE(ShowContextMenuForElement(
+      plugin_chrome_pdf, ui::mojom::blink::MenuSourceType::kMouse));
+  ContextMenuData context_menu_data_chrome_pdf =
+      GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data_chrome_pdf.edit_flags &
+                ContextMenuDataEditFlags::kCanTranslate,
+            ContextMenuDataEditFlags::kCanTranslate);
+  EXPECT_EQ(context_menu_data_chrome_pdf.edit_flags &
+                ContextMenuDataEditFlags::kCanCopy,
+            ContextMenuDataEditFlags::kCanCopy);
+
+  Element* plugin_pdf_uppercase =
+      document->getElementById(AtomicString("plugin-pdf-uppercase"));
+  auto* embedded_pdf_uppercase = DynamicTo<LayoutEmbeddedContent>(
+      plugin_pdf_uppercase->GetLayoutObject());
+  ASSERT_TRUE(embedded_pdf_uppercase && embedded_pdf_uppercase->Plugin());
+  auto* test_plugin_pdf_uppercase = DynamicTo<ContextMenuControllerTestPlugin>(
+      embedded_pdf_uppercase->Plugin()->Plugin());
+  ASSERT_TRUE(test_plugin_pdf_uppercase);
+  test_plugin_pdf_uppercase->SetAttributesForTesting(
+      {/*can_copy=*/true, /*selected_text=*/"some text"});
+
+  ASSERT_TRUE(ShowContextMenuForElement(
+      plugin_pdf_uppercase, ui::mojom::blink::MenuSourceType::kMouse));
+  ContextMenuData context_menu_data_pdf_uppercase =
+      GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(context_menu_data_pdf_uppercase.edit_flags &
+                ContextMenuDataEditFlags::kCanTranslate,
+            ContextMenuDataEditFlags::kCanTranslate);
+  EXPECT_EQ(context_menu_data_pdf_uppercase.edit_flags &
+                ContextMenuDataEditFlags::kCanCopy,
+            ContextMenuDataEditFlags::kCanCopy);
+}
+
 TEST_F(ContextMenuControllerTest, VideoNotLoaded) {
   ContextMenuAllowedScope context_menu_allowed_scope;
   HitTestResult hit_test_result;

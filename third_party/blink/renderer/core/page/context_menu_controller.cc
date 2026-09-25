@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -100,6 +101,7 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink.h"
 
 namespace blink {
@@ -686,8 +688,14 @@ bool ContextMenuController::ShowContextMenu(
                 ContextMenuData::kCheckableMenuItemDisabled;
           }
         }
-        // Disable translation for plugins.
-        data.edit_flags &= ~ContextMenuDataEditFlags::kCanTranslate;
+        // Disable translation for plugins, except for the PDF viewer.
+        const AtomicString& plugin_type =
+            plugin_element->FastGetAttribute(html_names::kTypeAttr);
+        if (!EqualIgnoringAsciiCase(plugin_type, "application/pdf") &&
+            !EqualIgnoringAsciiCase(plugin_type,
+                                    "application/x-google-chrome-pdf")) {
+          data.edit_flags &= ~ContextMenuDataEditFlags::kCanTranslate;
+        }
 
         // Figure out the media flags.
         data.media_flags |= ContextMenuData::kMediaCanSave;
