@@ -424,6 +424,67 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
           "Privacy.UniversalOptOut.SettingsVisibility", false, 1);
     }
   }
+
+  // Hidden when eligible and features enabled, but eligibility is forced off.
+  ResetController();
+  {
+    [[NSUserDefaults standardUserDefaults]
+        setInteger:static_cast<NSInteger>(
+                       experimental_flags::UniversalOptOutEligibilityOverride::
+                           kForcedOff)
+            forKey:@"UniversalOptOutEligibilityOverride"];
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/
+        {universal_optout::features::kUniversalOptOut,
+         universal_optout::features::kUniversalOptOutExtension,
+         universal_optout::features::kUniversalOptOutSettings},
+        /*disabled_features=*/{});
+
+    CreateController();
+    CheckController();
+    EXPECT_FALSE(HasUniversalOptOutItem());
+    histogram_tester.ExpectUniqueSample(
+        "Privacy.UniversalOptOut.SettingsVisibility", false, 1);
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:@"UniversalOptOutEligibilityOverride"];
+  }
+
+  // Visible when ineligible and features enabled, but eligibility is forced on
+  // (on iOS 18.4+).
+  ResetController();
+  profile_->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEligible, false);
+  {
+    [[NSUserDefaults standardUserDefaults]
+        setInteger:static_cast<NSInteger>(
+                       experimental_flags::UniversalOptOutEligibilityOverride::
+                           kForcedOn)
+            forKey:@"UniversalOptOutEligibilityOverride"];
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/
+        {universal_optout::features::kUniversalOptOut,
+         universal_optout::features::kUniversalOptOutExtension,
+         universal_optout::features::kUniversalOptOutSettings},
+        /*disabled_features=*/{});
+
+    CreateController();
+    CheckController();
+    if (base::ios::IsRunningOnOrLater(18, 4, 0)) {
+      EXPECT_TRUE(HasUniversalOptOutItem());
+      histogram_tester.ExpectUniqueSample(
+          "Privacy.UniversalOptOut.SettingsVisibility", true, 1);
+    } else {
+      EXPECT_FALSE(HasUniversalOptOutItem());
+      histogram_tester.ExpectUniqueSample(
+          "Privacy.UniversalOptOut.SettingsVisibility", false, 1);
+    }
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:@"UniversalOptOutEligibilityOverride"];
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

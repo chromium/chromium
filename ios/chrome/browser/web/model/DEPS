@@ -56,6 +56,7 @@ include_rules = [
   "+ios/chrome/browser/text_selection/model",
   "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/unified_consent/model",
+  "+ios/chrome/browser/universal_optout/model",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web_extension/model",
   "+ios/chrome/browser/web_selection/model",

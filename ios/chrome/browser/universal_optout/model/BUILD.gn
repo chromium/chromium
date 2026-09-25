@@ -20,3 +20,38 @@ source_set("model") {
     "//ios/web/public",
   ]
 }
+
+source_set("eligibility_utils") {
+  sources = [
+    "eligibility_utils.h",
+    "eligibility_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/universal_optout",
+    "//components/universal_optout:features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "eligibility_utils_unittest.mm" ]
+  deps = [
+    ":eligibility_utils",
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/universal_optout",
+    "//components/universal_optout:features",
+    "//components/variations:test_support",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/web/public",
+    "//testing/gtest",
+  ]
+}

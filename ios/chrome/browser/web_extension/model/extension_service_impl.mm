@@ -14,8 +14,8 @@
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/universal_optout/prefs.h"
-#import "components/universal_optout/universal_optout_service.h"
 #import "ios/web/public/extension/extension_controller.h"
+#import "ios/web/public/web_client.h"
 
 namespace {
 
@@ -25,10 +25,8 @@ constexpr base::TimeDelta kExtensionLoadingTimeout = base::Seconds(2);
 
 ExtensionServiceImpl::ExtensionServiceImpl(
     PrefService& pref_service,
-    universal_optout::UniversalOptOutService* universal_optout_service,
     std::unique_ptr<web::ExtensionController> extension_controller)
     : pref_service_(pref_service),
-      universal_optout_service_(universal_optout_service),
       extension_controller_(std::move(extension_controller)) {}
 
 ExtensionServiceImpl::~ExtensionServiceImpl() {
@@ -68,12 +66,10 @@ base::CallbackListSubscription ExtensionServiceImpl::RunWhenReady(
   return ready_callbacks_.Add(std::move(callback));
 }
 
-void ExtensionServiceImpl::Initialize() {
+void ExtensionServiceImpl::Initialize(web::UniversalOptOutState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const bool is_eligible =
-      universal_optout_service_ && universal_optout_service_->IsEligible();
-
-  if (!is_eligible || !extension_controller_) {
+  if (state == web::UniversalOptOutState::kNotEligible ||
+      !extension_controller_) {
     is_ready_ = true;
     return;
   }
@@ -84,9 +80,7 @@ void ExtensionServiceImpl::Initialize() {
       base::BindRepeating(&ExtensionServiceImpl::OnOptOutPrefChanged,
                           base::Unretained(this)));
 
-  const bool opted_in = pref_service_->GetBoolean(
-      universal_optout::prefs::kUniversalOptOutEnabled);
-  if (opted_in) {
+  if (state == web::UniversalOptOutState::kEnabled) {
     extension_load_started_at_startup_ = true;
     is_loading_ = true;
     initialization_start_time_ = base::TimeTicks::Now();

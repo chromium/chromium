@@ -63,6 +63,8 @@ BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
 NSString* const kTipsMagicStackLensShopWithImage =
     @"TipsMagicStackLensShopWithImage";
 NSString* const kTipsMagicStackStateOverride = @"TipsMagicStackStateOverride";
+NSString* const kUniversalOptOutEligibilityOverride =
+    @"UniversalOptOutEligibilityOverride";
 NSString* const kInactiveTabsDemoMode = @"InactiveTabsDemoMode";
 NSString* const kForceInactiveTabsUserEducation =
     @"ForceInactiveTabsUserEducation";
@@ -436,6 +438,19 @@ int GetForcedPushNotificationType() {
 int GetForcedPushNotificationDelay() {
   return [[NSUserDefaults standardUserDefaults]
       integerForKey:kForcedPushNotificationDelay];
+}
+
+UniversalOptOutEligibilityOverride GetUniversalOptOutEligibilityOverride() {
+  int value = [[NSUserDefaults standardUserDefaults]
+      integerForKey:kUniversalOptOutEligibilityOverride];
+  switch (value) {
+    case 1:
+      return UniversalOptOutEligibilityOverride::kForcedOn;
+    case 2:
+      return UniversalOptOutEligibilityOverride::kForcedOff;
+    default:
+      return UniversalOptOutEligibilityOverride::kDefault;
+  }
 }
 
 }  // namespace experimental_flags

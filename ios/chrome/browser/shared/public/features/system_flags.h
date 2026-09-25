@@ -214,6 +214,16 @@ int GetForcedPushNotificationType();
 // Returns the delay in seconds before triggering the forced push notification.
 int GetForcedPushNotificationDelay();
 
+// The forced state of Universal Opt-Out eligibility from experimental settings.
+enum class UniversalOptOutEligibilityOverride {
+  kDefault = 0,
+  kForcedOn = 1,
+  kForcedOff = 2,
+};
+
+// Returns the forced state of Universal Opt-Out eligibility.
+UniversalOptOutEligibilityOverride GetUniversalOptOutEligibilityOverride();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

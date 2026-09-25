@@ -29,7 +29,6 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
-#import "components/universal_optout/features.h"
 #import "components/universal_optout/prefs.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
@@ -63,12 +62,14 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/universal_optout/model/eligibility_utils.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
+#import "ios/web/public/web_client.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -111,12 +112,8 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
 const char kSyncSettingsURL[] = "settings://open_sync";
 
 bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
-  return (prefs->GetBoolean(universal_optout::prefs::kUniversalOptOutEnabled) ||
-          prefs->GetBoolean(
-              universal_optout::prefs::kUniversalOptOutEligible)) &&
-         universal_optout::features::IsUniversalOptOutEnabled() &&
-         base::FeatureList::IsEnabled(
-             universal_optout::features::kUniversalOptOutSettings);
+  return universal_optout::GetUniversalOptOutState(prefs, nullptr) !=
+         web::UniversalOptOutState::kNotEligible;
 }
 
 }  // namespace

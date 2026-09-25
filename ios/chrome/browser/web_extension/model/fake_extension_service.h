@@ -11,6 +11,10 @@
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
 
+namespace web {
+enum class UniversalOptOutState;
+}  // namespace web
+
 // A fake `ExtensionService` for testing.
 class FakeExtensionService final : public ExtensionService {
  public:
@@ -20,7 +24,7 @@ class FakeExtensionService final : public ExtensionService {
   ~FakeExtensionService() override;
 
   // ExtensionService:
-  void Initialize() override;
+  void Initialize(web::UniversalOptOutState state) override;
   web::ExtensionController* GetExtensionController() const override;
   bool IsReady() const override;
   bool WebExtensionsWereLoadedAtStartup() const override;

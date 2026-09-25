@@ -7,16 +7,16 @@
 #import <utility>
 
 #import "base/check_deref.h"
-#import "base/feature_list.h"
 #import "base/ios/ios_util.h"
-#import "components/universal_optout/features.h"
-#import "components/universal_optout/universal_optout_service.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/universal_optout/model/eligibility_utils.h"
 #import "ios/chrome/browser/universal_optout/model/universal_optout_service_factory.h"
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
 #import "ios/chrome/browser/web_extension/model/extension_service_impl.h"
 #import "ios/web/public/extension/extension_controller.h"
+#import "ios/web/public/web_client.h"
 
 // static
 ExtensionService* ExtensionServiceFactory::GetForProfile(ProfileIOS* profile) {
@@ -54,14 +54,11 @@ std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
 
   universal_optout::UniversalOptOutService* optout_service =
       universal_optout::UniversalOptOutServiceFactory::GetForProfile(profile);
-  if (!optout_service || !optout_service->IsEligible()) {
-    return nullptr;
-  }
 
-  if (!base::FeatureList::IsEnabled(
-          universal_optout::features::kUniversalOptOut) ||
-      !base::FeatureList::IsEnabled(
-          universal_optout::features::kUniversalOptOutExtension)) {
+  const web::UniversalOptOutState opt_out_state =
+      universal_optout::GetUniversalOptOutState(profile->GetPrefs(),
+                                                optout_service);
+  if (opt_out_state == web::UniversalOptOutState::kNotEligible) {
     return nullptr;
   }
 
@@ -72,9 +69,8 @@ std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
       return nullptr;
     }
     auto service = std::make_unique<ExtensionServiceImpl>(
-        CHECK_DEREF(profile->GetPrefs()), optout_service,
-        std::move(extension_controller));
-    service->Initialize();
+        CHECK_DEREF(profile->GetPrefs()), std::move(extension_controller));
+    service->Initialize(opt_out_state);
     return service;
   }
   return nullptr;

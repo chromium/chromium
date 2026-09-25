@@ -12,7 +12,7 @@ FakeExtensionService::FakeExtensionService() = default;
 
 FakeExtensionService::~FakeExtensionService() = default;
 
-void FakeExtensionService::Initialize() {}
+void FakeExtensionService::Initialize(web::UniversalOptOutState state) {}
 
 web::ExtensionController* FakeExtensionService::GetExtensionController() const {
   return nullptr;

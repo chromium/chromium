@@ -13,14 +13,15 @@
 
 namespace web {
 class ExtensionController;
+enum class UniversalOptOutState;
 }  // namespace web
 
 // Pure interface for the profile-keyed service managing web extensions.
 class ExtensionService : public KeyedService {
  public:
-  // Initializes the service, registers preference observers, and initiates
-  // loading of extensions if applicable.
-  virtual void Initialize() = 0;
+  // Initializes the service with the given `opt_out_state`, registers
+  // preference observers, and initiates loading of extensions if enabled.
+  virtual void Initialize(web::UniversalOptOutState opt_out_state) = 0;
 
   // Returns the `web::ExtensionController` owned by this service.
   virtual web::ExtensionController* GetExtensionController() const

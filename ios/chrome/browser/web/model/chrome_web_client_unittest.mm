@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/web/model/error_page_util.h"
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
@@ -399,7 +400,6 @@ TEST_P(ChromeWebClientTest_V4V5, PrepareErrorPageForSafeBrowsingError) {
 // security error), so the Safe Browsing interstitial should NOT be bypassed and
 // must be displayed instead.
 
-
 // Tests PrepareErrorPage for a safe browsing enterprise block error, which
 // results in a committed enterprise interstitial.
 TEST_F(ChromeWebClientTest,
@@ -659,8 +659,6 @@ TEST_F(ChromeWebClientTest, IsPointingToSameDocumentOnline) {
       web_client.IsPointingToSameDocument(different_url1, different_url2));
 }
 
-
-
 // Tests if URLs with one empty is working as expected.
 TEST_F(ChromeWebClientTest, IsPointingToSameDocumentEmpty) {
   ChromeWebClient web_client;
@@ -719,6 +717,51 @@ TEST_F(ChromeWebClientTest, GetUniversalOptOutState) {
       universal_optout::prefs::kUniversalOptOutEnabled, true);
   EXPECT_EQ(web::UniversalOptOutState::kEnabled,
             web_client.GetUniversalOptOutState(profile()));
+
+  // Test experimental flag override: Forced Off overrides both eligible and
+  // enabled states to kNotEligible.
+  {
+    profile()->GetPrefs()->SetBoolean(
+        universal_optout::prefs::kUniversalOptOutEligible, true);
+    profile()->GetPrefs()->SetBoolean(
+        universal_optout::prefs::kUniversalOptOutEnabled, false);
+    [[NSUserDefaults standardUserDefaults]
+        setInteger:static_cast<NSInteger>(
+                       experimental_flags::UniversalOptOutEligibilityOverride::
+                           kForcedOff)
+            forKey:@"UniversalOptOutEligibilityOverride"];
+    EXPECT_EQ(web::UniversalOptOutState::kNotEligible,
+              web_client.GetUniversalOptOutState(profile()));
+
+    profile()->GetPrefs()->SetBoolean(
+        universal_optout::prefs::kUniversalOptOutEnabled, true);
+    EXPECT_EQ(web::UniversalOptOutState::kNotEligible,
+              web_client.GetUniversalOptOutState(profile()));
+  }
+
+  // Test experimental flag override: Forced On makes an ineligible profile
+  // eligible (or enabled if preference is set).
+  {
+    profile()->GetPrefs()->SetBoolean(
+        universal_optout::prefs::kUniversalOptOutEligible, false);
+    profile()->GetPrefs()->SetBoolean(
+        universal_optout::prefs::kUniversalOptOutEnabled, false);
+    [[NSUserDefaults standardUserDefaults]
+        setInteger:static_cast<NSInteger>(
+                       experimental_flags::UniversalOptOutEligibilityOverride::
+                           kForcedOn)
+            forKey:@"UniversalOptOutEligibilityOverride"];
+    EXPECT_EQ(web::UniversalOptOutState::kEligible,
+              web_client.GetUniversalOptOutState(profile()));
+
+    profile()->GetPrefs()->SetBoolean(
+        universal_optout::prefs::kUniversalOptOutEnabled, true);
+    EXPECT_EQ(web::UniversalOptOutState::kEnabled,
+              web_client.GetUniversalOptOutState(profile()));
+  }
+
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:@"UniversalOptOutEligibilityOverride"];
 }
 
 // Tests that GetExtensionController returns nullptr when no ExtensionService is
@@ -733,10 +776,11 @@ TEST_F(ChromeWebClientTest, GetExtensionController) API_AVAILABLE(ios(18.4)) {
       ExtensionServiceFactory::GetInstance(),
       base::BindRepeating(
           [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-            return std::make_unique<ExtensionServiceImpl>(
+            auto service = std::make_unique<ExtensionServiceImpl>(
                 CHECK_DEREF(profile->GetPrefs()),
-                /*universal_optout_service=*/nullptr,
                 web::ExtensionController::Create());
+            service->Initialize(web::UniversalOptOutState::kEnabled);
+            return service;
           }));
   auto profile_with_service = std::move(builder).Build();
   ExtensionService* service =

@@ -41,8 +41,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
-#import "components/universal_optout/features.h"
-#import "components/universal_optout/prefs.h"
 #import "components/version_info/version_info.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
@@ -100,6 +98,8 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_url_filter_tab_helper.h"
 #import "ios/chrome/browser/unified_consent/model/url_keyed_data_collection_consent_helper_factory_ios.h"
 #import "ios/chrome/browser/unified_consent/model/url_keyed_data_collection_consent_helper_ios.h"
+#import "ios/chrome/browser/universal_optout/model/eligibility_utils.h"
+#import "ios/chrome/browser/universal_optout/model/universal_optout_service_factory.h"
 #import "ios/chrome/browser/web/model/browser_about_rewriter.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_java_script_feature.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
@@ -632,7 +632,6 @@ void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {
     // title. When restoring the NTP, be sure to re-add the title below.
     web::NavigationItem* item = navigationManager->GetItemAtIndex(i);
     NewTabPageTabHelper::UpdateItem(item);
-
   }
 }
 
@@ -726,26 +725,11 @@ bool ChromeWebClient::IsSmoothScrollingSupported() const {
 
 web::UniversalOptOutState ChromeWebClient::GetUniversalOptOutState(
     web::BrowserState* browser_state) const {
-  if (!universal_optout::features::IsUniversalOptOutEnabled() ||
-      !base::FeatureList::IsEnabled(
-          universal_optout::features::kUniversalOptOutSettings)) {
-    return web::UniversalOptOutState::kNotEligible;
-  }
-
   ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   CHECK(profile);
-  PrefService* prefs = profile->GetPrefs();
-  CHECK(prefs);
-
-  if (prefs->GetBoolean(universal_optout::prefs::kUniversalOptOutEnabled)) {
-    return web::UniversalOptOutState::kEnabled;
-  }
-
-  if (prefs->GetBoolean(universal_optout::prefs::kUniversalOptOutEligible)) {
-    return web::UniversalOptOutState::kEligible;
-  }
-
-  return web::UniversalOptOutState::kNotEligible;
+  return universal_optout::GetUniversalOptOutState(
+      profile->GetPrefs(),
+      universal_optout::UniversalOptOutServiceFactory::GetForProfile(profile));
 }
 
 web::ExtensionController* ChromeWebClient::GetExtensionController(

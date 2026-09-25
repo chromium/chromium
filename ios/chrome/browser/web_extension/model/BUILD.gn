@@ -19,6 +19,8 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/universal_optout/model",
+    "//ios/chrome/browser/universal_optout/model:eligibility_utils",
+    "//ios/web/public",
     "//ios/web/public/extension",
   ]
 }
@@ -39,7 +41,10 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "extension_service_unittest.mm" ]
+  sources = [
+    "extension_service_factory_unittest.mm",
+    "extension_service_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base",
@@ -51,8 +56,10 @@ source_set("unit_tests") {
     "//components/universal_optout",
     "//components/variations:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/universal_optout/model",
     "//ios/chrome/test:test_support",
+    "//ios/web/public",
     "//ios/web/public/extension",
     "//ios/web/public/test",
     "//testing/gmock",
