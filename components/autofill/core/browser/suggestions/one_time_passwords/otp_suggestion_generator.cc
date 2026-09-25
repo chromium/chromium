@@ -4,6 +4,7 @@
 #include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
@@ -31,10 +33,16 @@ namespace {
 
 // Builds Suggestion for given `otp_value`.
 Suggestion BuildOtpSuggestion(const std::string& otp_value,
-                              SuggestionType type) {
+                              SuggestionType type,
+                              std::string_view account_email) {
   Suggestion suggestion(base::UTF8ToUTF16(otp_value), type);
   if (type == SuggestionType::kGmailOneTimePasswordEntry) {
-    suggestion.icon = Suggestion::Icon::kGmail;
+    suggestion.icon = Suggestion::Icon::kMailAsterisk;
+    suggestion.minor_texts = {Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_GMAIL_OTP_VERIFICATION_CODE_LABEL))};
+    suggestion.labels = {{Suggestion::Text(
+        l10n_util::GetStringFUTF16(IDS_AUTOFILL_GMAIL_OTP_FROM_ACCOUNT_LABEL,
+                                   base::UTF8ToUTF16(account_email)))}};
   }
 #if BUILDFLAG(IS_ANDROID)
   // Choose the right icon and A11Y label when more OTP options are supported
@@ -42,12 +50,12 @@ Suggestion BuildOtpSuggestion(const std::string& otp_value,
   if (type == SuggestionType::kOneTimePasswordEntry) {
     suggestion.icon = Suggestion::Icon::kAndroidMessages;
   }
+#endif
   suggestion.voice_over = l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL,
       suggestion.main_text.value);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_ONE_TIME_PASSWORD);
-#endif
   return suggestion;
 }
 
@@ -55,10 +63,13 @@ Suggestion BuildOtpSuggestion(const std::string& otp_value,
 
 std::vector<Suggestion> BuildOtpSuggestions(
     base::span<const std::string> one_time_passwords,
-    SuggestionType type) {
+    SuggestionType type,
+    std::string_view account_email) {
   CHECK(type == SuggestionType::kGmailOneTimePasswordEntry ||
         type == SuggestionType::kOneTimePasswordEntry);
-  if (one_time_passwords.empty()) {
+  if (one_time_passwords.empty() ||
+      (type == SuggestionType::kGmailOneTimePasswordEntry &&
+       account_email.empty())) {
     return {};
   }
   std::vector<Suggestion> suggestions;
@@ -66,7 +77,7 @@ std::vector<Suggestion> BuildOtpSuggestions(
       one_time_passwords.size() +
       (type == SuggestionType::kGmailOneTimePasswordEntry ? 2 : 0));
   for (const std::string& otp_value : one_time_passwords) {
-    suggestions.push_back(BuildOtpSuggestion(otp_value, type));
+    suggestions.push_back(BuildOtpSuggestion(otp_value, type, account_email));
   }
   if (type == SuggestionType::kGmailOneTimePasswordEntry) {
     suggestions.emplace_back(SuggestionType::kSeparator);
@@ -74,6 +85,7 @@ std::vector<Suggestion> BuildOtpSuggestions(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_OPEN_GMAIL_FOR_OTP),
         SuggestionType::kOpenGmailForOtps);
     open_gmail.icon = Suggestion::Icon::kGmail;
+    open_gmail.trailing_icon = Suggestion::Icon::kOpenInNew;
   }
   return suggestions;
 }
@@ -114,6 +126,10 @@ void OtpSuggestionGenerator::GenerateSuggestions(
 void OtpSuggestionGenerator::OnOtpReturned(
     base::OnceCallback<void(ReturnedSuggestions)> callback,
     std::vector<std::string> one_time_passwords) {
+  // TODO(crbug.com/565217441): Pass
+  // `SuggestionType::kGmailOneTimePasswordEntry` and the signed-in primary
+  // account email from `IdentityManager` once `OtpManager` distinguishes Gmail
+  // vs. SMS OTP tokens.
   std::move(callback).Run({SuggestionDataSource::kOneTimePassword,
                            BuildOtpSuggestions(one_time_passwords)});
 }

@@ -106,25 +106,31 @@ TEST_F(OtpSuggestionGeneratorTest, EmptyInput) {
 
 TEST_F(OtpSuggestionGeneratorTest, GmailOtps) {
   std::vector<std::string> otps = {"123456", "789012"};
-  std::vector<Suggestion> suggestions =
-      BuildOtpSuggestions(otps, SuggestionType::kGmailOneTimePasswordEntry);
+  std::vector<Suggestion> suggestions = BuildOtpSuggestions(
+      otps, SuggestionType::kGmailOneTimePasswordEntry, "user@gmail.com");
 
   ASSERT_EQ(suggestions.size(), 4U);
   EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(otps[0]));
   EXPECT_EQ(suggestions[0].type, SuggestionType::kGmailOneTimePasswordEntry);
-  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kGmail);
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(suggestions[0].voice_over, u"Verification Code: 123456");
+  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kMailAsterisk);
+  EXPECT_THAT(suggestions[0].minor_texts,
+              ElementsAre(Suggestion::Text(u"Verification code")));
+  EXPECT_THAT(
+      suggestions[0].labels,
+      ElementsAre(ElementsAre(Suggestion::Text(u"From user@gmail.com"))));
+  EXPECT_EQ(suggestions[0].voice_over, u"Verification code: 123456");
   EXPECT_EQ(suggestions[0].acceptance_a11y_announcement, u"Autofilled code");
-#endif
 
   EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(otps[1]));
   EXPECT_EQ(suggestions[1].type, SuggestionType::kGmailOneTimePasswordEntry);
-  EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kGmail);
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(suggestions[1].voice_over, u"Verification Code: 789012");
+  EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kMailAsterisk);
+  EXPECT_THAT(suggestions[1].minor_texts,
+              ElementsAre(Suggestion::Text(u"Verification code")));
+  EXPECT_THAT(
+      suggestions[1].labels,
+      ElementsAre(ElementsAre(Suggestion::Text(u"From user@gmail.com"))));
+  EXPECT_EQ(suggestions[1].voice_over, u"Verification code: 789012");
   EXPECT_EQ(suggestions[1].acceptance_a11y_announcement, u"Autofilled code");
-#endif
 
   EXPECT_EQ(suggestions[2].type, SuggestionType::kSeparator);
 
@@ -132,6 +138,15 @@ TEST_F(OtpSuggestionGeneratorTest, GmailOtps) {
             l10n_util::GetStringUTF16(IDS_AUTOFILL_OPEN_GMAIL_FOR_OTP));
   EXPECT_EQ(suggestions[3].type, SuggestionType::kOpenGmailForOtps);
   EXPECT_EQ(suggestions[3].icon, Suggestion::Icon::kGmail);
+  EXPECT_EQ(suggestions[3].trailing_icon, Suggestion::Icon::kOpenInNew);
+}
+
+TEST_F(OtpSuggestionGeneratorTest, GmailOtps_EmptyAccountEmailReturnsEmpty) {
+  std::vector<std::string> otps = {"123456"};
+  std::vector<Suggestion> suggestions = BuildOtpSuggestions(
+      otps, SuggestionType::kGmailOneTimePasswordEntry, /*account_email=*/"");
+
+  EXPECT_TRUE(suggestions.empty());
 }
 
 TEST_F(OtpSuggestionGeneratorTest, SmsOtps) {
@@ -141,20 +156,20 @@ TEST_F(OtpSuggestionGeneratorTest, SmsOtps) {
   ASSERT_EQ(suggestions.size(), 2U);
   EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(otps[0]));
   EXPECT_EQ(suggestions[0].type, SuggestionType::kOneTimePasswordEntry);
+  EXPECT_EQ(suggestions[0].voice_over, u"Verification code: 123456");
+  EXPECT_EQ(suggestions[0].acceptance_a11y_announcement, u"Autofilled code");
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kAndroidMessages);
-  EXPECT_EQ(suggestions[0].voice_over, u"Verification Code: 123456");
-  EXPECT_EQ(suggestions[0].acceptance_a11y_announcement, u"Autofilled code");
 #else
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kNoIcon);
 #endif
 
   EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(otps[1]));
   EXPECT_EQ(suggestions[1].type, SuggestionType::kOneTimePasswordEntry);
+  EXPECT_EQ(suggestions[1].voice_over, u"Verification code: 789012");
+  EXPECT_EQ(suggestions[1].acceptance_a11y_announcement, u"Autofilled code");
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kAndroidMessages);
-  EXPECT_EQ(suggestions[1].voice_over, u"Verification Code: 789012");
-  EXPECT_EQ(suggestions[1].acceptance_a11y_announcement, u"Autofilled code");
 #else
   EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kNoIcon);
 #endif

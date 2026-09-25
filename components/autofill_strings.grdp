@@ -447,8 +447,7 @@
   <message name="IDS_AUTOFILL_GMAIL_OTP_REQUIRED_STEP_2" desc="Second step in the Gmail OTP settings required dialog prompting the user to turn on smart features in other Google products.">
     Turn on “<ph name="BEGIN_LINK">&lt;a href="$1" tabindex="0" aria-description="$2" target="_blank"&gt;</ph>Smart features in other Google products<ph name="LINK_END">&lt;/a&gt;</ph>”
   </message>
-  <!-- TODO(crbug.com/556170227): Make this string translateable once UI is finalized. -->
-  <message name="IDS_AUTOFILL_OPEN_GMAIL_FOR_OTP" desc="The text of the suggestion that opens Gmail to view one time passwords." translateable="false">
+  <message name="IDS_AUTOFILL_OPEN_GMAIL_FOR_OTP" desc="The text of the suggestion that opens Gmail to view one time passwords.">
     Open Gmail
   </message>
   <message name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_TITLE" desc="Title of the bubble prompting the user to opt in to autofilling verification codes from Gmail.">
@@ -465,6 +464,18 @@
   </message>
   <message name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_NO_THANKS_BUTTON" desc="Label for the cancel button in the Gmail OTP opt-in bubble that declines autofilling verification codes from Gmail.">
     No thanks
+  </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_VERIFICATION_CODE_LABEL" desc="Secondary title shown next to a Gmail one-time password suggestion in the Autofill popup.">
+    Verification code
+  </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_FROM_ACCOUNT_LABEL" desc="Subtext shown below a Gmail one-time password suggestion indicating the user's Gmail account from which the code was retrieved.">
+    From <ph name="EMAIL">$1<ex>elisa.becket@gmail.com</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL" desc="Voice over label for the one time password field.">
+    Verification code: <ph name="OTP">$1<ex>123456</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_ONE_TIME_PASSWORD" desc="Accessibility announcement for when a one time password is autofilled.">
+    Autofilled code
   </message>
   <message name="IDS_AUTOFILL_DISABLE_SETTINGS_EXPLANATION_TITLE" desc="Title of the card explaining why the settings page was disabled. Sentence-Cased." formatter_data="android_java">
     Google isn’t your autofill provider
@@ -538,12 +549,6 @@
     </message>
     <message name="IDS_AUTOFILL_ADDRESS_SHEET_ALL_ADDRESSES_LINK" desc="The text of the link in the address sheet that opens the address management section.">
       Manage addresses
-    </message>
-    <message name="IDS_AUTOFILL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL" desc="Voice over label for the one time password field.">
-      Verification Code: <ph name="OTP">$1<ex>123456</ex></ph>
-    </message>
-    <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_ONE_TIME_PASSWORD" desc="Accessibility announcement for when a one time password is autofilled.">
-      Autofilled code
     </message>
     <message name="IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUGGESTION" desc="The keyboard accessory suggestion to open the loyalty cards bottom sheet containing all the user loyalty cards.">
       Your loyalty cards

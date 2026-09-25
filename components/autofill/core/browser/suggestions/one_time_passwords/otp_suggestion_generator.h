@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_ONE_TIME_PASSWORDS_OTP_SUGGESTION_GENERATOR_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -29,7 +30,8 @@ class OtpManager;
 // launched.
 std::vector<Suggestion> BuildOtpSuggestions(
     base::span<const std::string> one_time_passwords,
-    SuggestionType type = SuggestionType::kOneTimePasswordEntry);
+    SuggestionType type = SuggestionType::kOneTimePasswordEntry,
+    std::string_view account_email = "");
 
 // A `SuggestionGenerator` for `FillingProduct::kOneTimePassword`.
 class OtpSuggestionGenerator : public SuggestionGenerator {
