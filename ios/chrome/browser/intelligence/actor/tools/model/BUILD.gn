@@ -274,7 +274,13 @@ optimize_ts("drag_and_release_tool_ts") {
 
 bundle_data("drag_html_bundle_data") {
   testonly = true
-  sources = [ "//components/test/data/actor/drag.html" ]
+  sources = [
+    "//components/test/data/actor/click_occluded_by_fixed.html",
+    "//components/test/data/actor/drag.html",
+    "//components/test/data/actor/oov_elements.html",
+    "//components/test/data/actor/page_with_clickable_element.html",
+    "//components/test/data/actor/positioned_iframe.html",
+  ]
   outputs = [
     "{{bundle_resources_dir}}/components/test/data/actor/{{source_file_part}}",
   ]

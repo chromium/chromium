@@ -18,8 +18,8 @@ namespace {
 
 constexpr int kPageWidth = 400;
 constexpr int kPageHeight = 400;
-constexpr int kIframeX = 50;
-constexpr int kIframeY = 200;
+constexpr int kIframeX = 280;
+constexpr int kIframeY = 280;
 
 class ActionTargetJavaScriptTest : public web::JavascriptTest {
  public:
@@ -34,16 +34,14 @@ class ActionTargetJavaScriptTest : public web::JavascriptTest {
     web::JavascriptTest::SetUp();
 
     test_server_.ServeFilesFromSourceDirectory(
-        base::FilePath("ios/testing/data/http_server_files/"));
+        base::FilePath("components/test/data/actor/"));
     ASSERT_TRUE(test_server_.Start());
 
     AddGCrWebScript();
     AddUserScript(@"autofill_form_features");
     AddUserScript(@"action_target");
 
-    // This page has an iframe at (50, 200) and a button at (50, 50).
-    ASSERT_TRUE(
-        LoadUrl(GURL(test_server_.GetURL("/actor/click_tool_test.html"))));
+    ASSERT_TRUE(LoadUrl(GURL(test_server_.GetURL("/positioned_iframe.html"))));
   }
 
   NSDictionary* GetTargetFrame(int x, int y, int pixelType) {
@@ -76,7 +74,7 @@ TEST_F(ActionTargetJavaScriptTest, TargetOnIframe_ReturnsChildFrameInfo) {
 
 TEST_F(ActionTargetJavaScriptTest,
        TargetOnMainFrame_ReturnsSuccessWithoutChildFrameInfo) {
-  // The iframe is at (50, 200).
+  // The iframe is in the bottom-right quadrant; (10, 10) is on the main frame.
   NSDictionary* result = GetTargetFrame(/*x=*/10, /*y=*/10, /*pixelType=*/1);
   EXPECT_EQ([result[@"resultCode"] intValue],
             static_cast<int>(actor::ActionTargetResultCode::kOk));

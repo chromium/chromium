@@ -13,6 +13,7 @@
 #import "base/path_service.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/click_tool_java_script_feature.h"
 #import "ios/web/common/features.h"
@@ -20,31 +21,27 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 
 namespace {
 
-struct EventInfo {
-  std::string type;
-  int x;
-  int y;
-  bool bubbles;
-  bool cancelable;
-  int button;
-  int detail;
+constexpr std::string_view kSingleButtonMouseEvents =
+    "mousemove[BUTTON#clickable],mousedown[BUTTON#clickable],"
+    "mouseup[BUTTON#clickable],click[BUTTON#clickable]";
 
-  bool operator==(const EventInfo& other) const {
-    return type == other.type && x == other.x && y == other.y &&
-           bubbles == other.bubbles && cancelable == other.cancelable &&
-           button == other.button && detail == other.detail;
-  }
-};
+constexpr std::string_view kDoubleButtonMouseEvents =
+    "mousemove[BUTTON#clickable],mousedown[BUTTON#clickable],"
+    "mouseup[BUTTON#clickable],click[BUTTON#clickable],"
+    "mousemove[BUTTON#clickable],mousedown[BUTTON#clickable],"
+    "mouseup[BUTTON#clickable],click[BUTTON#clickable]";
+
+constexpr std::string_view kEmptySpaceMouseEvents =
+    "mousemove[BODY#],mousedown[BODY#],mouseup[BODY#],click[BODY#]";
 
 class ClickToolJavascriptTest : public web::JavascriptTest {
  public:
-  static constexpr int kButtonX = 50;
-  static constexpr int kButtonY = 50;
-  static constexpr int kEmptyX = 10;
-  static constexpr int kEmptyY = 10;
+  static constexpr int kEmptyX = 350;
+  static constexpr int kEmptyY = 350;
   static constexpr int kDevicePixelRatio = 2;
 
   ClickToolJavascriptTest() {
@@ -59,53 +56,86 @@ class ClickToolJavascriptTest : public web::JavascriptTest {
     web::JavascriptTest::SetUp();
 
     test_server_.ServeFilesFromSourceDirectory(
-        base::FilePath("ios/testing/data/http_server_files/"));
+        base::FilePath("components/test/data/actor/"));
     ASSERT_TRUE(test_server_.Start());
 
     AddGCrWebScript();
     AddUserScript(@"dom_node_ids_test");
     AddUserScript(@"click_tool");
 
-    ASSERT_TRUE(
-        LoadUrl(GURL(test_server_.GetURL("/actor/click_tool_test.html"))));
+    ASSERT_TRUE(LoadUrl(
+        GURL(test_server_.GetURL("/page_with_clickable_element.html"))));
+    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForPageLoadTimeout, ^{
+          id ready = web::test::ExecuteJavaScript(
+              web_view(),
+              @"document.readyState === 'complete' && window.innerHeight > 0;");
+          return [ready boolValue];
+        }));
   }
 
-  std::vector<EventInfo> ExpectedTouchEvents(int x, int y) {
-    return {
-        {"touchstart", x, y, /*bubbles=*/true, /*cancelable=*/true,
-         /*button=*/0, /*detail=*/0},
-        {"touchend", x, y, /*bubbles=*/true, /*cancelable=*/true,
-         /*button=*/0, /*detail=*/0},
-    };
+  int GetElementCenterX(NSString* element_id) {
+    NSString* script = [NSString
+        stringWithFormat:@"Math.round((() => { const r = "
+                         @"document.getElementById('%@').getBoundingClientRect("
+                         @"); return r.left + r.width / 2; })());",
+                         element_id];
+    id result = web::test::ExecuteJavaScript(web_view(), script);
+    return [result intValue];
   }
 
-  std::vector<EventInfo> ExpectedEventsOnClick(int x,
-                                               int y,
-                                               int button,
-                                               int detail) {
-    std::vector<EventInfo> events = ExpectedTouchEvents(x, y);
-    events.push_back({"mousemove", x, y, /*bubbles=*/true, /*cancelable=*/true,
-                      button, detail});
-    events.push_back({"mousedown", x, y, /*bubbles=*/true, /*cancelable=*/true,
-                      button, detail});
-    events.push_back({"mouseup", x, y, /*bubbles=*/true, /*cancelable=*/true,
-                      button, detail});
-    events.push_back(
-        {"click", x, y, /*bubbles=*/true, /*cancelable=*/true, button, detail});
-    return events;
+  int GetElementCenterY(NSString* element_id) {
+    NSString* script = [NSString
+        stringWithFormat:@"Math.round((() => { const r = "
+                         @"document.getElementById('%@').getBoundingClientRect("
+                         @"); return r.top + r.height / 2; })());",
+                         element_id];
+    id result = web::test::ExecuteJavaScript(web_view(), script);
+    return [result intValue];
   }
 
-  NSDictionary* ExecuteClickAndVerifyEvents(
+  int GetButtonX() { return GetElementCenterX(@"clickable"); }
+
+  int GetButtonY() { return GetElementCenterY(@"clickable"); }
+
+  bool IsButtonClicked() {
+    id result = web::test::ExecuteJavaScript(web_view(), @"button_clicked;");
+    return [result boolValue];
+  }
+
+  bool ExpectSingleLeftClick() {
+    id result = web::test::ExecuteJavaScript(
+        web_view(), @"button_clicked && button_click_count === 1 && "
+                    @"button_mouse_down && button_mouse_up;");
+    return [result boolValue];
+  }
+
+  bool ExpectDoubleLeftClick() {
+    id result = web::test::ExecuteJavaScript(
+        web_view(), @"button_clicked && button_click_count === 2 && "
+                    @"button_mouse_down && button_mouse_up;");
+    return [result boolValue];
+  }
+
+  std::string GetMouseEventLog() {
+    id result =
+        web::test::ExecuteJavaScript(web_view(), @"mouse_event_log.join(',');");
+    NSString* str = base::apple::ObjCCast<NSString>(result);
+    return str ? base::SysNSStringToUTF8(str) : "";
+  }
+
+  NSDictionary* ExecuteClickAndVerifyMouseEventLog(
       int click_count,
-      const std::vector<EventInfo>& expected_events) {
-    NSDictionary* result = ClickByCoordinate(
-        kButtonX, kButtonY, /*clickType=*/1, click_count, /*pixelType=*/1);
+      std::string_view expected_mouse_log) {
+    NSDictionary* result =
+        ClickByCoordinate(GetButtonX(), GetButtonY(), /*clickType=*/1,
+                          click_count, /*pixelType=*/1);
     EXPECT_TRUE(result);
     EXPECT_NE(result[@"resultCode"], nil);
     EXPECT_EQ(static_cast<actor::ClickToolResultCode>(
                   [result[@"resultCode"] intValue]),
               actor::ClickToolResultCode::kOk);
-    EXPECT_EQ(GetCapturedEvents(), expected_events);
+    EXPECT_EQ(GetMouseEventLog(), expected_mouse_log);
     return result;
   }
 
@@ -135,33 +165,10 @@ class ClickToolJavascriptTest : public web::JavascriptTest {
     return resultDict;
   }
 
-  std::vector<EventInfo> GetCapturedEvents() {
-    NSString* eventsJson = web::test::ExecuteJavaScript(
-        web_view(), @"JSON.stringify(window.capturedEvents)");
-    NSData* data = [eventsJson dataUsingEncoding:NSUTF8StringEncoding];
-    NSArray* eventsArray = [NSJSONSerialization JSONObjectWithData:data
-                                                           options:0
-                                                             error:nil];
-    std::vector<EventInfo> captured_events;
-    for (NSDictionary* eventDict in eventsArray) {
-      EventInfo info;
-      info.type = base::SysNSStringToUTF8(eventDict[@"type"]);
-      info.x = [eventDict[@"x"] intValue];
-      info.y = [eventDict[@"y"] intValue];
-      info.bubbles = [eventDict[@"bubbles"] boolValue];
-      info.cancelable = [eventDict[@"cancelable"] boolValue];
-      info.button = [eventDict[@"button"] intValue];
-      info.detail = [eventDict[@"detail"] intValue];
-      captured_events.push_back(info);
-    }
-    return captured_events;
-  }
-
-  std::string GetButtonText() {
+  bool ExpectSingleRightClick() {
     id result = web::test::ExecuteJavaScript(
-        web_view(), @"document.getElementById('target_button').innerText");
-    NSString* resultString = base::apple::ObjCCast<NSString>(result);
-    return base::SysNSStringToUTF8(resultString);
+        web_view(), @"button_clicked && button_mouse_down && button_mouse_up;");
+    return [result boolValue];
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -170,52 +177,46 @@ class ClickToolJavascriptTest : public web::JavascriptTest {
 
 TEST_F(ClickToolJavascriptTest,
        ClickByCoordinate_DensityIndependentPixels_SingleClick_OnButton) {
-  NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/1,
+  const int button_x = GetButtonX();
+  const int button_y = GetButtonY();
+  NSDictionary* result = ClickByCoordinate(button_x, button_y, /*clickType=*/1,
                                            /*clickCount=*/1, /*pixelType=*/1);
   EXPECT_EQ(
       static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
       actor::ClickToolResultCode::kOk);
 
-  std::vector<EventInfo> expected =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
-  std::vector<EventInfo> actual = GetCapturedEvents();
-  EXPECT_EQ(expected, actual);
-  EXPECT_EQ(GetButtonText(), "Clicked");
+  EXPECT_EQ(GetMouseEventLog(), kSingleButtonMouseEvents);
+  EXPECT_TRUE(ExpectSingleLeftClick());
+  EXPECT_TRUE(IsButtonClicked());
 }
 
 TEST_F(ClickToolJavascriptTest,
        ClickByCoordinate_DensityIndependentPixels_DoubleClick_OnButton) {
-  NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/1,
+  const int button_x = GetButtonX();
+  const int button_y = GetButtonY();
+  NSDictionary* result = ClickByCoordinate(button_x, button_y, /*clickType=*/1,
                                            /*clickCount=*/2, /*pixelType=*/1);
   EXPECT_EQ(
       static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
       actor::ClickToolResultCode::kOk);
 
-  std::vector<EventInfo> expected =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
-  std::vector<EventInfo> second_click =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/2);
-  expected.insert(expected.end(), second_click.begin(), second_click.end());
-  expected.push_back({"dblclick", kButtonX, kButtonY, /*bubbles=*/true,
-                      /*cancelable=*/true, /*button=*/0, /*detail=*/2});
-
-  std::vector<EventInfo> actual = GetCapturedEvents();
-  EXPECT_EQ(expected, actual);
-  EXPECT_EQ(GetButtonText(), "Clicked");
+  EXPECT_EQ(GetMouseEventLog(), kDoubleButtonMouseEvents);
+  EXPECT_TRUE(ExpectDoubleLeftClick());
+  EXPECT_TRUE(IsButtonClicked());
 }
 
 TEST_F(ClickToolJavascriptTest,
        ClickByCoordinate_DensityIndependentPixels_RightClick_OnButton) {
-  NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/2,
+  const int button_x = GetButtonX();
+  const int button_y = GetButtonY();
+  NSDictionary* result = ClickByCoordinate(button_x, button_y, /*clickType=*/2,
                                            /*clickCount=*/1, /*pixelType=*/1);
   EXPECT_EQ(
       static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
       actor::ClickToolResultCode::kOk);
 
-  std::vector<EventInfo> expected =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/2, /*detail=*/1);
-  std::vector<EventInfo> actual = GetCapturedEvents();
-  EXPECT_EQ(expected, actual);
+  EXPECT_EQ(GetMouseEventLog(), kSingleButtonMouseEvents);
+  EXPECT_TRUE(ExpectSingleRightClick());
 }
 
 TEST_F(ClickToolJavascriptTest,
@@ -226,10 +227,8 @@ TEST_F(ClickToolJavascriptTest,
       static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
       actor::ClickToolResultCode::kOk);
 
-  std::vector<EventInfo> expected =
-      ExpectedEventsOnClick(kEmptyX, kEmptyY, /*button=*/0, /*detail=*/1);
-  std::vector<EventInfo> actual = GetCapturedEvents();
-  EXPECT_EQ(expected, actual);
+  EXPECT_EQ(GetMouseEventLog(), kEmptySpaceMouseEvents);
+  EXPECT_FALSE(IsButtonClicked());
 }
 
 TEST_F(ClickToolJavascriptTest,
@@ -246,16 +245,16 @@ TEST_F(ClickToolJavascriptTest,
 TEST_F(
     ClickToolJavascriptTest,
     ClickByCoordinate_DensityIndependentPixels_UnknownClickType_DefaultsToLeft) {
-  NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/99,
+  const int button_x = GetButtonX();
+  const int button_y = GetButtonY();
+  NSDictionary* result = ClickByCoordinate(button_x, button_y, /*clickType=*/99,
                                            /*clickCount=*/1, /*pixelType=*/1);
   EXPECT_EQ(
       static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
       actor::ClickToolResultCode::kOk);
 
-  std::vector<EventInfo> expected =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
-  std::vector<EventInfo> actual = GetCapturedEvents();
-  EXPECT_EQ(expected, actual);
+  EXPECT_EQ(GetMouseEventLog(), kSingleButtonMouseEvents);
+  EXPECT_TRUE(ExpectSingleLeftClick());
 }
 
 TEST_F(ClickToolJavascriptTest,
@@ -264,28 +263,28 @@ TEST_F(ClickToolJavascriptTest,
       web_view(), base::SysUTF8ToNSString(base::StringPrintf(
                       R"(window.devicePixelRatio = %d;)", kDevicePixelRatio)));
 
-  int x = kButtonX * kDevicePixelRatio;
-  int y = kButtonY * kDevicePixelRatio;
+  const int button_x = GetButtonX();
+  const int button_y = GetButtonY();
+  int x = button_x * kDevicePixelRatio;
+  int y = button_y * kDevicePixelRatio;
   NSDictionary* result = ClickByCoordinate(x, y, /*clickType=*/1,
                                            /*clickCount=*/1, /*pixelType=*/2);
   EXPECT_EQ(
       static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
       actor::ClickToolResultCode::kOk);
 
-  std::vector<EventInfo> expected =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
-  std::vector<EventInfo> actual = GetCapturedEvents();
-  EXPECT_EQ(expected, actual);
-  EXPECT_EQ(GetButtonText(), "Clicked");
+  EXPECT_EQ(GetMouseEventLog(), kSingleButtonMouseEvents);
+  EXPECT_TRUE(ExpectSingleLeftClick());
+  EXPECT_TRUE(IsButtonClicked());
 }
 
 TEST_F(ClickToolJavascriptTest, ClickByCoordinate_DisabledElement_Fails) {
-  // Disable the button
-  (void)web::test::ExecuteJavaScript(
-      web_view(), @"document.getElementById('target_button').disabled = true;");
+  const int disabled_x = GetElementCenterX(@"disabled");
+  const int disabled_y = GetElementCenterY(@"disabled");
 
-  NSDictionary* result = ClickByCoordinate(kButtonX, kButtonY, /*clickType=*/1,
-                                           /*clickCount=*/1, /*pixelType=*/1);
+  NSDictionary* result =
+      ClickByCoordinate(disabled_x, disabled_y, /*clickType=*/1,
+                        /*clickCount=*/1, /*pixelType=*/1);
   EXPECT_EQ(
       static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
       actor::ClickToolResultCode::kElementDisabled);
@@ -293,13 +292,9 @@ TEST_F(ClickToolJavascriptTest, ClickByCoordinate_DisabledElement_Fails) {
 }
 
 TEST_F(ClickToolJavascriptTest, ClickByNodeId_DisabledElement_Fails) {
-  // Disable the button
-  (void)web::test::ExecuteJavaScript(
-      web_view(), @"document.getElementById('target_button').disabled = true;");
-
   id nodeIdResult =
       web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
-        var el = document.getElementById('target_button');
+        var el = document.getElementById('disabled');
         __gCrWeb.getRegisteredApi('dom_node_ids_test')
                 .getFunction('getOrCreateNodeId')(el);
       )"));
@@ -326,7 +321,7 @@ TEST_F(ClickToolJavascriptTest, ClickByNodeId_NotFound) {
 TEST_F(ClickToolJavascriptTest, ClickByNodeId_Success) {
   id nodeIdResult =
       web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
-        var el = document.getElementById('target_button');
+        var el = document.getElementById('clickable');
         __gCrWeb.getRegisteredApi('dom_node_ids_test')
                 .getFunction('getOrCreateNodeId')(el);
       )"));
@@ -339,17 +334,15 @@ TEST_F(ClickToolJavascriptTest, ClickByNodeId_Success) {
       static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
       actor::ClickToolResultCode::kOk);
 
-  std::vector<EventInfo> expected =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
-  std::vector<EventInfo> actual = GetCapturedEvents();
-  EXPECT_EQ(expected, actual);
-  EXPECT_EQ(GetButtonText(), "Clicked");
+  EXPECT_EQ(GetMouseEventLog(), kSingleButtonMouseEvents);
+  EXPECT_TRUE(ExpectSingleLeftClick());
+  EXPECT_TRUE(IsButtonClicked());
 }
 
 TEST_F(ClickToolJavascriptTest, ClickByNodeId_TextNode_Success) {
   id nodeIdResult =
       web::test::ExecuteJavaScript(web_view(), base::SysUTF8ToNSString(R"(
-        var el = document.getElementById('target_button').firstChild;
+        var el = document.getElementById('clickable').firstChild;
         __gCrWeb.getRegisteredApi('dom_node_ids_test')
                 .getFunction('getOrCreateNodeId')(el);
       )"));
@@ -362,11 +355,9 @@ TEST_F(ClickToolJavascriptTest, ClickByNodeId_TextNode_Success) {
       static_cast<actor::ClickToolResultCode>([result[@"resultCode"] intValue]),
       actor::ClickToolResultCode::kOk);
 
-  std::vector<EventInfo> expected =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
-  std::vector<EventInfo> actual = GetCapturedEvents();
-  EXPECT_EQ(expected, actual);
-  EXPECT_EQ(GetButtonText(), "Clicked");
+  EXPECT_EQ(GetMouseEventLog(), kSingleButtonMouseEvents);
+  EXPECT_TRUE(ExpectSingleLeftClick());
+  EXPECT_TRUE(IsButtonClicked());
 }
 
 TEST_F(ClickToolJavascriptTest, ClickByNodeId_UnclickableNode_Fails) {
@@ -394,11 +385,10 @@ TEST_F(ClickToolJavascriptTest, ClickByNodeId_UnclickableNode_Fails) {
 TEST_F(
     ClickToolJavascriptTest,
     ClickByCoordinate_SingleClick_TouchStartPreventDefault_SuppressesMouseEvents_ReturnsOk) {
-  web::test::ExecuteJavaScriptInWebView(
+  (void)web::test::ExecuteJavaScript(
       web_view(), @"document.addEventListener('touchstart', (e) => "
                   @"e.preventDefault(), {passive: false});");
-  ExecuteClickAndVerifyEvents(/*click_count=*/1,
-                              ExpectedTouchEvents(kButtonX, kButtonY));
+  ExecuteClickAndVerifyMouseEventLog(/*click_count=*/1, "");
 }
 
 // Tests that when a site calls preventDefault() on 'touchend', touch events
@@ -407,41 +397,33 @@ TEST_F(
 TEST_F(
     ClickToolJavascriptTest,
     ClickByCoordinate_SingleClick_TouchEndPreventDefault_SuppressesMouseEvents_ReturnsOk) {
-  web::test::ExecuteJavaScriptInWebView(
+  (void)web::test::ExecuteJavaScript(
       web_view(),
       @"document.addEventListener('touchend', (e) => e.preventDefault());");
-  ExecuteClickAndVerifyEvents(/*click_count=*/1,
-                              ExpectedTouchEvents(kButtonX, kButtonY));
+  ExecuteClickAndVerifyMouseEventLog(/*click_count=*/1, "");
 }
 
 // Tests that when an event listener calls preventDefault() on a 'click' event,
 // the tool returns kOk.
 TEST_F(ClickToolJavascriptTest,
        ClickByCoordinate_SingleClick_ClickPreventDefault_ReturnsOk) {
-  web::test::ExecuteJavaScriptInWebView(
+  (void)web::test::ExecuteJavaScript(
       web_view(),
       @"document.addEventListener('click', (e) => e.preventDefault());");
-  ExecuteClickAndVerifyEvents(
-      /*click_count=*/1,
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1));
+  ExecuteClickAndVerifyMouseEventLog(/*click_count=*/1,
+                                     kSingleButtonMouseEvents);
 }
 
 // Tests that when an event listener calls preventDefault() on a 'dblclick'
 // event, the tool returns kOk.
 TEST_F(ClickToolJavascriptTest,
        ClickByCoordinate_DoubleClick_DblclickPreventDefault_ReturnsOk) {
-  web::test::ExecuteJavaScriptInWebView(
+  (void)web::test::ExecuteJavaScript(
       web_view(),
       @"document.addEventListener('dblclick', (e) => e.preventDefault());");
 
-  std::vector<EventInfo> expected =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
-  std::vector<EventInfo> second_click =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/2);
-  expected.insert(expected.end(), second_click.begin(), second_click.end());
-  expected.push_back({"dblclick", kButtonX, kButtonY, /*bubbles=*/true,
-                      /*cancelable=*/true, /*button=*/0, /*detail=*/2});
-  ExecuteClickAndVerifyEvents(/*click_count=*/2, expected);
+  ExecuteClickAndVerifyMouseEventLog(/*click_count=*/2,
+                                     kDoubleButtonMouseEvents);
 }
 
 // Tests that when an event listener calls preventDefault() on 'touchstart'
@@ -451,7 +433,7 @@ TEST_F(ClickToolJavascriptTest,
 TEST_F(
     ClickToolJavascriptTest,
     ClickByCoordinate_DoubleClick_FirstClickTouchPreventDefault_DispatchesSecondTouchAndMouseEvents_ReturnsOk) {
-  web::test::ExecuteJavaScriptInWebView(
+  (void)web::test::ExecuteJavaScript(
       web_view(), @"(() => {"
                   @"  let touchCount = 0;"
                   @"  document.addEventListener('touchstart', (e) => {"
@@ -462,15 +444,8 @@ TEST_F(
                   @"  }, {passive: false});"
                   @"})();");
 
-  // First click only generates touch events because touchstart was canceled.
-  std::vector<EventInfo> expected = ExpectedTouchEvents(kButtonX, kButtonY);
-  // Second click generates touch and mouse events with detail=1 because the
-  // first click generated no mouse events to increment the consecutive click
-  // count.
-  std::vector<EventInfo> second_click =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
-  expected.insert(expected.end(), second_click.begin(), second_click.end());
-  ExecuteClickAndVerifyEvents(/*click_count=*/2, expected);
+  ExecuteClickAndVerifyMouseEventLog(/*click_count=*/2,
+                                     kSingleButtonMouseEvents);
 }
 
 // Tests that when an event listener calls preventDefault() on 'touchstart'
@@ -479,7 +454,7 @@ TEST_F(
 TEST_F(
     ClickToolJavascriptTest,
     ClickByCoordinate_DoubleClick_SecondClickTouchPreventDefault_SuppressesSecondMouseEvents_ReturnsOk) {
-  web::test::ExecuteJavaScriptInWebView(
+  (void)web::test::ExecuteJavaScript(
       web_view(), @"(() => {"
                   @"  let touchCount = 0;"
                   @"  document.addEventListener('touchstart', (e) => {"
@@ -490,14 +465,8 @@ TEST_F(
                   @"  }, {passive: false});"
                   @"})();");
 
-  // First click generates touch and mouse events (detail=1).
-  std::vector<EventInfo> expected =
-      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
-  // Second click only generates touch events because its touchstart was
-  // canceled.
-  std::vector<EventInfo> second_touch = ExpectedTouchEvents(kButtonX, kButtonY);
-  expected.insert(expected.end(), second_touch.begin(), second_touch.end());
-  ExecuteClickAndVerifyEvents(/*click_count=*/2, expected);
+  ExecuteClickAndVerifyMouseEventLog(/*click_count=*/2,
+                                     kSingleButtonMouseEvents);
 }
 
 // Tests that when event listeners call preventDefault() on 'touchstart' during
@@ -506,16 +475,12 @@ TEST_F(
 TEST_F(
     ClickToolJavascriptTest,
     ClickByCoordinate_DoubleClick_BothClicksTouchPreventDefault_SuppressesAllMouseEvents_ReturnsOk) {
-  web::test::ExecuteJavaScriptInWebView(
+  (void)web::test::ExecuteJavaScript(
       web_view(),
       @"document.addEventListener('touchstart', (e) => e.preventDefault(), "
       @"{passive: false});");
 
-  // Both clicks generate touch events only.
-  std::vector<EventInfo> expected = ExpectedTouchEvents(kButtonX, kButtonY);
-  std::vector<EventInfo> second_touch = ExpectedTouchEvents(kButtonX, kButtonY);
-  expected.insert(expected.end(), second_touch.begin(), second_touch.end());
-  ExecuteClickAndVerifyEvents(/*click_count=*/2, expected);
+  ExecuteClickAndVerifyMouseEventLog(/*click_count=*/2, "");
 }
 
 }  // namespace
