@@ -2818,20 +2818,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError.{OptimizationTarget}"
-    enum="PlatformFileError" expires_after="M145">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>wittman@chromium.org</owner>
-  <summary>
-    Records the exact error whenever writing a model file fails at the step
-    where the model is moved from the scratch directory to its final location.
-    Recorded every time a {OptimizationTarget} model file is downloaded and
-    being processed for storage.
-  </summary>
-  <token key="OptimizationTarget" variants="OptimizationTarget"/>
-</histogram>
-
-<histogram
     name="OptimizationGuide.PredictionModelDownloadManager.State.{OptimizationTarget}"
     enum="OptimizationGuidePredictionModelDownloadState"
     expires_after="2027-04-14">

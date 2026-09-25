@@ -473,10 +473,6 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
       optimization_guide::PredictionModelDownloadStatus::kSuccess, 1);
-
-  // No error when moving the file so there will be no record.
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError", 0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad",
       kSuccessfulModelVersion, 1);
@@ -511,10 +507,6 @@ TEST_F(PredictionManagerModelDownloadingBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
       optimization_guide::PredictionModelDownloadStatus::kSuccess, 1);
-
-  // No error when moving the file so there will be no record.
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError", 0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad",
       kSuccessfulModelVersion, 1);
