@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/accessibility/ax_mode.h"
@@ -300,6 +302,74 @@ TEST_F(AccessibilityTest, FocusgroupOwnerImpliedRoleGenericContainer) {
   // A generic container with focusgroup behavior should be promoted to the
   // minimum ARIA role for its behavior (toolbar).
   EXPECT_EQ(ax::mojom::Role::kToolbar, fg->RoleValue());
+}
+
+TEST_F(AccessibilityTest, FocusgroupOwnerImpliedRolePopover) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="menu" popover="manual">
+        <button id="child">Item</button>
+      </div>)HTML");
+  auto* popover = To<HTMLElement>(GetElementById("fg"));
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  const AXObject* fg = GetAXObjectByElementId("fg");
+  ASSERT_NE(nullptr, fg);
+  EXPECT_EQ(ax::mojom::Role::kMenu, fg->RoleValue());
+
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  EXPECT_EQ(ax::mojom::Role::kMenuItem,
+            child->ComputeFinalRoleForSerialization());
+}
+
+TEST_F(AccessibilityTest, FocusgroupDisabledPopoverUsesGroupFallback) {
+  ScopedFocusgroupForTest focusgroup_disabled(/*enabled=*/false);
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="menu" popover="manual">
+        <button>Item</button>
+      </div>)HTML");
+  auto* popover = To<HTMLElement>(GetElementById("fg"));
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  const AXObject* fg = GetAXObjectByElementId("fg");
+  ASSERT_NE(nullptr, fg);
+  EXPECT_EQ(ax::mojom::Role::kGroup, fg->RoleValue());
+}
+
+TEST_F(AccessibilityTest, FocusgroupListboxPopoverIsNotClickable) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="listbox" popover="manual">
+        <button>Item</button>
+      </div>)HTML");
+  auto* popover = To<HTMLElement>(GetElementById("fg"));
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  const AXObject* fg = GetAXObjectByElementId("fg");
+  ASSERT_NE(nullptr, fg);
+  EXPECT_EQ(ax::mojom::Role::kListBox, fg->RoleValue());
+  EXPECT_FALSE(fg->IsClickable());
+}
+
+TEST_F(AccessibilityTest, FocusgroupPopoverPreservesNativeGroupRole) {
+  SetBodyInnerHTML(R"HTML(
+      <fieldset id="fg" focusgroup="menu" popover="manual">
+        <button id="child">Item</button>
+      </fieldset>)HTML");
+  auto* popover = To<HTMLElement>(GetElementById("fg"));
+  popover->showPopover(ASSERT_NO_EXCEPTION);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  const AXObject* fg = GetAXObjectByElementId("fg");
+  ASSERT_NE(nullptr, fg);
+  EXPECT_EQ(ax::mojom::Role::kGroup, fg->RoleValue());
+
+  const AXObject* child = GetAXObjectByElementId("child");
+  ASSERT_NE(nullptr, child);
+  EXPECT_EQ(ax::mojom::Role::kButton,
+            child->ComputeFinalRoleForSerialization());
 }
 
 TEST_F(AccessibilityTest, FocusgroupOwnerDoesNotOverrideExplicitRole) {

@@ -2325,8 +2325,16 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
   // TODO(accessibility) if (AXObjectCache().IsInternalUICheckerOn()) assert,
   // because it is a bad code smell and usually points to other problems.
   if (GetElement() && !HasAriaAttribute(html_names::kRoleAttr)) {
-    if (IsPopup() != ax::mojom::blink::IsPopup::kNone ||
-        GetElement()->FastHasAttribute(html_names::kAutofocusAttr) ||
+    if (IsPopup() != ax::mojom::blink::IsPopup::kNone) {
+      const FocusgroupData data = GetElement()->GetFocusgroupData();
+      if (focusgroup::IsActualFocusgroup(data)) {
+        // Preserve native-role-only behavior, such as clickability, by letting
+        // DetermineRoleValue() store the implied role in aria_role_.
+        return ax::mojom::blink::Role::kGenericContainer;
+      }
+      return ax::mojom::blink::Role::kGroup;
+    }
+    if (GetElement()->FastHasAttribute(html_names::kAutofocusAttr) ||
         GetElement()->FastHasAttribute(html_names::kDraggableAttr)) {
       return ax::mojom::blink::Role::kGroup;
     }
