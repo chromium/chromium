@@ -27,6 +27,7 @@ import android.os.SystemClock;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.CredentialInfo;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
@@ -43,6 +44,7 @@ import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.CredManSupport;
 import org.chromium.components.webauthn.CredentialRequestResult;
 import org.chromium.components.webauthn.Fido2CredentialRequest.CancellableUiState;
+import org.chromium.components.webauthn.Fido2CredentialRequest.StopImmediateTimerBehavior;
 import org.chromium.components.webauthn.Fido2CredentialRequestJni;
 import org.chromium.components.webauthn.GetAssertionOutcome;
 import org.chromium.components.webauthn.MakeCredentialOutcome;
@@ -245,7 +247,14 @@ public class CredManHelper {
         return AuthenticatorStatus.SUCCESS;
     }
 
-    /** Queries credential availability using the Android 14 CredMan API. */
+    /**
+     * Queries credential availability using the Android 14 CredMan API.
+     *
+     * @param stopImmediateTimer Callback to stop the immediate mediation timer, taking {@link
+     *     StopImmediateTimerBehavior#RECORD_METRIC} when prefetch succeeds or {@link
+     *     StopImmediateTimerBehavior#DO_NOT_RECORD_METRIC} to cancel the timer without recording on
+     *     error.
+     */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void startPrefetchRequest(
             GetCredentialOptions options,
@@ -253,7 +262,7 @@ public class CredManHelper {
             byte @Nullable [] clientDataJson,
             byte @Nullable [] clientDataHash,
             Barrier barrier,
-            @Nullable Runnable stopImmediateTimer,
+            @Nullable Callback<Integer> stopImmediateTimer,
             boolean ignoreGpm) {
         log(TAG, "startPrefetchRequest");
         long startTimeMs = SystemClock.elapsedRealtime();
@@ -276,6 +285,10 @@ public class CredManHelper {
                                         + " ("
                                         + e.getMessage()
                                         + ")");
+                        if (stopImmediateTimer != null) {
+                            stopImmediateTimer.onResult(
+                                    StopImmediateTimerBehavior.DO_NOT_RECORD_METRIC);
+                        }
                         mCancellableUiState = CancellableUiState.NONE;
                         localBarrier.onCredManFailed(AuthenticatorStatus.UNKNOWN_ERROR);
                         mMetricsHelper.recordCredmanPrepareRequestHistogram(
@@ -330,7 +343,8 @@ public class CredManHelper {
                             // if the request is taking more than a certain amount of time to
                             // resolve. If credentials were found then it is followed by a call
                             // to `startGetRequest`.
-                            assumeNonNull(stopImmediateTimer).run();
+                            assumeNonNull(stopImmediateTimer)
+                                    .onResult(StopImmediateTimerBehavior.RECORD_METRIC);
 
                             setRequestPasswords(options.password && hasAuthenticationResults);
 

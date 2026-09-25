@@ -90,6 +90,8 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
             "One of the excluded credentials exists on the local device";
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
     static final String CANCELLED_ERROR_MSG = "Cancelled by user.";
+    private static final String IMMEDIATE_TIMEOUT_HISTOGRAM =
+            "WebAuthentication.GetAssertion.Immediate.TimeoutWhileWaitingForUi";
 
     @IntDef({
         Fido2ApiRequestType.MAKE_CREDENTIAL,
@@ -120,6 +122,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     private @Nullable WebauthnBrowserBridge mBrowserBridge;
 
     private RunnableTimer mImmediateTimer = new RunnableTimer();
+    private boolean mIsImmediateTimerRunning;
 
     // Some modes do credential enumeration in advance of calling a platform API to get a passkey
     // assertion. In these cases a cancellation before the final request is sent can prevent
@@ -145,6 +148,16 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     }
 
     private @CancellableUiState int mCancellableUiState = CancellableUiState.NONE;
+
+    @IntDef({
+        StopImmediateTimerBehavior.RECORD_METRIC,
+        StopImmediateTimerBehavior.DO_NOT_RECORD_METRIC
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface StopImmediateTimerBehavior {
+        int RECORD_METRIC = 0;
+        int DO_NOT_RECORD_METRIC = 1;
+    }
 
     // Not null when the GMSCore-created ClientDataJson needs to be overridden or when using the
     // CredMan API.
@@ -874,9 +887,10 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                                                             callerOriginString,
                                                             finalClientDataHash,
                                                             credentials)),
-                            (e) ->
-                                    mBarrier.onFido2ApiFailed(
-                                            AuthenticatorStatus.NOT_ALLOWED_ERROR));
+                            (e) -> {
+                                stopImmediateTimer(StopImmediateTimerBehavior.DO_NOT_RECORD_METRIC);
+                                mBarrier.onFido2ApiFailed(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                            });
             return;
         }
 
@@ -896,6 +910,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
 
     public void cancelGetAssertion() {
         log(TAG, "cancelGetAssertion");
+        stopImmediateTimer(StopImmediateTimerBehavior.DO_NOT_RECORD_METRIC);
         mCredManHelper.cancelGetAssertion(AuthenticatorStatus.ABORT_ERROR);
 
         switch (mCancellableUiState) {
@@ -1051,7 +1066,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
             return;
         }
 
-        stopImmediateTimer();
+        stopImmediateTimer(StopImmediateTimerBehavior.RECORD_METRIC);
 
         List<WebauthnCredentialDetails> discoverableCredentials = new ArrayList<>();
         if (options.publicKey != null) {
@@ -1877,14 +1892,23 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     }
 
     private void startImmediateTimer() {
+        mIsImmediateTimerRunning = true;
         mImmediateTimer.startTimer(500, this::onImmediateTimeout);
     }
 
-    private void stopImmediateTimer() {
+    private void stopImmediateTimer(@StopImmediateTimerBehavior int behavior) {
+        if (!mIsImmediateTimerRunning) {
+            return;
+        }
+        mIsImmediateTimerRunning = false;
+        if (behavior == StopImmediateTimerBehavior.RECORD_METRIC) {
+            RecordHistogram.recordBooleanHistogram(IMMEDIATE_TIMEOUT_HISTOGRAM, false);
+        }
         mImmediateTimer.cancelTimer();
     }
 
     private void onImmediateTimeout() {
+        mIsImmediateTimerRunning = false;
         WebauthnRequestCallback requestCallback =
                 mAuthenticationContextProvider.getRequestCallback();
         if (requestCallback == null) {
@@ -1893,6 +1917,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         assert requestCallback.getCallbackType()
                 == WebauthnRequestCallback.CallbackType.GET_CREDENTIAL;
         logError(TAG, "Timed out waiting for immediate request");
+        RecordHistogram.recordBooleanHistogram(IMMEDIATE_TIMEOUT_HISTOGRAM, true);
         mCredManHelper.cancelGetAssertion(AuthenticatorStatus.NOT_ALLOWED_ERROR);
         mBarrier.onFido2ApiCancelled(AuthenticatorStatus.NOT_ALLOWED_ERROR);
         mCancellableUiState = CancellableUiState.CANCEL_PENDING;
@@ -1910,6 +1935,8 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     }
 
     private void cleanupRequest() {
+        mIsImmediateTimerRunning = false;
+        mImmediateTimer.cancelTimer();
         WebauthnBrowserBridge bridge = getBridge();
         if (bridge != null && bridge.isInitialized()) {
             bridge.cleanupRequest(mAuthenticationContextProvider.getRenderFrameHost());

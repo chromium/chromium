@@ -59,6 +59,7 @@ import org.chromium.components.password_manager.BrowserAssistedLoginType;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
+import org.chromium.components.webauthn.Fido2CredentialRequest.StopImmediateTimerBehavior;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnFeatures;
 import org.chromium.components.webauthn.WebauthnModeProvider;
@@ -736,7 +737,8 @@ public class CredManHelperRobolectricTest {
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
                 /* overrideForcesGpm= */ TriState.TRUE);
 
-        Runnable stopImmediateTimer = Mockito.mock(Runnable.class);
+        @SuppressWarnings("unchecked")
+        Callback<Integer> stopImmediateTimer = Mockito.mock(Callback.class);
 
         mCredManHelper.startPrefetchRequest(
                 mRequestOptions,
@@ -765,7 +767,7 @@ public class CredManHelperRobolectricTest {
 
         credManCallSuccessfulRunback.getValue().run();
 
-        verify(stopImmediateTimer, times(1)).run();
+        verify(stopImmediateTimer, times(1)).onResult(StopImmediateTimerBehavior.RECORD_METRIC);
         verify(mGetCredentialResponseCallback, never()).call(any());
         verify(mBrowserBridge, never())
                 .onCredManConditionalRequestPending(any(), anyBoolean(), any());
@@ -791,6 +793,40 @@ public class CredManHelperRobolectricTest {
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SENT_REQUEST), anyInt());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSKEY), anyInt());
+    }
+
+    @Test
+    public void testImmediateGetCredential_credManOnly_error_stopsImmediateTimerWithoutRecording() {
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+        mRequestCallback =
+                WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
+        when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(mRequestCallback);
+
+        CredManSupportProvider.setupForTesting(
+                /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+                /* overrideForcesGpm= */ TriState.TRUE);
+
+        @SuppressWarnings("unchecked")
+        Callback<Integer> stopImmediateTimer = Mockito.mock(Callback.class);
+
+        mCredManHelper.startPrefetchRequest(
+                mRequestOptions,
+                mOriginString,
+                /* clientDataJson= */ null,
+                mClientDataHash,
+                mBarrier,
+                stopImmediateTimer,
+                /* ignoreGpm= */ false);
+
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
+        shadowCredentialManager
+                .getPrepareGetCredentialCallback()
+                .onError(
+                        new GetCredentialException(GetCredentialException.TYPE_UNKNOWN, "Message"));
+
+        verify(stopImmediateTimer, times(1))
+                .onResult(StopImmediateTimerBehavior.DO_NOT_RECORD_METRIC);
+        verify(mBarrier, times(1)).onCredManFailed(eq(AuthenticatorStatus.UNKNOWN_ERROR));
     }
 
     @Test

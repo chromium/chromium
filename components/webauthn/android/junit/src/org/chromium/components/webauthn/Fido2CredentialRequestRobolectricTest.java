@@ -56,6 +56,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionResponse;
 import org.chromium.blink.mojom.GetCredentialOptions;
@@ -904,12 +905,16 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     public void testImmediateGetCredential_success() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "WebAuthentication.GetAssertion.Immediate.TimeoutWhileWaitingForUi", false);
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.IMMEDIATE;
 
         handleGetCredentialRequest();
 
         String originString = Fido2CredentialRequest.convertOriginToString(mOrigin);
+        ArgumentCaptor<Callback<Integer>> stopImmediateTimerCaptor = MockitoHelper.callbackCaptor();
         verify(mCredManHelperMock)
                 .startPrefetchRequest(
                         eq(mRequestOptions),
@@ -917,9 +922,45 @@ public class Fido2CredentialRequestRobolectricTest {
                         eq(TEST_CLIENT_DATA_JSON.getBytes()),
                         /* clientDataHash= */ any(),
                         /* barrier= */ any(),
-                        /* stopImmediateTimer= */ notNull(),
+                        /* stopImmediateTimer= */ stopImmediateTimerCaptor.capture(),
                         /* ignoreGpm= */ eq(false));
+        stopImmediateTimerCaptor
+                .getValue()
+                .onResult(Fido2CredentialRequest.StopImmediateTimerBehavior.RECORD_METRIC);
+        watcher.assertExpected();
         verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
+    }
+
+    @Test
+    public void testImmediateGetCredential_error_doesNotRecordTimeoutHistogram() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "WebAuthentication.GetAssertion.Immediate.TimeoutWhileWaitingForUi")
+                        .build();
+        setGetCredentialRequestOptions(/* hasAllowList= */ false);
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+        RunnableTimer timer = Mockito.mock(RunnableTimer.class);
+        mRequest.setImmediateTimerForTesting(timer);
+
+        handleGetCredentialRequest();
+
+        String originString = Fido2CredentialRequest.convertOriginToString(mOrigin);
+        ArgumentCaptor<Callback<Integer>> stopImmediateTimerCaptor = MockitoHelper.callbackCaptor();
+        verify(mCredManHelperMock)
+                .startPrefetchRequest(
+                        eq(mRequestOptions),
+                        eq(originString),
+                        eq(TEST_CLIENT_DATA_JSON.getBytes()),
+                        /* clientDataHash= */ any(),
+                        /* barrier= */ any(),
+                        /* stopImmediateTimer= */ stopImmediateTimerCaptor.capture(),
+                        /* ignoreGpm= */ eq(false));
+        stopImmediateTimerCaptor
+                .getValue()
+                .onResult(Fido2CredentialRequest.StopImmediateTimerBehavior.DO_NOT_RECORD_METRIC);
+        watcher.assertExpected();
+        verify(timer).cancelTimer();
     }
 
     @Test
@@ -937,6 +978,9 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     public void testImmediateGetCredential_timeout_notAllowed() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "WebAuthentication.GetAssertion.Immediate.TimeoutWhileWaitingForUi", true);
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
                 /* overrideForcesGpm= */ TriState.FALSE);
@@ -956,6 +1000,7 @@ public class Fido2CredentialRequestRobolectricTest {
 
         handleGetCredentialRequest();
 
+        watcher.assertExpected();
         verify(mBarrierMock).onFido2ApiCancelled(eq(AuthenticatorStatus.NOT_ALLOWED_ERROR));
     }
 
