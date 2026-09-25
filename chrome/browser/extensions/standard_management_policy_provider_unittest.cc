@@ -350,6 +350,9 @@ TEST_F(StandardManagementPolicyProviderTest, LowTrustSettingsOverrideBlock) {
 
   // 1. Simulate an unmanaged (low trust) environment.
   {
+    policy::ScopedManagementServiceOverrideForTesting platform_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
     policy::ScopedManagementServiceOverrideForTesting profile_management(
         policy::ManagementServiceFactory::GetForProfile(&profile_),
         policy::EnterpriseManagementAuthority::NONE);
@@ -434,6 +437,9 @@ TEST_F(StandardManagementPolicyProviderTest, LowTrustManualInstallBypass) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kBlockPolicyDseNtpOverridesInLowTrust);
 
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
   policy::ScopedManagementServiceOverrideForTesting profile_management(
       policy::ManagementServiceFactory::GetForProfile(&profile_),
       policy::EnterpriseManagementAuthority::NONE);
