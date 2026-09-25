@@ -732,6 +732,43 @@ TEST_F(HTMLTextAreaElementTest, AutofillPreviewScrollStateLeak) {
             Color::FromRGB(0, 255, 0));
 }
 
+TEST_F(HTMLTextAreaElementTest, AutofillPreviewScrollSideChannelsLeak) {
+  LoadAhem();
+  SetBodyContent(R"HTML(
+    <textarea id="test" style="font: 10px Ahem; width: 80px; height: 20px; overflow: auto;"></textarea>
+  )HTML");
+  HTMLTextAreaElement& textarea = TestElement();
+  RunDocumentLifecycle();
+
+  const int baseline_client_width = textarea.clientWidth();
+  const int baseline_client_height = textarea.clientHeight();
+  const int baseline_offset_height = textarea.OffsetHeight();
+
+  // Set a long suggested value that wraps across many lines and would normally
+  // trigger a vertical scrollbar and scrollable overflow.
+  textarea.SetSuggestedValue(
+      "XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX XXXXXXXXXX");
+  RunDocumentLifecycle();
+
+  // Neither clientWidth nor clientHeight should shrink due to an auto
+  // scrollbar during preview.
+  EXPECT_EQ(textarea.clientWidth(), baseline_client_width);
+  EXPECT_EQ(textarea.clientHeight(), baseline_client_height);
+  EXPECT_EQ(textarea.OffsetHeight(), baseline_offset_height);
+
+  // Programmatic scrolling via setScrollTop / setScrollLeft must not scroll the
+  // underlying PaintLayerScrollableArea during preview.
+  textarea.setScrollTop(50);
+  textarea.setScrollLeft(50);
+  RunDocumentLifecycle();
+
+  ASSERT_TRUE(textarea.GetLayoutBox());
+  if (const auto* scrollable_area =
+          textarea.GetLayoutBox()->GetScrollableArea()) {
+    EXPECT_EQ(scrollable_area->GetScrollOffset(), ScrollOffset());
+  }
+}
+
 TEST_F(HTMLTextAreaElementTest, GetTextInfoSyntheticBoldItalic) {
   LoadAhem();
 

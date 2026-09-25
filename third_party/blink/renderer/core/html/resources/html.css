@@ -616,6 +616,12 @@ input::-internal-input-suggested {
     overflow: hidden;
 }
 
+textarea::-internal-input-suggested {
+    max-inline-size: 100%;
+    max-block-size: 100%;
+    overflow: hidden;
+}
+
 input::-internal-input-suggested,
 textarea::-internal-input-suggested {
     pointer-events: none !important;
