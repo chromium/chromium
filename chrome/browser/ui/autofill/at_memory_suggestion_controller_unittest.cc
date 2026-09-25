@@ -283,6 +283,27 @@ TEST_F(AtMemorySuggestionControllerTest, AcceptSuggestion) {
       /*was_obscured=*/false);
 }
 
+// Tests that accepting a suggestion forwards the was_obscured flag.
+TEST_F(AtMemorySuggestionControllerTest, AcceptSuggestionForwardsWasObscured) {
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"test", SuggestionType::kAddressEntry)};
+  ShowSuggestions(manager(), suggestions,
+                  /*search_bar_initial_value=*/u"");
+
+  EXPECT_CALL(
+      manager().external_delegate(),
+      DidAcceptSuggestion(
+          suggestions[0],
+          testing::Field(
+              &AutofillSuggestionDelegate::SuggestionMetadata::was_obscured,
+              true),
+          _, _));
+
+  client().suggestion_controller(manager()).AcceptSuggestion(
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/true);
+}
+
 // Tests that AtMemoryBottomSheetBridge methods correctly route to the
 // controller and delegate.
 TEST_F(AtMemorySuggestionControllerTest, DelegateRouting) {

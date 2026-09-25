@@ -83,8 +83,6 @@ void AtMemorySuggestionController::AcceptSuggestion(
     int index,
     AutofillMetrics::SuggestionAcceptedMethod accept_method,
     bool was_obscured) {
-  // TODO(crbug.com/561395976): Use the `was_obscured` parameter to run
-  // additional authentication.
   if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
     return;
   }
@@ -97,7 +95,8 @@ void AtMemorySuggestionController::AcceptSuggestion(
     delegate_->DidAcceptSuggestion(
         suggestion,
         AutofillSuggestionDelegate::SuggestionMetadata{
-            .multi_index = {static_cast<size_t>(index)}},
+            .multi_index = {static_cast<size_t>(index)},
+            .was_obscured = was_obscured},
         controller_common_.form_id, controller_common_.field_id);
   }
 }
@@ -294,6 +293,7 @@ void AtMemorySuggestionController::OnChildSuggestionSelected(
 
   Suggestion suggestion = parent_suggestion.children[child_position];
   if (delegate_) {
+    // TODO(crbug.com/561395976): Populate the `was_obscured` flag.
     delegate_->DidAcceptSuggestion(
         suggestion,
         AutofillSuggestionDelegate::SuggestionMetadata{

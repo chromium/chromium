@@ -64,7 +64,9 @@ EqualsSuggestionMetadata(
       Field(&AutofillSuggestionDelegate::SuggestionMetadata::multi_index,
             metadata.multi_index),
       Field(&AutofillSuggestionDelegate::SuggestionMetadata::from_search_result,
-            metadata.from_search_result));
+            metadata.from_search_result),
+      Field(&AutofillSuggestionDelegate::SuggestionMetadata::was_obscured,
+            metadata.was_obscured));
 }
 
 class AutofillPopupControllerImplTest
@@ -541,6 +543,22 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
   sub_controller->AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
       /*was_obscured=*/false);
+}
+
+TEST_F(AutofillPopupControllerImplTest, AcceptSuggestionForwardsWasObscured) {
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+  client().suggestion_controller(manager()).OnPopupPainted();
+  EXPECT_CALL(
+      manager().external_delegate(),
+      DidAcceptSuggestion(
+          _,
+          EqualsSuggestionMetadata({.multi_index = {0}, .was_obscured = true}),
+          _, _));
+
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  client().suggestion_controller(manager()).AcceptSuggestion(
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/true);
 }
 
 // Tests that unacceptable suggestions cannot be accepted.

@@ -72,6 +72,11 @@ class AutofillSuggestionDelegate {
     // the search input is not empty).
     bool from_search_result = false;
 
+    // Indicates if the application window was fully or partially obscured when
+    // the suggestion was accepted. This flag is populated only on Android at
+    // the moment.
+    bool was_obscured = false;
+
     friend bool operator==(const SuggestionMetadata& lhs,
                            const SuggestionMetadata& rhs) = default;
   };

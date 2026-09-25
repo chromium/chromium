@@ -572,9 +572,9 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
   base::UmaHistogramEnumeration("Autofill.SuggestionAccepted.Method",
                                 accept_method);
 
-  delegate_->DidAcceptSuggestion(suggestion, GetSuggestionMetadata(index),
-                                 controller_common_.form_id,
-                                 controller_common_.field_id);
+  delegate_->DidAcceptSuggestion(
+      suggestion, GetSuggestionMetadata(index, was_obscured),
+      controller_common_.form_id, controller_common_.field_id);
 }
 
 AutofillSuggestionDelegate::SuggestionUiMetadata
@@ -593,12 +593,14 @@ AutofillPopupControllerImpl::GetPopupMetadata() const {
 }
 
 AutofillSuggestionDelegate::SuggestionMetadata
-AutofillPopupControllerImpl::GetSuggestionMetadata(size_t row_index) const {
+AutofillPopupControllerImpl::GetSuggestionMetadata(size_t row_index,
+                                                   bool was_obscured) const {
   std::vector<size_t> multi_index = GetPopupMetadata().multi_index;
   multi_index.push_back(row_index);
   return {
       .multi_index = std::move(multi_index),
       .from_search_result = filter_.has_value(),
+      .was_obscured = was_obscured,
   };
 }
 

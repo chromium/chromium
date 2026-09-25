@@ -866,6 +866,23 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       AcceptSuggestionForwardsWasObscured) {
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  EXPECT_CALL(
+      manager().external_delegate(),
+      DidAcceptSuggestion(
+          _,
+          Field(&AutofillSuggestionDelegate::SuggestionMetadata::was_obscured,
+                true),
+          _, _));
+  client().suggestion_controller(manager()).AcceptSuggestion(
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/true);
+}
+
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        AcceptSuggestionWithLoadingPayloadDoesNotHide) {
   Suggestion suggestion(u"Passport number", SuggestionType::kFillAutofillAi);
   suggestion.payload = Suggestion::AutofillAiPayload(
