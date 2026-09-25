@@ -154,7 +154,7 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestion(NSString* realm) {
   return grey_allOf(text_matcher,
                     grey_ancestor(grey_accessibilityID(
                         kFormInputAccessoryViewAccessibilityID)),
-                    grey_interactable(), nil);
+                    nil);
 }
 
 // Matcher for the autofill backup password suggestion chip in the keyboard
