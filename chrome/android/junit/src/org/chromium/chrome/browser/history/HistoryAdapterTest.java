@@ -23,7 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
+import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -129,7 +129,7 @@ public class HistoryAdapterTest {
         mAdapter.onSearchStart();
         Assert.assertTrue("Source app should remain on when entering search", showSourceApp());
 
-        mAdapter.updateHistory(new AppInfo("org.great.app", null, "Great App"));
+        mAdapter.updateHistory(new FilterItem("org.great.app", null, "Great App"));
         Assert.assertFalse("No source app when app filter is on", showSourceApp());
         Assert.assertEquals("App id should switch to greatapp", "org.great.app", getAppId());
 
@@ -137,7 +137,7 @@ public class HistoryAdapterTest {
         Assert.assertTrue("Source app when app filter is reset", showSourceApp());
         Assert.assertEquals("App id should switch to null", null, getAppId());
 
-        mAdapter.updateHistory(new AppInfo("org.awesome.app", null, "Awesome App"));
+        mAdapter.updateHistory(new FilterItem("org.awesome.app", null, "Awesome App"));
         Assert.assertFalse("No source app when app filter is on again", showSourceApp());
         Assert.assertEquals("App id should switch to awesomeapp", "org.awesome.app", getAppId());
 

@@ -22,12 +22,13 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         android:src="@drawable/drag_handlebar" />
     <TextView
+        android:id="@+id/filter_header_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minHeight="44dp"
         android:layout_marginStart="@dimen/list_item_default_margin"
         android:gravity="center_vertical"
         android:textDirection="locale"
-        android:text="@string/history_filter_by_app"
+        tools:text="@string/history_filter_by_app"
         style="@style/TextAppearance.TextAccentMediumThick.Primary" />
 </LinearLayout>

@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
+import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -136,7 +136,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final @Nullable String mHostName;
     private final @Nullable Runnable mHideSoftKeyboard;
     private final boolean mShowAppFilter;
-    private final List<AppInfo> mAppInfoList = new ArrayList<>();
+    private final List<FilterItem> mAppInfoList = new ArrayList<>();
     private final @Nullable Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final @Nullable Supplier<@Nullable Tab> mTabSupplier;
     private final AppInfoCache mAppInfoCache;
@@ -151,8 +151,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final boolean mLaunchedForApp;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private final @Nullable String mAppId;
-    private @Nullable AppFilterCoordinator mAppFilterSheet;
-    private @Nullable AppInfo mCurrentApp;
+    private @Nullable FilterSheetCoordinator mAppFilterSheet;
+    private @Nullable FilterItem mCurrentApp;
     private long mAppQueryStartMs;
     private final AsyncTabLauncher mRegularAsyncTabLauncher;
     private final AsyncTabLauncher mIncognitoAsyncTabLauncher;
@@ -493,14 +493,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     }
 
     /**
-     * Build a list of {@link AppInfo} using the app query result.
+     * Build a list of {@link FilterItem} using the app query result.
      *
      * @param appIds List of app IDs found from the history database.
      */
     private void buildAppInfoList(List<String> appIds) {
         mAppInfoList.clear();
         for (String appId : appIds) {
-            AppInfo appInfo = mAppInfoCache.get(appId);
+            FilterItem appInfo = mAppInfoCache.get(appId);
             // Filter out the app whose info cannot be found. TODO: Consider keeping it with
             // a default app.
             if (appInfo.isValid()) mAppInfoList.add(appInfo);
@@ -638,6 +638,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      */
     boolean showAppFilter() {
         return HistoryManager.isAppSpecificHistoryEnabled() && mShowAppFilter;
+    }
+
+    /**
+     * @return True if history page needs to show filter chips UI.
+     */
+    boolean showFilterChips() {
+        return showAppFilter();
     }
 
     /** returns whether the info header will be available for user upon request. */
@@ -844,12 +851,13 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         if (mAppFilterSheet == null) {
             assert mBottomSheetControllerSupplier != null;
             mAppFilterSheet =
-                    new AppFilterCoordinator(
+                    new FilterSheetCoordinator(
                             mActivity,
                             mActivity.getWindow().getDecorView(),
                             mBottomSheetControllerSupplier.get(),
                             this::onAppUpdated,
-                            mAppInfoList);
+                            mAppInfoList,
+                            R.string.history_filter_by_app);
         }
         mAppFilterSheet.openSheet(mCurrentApp);
         mUmaRecorder.recordAppFilterSheetOpened();
@@ -857,7 +865,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     /** Callback from app filter sheet, with the newly chosen app to filter. */
     @VisibleForTesting
-    void onAppUpdated(@Nullable AppInfo appInfo) {
+    void onAppUpdated(@Nullable FilterItem appInfo) {
         if (Objects.equals(mCurrentApp, appInfo)) return;
         mCurrentApp = appInfo;
         getAdapter().updateHistory(mCurrentApp);
@@ -919,24 +927,24 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     }
 
     static class AppInfoCache {
-        private static final AppInfo EMPTY_INFO = new AppInfo(null, null, "");
-        private @Nullable HashMap<String, AppInfo> mAppInfoMap;
+        private static final FilterItem EMPTY_INFO = new FilterItem(null, null, "");
+        private @Nullable HashMap<String, FilterItem> mAppInfoMap;
         private PackageManager mPackageManager;
 
         public AppInfoCache(PackageManager packageManager) {
             mPackageManager = packageManager;
         }
 
-        public AppInfo get(String appId) {
+        public FilterItem get(String appId) {
             if (mAppInfoMap == null) mAppInfoMap = new HashMap<>();
-            AppInfo appInfo = mAppInfoMap.get(appId);
+            FilterItem appInfo = mAppInfoMap.get(appId);
             if (appInfo == null) {
                 try {
                     PackageManager pm = mPackageManager;
                     var info = pm.getApplicationInfo(appId, PackageManager.GET_META_DATA);
                     var icon = pm.getApplicationIcon(info);
                     var label = pm.getApplicationLabel(info);
-                    appInfo = new AppInfo(appId, icon, label);
+                    appInfo = new FilterItem(appId, icon, label);
                 } catch (NameNotFoundException e) {
                     // Can happen if the corresponding app was uninstalled, or unavailable for any
                     // reason. Map it with an empty info so it won't be queried again till next
@@ -975,11 +983,11 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mAppInfoCache.setPackageManagerForTesting(packageManager); // IN-TEST
     }
 
-    void setAppFilterSheetForTesting(AppFilterCoordinator appFilterSheet) {
+    void setAppFilterSheetForTesting(FilterSheetCoordinator appFilterSheet) {
         mAppFilterSheet = appFilterSheet;
     }
 
-    @Nullable AppInfo getAppInfoForTesting() {
+    @Nullable FilterItem getAppInfoForTesting() {
         return mCurrentApp;
     }
 }

@@ -13,9 +13,9 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/** Property model properties for app filter sheet UI. */
+/** Property model properties for filter sheet UI. */
 @NullMarked
-class AppFilterProperties {
+class FilterSheetProperties {
     public static final ReadableObjectPropertyKey<String> ID = new ReadableObjectPropertyKey<>();
     public static final ReadableObjectPropertyKey<Drawable> ICON =
             new ReadableObjectPropertyKey<>();

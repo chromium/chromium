@@ -79,7 +79,7 @@ public class HistoryActivity extends SnackbarActivity {
                         edgeToEdgePadAdjusterGenerator);
         ViewGroup contentView = mHistoryManager.getView();
         setContentView(contentView);
-        if (showAppFilter) createBottomSheetController(contentView);
+        createBottomSheetController(contentView);
         BackPressHelper.create(this, getOnBackPressedDispatcher(), mHistoryManager);
     }
 

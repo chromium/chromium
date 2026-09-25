@@ -71,7 +71,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
+import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -181,7 +181,7 @@ public class HistoryUiTest {
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private PackageManager mPackageManager;
-    @Mock private AppFilterCoordinator mAppFilterSheet;
+    @Mock private FilterSheetCoordinator mAppFilterSheet;
     @Mock private ApplicationInfo mPackageAppInfo;
 
     public static Matcher<Intent> hasData(GURL uri) {
@@ -661,14 +661,14 @@ public class HistoryUiTest {
         verify(mAppFilterSheet).openSheet(eq(null));
 
         // Verify ContentManager is updated with the selected app info.
-        AppInfo selected = new AppInfo("Ernie", null, appId1);
+        FilterItem selected = new FilterItem("Ernie", null, appId1);
         mContentManager.onAppUpdated(selected);
         Assert.assertEquals(
                 "The expected app 'Ernie' was not chosen",
                 mContentManager.getAppInfoForTesting(),
                 selected);
 
-        AppInfo selected2 = new AppInfo("Bert", null, appId2);
+        FilterItem selected2 = new FilterItem("Bert", null, appId2);
         mContentManager.onAppUpdated(selected2);
         Assert.assertEquals(
                 "The expected app 'Bert' was not chosen",
@@ -692,7 +692,7 @@ public class HistoryUiTest {
         final String app1 = "org.chromium.chrome.AwesomeApp";
         when(mPackageManager.getApplicationInfo(eq(app1), anyInt())).thenReturn(mPackageAppInfo);
 
-        AppInfo appInfo1 = appInfoCache.get(app1);
+        FilterItem appInfo1 = appInfoCache.get(app1);
         verify(mPackageManager).getApplicationInfo(eq(app1), anyInt());
         clearInvocations(mPackageManager);
 
@@ -706,7 +706,7 @@ public class HistoryUiTest {
         final String app2 = "org.chromium.chrome.UninstalledApp";
         when(mPackageManager.getApplicationInfo(eq(app2), anyInt()))
                 .thenThrow(NameNotFoundException.class);
-        AppInfo appInfo2 = appInfoCache.get(app2);
+        FilterItem appInfo2 = appInfoCache.get(app2);
         assertFalse("Bad appId should return invalid AppInfo", appInfo2.isValid());
         clearInvocations(mPackageManager);
 

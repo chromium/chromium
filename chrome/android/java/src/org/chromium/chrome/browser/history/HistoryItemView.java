@@ -24,7 +24,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
+import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.history.HistoryContentManager.AppInfoCache;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -198,7 +198,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         if (mShowSourceApp.getAsBoolean()) {
             String appId = item.getAppId();
             if (appId != null) {
-                AppInfo appInfo = mAppInfoCache.get(appId);
+                FilterItem appInfo = mAppInfoCache.get(appId);
                 if (appInfo.isValid()) {
                     var sourceApp =
                             getResources()

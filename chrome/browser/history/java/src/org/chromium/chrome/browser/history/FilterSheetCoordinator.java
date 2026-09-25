@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,10 +26,10 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
-/** Coordinator class of the app filter bottom sheet UI for history page. */
+/** Coordinator class of the filter bottom sheet UI for history page. */
 @NullMarked
-class AppFilterCoordinator implements View.OnLayoutChangeListener {
-    // Maximum number of app filter items shown on the sheet at once if screen dimension allows.
+class FilterSheetCoordinator implements View.OnLayoutChangeListener {
+    // Maximum number of filter items shown on the sheet at once if screen dimension allows.
     static final int MAX_VISIBLE_ITEM_COUNT = 5;
 
     // Maximum ratio of the sheet height against the base view height.
@@ -36,7 +37,7 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
-    private final AppFilterMediator mMediator;
+    private final FilterSheetMediator mMediator;
     private final RecyclerView mItemListView;
     private final BottomSheetContent mSheetContent;
     private final PropertyModel mCloseButtonModel;
@@ -45,23 +46,23 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
     private final View mBaseView;
 
     private final CloseCallback mCloseCallback;
-    private final int mAppCount;
+    private int mItemCount;
 
     private int mBaseViewHeight;
 
-    /** Data class for individual app item in the filter list. */
-    public static class AppInfo {
+    /** Data class for individual item in the filter list. */
+    public static class FilterItem {
         public final @Nullable String id;
         public final @Nullable Drawable icon;
         public final CharSequence label;
 
-        public AppInfo(@Nullable String id, @Nullable Drawable icon, CharSequence label) {
+        public FilterItem(@Nullable String id, @Nullable Drawable icon, CharSequence label) {
             this.id = id;
             this.icon = icon;
             this.label = label;
         }
 
-        /** Return whether the app info object is valid. */
+        /** Return whether the filter item object is valid. */
         public boolean isValid() {
             return id != null;
         }
@@ -69,17 +70,24 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
         @Override
         public boolean equals(Object o) {
             if (o == this) return true;
-            return (o instanceof AppInfo appInfo) ? TextUtils.equals(id, appInfo.id) : false;
+            return (o instanceof FilterItem filterItem)
+                    ? TextUtils.equals(id, filterItem.id)
+                    : false;
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hashCode(id);
         }
     }
 
-    /** Callback to be invoked when the sheet gets closed with updated app info. */
+    /** Callback to be invoked when the sheet gets closed with updated filter item. */
     public interface CloseCallback {
         /**
-         * @param appInfo {@link AppInfo} containing the app information. May be {@code null} if no
-         *     app is selected.
+         * @param filterItem {@link FilterItem} containing the item information. May be {@code null}
+         *     if no item is selected.
          */
-        void onAppUpdated(@Nullable AppInfo appInfo);
+        void onFilterItemUpdated(@Nullable FilterItem filterItem);
     }
 
     /**
@@ -89,24 +97,27 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
      * @param baseView Base view on which the sheet is opened.
      * @param bottomSheetController {@link BottomSheetController} to open/close the sheet.
      * @param closeCallback Callback invoked when the sheet is closed
-     * @param appInfoList List of the apps to display in the sheet.
+     * @param filterItemList List of the items to display in the sheet.
+     * @param titleResId Resource ID for the header title of the bottom sheet.
      */
-    AppFilterCoordinator(
+    FilterSheetCoordinator(
             Context context,
             View baseView,
             BottomSheetController bottomSheetController,
             CloseCallback closeCallback,
-            List<AppInfo> appInfoList) {
+            List<FilterItem> filterItemList,
+            @StringRes int titleResId) {
         mContext = context;
         mBaseView = baseView;
         mBaseViewHeight = mBaseView.getHeight();
         mBottomSheetController = bottomSheetController;
         mCloseCallback = closeCallback;
         var layoutInflater = LayoutInflater.from(context);
-        mContentView = layoutInflater.inflate(R.layout.appfilter_content, null);
-        mItemListView = (RecyclerView) mContentView.findViewById(R.id.appfilter_item_list);
+        mContentView = layoutInflater.inflate(R.layout.filter_sheet_content, null);
+        mItemListView = (RecyclerView) mContentView.findViewById(R.id.filter_item_list);
         mSheetContent =
-                new AppFilterSheetContent(context, mContentView, mItemListView, this::destroy);
+                new FilterSheetContent(
+                        context, mContentView, mItemListView, this::destroy, titleResId);
 
         ModelList listItems = new ModelList();
         var adapter = new SimpleRecyclerViewAdapter(listItems);
@@ -115,22 +126,28 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
                 (parent) ->
                         layoutInflater.inflate(
                                 R.layout.modern_list_item_small_icon_view, parent, false),
-                AppFilterViewBinder::bind);
+                FilterSheetViewBinder::bind);
         mItemListView.setAdapter(adapter);
 
         // Close button at the bottom.
         View closeButton = mContentView.findViewById(R.id.close_button);
         mCloseButtonModel =
-                new PropertyModel.Builder(AppFilterProperties.CLOSE_BUTTON_KEY)
+                new PropertyModel.Builder(FilterSheetProperties.CLOSE_BUTTON_KEY)
                         .with(
-                                AppFilterProperties.CLOSE_BUTTON_CALLBACK,
+                                FilterSheetProperties.CLOSE_BUTTON_CALLBACK,
                                 v -> mBottomSheetController.hideContent(mSheetContent, true))
                         .build();
         PropertyModelChangeProcessor.create(
-                mCloseButtonModel, closeButton, AppFilterViewBinder::bind);
+                mCloseButtonModel, closeButton, FilterSheetViewBinder::bind);
 
-        mMediator = new AppFilterMediator(listItems, appInfoList, this::closeSheet);
-        mAppCount = listItems.size();
+        mMediator = new FilterSheetMediator(listItems, filterItemList, this::closeSheet);
+        mItemCount = listItems.size();
+    }
+
+    /** Updates the items displayed in the filter sheet. */
+    public void updateItems(List<FilterItem> filterItemList) {
+        mMediator.updateItems(filterItemList);
+        mItemCount = filterItemList.size();
     }
 
     @Override
@@ -152,14 +169,14 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
     }
 
     /**
-     * Open app filter bottom sheet.
+     * Open filter bottom sheet.
      *
-     * @param currentApp Initial app to be selected at the beginning. If {@code null}, no app will
-     *     be selected.
+     * @param currentItem Initial item to be selected at the beginning. If {@code null}, no item
+     *     will be selected.
      */
-    public void openSheet(@Nullable AppInfo currentApp) {
+    public void openSheet(@Nullable FilterItem currentItem) {
         updateSheetHeight();
-        mMediator.resetState(currentApp);
+        mMediator.resetState(currentItem);
         mBottomSheetController.requestShowContent(mSheetContent, true);
     }
 
@@ -175,7 +192,7 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
 
         int rowHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
-        layoutParams.height = calculateSheetHeight(rowHeight, mBaseView.getHeight(), mAppCount);
+        layoutParams.height = calculateSheetHeight(rowHeight, mBaseView.getHeight(), mItemCount);
         mItemListView.setLayoutParams(layoutParams);
     }
 
@@ -186,24 +203,24 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
         return Math.min(visibleRowCount * rowHeight, maxHeight);
     }
 
-    private void closeSheet(@Nullable AppInfo appInfo) {
+    private void closeSheet(@Nullable FilterItem filterItem) {
         mBottomSheetController.hideContent(mSheetContent, true);
-        mCloseCallback.onAppUpdated(appInfo);
+        mCloseCallback.onFilterItemUpdated(filterItem);
     }
 
     private void destroy() {
         mBaseView.removeOnLayoutChangeListener(this);
     }
 
-    void clickItemForTesting(String appId) {
-        mMediator.clickItemForTesting(appId); // IN-TEST
+    void clickItemForTesting(String id) {
+        mMediator.clickItemForTesting(id); // IN-TEST
     }
 
     void clickCloseButtonForTesting() {
-        mCloseButtonModel.get(AppFilterProperties.CLOSE_BUTTON_CALLBACK).onClick(null); // IN-TEST
+        mCloseButtonModel.get(FilterSheetProperties.CLOSE_BUTTON_CALLBACK).onClick(null); // IN-TEST
     }
 
-    @Nullable String getCurrentAppIdForTesting() {
-        return mMediator.getCurrentAppIdForTesting(); // IN-TEST
+    @Nullable String getCurrentItemIdForTesting() {
+        return mMediator.getCurrentItemIdForTesting(); // IN-TEST
     }
 }

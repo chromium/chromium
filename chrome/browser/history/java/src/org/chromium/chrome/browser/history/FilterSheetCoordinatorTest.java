@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.history;
 import static org.junit.Assert.assertEquals;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
-import static org.chromium.chrome.browser.history.AppFilterCoordinator.MAX_SHEET_HEIGHT_RATIO;
-import static org.chromium.chrome.browser.history.AppFilterCoordinator.MAX_VISIBLE_ITEM_COUNT;
+import static org.chromium.chrome.browser.history.FilterSheetCoordinator.MAX_SHEET_HEIGHT_RATIO;
+import static org.chromium.chrome.browser.history.FilterSheetCoordinator.MAX_VISIBLE_ITEM_COUNT;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
@@ -30,7 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
+import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -44,11 +44,11 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Integration tests for the app filter sheet for history page. */
+/** Integration tests for the filter sheet for history page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class AppFilterCoordinatorTest {
+public class FilterSheetCoordinatorTest {
     private static final String APPID_YOUTUBE = "com.google.android.youtube";
     private static final String APPID_CHROME = "com.android.chrome";
     private static final String APPID_CALENDAR = "com.google.android.calendar";
@@ -64,8 +64,8 @@ public class AppFilterCoordinatorTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private BottomSheetController mBottomSheetController;
-    private AppFilterCoordinator mAppFilterSheet;
-    private AppInfo mCurrentApp;
+    private FilterSheetCoordinator mFilterSheet;
+    private FilterItem mCurrentItem;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -77,18 +77,19 @@ public class AppFilterCoordinatorTest {
                     mBottomSheetController = createBottomSheetController();
 
                     Drawable icon = activity.getResources().getDrawable(R.drawable.ic_devices_16dp);
-                    List<AppInfo> apps = new ArrayList<>();
-                    apps.add(new AppInfo(APPID_YOUTUBE, icon, APPLABEL_YOUTUBE));
-                    apps.add(new AppInfo(APPID_CHROME, icon, APPLABEL_CHROME));
-                    apps.add(new AppInfo(APPID_CALENDAR, icon, APPLABEL_CALENDAR));
-                    apps.add(new AppInfo(APPID_MESSAGE, icon, APPLABEL_MESSAGE));
-                    mAppFilterSheet =
-                            new AppFilterCoordinator(
+                    List<FilterItem> items = new ArrayList<>();
+                    items.add(new FilterItem(APPID_YOUTUBE, icon, APPLABEL_YOUTUBE));
+                    items.add(new FilterItem(APPID_CHROME, icon, APPLABEL_CHROME));
+                    items.add(new FilterItem(APPID_CALENDAR, icon, APPLABEL_CALENDAR));
+                    items.add(new FilterItem(APPID_MESSAGE, icon, APPLABEL_MESSAGE));
+                    mFilterSheet =
+                            new FilterSheetCoordinator(
                                     activity,
                                     activity.getWindow().getDecorView(),
                                     mBottomSheetController,
-                                    this::onAppUpdated,
-                                    apps);
+                                    this::onFilterItemUpdated,
+                                    items,
+                                    R.string.history_filter_by_app);
                 });
     }
 
@@ -117,16 +118,16 @@ public class AppFilterCoordinatorTest {
                 /* enableLargeFormFactorUi= */ false);
     }
 
-    private void onAppUpdated(AppInfo appInfo) {
-        mCurrentApp = appInfo;
+    private void onFilterItemUpdated(FilterItem filterItem) {
+        mCurrentItem = filterItem;
     }
 
-    private void setCurrentAppInfo(String appId, CharSequence appLabel) {
-        mCurrentApp = appId == null ? null : new AppInfo(appId, null, appLabel);
+    private void setCurrentFilterItem(String id, CharSequence label) {
+        mCurrentItem = id == null ? null : new FilterItem(id, null, label);
     }
 
     private int calcSheetHeight(int rowHeight, int baseViewHeight, int rowCount) {
-        return AppFilterCoordinator.calculateSheetHeight(rowHeight, baseViewHeight, rowCount);
+        return FilterSheetCoordinator.calculateSheetHeight(rowHeight, baseViewHeight, rowCount);
     }
 
     @Test
@@ -167,106 +168,122 @@ public class AppFilterCoordinatorTest {
     @Test
     @MediumTest
     public void testFullHistoryToApp() {
-        assertEquals("Selected app is not correct.", null, mCurrentApp);
+        assertEquals("Selected app is not correct.", null, mCurrentItem);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet(mCurrentApp);
-                    mAppFilterSheet.clickItemForTesting(APPID_MESSAGE);
+                    mFilterSheet.openSheet(mCurrentItem);
+                    mFilterSheet.clickItemForTesting(APPID_MESSAGE);
                 });
 
         // Tapping an app selects it.
-        assertEquals("Chosen app is not correct.", APPID_MESSAGE, mCurrentApp.id);
-        assertEquals("Chosen label is not correct.", APPLABEL_MESSAGE, mCurrentApp.label);
+        assertEquals("Chosen app is not correct.", APPID_MESSAGE, mCurrentItem.id);
+        assertEquals("Chosen label is not correct.", APPLABEL_MESSAGE, mCurrentItem.label);
     }
 
     @Test
     @MediumTest
     public void testSelectNewApp() {
-        setCurrentAppInfo(APPID_CALENDAR, APPLABEL_CALENDAR);
-        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentApp.id);
+        setCurrentFilterItem(APPID_CALENDAR, APPLABEL_CALENDAR);
+        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentItem.id);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet(mCurrentApp);
-                    mAppFilterSheet.clickItemForTesting(APPID_CHROME);
+                    mFilterSheet.openSheet(mCurrentItem);
+                    mFilterSheet.clickItemForTesting(APPID_CHROME);
                 });
 
         // Tapping an app makes it a newly selected one.
-        assertEquals("Chosen app is not correct.", APPID_CHROME, mCurrentApp.id);
-        assertEquals("Chosen label is not correct.", APPLABEL_CHROME, mCurrentApp.label);
+        assertEquals("Chosen app is not correct.", APPID_CHROME, mCurrentItem.id);
+        assertEquals("Chosen label is not correct.", APPLABEL_CHROME, mCurrentItem.label);
     }
 
     @Test
     @MediumTest
     public void testUnselectApp() {
-        setCurrentAppInfo(APPID_CALENDAR, APPLABEL_CALENDAR);
-        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentApp.id);
+        setCurrentFilterItem(APPID_CALENDAR, APPLABEL_CALENDAR);
+        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentItem.id);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet(mCurrentApp);
-                    mAppFilterSheet.clickItemForTesting(APPID_CALENDAR);
+                    mFilterSheet.openSheet(mCurrentItem);
+                    mFilterSheet.clickItemForTesting(APPID_CALENDAR);
                 });
 
         // Tapping the already selected app unselects it.
-        assertEquals("Chosen app is not correct.", null, mCurrentApp);
+        assertEquals("Chosen app is not correct.", null, mCurrentItem);
 
         // Open the sheet once more and select the app that was unselected right before.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet(mCurrentApp);
-                    mAppFilterSheet.clickItemForTesting(APPID_CALENDAR);
+                    mFilterSheet.openSheet(mCurrentItem);
+                    mFilterSheet.clickItemForTesting(APPID_CALENDAR);
                 });
-        assertEquals("Chosen app is not correct.", APPID_CALENDAR, mCurrentApp.id);
-        assertEquals("Chosen label is not correct.", APPLABEL_CALENDAR, mCurrentApp.label);
+        assertEquals("Chosen app is not correct.", APPID_CALENDAR, mCurrentItem.id);
+        assertEquals("Chosen label is not correct.", APPLABEL_CALENDAR, mCurrentItem.label);
     }
 
     @Test
     @MediumTest
     public void testResetSheetAtOpen() {
-        assertEquals("Selected app is not correct.", null, mCurrentApp);
+        assertEquals("Selected app is not correct.", null, mCurrentItem);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet(mCurrentApp);
-                    mAppFilterSheet.clickItemForTesting(APPID_CALENDAR);
+                    mFilterSheet.openSheet(mCurrentItem);
+                    mFilterSheet.clickItemForTesting(APPID_CALENDAR);
                 });
-        assertEquals("Chosen app should be Calendar.", APPID_CALENDAR, mCurrentApp.id);
+        assertEquals("Chosen app should be Calendar.", APPID_CALENDAR, mCurrentItem.id);
 
         // Caller resets its state and opens the sheet again. The sheet should be reset in sync.
-        setCurrentAppInfo(null, null);
+        setCurrentFilterItem(null, null);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet(mCurrentApp);
+                    mFilterSheet.openSheet(mCurrentItem);
                 });
-        assertEquals(
-                "No app should be selected.", null, mAppFilterSheet.getCurrentAppIdForTesting());
+        assertEquals("No app should be selected.", null, mFilterSheet.getCurrentItemIdForTesting());
 
-        setCurrentAppInfo(APPID_YOUTUBE, APPLABEL_YOUTUBE);
+        setCurrentFilterItem(APPID_YOUTUBE, APPLABEL_YOUTUBE);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet(mCurrentApp);
+                    mFilterSheet.openSheet(mCurrentItem);
                 });
         assertEquals(
                 "Chosen app should be YouTube.",
                 APPID_YOUTUBE,
-                mAppFilterSheet.getCurrentAppIdForTesting());
+                mFilterSheet.getCurrentItemIdForTesting());
     }
 
     @Test
     @MediumTest
     public void testCloseSheetWithoutSelection() {
-        setCurrentAppInfo(APPID_CALENDAR, APPLABEL_CALENDAR);
-        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentApp.id);
+        setCurrentFilterItem(APPID_CALENDAR, APPLABEL_CALENDAR);
+        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentItem.id);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet(mCurrentApp);
-                    mAppFilterSheet.clickCloseButtonForTesting();
+                    mFilterSheet.openSheet(mCurrentItem);
+                    mFilterSheet.clickCloseButtonForTesting();
                 });
 
         // Closing the sheet preserves the previously selected app.
-        assertEquals("Chosen app is not correct.", APPID_CALENDAR, mCurrentApp.id);
-        assertEquals("Chosen label is not correct.", APPLABEL_CALENDAR, mCurrentApp.label);
+        assertEquals("Chosen app is not correct.", APPID_CALENDAR, mCurrentItem.id);
+        assertEquals("Chosen label is not correct.", APPLABEL_CALENDAR, mCurrentItem.label);
+    }
+
+    @Test
+    @MediumTest
+    public void testUpdateItems() {
+        List<FilterItem> updatedApps = new ArrayList<>();
+        updatedApps.add(new FilterItem("com.example.newapp", null, "New App"));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mFilterSheet.updateItems(updatedApps);
+                    mFilterSheet.openSheet(null);
+                    mFilterSheet.clickItemForTesting("com.example.newapp");
+                });
+
+        assertEquals("Chosen app is not correct.", "com.example.newapp", mCurrentItem.id);
+        assertEquals("Chosen label is not correct.", "New App", mCurrentItem.label);
     }
 }

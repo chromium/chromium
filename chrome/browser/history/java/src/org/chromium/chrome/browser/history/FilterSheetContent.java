@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,9 +17,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
-/** BottomSheetContent implementation for app filter bottom sheet. */
+/** BottomSheetContent implementation for filter bottom sheet. */
 @NullMarked
-class AppFilterSheetContent implements BottomSheetContent {
+class FilterSheetContent implements BottomSheetContent {
     private static final BottomSheetType BOTTOM_SHEET_TYPE =
             new BottomSheetType.Builder().setUserInitiated(true).build();
 
@@ -27,11 +28,17 @@ class AppFilterSheetContent implements BottomSheetContent {
     private final RecyclerView mListView;
     private final Runnable mCloseRunnable;
 
-    /** Construct a new AppFilterSheet. */
-    AppFilterSheetContent(
-            Context context, View contentView, RecyclerView listView, Runnable closeRunnable) {
+    /** Construct a new FilterSheetContent. */
+    FilterSheetContent(
+            Context context,
+            View contentView,
+            RecyclerView listView,
+            Runnable closeRunnable,
+            @StringRes int titleResId) {
         var layoutInflater = LayoutInflater.from(context);
-        mToolbarView = layoutInflater.inflate(R.layout.appfilter_header, null);
+        mToolbarView = layoutInflater.inflate(R.layout.filter_sheet_header, null);
+        TextView titleView = mToolbarView.findViewById(R.id.filter_header_title);
+        titleView.setText(titleResId);
         mContentView = contentView;
         mListView = listView;
         mCloseRunnable = closeRunnable;

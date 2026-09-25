@@ -114,11 +114,11 @@ if (is_android) {
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [
-      "java/src/org/chromium/chrome/browser/history/AppFilterCoordinator.java",
-      "java/src/org/chromium/chrome/browser/history/AppFilterMediator.java",
-      "java/src/org/chromium/chrome/browser/history/AppFilterProperties.java",
-      "java/src/org/chromium/chrome/browser/history/AppFilterSheetContent.java",
-      "java/src/org/chromium/chrome/browser/history/AppFilterViewBinder.java",
+      "java/src/org/chromium/chrome/browser/history/FilterSheetContent.java",
+      "java/src/org/chromium/chrome/browser/history/FilterSheetCoordinator.java",
+      "java/src/org/chromium/chrome/browser/history/FilterSheetMediator.java",
+      "java/src/org/chromium/chrome/browser/history/FilterSheetProperties.java",
+      "java/src/org/chromium/chrome/browser/history/FilterSheetViewBinder.java",
       "java/src/org/chromium/chrome/browser/history/HistoryTabHelper.java",
     ]
 
@@ -143,8 +143,8 @@ if (is_android) {
 
   android_resources("java_resources") {
     sources = [
-      "java/res/layout/appfilter_content.xml",
-      "java/res/layout/appfilter_header.xml",
+      "java/res/layout/filter_sheet_content.xml",
+      "java/res/layout/filter_sheet_header.xml",
     ]
     deps = [
       "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -156,7 +156,7 @@ if (is_android) {
     testonly = true
     resources_package = "org.chromium.chrome.browser.history"
 
-    sources = [ "java/src/org/chromium/chrome/browser/history/AppFilterCoordinatorTest.java" ]
+    sources = [ "java/src/org/chromium/chrome/browser/history/FilterSheetCoordinatorTest.java" ]
 
     deps = [
       ":java",

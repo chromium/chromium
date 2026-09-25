@@ -12,27 +12,29 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Binder object for the appfilter sheet content model and the view. */
+/** Binder object for the filter sheet content model and the view. */
 @NullMarked
-class AppFilterViewBinder {
+class FilterSheetViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey key) {
-        if (AppFilterProperties.ICON == key) {
+        if (FilterSheetProperties.ICON == key) {
             ImageView icon = view.findViewById(R.id.start_icon);
-            icon.setImageDrawable(model.get(AppFilterProperties.ICON));
+            var drawable = model.get(FilterSheetProperties.ICON);
+            icon.setImageDrawable(drawable);
+            icon.setVisibility(drawable != null ? View.VISIBLE : View.GONE);
             icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        } else if (AppFilterProperties.LABEL == key) {
+        } else if (FilterSheetProperties.LABEL == key) {
             ((TextView) view.findViewById(R.id.title))
-                    .setText(model.get(AppFilterProperties.LABEL));
+                    .setText(model.get(FilterSheetProperties.LABEL));
             view.findViewById(R.id.description).setVisibility(View.GONE);
-        } else if (AppFilterProperties.SELECTED == key) {
+        } else if (FilterSheetProperties.SELECTED == key) {
             ImageView checkMark = view.findViewById(R.id.end_button);
             checkMark.setImageResource(R.drawable.ic_check_googblue_24dp);
-            boolean selected = model.get(AppFilterProperties.SELECTED);
+            boolean selected = model.get(FilterSheetProperties.SELECTED);
             checkMark.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
-        } else if (AppFilterProperties.CLICK_LISTENER == key) {
-            view.setOnClickListener(model.get(AppFilterProperties.CLICK_LISTENER));
-        } else if (AppFilterProperties.CLOSE_BUTTON_CALLBACK == key) {
-            view.setOnClickListener(model.get(AppFilterProperties.CLOSE_BUTTON_CALLBACK));
+        } else if (FilterSheetProperties.CLICK_LISTENER == key) {
+            view.setOnClickListener(model.get(FilterSheetProperties.CLICK_LISTENER));
+        } else if (FilterSheetProperties.CLOSE_BUTTON_CALLBACK == key) {
+            view.setOnClickListener(model.get(FilterSheetProperties.CLOSE_BUTTON_CALLBACK));
         }
     }
 }

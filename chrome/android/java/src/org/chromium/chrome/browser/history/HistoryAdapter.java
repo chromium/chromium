@@ -27,7 +27,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.finds.FindsFeatures;
 import org.chromium.chrome.browser.finds.FindsUtils;
-import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
+import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
@@ -55,7 +55,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private final HistoryContentManager mManager;
     private final ArrayList<HistoryItemView> mItemViews;
     private final DefaultFaviconHelper mFaviconHelper;
-    private final boolean mShowAppFilter;
     private @Nullable final SigninPromoCoordinator mHistorySyncPromoCoordinator;
     private @Nullable final SnackbarManager mSnackbarManager;
     private @Nullable final Profile mProfile;
@@ -71,7 +70,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private @Nullable HeaderItem mClearBrowsingDataButtonHeaderItem;
     private @Nullable HeaderItem mHistoryOpenInChromeHeaderItem;
     private @Nullable HeaderItem mHistorySyncPromoHeaderItem;
-    private @Nullable HeaderItem mAppFilterHeaderItem;
+    private @Nullable HeaderItem mFilterChipsHeaderItem;
     private @Nullable HeaderItem mFindsPromoHeaderItem;
     private ChipView mAppFilterChip;
 
@@ -134,8 +133,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mProfile = profile;
         mFaviconHelper = new DefaultFaviconHelper();
         mItemViews = new ArrayList<>();
-        mShowAppFilter = mManager.showAppFilter();
-        mShowSourceApp = mShowAppFilter; // defaults to BrApp full history
+        mShowSourceApp = mManager.showAppFilter(); // defaults to BrApp full history
         mHistorySyncPromoCoordinator = historySyncPromoCoordinator;
         mIsLargeFormFactorDevice = false;
         mShouldClusterByDomain = shouldClusterByDomain;
@@ -215,15 +213,16 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         onSearchStart();
         mIsLoadingItems = true;
         mClearOnNextQueryComplete = true;
-        mHistoryProvider.queryHistory(mQueryText, new QueryOptions(mAppId, null, null));
+        mHistoryProvider.queryHistory(
+                mQueryText, new QueryOptions(mAppId, null, /* clientId= */ null));
     }
 
     /** Called when a search is ended. */
     public void onEndSearch() {
         mQueryText = EMPTY_QUERY;
         mIsSearching = false;
-        if (mShowAppFilter) setAppId(null);
-        mShowSourceApp = mShowAppFilter;
+        if (mManager.showAppFilter()) setAppId(null);
+        mShowSourceApp = mManager.showAppFilter();
 
         // Re-initialize the data in the adapter.
         startLoadingItems();
@@ -278,7 +277,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         }
 
         // While the selection is active, we temporarily disable the app filter button.
-        if (mShowAppFilter) mAppFilterChip.setEnabled(!active);
+        if (mManager.showAppFilter()) mAppFilterChip.setEnabled(!active);
 
         int visibility = mManager.getRemoveItemButtonVisibility();
         if (active) {
@@ -346,7 +345,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
         boolean hasVisibleContent = !items.isEmpty() || mHistorySyncPromoVisible;
         if ((!mAreHeadersInitialized && hasVisibleContent && !mIsSearching)
-                || (mIsSearching && mShowAppFilter)
+                || (mIsSearching && mManager.showFilterChips())
                 || mIsLargeFormFactorDevice) {
             setHeaders();
             mAreHeadersInitialized = true;
@@ -432,11 +431,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      */
     @Initializer
     void generateHeaderItems() {
-        ViewGroup historyAppFilterContainer = getAppFilterContainer(null);
+        ViewGroup historyFilterChipsContainer = getFilterChipsContainer(null);
         ViewGroup privacyDisclaimerContainer = getPrivacyDisclaimerContainer(null);
         ViewGroup clearBrowsingDataButtonContainer = getClearBrowsingDataButtonContainer(null);
 
-        mAppFilterHeaderItem = new StandardHeaderItem(0, historyAppFilterContainer);
+        mFilterChipsHeaderItem = new StandardHeaderItem(0, historyFilterChipsContainer);
         mPrivacyDisclaimerHeaderItem = new StandardHeaderItem(0, privacyDisclaimerContainer);
         mPrivacyDisclaimerBottomSpace =
                 privacyDisclaimerContainer.findViewById(R.id.privacy_disclaimer_bottom_space);
@@ -500,16 +499,17 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     @EnsuresNonNull("mAppFilterChip")
-    private ViewGroup getAppFilterContainer(@Nullable ViewGroup parent) {
-        ViewGroup historyAppFilterContainer =
+    private ViewGroup getFilterChipsContainer(@Nullable ViewGroup parent) {
+        ViewGroup historyFilterChipsContainer =
                 (ViewGroup)
                         LayoutInflater.from(mManager.getContext())
-                                .inflate(R.layout.app_history_filter, parent, true);
-        mAppFilterChip = historyAppFilterContainer.findViewById(R.id.app_history_filter_chip);
+                                .inflate(R.layout.history_filter_chips, parent, true);
+        mAppFilterChip = historyFilterChipsContainer.findViewById(R.id.app_history_filter_chip);
         mAppFilterChip.setOnClickListener(_ -> mManager.onAppFilterClicked());
         mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
         mAppFilterChip.addDropdownIcon();
-        return historyAppFilterContainer;
+        mAppFilterChip.setVisibility(mManager.showAppFilter() ? View.VISIBLE : View.GONE);
+        return historyFilterChipsContainer;
     }
 
     private View getHistorySyncPromoView() {
@@ -519,11 +519,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         return promoView;
     }
 
-    void updateHistory(@Nullable AppInfo appInfo) {
+    void updateHistory(@Nullable FilterItem appInfo) {
         if (appInfo == null) {
             setAppId(null);
             resetAppFilterChip();
-            mShowSourceApp = mShowAppFilter;
+            mShowSourceApp = mManager.showAppFilter();
         } else {
             setAppId(appInfo.id);
             mAppFilterChip.getPrimaryTextView().setText(appInfo.label);
@@ -636,7 +636,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         if (mIsSearching) {
             // Query for apps could be still pending. |setHeaders()| will be invoked
             // again when the query is completed in order to set the header accordingly.
-            if (mShowAppFilter && mManager.hasFilterList()) args.add(mAppFilterHeaderItem);
+            if (mManager.showFilterChips() && mManager.hasFilterList()) {
+                args.add(mFilterChipsHeaderItem);
+            }
         } else {
             if (mPrivacyDisclaimersVisible) {
                 args.add(mPrivacyDisclaimerHeaderItem);
@@ -660,7 +662,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     /** For LFF devices w/ physical keyboard attached, there's only search mode. */
     private void setLFFHeaders() {
         ArrayList<HeaderItem> args = new ArrayList<>();
-        if (mShowAppFilter && mManager.hasFilterList()) args.add(mAppFilterHeaderItem);
+        if (mManager.showFilterChips() && mManager.hasFilterList()) {
+            args.add(mFilterChipsHeaderItem);
+        }
         if (isNormalContentAvailable()) {
             if (mPrivacyDisclaimersVisible) {
                 args.add(mPrivacyDisclaimerHeaderItem);
@@ -820,7 +824,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mPrivacyDisclaimerHeaderItem = new StandardHeaderItem(0, null);
         mClearBrowsingDataButtonHeaderItem = new StandardHeaderItem(1, null);
         mClearBrowsingDataButtonVisible = true;
-        mAppFilterHeaderItem = new StandardHeaderItem(0, null);
+        mFilterChipsHeaderItem = new StandardHeaderItem(0, null);
         mHistorySyncPromoHeaderItem = new PersistentHeaderItem(2, null);
     }
 
