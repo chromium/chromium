@@ -45,10 +45,23 @@ public class ContentLanguagesPreference extends Preference {
         private final Context mContext;
         private final PrefService mPrefService;
 
-        LanguageListAdapter(Context context, Profile profile, PrefService prefService) {
+        /**
+         * The instance this adapter observes. Reads and writes go through it rather than through
+         * {@link LanguagesManager#getForProfile}: {@link LanguagesManager#recycle()}, called when
+         * any language settings page is detached, drops the cached instance, and a write through a
+         * new one would not notify this adapter.
+         */
+        private final LanguagesManager mLanguagesManager;
+
+        LanguageListAdapter(
+                Context context,
+                Profile profile,
+                PrefService prefService,
+                LanguagesManager languagesManager) {
             super(context, profile);
             mContext = context;
             mPrefService = prefService;
+            mLanguagesManager = languagesManager;
         }
 
         @Override
@@ -120,19 +133,15 @@ public class ContentLanguagesPreference extends Preference {
                                             : LanguagesManager.LanguageSettingsActionType
                                                     .DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
                         } else if (textId == R.string.remove) {
-                            LanguagesManager.getForProfile(getProfile())
-                                    .removeFromAcceptLanguages(info.getCode());
+                            mLanguagesManager.removeFromAcceptLanguages(info.getCode());
                             LanguagesManager.recordAction(
                                     LanguagesManager.LanguageSettingsActionType.LANGUAGE_REMOVED);
                         } else if (textId == R.string.menu_item_move_up) {
-                            LanguagesManager.getForProfile(getProfile())
-                                    .moveLanguagePosition(info.getCode(), -1, true);
+                            mLanguagesManager.moveLanguagePosition(info.getCode(), -1, true);
                         } else if (textId == R.string.menu_item_move_down) {
-                            LanguagesManager.getForProfile(getProfile())
-                                    .moveLanguagePosition(info.getCode(), 1, true);
+                            mLanguagesManager.moveLanguagePosition(info.getCode(), 1, true);
                         } else if (textId == R.string.menu_item_move_to_top) {
-                            LanguagesManager.getForProfile(getProfile())
-                                    .moveLanguagePosition(info.getCode(), -position, true);
+                            mLanguagesManager.moveLanguagePosition(info.getCode(), -position, true);
                         }
                         // Re-generate list items.
                         if (textId != R.string.remove) {
@@ -157,8 +166,7 @@ public class ContentLanguagesPreference extends Preference {
             } else {
                 disableDrag();
             }
-            setDisplayedLanguages(
-                    LanguagesManager.getForProfile(getProfile()).getUserAcceptLanguageItems());
+            setDisplayedLanguages(mLanguagesManager.getUserAcceptLanguageItems());
         }
     }
 
@@ -187,7 +195,7 @@ public class ContentLanguagesPreference extends Preference {
             SelectLanguageFragment.Launcher launcher, Profile profile, PrefService prefService) {
         mLauncher = launcher;
         mLanguagesManager = LanguagesManager.getForProfile(profile);
-        mAdapter = new LanguageListAdapter(getContext(), profile, prefService);
+        mAdapter = new LanguageListAdapter(getContext(), profile, prefService, mLanguagesManager);
     }
 
     @Override
