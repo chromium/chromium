@@ -96,6 +96,7 @@ public class FullscreenVideoTest {
     /** Tests that the dimensions of the fullscreen video are propagated correctly. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/565903017")
     public void testFullscreenDimensions() throws TimeoutException {
         loadUrlAndEnterFullscreen("/content/test/data/media/video-player.html");
     }
