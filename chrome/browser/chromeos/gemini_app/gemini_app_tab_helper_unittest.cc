@@ -21,6 +21,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,12 +74,18 @@ class GeminiAppTabHelperTest
           otr_profile, content::SiteInstance::Create(otr_profile)));
     }
 
-    GeminiAppTabHelper::MaybeCreateForWebContents(web_contents());
+    tab_helper_ = GeminiAppTabHelper::MaybeCreate(web_contents());
+  }
+
+  void TearDown() override {
+    tab_helper_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   // Used to conditionally enable/disable the Gemini app preinstallation
   // feature based on test parameterization.
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<GeminiAppTabHelper> tab_helper_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

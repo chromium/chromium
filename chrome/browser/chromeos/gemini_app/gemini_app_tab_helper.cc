@@ -4,12 +4,14 @@
 
 #include "chrome/browser/chromeos/gemini_app/gemini_app_tab_helper.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -39,18 +41,18 @@ bool IsOffTheRecord(content::WebContents* web_contents) {
 // GeminiAppTabHelper ----------------------------------------------------------
 
 GeminiAppTabHelper::GeminiAppTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<GeminiAppTabHelper>(*web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 GeminiAppTabHelper::~GeminiAppTabHelper() = default;
 
 // static
-void GeminiAppTabHelper::MaybeCreateForWebContents(
+std::unique_ptr<GeminiAppTabHelper> GeminiAppTabHelper::MaybeCreate(
     content::WebContents* web_contents) {
   if (chromeos::features::IsGeminiAppPreinstallEnabled() &&
       !IsOffTheRecord(web_contents)) {
-    GeminiAppTabHelper::CreateForWebContents(web_contents);
+    return base::WrapUnique(new GeminiAppTabHelper(web_contents));
   }
+  return nullptr;
 }
 
 // static
@@ -88,5 +90,3 @@ void GeminiAppTabHelper::DidStartNavigation(
                                   /*page=*/it->second);
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(GeminiAppTabHelper);
