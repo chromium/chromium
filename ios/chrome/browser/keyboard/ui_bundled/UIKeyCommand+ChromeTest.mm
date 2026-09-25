@@ -69,6 +69,7 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
          @"IDS_IOS_KEYBOARD_OPEN_LOCATION");
   Verify(UIKeyCommand.cr_closeTab, @"⌘W", @"keyCommand_closeTab",
          @"IDS_IOS_KEYBOARD_CLOSE_TAB");
+  EXPECT_TRUE(UIKeyCommand.cr_closeTab.wantsPriorityOverSystemBehavior);
   Verify(UIKeyCommand.cr_showNextTab, @"⌃⇥", @"keyCommand_showNextTab",
          @"IDS_IOS_KEYBOARD_NEXT_TAB");
   Verify(UIKeyCommand.cr_showPreviousTab, @"⌃⇧⇥", @"keyCommand_showPreviousTab",

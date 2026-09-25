@@ -265,6 +265,15 @@
   [self dismissComposebox];
 }
 
+- (void)composeboxViewControllerDidCloseTab:
+    (ComposeboxViewController*)viewController {
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [browserCoordinatorHandler hideComposeboxWithCompletion:^{
+    [browserCoordinatorHandler closeCurrentTab];
+  }];
+}
+
 - (void)composeboxHorizontalSizeClassDidChange {
   _viewController.view.hidden = YES;
   __weak __typeof(self) weakSelf = self;

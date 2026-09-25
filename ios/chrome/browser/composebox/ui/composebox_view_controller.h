@@ -19,6 +19,9 @@
     (ComposeboxViewController*)viewController;
 // Indicates to the delegate to handle a change in horizontal size class.
 - (void)composeboxHorizontalSizeClassDidChange;
+// Indicates to the delegate that the close tab key command was triggered.
+- (void)composeboxViewControllerDidCloseTab:
+    (ComposeboxViewController*)viewController;
 @end
 
 // View Controller that contains the composebox, presenting it modally.

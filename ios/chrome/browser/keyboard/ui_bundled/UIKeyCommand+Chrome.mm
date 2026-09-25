@@ -108,11 +108,14 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 
 + (UIKeyCommand*)cr_closeTab {
   UIImage* image = SymbolWithConfiguration(SymbolXMarkSquare, nil);
-  return [self cr_commandWithInput:@"w"
-                     modifierFlags:Command
-                            action:@selector(keyCommand_closeTab)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_CLOSE_TAB"
-                             image:image];
+  UIKeyCommand* keyCommand =
+      [self cr_commandWithInput:@"w"
+                  modifierFlags:Command
+                         action:@selector(keyCommand_closeTab)
+                titleIDAsString:@"IDS_IOS_KEYBOARD_CLOSE_TAB"
+                          image:image];
+  keyCommand.wantsPriorityOverSystemBehavior = YES;
+  return keyCommand;
 }
 
 + (UIKeyCommand*)cr_showNextTab {

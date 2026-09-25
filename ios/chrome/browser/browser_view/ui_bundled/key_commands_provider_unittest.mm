@@ -198,6 +198,15 @@ class KeyCommandsProviderTest : public PlatformTest {
 // Checks that KeyCommandsProvider returns key commands.
 TEST_F(KeyCommandsProviderTest, ReturnsKeyCommands) {
   EXPECT_NE(0u, provider_.keyCommands.count);
+  bool has_close_tab = false;
+  for (UIKeyCommand* command in provider_.keyCommands) {
+    if (command.action == @selector(keyCommand_closeTab)) {
+      has_close_tab = true;
+      EXPECT_TRUE(command.wantsPriorityOverSystemBehavior);
+      break;
+    }
+  }
+  EXPECT_TRUE(has_close_tab);
 }
 
 #pragma mark - Responder Chain Tests
@@ -380,6 +389,29 @@ TEST_F(KeyCommandsProviderTest, CanPerform_EditingTextActions) {
   EXPECT_FALSE(CanPerform(@"keyCommand_forward"));
   EXPECT_FALSE(CanPerform(@"keyCommand_back", back_2));
   EXPECT_FALSE(CanPerform(@"keyCommand_forward", forward_2));
+}
+
+// Tests that keyCommand_closeTab can be performed when text is being edited,
+// as long as tabs are present.
+TEST_F(KeyCommandsProviderTest, CanPerform_CloseTabWhileEditingText) {
+  // No tabs.
+  ASSERT_EQ(web_state_list_->count(), 0);
+  EXPECT_FALSE(CanPerform(@"keyCommand_closeTab"));
+
+  // Add a tab.
+  InsertNewWebState(0);
+  EXPECT_TRUE(CanPerform(@"keyCommand_closeTab"));
+
+  // Focus a text field to simulate editing text (such as in the omnibox).
+  UITextField* textField = [[UITextField alloc] init];
+  [GetAnyKeyWindow() addSubview:textField];
+  [textField becomeFirstResponder];
+
+  EXPECT_TRUE(CanPerform(@"keyCommand_closeTab"));
+
+  // Clean up.
+  [textField resignFirstResponder];
+  [textField removeFromSuperview];
 }
 
 // Checks whether KeyCommandsProvider can perform the actions that are only

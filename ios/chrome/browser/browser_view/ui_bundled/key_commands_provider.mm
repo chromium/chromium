@@ -128,9 +128,12 @@ using base::UserMetricsAction;
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
   // On iOS 15+, key commands visible in the app's menu are created in
-  // MenuBuilder. Return the key commands that are not already present in the
-  // menu.
+  // MenuBuilder. Return key commands that are not already present in the menu,
+  // or that need to be declared on the responder chain (such as `cr_closeTab`,
+  // where `wantsPriorityOverSystemBehavior` must be evaluated on the responder
+  // chain to prevent iPadOS from closing the window when editing text).
   return @[
+    UIKeyCommand.cr_closeTab,
     UIKeyCommand.cr_openNewRegularTab,
     UIKeyCommand.cr_showNextTab_2,
     UIKeyCommand.cr_showPreviousTab_2,

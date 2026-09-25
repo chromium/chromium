@@ -796,11 +796,15 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 }
 
 - (NSArray*)keyCommands {
-  return @[ UIKeyCommand.cr_close ];
+  return @[ UIKeyCommand.cr_close, UIKeyCommand.cr_closeTab ];
 }
 
 - (void)keyCommand_close {
   [self.delegate composeboxViewControllerDidTapCloseButton:self];
+}
+
+- (void)keyCommand_closeTab {
+  [self.delegate composeboxViewControllerDidCloseTab:self];
 }
 
 @end
