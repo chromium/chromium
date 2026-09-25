@@ -193,8 +193,7 @@ void GlicTabObserverAndroid::DidAddTab(TabAndroid* tab,
       TabCreationEvent{tab, old_tab, opener, ToTypeCreationType(type)});
 }
 
-void GlicTabObserverAndroid::DidSelectTab(TabAndroid* tab,
-                                          TabModel::TabSelectionType type) {
+void GlicTabObserverAndroid::DidSelectTab(TabAndroid* tab) {
   if (!tab) {
     return;
   }

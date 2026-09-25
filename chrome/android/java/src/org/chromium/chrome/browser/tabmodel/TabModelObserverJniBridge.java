@@ -52,8 +52,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
     public final void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
         assert mNativeTabModelObserverJniBridge != 0;
         assert tab.isInitialized();
-        TabModelObserverJniBridgeJni.get()
-                .didSelectTab(mNativeTabModelObserverJniBridge, tab, type, lastId);
+        TabModelObserverJniBridgeJni.get().didSelectTab(mNativeTabModelObserverJniBridge, tab);
     }
 
     @Override
@@ -292,11 +291,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
     // browser/ui/android/tab_model/tab_model_observer_jni_bridge.*.
     @NativeMethods
     interface Natives {
-        void didSelectTab(
-                long nativeTabModelObserverJniBridge,
-                @JniType("TabAndroid*") Tab tab,
-                int type,
-                int lastId);
+        void didSelectTab(long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab);
 
         void willCloseTabs(
                 long nativeTabModelObserverJniBridge,

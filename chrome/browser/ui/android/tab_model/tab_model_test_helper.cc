@@ -425,7 +425,7 @@ bool OwningTestTabModel::HasTab(TabAndroid* tab) const {
 
 void OwningTestTabModel::SetActiveIndex(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SelectTab(GetTabAt(index), TabModel::TabSelectionType::FROM_USER);
+  SelectTab(GetTabAt(index));
 }
 
 void OwningTestTabModel::ForceCloseAllTabs() {
@@ -495,7 +495,7 @@ void OwningTestTabModel::CloseTabsAt(const std::vector<int>& indices) {
         }
       }
     }
-    SelectTab(new_active_tab, TabModel::TabSelectionType::FROM_CLOSE);
+    SelectTab(new_active_tab);
   }
 
   std::vector<std::unique_ptr<TabAndroid>> removed_tabs;
@@ -795,7 +795,7 @@ TabAndroid* OwningTestTabModel::AddTabFromWebContents(
 
   // The first tab will always be selected.
   if (select || owned_tabs_.size() == 1) {
-    SelectTab(raw_tab, TabModel::TabSelectionType::FROM_NEW);
+    SelectTab(raw_tab);
   }
 
   return raw_tab;
@@ -806,8 +806,7 @@ void OwningTestTabModel::SetIsActiveModel(bool is_active) {
   is_active_model_ = is_active;
 }
 
-void OwningTestTabModel::SelectTab(TabAndroid* tab,
-                                   TabModel::TabSelectionType selection_type) {
+void OwningTestTabModel::SelectTab(TabAndroid* tab) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (active_tab_) {
     active_tab_->web_contents()->UpdateWebContentsVisibility(
@@ -818,8 +817,7 @@ void OwningTestTabModel::SelectTab(TabAndroid* tab,
     active_tab_->web_contents()->UpdateWebContentsVisibility(
         content::Visibility::VISIBLE);
   }
-  observer_list_.Notify(&TabModelObserver::DidSelectTab, active_tab_.get(),
-                        selection_type);
+  observer_list_.Notify(&TabModelObserver::DidSelectTab, active_tab_.get());
 }
 
 TabAndroidLoadedWaiter::TabAndroidLoadedWaiter(TabAndroid* tab) {

@@ -108,9 +108,7 @@ bool AutoPictureInPictureTabModelObserverHelper::IsTabActivated() {
   return is_tab_activated_;
 }
 
-void AutoPictureInPictureTabModelObserverHelper::DidSelectTab(
-    TabAndroid* tab,
-    TabModel::TabSelectionType type) {
+void AutoPictureInPictureTabModelObserverHelper::DidSelectTab(TabAndroid* tab) {
   // When a tab is dragged out of a window, two consecutive `DidSelectTab`
   // events are triggered: one for the primary tab being dragged and another
   // for the secondary tab that replaces it. To prevent the second event from

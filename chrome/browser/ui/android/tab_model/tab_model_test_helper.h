@@ -292,7 +292,7 @@ class OwningTestTabModel : public TabModel {
   bool IsClosingAllTabs() override;
 
  private:
-  void SelectTab(TabAndroid* tab, TabModel::TabSelectionType selection_type);
+  void SelectTab(TabAndroid* tab);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

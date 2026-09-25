@@ -48,7 +48,7 @@ class ActiveTabTracker : public TabModelObserver {
   ActiveTabTracker& operator=(const ActiveTabTracker&) = delete;
   ~ActiveTabTracker() override = default;
 
-  void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override {
+  void DidSelectTab(TabAndroid* tab) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (tab == active_tab_) {
       return;

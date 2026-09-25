@@ -27,8 +27,7 @@ SidePanelTabModelObserver::~SidePanelTabModelObserver() {
   }
 }
 
-void SidePanelTabModelObserver::DidSelectTab(TabAndroid* tab,
-                                             TabModel::TabSelectionType type) {
+void SidePanelTabModelObserver::DidSelectTab(TabAndroid* tab) {
   CHECK(tab) << "New active tab should never be null.";
 
   TabAndroid* old_tab = TabAndroid::FromTabHandle(active_tab_handle_);

@@ -37,7 +37,7 @@ class AndroidTabModelEventBridge : public EventBridge,
   // implementation.
   //////////////////////////////////////////////////////////////////////////////
   // Select in this case means activate.
-  void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override;
+  void DidSelectTab(TabAndroid* tab) override;
   void OnTabsSelectionsChanged() override;
   /////////////////////////////////////////////////////////////////////////////
   void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) override;

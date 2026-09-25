@@ -44,7 +44,7 @@ class TabModelObserverJniBridge {
 
   // The following functions are called by JNI.
 
-  void DidSelectTab(JNIEnv* env, TabAndroid* tab, int type, int last_id);
+  void DidSelectTab(JNIEnv* env, TabAndroid* tab);
 
   void WillCloseTabs(JNIEnv* env,
                      const std::vector<TabAndroid*>& tabs,

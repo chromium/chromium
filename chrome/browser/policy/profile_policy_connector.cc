@@ -196,7 +196,7 @@ class LocalTestInfoBarVisibilityManager :
   }
 
   // TabModelObserver
-  void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override {
+  void DidSelectTab(TabAndroid* tab) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     if (tab && tab->web_contents()) {
       EnsureInfobarForActiveLocalTestPolicies(tab->web_contents());

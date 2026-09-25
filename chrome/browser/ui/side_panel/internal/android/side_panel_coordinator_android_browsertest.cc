@@ -51,9 +51,7 @@ class SequenceEnforcingTabModelObserver : public TabModelObserver {
   SequenceEnforcingTabModelObserver() = default;
   ~SequenceEnforcingTabModelObserver() override = default;
 
-  void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override {
-    did_select_tab_called_ = true;
-  }
+  void DidSelectTab(TabAndroid* tab) override { did_select_tab_called_ = true; }
 
   void TabRemoved(TabAndroid* tab) override {
     EXPECT_TRUE(did_select_tab_called_);
@@ -194,7 +192,7 @@ class AutoOpenSidePanelTabModelObserver : public TabModelObserver {
     registry->SetActiveEntry(entry_ptr);
   }
 
-  void DidSelectTab(TabAndroid* tab, TabModel::TabSelectionType type) override {
+  void DidSelectTab(TabAndroid* tab) override {
     // Simulates features like GLiC explicitly calling `Show()` on tab
     // activation (see `GlicInstanceImpl::OnBoundTabActivated()`), in addition
     // to `SidePanelCoordinatorAndroid` handling the active tab change.

@@ -48,8 +48,7 @@ void AndroidTabModelEventBridge::Notify(events::Event event) const {
   }
 }
 
-void AndroidTabModelEventBridge::DidSelectTab(TabAndroid* tab,
-                                              TabModel::TabSelectionType type) {
+void AndroidTabModelEventBridge::DidSelectTab(TabAndroid* tab) {
   // Note that the inputs for this event are dropped. The API does not
   // currently need it, but this may change in the future.
   HandleSelectionAndActivationChange();

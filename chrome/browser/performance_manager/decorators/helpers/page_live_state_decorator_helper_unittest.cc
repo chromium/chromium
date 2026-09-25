@@ -283,8 +283,7 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTab) {
   std::unique_ptr<TabAndroid> tab2 =
       TabAndroid::CreateForTesting(profile(), 2, std::move(web_contents2));
 
-  tab_model.GetObserver()->DidSelectTab(tab1.get(),
-                                        TabModel::TabSelectionType::FROM_USER);
+  tab_model.GetObserver()->DidSelectTab(tab1.get());
 
   testing::TestPageNodeProperty(
       contents1, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -293,8 +292,7 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTab) {
       contents2, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, false);
 
-  tab_model.GetObserver()->DidSelectTab(tab2.get(),
-                                        TabModel::TabSelectionType::FROM_USER);
+  tab_model.GetObserver()->DidSelectTab(tab2.get());
 
   testing::TestPageNodeProperty(
       contents1, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -305,8 +303,7 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTab) {
 
   tab_model.GetObserver()->OnFinishingTabClosure(
       tab2.get(), TabModel::TabClosingSource::UNKNOWN);
-  tab_model.GetObserver()->DidSelectTab(tab1.get(),
-                                        TabModel::TabSelectionType::FROM_USER);
+  tab_model.GetObserver()->DidSelectTab(tab1.get());
 
   testing::TestPageNodeProperty(
       contents1, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -332,8 +329,7 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTabAfterRemoved) {
   std::unique_ptr<TabAndroid> tab2 =
       TabAndroid::CreateForTesting(profile(), 2, std::move(web_contents2));
 
-  tab_model.GetObserver()->DidSelectTab(tab1.get(),
-                                        TabModel::TabSelectionType::FROM_USER);
+  tab_model.GetObserver()->DidSelectTab(tab1.get());
 
   testing::TestPageNodeProperty(
       contents1, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -342,8 +338,7 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTabAfterRemoved) {
       contents2, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, false);
 
-  tab_model.GetObserver()->DidSelectTab(tab2.get(),
-                                        TabModel::TabSelectionType::FROM_USER);
+  tab_model.GetObserver()->DidSelectTab(tab2.get());
 
   testing::TestPageNodeProperty(
       contents1, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -363,8 +358,7 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTabAfterRemoved) {
   tab2.reset();
 
   // Moving to the tab1 from tab2 does not cause invalid pointer access.
-  tab_model.GetObserver()->DidSelectTab(tab1.get(),
-                                        TabModel::TabSelectionType::FROM_USER);
+  tab_model.GetObserver()->DidSelectTab(tab1.get());
 
   testing::TestPageNodeProperty(
       contents1, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -396,10 +390,8 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTabWithMultipleTabModels) {
   std::unique_ptr<TabAndroid> tab4 =
       TabAndroid::CreateForTesting(profile(), 4, std::move(web_contents4));
 
-  tab_model1.GetObserver()->DidSelectTab(tab1.get(),
-                                         TabModel::TabSelectionType::FROM_USER);
-  tab_model2.GetObserver()->DidSelectTab(tab4.get(),
-                                         TabModel::TabSelectionType::FROM_USER);
+  tab_model1.GetObserver()->DidSelectTab(tab1.get());
+  tab_model2.GetObserver()->DidSelectTab(tab4.get());
   testing::TestPageNodeProperty(
       contents1, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, true);
@@ -413,10 +405,8 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTabWithMultipleTabModels) {
       contents4, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, true);
 
-  tab_model1.GetObserver()->DidSelectTab(tab2.get(),
-                                         TabModel::TabSelectionType::FROM_USER);
-  tab_model2.GetObserver()->DidSelectTab(tab3.get(),
-                                         TabModel::TabSelectionType::FROM_USER);
+  tab_model1.GetObserver()->DidSelectTab(tab2.get());
+  tab_model2.GetObserver()->DidSelectTab(tab3.get());
   testing::TestPageNodeProperty(
       contents1, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsActiveTab, false);
