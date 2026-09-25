@@ -196,7 +196,7 @@ void GameControllerDataFetcherMac::GameControllerDataFetcherMacImpl::
 
   // Initialize the pad state if a slot is available. If not, GetGamepadData
   // will try again during the next polling cycle.
-  PadState* state = owner_->GetPadState(owner_->next_source_id_);
+  PadState* state = owner_->GetPadState(source_id);
   if (state) {
     state->is_initialized = true;
     gamepad->InitializeStaticData(state->data);
