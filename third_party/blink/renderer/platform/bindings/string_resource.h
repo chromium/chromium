@@ -126,8 +126,12 @@ class StringResourceBase {
       atomic_string_ = AtomicString(plain_string_);
       DCHECK(!atomic_string_.IsNull());
       if (plain_string_.Impl() != atomic_string_.Impl()) {
+        // TODO(crbug.com/562847435): This is temporary hardening until an
+        // architectural fix for resource lifetimes is developed.
+        LockDisposal();
         memory_accounter_.Increase(isolate,
                                    atomic_string_.CharactersSizeInBytes());
+        UnlockDisposal();
       }
     }
     return atomic_string_;
