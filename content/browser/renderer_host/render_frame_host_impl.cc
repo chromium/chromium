@@ -9495,11 +9495,7 @@ void RenderFrameHostImpl::EnterFullscreen(
         blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
         blink::mojom::UserActivationNotificationType::kNone);
     const bool consumed_token = fullscreen_request_token_.ConsumeIfActive();
-    const bool missing_focus =
-        base::FeatureList::IsEnabled(
-            blink::features::kSuppressFullscreenFromUnfocusedView) &&
-        !GetView()->HasFocus();
-    if ((!consumed_activation || missing_focus) && !consumed_token) {
+    if (!consumed_activation && !consumed_token) {
       DLOG(ERROR) << "Cannot enter fullscreen without a transient activation, "
                   << "orientation change, XR overlay, or delegated capability.";
       std::move(callback).Run(/*granted=*/false);

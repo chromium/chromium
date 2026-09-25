@@ -6119,14 +6119,6 @@
       name: "SubApps",
       status: "stable",
     },
-    {
-      // Require the requesting view to have focus before allowing it go
-      // fullscreen, unless it has a fullscreen token through capability
-      // delegation.
-      // https://crbug.com/347495359
-      name: "SuppressFullscreenFromUnfocusedView",
-      status: "stable",
-    },
     // 'pointercancel' and boundary leave ('pointerout' and 'pointerleave')
     // events would now fire after a mouse drag start, matching the spec's
     // definition of "pointer stream suppression". See:
