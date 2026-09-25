@@ -453,6 +453,7 @@ source_set("tab_strip_impl") {
     "//chrome/browser/ui/views/frame:browser_frame_view",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:browser_widget",
+    "//chrome/browser/ui/views/frame:frame_separator",
     "//chrome/browser/ui/views/frame:glass_frame_service",
     "//chrome/browser/ui/views/glic",
     "//chrome/browser/ui/views/tabs:base",

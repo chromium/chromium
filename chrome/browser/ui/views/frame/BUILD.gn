@@ -424,6 +424,19 @@ source_set("toolbar_button_provider") {
   deps = [ "//chrome/browser/ui/browser_window" ]
 }
 
+source_set("frame_separator") {
+  sources = [
+    "frame_separator.cc",
+    "frame_separator.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
 source_set("frame") {
   sources = [
     "tab_strip_region_view.cc",
@@ -1817,6 +1830,18 @@ source_set("system_menu_model_builder_impl") {
   if (use_ozone && !is_chromeos) {
     deps += [ "//ui/ozone" ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "frame_separator_unittest.cc" ]
+  deps = [
+    ":frame_separator",
+    "//ui/gfx:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
 }
 
 source_set("browser_tests") {

@@ -219,15 +219,12 @@ class VerticalTabStripRegionView final
   void OnCollapseStateChanged(
       tabs::VerticalTabStripCollapseState collapse_state);
 
-  void UpdateColors();
-
   void OnAnimationProgressed(const BrowserAnimationController* controller,
                              BrowserAnimationUpdate status);
 
   // Get whether the collapse/expand animation is running.
   bool IsAnimatingSize() const;
 
-  bool IsFrameActive() const;
   bool IsCollapseButtonHovered() const;
 
   // Returns the bounds within which tabs can be dragged in the vertical tab

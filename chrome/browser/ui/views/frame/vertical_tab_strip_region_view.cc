@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
+#include "chrome/browser/ui/views/frame/frame_separator.h"
 #include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/browser/ui/views/frame/shadow_frame_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -70,7 +71,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/resize_area.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/delegating_layout_manager.h"
@@ -144,12 +144,15 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   const int region_horizontal_padding =
       GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
 
-  top_button_separator_ =
-      content_area_view_->AddChildView(std::make_unique<views::Separator>());
+  auto* const top_button_separator =
+      content_area_view_->AddChildView(std::make_unique<FrameSeparator>());
   // The TopContainer handles the padding distance to the separator so that we
   // can control how far it is in the various states.
-  top_button_separator_->SetProperty(
+  top_button_separator->SetProperty(
       views::kMarginsKey, gfx::Insets::VH(0, region_horizontal_padding));
+  top_button_separator->SetColorId(kColorTabDividerFrameActive);
+  top_button_separator->SetInactiveColorId(kColorTabDividerFrameInactive);
+  top_button_separator_ = top_button_separator;
 
   bottom_button_container_ = content_area_view_->AddChildView(
       std::make_unique<VerticalTabStripBottomContainer>(
@@ -209,7 +212,6 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   }
 
   SetNotifyEnterExitOnChild(true);
-  UpdateColors();
 }
 
 VerticalTabStripRegionView::~VerticalTabStripRegionView() {
@@ -369,11 +371,8 @@ void VerticalTabStripRegionView::AddedToWidget() {
   BaseTabStripRegionView::AddedToWidget();
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
-          [](VerticalTabStripRegionView* view) {
-            view->UpdateColors();
-            view->UpdateExpandOnHoverState();
-          },
-          base::Unretained(this)));
+          &VerticalTabStripRegionView::UpdateExpandOnHoverState,
+          base::Unretained(this), /*hovered=*/std::nullopt));
   if (GetFocusManager()) {
     GetFocusManager()->AddFocusChangeListener(&focus_listener_);
   }
@@ -932,16 +931,6 @@ void VerticalTabStripRegionView::OnCollapseStateChanged(
   }
 }
 
-void VerticalTabStripRegionView::UpdateColors() {
-  top_button_separator_->SetColorId(IsFrameActive()
-                                        ? kColorTabDividerFrameActive
-                                        : kColorTabDividerFrameInactive);
-}
-
-bool VerticalTabStripRegionView::IsFrameActive() const {
-  return GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
-}
-
 bool VerticalTabStripRegionView::IsCollapseButtonHovered() const {
   return SafeInvoke(top_button_container_.get())
       .Then(&VerticalTabStripTopContainer::GetCollapseButton)
@@ -1010,7 +999,7 @@ void VerticalTabStripRegionView::UpdateExpandOnHoverState(
   // hover state or exit it if already expanded. We evaluate this after the
   // locks because IsFrameActive can also return false when a WebUI bubble is
   // open.
-  if (!IsFrameActive()) {
+  if (GetWidget() && !GetWidget()->ShouldPaintAsActive()) {
     if (is_expanded_on_hover_) {
       AnimateExpandOnHover(/*expand=*/false);
     }

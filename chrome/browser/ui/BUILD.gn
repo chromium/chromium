@@ -3417,6 +3417,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:custom_floating_corner_impl",
       "//chrome/browser/ui/views/frame:find_bar_owner_views",
       "//chrome/browser/ui/views/frame:find_bar_owner_views_impl",
+      "//chrome/browser/ui/views/frame:frame_separator",
       "//chrome/browser/ui/views/frame:immersive_mode_controller_factory_views",
       "//chrome/browser/ui/views/frame:immersive_mode_controller_stub",
       "//chrome/browser/ui/views/frame:main_background_region_view",

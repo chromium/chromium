@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/frame_separator.h"
 #include "chrome/browser/ui/views/glic/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic/glic_and_actor_buttons_container.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_actor_task_icon.h"
@@ -59,10 +60,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
 #include "base/time/time.h"
-
-#if !BUILDFLAG(IS_MAC)
-#include "ui/views/controls/separator.h"
-#endif  // !BUILDFLAG(IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -258,12 +255,11 @@ TabStripActionContainer::TabStripActionContainer(
   if (glic::GlicEnabling::IsProfileEligible(
           browser_window_interface_->GetProfile())) {
 #if !BUILDFLAG(IS_MAC)
-    std::unique_ptr<views::Separator> separator =
-        std::make_unique<views::Separator>();
+    auto* const separator = AddChildView(std::make_unique<FrameSeparator>());
     separator->SetBorderRadius(TabStyle::Get()->GetSeparatorCornerRadius());
     separator->SetPreferredSize(TabStyle::Get()->GetSeparatorSize());
-
     separator->SetColorId(kColorTabDividerFrameActive);
+    separator->SetInactiveColorId(kColorTabDividerFrameInactive);
 
     gfx::Insets margin;
     margin.set_left_right(kLargeSpaceBetweenSeparatorLeft,
@@ -271,14 +267,7 @@ TabStripActionContainer::TabStripActionContainer(
 
     separator->SetProperty(views::kMarginsKey, margin);
 
-    subscriptions_.push_back(browser_window_interface_->RegisterDidBecomeActive(
-        base::BindRepeating(&TabStripActionContainer::DidBecomeActive,
-                            base::Unretained(this))));
-    subscriptions_.push_back(
-        browser_window_interface_->RegisterDidBecomeInactive(
-            base::BindRepeating(&TabStripActionContainer::DidBecomeInactive,
-                                base::Unretained(this))));
-    separator_ = AddChildView(std::move(separator));
+    separator_ = separator;
     UpdateSeparatorVisibility();
 #endif  // !BUILDFLAG(IS_MAC)
   }
@@ -528,15 +517,6 @@ void TabStripActionContainer::UpdateButtonBorders(
   if (glic_button_) {
     UpdateGlicActorButtonContainerBorders();
   }
-}
-
-void TabStripActionContainer::DidBecomeActive(BrowserWindowInterface* browser) {
-  separator_->SetColorId(kColorTabDividerFrameActive);
-}
-
-void TabStripActionContainer::DidBecomeInactive(
-    BrowserWindowInterface* browser) {
-  separator_->SetColorId(kColorTabDividerFrameInactive);
 }
 
 void TabStripActionContainer::ShowTabStripNudge(TabStripNudgeButton* button) {

@@ -141,9 +141,6 @@ class TabStripActionContainer : public views::View,
  private:
   friend class TabStripActionContainerBrowserTest;
 
-  void DidBecomeActive(BrowserWindowInterface* browser);
-  void DidBecomeInactive(BrowserWindowInterface* browser);
-
   void ShowTabStripNudge(TabStripNudgeButton* button);
   void HideTabStripNudge(TabStripNudgeButton* button);
 
@@ -227,8 +224,6 @@ class TabStripActionContainer : public views::View,
 
   // Prevents other features from showing tabstrip-modal UI.
   std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui_;
-
-  std::list<base::CallbackListSubscription> subscriptions_;
 
   std::unique_ptr<TabStripNudgeAnimationSession> animation_session_;
   std::unique_ptr<ActorTaskListBubble> actor_task_list_bubble_;

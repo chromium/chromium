@@ -129,10 +129,6 @@ class TabStripView final : public views::View,
   gfx::Rect GetBoundsInScrollViewContents(views::View* view,
                                           views::ScrollView* scroll_view);
 
-  void UpdateColors();
-
-  bool IsFrameActive() const;
-
   void HideHoverCardOnScroll();
 
   PrefService* GetPrefs() const;
@@ -168,7 +164,6 @@ class TabStripView final : public views::View,
       unpinned_tab_scrollable_state_recorder_;
 
   base::CallbackListSubscription node_destroyed_subscription_;
-  base::CallbackListSubscription paint_as_active_subscription_;
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>

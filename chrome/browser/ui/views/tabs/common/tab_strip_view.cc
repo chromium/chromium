@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/frame_separator.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
@@ -39,7 +40,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
@@ -191,8 +191,10 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
       views::ScrollView::ScrollWithLayers::kEnabled));
   SetScrollViewProperties(pinned_tabs_scroll_view_);
 
-  auto tabs_separator = std::make_unique<views::Separator>();
-  tabs_separator_ = AddChildView(std::move(tabs_separator));
+  auto* const tabs_separator = AddChildView(std::make_unique<FrameSeparator>());
+  tabs_separator->SetColorId(kColorTabDividerFrameActive);
+  tabs_separator->SetInactiveColorId(kColorTabDividerFrameInactive);
+  tabs_separator_ = tabs_separator;
 
   unpinned_tabs_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled));
@@ -232,7 +234,6 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
   }
 
   SetNotifyEnterExitOnChild(true);
-  UpdateColors();
 }
 
 TabStripView::~TabStripView() {
@@ -243,8 +244,6 @@ TabStripView::~TabStripView() {
 
 void TabStripView::AddedToWidget() {
   views::Widget* const widget = GetWidget();
-  paint_as_active_subscription_ = widget->RegisterPaintAsActiveChangedCallback(
-      base::BindRepeating(&TabStripView::UpdateColors, base::Unretained(this)));
   widget_observation_.Observe(widget);
 }
 
@@ -799,18 +798,6 @@ gfx::Rect TabStripView::GetBoundsInScrollViewContents(
     bounds = views::View::ConvertRectToTarget(v, v->parent(), bounds);
   }
   return bounds;
-}
-
-void TabStripView::UpdateColors() {
-  if (tabs_separator_) {
-    tabs_separator_->SetColorId(IsFrameActive()
-                                    ? kColorTabDividerFrameActive
-                                    : kColorTabDividerFrameInactive);
-  }
-}
-
-bool TabStripView::IsFrameActive() const {
-  return GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
 }
 
 void TabStripView::HideHoverCardOnScroll() {
