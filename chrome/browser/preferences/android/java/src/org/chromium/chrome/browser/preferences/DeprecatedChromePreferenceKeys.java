@@ -109,6 +109,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.WebFeed.IntroLastShownTimeMs",
                 "Chrome.WebFeed.IntroWebFeedIdShownTimeMs.*",
                 "Chrome.WebFeed.IntroWebFeedIdShownCount.*",
+                "Chrome.Widget.NumConsecutiveCrashes",
                 "LocaleManager_USR_TYPE",
                 "PersistedNotificationId",
                 "PhysicalWeb.ActivityReferral",

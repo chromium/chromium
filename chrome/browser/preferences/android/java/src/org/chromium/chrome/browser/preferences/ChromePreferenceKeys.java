@@ -881,8 +881,6 @@ public final class ChromePreferenceKeys {
 
     public static final String SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE =
             "Chrome.Widget.IsVoiceSearchAvailable";
-    public static final String SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES =
-            "Chrome.Widget.NumConsecutiveCrashes";
     public static final String SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME =
             "Chrome.Widget.SearchEngineShortName";
     public static final String SEARCH_WIDGET_SEARCH_ENGINE_URL = "Chrome.Widget.SearchEngineUrl";
@@ -1314,7 +1312,6 @@ public final class ChromePreferenceKeys {
                 SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE,
                 SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE,
                 SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,
-                SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES,
                 SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME,
                 SEARCH_WIDGET_SEARCH_ENGINE_URL,
                 SEGMENTATION_FEED_ACTIVE_USER,
