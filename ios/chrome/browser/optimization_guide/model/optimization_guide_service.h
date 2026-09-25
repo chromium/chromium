@@ -25,6 +25,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_global_state.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "url/gurl.h"
 
 namespace leveldb_proto {
@@ -34,10 +35,6 @@ class ProtoDatabaseProvider;
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
-
-namespace network::mojom {
-class NetworkContext;
-}  // namespace network::mojom
 
 namespace optimization_guide {
 class HintsManager;
@@ -72,9 +69,6 @@ class OptimizationGuideService
       public optimization_guide::RemoteModelExecutor,
       public optimization_guide::OptimizationGuideModelProvider {
  public:
-  using NetworkContextGetter =
-      base::RepeatingCallback<network::mojom::NetworkContext*()>;
-
   OptimizationGuideService(
       leveldb_proto::ProtoDatabaseProvider* proto_db_provider,
       const base::FilePath& profile_path,
@@ -87,7 +81,7 @@ class OptimizationGuideService
       signin::IdentityManager* identity_manager,
       std::unique_ptr<optimization_guide::ModelExecutionManager::Delegate>
           delegate,
-      NetworkContextGetter network_context_getter);
+      network::NetworkContextGetter network_context_getter);
   ~OptimizationGuideService() override;
 
   OptimizationGuideService(const OptimizationGuideService&) = delete;
@@ -237,7 +231,7 @@ class OptimizationGuideService
   const raw_ptr<PrefService> pref_service_ = nullptr;
 
   // Function that returns the current network context.
-  const NetworkContextGetter network_context_getter_;
+  const network::NetworkContextGetter network_context_getter_;
 
   // IdentityManager of the profile this service is linked to.
   const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;

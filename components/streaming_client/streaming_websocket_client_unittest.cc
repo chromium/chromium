@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
@@ -181,7 +182,10 @@ class StreamingWebSocketClientTest : public ::testing::Test {
  protected:
   StreamingWebSocketClientTest()
       : client_(GURL("wss://example.com/websocket"),
-                &network_context_,
+                base::BindRepeating(
+                    [](MockNetworkContext* context)
+                        -> network::mojom::NetworkContext* { return context; },
+                    base::Unretained(&network_context_)),
                 TRAFFIC_ANNOTATION_FOR_TESTS,
                 &delegate_) {}
 
@@ -478,6 +482,23 @@ TEST_F(StreamingWebSocketClientTest, DataPipeWriteFailure) {
 
 TEST_F(StreamingWebSocketClientTest, ServiceUrl) {
   EXPECT_EQ(client_.service_url(), GURL("wss://example.com/websocket"));
+}
+
+TEST_F(StreamingWebSocketClientTest, NullNetworkContext) {
+  StreamingWebSocketClient client(
+      GURL("wss://example.com/websocket"),
+      base::BindRepeating(
+          []() -> network::mojom::NetworkContext* { return nullptr; }),
+      TRAFFIC_ANNOTATION_FOR_TESTS, &delegate_);
+
+  base::test::TestFuture<void> future;
+  delegate_.on_event_callback = future.GetRepeatingCallback();
+
+  client.Send(std::vector<uint8_t>{1, 2, 3});
+
+  EXPECT_TRUE(future.Wait());
+  ASSERT_TRUE(delegate_.error_message.has_value());
+  EXPECT_EQ(*delegate_.error_message, "Failed to get NetworkContext.");
 }
 
 }  // namespace

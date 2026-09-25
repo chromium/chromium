@@ -22,12 +22,9 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "url/gurl.h"
-
-namespace network::mojom {
-class NetworkContext;
-}  // namespace network::mojom
 
 namespace streaming_client {
 
@@ -78,7 +75,7 @@ class StreamingWebSocketClient
   };
 
   StreamingWebSocketClient(const GURL& service_url,
-                           network::mojom::NetworkContext* network_context,
+                           network::NetworkContextGetter network_context_getter,
                            net::NetworkTrafficAnnotationTag traffic_annotation,
                            Delegate* delegate);
   ~StreamingWebSocketClient() override;
@@ -146,7 +143,7 @@ class StreamingWebSocketClient
   State state_ = State::kInitialized;
   base::TimeTicks connection_open_time_;
   const GURL service_url_;
-  const raw_ptr<network::mojom::NetworkContext> network_context_;
+  const network::NetworkContextGetter network_context_getter_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
   raw_ptr<Delegate> delegate_;
 

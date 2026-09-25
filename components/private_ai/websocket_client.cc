@@ -21,7 +21,6 @@
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/proto_utils/google_rpc_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 #include "url/gurl.h"
 
@@ -64,11 +63,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 WebSocketClient::WebSocketClient(
     const GURL& service_url,
-    network::mojom::NetworkContext* network_context,
+    network::NetworkContextGetter network_context_getter,
     PrivateAiLogger* logger)
     : logger_(logger),
       streaming_client_(service_url,
-                        network_context,
+                        std::move(network_context_getter),
                         kTrafficAnnotation,
                         /*delegate=*/this) {
   CHECK(logger_);

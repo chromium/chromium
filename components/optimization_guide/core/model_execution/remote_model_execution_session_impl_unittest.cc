@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_command_line.h"
@@ -76,10 +77,11 @@ class FakeStreamingWebSocketClient
     : public streaming_client::StreamingWebSocketClient {
  public:
   explicit FakeStreamingWebSocketClient(Delegate* delegate = nullptr)
-      : StreamingWebSocketClient(GURL(),
-                                 /*network_context=*/nullptr,
-                                 MISSING_TRAFFIC_ANNOTATION,
-                                 delegate) {}
+      : StreamingWebSocketClient(
+            GURL(),
+            /*network_context_getter=*/base::NullCallback(),
+            MISSING_TRAFFIC_ANNOTATION,
+            delegate) {}
   ~FakeStreamingWebSocketClient() override = default;
 
   void Connect() override {
@@ -752,7 +754,10 @@ TEST_F(RemoteModelExecutionSessionImplTest,
       streaming_future;
   auto session = RemoteModelExecutionSession::Create(
       ModelBasedCapabilityKey::kScamDetection, {},
-      streaming_future.GetRepeatingCallback(), &test_network_context,
+      streaming_future.GetRepeatingCallback(),
+      base::BindRepeating(
+          [](network::mojom::NetworkContext* context) { return context; },
+          base::Unretained(&test_network_context)),
       identity_test_env_.identity_manager());
   EXPECT_EQ(session, nullptr);
 }
@@ -765,7 +770,10 @@ TEST_F(RemoteModelExecutionSessionImplTest, CreateSuccess) {
       streaming_future;
   auto session = RemoteModelExecutionSession::Create(
       ModelBasedCapabilityKey::kScamDetection, {},
-      streaming_future.GetRepeatingCallback(), &test_network_context,
+      streaming_future.GetRepeatingCallback(),
+      base::BindRepeating(
+          [](network::mojom::NetworkContext* context) { return context; },
+          base::Unretained(&test_network_context)),
       identity_test_env_.identity_manager());
   EXPECT_NE(session, nullptr);
 }

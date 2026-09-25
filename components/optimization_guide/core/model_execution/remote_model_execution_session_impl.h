@@ -20,12 +20,9 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/streaming_client/streaming_websocket_client.h"
+#include "services/network/public/cpp/network_context_getter.h"
 
 class OptimizationGuideLogger;
-
-namespace network::mojom {
-class NetworkContext;
-}  // namespace network::mojom
 
 namespace signin {
 class IdentityManager;
@@ -43,7 +40,7 @@ class RemoteModelExecutionSessionImpl
       ModelBasedCapabilityKey feature,
       const StreamingModelExecutionOptions& options,
       OptimizationGuideModelExecutionStreamingCallback callback,
-      network::mojom::NetworkContext* network_context,
+      network::NetworkContextGetter network_context_getter,
       signin::IdentityManager* identity_manager,
       OptimizationGuideLogger* logger = nullptr);
 

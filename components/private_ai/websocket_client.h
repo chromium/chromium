@@ -17,11 +17,8 @@
 #include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/transport.h"
 #include "components/streaming_client/streaming_websocket_client.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "url/gurl.h"
-
-namespace network::mojom {
-class NetworkContext;
-}  // namespace network::mojom
 
 namespace private_ai {
 
@@ -32,7 +29,7 @@ class WebSocketClient
       public streaming_client::StreamingWebSocketClient::Delegate {
  public:
   WebSocketClient(const GURL& service_url,
-                  network::mojom::NetworkContext* network_context,
+                  network::NetworkContextGetter network_context_getter,
                   PrivateAiLogger* logger);
   ~WebSocketClient() override;
 

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -18,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "services/network/test/test_network_context.h"
@@ -73,6 +75,13 @@ class MockNetworkContext : public network::TestNetworkContext {
   std::vector<network::mojom::HttpHeaderPtr> additional_headers_;
 };
 
+network::NetworkContextGetter GetNetworkContextGetter(
+    network::mojom::NetworkContext* network_context) {
+  return base::BindRepeating(
+      [](network::mojom::NetworkContext* context) { return context; },
+      base::Unretained(network_context));
+}
+
 struct TestConnection {
   mojo::Remote<network::mojom::WebSocketClient> client_remote;
   mojo::Remote<network::mojom::WebSocket> websocket_remote;
@@ -84,7 +93,7 @@ class WebSocketClientTest : public ::testing::Test {
  protected:
   WebSocketClientTest()
       : client_(GURL("wss://example.com/websocket"),
-                &network_context_,
+                GetNetworkContextGetter(&network_context_),
                 &logger_) {
     client_.SetResponseCallback(future_.GetRepeatingCallback());
   }
@@ -187,7 +196,8 @@ TEST_F(WebSocketClientTest, NonProdVerificationKeyVariantHeader) {
   GURL url("wss://dev-private-ai.example.com/websocket");
   MockNetworkContext network_context;
 
-  WebSocketClient client(url, &network_context, &logger_);
+  WebSocketClient client(url, GetNetworkContextGetter(&network_context),
+                         &logger_);
   client.SetResponseCallback(base::DoNothing());
   client.Send(oak::session::v1::SessionRequest());
 
@@ -202,7 +212,8 @@ TEST_F(WebSocketClientTest, ProdVerificationKeyVariantHeader) {
   GURL url("wss://example.com/websocket");
   MockNetworkContext network_context;
 
-  WebSocketClient client(url, &network_context, &logger_);
+  WebSocketClient client(url, GetNetworkContextGetter(&network_context),
+                         &logger_);
   client.SetResponseCallback(base::DoNothing());
   client.Send(oak::session::v1::SessionRequest());
 

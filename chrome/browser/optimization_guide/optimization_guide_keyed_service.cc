@@ -548,7 +548,14 @@ OptimizationGuideKeyedService::StartStreamingSession(
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   return optimization_guide::RemoteModelExecutionSession::Create(
       feature, options, std::move(callback),
-      profile->GetDefaultStoragePartition()->GetNetworkContext(),
+      base::BindRepeating(
+          [](base::WeakPtr<Profile> profile)
+              -> network::mojom::NetworkContext* {
+            return profile ? profile->GetDefaultStoragePartition()
+                                 ->GetNetworkContext()
+                           : nullptr;
+          },
+          profile->GetWeakPtr()),
       IdentityManagerFactory::GetForProfile(profile),
       optimization_guide_logger_.get());
 }

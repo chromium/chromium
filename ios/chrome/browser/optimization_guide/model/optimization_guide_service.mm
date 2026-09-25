@@ -66,7 +66,7 @@ OptimizationGuideService::OptimizationGuideService(
     signin::IdentityManager* identity_manager,
     std::unique_ptr<optimization_guide::ModelExecutionManager::Delegate>
         delegate,
-    NetworkContextGetter network_context_getter)
+    network::NetworkContextGetter network_context_getter)
     : pref_service_(pref_service),
       network_context_getter_(std::move(network_context_getter)),
       identity_manager_(identity_manager),
@@ -367,6 +367,6 @@ OptimizationGuideService::StartStreamingSession(
     return nullptr;
   }
   return optimization_guide::RemoteModelExecutionSession::Create(
-      feature, options, std::move(callback), network_context_getter_.Run(),
+      feature, options, std::move(callback), network_context_getter_,
       identity_manager_, optimization_guide_logger_.get());
 }

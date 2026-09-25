@@ -28,6 +28,7 @@
 #include "components/private_ai/secure_session_async_impl.h"
 #include "components/private_ai/transport.h"
 #include "components/private_ai/websocket_client.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 #include "url/gurl.h"
@@ -49,8 +50,14 @@ SecureChannelImpl::FactoryImpl::~FactoryImpl() = default;
 std::unique_ptr<SecureChannel> SecureChannelImpl::FactoryImpl::Create(
     base::OnceClosure on_established,
     ResponseCallback callback) {
-  auto transport =
-      std::make_unique<WebSocketClient>(url_, network_context_, logger_);
+  // TODO(crbug.com/558464760): Migrate FactoryImpl to store a
+  // NetworkContextGetter instead of a raw NetworkContext pointer.
+  auto transport = std::make_unique<WebSocketClient>(
+      url_,
+      base::BindRepeating(
+          [](network::mojom::NetworkContext* context) { return context; },
+          base::Unretained(network_context_)),
+      logger_);
   auto secure_session =
       std::make_unique<SecureSessionAsyncImpl>(oak_session_driver_);
   auto attestation_handler =

@@ -64,14 +64,14 @@ RemoteModelExecutionSession::Create(
     ModelBasedCapabilityKey feature,
     const StreamingModelExecutionOptions& options,
     OptimizationGuideModelExecutionStreamingCallback callback,
-    network::mojom::NetworkContext* network_context,
+    network::NetworkContextGetter network_context_getter,
     signin::IdentityManager* identity_manager,
     OptimizationGuideLogger* logger) {
   if (!base::FeatureList::IsEnabled(
           features::kOptimizationGuideModelExecution)) {
     return nullptr;
   }
-  CHECK(network_context);
+  CHECK(network_context_getter);
   if (logger && logger->ShouldEnableDebugLogs()) {
     OPTIMIZATION_GUIDE_LOGGER(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
@@ -81,15 +81,15 @@ RemoteModelExecutionSession::Create(
   }
 
   return std::make_unique<RemoteModelExecutionSessionImpl>(
-      feature, options, std::move(callback), network_context, identity_manager,
-      logger);
+      feature, options, std::move(callback), std::move(network_context_getter),
+      identity_manager, logger);
 }
 
 RemoteModelExecutionSessionImpl::RemoteModelExecutionSessionImpl(
     ModelBasedCapabilityKey feature,
     const StreamingModelExecutionOptions& options,
     OptimizationGuideModelExecutionStreamingCallback callback,
-    network::mojom::NetworkContext* network_context,
+    network::NetworkContextGetter network_context_getter,
     signin::IdentityManager* identity_manager,
     OptimizationGuideLogger* logger)
     : RemoteModelExecutionSessionImpl(
@@ -99,7 +99,7 @@ RemoteModelExecutionSessionImpl::RemoteModelExecutionSessionImpl(
           identity_manager,
           std::make_unique<streaming_client::StreamingWebSocketClient>(
               GetModelExecutionServiceStreamURL(feature),
-              network_context,
+              std::move(network_context_getter),
               GetNetworkTrafficAnnotation(feature),
               /*delegate=*/this),
           logger) {}

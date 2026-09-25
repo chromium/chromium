@@ -38,11 +38,11 @@ void StreamingWebSocketClient::Delegate::OnConnected() {}
 
 StreamingWebSocketClient::StreamingWebSocketClient(
     const GURL& service_url,
-    network::mojom::NetworkContext* network_context,
+    network::NetworkContextGetter network_context_getter,
     net::NetworkTrafficAnnotationTag traffic_annotation,
     Delegate* delegate)
     : service_url_(service_url),
-      network_context_(network_context),
+      network_context_getter_(std::move(network_context_getter)),
       traffic_annotation_(traffic_annotation),
       delegate_(delegate),
       readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
@@ -58,12 +58,11 @@ void StreamingWebSocketClient::Send(std::vector<uint8_t> request) {
     return;
   }
 
-  if (state_ == State::kInitialized) {
-    Connect();
-  }
-
   if (state_ != State::kOpen) {
     pending_write_data_.push(std::move(request));
+    if (state_ == State::kInitialized) {
+      Connect();
+    }
     return;
   }
 
@@ -77,10 +76,19 @@ void StreamingWebSocketClient::Close() {
 
 void StreamingWebSocketClient::Connect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(network_context_);
+  CHECK(network_context_getter_);
   CHECK(delegate_);
 
   if (state_ == State::kConnecting || state_ == State::kOpen) {
+    return;
+  }
+
+  state_ = State::kConnecting;
+
+  network::mojom::NetworkContext* network_context =
+      network_context_getter_.Run();
+  if (!network_context) {
+    OnError("Failed to get NetworkContext.");
     return;
   }
 
@@ -92,8 +100,6 @@ void StreamingWebSocketClient::Connect() {
   handshake_receiver_.set_disconnect_handler(base::BindOnce(
       &StreamingWebSocketClient::OnMojoPipeDisconnect, base::Unretained(this)));
 
-  state_ = State::kConnecting;
-
   std::vector<std::string> requested_protocols;
 
   std::vector<network::mojom::HttpHeaderPtr> additional_headers =
@@ -101,7 +107,7 @@ void StreamingWebSocketClient::Connect() {
   additional_headers.push_back(network::mojom::HttpHeader::New(
       "X-WebChannel-Content-Type", "application/x-protobuf"));
 
-  network_context_->CreateWebSocket(
+  network_context->CreateWebSocket(
       service_url_, requested_protocols, net::StorageAccessApiStatus::kNone,
       net::IsolationInfo::CreateForInternalRequest(
           url::Origin::Create(service_url_)),

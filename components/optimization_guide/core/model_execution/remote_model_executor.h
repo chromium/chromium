@@ -18,14 +18,11 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
+#include "services/network/public/cpp/network_context_getter.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 class OptimizationGuideLogger;
-
-namespace network::mojom {
-class NetworkContext;
-}  // namespace network::mojom
 
 namespace signin {
 class IdentityManager;
@@ -131,7 +128,7 @@ class RemoteModelExecutionSession {
       ModelBasedCapabilityKey feature,
       const StreamingModelExecutionOptions& options,
       OptimizationGuideModelExecutionStreamingCallback callback,
-      network::mojom::NetworkContext* network_context,
+      network::NetworkContextGetter network_context_getter,
       signin::IdentityManager* identity_manager,
       OptimizationGuideLogger* logger = nullptr);
 
