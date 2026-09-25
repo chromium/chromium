@@ -3637,7 +3637,6 @@ crbug.com/369270133 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/cs
 crbug.com/369270133 [ Mac15 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/animating-new-content-subset.html [ Failure ]
 crbug.com/368131302 external/wpt/css/css-sizing/intrinsic-percent-replaced-022.html [ Failure ]
 crbug.com/368131302 external/wpt/css/css-sizing/intrinsic-percent-replaced-023.html [ Failure ]
-crbug.com/368076862 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?flac [ Timeout ]
 [ Mac13 ] wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Timeout ]
 [ Mac14 ] wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Timeout ]
 [ Mac15-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Timeout ]

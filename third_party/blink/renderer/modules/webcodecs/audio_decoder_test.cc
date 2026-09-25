@@ -96,4 +96,48 @@ TEST_F(AudioDecoderTest, IsConfigSupported_Opus_Non48k) {
   EXPECT_TRUE(support->supported());
 }
 
+TEST_F(AudioDecoderTest, IsConfigSupported_WithoutDescription) {
+  V8TestingScope scope;
+
+  struct TestCase {
+    const char* codec;
+    uint32_t channels;
+  };
+  constexpr uint32_t kSampleRate = 48000;
+  constexpr TestCase kTestCases[] = {
+      {"flac", 2},
+      {"vorbis", 2},
+      {"opus", 6},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.codec);
+    auto* config = AudioDecoderConfig::Create();
+    config->setCodec(test_case.codec);
+    config->setNumberOfChannels(test_case.channels);
+    config->setSampleRate(kSampleRate);
+
+    ScriptPromise<AudioDecoderSupport> promise =
+        AudioDecoder::isConfigSupported(scope.GetScriptState(), config,
+                                        scope.GetExceptionState());
+    ASSERT_FALSE(scope.GetExceptionState().HadException());
+
+    ScriptPromiseTester tester(scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+
+    auto* support = ToAudioDecoderSupport(&scope, tester.Value());
+    ASSERT_TRUE(support);
+    EXPECT_TRUE(support->supported());
+
+    // `MakeMediaAudioDecoderConfig()` (used during `configure()`) should still
+    // reject missing descriptions for these configurations.
+    String js_error_message;
+    EXPECT_FALSE(
+        AudioDecoder::MakeMediaAudioDecoderConfig(*config, &js_error_message)
+            .has_value());
+    EXPECT_FALSE(js_error_message.empty());
+  }
+}
+
 }  // namespace blink

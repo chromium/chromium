@@ -41,12 +41,8 @@ bool VerifyDescription(const AudioDecoderConfig& config,
                        String* js_error_message) {
   // https://www.w3.org/TR/webcodecs-flac-codec-registration
   // https://www.w3.org/TR/webcodecs-vorbis-codec-registration
-  bool description_required = false;
-  if (config.codec() == "flac" || config.codec() == "vorbis") {
-    description_required = true;
-  }
-
-  if (description_required && !config.hasDescription()) {
+  if ((config.codec() == "flac" || config.codec() == "vorbis") &&
+      !config.hasDescription()) {
     *js_error_message = "Invalid config; description is required.";
     return false;
   }
@@ -64,9 +60,18 @@ bool VerifyDescription(const AudioDecoderConfig& config,
   if (config.hasDescription()) {
     auto desc_wrapper = AsSpan<const uint8_t>(config.description());
 
-    if (!desc_wrapper.data()) {
-      *js_error_message = "Invalid config; description is detached.";
-      return false;
+    // Detached buffers are already rejected in `IsValidAudioDecoderConfig()`,
+    // which is called before `VerifyDescription()`.
+    CHECK(desc_wrapper.data());
+
+    if (config.codec() == "opus") {
+      // A size of 19 bytes corresponds to the minimum length of an Opus
+      // Identification Header for a standard mono or stereo stream.
+      constexpr size_t kMinDescriptionSize = 19;
+      if (desc_wrapper.size() < kMinDescriptionSize) {
+        *js_error_message = "Invalid config; description is too short.";
+        return false;
+      }
     }
   }
 
@@ -231,16 +236,19 @@ std::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
     *js_error_message = "Invalid codec; codec is required.";
     return std::nullopt;
   }
+  if (config.hasDescription()) {
+    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    if (!desc_wrapper.data()) {
+      *js_error_message = "Invalid config; description is detached.";
+      return std::nullopt;
+    }
+  }
+
   // Match codec strings from the codec registry:
   // https://www.w3.org/TR/webcodecs-codec-registry/#audio-codec-registry
   std::optional<media::AudioCodec> pcm_type = TryGetPcmCodec(config.codec());
   if (pcm_type.has_value()) {
     return media::AudioType{.codec = *pcm_type};
-  }
-
-  if (!VerifyDescription(config, js_error_message)) {
-    CHECK(!js_error_message->empty());
-    return std::nullopt;
   }
 
   std::optional<media::AudioType> audio_type =
@@ -267,27 +275,14 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
     return std::nullopt;
   }
 
+  if (!VerifyDescription(config, js_error_message)) {
+    CHECK(!js_error_message->empty());
+    return std::nullopt;
+  }
+
   std::vector<uint8_t> extra_data;
   if (config.hasDescription()) {
     auto desc_wrapper = AsSpan<const uint8_t>(config.description());
-
-    if (!desc_wrapper.data()) {
-      // We should never get here, since this should be caught in
-      // IsValidAudioDecoderConfig().
-      *js_error_message = "Invalid config; description is detached.";
-      return std::nullopt;
-    }
-
-    if (config.codec() == "opus") {
-      // A size of 19 bytes corresponds to the minimum length of an Opus
-      // Identification Header for a standard mono or stereo stream.
-      constexpr size_t kMinDescriptionSize = 19;
-      if (desc_wrapper.size() < kMinDescriptionSize) {
-        *js_error_message = "Invalid config; description is too short.";
-        return std::nullopt;
-      }
-    }
-
     if (!desc_wrapper.empty()) {
       extra_data.assign(base::to_address(desc_wrapper.begin()),
                         base::to_address(desc_wrapper.end()));
