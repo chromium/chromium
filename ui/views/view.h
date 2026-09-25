@@ -778,6 +778,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // ui::LayerObserver:
   void LayerDestroyed(ui::Layer* layer) override;
+  void OnLayerRecreated(ui::Layer* old_layer, ui::Layer* new_layer) override;
 
   // Overridden from ui::LayerOwner:
   std::unique_ptr<ui::Layer> RecreateLayer() override;

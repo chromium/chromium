@@ -865,6 +865,20 @@ void View::LayerDestroyed(ui::Layer* layer) {
   RemoveLayerFromRegions(layer);
 }
 
+void View::OnLayerRecreated(ui::Layer* old_layer, ui::Layer* new_layer) {
+  auto swap_layer =
+      [&](std::vector<raw_ptr<ui::Layer, VectorExperimental>>& layers) {
+        auto it = std::ranges::find(layers, old_layer);
+        if (it != layers.end()) {
+          old_layer->RemoveObserver(this);
+          new_layer->AddObserver(this);
+          *it = new_layer;
+        }
+      };
+  swap_layer(layers_below_);
+  swap_layer(layers_above_);
+}
+
 std::unique_ptr<ui::Layer> View::RecreateLayer() {
   std::unique_ptr<ui::Layer> old_layer = LayerOwner::RecreateLayer();
   Widget* widget = GetWidget();
@@ -2796,22 +2810,22 @@ void View::UpdateLayerClipForVisibleBounds(bool remove_layer_clip) {
 
 void View::ReorderChildLayers(ui::Layer* parent_layer) {
   if (layer() && layer() != parent_layer) {
-    DCHECK_EQ(parent_layer, layer()->parent());
-    // Do not restack if this view's layer is not a direct child of
-    // `parent_layer`. Transient states (such as LayerTreeOwner window state
-    // transitions, animations, or unparented views during multi-step tree
-    // construction) can momentarily leave layers unparented or in a separate
-    // layer hierarchy during a layout pass.
+    // TODO(crbug.com/565603740): Revert back to DCHECK_EQ and remove
+    // DUMP_WILL_BE_CHECK_EQ / early returns once confirmed no parent mismatch
+    // occurs.
+    DUMP_WILL_BE_CHECK_EQ(parent_layer, layer()->parent());
     if (layer()->parent() != parent_layer) {
       return;
     }
     for (ui::Layer* layer_above : layers_above_) {
+      DUMP_WILL_BE_CHECK_EQ(parent_layer, layer_above->parent());
       if (layer_above->parent() == parent_layer) {
         parent_layer->StackAtBottom(layer_above);
       }
     }
     parent_layer->StackAtBottom(layer());
     for (ui::Layer* layer_below : layers_below_) {
+      DUMP_WILL_BE_CHECK_EQ(parent_layer, layer_below->parent());
       if (layer_below->parent() == parent_layer) {
         parent_layer->StackAtBottom(layer_below);
       }

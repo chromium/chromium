@@ -49,8 +49,7 @@ class FrameCenterButton;
 class FrameCaptionButtonContainerView;
 
 // Helper class for managing the window header.
-class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
-    : public ui::LayerOwner::Observer {
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
  public:
   // An invisible view that drives the frame's animation. This holds the
   // animating layer as a layer beneath this view so that it's behind all other
@@ -100,7 +99,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   FrameHeader(const FrameHeader&) = delete;
   FrameHeader& operator=(const FrameHeader&) = delete;
 
-  ~FrameHeader() override;
+  virtual ~FrameHeader();
 
   const std::u16string& frame_text_override() const {
     return frame_text_override_;
@@ -182,9 +181,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   chromeos::FrameCaptionButtonContainerView* caption_button_container() {
     return caption_button_container_;
   }
-
-  // ui::LayerOwner::Observer overrides:
-  void OnLayerRecreated(ui::Layer* old_layer) override;
 
   gfx::Rect GetTitleBoundsForTesting() const { return GetTitleBounds(); }
   bool painted_for_testing() const { return painted_; }

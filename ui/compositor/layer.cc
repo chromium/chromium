@@ -413,9 +413,9 @@ void Layer::Remove(Layer* child) {
 }
 
 void Layer::StackAtTop(Layer* child) {
-  // `child` must be a direct child of this layer to be restacked. This is a
-  // no-op if `child` is null or does not belong to this layer, which occurs
-  // during transient UI lifecycle states (e.g. reparenting or animations).
+  // TODO(crbug.com/565603740): Remove DUMP_WILL_BE_CHECK and early return.
+  DUMP_WILL_BE_CHECK(child);
+  DUMP_WILL_BE_CHECK_EQ(this, child->parent());
   if (!child || child->parent() != this) {
     return;
   }
@@ -430,9 +430,9 @@ void Layer::StackAbove(Layer* child, Layer* other) {
 }
 
 void Layer::StackAtBottom(Layer* child) {
-  // `child` must be a direct child of this layer to be restacked. This is a
-  // no-op if `child` is null or does not belong to this layer, which occurs
-  // during transient UI lifecycle states (e.g. reparenting or animations).
+  // TODO(crbug.com/565603740): Remove DUMP_WILL_BE_CHECK and early return.
+  DUMP_WILL_BE_CHECK(child);
+  DUMP_WILL_BE_CHECK_EQ(this, child->parent());
   if (!child || child->parent() != this) {
     return;
   }
@@ -1289,12 +1289,10 @@ void Layer::CollectAnimators(
 
 void Layer::StackRelativeTo(Layer* child, Layer* other, bool above) {
   DCHECK_NE(child, other);
-  DCHECK_EQ(this, child->parent());
-  DCHECK_EQ(this, other->parent());
-
-  // Restacking requires both layers to be distinct direct children of this
-  // layer. If either layer does not belong to this layer (e.g. during
-  // reparenting or animation transitions), no restacking can be performed.
+  // TODO(crbug.com/565603740): Revert back to DCHECK_EQ and remove early
+  // return.
+  DUMP_WILL_BE_CHECK_EQ(this, child->parent());
+  DUMP_WILL_BE_CHECK_EQ(this, other->parent());
   if (!child || !other || child == other || child->parent() != this ||
       other->parent() != this) {
     return;

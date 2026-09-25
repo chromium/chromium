@@ -91,8 +91,7 @@ class SystemShadowColorTest
   // Creates an instance of `SystemShadowImpl`.
   std::unique_ptr<SystemShadow> MakeShadowOnNinePatchLayer(
       SystemShadow::Type type) {
-    auto shadow = SystemShadow::CreateShadowOnNinePatchLayer(
-        type, SystemShadow::LayerRecreatedCallback());
+    auto shadow = SystemShadow::CreateShadowOnNinePatchLayer(type);
     AddShadowToWidget(shadow.get(), widget_.get());
     return shadow;
   }
