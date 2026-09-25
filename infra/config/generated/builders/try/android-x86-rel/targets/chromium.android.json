@@ -1122,6 +1122,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_29_google_apis_x86",
+        "enable_rts_filtering": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
