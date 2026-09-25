@@ -4973,11 +4973,20 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kAutofillEnableResurrectingPaymentsUsersConvenience[] = {
         {"autofill_enable_resurrecting_payments_churned_users_treatment", "2"}};
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam
+    kAutofillEnableResurrectingPaymentsUsersMessage[] = {
+        {"autofill_enable_resurrecting_payments_churned_users_treatment", "3"}};
+#endif  // BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureVariation
     kAutofillEnableResurrectingPaymentsUsersVariations[] = {
         {"Security", kAutofillEnableResurrectingPaymentsUsersSecurity, nullptr},
         {"Convenience", kAutofillEnableResurrectingPaymentsUsersConvenience,
-         nullptr}};
+         nullptr},
+#if BUILDFLAG(IS_ANDROID)
+        {"Message", kAutofillEnableResurrectingPaymentsUsersMessage, nullptr},
+#endif  // BUILDFLAG(IS_ANDROID)
+};
 
 const FeatureEntry::FeatureParam kAutofillAiWalletPassBranding2026Variant1[] = {
     {"string_variant", "1"}};
