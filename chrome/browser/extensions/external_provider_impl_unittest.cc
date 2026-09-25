@@ -108,7 +108,7 @@ const char kExternalExtensionId[] = "ghpipljflpbfljcfjlhfbfcpoklobpji";
 
 #if BUILDFLAG(IS_WIN)
 const char kExternalExtensionCrxPath[] =
-    "external\\ghpipljflpbfljcfjlhfbfcpoklobpji.crx";
+    "external_extension\\ghpipljflpbfljcfjlhfbfcpoklobpji.crx";
 const wchar_t kExternalExtensionRegistryKey[] =
     L"Software\\Google\\Chrome\\Extensions\\ghpipljflpbfljcfjlhfbfcpoklobpji";
 #endif
