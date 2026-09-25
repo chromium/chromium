@@ -126,23 +126,6 @@ void FakeCrosNetworkConfigBase::GetSupportedVpnTypes(
   NOTREACHED();
 }
 
-void FakeCrosNetworkConfigBase::RequestTrafficCounters(
-    const std::string& guid,
-    RequestTrafficCountersCallback callback) {
-  NOTREACHED();
-}
-
-void FakeCrosNetworkConfigBase::ResetTrafficCounters(const std::string& guid) {
-  NOTREACHED();
-}
-
-void FakeCrosNetworkConfigBase::SetTrafficCountersResetDay(
-    const std::string& guid,
-    chromeos::network_config::mojom::UInt32ValuePtr day,
-    SetTrafficCountersResetDayCallback callback) {
-  NOTREACHED();
-}
-
 void FakeCrosNetworkConfigBase::CreateCustomApn(
     const std::string& network_guid,
     chromeos::network_config::mojom::ApnPropertiesPtr apn,

@@ -49,12 +49,6 @@ suite('<network-proxy-section>', () => {
         vpn: undefined,
         wifi: undefined,
       },
-      trafficCounterProperties: {
-        lastResetTime: null,
-        friendlyDate: null,
-        autoReset: false,
-        userSpecifiedResetDay: 0,
-      },
     };
   }
 

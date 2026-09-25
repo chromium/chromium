@@ -816,22 +816,6 @@ union NetworkTypeManagedProperties {
   ManagedWiFiProperties wifi;
 };
 
-struct UInt32Value {
-  uint32 value;
-};
-
-struct TrafficCounterProperties {
-  // Time when the traffic counters for a Service were last reset.
-  mojo_base.mojom.Time? last_reset_time;
-  // A friendly formatted sentence representing the |last_reset_time| as a
-  // date, e.g., Monday, March 6, 2008. This value takes locale into account.
-  string? friendly_date;
-  // Whether traffic counters are reset automatically.
-  bool auto_reset;
-  // User selected day of month when traffic counters are reset.
-  uint32 user_specified_reset_day;
-};
-
 // Managed properties provided by getManagedProperties. See
 // //components/onc/docs/onc_spec.md for details about each property.
 struct ManagedProperties {
@@ -856,11 +840,6 @@ struct ManagedProperties {
   // match the type of |type_properties|, which will always be provided.
   NetworkType type;
   NetworkTypeManagedProperties type_properties;
-  // Contains traffic counter related information for this network. This field
-  // is only applicable for Cellular and WiFi networks when
-  // TrafficCountersEnabled and TrafficCountersForWiFiTesting, respectively, is
-  // enabled.
-  TrafficCounterProperties? traffic_counter_properties;
 };
 
 // Properties for SetProperties and ConfigureNetwork. All of the top level
@@ -1197,32 +1176,6 @@ struct AlwaysOnVpnProperties {
   string service_guid;
 };
 
-// Source of the traffic. These sources are kept in sync with
-// third_party/cros_system_api/dbus/shill/dbus-constants.h.
-enum TrafficCounterSource {
-  kUnknown,
-  kChrome,
-  kUser,
-  kArc,
-  kCrosvm,
-  kPluginvm,
-  kUpdateEngine,
-  kVpn,
-  kSystem,
-};
-
-// Information about a traffic counter for a single source.
-struct TrafficCounter {
-  // Source of traffic.
-  TrafficCounterSource source;
-  // Corresponds to the number of bytes received by |source| since the last
-  // reset.
-  uint64 rx_bytes;
-  // Corresponds to the number of bytes transmitted by |source| since the last
-  // reset.
-  uint64 tx_bytes;
-};
-
 // Interface for fetching and setting network configuration properties, e.g.
 // from Settings WebUI or the SystemTray.
 interface CrosNetworkConfig {
@@ -1342,17 +1295,6 @@ interface CrosNetworkConfig {
 
   // Returns the list of supported VPN types.
   GetSupportedVpnTypes() => (array<string> vpn_types);
-
-  // Requests traffic counters for a service with ID |guid|.
-  RequestTrafficCounters(string guid) =>
-    (array<TrafficCounter> traffic_counters);
-
-  // Resets traffic counters for a service with ID |guid|.
-  ResetTrafficCounters(string guid);
-
-  // Sets the traffic counters reset day. In order for |day| to be valid, it
-  // must be within the limit 1 <= |day| <= 31.
-  SetTrafficCountersResetDay(string guid, UInt32Value? day) => (bool success);
 
   // Creates a new APN for the cellular network with ID |network_guid|, and
   // appends it to |custom_apn_list|. Should only be called when the APN

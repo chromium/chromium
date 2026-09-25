@@ -74,13 +74,6 @@ class FakeCrosNetworkConfigBase
   void SetAlwaysOnVpn(chromeos::network_config::mojom::AlwaysOnVpnPropertiesPtr
                           properties) override;
   void GetSupportedVpnTypes(GetSupportedVpnTypesCallback callback) override;
-  void RequestTrafficCounters(const std::string& guid,
-                              RequestTrafficCountersCallback callback) override;
-  void ResetTrafficCounters(const std::string& guid) override;
-  void SetTrafficCountersResetDay(
-      const std::string& guid,
-      chromeos::network_config::mojom::UInt32ValuePtr day,
-      SetTrafficCountersResetDayCallback callback) override;
   void CreateCustomApn(const std::string& network_guid,
                        chromeos::network_config::mojom::ApnPropertiesPtr apn,
                        CreateCustomApnCallback callback) override;

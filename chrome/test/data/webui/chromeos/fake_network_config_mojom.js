@@ -25,9 +25,6 @@ import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resour
 /** @typedef {*} NetworkCertificate */
 /** @typedef {*} NetworkFilter */
 /** @typedef {*} NetworkStateProperties */
-/** @typedef {*} Time */
-/** @typedef {*} TrafficCounter */
-/** @typedef {*} UInt32Value */
 /** @typedef {*} VpnProvider */
 
 // Default cellular pin, used when locking/unlocking cellular profiles.
@@ -100,9 +97,6 @@ export class FakeNetworkConfig {
 
     /** @private {!Array<VpnProvider>} */
     this.vpnProviders_ = [];
-
-    /** @private {!Map<string, !Array<!Object>>} */
-    this.trafficCountersMap_ = new Map();
 
     /** @private {!number} */
     this.apnIdCounter_ = 0;
@@ -205,8 +199,7 @@ export class FakeNetworkConfig {
      'getGlobalPolicy', 'getVpnProviders', 'getNetworkCertificates',
      'setProperties', 'setCellularSimState', 'selectCellularMobileNetwork',
      'startConnect', 'startDisconnect', 'configureNetwork', 'forgetNetwork',
-     'getAlwaysOnVpn', 'getSupportedVpnTypes', 'requestTrafficCounters',
-     'resetTrafficCounters', 'setTrafficCountersResetDay', 'removeCustomApn',
+     'getAlwaysOnVpn', 'getSupportedVpnTypes', 'removeCustomApn',
      'createCustomApn', 'createExclusivelyEnabledCustomApn', 'modifyCustomApn']
         .forEach((methodName) => {
           this.resolverMap_.set(methodName, new PromiseResolver());
@@ -313,60 +306,6 @@ export class FakeNetworkConfig {
     network.typeState.wifi.visible = visible;
 
     this.onNetworkStateChanged(network);
-  }
-
-  /**
-   * @param {string} guid
-   * @param {!Array<!Object>} trafficCounters counters for guid
-   */
-  setTrafficCountersForTest(guid, trafficCounters) {
-    const network = this.networkStates_.find(state => {
-      return state.guid === guid;
-    });
-    assert(!!network, 'Network not found: ' + guid);
-
-    this.trafficCountersMap_.set(guid, trafficCounters);
-  }
-
-  /**
-   * @param {string} guid
-   * @param {?Time} lastResetTime last reset
-   * time for network with guid
-   */
-  setLastResetTimeForTest(guid, lastResetTime) {
-    const network = this.networkStates_.find(state => {
-      return state.guid === guid;
-    });
-    assert(!!network, 'Network not found: ' + guid);
-    const managed = this.managedProperties_.get(guid);
-    if (managed) {
-      assert(
-          !!managed.trafficCounterProperties,
-          'Missing traffic counter properties for network: ' + guid);
-      managed.trafficCounterProperties.lastResetTime = lastResetTime;
-    }
-    this.onActiveNetworksChanged();
-  }
-
-  /**
-   * @param {string} guid
-   * @param {string} friendlyDate a human readable date representing
-   * the last reset time
-   *
-   */
-  setFriendlyDateForTest(guid, friendlyDate) {
-    const network = this.networkStates_.find(state => {
-      return state.guid === guid;
-    });
-    assert(!!network, 'Network not found: ' + guid);
-    const managed = this.managedProperties_.get(guid);
-    if (managed) {
-      assert(
-          !!managed.trafficCounterProperties,
-          'Missing traffic counter properties for network: ' + guid);
-      managed.trafficCounterProperties.friendlyDate = friendlyDate;
-    }
-    this.onActiveNetworksChanged();
   }
 
   /**
@@ -825,61 +764,6 @@ export class FakeNetworkConfig {
    */
   setAlwaysOnVpn(properties) {
     this.alwaysOnVpnProperties_ = properties;
-  }
-
-  /**
-   * @param {string} guid
-   * @return {!Promise<{trafficCounters: !Array<!TrafficCounter>}>} traffic
-   *     counters for network with guid
-   */
-  requestTrafficCounters(guid) {
-    return new Promise(resolve => {
-      this.methodCalled('requestTrafficCounters');
-      resolve({trafficCounters: this.trafficCountersMap_.get(guid)});
-    });
-  }
-
-  /**
-   * @param {string} guid
-   */
-  resetTrafficCounters(guid) {
-    const trafficCounters = this.trafficCountersMap_.get(guid);
-    assert(!!trafficCounters, 'Network not found: ' + guid);
-    trafficCounters.forEach(function(counter) {
-      counter.rxBytes = 0n;
-      counter.txBytes = 0n;
-    });
-    this.methodCalled('resetTrafficCounters');
-  }
-
-  /**
-   * @param {string} guid
-   * @param {?UInt32Value} resetDay
-   */
-  setResetDay_(guid, resetDay) {
-    const network = this.networkStates_.find(state => {
-      return state.guid === guid;
-    });
-    assert(!!network, 'Network not found: ' + guid);
-    const managed = this.managedProperties_.get(guid);
-    if (managed) {
-      managed.trafficCounterProperties.userSpecifiedResetDay =
-          resetDay ? resetDay.value : 1;
-    }
-    this.onActiveNetworksChanged();
-  }
-
-  /**
-   * @param {string} guid
-   * @param {?UInt32Value} resetDay
-   * @return {!Promise<{success: boolean}>}
-   */
-  setTrafficCountersResetDay(guid, resetDay) {
-    return new Promise(resolve => {
-      this.methodCalled('setTrafficCountersResetDay');
-      this.setResetDay_(guid, resetDay);
-      resolve({success: true});
-    });
   }
 
   /**

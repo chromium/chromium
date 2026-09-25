@@ -31,7 +31,6 @@ import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSour
 /** @typedef {*} SIMLockStatus */
 /** @typedef {*} SubjectAltName */
 /** @typedef {*} TetherStateProperties */
-/** @typedef {*} TrafficCounterProperties */
 
 // Used to indicate a saved but unknown credential value. Will appear as
 // placeholder character in the credential (passphrase, password, etc.) field by
@@ -766,7 +765,6 @@ export class OncMojo {
       ipAddressConfigType: OncMojo.createManagedString('DHCP'),
       nameServersConfigType: OncMojo.createManagedString('DHCP'),
       portalState: PortalState.kUnknown,
-      trafficCounterProperties: OncMojo.createTrafficCounterProperties(),
     };
     switch (type) {
       case NetworkType.kCellular:
@@ -1190,17 +1188,6 @@ export class OncMojo {
       activeValue: b,
       policySource: PolicySource.kNone,
       policyValue: false,
-    };
-  }
-
-  /**
-   * @return {!TrafficCounterProperties}
-   */
-  static createTrafficCounterProperties() {
-    return {
-      lastResetTime: null,
-      autoReset: false,
-      userSpecifiedResetDay: 1,
     };
   }
 

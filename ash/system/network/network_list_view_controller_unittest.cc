@@ -128,8 +128,6 @@ ManagedPropertiesPtr CreateManagedPropertiesWithVPN(bool is_managed) {
           std::move(vpn));
   managed_properties->ip_address_config_type = ManagedString::New();
   managed_properties->name_servers_config_type = ManagedString::New();
-  managed_properties->traffic_counter_properties =
-      chromeos::network_config::mojom::TrafficCounterProperties::New();
   return managed_properties;
 }
 
@@ -151,8 +149,6 @@ ManagedPropertiesPtr CreateManagedPropertiesWithProxy(bool is_managed) {
   managed_properties->proxy_settings = std::move(proxy_settings);
   managed_properties->ip_address_config_type = ManagedString::New();
   managed_properties->name_servers_config_type = ManagedString::New();
-  managed_properties->traffic_counter_properties =
-      chromeos::network_config::mojom::TrafficCounterProperties::New();
   return managed_properties;
 }
 
