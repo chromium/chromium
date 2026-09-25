@@ -696,9 +696,4 @@ typedef NS_ENUM(NSInteger, ItemType) {
              : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
 }
 
-- (void)settingsWillBeDismissed {
-  // TODO(crbug.com/40272467)
-  [self disconnect];
-}
-
 @end

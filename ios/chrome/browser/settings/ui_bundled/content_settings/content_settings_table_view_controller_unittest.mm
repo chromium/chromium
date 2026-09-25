@@ -38,7 +38,7 @@ class ContentSettingsTableViewControllerTest
 
   void TearDown() override {
     [base::apple::ObjCCastStrict<ContentSettingsTableViewController>(
-        controller()) settingsWillBeDismissed];
+        controller()) disconnect];
     LegacyChromeTableViewControllerTest::TearDown();
   }
 
