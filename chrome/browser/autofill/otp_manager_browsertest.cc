@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
@@ -72,70 +73,6 @@ void FakeSmsOtpBackend::NotifyCallbacks(
   }
   callbacks_.clear();
 }
-
-// This implementation is for testing. It lets us manually control and simulate
-// the moment a Gmail OTP is received for one-time passwords (OTP).
-class FakeGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
- public:
-  using CallbackType = base::RepeatingCallback<void(
-      base::expected<one_time_tokens::OneTimeToken,
-                     one_time_tokens::OneTimeTokenRetrievalError>)>;
-
-  FakeGmailOtpBackend() = default;
-  ~FakeGmailOtpBackend() override = default;
-
-  // one_time_tokens::GmailOtpBackend:
-  one_time_tokens::ExpiringSubscription Subscribe(
-      base::Time expiration,
-      CallbackType callback) override {
-    callbacks_.push_back(callback);
-    return one_time_tokens::ExpiringSubscription();
-  }
-
-  one_time_tokens::ExpiringSubscription SubscribeToTickles(
-      base::Time expiration,
-      TickleCallback callback) override {
-    return one_time_tokens::ExpiringSubscription();
-  }
-
-  // one_time_tokens::GmailOtpBackend:
-  std::vector<one_time_tokens::OneTimeToken> GetCachedOneTimeTokens()
-      const override {
-    return {};
-  }
-
-  std::vector<one_time_tokens::OneTimeToken>
-  PurgeExpiredAndGetCachedOneTimeTokens() override {
-    return {};
-  }
-
-  void OnIncomingOneTimeTokenBackendNotification(
-      const one_time_tokens::OneTimeTokenBackendNotification& notification)
-      override {}
-
-  void FetchUserDataProcessingConsent(
-      one_time_tokens::GmailOtpBackend::FetchUserDataProcessingConsentCallback
-          callback) override {
-    std::move(callback).Run(/*consent_states=*/std::nullopt);
-  }
-
-  bool HasPendingRequests() const override { return false; }
-
-  // Simulates the reception of a Gmail OTP.
-  void ProcessCallbacks(
-      base::expected<one_time_tokens::OneTimeToken,
-                     one_time_tokens::OneTimeTokenRetrievalError> reply) {
-    for (auto& callback : callbacks_) {
-      callback.Run(reply);
-    }
-    callbacks_.clear();
-  }
-
-  size_t num_callbacks() const { return callbacks_.size(); }
-
- private:
-  std::vector<CallbackType> callbacks_;
-};
 
 // AutofillCrowdsourcingManager that classifies every field as a ONE_TIME_CODE.
 class FakeAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
@@ -234,7 +171,8 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
         std::make_unique<FakeAutofillCrowdsourcingManager>(
             this, version_info::Channel::STABLE));
     set_sms_otp_backend(std::make_unique<FakeSmsOtpBackend>());
-    gmail_otp_backend_ = std::make_unique<FakeGmailOtpBackend>();
+    gmail_otp_backend_ =
+        std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
     one_time_token_service_ =
         std::make_unique<one_time_tokens::OneTimeTokenServiceImpl>(
             GetSmsOtpBackend(), gmail_otp_backend_.get());
@@ -250,8 +188,9 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
     return *static_cast<FakeSmsOtpBackend*>(GetSmsOtpBackend());
   }
 
-  FakeGmailOtpBackend& gmail_otp_backend() {
-    return *static_cast<FakeGmailOtpBackend*>(gmail_otp_backend_.get());
+  one_time_tokens::FakeGmailOtpBackend& gmail_otp_backend() {
+    return *static_cast<one_time_tokens::FakeGmailOtpBackend*>(
+        gmail_otp_backend_.get());
   }
 
  private:

@@ -25,6 +25,7 @@ source_set("unit_tests") {
     ":one_time_tokens",
     "//base/test:test_support",
     "//components/one_time_tokens/core/browser",
+    "//components/one_time_tokens/core/browser:test_support",
     "//components/sharing_message",
     "//components/sharing_message/proto",
     "//testing/gmock",

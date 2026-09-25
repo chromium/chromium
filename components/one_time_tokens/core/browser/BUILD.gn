@@ -105,6 +105,8 @@ source_set("unit_tests") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "fake_gmail_otp_backend.cc",
+    "fake_gmail_otp_backend.h",
     "mock_one_time_token_service.cc",
     "mock_one_time_token_service.h",
   ]

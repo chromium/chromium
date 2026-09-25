@@ -6,7 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
+#include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "components/sharing_message/proto/one_time_token_backend_notification.pb.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
@@ -18,53 +18,6 @@ using ::testing::_;
 
 namespace {
 
-class MockGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
- public:
-  MOCK_METHOD(one_time_tokens::ExpiringSubscription,
-              Subscribe,
-              (base::Time expiration, Callback callback),
-              (override));
-  MOCK_METHOD(one_time_tokens::ExpiringSubscription,
-              SubscribeToTickles,
-              (base::Time expiration, TickleCallback callback),
-              (override));
-  MOCK_METHOD(std::vector<one_time_tokens::OneTimeToken>,
-              GetCachedOneTimeTokens,
-              (),
-              (const, override));
-  MOCK_METHOD(std::vector<one_time_tokens::OneTimeToken>,
-              PurgeExpiredAndGetCachedOneTimeTokens,
-              (),
-              (override));
-
-  MOCK_METHOD(void,
-              OnIncomingOneTimeTokenBackendNotification,
-              (const one_time_tokens::OneTimeTokenBackendNotification&
-                   one_time_token_backend_notification),
-              (override));
-
-  MOCK_METHOD(
-      void,
-      FetchUserDataProcessingConsent,
-      (one_time_tokens::GmailOtpBackend::FetchUserDataProcessingConsentCallback
-           callback),
-      (override));
-
-  MOCK_METHOD(bool, HasPendingRequests, (), (const, override));
-};
-
-MATCHER_P4(OneTimeTokenNotificationMatches,
-           expected_otp_created_timestamp,
-           expected_email_received_timestamp,
-           expected_email_delivered_timestamp,
-           expected_message_reference,
-           "") {
-  return arg.otp_created_timestamp == expected_otp_created_timestamp &&
-         arg.email_received_timestamp == expected_email_received_timestamp &&
-         arg.email_delivered_timestamp == expected_email_delivered_timestamp &&
-         arg.encrypted_message_reference.value() == expected_message_reference;
-}
-
 class OneTimeTokenSharingHandlerTest : public testing::Test {
  protected:
   OneTimeTokenSharingHandlerTest() = default;
@@ -72,9 +25,9 @@ class OneTimeTokenSharingHandlerTest : public testing::Test {
 
 TEST_F(OneTimeTokenSharingHandlerTest, OnMessageCallsBackendAndRunsCallback) {
   base::HistogramTester histogram_tester;
-  MockGmailOtpBackend mock_gmail_otp_backend;
+  one_time_tokens::FakeGmailOtpBackend fake_gmail_otp_backend;
   auto handler =
-      std::make_unique<OneTimeTokenSharingHandler>(&mock_gmail_otp_backend);
+      std::make_unique<OneTimeTokenSharingHandler>(&fake_gmail_otp_backend);
 
   constexpr int64_t kOtpCreatedSeconds = 123456789;
   constexpr int64_t kEmailReceivedSeconds = 987654321;
@@ -99,16 +52,21 @@ TEST_F(OneTimeTokenSharingHandlerTest, OnMessageCallsBackendAndRunsCallback) {
   gmail_otp->mutable_email_delivered_timestamp()->set_seconds(
       kEmailDeliveredSeconds);
 
-  EXPECT_CALL(
-      mock_gmail_otp_backend,
-      OnIncomingOneTimeTokenBackendNotification(OneTimeTokenNotificationMatches(
-          expected_otp_created_timestamp, expected_email_received_timestamp,
-          expected_email_delivered_timestamp, expected_message_reference)));
-
   base::MockCallback<SharingMessageHandler::DoneCallback> done_callback;
   EXPECT_CALL(done_callback, Run(_));
 
   handler->OnMessage(message, done_callback.Get());
+
+  ASSERT_EQ(fake_gmail_otp_backend.incoming_notifications().size(), 1u);
+  const one_time_tokens::OneTimeTokenBackendNotification& notification =
+      fake_gmail_otp_backend.incoming_notifications().front();
+  EXPECT_EQ(notification.otp_created_timestamp, expected_otp_created_timestamp);
+  EXPECT_EQ(notification.email_received_timestamp,
+            expected_email_received_timestamp);
+  EXPECT_EQ(notification.email_delivered_timestamp,
+            expected_email_delivered_timestamp);
+  EXPECT_EQ(notification.encrypted_message_reference.value(),
+            expected_message_reference);
 
   histogram_tester.ExpectUniqueSample(
       "Sharing.OneTimeTokenSharingHandler.NotificationValidationResult",
@@ -118,23 +76,21 @@ TEST_F(OneTimeTokenSharingHandlerTest, OnMessageCallsBackendAndRunsCallback) {
 TEST_F(OneTimeTokenSharingHandlerTest,
        OnEmptySharingMessageDoesNotCallBackend) {
   base::HistogramTester histogram_tester;
-  MockGmailOtpBackend mock_gmail_otp_backend;
+  one_time_tokens::FakeGmailOtpBackend fake_gmail_otp_backend;
   auto handler =
-      std::make_unique<OneTimeTokenSharingHandler>(&mock_gmail_otp_backend);
+      std::make_unique<OneTimeTokenSharingHandler>(&fake_gmail_otp_backend);
 
   components_sharing_message::SharingMessage message;
   // Instantiate the one_time_token_backend_notification, but don't initialize
   // the rest of the message.
   message.mutable_one_time_token_backend_notification();
 
-  EXPECT_CALL(mock_gmail_otp_backend,
-              OnIncomingOneTimeTokenBackendNotification(_))
-      .Times(0);
-
   base::MockCallback<SharingMessageHandler::DoneCallback> done_callback;
   EXPECT_CALL(done_callback, Run(_));
 
   handler->OnMessage(message, done_callback.Get());
+
+  EXPECT_TRUE(fake_gmail_otp_backend.incoming_notifications().empty());
 
   histogram_tester.ExpectUniqueSample(
       "Sharing.OneTimeTokenSharingHandler.NotificationValidationResult",
@@ -144,9 +100,9 @@ TEST_F(OneTimeTokenSharingHandlerTest,
 TEST_F(OneTimeTokenSharingHandlerTest,
        OnEmptyMessageReferenceDoesNotCallBackend) {
   base::HistogramTester histogram_tester;
-  MockGmailOtpBackend mock_gmail_otp_backend;
+  one_time_tokens::FakeGmailOtpBackend fake_gmail_otp_backend;
   auto handler =
-      std::make_unique<OneTimeTokenSharingHandler>(&mock_gmail_otp_backend);
+      std::make_unique<OneTimeTokenSharingHandler>(&fake_gmail_otp_backend);
 
   components_sharing_message::SharingMessage message;
   // Instantiate the one_time_token_backend_notification, but don't initialize
@@ -154,14 +110,12 @@ TEST_F(OneTimeTokenSharingHandlerTest,
   message.mutable_one_time_token_backend_notification()
       ->mutable_gmail_one_time_password();
 
-  EXPECT_CALL(mock_gmail_otp_backend,
-              OnIncomingOneTimeTokenBackendNotification(_))
-      .Times(0);
-
   base::MockCallback<SharingMessageHandler::DoneCallback> done_callback;
   EXPECT_CALL(done_callback, Run(_));
 
   handler->OnMessage(message, done_callback.Get());
+
+  EXPECT_TRUE(fake_gmail_otp_backend.incoming_notifications().empty());
 
   histogram_tester.ExpectUniqueSample(
       "Sharing.OneTimeTokenSharingHandler.NotificationValidationResult",
