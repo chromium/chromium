@@ -14,7 +14,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 // </if>
 import {createCreditCardEntry} from './autofill_fake_data.js';
-import {createPaymentsPage, getLocalAndServerCreditCardListItems, getDefaultExpectations, getCardRowShadowRoot, setupPaymentsPrefs, verifyBooleanHistogramRecorded, verifyBooleanHistogramNotRecorded} from './payments_page_test_utils.js';
+import {createPaymentsPage, getDefaultExpectations, getFirstCreditCardEntry, getLocalAndServerCreditCardListItems, setupPaymentsPrefs, verifyBooleanHistogramNotRecorded, verifyBooleanHistogramRecorded} from './payments_page_test_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -103,7 +103,7 @@ suite('PaymentsPage', function() {
     assertEquals(0, getLocalAndServerCreditCardListItems().length);
 
     const noPaymentMethodsLabel =
-        creditCardList.shadowRoot!.querySelector<HTMLElement>(
+        creditCardList.shadowRoot.querySelector<HTMLElement>(
             '#noPaymentMethodsLabel');
     assertTrue(!!noPaymentMethodsLabel);
     assertFalse(noPaymentMethodsLabel.hidden);
@@ -303,7 +303,7 @@ suite('PaymentsPage', function() {
         creditCards.length, getLocalAndServerCreditCardListItems().length);
 
     const noPaymentMethodsLabel =
-        creditCardList.shadowRoot!.querySelector<HTMLElement>(
+        creditCardList.shadowRoot.querySelector<HTMLElement>(
             '#noPaymentMethodsLabel');
     assertTrue(!!noPaymentMethodsLabel);
     assertTrue(noPaymentMethodsLabel.hidden);
@@ -600,11 +600,11 @@ suite('PaymentsPage', function() {
 
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
-    const rowShadowRoot = getCardRowShadowRoot(page.$.paymentsList);
-    assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
+    const firstEntry = getFirstCreditCardEntry(page.$.paymentsList);
+    assertFalse(!!firstEntry.shadowRoot.querySelector('#remoteCreditCardLink'));
 
     const menuButton =
-        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
+        firstEntry.shadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
     menuButton.click();
     flush();

@@ -1,41 +1,15 @@
-<style include="settings-shared autofill-shared screen-reader-only">
-  .misc-column {
-    align-items: center;
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .list-item {
-    margin-bottom: 8px;
-    margin-top: 8px;
-  }
-
-  .sub-label {
-    color: var(--cr-secondary-text-color);
-  }
-
-  #paymentsIcon {
-    vertical-align: middle;
-  }
-
-  #payOverTimeIssuerImage {
-    line-height: 0;
-    margin-inline-end: 16px;
-    vertical-align: middle;
-  }
-</style>
-
 <div class="list-item" role="row">
   <div class="type-column" role="cell">
     <picture id="payOverTimeIssuerImage">
       <source
-          srcset="[[getIssuerImage_(payOverTimeIssuer.imageSrcDark)]]"
+          srcset="${this.getIssuerImage_(this.payOverTimeIssuer.imageSrcDark)}"
           media="(prefers-color-scheme: dark)">
-      <img alt="" srcset="[[getIssuerImage_(payOverTimeIssuer.imageSrc)]]">
+      <img alt=""
+          srcset="${this.getIssuerImage_(this.payOverTimeIssuer.imageSrc)}">
     </picture>
     <div class="summary-column screen-reader-only-host-node" role="cell">
       <div id="summaryLabel" class="ellipses">
-        [[payOverTimeIssuer.displayName]]
+        ${this.payOverTimeIssuer.displayName}
       </div>
     </div>
   </div>
@@ -44,29 +18,20 @@
 <if expr="_google_chrome">
       <picture id="paymentsIcon">
         <source
-            srcset="[[getGooglePayDarkModeLogoSrcSet_(
-                autofillEnableGradientGoogleLogosEnabled_)]]"
+            srcset="${this.getGooglePayDarkModeLogoSrcSet_()}"
             media="(prefers-color-scheme: dark)">
         <img alt=""
-            srcset="[[getGooglePayLightModeLogoSrcSet_(
-                autofillEnableGradientGoogleLogosEnabled_)]]">
+            srcset="${this.getGooglePayLightModeLogoSrcSet_()}">
       </picture>
 </if>
 <if expr="not _google_chrome">
       <span class="sub-label">$i18n{googlePayments}</span>
 </if>
     </div>
-    <template is="dom-if" if="[[autofillEnableWalletBrandingEnabled_]]">
-      <cr-icon-button class="icon-external" id="remotePayOverTimeIssuerLink"
-          title="$i18n{remotePaymentMethodsWalletLinkLabel}" role="link"
-          on-click="onRemoteEditClick_"
-          aria-description="$i18n{opensInNewTab}"></cr-icon-button>
-    </template>
-    <template is="dom-if" if="[[!autofillEnableWalletBrandingEnabled_]]">
-      <cr-icon-button class="icon-external" id="remotePayOverTimeIssuerLink"
-          title="$i18n{remotePaymentMethodsLinkLabel}" role="link"
-          on-click="onRemoteEditClick_"
-          aria-description="$i18n{opensInNewTab}"></cr-icon-button>
-    </template>
+    <cr-icon-button class="icon-external" id="remotePayOverTimeIssuerLink"
+        title="${this.getRemotePaymentMethodsLinkLabel_()}" role="link"
+        @click="${this.onRemoteEditClick_}"
+        aria-description="$i18n{opensInNewTab}">
+    </cr-icon-button>
   </div>
 </div>

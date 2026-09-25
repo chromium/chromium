@@ -1,43 +1,27 @@
-    <style include="settings-shared autofill-shared">
-      .expiration-column {
-        align-items: center;
-        display: flex;
-        flex: 1;
-      }
-
-      /**
-       * Add a separator line between consecutive non-empty payment method
-       * lists to display as a continuation of the previous list.
-       */
-      .vertical-list:has(.payment-method) ~ .vertical-list:has(.payment-method) {
-        border-top: var(--cr-separator-line);
-        width: 100%;
-      }
-    </style>
-    <div role="table">
-      <div class="vertical-list list-with-header" role="rowgroup">
-        <template is="dom-repeat" items="[[creditCards]]">
-          <settings-credit-card-list-entry id="[[getCreditCardId_(index)]]"
-              class="payment-method" credit-card="[[item]]">
-          </settings-credit-card-list-entry>
-        </template>
-      </div>
-      <div class="vertical-list list-with-header" role="rowgroup">
-        <template is="dom-repeat" items="[[ibans]]">
-          <settings-iban-list-entry id="[[getIbanId_(index)]]"
-              class="payment-method" iban="[[item]]">
-          </settings-iban-list-entry>
-        </template>
-      </div>
-      <div class="vertical-list list-with-header" role="rowgroup">
-        <template is="dom-repeat" items="[[payOverTimeIssuers]]">
-          <settings-pay-over-time-issuer-list-entry class="payment-method"
-              pay-over-time-issuer="[[item]]">
-          </settings-pay-over-time-issuer-list-entry>
-        </template>
-      </div>
-    </div>
-    <div id="noPaymentMethodsLabel" class="list-item"
-        hidden$="[[showAnyPaymentMethods_]]">
-      $i18n{noPaymentMethodsFound}
-    </div>
+<div role="table">
+  <div class="vertical-list list-with-header" role="rowgroup">
+    ${this.creditCards.map((item, index) => html`
+      <settings-credit-card-list-entry id="${this.getCreditCardId_(index)}"
+          class="payment-method" .creditCard="${item}">
+      </settings-credit-card-list-entry>
+    `)}
+  </div>
+  <div class="vertical-list list-with-header" role="rowgroup">
+    ${this.ibans.map((item, index) => html`
+      <settings-iban-list-entry id="${this.getIbanId_(index)}"
+          class="payment-method" .iban="${item}">
+      </settings-iban-list-entry>
+    `)}
+  </div>
+  <div class="vertical-list list-with-header" role="rowgroup">
+    ${this.payOverTimeIssuers.map(item => html`
+      <settings-pay-over-time-issuer-list-entry class="payment-method"
+          .payOverTimeIssuer="${item}">
+      </settings-pay-over-time-issuer-list-entry>
+    `)}
+  </div>
+</div>
+<div id="noPaymentMethodsLabel" class="list-item"
+    ?hidden="${this.showAnyPaymentMethods_()}">
+  $i18n{noPaymentMethodsFound}
+</div>

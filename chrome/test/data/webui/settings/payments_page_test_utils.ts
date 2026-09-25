@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsPaymentsPageElement, SettingsCreditCardListEntryElement, SettingsIbanListEntryElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsPaymentsPageElement, SettingsCreditCardListEntryElement, SettingsIbanListEntryElement, SettingsPaymentsListElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertLT} from 'chrome://webui-test/chai_assert.js';
@@ -139,19 +139,20 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
  */
 export function getLocalAndServerCreditCardListItems() {
   return document.body.querySelector('settings-payments-page')!.shadowRoot!
-      .querySelector('#paymentsList')!.shadowRoot!.querySelectorAll(
+      .querySelector('settings-payments-list')!.shadowRoot.querySelectorAll(
           'settings-credit-card-list-entry');
 }
 
 /**
- * Returns the shadow root of the card row from the specified list of
- * payment methods.
+ * Returns the first credit card row from the specified list of payment methods.
  */
-export function getCardRowShadowRoot(paymentsList: HTMLElement): ShadowRoot {
+export function getFirstCreditCardEntry(
+    paymentsList: SettingsPaymentsListElement):
+    SettingsCreditCardListEntryElement {
   const row =
-      paymentsList.shadowRoot!.querySelector('settings-credit-card-list-entry');
+      paymentsList.shadowRoot.querySelector('settings-credit-card-list-entry');
   assertTrue(!!row);
-  return row.shadowRoot;
+  return row;
 }
 
 type PaymentEntryElement =

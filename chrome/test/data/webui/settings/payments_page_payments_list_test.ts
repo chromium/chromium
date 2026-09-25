@@ -8,8 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {SettingsPaymentsListElement} from 'chrome://settings/lazy_load.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry} from './autofill_fake_data.js';
 import {setupPaymentsPrefs} from './payments_page_test_utils.js';
@@ -38,7 +37,7 @@ suite('PaymentsPagePaymentsList', function() {
     list.payOverTimeIssuers = payOverTimeIssuers;
 
     document.body.appendChild(list);
-    await flushTasks();
+    await microtasksFinished();
 
     return list;
   }
@@ -47,7 +46,7 @@ suite('PaymentsPagePaymentsList', function() {
    * Returns an array containing all payment method items from paymentsList.
    */
   function getPaymentsListPaymentMethodItems() {
-    return paymentsList!.shadowRoot!.querySelectorAll<HTMLElement>(
+    return paymentsList.shadowRoot.querySelectorAll<HTMLElement>(
         '.payment-method');
   }
 
@@ -55,7 +54,7 @@ suite('PaymentsPagePaymentsList', function() {
    * Returns an array containing all vertical-list items from paymentsList.
    */
   function getVerticalLists() {
-    return paymentsList!.shadowRoot!.querySelectorAll<HTMLElement>(
+    return paymentsList.shadowRoot.querySelectorAll<HTMLElement>(
         '.vertical-list');
   }
 
@@ -164,7 +163,7 @@ suite('PaymentsPagePaymentsList', function() {
     assertEquals(0, getPaymentsListPaymentMethodItems().length);
 
     const noPaymentMethodsLabel =
-        paymentsList.shadowRoot!.querySelector<HTMLElement>(
+        paymentsList.shadowRoot.querySelector<HTMLElement>(
             '#noPaymentMethodsLabel');
     assertTrue(!!noPaymentMethodsLabel);
     assertTrue(isVisible(noPaymentMethodsLabel));
@@ -178,7 +177,7 @@ suite('PaymentsPagePaymentsList', function() {
     assertEquals(3, getPaymentsListPaymentMethodItems().length);
 
     const noPaymentMethodsLabel =
-        paymentsList.shadowRoot!.querySelector<HTMLElement>(
+        paymentsList.shadowRoot.querySelector<HTMLElement>(
             '#noPaymentMethodsLabel');
     assertTrue(!!noPaymentMethodsLabel);
     assertFalse(isVisible(noPaymentMethodsLabel));

@@ -10,8 +10,7 @@ import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import type {SettingsPayOverTimeIssuerListEntryElement} from 'chrome://settings/lazy_load.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createPayOverTimeIssuerEntry} from './autofill_fake_data.js';
 import {createPaymentsPage, setupPaymentsPrefs} from './payments_page_test_utils.js';
@@ -41,7 +40,7 @@ suite('PaymentsPagePayOverTime', function() {
     element.payOverTimeIssuer = issuer;
 
     document.body.appendChild(element);
-    await flushTasks();
+    await microtasksFinished();
 
     return element;
   }
@@ -141,7 +140,7 @@ suite('PaymentsPagePayOverTime', function() {
     const entry =
         await createPayOverTimeIssuerListEntry(createPayOverTimeIssuerEntry());
 
-    const outlinkButton = entry.shadowRoot!.querySelector<HTMLElement>(
+    const outlinkButton = entry.shadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-external');
     assertTrue(!!outlinkButton);
     assertEquals('Your payment methods in Google Pay', outlinkButton.title);
@@ -159,7 +158,7 @@ suite('PaymentsPagePayOverTime', function() {
     const entry =
         await createPayOverTimeIssuerListEntry(createPayOverTimeIssuerEntry());
 
-    const outlinkButton = entry.shadowRoot!.querySelector<HTMLElement>(
+    const outlinkButton = entry.shadowRoot.querySelector<HTMLElement>(
         'cr-icon-button.icon-external');
     assertTrue(!!outlinkButton);
     assertEquals('Your payment methods in Google Wallet', outlinkButton.title);
@@ -176,7 +175,7 @@ suite('PaymentsPagePayOverTime', function() {
     const entry = await createPayOverTimeIssuerListEntry(payOverTimeIssuer);
 
     const payOverTimeItemSummaryLabel =
-        entry.shadowRoot!.querySelector<HTMLElement>('#summaryLabel');
+        entry.shadowRoot.querySelector<HTMLElement>('#summaryLabel');
 
     assertTrue(!!payOverTimeItemSummaryLabel);
     assertEquals('hello', payOverTimeItemSummaryLabel.textContent.trim());
@@ -188,7 +187,7 @@ suite('PaymentsPagePayOverTime', function() {
     });
     const payOverTimeIssuer = createPayOverTimeIssuerEntry();
     const entry = await createPayOverTimeIssuerListEntry(payOverTimeIssuer);
-    const paymentsIcon = entry.shadowRoot!.querySelector('#paymentsIcon');
+    const paymentsIcon = entry.shadowRoot.querySelector('#paymentsIcon');
     // #paymentsIcon is only present in Google Chrome branded builds.
     if (paymentsIcon) {
       const source = paymentsIcon.querySelector('source');
@@ -201,7 +200,7 @@ suite('PaymentsPagePayOverTime', function() {
           img.srcset.includes('IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_SMALL'));
     } else {
       const textIndicator =
-          entry.shadowRoot!.querySelector('#paymentsIndicator .sub-label');
+          entry.shadowRoot.querySelector('#paymentsIndicator .sub-label');
       assertTrue(!!textIndicator);
       assertTrue(isVisible(textIndicator));
     }
@@ -213,7 +212,7 @@ suite('PaymentsPagePayOverTime', function() {
     });
     const payOverTimeIssuer = createPayOverTimeIssuerEntry();
     const entry = await createPayOverTimeIssuerListEntry(payOverTimeIssuer);
-    const paymentsIcon = entry.shadowRoot!.querySelector('#paymentsIcon');
+    const paymentsIcon = entry.shadowRoot.querySelector('#paymentsIcon');
     // #paymentsIcon is only present in Google Chrome branded builds.
     if (paymentsIcon) {
       const source = paymentsIcon.querySelector('source');
@@ -224,7 +223,7 @@ suite('PaymentsPagePayOverTime', function() {
       assertTrue(img.srcset.includes('IDR_AUTOFILL_GOOGLE_PAY_SMALL'));
     } else {
       const textIndicator =
-          entry.shadowRoot!.querySelector('#paymentsIndicator .sub-label');
+          entry.shadowRoot.querySelector('#paymentsIndicator .sub-label');
       assertTrue(!!textIndicator);
       assertTrue(isVisible(textIndicator));
     }

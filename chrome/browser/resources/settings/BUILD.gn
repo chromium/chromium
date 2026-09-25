@@ -572,6 +572,8 @@ build_webui("build") {
     "autofill_page/payments/credit_card_list_entry.css",
     "autofill_page/payments/iban_edit_dialog.css",
     "autofill_page/payments/iban_list_entry.css",
+    "autofill_page/payments/pay_over_time_issuer_list_entry.css",
+    "autofill_page/payments/payments_list.css",
     "autofill_page/payments/screen_reader_only.css",
     "autofill_page/payments/screen_reader_only_lit.css",
     "clear_browsing_data_dialog/clear_browsing_data_account_indicator.css",

@@ -6,7 +6,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsSimpleConfirmationDialogElement, CrInputElement, SettingsIbanEditDialogElement, SettingsIbanListEntryElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsSimpleConfirmationDialogElement, CrInputElement, SettingsIbanEditDialogElement, SettingsIbanListEntryElement, SettingsPaymentsListElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement} from 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
@@ -69,17 +69,17 @@ suite('PaymentsPageIban', function() {
    */
   function getIbanListItems() {
     return document.body.querySelector('settings-payments-page')!.shadowRoot!
-        .querySelector('#paymentsList')!.shadowRoot!.querySelectorAll(
+        .querySelector('settings-payments-list')!.shadowRoot.querySelectorAll(
             'settings-iban-list-entry');
   }
 
   /**
    * Returns the first IBAN row from the specified list of payment methods.
    */
-  function getFirstIbanEntry(paymentsList: HTMLElement):
+  function getFirstIbanEntry(paymentsList: SettingsPaymentsListElement):
       SettingsIbanListEntryElement {
     const row =
-        paymentsList.shadowRoot!.querySelector('settings-iban-list-entry');
+        paymentsList.shadowRoot.querySelector('settings-iban-list-entry');
     assertTrue(!!row);
     return row;
   }

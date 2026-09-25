@@ -7,86 +7,70 @@
  * cards etc.) to be shown in the settings page.
  */
 
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../../settings_shared.css.js';
 import './credit_card_list_entry.js';
 import './iban_list_entry.js';
 import './pay_over_time_issuer_list_entry.js';
-import '../autofill_shared.css.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
 import type {SettingsCreditCardListEntryElement} from './credit_card_list_entry.js';
 import type {SettingsIbanListEntryElement} from './iban_list_entry.js';
-import {getTemplate} from './payments_list.html.js';
+import {getCss} from './payments_list.css.js';
+import {getHtml} from './payments_list.html.js';
 
-export class SettingsPaymentsListElement extends PolymerElement {
+export class SettingsPaymentsListElement extends CrLitElement {
   static get is() {
     return 'settings-payments-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * An array of all saved credit cards.
        */
-      creditCards: Array,
+      creditCards: {type: Array},
 
       /**
        * An array of all saved IBANs.
        */
-      ibans: Array,
+      ibans: {type: Array},
 
       /**
        * An array of all saved Pay Over Time issuers.
        */
-      payOverTimeIssuers: Array,
+      payOverTimeIssuers: {type: Array},
 
       /**
        * True if displaying IBANs in settings is enabled.
        */
-      enableIbans_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showIbansSettings');
-        },
-      },
+      enableIbans_: {type: Boolean},
 
       /**
        * True if displaying Pay Over Time in settings is enabled.
        */
-      enablePayOverTime_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
-        },
-      },
-
-      /**
-       * True iff any payment methods will be shown.
-       */
-      showAnyPaymentMethods_: {
-        type: Boolean,
-        value: false,
-        computed: 'computeShowAnyPaymentMethods_(' +
-            'creditCards, ibans, enableIbans_, payOverTimeIssuers, enablePayOverTime_)',
-      },
+      enablePayOverTime_: {type: Boolean},
     };
   }
 
-  declare creditCards: chrome.autofillPrivate.CreditCardEntry[];
-  declare ibans: chrome.autofillPrivate.IbanEntry[];
-  declare payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
-  declare private enableIbans_: boolean;
-  declare private enablePayOverTime_: boolean;
-  declare private showAnyPaymentMethods_: boolean;
+  accessor creditCards: chrome.autofillPrivate.CreditCardEntry[] = [];
+  accessor ibans: chrome.autofillPrivate.IbanEntry[] = [];
+  accessor payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[] =
+      [];
+  private accessor enableIbans_: boolean =
+      loadTimeData.getBoolean('showIbansSettings');
+  private accessor enablePayOverTime_: boolean =
+      loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
 
   /**
    * Focuses the next most appropriate element after removing a specific
@@ -125,8 +109,8 @@ export class SettingsPaymentsListElement extends PolymerElement {
    */
   private updateFocusBeforeRemoval_(id: string): boolean {
     const paymentMethods =
-        this.shadowRoot!.querySelectorAll<SettingsCreditCardListEntryElement|
-                                          SettingsIbanListEntryElement>(
+        this.shadowRoot.querySelectorAll<SettingsCreditCardListEntryElement|
+                                         SettingsIbanListEntryElement>(
             '.payment-method');
 
     if (paymentMethods.length <= 1) {
@@ -145,50 +129,25 @@ export class SettingsPaymentsListElement extends PolymerElement {
     return false;
   }
 
-  private getCreditCardId_(index: number): string {
+  protected getCreditCardId_(index: number): string {
     return `card-${index}`;
   }
 
-  private getIbanId_(index: number): string {
+  protected getIbanId_(index: number): string {
     return `iban-${index}`;
-  }
-
-  /**
-   * @return Whether the list exists and has items.
-   */
-  private hasSome_(list: unknown[]): boolean {
-    return !!(list && list.length);
-  }
-
-  /**
-   * @return true iff there are credit cards to be shown.
-   */
-  private showCreditCards_(): boolean {
-    return this.hasSome_(this.creditCards);
-  }
-
-  /**
-   * @return true iff there are IBANs to be shown.
-   */
-  private showIbans_(): boolean {
-    return this.enableIbans_ && this.hasSome_(this.ibans);
-  }
-
-  /**
-   * @return true iff there are Pay Over Time issuers to be shown.
-   */
-  private showPayOverTimeIssuers_(): boolean {
-    return this.enablePayOverTime_ && this.hasSome_(this.payOverTimeIssuers);
   }
 
   /**
    * @return true iff any payment methods will be shown.
    */
-  private computeShowAnyPaymentMethods_(): boolean {
-    return this.showCreditCards_() || this.showIbans_() ||
-        this.showPayOverTimeIssuers_();
+  protected showAnyPaymentMethods_(): boolean {
+    return this.creditCards.length > 0 ||
+        (this.enableIbans_ && this.ibans.length > 0) ||
+        (this.enablePayOverTime_ && this.payOverTimeIssuers.length > 0);
   }
 }
+
+export type PaymentsListElement = SettingsPaymentsListElement;
 
 declare global {
   interface HTMLElementTagNameMap {
