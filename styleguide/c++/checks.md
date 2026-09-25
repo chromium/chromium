@@ -151,10 +151,11 @@ if (!bar) {
 ## More cautious CHECK() / NOTREACHED() rollouts and DCHECK() upgrades
 
 If you're not confident that an unexpected situation can't happen in practice,
-an additional `base::NotFatalUntil::M120` argument after the condition may be
-used to gather non-fatal diagnostics before turning fatal in a future milestone.
+an additional `base::NotFatalUntil::FatalMilestone`
+(e.g. `base::NotFatalUntil::M120`) argument after the condition may be used
+to gather non-fatal diagnostics before turning fatal in a future FatalMilestone.
 `CHECK()` and `NOTREACHED()` with a `base::NotFatalUntil` argument will provide
-non-fatal crash reports before the fatal milestone is hit. They preserve and
+non-fatal crash reports before the FatalMilestone is hit. They preserve and
 upload logged arguments which is useful for debugging failures during rollout as
 well.
 
