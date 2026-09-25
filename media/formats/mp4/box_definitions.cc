@@ -1790,6 +1790,7 @@ bool IamfSpecificBox::Parse(BoxReader* reader) {
     RCHECK(ReadOBU(&config_reader));
   }
 
+  RCHECK(profile != AudioCodecProfile::kUnknown);
   return true;
 }
 
@@ -1804,15 +1805,27 @@ bool IamfSpecificBox::ReadOBU(BufferReader* reader) {
     case kIamfConfigObuTypeAudioElement:
     case kIamfConfigObuTypeMixPresentation:
       break;
-    case kIamfConfigObuTypeSequenceHeader:
+    case kIamfConfigObuTypeSequenceHeader: {
       uint32_t ia_code;
       RCHECK(reader->Read4(&ia_code));
       RCHECK(ia_code == FOURCC_IAMF);
 
-      RCHECK(reader->Read1(&profile));
-      RCHECK(profile <= 1);
-
+      uint8_t primary_profile;
+      RCHECK(reader->Read1(&primary_profile));
+      switch (primary_profile) {
+        case 0:
+          profile = AudioCodecProfile::kIAMF_SIMPLE;
+          break;
+        case 1:
+          profile = AudioCodecProfile::kIAMF_BASE;
+          break;
+        default:
+          DVLOG(1) << "Unhandled IAMF primary_profile "
+                   << static_cast<int>(primary_profile);
+          return false;
+      }
       break;
+    }
     default:
       DVLOG(1) << "Unhandled IAMF OBU type " << static_cast<int>(obu_type);
       return false;

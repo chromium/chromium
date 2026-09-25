@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -488,7 +489,7 @@ struct MEDIA_EXPORT IamfSpecificBox : Box {
                      uint32_t* obu_size);
   bool ReadLeb128Value(BufferReader* reader, uint32_t* value) const;
 
-  uint8_t profile;
+  AudioCodecProfile profile = AudioCodecProfile::kUnknown;
   bool redundant_copy = false;
 
   std::vector<uint8_t> ia_descriptors;
