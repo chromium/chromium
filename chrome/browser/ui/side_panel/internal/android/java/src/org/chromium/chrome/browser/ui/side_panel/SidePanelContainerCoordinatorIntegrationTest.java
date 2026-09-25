@@ -639,6 +639,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE + ":scope/tab")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565523923
     public void closeTab_undo_restoresTabScopedSidePanel() {
         // Arrange: Open a second tab and show the side panel on it.
         var newTabPageStation = mResponsivePageStation.openNewTabFast();
