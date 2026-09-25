@@ -172,7 +172,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Duplicate) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/duplicate")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Size) {
+// TODO(crbug.com/565586485): Disabled on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Size DISABLED_Size
+#else
+#define MAYBE_Size Size
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_Size) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/tab_size")) << message_;
 }
 
