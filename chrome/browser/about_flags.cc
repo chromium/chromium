@@ -2788,6 +2788,16 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kOnDemandBackgroundTabContextCaptureOptimization_BackgroundTabDomContentLoaded
         [] = {{"background_tab_use_dom_content_loaded", "true"}};
+// Releasing a slot only matters when loads are limited, so turn the limit on.
+// Capture at DOMContentLoaded too, so the released tab's context is extracted
+// at the same point its slot is freed.
+const FeatureEntry::FeatureParam
+    kOnDemandBackgroundTabContextCaptureOptimization_ReleaseSlotOnDomContentLoaded
+        [] = {{"limit_concurrent_load_if_needed", "true"},
+              {"minimum_concurrent_load_if_needed", "1"},
+              {"maximum_concurrent_load_if_needed", "4"},
+              {"background_tab_use_dom_content_loaded", "true"},
+              {"release_slot_on_dom_content_loaded", "true"}};
 // Turns on every optimization param at once, for manual end-to-end testing.
 const FeatureEntry::FeatureParam
     kOnDemandBackgroundTabContextCaptureOptimization_All[] = {
@@ -2799,7 +2809,8 @@ const FeatureEntry::FeatureParam
         {"cancel_load_on_deselection", "true"},
         {"skip_delay_for_active_tab", "true"},
         {"active_tab_flush_timeout_seconds", "1"},
-        {"background_tab_use_dom_content_loaded", "true"}};
+        {"background_tab_use_dom_content_loaded", "true"},
+        {"release_slot_on_dom_content_loaded", "true"}};
 
 const FeatureEntry::FeatureVariation
     kOnDemandBackgroundTabContextCaptureOptimizationVariations[] = {
@@ -2820,6 +2831,9 @@ const FeatureEntry::FeatureVariation
          nullptr},
         {"BackgroundTabDomContentLoaded",
          kOnDemandBackgroundTabContextCaptureOptimization_BackgroundTabDomContentLoaded,
+         nullptr},
+        {"ReleaseSlotOnDomContentLoaded",
+         kOnDemandBackgroundTabContextCaptureOptimization_ReleaseSlotOnDomContentLoaded,
          nullptr}};
 
 #endif  // BUILDFLAG(IS_ANDROID)

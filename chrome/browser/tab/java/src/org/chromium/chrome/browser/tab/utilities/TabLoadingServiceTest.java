@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -48,6 +49,7 @@ public class TabLoadingServiceTest {
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
+    @Mock private Tab mTab4;
     @Mock private WebContents mWebContents;
     @Mock private NavigationController mNavigationController;
     @Mock private LoadIfNeededCallback mCallback;
@@ -59,11 +61,14 @@ public class TabLoadingServiceTest {
     private static final int TAB_ID = 123;
     private static final int TAB_ID_2 = 124;
     private static final int TAB_ID_3 = 125;
+    private static final int TAB_ID_4 = 126;
 
     // The optimization params all default to false, so each test opts into the one it exercises.
     private static final String OPTIMIZATION_LIMIT_LOADS =
             ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
                     + ":limit_concurrent_load_if_needed/true";
+    private static final String OPTIMIZATION_RELEASE_SLOT =
+            OPTIMIZATION_LIMIT_LOADS + "/release_slot_on_dom_content_loaded/true";
     private static final String OPTIMIZATION_FIRST_PAINT =
             ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE_OPTIMIZATION
                     + ":enable_first_paint/true";
@@ -617,6 +622,152 @@ public class TabLoadingServiceTest {
         mService.cancelLoadIfNeeded(mTab3);
 
         watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_RELEASE_SLOT)
+    public void testReleaseSlotOnDcl_StartsNextPendingTab() {
+        TabObserver observer = queueFourTabsAndGetFirstObserver();
+
+        observer.onDocumentLoadedInPrimaryMainFrame(mTab);
+
+        verify(mTab3).loadIfNeeded(true);
+        verify(mTab4, never()).loadIfNeeded(true);
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_RELEASE_SLOT)
+    public void testReleaseSlotOnDcl_RepeatedSignalReleasesOnce() {
+        TabObserver observer = queueFourTabsAndGetFirstObserver();
+
+        observer.onDocumentLoadedInPrimaryMainFrame(mTab);
+        observer.onDocumentLoadedInPrimaryMainFrame(mTab);
+
+        verify(mTab4, never()).loadIfNeeded(true);
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
+    public void testReleaseSlotOnDcl_ParamDisabledKeepsSlot() {
+        TabObserver observer = queueFourTabsAndGetFirstObserver();
+
+        observer.onDocumentLoadedInPrimaryMainFrame(mTab);
+
+        verify(mTab3, never()).loadIfNeeded(true);
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_RELEASE_SLOT)
+    public void testReleaseSlotOnDcl_DoesNotNotifyCallbacks() {
+        TabObserver observer = queueFourTabsAndGetFirstObserver();
+        mService.addLoadIfNeededCallback(mTab, mCallback);
+
+        observer.onDocumentLoadedInPrimaryMainFrame(mTab);
+
+        verify(mCallback, never()).onLoadFinished(any(), anyInt());
+        assertTrue(mService.isTabQueuedForLoad(TAB_ID));
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_RELEASE_SLOT)
+    public void testReleaseSlotOnDcl_PageLoadFinishedStillNotifiesCallbacks() {
+        TabObserver observer = queueFourTabsAndGetFirstObserver();
+        mService.addLoadIfNeededCallback(mTab, mCallback);
+        observer.onDocumentLoadedInPrimaryMainFrame(mTab);
+
+        observer.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
+
+        verify(mCallback).onLoadFinished(mTab, LoadResult.SUCCESS);
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_RELEASE_SLOT)
+    public void testCancelLoadIfNeeded_SlotReleasedTabStopsLoading() {
+        TabObserver observer = queueFourTabsAndGetFirstObserver();
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+        observer.onDocumentLoadedInPrimaryMainFrame(mTab);
+
+        assertTrue(mService.cancelLoadIfNeeded(mTab));
+
+        verify(mTab).stopLoading();
+        verify(mNavigationController).setNeedsReload();
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_RELEASE_SLOT)
+    public void testCancelLoadIfNeeded_SlotReleasedTabRemovesObserver() {
+        TabObserver observer = queueFourTabsAndGetFirstObserver();
+        observer.onDocumentLoadedInPrimaryMainFrame(mTab);
+
+        mService.cancelLoadIfNeeded(mTab);
+
+        verify(mTab).removeObserver(observer);
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_RELEASE_SLOT)
+    public void testCancelLoadIfNeeded_SlotReleasedTabDoesNotFreeSecondSlot() {
+        TabObserver observer = queueFourTabsAndGetFirstObserver();
+        observer.onDocumentLoadedInPrimaryMainFrame(mTab);
+
+        mService.cancelLoadIfNeeded(mTab);
+
+        verify(mTab4, never()).loadIfNeeded(true);
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_RELEASE_SLOT)
+    public void testReleaseSlotOnDcl_RespectsInFlightCeiling() {
+        queueFourTabsOnSingleSlotService();
+
+        releaseSlot(mTab);
+        releaseSlot(mTab2);
+
+        // One slot allows two tabs in flight, and both are still loading after their release.
+        verify(mTab3, never()).loadIfNeeded(true);
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_RELEASE_SLOT)
+    public void testCancelLoadIfNeeded_SlotReleasedTabStartsNextPendingTab() {
+        queueFourTabsOnSingleSlotService();
+        releaseSlot(mTab);
+        releaseSlot(mTab2);
+
+        mService.cancelLoadIfNeeded(mTab);
+
+        verify(mTab3).loadIfNeeded(true);
+    }
+
+    /** Fills both slots of a 2-slot service with two more tabs pending behind them. */
+    private TabObserver queueFourTabsAndGetFirstObserver() {
+        queueFourTabsWithMemoryGb(2);
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        return mTabObserverCaptor.getValue();
+    }
+
+    /** Fills the only slot of a 1-slot service with three more tabs pending behind it. */
+    private void queueFourTabsOnSingleSlotService() {
+        queueFourTabsWithMemoryGb(1);
+    }
+
+    private void queueFourTabsWithMemoryGb(int gb) {
+        configureConcurrentServiceWithMemoryGb(gb);
+        setupTabForLoad(mTab, TAB_ID);
+        setupTabForLoad(mTab2, TAB_ID_2);
+        setupTabForLoad(mTab3, TAB_ID_3);
+        setupTabForLoad(mTab4, TAB_ID_4);
+        mService.queueLoadIfNeeded(mTab);
+        mService.queueLoadIfNeeded(mTab2);
+        mService.queueLoadIfNeeded(mTab3);
+        mService.queueLoadIfNeeded(mTab4);
+    }
+
+    /** Signals DOMContentLoaded on a tab that has started loading. */
+    private void releaseSlot(Tab tab) {
+        verify(tab, atLeastOnce()).addObserver(mTabObserverCaptor.capture());
+        mTabObserverCaptor.getValue().onDocumentLoadedInPrimaryMainFrame(tab);
     }
 
     private void setupTabForLoad(Tab tab, int id) {

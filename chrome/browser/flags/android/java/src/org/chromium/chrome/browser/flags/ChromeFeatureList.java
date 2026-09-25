@@ -2506,6 +2506,10 @@ public abstract class ChromeFeatureList {
                     "enable_first_paint", false);
     public static final MutableIntParamWithSafeDefault sOnDemandBackgroundTabFirstPaintDelayMs =
             sOnDemandBackgroundTabContextCaptureOptimization.newIntParam("first_paint_delay_ms", 0);
+    public static final MutableBooleanParamWithSafeDefault
+            sOnDemandBackgroundTabReleaseSlotOnDomContentLoaded =
+                    sOnDemandBackgroundTabContextCaptureOptimization.newBooleanParam(
+                            "release_slot_on_dom_content_loaded", false);
     public static final MutableIntParamWithSafeDefault sSwipeToSwitchPaneMaxDurationMs =
             sEnableSwipeToSwitchPane.newIntParam("max_duration_ms", 250);
     public static final MutableBooleanParamWithSafeDefault

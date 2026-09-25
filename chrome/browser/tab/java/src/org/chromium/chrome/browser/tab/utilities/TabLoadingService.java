@@ -39,6 +39,12 @@ import java.util.List;
  */
 @NullMarked
 public class TabLoadingService {
+    /**
+     * Tabs that released their slot at DOMContentLoaded keep fetching subresources, so they still
+     * count toward a looser ceiling of this many times the concurrency limit. This keeps early
+     * release from growing concurrent loading work unboundedly on low-memory devices.
+     */
+    private static final int IN_FLIGHT_MULTIPLIER_AFTER_SLOT_RELEASE = 2;
 
     /**
      * Possible outcomes of a tab load request. Used to indicate the final state of the tab when
@@ -113,6 +119,22 @@ public class TabLoadingService {
                     }
                 }
 
+                /**
+                 * Releases the concurrency slot once the DOM is parsed.
+                 *
+                 * <p>This deliberately does not notify {@link LoadIfNeededCallback}s: the tab has
+                 * not finished loading, it has only reached the point where page context can be
+                 * extracted. Callbacks still hear about real completion via onPageLoadFinished.
+                 */
+                @Override
+                public void onDocumentLoadedInPrimaryMainFrame(Tab tab) {
+                    if (!OnDemandBackgroundTabCaptureConfig
+                            .isReleaseSlotOnDomContentLoadedEnabled()) {
+                        return;
+                    }
+                    getInstance().releaseSlotOnDomContentLoaded(tab);
+                }
+
                 @Override
                 public void onPageLoadFinished(Tab tab, GURL url) {
                     getInstance().onTabLoadFinished(tab, LoadResult.SUCCESS);
@@ -150,6 +172,13 @@ public class TabLoadingService {
      * opens up in {@link #mLoadingTabs}.
      */
     private final Deque<Tab> mPendingTabs = new ArrayDeque<>();
+
+    /**
+     * Tabs that gave up their concurrency slot at DOMContentLoaded but are still fetching
+     * subresources. They remain observed so the eventual terminal signal notifies callbacks, and so
+     * that cancellation can still stop them.
+     */
+    private final List<Tab> mSlotReleasedTabs = new ArrayList<>();
 
     /** Whether the concurrent load limit is enabled via feature flag. */
     private final boolean mLimitEnabled;
@@ -217,7 +246,7 @@ public class TabLoadingService {
         // already loading).
         mQueuedTabs.put(tab.getId(), new ObserverList<>());
 
-        if (mPendingTabs.isEmpty() && mLoadingTabs.size() < mLimit) {
+        if (mPendingTabs.isEmpty() && hasLoadCapacity()) {
             RecordHistogram.recordCount100Histogram(
                     "Android.TabLoadingService.PendingQueueDepth", 0);
             return startTabLoad(tab, /* notifyOnFailure= */ false);
@@ -300,16 +329,20 @@ public class TabLoadingService {
         mTabQueueStartTimes.delete(tab.getId());
         boolean wasQueued = mQueuedTabs.get(tab.getId()) != null;
         boolean wasLoading = mLoadingTabs.remove(tab);
+        // A tab that released its slot at DOMContentLoaded is still loading, so it is cancelled the
+        // same way as one that holds a slot. It just has no slot to give back.
+        boolean wasSlotReleased = mSlotReleasedTabs.remove(tab);
+        boolean wasInFlight = wasLoading || wasSlotReleased;
 
-        // The observer is attached to both actively loading and pending tabs, so it must be
-        // detached in either case to avoid observing tabs the service no longer tracks.
-        if (wasLoading || removedPending) {
+        // The observer is attached to both in-flight and pending tabs, so it must be detached in
+        // either case to avoid observing tabs the service no longer tracks.
+        if (wasInFlight || removedPending) {
             tab.removeObserver(sObserver);
         }
 
         // If the tab is currently activated (in foreground), do not stop its load or mark it for
         // reload as the user is actively viewing it.
-        if (wasLoading && !tab.isDestroyed() && !tab.isActivated()) {
+        if (wasInFlight && !tab.isDestroyed() && !tab.isActivated()) {
             tab.stopLoading();
             WebContents webContents = tab.getWebContents();
             if (webContents != null && !webContents.isDestroyed()) {
@@ -327,7 +360,8 @@ public class TabLoadingService {
         // service state is already consistent. This also clears the tab from mQueuedTabs.
         removeCallbacksAndNotify(tab, LoadResult.CANCELLED);
 
-        if (wasLoading) {
+        // A released tab holds no slot, but it may be what keeps the in-flight ceiling full.
+        if (wasInFlight) {
             maybeLoadQueuedTabs();
             return true;
         }
@@ -374,8 +408,34 @@ public class TabLoadingService {
         return activeGen != -1 && activeGen == generation;
     }
 
+    /**
+     * Frees the concurrency slot held by a tab that has parsed its DOM but is still fetching
+     * subresources, so the next pending tab can start loading.
+     *
+     * <p>No-op unless the tab currently holds a slot, which makes repeated DOMContentLoaded signals
+     * (e.g. from a reload) harmless.
+     */
+    private void releaseSlotOnDomContentLoaded(Tab tab) {
+        if (!mLimitEnabled || !mLoadingTabs.remove(tab)) {
+            return;
+        }
+        mSlotReleasedTabs.add(tab);
+        maybeLoadQueuedTabs();
+    }
+
+    /**
+     * Returns whether another tab may start loading: a concurrency slot must be free, and tabs
+     * still loading after releasing their slot must not have filled the in-flight ceiling.
+     */
+    private boolean hasLoadCapacity() {
+        int inFlightCount = mLoadingTabs.size() + mSlotReleasedTabs.size();
+        return mLoadingTabs.size() < mLimit
+                && inFlightCount < mLimit * IN_FLIGHT_MULTIPLIER_AFTER_SLOT_RELEASE;
+    }
+
     private void onTabLoadFinished(Tab tab, @LoadResult int result) {
         mLoadingTabs.remove(tab);
+        mSlotReleasedTabs.remove(tab);
         mPendingTabs.remove(tab);
         mTabLoadGenerations.delete(tab.getId());
         mTabQueueStartTimes.delete(tab.getId());
@@ -401,7 +461,7 @@ public class TabLoadingService {
             return;
         }
 
-        while (mLoadingTabs.size() < mLimit && !mPendingTabs.isEmpty()) {
+        while (hasLoadCapacity() && !mPendingTabs.isEmpty()) {
             Tab nextTab = mPendingTabs.removeFirst();
             long queueStartTime = mTabQueueStartTimes.get(nextTab.getId(), 0);
             if (queueStartTime > 0) {
@@ -421,6 +481,7 @@ public class TabLoadingService {
         mTabQueueStartTimes.clear();
         mNextGeneration = 0;
         mLoadingTabs.clear();
+        mSlotReleasedTabs.clear();
         mPendingTabs.clear();
     }
 
