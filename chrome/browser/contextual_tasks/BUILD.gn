@@ -885,9 +885,11 @@ source_set("interactive_ui_tests") {
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:test_support",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/contextual_search:test_support",
       "//components/lens:enterprise_policy",
+      "//components/strings:components_strings",
       "//third_party/lens_server_proto:lens_overlay_proto",
     ]
   }

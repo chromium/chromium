@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -54,6 +56,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/common/chrome_features.h"
@@ -77,6 +80,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -102,6 +106,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -882,6 +887,101 @@ class ContextualTasksInteractiveUiTest
 
   UserVariation GetUserVariation() const override { return GetParam(); }
 };
+
+class ContextualTasksPinnedToolbarInteractiveUiTest
+    : public ContextualTasksInteractiveUiTest {
+ public:
+  void SetUpFeatureList() override {
+    auto enabled = GetDefaultEnabledFeatures();
+    auto disabled = GetDefaultDisabledFeatures();
+    enabled.push_back({kEnableContextualTasksPinButtonInToolbar, {}});
+    enabled.push_back({kContextualTasksForceEntryPointEligibility, {}});
+    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
+};
+
+// This tests the following CUJ:
+//  (1) User opens Customize Chrome toolbar section to pin Contextual Tasks.
+//  (2) User toggles Contextual Tasks pinning via Customize Chrome WebUI.
+//  (3) Pinned Contextual Tasks toolbar button appears.
+//  (4) User clicks the pinned Contextual Tasks toolbar button.
+//  (5) Contextual Tasks side panel opens and WebUI app initializes.
+//  (6) Pinned toolbar button reflects the active toggle state.
+//  (7) User clicks the pinned toolbar button again to toggle the side panel
+//      closed.
+//  (8) Contextual Tasks side panel closes.
+IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
+                       PinnedToolbarButtonClick) {
+  SkipIfIncognito("Toolbar pinning is not supported in Incognito");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCustomizeChromeWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
+  const DeepQuery kContextualTasksToggle = {
+      "customize-chrome-app",
+      "#toolbarPage",
+      base::StrCat({"cr-toggle[aria-label=\"",
+                    l10n_util::GetStringUTF8(
+                        IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL),
+                    "\"]"}),
+  };
+
+  RunTestSequence(
+      // Step 1: Open Customize Chrome toolbar section to pin Contextual Tasks.
+      Do([this]() {
+        chrome::ExecuteCommand(browser(), IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR);
+      }),
+      WaitForShow(kCustomizeChromeSidePanelWebViewElementId),
+      InstrumentNonTabWebView(kCustomizeChromeWebContentsId,
+                              kCustomizeChromeSidePanelWebViewElementId),
+      // Step 2: Toggle pinning for Contextual Tasks via Customize Chrome WebUI.
+      WaitForElementVisible(kCustomizeChromeWebContentsId,
+                            kContextualTasksToggle),
+      ScrollIntoView(kCustomizeChromeWebContentsId, kContextualTasksToggle),
+      ClickElement(kCustomizeChromeWebContentsId, kContextualTasksToggle),
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+
+      // Step 3 & 4: Click the pinned button to open the side panel and verify
+      // WebUI loads.
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      CheckResult(
+          [this]() {
+            return SidePanelUI::From(browser())->IsSidePanelShowing();
+          },
+          true),
+
+      // Step 5: Verify the pinned toolbar button reflects the active toggle
+      // state.
+      CheckView(
+          kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+          [](PinnedActionToolbarButton* button) { return button->IsActive(); }),
+
+      // Step 6: Instrument WebUI app inside side panel to verify load.
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "SidePanelContentWebViewName"),
+      WaitForElementExists(kSidePanelWebContentsId, {"contextual-tasks-app"}),
+
+      // Step 7: Click the pinned button again to toggle the side panel closed.
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId),
+      CheckResult(
+          [this]() {
+            return SidePanelUI::From(browser())->IsSidePanelShowing();
+          },
+          false),
+
+      // Step 8: Verify the pinned toolbar button is no longer active.
+      CheckView(kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+                [](PinnedActionToolbarButton* button) {
+                  return !button->IsActive();
+                }));
+}
 
 // TODO(crbug.com/500717050): Parameterize this test suite on the feature flag.
 // TODO(crbug.com/524797987): Re-enable this test on ChromeOS and Linux.
@@ -3243,6 +3343,13 @@ INSTANTIATE_TEST_SUITE_P(
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ContextualTasksInteractiveUiTest,
+                         testing::Values(UserVariation::kSignedIn,
+                                         UserVariation::kSignedOut,
+                                         UserVariation::kIncognito),
+                         &UserVariationToString);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextualTasksPinnedToolbarInteractiveUiTest,
                          testing::Values(UserVariation::kSignedIn,
                                          UserVariation::kSignedOut,
                                          UserVariation::kIncognito),
