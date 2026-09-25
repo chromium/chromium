@@ -340,13 +340,18 @@ struct PLATFORM_EXPORT ShapeResultRun final
       return data_[index];
     }
     HarfBuzzRunGlyphData& MutableGlyphAt(unsigned index) {
+      Materialize();
       return data_[index];
     }
     const HeapVector<HarfBuzzRunGlyphData>& NonCompactGlyphs() const {
+      CHECK(!IsCompact());
       return data_;
     }
 
-    HeapVector<HarfBuzzRunGlyphData>& MutableGlyphs() { return data_; }
+    HeapVector<HarfBuzzRunGlyphData>& MutableGlyphs() {
+      Materialize();
+      return data_;
+    }
 
     bool HasNonZeroOffsets() const { return OffsetsVector(); }
     bool HasGraphemes() const { return Graphemes(); }
@@ -465,6 +470,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
         return;
       }
       DCHECK_LT(new_size, size());
+      // Materialize before mutating shared compact storage.
+      Materialize();
       data_.Shrink(new_size);
       if (HasNonZeroOffsets()) {
         OffsetsVector()->Shrink(new_size);
@@ -553,6 +560,12 @@ struct PLATFORM_EXPORT ShapeResultRun final
     FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                              CompactCopyMaterializesIndependently);
 
+    void Materialize() {
+      if (IsCompact()) [[unlikely]] {
+        MaterializeSlow();
+      }
+    }
+
     static constexpr unsigned kMinGlyphsToCompact = 8;
 
     void SetCompact(CompactGlyphData* compact) {
@@ -564,11 +577,43 @@ struct PLATFORM_EXPORT ShapeResultRun final
       ClearOffsets();
     }
 
+    // Avoid `resize()`'s geometric capacity growth for fixed-size runs.
+    void ResizeDataExactly(unsigned num_glyphs) {
+      data_.reserve(num_glyphs);
+      data_.resize(num_glyphs);
+    }
+
     NOINLINE HarfBuzzRunGlyphData GetCompact(unsigned index) const {
       CHECK(IsCompact());
       const CompactGlyphData& compact = *CompactData();
       return HarfBuzzRunGlyphData(compact.glyphs[index], index,
                                   SafeToBreak::kSafe, compact.advance);
+    }
+
+    NOINLINE void ExpandCompactInto(
+        unsigned start,
+        base::span<HarfBuzzRunGlyphData> dest) const {
+      CHECK(IsCompact());
+      const CompactGlyphData& compact = *CompactData();
+      CHECK_LE(start, compact.glyphs.size());
+      CHECK_LE(dest.size(), compact.glyphs.size() - start);
+      const TextRunLayoutUnit advance = compact.advance;
+      const base::span<const uint16_t> glyphs =
+          base::span<const uint16_t>(compact.glyphs)
+              .subspan(start, dest.size());
+      for (unsigned i = 0; i < glyphs.size(); ++i) {
+        dest[i] = HarfBuzzRunGlyphData(glyphs[i], start + i, SafeToBreak::kSafe,
+                                       advance);
+      }
+    }
+
+    NOINLINE void MaterializeSlow() {
+      CHECK(IsCompact());
+      const unsigned num_glyphs = CompactData()->glyphs.size();
+      CHECK(data_.empty());
+      ResizeDataExactly(num_glyphs);
+      ExpandCompactInto(0, base::span<HarfBuzzRunGlyphData>(data_));
+      ClearCompact();
     }
 
     void AllocateOffsets() {

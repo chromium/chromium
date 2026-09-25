@@ -49,7 +49,6 @@ class ShapeResultRunTest : public testing::Test {
     return run;
   }
 };
-
 TEST_F(ShapeResultRunTest, GlyphDataCopyConstructor) {
   ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
   auto* graphemes = MakeGarbageCollected<GCedHeapVector<unsigned>>(2);
@@ -216,6 +215,53 @@ TEST_F(ShapeResultRunTest, CompactRejectsOversizedInputBeforeReading) {
       }));
   EXPECT_FALSE(read_glyph);
   EXPECT_FALSE(run->glyph_data_.IsCompact());
+}
+
+TEST_F(ShapeResultRunTest, CompactCopyMaterializesIndependently) {
+  ShapeResultRun* run = CreateCompactRun(8, 8);
+  run->glyph_data_.SetOffsetAt(3, GlyphOffset(1, 2));
+  auto* graphemes = MakeGarbageCollected<GCedHeapVector<unsigned>>(8);
+  run->glyph_data_.SetGraphemes(graphemes);
+  ASSERT_TRUE(run->glyph_data_.IsCompact());
+
+  ShapeResultRun* copy = MakeGarbageCollected<ShapeResultRun>(*run);
+  ASSERT_TRUE(copy->glyph_data_.IsCompact());
+  EXPECT_EQ(run->glyph_data_.CompactData(), copy->glyph_data_.CompactData());
+  EXPECT_EQ(graphemes, copy->glyph_data_.Graphemes());
+  ASSERT_TRUE(copy->glyph_data_.HasNonZeroOffsets());
+  EXPECT_NE(run->glyph_data_.Offsets().data(),
+            copy->glyph_data_.Offsets().data());
+  EXPECT_EQ(GlyphOffset(1, 2), copy->glyph_data_.Offsets()[3]);
+
+  HarfBuzzRunGlyphData& copied_glyph = copy->glyph_data_.MutableGlyphAt(3);
+  EXPECT_EQ(copied_glyph.glyph, 45u);
+  EXPECT_EQ(copied_glyph.character_index, 3u);
+  EXPECT_EQ(copied_glyph.advance, TextRunLayoutUnit::FromFloatRound(10.0f));
+  EXPECT_FALSE(copy->glyph_data_.IsCompact());
+  EXPECT_TRUE(run->glyph_data_.IsCompact());
+
+  copied_glyph.glyph = 99;
+  copied_glyph.SetAdvance(12.0f);
+  copy->glyph_data_.SetOffsetAt(3, GlyphOffset(3, 4));
+  EXPECT_EQ(99u, copy->glyph_data_.GlyphAt(3).glyph);
+  EXPECT_EQ(TextRunLayoutUnit::FromFloatRound(12.0f),
+            copy->glyph_data_.GlyphAt(3).advance);
+  EXPECT_EQ(GlyphOffset(3, 4), copy->glyph_data_.Offsets()[3]);
+  EXPECT_EQ(45u, run->glyph_data_.GlyphAt(3).glyph);
+  EXPECT_EQ(TextRunLayoutUnit::FromFloatRound(10.0f),
+            run->glyph_data_.GlyphAt(3).advance);
+  EXPECT_EQ(GlyphOffset(1, 2), run->glyph_data_.Offsets()[3]);
+  EXPECT_EQ(graphemes, run->glyph_data_.Graphemes());
+  EXPECT_TRUE(run->glyph_data_.IsCompact());
+}
+
+TEST_F(ShapeResultRunTest, CompactZeroOffsetDoesNotMaterialize) {
+  ShapeResultRun* run = CreateCompactRun(8, 8);
+
+  run->glyph_data_.SetOffsetAt(3, GlyphOffset());
+
+  EXPECT_TRUE(run->glyph_data_.IsCompact());
+  EXPECT_FALSE(run->glyph_data_.HasNonZeroOffsets());
 }
 
 }  // namespace blink
