@@ -149,6 +149,45 @@ TEST_F(ComputedStyleTest, ClipPathEqual) {
   EXPECT_EQ(*builder1.TakeStyle(), *builder2.TakeStyle());
 }
 
+TEST_F(ComputedStyleTest, ScrollMarkerGroupDifference) {
+  auto create_style = [this](ScrollMarkerGroup::ScrollMarkerPosition position,
+                             ScrollMarkerGroup::ScrollMarkerMode mode) {
+    ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+    builder.SetScrollMarkerGroup(
+        MakeGarbageCollected<ScrollMarkerGroup>(position, mode));
+    return builder.TakeStyle();
+  };
+
+  const ComputedStyle* initial = InitialComputedStyle();
+  const ComputedStyle* before_links =
+      create_style(ScrollMarkerGroup::ScrollMarkerPosition::kBefore,
+                   ScrollMarkerGroup::ScrollMarkerMode::kLinks);
+  const ComputedStyle* after_links =
+      create_style(ScrollMarkerGroup::ScrollMarkerPosition::kAfter,
+                   ScrollMarkerGroup::ScrollMarkerMode::kLinks);
+  const ComputedStyle* before_tabs =
+      create_style(ScrollMarkerGroup::ScrollMarkerPosition::kBefore,
+                   ScrollMarkerGroup::ScrollMarkerMode::kTabs);
+
+  // Adding or removing scroll-marker-group affects descendant ::scroll-markers.
+  EXPECT_EQ(ComputedStyle::Difference::kDescendantAffecting,
+            ComputedStyle::ComputeDifference(initial, before_links));
+  EXPECT_EQ(ComputedStyle::Difference::kDescendantAffecting,
+            ComputedStyle::ComputeDifference(before_links, initial));
+
+  // Switching between 'before' and 'after' changes which ::scroll-marker-group
+  // pseudo-element is generated.
+  EXPECT_EQ(ComputedStyle::Difference::kPseudoElementStyle,
+            ComputedStyle::ComputeDifference(before_links, after_links));
+  EXPECT_EQ(ComputedStyle::Difference::kPseudoElementStyle,
+            ComputedStyle::ComputeDifference(after_links, before_links));
+
+  // Changing only the mode keeps the same pseudo-element node, but still
+  // reattaches its layout tree.
+  EXPECT_EQ(ComputedStyle::Difference::kNonInherited,
+            ComputedStyle::ComputeDifference(before_links, before_tabs));
+}
+
 TEST_F(ComputedStyleTest, ForcesStackingContext) {
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
   builder.SetForcesStackingContext(true);

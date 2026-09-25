@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -1596,6 +1597,111 @@ TEST_F(ElementTest, GenerateScrollMarkerGroup) {
   EXPECT_TRUE(scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
   EXPECT_FALSE(
       non_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+}
+
+TEST_F(ElementTest, ChangeScrollMarkerGroupPosition) {
+  SetBodyContent(R"HTML(
+    <style>
+      #scroller {
+        scroll-marker-group: before;
+        overflow: auto;
+      }
+      #item::scroll-marker {
+        content: 'a';
+      }
+    </style>
+    <div id="scroller"><div id="item"></div></div>
+  )HTML");
+
+  Element* scroller = GetElementById("scroller");
+  Element* item = GetElementById("item");
+  UpdateAllLifecyclePhasesForTest();
+
+  PseudoElement* group_before =
+      scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore);
+  PseudoElement* marker = item->GetPseudoElement(kPseudoIdScrollMarker);
+  ASSERT_TRUE(group_before);
+  ASSERT_TRUE(marker);
+  ASSERT_TRUE(group_before->GetLayoutObject());
+  ASSERT_TRUE(marker->GetLayoutObject());
+  EXPECT_TRUE(marker->GetLayoutObject()->IsDescendantOf(
+      group_before->GetLayoutObject()));
+
+  // Switch to 'after'.
+  scroller->SetInlineStyleProperty(CSSPropertyID::kScrollMarkerGroup,
+                                   CSSValueID::kAfter);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  PseudoElement* group_after =
+      scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter);
+  ASSERT_TRUE(group_after);
+  ASSERT_TRUE(group_after->GetLayoutObject());
+  ASSERT_TRUE(marker->GetLayoutObject());
+  EXPECT_TRUE(marker->GetLayoutObject()->IsDescendantOf(
+      group_after->GetLayoutObject()));
+
+  // Switch back to 'before'.
+  scroller->SetInlineStyleProperty(CSSPropertyID::kScrollMarkerGroup,
+                                   CSSValueID::kBefore);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
+  group_before = scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore);
+  ASSERT_TRUE(group_before);
+  ASSERT_TRUE(group_before->GetLayoutObject());
+  ASSERT_TRUE(marker->GetLayoutObject());
+  EXPECT_TRUE(marker->GetLayoutObject()->IsDescendantOf(
+      group_before->GetLayoutObject()));
+
+  // Switch to 'none'.
+  scroller->SetInlineStyleProperty(CSSPropertyID::kScrollMarkerGroup,
+                                   CSSValueID::kNone);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  EXPECT_FALSE(scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter));
+  EXPECT_FALSE(item->GetPseudoElement(kPseudoIdScrollMarker));
+}
+
+TEST_F(ElementTest, ChangeScrollMarkerGroupMode) {
+  SetBodyContent(R"HTML(
+    <style>
+      #scroller {
+        scroll-marker-group: before tabs;
+        overflow: auto;
+      }
+      #item::scroll-marker {
+        content: 'a';
+      }
+    </style>
+    <div id="scroller"><div id="item"></div></div>
+  )HTML");
+
+  Element* scroller = GetElementById("scroller");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* group = DynamicTo<ScrollMarkerGroupPseudoElement>(
+      scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  ASSERT_TRUE(group);
+  EXPECT_EQ(ScrollMarkerGroup::ScrollMarkerMode::kTabs,
+            group->ScrollMarkerGroupMode());
+  LayoutObject* old_layout_object = group->GetLayoutObject();
+  ASSERT_TRUE(old_layout_object);
+
+  scroller->SetInlineStyleProperty(CSSPropertyID::kScrollMarkerGroup,
+                                   "before links");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Ensure a mode change keeps the same pseudo-element.
+  ASSERT_EQ(group,
+            scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  EXPECT_EQ(ScrollMarkerGroup::ScrollMarkerMode::kLinks,
+            group->ScrollMarkerGroupMode());
+
+  // The layout tree is reattached, so the group gets a new layout object.
+  EXPECT_TRUE(group->GetLayoutObject());
+  EXPECT_NE(old_layout_object, group->GetLayoutObject());
 }
 
 TEST_F(ElementTest, NestedMarkerInheritsFromPseudoParent) {

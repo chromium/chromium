@@ -695,6 +695,51 @@ TEST_F(AccessibilityTest, ScrollButtonAndMarkerGroupParent) {
   EXPECT_EQ(marker_group_parent, wrapper->GetNode());
 }
 
+TEST_F(AccessibilityTest, ScrollMarkerGroupModeChangeUpdatesRoles) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #carousel {
+      scroll-marker-group: before tabs;
+      overflow: scroll;
+    }
+    #item::scroll-marker {
+      content: '';
+    }
+    </style>
+    <div id=carousel><div id=item>One</div></div>)HTML");
+
+  auto expect_roles = [&](ax::mojom::Role group_role,
+                          ax::mojom::Role marker_role,
+                          ax::mojom::Role item_role) {
+    UpdateAllLifecyclePhasesForTest();
+    const AXObject* group =
+        GetAXObjectByElementId("carousel", kPseudoIdScrollMarkerGroupBefore);
+    const AXObject* marker =
+        GetAXObjectByElementId("item", kPseudoIdScrollMarker);
+    const AXObject* item = GetAXObjectByElementId("item");
+    ASSERT_NE(nullptr, group);
+    ASSERT_NE(nullptr, marker);
+    ASSERT_NE(nullptr, item);
+    EXPECT_EQ(group_role, group->RoleValue());
+    EXPECT_EQ(marker_role, marker->RoleValue());
+    EXPECT_EQ(item_role, item->RoleValue());
+  };
+
+  Element* carousel = GetElementById("carousel");
+  expect_roles(ax::mojom::Role::kTabList, ax::mojom::Role::kTab,
+               ax::mojom::Role::kTabPanel);
+
+  carousel->SetInlineStyleProperty(CSSPropertyID::kScrollMarkerGroup,
+                                   "before links");
+  expect_roles(ax::mojom::Role::kNavigation, ax::mojom::Role::kLink,
+               ax::mojom::Role::kGenericContainer);
+
+  carousel->SetInlineStyleProperty(CSSPropertyID::kScrollMarkerGroup,
+                                   "before tabs");
+  expect_roles(ax::mojom::Role::kTabList, ax::mojom::Role::kTab,
+               ax::mojom::Role::kTabPanel);
+}
+
 TEST_F(AccessibilityTest,
        TreeItemWithAriaCheckedShouldNotHaveImplicitAriaSelected) {
   SetBodyInnerHTML(R"HTML(

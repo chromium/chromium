@@ -493,6 +493,10 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
       old_style.HasAnyPseudoElementStyles()) {
     return Difference::kPseudoElementStyle;
   }
+  if (old_style.ScrollMarkerGroupPosition() !=
+      new_style.ScrollMarkerGroupPosition()) {
+    return Difference::kPseudoElementStyle;
+  }
   if (old_style.Display() != new_style.Display() &&
       (new_style.IsDisplayListItem() || old_style.IsDisplayListItem())) {
     return Difference::kPseudoElementStyle;

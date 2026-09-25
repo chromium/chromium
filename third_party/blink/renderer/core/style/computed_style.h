@@ -2573,6 +2573,15 @@ class ComputedStyle final : public ComputedStyleBase {
     return GetScrollMarkerGroup()->Mode();
   }
 
+  // Empty value means scroll-marker-group: none.
+  std::optional<ScrollMarkerGroup::ScrollMarkerPosition>
+  ScrollMarkerGroupPosition() const {
+    if (!GetScrollMarkerGroup()) {
+      return std::nullopt;
+    }
+    return GetScrollMarkerGroup()->Position();
+  }
+
   bool ScrollMarkerGroupNone() const { return !GetScrollMarkerGroup(); }
 
   bool ScrollMarkerGroupEqual(const ComputedStyle& other) const {
