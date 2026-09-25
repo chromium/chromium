@@ -39,6 +39,7 @@ type CountryEntry = chrome.autofillPrivate.CountryEntry;
 type DateValue = chrome.autofillPrivate.DateValue;
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
 type EntityType = chrome.autofillPrivate.EntityType;
+type UpsertPassDetails = chrome.autofillPrivate.UpsertPassDetails;
 
 export interface SettingsAutofillAiAddOrEditDialogElement {
   $: {
@@ -123,7 +124,17 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
        */
       footerText_: {
         type: Object,
-        computed: 'computeFooterText_(entityInstance.*, userEmail_)',
+        computed: 'computeFooterText_(entityInstance, userEmail_, ' +
+            'upsertPassDetails)',
+      },
+
+      /**
+       * Details for upserting a public pass, including legal message lines and
+       * context token.
+       */
+      upsertPassDetails: {
+        type: Object,
+        value: null,
       },
 
       /**
@@ -199,8 +210,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
       isWalletPassBranding2026Enabled_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isAutofillAiWalletPassBranding2026Enabled'),
+        value: () => loadTimeData.getBoolean(
+            'isAutofillAiWalletPassBranding2026Enabled'),
       },
 
       /**
@@ -215,6 +226,7 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
   declare entityInstance: EntityInstance|null;
   declare dialogTitle: string;
+  declare upsertPassDetails: UpsertPassDetails|null;
   declare private completeAttributeInstanceList_: AttributeInstance[];
   declare private countryList_: CountryEntry[];
   declare private completeAttributeTypesList_: AttributeType[];
@@ -257,6 +269,14 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     const accountInfo = await chrome.autofillPrivate.getAccountInfo();
     if (accountInfo && accountInfo.email) {
       this.userEmail_ = accountInfo.email;
+    }
+
+    if (loadTimeData.getBoolean('enableWalletDisclosureNoticePublicPass') &&
+        !this.entityInstance.guid &&
+        this.isPublicPass_(this.entityInstance.type) &&
+        !this.upsertPassDetails) {
+      this.upsertPassDetails =
+          await this.entityDataManager_.getDetailsForUpsertPass();
     }
 
     // TODO(crbug.com/407794687): Decide whether the code should show a spinner
@@ -461,17 +481,35 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     return footer.toString() === '';
   }
 
+  private isPublicPass_(entityType: EntityType): boolean {
+    return entityType.supportsWalletStorage &&
+        entityType.passType ===
+        chrome.autofillPrivate.EntityPassType.PUBLIC_PASS;
+  }
+
   // When saving a Wallet private pass a consent is recorded that includes the
   // notice string. Ensure that the correct string ID is referenced in the
   // backend code.
   // LINT.IfChange
-  private computeFooterText_(): TrustedHTML {
-    if (!this.entityInstance || !this.userEmail_) {
+  private computeFooterText_(
+      entityInstance: EntityInstance|null, userEmail: string,
+      upsertPassDetails: UpsertPassDetails|null): TrustedHTML {
+    if (!entityInstance || !userEmail) {
       return sanitizeInnerHtml('');
     }
 
-    if (!this.entityInstance.type.supportsWalletStorage ||
-        this.entityInstance.guid) {
+    // Public Pass Handling:
+    if (loadTimeData.getBoolean('enableWalletDisclosureNoticePublicPass') &&
+        this.isPublicPass_(entityInstance.type)) {
+      if (!entityInstance.guid && upsertPassDetails) {
+        return this.formatLegalMessageLines_(
+            upsertPassDetails.legalMessageLines);
+      }
+      return sanitizeInnerHtml(
+          this.i18n('autofillAiSaveOrUpdateLocalEntitySourceNotice'));
+    }
+
+    if (!entityInstance.type.supportsWalletStorage || entityInstance.guid) {
       return sanitizeInnerHtml(
           this.i18n('autofillAiSaveOrUpdateLocalEntitySourceNotice'));
     }
@@ -482,11 +520,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
       // storage. This is sufficient because the entities stored in Wallet are
       // not editable from the settings.
       const manageYourInfoLink = `<a target=_blank href=${
-          this.walletManageYourInfoUrl_(this.entityInstance.type)}>${
+          this.walletManageYourInfoUrl_(entityInstance.type)}>${
           this.i18n('autofillAiManageYourInfo')}</a>`;
       return this.i18nAdvanced('saveInfoToWalletSettingsAccountNotice', {
         substitutions:
-            [walletTitle, manageYourInfoLink, walletTitle, this.userEmail_],
+            [walletTitle, manageYourInfoLink, walletTitle, userEmail],
         tags: ['a'],
         attrs: ['href', 'target'],
       });
@@ -495,10 +533,30 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     // Show footer only when it is a new entity and type supports Wallet
     // storage. This is sufficient because the entities stored in Wallet are not
     // editable from the settings.
-    return sanitizeInnerHtml(this.i18n(
-        'saveInfoToWalletAccountNotice', walletTitle, this.userEmail_));
+    return sanitizeInnerHtml(
+        this.i18n('saveInfoToWalletAccountNotice', walletTitle, userEmail));
   }
   // LINT.ThenChange(//chrome/browser/extensions/api/autofill_private/autofill_private_api.cc)
+
+  private formatLegalMessageLines_(
+      lines: chrome.autofillPrivate.LegalMessageLine[]): TrustedHTML {
+    let html = '';
+    for (let i = 0; i < lines.length; ++i) {
+      const line = lines[i];
+      let lineHtml = '';
+      let lastIndex = 0;
+      const sortedLinks = [...line.links].sort((a, b) => a.start - b.start);
+      for (const link of sortedLinks) {
+        lineHtml += line.text.substring(lastIndex, link.start);
+        const linkText = line.text.substring(link.start, link.end);
+        lineHtml += `<a target="_blank" href="${link.url}">${linkText}</a>`;
+        lastIndex = link.end;
+      }
+      lineHtml += line.text.substring(lastIndex);
+      html += (i > 0 ? '<br>' : '') + lineHtml;
+    }
+    return sanitizeInnerHtml(html);
+  }
 
   private isExistingYearOutOfBounds_(
       attributeInstance: AttributeInstance, years: string[]): boolean {
@@ -588,14 +646,20 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         !this.isAttributeInstanceNotEmpty(attributeInstance);
   }
 
-  private shouldShowWalletBranding_(): boolean {
-    if (!this.entityInstance) {
+  private shouldShowWalletBranding_(
+      entityInstance: EntityInstance|null,
+      upsertPassDetails: UpsertPassDetails|null): boolean {
+    if (!entityInstance || entityInstance.guid) {
       return false;
     }
 
-    // Wallet entities are non-editable in settings.
-    return !this.entityInstance.guid &&
-        this.entityInstance.type.supportsWalletStorage;
+    if (this.isPublicPass_(entityInstance.type)) {
+      return loadTimeData.getBoolean('enableWalletDisclosureNoticePublicPass') ?
+          !!upsertPassDetails :
+          entityInstance.type.supportsWalletStorage;
+    }
+
+    return entityInstance.type.supportsWalletStorage;
   }
 
   /**
@@ -695,8 +759,14 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
     // If the type supports Wallet storage, we default to saving to Wallet but
     // only for new entities.
-    if (!entityToSave.guid && entityToSave.type.supportsWalletStorage) {
-      entityToSave.storedInWallet = true;
+    if (!entityToSave.guid) {
+      if (this.isPublicPass_(entityToSave.type) &&
+          loadTimeData.getBoolean('enableWalletDisclosureNoticePublicPass')) {
+        entityToSave.storedInWallet = !!this.upsertPassDetails;
+        entityToSave.contextToken = this.upsertPassDetails?.contextToken;
+      } else {
+        entityToSave.storedInWallet = entityToSave.type.supportsWalletStorage;
+      }
     }
 
     if (this.enableSavePrivatePassesToWallet_) {

@@ -101,7 +101,8 @@
   <div slot="title" class="title-container">
     <div class="title-text">[[dialogTitle]]</div>
 
-    <template is="dom-if" if="[[shouldShowWalletBranding_(entityInstance)]]">
+    <template is="dom-if"
+        if="[[shouldShowWalletBranding_(entityInstance, upsertPassDetails)]]">
       <if expr="_google_chrome">
         <template is="dom-if" if="[[isWalletPassBranding2026Enabled_]]">
           <div class="title-icon-container-standalone">

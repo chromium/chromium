@@ -373,9 +373,12 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     });
 
     try {
-      // Use the test entity which has supportsWalletStorage set to true.
+      // Use an eligible private pass entity to test the generic wallet notice.
       const newEntity = structuredClone(testEntityInstance);
       newEntity.guid = '';
+      newEntity.type.typeName = 0;
+      newEntity.type.passType =
+          chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
       dialog.entityInstance = newEntity;
       loadTimeData.overrideValues({
         saveInfoToWalletAccountNotice: 'Save to $1 using $2',
@@ -1091,4 +1094,310 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
               params.monthsAbbreviations[i]!));
         }
       }));
+});
+
+suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
+  let dialog: SettingsAutofillAiAddOrEditDialogElement;
+  let entityDataManager: TestEntityDataManagerProxy;
+  let vehicleEntity: chrome.autofillPrivate.EntityInstance;
+  const mockUpsertPassDetails: chrome.autofillPrivate.UpsertPassDetails = {
+    legalMessageLines: [
+      {
+        text: 'By saving this pass to Google Wallet, you agree to the Google ' +
+            'Privacy Policy and Google Wallet Settings.',
+        links: [
+          {
+            start: 55,
+            end: 76,
+            url: 'https://policies.google.com/privacy',
+          },
+          {
+            start: 81,
+            end: 103,
+            url: 'https://wallet.google.com/settings',
+          },
+        ],
+      },
+    ],
+    contextToken: 'signed-context-token-123',
+  };
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    entityDataManager = new TestEntityDataManagerProxy();
+    EntityDataManagerProxyImpl.setInstance(entityDataManager);
+
+    vehicleEntity = {
+      type: {
+        typeName: 2,
+        typeNameAsString: 'Vehicle',
+        addEntityTypeString: 'Add vehicle',
+        editEntityTypeString: 'Edit vehicle',
+        deleteEntityTypeString: 'Delete vehicle',
+        supportsWalletStorage: true,
+        passType: chrome.autofillPrivate.EntityPassType.PUBLIC_PASS,
+      },
+      attributeInstances: [
+        {
+          type: {
+            typeName: 10,
+            typeNameAsString: 'Make',
+            dataType: AttributeTypeDataType.STRING,
+          },
+          value: 'Toyota',
+        },
+      ],
+      guid: '',
+      nickname: 'My car',
+    };
+
+    entityDataManager.setGetAllAttributeTypesForEntityTypeNameResponse([
+      {
+        typeName: 10,
+        typeNameAsString: 'Make',
+        dataType: AttributeTypeDataType.STRING,
+      },
+    ]);
+
+    chrome.autofillPrivate.getAccountInfo = () => Promise.resolve({
+      email: 'test@example.com',
+      isSyncEnabledForAutofillProfiles: true,
+      isEligibleForAddressAccountStorage: true,
+      isAutofillSyncToggleEnabled: true,
+      isAutofillSyncToggleAvailable: true,
+    });
+
+    loadTimeData.overrideValues({
+      autofillAiSaveOrUpdateLocalEntitySourceNotice:
+          'Your info is saved to your device',
+      enableWalletDisclosureNoticePublicPass: true,
+    });
+
+    dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
+  });
+
+  test(
+      'Vehicle_WithUpsertPassDetails_ShowsLegalFooterWithLinks',
+      async function() {
+        dialog.entityInstance = structuredClone(vehicleEntity);
+        dialog.upsertPassDetails = mockUpsertPassDetails;
+        document.body.appendChild(dialog);
+        await entityDataManager.whenCalled(
+            'getAllAttributeTypesForEntityTypeName');
+        await flushTasks();
+
+        const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+        assertTrue(!!footer);
+        assertFalse(footer.hidden);
+
+        const links = footer.querySelectorAll<HTMLAnchorElement>('a');
+        assertEquals(2, links.length);
+        assertEquals('https://policies.google.com/privacy', links[0]!.href);
+        assertEquals('_blank', links[0]!.target);
+        assertEquals('Google Privacy Policy', links[0]!.textContent);
+        assertEquals('https://wallet.google.com/settings', links[1]!.href);
+        assertEquals('_blank', links[1]!.target);
+        assertEquals('Google Wallet Settings', links[1]!.textContent);
+      });
+
+  test(
+      'Vehicle_WithoutUpsertPassDetails_ShowsLocalSaveFooter',
+      async function() {
+        dialog.entityInstance = structuredClone(vehicleEntity);
+        dialog.upsertPassDetails = null;
+        document.body.appendChild(dialog);
+        await entityDataManager.whenCalled(
+            'getAllAttributeTypesForEntityTypeName');
+        await flushTasks();
+
+        const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+        assertTrue(!!footer);
+        assertFalse(footer.hidden);
+        assertTrue(
+            footer.innerText.includes('Your info is saved to your device'));
+        assertEquals(0, footer.querySelectorAll('a').length);
+      });
+
+  test('Vehicle_ExistingEntity_ShowsLocalSaveFooter', async function() {
+    const existingVehicle = structuredClone(vehicleEntity);
+    existingVehicle.guid = 'existing-guid-123';
+    dialog.entityInstance = existingVehicle;
+    dialog.upsertPassDetails = mockUpsertPassDetails;
+    document.body.appendChild(dialog);
+    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
+    await flushTasks();
+
+    const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+    assertTrue(!!footer);
+    assertFalse(footer.hidden);
+    assertTrue(footer.innerText.includes('Your info is saved to your device'));
+    assertEquals(0, footer.querySelectorAll('a').length);
+  });
+
+  test(
+      'Vehicle_SaveWithUpsertPassDetails_SavesToWalletAndPassesToken',
+      async function() {
+        dialog.entityInstance = structuredClone(vehicleEntity);
+        dialog.upsertPassDetails = mockUpsertPassDetails;
+        document.body.appendChild(dialog);
+        await entityDataManager.whenCalled(
+            'getAllAttributeTypesForEntityTypeName');
+        await flushTasks();
+
+        const saveButton =
+            dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+        assertTrue(!!saveButton);
+
+        const dialogConfirmedPromise =
+            eventToPromise<CustomEvent<chrome.autofillPrivate.EntityInstance>>(
+                'autofill-ai-add-or-edit-done', dialog);
+        saveButton.click();
+
+        const dialogConfirmedEvent = await dialogConfirmedPromise;
+        assertTrue(dialogConfirmedEvent.detail.storedInWallet!);
+        assertEquals(
+            'signed-context-token-123',
+            dialogConfirmedEvent.detail.contextToken);
+      });
+
+  test('Vehicle_SaveWithoutUpsertPassDetails_SavesLocally', async function() {
+    dialog.entityInstance = structuredClone(vehicleEntity);
+    dialog.upsertPassDetails = null;
+    document.body.appendChild(dialog);
+    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
+    await flushTasks();
+
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+    assertTrue(!!saveButton);
+
+    const dialogConfirmedPromise =
+        eventToPromise<CustomEvent<chrome.autofillPrivate.EntityInstance>>(
+            'autofill-ai-add-or-edit-done', dialog);
+    saveButton.click();
+
+    const dialogConfirmedEvent = await dialogConfirmedPromise;
+    assertFalse(dialogConfirmedEvent.detail.storedInWallet!);
+    assertEquals(undefined, dialogConfirmedEvent.detail.contextToken);
+  });
+
+  test(
+      'PublicPass_WithoutWalletStorageSupport_ShowsLocalSaveFooter',
+      async function() {
+        const localPublicPass = structuredClone(vehicleEntity);
+        localPublicPass.type.supportsWalletStorage = false;
+        dialog.entityInstance = localPublicPass;
+        dialog.upsertPassDetails = mockUpsertPassDetails;
+        document.body.appendChild(dialog);
+        await entityDataManager.whenCalled(
+            'getAllAttributeTypesForEntityTypeName');
+        await flushTasks();
+
+        const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+        assertTrue(!!footer);
+        assertFalse(footer.hidden);
+        assertTrue(
+            footer.innerText.includes('Your info is saved to your device'));
+        assertEquals(0, footer.querySelectorAll('a').length);
+
+        const saveButton =
+            dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+        assertTrue(!!saveButton);
+
+        const dialogConfirmedPromise =
+            eventToPromise<CustomEvent<chrome.autofillPrivate.EntityInstance>>(
+                'autofill-ai-add-or-edit-done', dialog);
+        saveButton.click();
+
+        const dialogConfirmedEvent = await dialogConfirmedPromise;
+        assertFalse(dialogConfirmedEvent.detail.storedInWallet!);
+        assertEquals(undefined, dialogConfirmedEvent.detail.contextToken);
+      });
+
+  test(
+      'Vehicle_FetchesUpsertPassDetailsOnConnectIfNotProvided',
+      async function() {
+        entityDataManager.setGetDetailsForUpsertPassResponse(
+            mockUpsertPassDetails);
+        dialog.entityInstance = structuredClone(vehicleEntity);
+        document.body.appendChild(dialog);
+        await entityDataManager.whenCalled('getDetailsForUpsertPass');
+        await flushTasks();
+
+        assertEquals(mockUpsertPassDetails, dialog.upsertPassDetails);
+        const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+        assertTrue(!!footer);
+        assertFalse(footer.hidden);
+        const links = footer.querySelectorAll<HTMLAnchorElement>('a');
+        assertEquals(2, links.length);
+      });
+
+  test('Vehicle_EndToEndFlow_FetchRenderAndSave', async function() {
+    entityDataManager.setGetDetailsForUpsertPassResponse(mockUpsertPassDetails);
+    dialog.entityInstance = structuredClone(vehicleEntity);
+    document.body.appendChild(dialog);
+    await entityDataManager.whenCalled('getDetailsForUpsertPass');
+    await flushTasks();
+
+    // 1. Details are fetched and assigned.
+    assertEquals(mockUpsertPassDetails, dialog.upsertPassDetails);
+
+    // 2. Legal message lines and links are rendered in the footer.
+    const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+    assertTrue(!!footer);
+    assertFalse(footer.hidden);
+    const links = footer.querySelectorAll<HTMLAnchorElement>('a');
+    assertEquals(2, links.length);
+    assertEquals('https://policies.google.com/privacy', links[0]!.href);
+    assertEquals('https://wallet.google.com/settings', links[1]!.href);
+
+    // 3. Save button is clicked and entity is saved to Wallet with token.
+    const saveButton =
+        dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+    assertTrue(!!saveButton);
+
+    const dialogConfirmedPromise =
+        eventToPromise<CustomEvent<chrome.autofillPrivate.EntityInstance>>(
+            'autofill-ai-add-or-edit-done', dialog);
+    saveButton.click();
+
+    const dialogConfirmedEvent = await dialogConfirmedPromise;
+    assertTrue(dialogConfirmedEvent.detail.storedInWallet!);
+    assertEquals(
+        'signed-context-token-123', dialogConfirmedEvent.detail.contextToken);
+  });
+
+  test(
+      'Vehicle_WhenFeatureDisabled_SavesToWalletWithoutLegalNotice',
+      async function() {
+        loadTimeData.overrideValues({
+          enableWalletDisclosureNoticePublicPass: false,
+        });
+        dialog =
+            document.createElement('settings-autofill-ai-add-or-edit-dialog');
+        dialog.entityInstance = structuredClone(vehicleEntity);
+        document.body.appendChild(dialog);
+        await entityDataManager.whenCalled(
+            'getAllAttributeTypesForEntityTypeName');
+        await flushTasks();
+
+        // getDetailsForUpsertPass should not be called when feature is
+        // disabled.
+        assertEquals(
+            0, entityDataManager.getCallCount('getDetailsForUpsertPass'));
+
+        // Save button is clicked and entity is saved to Wallet as before.
+        const saveButton =
+            dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+        assertTrue(!!saveButton);
+
+        const dialogConfirmedPromise =
+            eventToPromise<CustomEvent<chrome.autofillPrivate.EntityInstance>>(
+                'autofill-ai-add-or-edit-done', dialog);
+        saveButton.click();
+
+        const dialogConfirmedEvent = await dialogConfirmedPromise;
+        assertTrue(dialogConfirmedEvent.detail.storedInWallet!);
+        assertEquals(undefined, dialogConfirmedEvent.detail.contextToken);
+      });
 });

@@ -554,6 +554,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           autofill::features::kAutofillAiWalletPrivatePasses));
 
   html_source->AddBoolean(
+      "enableWalletDisclosureNoticePublicPass",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass));
+
+  html_source->AddBoolean(
       "enableInlineCueMenuContentSetting",
       base::FeatureList::IsEnabled(features::kGlicSelectionPrompt));
 
