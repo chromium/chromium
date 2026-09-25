@@ -200,6 +200,8 @@ class ServerPrintersFetcher::PrivateImplementation
 
     // Preparation of the IPP frame.
     ipp::Frame request(ipp::Operation::CUPS_Get_Printers);
+    // TODO(crbug.com/563075802): CHECK-exclusion: Remove side effect from the
+    // invariant condition expression.
     DCHECK_EQ(ipp::Code::kOK,
               request.Groups(ipp::GroupTag::operation_attributes)[0].AddAttr(
                   "requested-attributes", ipp::ValueTag::keyword,
