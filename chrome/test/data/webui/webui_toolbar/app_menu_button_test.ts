@@ -4,6 +4,7 @@
 
 import 'chrome://webui-toolbar.top-chrome/app.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -22,7 +23,7 @@ class MockBrowserProxy extends TestBrowserProxy {
     this.toolbarUIHandler = toolbarUiHandler;
   }
 
-  addFocusRequestListener(listener: FocusRequestListener) {
+  addFocusRequestListener(listener: FocusRequestListener): number {
     this.methodCalled('addFocusRequestListener', listener);
     this.focusRequestListener_ = listener;
     return 1;
@@ -50,6 +51,9 @@ suite('AppMenuButtonTest', function() {
     toolbarUiHandler = new TestToolbarUiHandler();
     browserProxy = new MockBrowserProxy(toolbarUiHandler);
     BrowserProxyImpl.setInstance(browserProxy as unknown as BrowserProxy);
+    loadTimeData.overrideValues({
+      enableGlowUp: false,
+    });
 
     document.documentElement.style.setProperty(
         '--toolbar-interior-margin-end', '6px');
@@ -379,5 +383,169 @@ suite('AppMenuButtonTest', function() {
     assertEquals(
         '7px',
         window.getComputedStyle(appMenuButton.$.button).paddingInlineEnd);
+  });
+
+  test('Glow Up Disabled by Default', async function() {
+    assertFalse(appMenuButton.glowUpEnabled);
+    assertFalse(appMenuButton.glowUpActive);
+    assertFalse(appMenuButton.hasAttribute('glow-up-active'));
+
+    const crIcon = appMenuButton.shadowRoot.querySelector('cr-icon')!;
+    assertTrue(!!crIcon);
+    assertEquals('webui-toolbar:more_vert', crIcon.getAttribute('icon'));
+
+    // Open context menu
+    appMenuButton.state = {
+      ...appMenuButton.state,
+      isContextMenuVisible: true,
+    };
+    await microtasksFinished();
+
+    assertFalse(appMenuButton.glowUpActive);
+    assertFalse(appMenuButton.hasAttribute('glow-up-active'));
+    assertFalse(appMenuButton.isAnimating);
+    assertEquals('webui-toolbar:more_vert', crIcon.getAttribute('icon'));
+
+    // Close context menu
+    appMenuButton.state = {
+      ...appMenuButton.state,
+      isContextMenuVisible: false,
+    };
+    await microtasksFinished();
+
+    assertFalse(appMenuButton.glowUpActive);
+    assertFalse(appMenuButton.hasAttribute('glow-up-active'));
+    assertFalse(appMenuButton.isAnimating);
+    assertEquals('webui-toolbar:more_vert', crIcon.getAttribute('icon'));
+  });
+
+  test('Glow Up Animation Lifecycle and Ripple Suppression', async function() {
+    // Intercept window.setTimeout to capture and manually trigger animation
+    // timer callbacks (matching the 250ms glow-up duration) without leaking
+    // test-only hooks into production code.
+    const originalSetTimeout = window.setTimeout;
+    let timeoutCallback: (() => void)|null = null;
+    let timeoutDelay = 0;
+    (window as any).setTimeout = (cb: any, ms: number) => {
+      if (ms === 250) {
+        timeoutCallback = cb;
+        timeoutDelay = ms;
+        return -1;
+      }
+      return originalSetTimeout(cb, ms);
+    };
+
+    try {
+      appMenuButton.glowUpEnabled = true;
+      assertFalse(appMenuButton.glowUpActive);
+
+      const crIcon = appMenuButton.shadowRoot.querySelector('cr-icon')!;
+      assertTrue(!!crIcon);
+      assertEquals('webui-toolbar:more_vert', crIcon.getAttribute('icon'));
+
+      // 1. Trigger menu open
+      appMenuButton.state = {
+        ...appMenuButton.state,
+        isContextMenuVisible: true,
+      };
+      await microtasksFinished();
+
+      // Glow Up should be active, animating, and forward animation icon set
+      assertTrue(appMenuButton.glowUpActive);
+      assertTrue(appMenuButton.hasAttribute('glow-up-active'));
+      assertTrue(appMenuButton.isAnimating);
+      assertEquals(
+          'webui-toolbar:app_menu_glow_up', crIcon.getAttribute('icon'));
+
+      // Ripple should be suppressed (transparent)
+      assertEquals(
+          'transparent',
+          getComputedStyle(appMenuButton.$.button)
+              .getPropertyValue('--toolbar-chip-ink-drop-ripple-color')
+              .trim());
+
+      // 2. Advance timer to complete opening animation
+      assertTrue(!!timeoutCallback);
+      assertEquals(250, timeoutDelay);
+      (timeoutCallback as any)();
+      timeoutCallback = null;
+      await microtasksFinished();
+
+      // Opening animation is complete, but menu is still open:
+      // glowUpActive remains true, isAnimating becomes false
+      assertFalse(appMenuButton.isAnimating);
+      assertTrue(appMenuButton.glowUpActive);
+      assertTrue(appMenuButton.hasAttribute('glow-up-active'));
+      assertEquals(
+          'webui-toolbar:app_menu_glow_up', crIcon.getAttribute('icon'));
+      assertEquals(
+          'transparent',
+          getComputedStyle(appMenuButton.$.button)
+              .getPropertyValue('--toolbar-chip-ink-drop-ripple-color')
+              .trim());
+
+      // 3. Trigger menu close
+      appMenuButton.state = {
+        ...appMenuButton.state,
+        isContextMenuVisible: false,
+      };
+      await microtasksFinished();
+
+      // During closing animation, end icon is shown, still active and
+      // animating
+      assertTrue(appMenuButton.glowUpActive);
+      assertTrue(appMenuButton.hasAttribute('glow-up-active'));
+      assertTrue(appMenuButton.isAnimating);
+      assertEquals(
+          'webui-toolbar:app_menu_glow_up_end', crIcon.getAttribute('icon'));
+
+      // 4. Advance timer to complete closing animation
+      assertTrue(!!timeoutCallback);
+      assertEquals(250, timeoutDelay);
+      (timeoutCallback as any)();
+      timeoutCallback = null;
+      await microtasksFinished();
+      await appMenuButton.updateComplete;
+
+      // Closing animation is complete:
+      // reverts to inactive, not animating, and static icon restored
+      assertFalse(appMenuButton.isAnimating);
+      assertFalse(appMenuButton.glowUpActive);
+      assertFalse(appMenuButton.hasAttribute('glow-up-active'));
+      assertEquals('webui-toolbar:more_vert', crIcon.getAttribute('icon'));
+    } finally {
+      (window as any).setTimeout = originalSetTimeout;
+    }
+  });
+
+  test('Glow Up Disconnect Cleans Up Timers and State', async function() {
+    // Intercept window.clearTimeout to verify that removing the element from
+    // the DOM properly cancels any pending animation timers.
+    const originalClearTimeout = window.clearTimeout;
+    let clearTimeoutCalled = false;
+    (window as any).clearTimeout = (id: any) => {
+      clearTimeoutCalled = true;
+      originalClearTimeout(id);
+    };
+
+    try {
+      appMenuButton.glowUpEnabled = true;
+
+      // Open menu to begin animation
+      appMenuButton.state = {
+        ...appMenuButton.state,
+        isContextMenuVisible: true,
+      };
+      await microtasksFinished();
+      assertTrue(appMenuButton.isAnimating);
+
+      // Remove from DOM
+      appMenuButton.remove();
+
+      assertFalse(appMenuButton.isAnimating);
+      assertTrue(clearTimeoutCalled);
+    } finally {
+      (window as any).clearTimeout = originalClearTimeout;
+    }
   });
 });

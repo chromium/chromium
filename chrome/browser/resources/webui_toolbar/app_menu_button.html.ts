@@ -20,7 +20,9 @@ export function getHtml(this: AppMenuButtonElement) {
     .ariaExpanded="${this.state.isContextMenuVisible ? 'true' : 'false'}"
     .tooltip="${this.getTooltip_()}">
   ${this.state.labelText ? html`<span>${this.state.labelText}</span>` : ''}
-  <cr-icon id="icon" icon="webui-toolbar:more_vert" slot="suffix-icon">
+  <cr-icon id="icon"
+      icon="${this.glowUpActive ? this.getAnimatedIcon_() : 'webui-toolbar:more_vert'}"
+      slot="suffix-icon">
   </cr-icon>
 </toolbar-chip-button>
 <!--_html_template_end_-->`;

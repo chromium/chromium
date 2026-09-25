@@ -70,3 +70,10 @@ toolbar-chip-button[has-label] {
   --toolbar-chip-ink-drop-hover-color: var(--color-app-menu-chip-ink-drop-hover);
   --toolbar-chip-ink-drop-ripple-color: var(--color-app-menu-chip-ink-drop-ripple);
 }
+
+/* Suppress the pressed ripple during Glow Up to avoid visual conflict with
+ * the animated icon. */
+:host([glow-up-active]) toolbar-chip-button {
+  --toolbar-chip-ink-drop-ripple-color: transparent;
+}
+
