@@ -99,6 +99,28 @@ interface FrameSinkManager {
   // message pipe to the client will be closed.
   InvalidateFrameSinkId(FrameSinkId frame_sink_id) => ();
 
+  // Requests a one-shot FrameSinkManagerClient::OnFirstNonEmptyFrame()
+  // notification the next time a CompositorFrame with visually non-empty
+  // content activates for `frame_sink_id`. Repeated calls are idempotent. The
+  // request is cleared once the notification is sent, when
+  // CancelNonEmptyFrameNotification() is called, or on InvalidateFrameSinkId().
+  //
+  // The request is tracked per FrameSinkId rather than per CompositorFrameSink,
+  // so that destroying and recreating the CompositorFrameSink (e.g. after
+  // context loss, or by a compromised renderer closing its message pipe) does
+  // not disarm it.
+  //
+  // Callers that need to observe the very first frame from a client must call
+  // this before Create(Root)CompositorFrameSink() for the same `frame_sink_id`.
+  // Both messages travel on this pipe, which preserves ordering, so Viz is
+  // guaranteed to be armed before it can process any CompositorFrame submitted
+  // by the client. See https://crbug.com/40055319.
+  RequestNonEmptyFrameNotification(FrameSinkId frame_sink_id);
+
+  // Cancels a pending RequestNonEmptyFrameNotification() for `frame_sink_id`.
+  // Does nothing if no request is pending.
+  CancelNonEmptyFrameNotification(FrameSinkId frame_sink_id);
+
   // |debug_label| is used when printing out the surface hierarchy so we know
   // which clients are contributing which surfaces.
   SetFrameSinkDebugLabel(FrameSinkId frame_sink_id, string debug_label);
@@ -270,6 +292,14 @@ interface FrameSinkManagerClient {
   // Called by the frame sink manager when a CompositorFrame with a new
   // SurfaceId activates for the first time.
   OnFirstSurfaceActivation(SurfaceInfo surface_info);
+
+  // Called at most once for each pending
+  // FrameSinkManager::RequestNonEmptyFrameNotification() request, when a
+  // CompositorFrame with visually non-empty content activates for
+  // `frame_sink_id`. Unlike OnFirstSurfaceActivation(), this does not fire
+  // for frames that merely allocate a new SurfaceId (e.g. window resizes)
+  // while the client's content remains empty. See https://crbug.com/40055319.
+  OnFirstNonEmptyFrame(FrameSinkId frame_sink_id);
 
   // Sends new |hit_test_data| to the client.
   OnAggregatedHitTestRegionListUpdated(

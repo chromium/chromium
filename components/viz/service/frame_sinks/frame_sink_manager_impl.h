@@ -142,6 +142,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
                            bool report_activation) override;
   void InvalidateFrameSinkId(const FrameSinkId& frame_sink_id,
                              InvalidateFrameSinkIdCallback callback) override;
+  void RequestNonEmptyFrameNotification(
+      const FrameSinkId& frame_sink_id) override;
+  void CancelNonEmptyFrameNotification(
+      const FrameSinkId& frame_sink_id) override;
   void SetFrameSinkDebugLabel(const FrameSinkId& frame_sink_id,
                               const std::string& debug_label) override;
   void CreateRootCompositorFrameSink(
@@ -242,6 +246,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   // SurfaceObserver implementation.
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override;
+  void OnSurfaceActivated(const SurfaceId& surface_id) override;
 
   void UpdateHitTestRegionData(
       const FrameSinkId& frame_sink_id,
@@ -553,6 +558,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void MaybeEraseHitTestQuery(const FrameSinkId& frame_sink_id);
   void MaybeAddHitTestQuery(const FrameSinkId& frame_sink_id);
 
+  // Consumes the pending RequestNonEmptyFrameNotification() for `frame_sink_id`
+  // and notifies the client. There must be a pending request.
+  void NotifyFirstNonEmptyFrame(const FrameSinkId& frame_sink_id);
+
   // Provides an output surface for CreateRootCompositorFrameSink().
   const raw_ptr<OutputSurfaceProvider> output_surface_provider_;
 
@@ -596,6 +605,17 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // labels. Map entries will be created when frame sink is registered and
   // destroyed when frame sink is invalidated.
   base::flat_map<FrameSinkId, FrameSinkData> frame_sink_data_;
+
+  // FrameSinkIds with a pending RequestNonEmptyFrameNotification().
+  // Deliberately tracked here rather than on CompositorFrameSinkSupport, whose
+  // lifetime is tied to a single mojom::CompositorFrameSink pipe: a client that
+  // destroys and recreates its sink (or simply closes the pipe after submitting
+  // a frame) must not be able to disarm or reset the request. Entries are
+  // removed once the notification is sent, on
+  // CancelNonEmptyFrameNotification(), and on InvalidateFrameSinkId(). Empty in
+  // the steady state, which keeps OnSurfaceActivated() cheap. See
+  // https://crbug.com/40055319.
+  base::flat_set<FrameSinkId> pending_non_empty_frame_notifications_;
 
   // Set of BeginFrameSource along with associated FrameSinkIds. Any child
   // that is implicitly using this frame sink must be reachable by the

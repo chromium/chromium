@@ -49,6 +49,16 @@ class VIZ_COMMON_EXPORT CompositorFrame {
 
   bool HasCopyOutputRequests() const;
 
+  // Returns true if this frame contains visually non-empty content (e.g. text,
+  // images, canvases, or non-background draw quads), as opposed to an empty
+  // frame or a frame containing only a solid background color.
+  //
+  // This lets Viz distinguish "the client painted something" from "the client
+  // produced a frame", without trusting any renderer-supplied signal. Notably,
+  // a client that merely reacts to a resize or a device scale factor change
+  // still produces empty frames by this definition.
+  bool HasVisuallyNonEmptyContent() const;
+
   void AsValueInto(base::trace_event::TracedValue* value) const;
   std::string ToString() const;
 

@@ -40,6 +40,10 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
                            bool report_activation) override {}
   void InvalidateFrameSinkId(const FrameSinkId& frame_sink_id,
                              InvalidateFrameSinkIdCallback callback) override;
+  void RequestNonEmptyFrameNotification(
+      const FrameSinkId& frame_sink_id) override {}
+  void CancelNonEmptyFrameNotification(
+      const FrameSinkId& frame_sink_id) override {}
   void SetFrameSinkDebugLabel(const FrameSinkId& frame_sink_id,
                               const std::string& debug_label) override {}
   void CreateRootCompositorFrameSink(

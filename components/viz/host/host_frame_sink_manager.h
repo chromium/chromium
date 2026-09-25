@@ -109,6 +109,44 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // InvalidateFrameSinkId() has not been called.
   bool IsFrameSinkIdRegistered(const FrameSinkId& frame_sink_id) const;
 
+  // Requests a one-shot notification for when Viz activates a CompositorFrame
+  // with visually non-empty content for `frame_sink_id`, and runs
+  // `on_non_empty_frame` when that happens. This is a trustworthy signal that
+  // the client painted something, since it does not depend on any data supplied
+  // by the client. See https://crbug.com/40055319.
+  //
+  // `frame_sink_id` must already be registered with RegisterFrameSinkId(),
+  // because the request is dropped by InvalidateFrameSinkId().
+  //
+  // `on_non_empty_frame` runs at most once, and is never run to signal failure.
+  // It runs synchronously when Viz reports the non-empty frame, which is an
+  // asynchronous Mojo message in all production configurations. If the frame
+  // sink is invalidated, or the notification is cancelled, or this
+  // HostFrameSinkManager is destroyed before that report arrives, the callback
+  // is dropped without running.
+  //
+  // Tests that connect to Viz directly with
+  // FrameSinkManagerImpl::SetLocalClient() have no Mojo message in between, so
+  // the callback may run while Viz is on the stack: either from within this
+  // call, if a non-empty frame has already activated, or from within
+  // Surface::ActivateFrame().
+  //
+  // The request is retained across CompositorFrameSink recreation and GPU
+  // process crashes, so a renderer cannot disarm it. To observe the client's
+  // very first frame, call this before CreateCompositorFrameSink() for the same
+  // `frame_sink_id`; both messages are ordered on the same pipe to Viz.
+  //
+  // Calling this again for the same `frame_sink_id` replaces any previously
+  // requested callback.
+  void RequestNonEmptyFrameNotification(const FrameSinkId& frame_sink_id,
+                                        base::OnceClosure on_non_empty_frame);
+
+  // Cancels a pending RequestNonEmptyFrameNotification() for `frame_sink_id`,
+  // dropping the callback without running it. Does nothing if none is pending,
+  // including when Viz has already reported a non-empty frame and the callback
+  // has run.
+  void CancelNonEmptyFrameNotification(const FrameSinkId& frame_sink_id);
+
   // Invalidates `frame_sink_id` when the client is done submitting
   // CompositorFrames. If there is a CompositorFrameSink for `frame_sink_id`
   // then it will be destroyed and the message pipe to the client will be
@@ -394,6 +432,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
                            uint32_t frame_token,
                            base::TimeTicks activation_time) override;
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override;
+  void OnFirstNonEmptyFrame(const FrameSinkId& frame_sink_id) override;
   void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) override;
@@ -433,6 +472,13 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   base::flat_map<FrameSinkId, base::ScopedClosureRunner>
       frame_sink_invalidate_callbacks_;
+
+  // Pending RequestNonEmptyFrameNotification() callbacks, keyed by FrameSinkId.
+  //
+  // These callbacks are never run to signal failure, so erasing an entry is
+  // always a correct teardown, and no callback ever runs from a destructor or
+  // from inside a container mutation.
+  base::flat_map<FrameSinkId, base::OnceClosure> non_empty_frame_callbacks_;
 
   // If |frame_sink_manager_remote_| connection was lost.
   bool connection_was_lost_ = false;

@@ -2397,4 +2397,311 @@ TEST_F(FrameSinkManagerTest,
   manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
 }
 
+// Records OnFirstNonEmptyFrame() notifications from FrameSinkManagerImpl.
+class NonEmptyFrameNotificationClient : public mojom::FrameSinkManagerClient {
+ public:
+  NonEmptyFrameNotificationClient() = default;
+  ~NonEmptyFrameNotificationClient() override = default;
+
+  const std::vector<FrameSinkId>& notifications() const {
+    return notifications_;
+  }
+
+  // mojom::FrameSinkManagerClient:
+  void OnFirstNonEmptyFrame(const FrameSinkId& frame_sink_id) override {
+    notifications_.push_back(frame_sink_id);
+  }
+  void OnFirstSurfaceActivation(const SurfaceInfo&) override {}
+  void OnFrameTokenChanged(const FrameSinkId&,
+                           uint32_t,
+                           base::TimeTicks) override {}
+  void OnAggregatedHitTestRegionListUpdated(
+      const FrameSinkId&,
+      const std::vector<AggregatedHitTestRegion>&) override {}
+#if BUILDFLAG(IS_ANDROID)
+  void VerifyThreadIdsDoNotBelongToHost(
+      const std::vector<int32_t>&,
+      VerifyThreadIdsDoNotBelongToHostCallback) override {}
+#endif
+  void OnScreenshotCaptured(
+      const blink::SameDocNavigationScreenshotDestinationToken&,
+      std::unique_ptr<CopyOutputResult>) override {}
+  void OnVizTouchStateAvailable(base::ReadOnlySharedMemoryRegion) override {}
+  void OnViewTransitionResourcesCaptured(
+      const blink::ViewTransitionToken&) override {}
+
+ private:
+  std::vector<FrameSinkId> notifications_;
+};
+
+class FrameSinkManagerNonEmptyFrameTest : public FrameSinkManagerTest {
+ public:
+  void SetUp() override {
+    FrameSinkManagerTest::SetUp();
+    manager_->SetLocalClient(&client_);
+  }
+
+  // Submits a frame containing a single solid color quad, i.e. what a client
+  // produces for a blank document (including after a resize).
+  void SubmitEmptyFrame(CompositorFrameSinkSupport* support,
+                        const LocalSurfaceId& local_surface_id) {
+    support->SubmitCompositorFrame(
+        local_surface_id,
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(kFrameRect)
+                               .AddSolidColorQuad(kFrameRect, SkColors::kWhite))
+            .Build());
+  }
+
+  // Submits a frame with painted content.
+  void SubmitNonEmptyFrame(CompositorFrameSinkSupport* support,
+                           const LocalSurfaceId& local_surface_id) {
+    support->SubmitCompositorFrame(
+        local_surface_id,
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(kFrameRect)
+                    .AddSolidColorQuad(kFrameRect, SkColors::kWhite)
+                    .AddSolidColorQuad(gfx::Rect(0, 0, 10, 10), SkColors::kRed))
+            .Build());
+  }
+
+ protected:
+  static constexpr gfx::Rect kFrameRect{0, 0, 20, 20};
+
+  NonEmptyFrameNotificationClient client_;
+  ParentLocalSurfaceIdAllocator allocator_;
+};
+
+// Without a request, non-empty frames produce no notification.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, NoNotificationWithoutRequest) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  auto support = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+
+  allocator_.GenerateId();
+  SubmitNonEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+
+  EXPECT_TRUE(client_.notifications().empty());
+
+  support.reset();
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
+// An empty frame must not trigger the notification. This is the case that
+// disqualified OnFirstSurfaceActivation(): a resize allocates a new SurfaceId
+// and activates a new surface while the client's content is still blank.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, EmptyFramesDoNotNotify) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  manager_->RequestNonEmptyFrameNotification(kFrameSinkIdA);
+  auto support = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+
+  allocator_.GenerateId();
+  SubmitEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_TRUE(client_.notifications().empty());
+
+  // Simulate a resize: a new LocalSurfaceId, and therefore a new surface
+  // activation, but still no content.
+  allocator_.GenerateId();
+  SubmitEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_TRUE(client_.notifications().empty());
+
+  support.reset();
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
+// The notification fires once when content appears, and only once.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, NotifiesOnceOnNonEmptyFrame) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  manager_->RequestNonEmptyFrameNotification(kFrameSinkIdA);
+  auto support = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+
+  allocator_.GenerateId();
+  SubmitEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_TRUE(client_.notifications().empty());
+
+  SubmitNonEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_THAT(client_.notifications(), testing::ElementsAre(kFrameSinkIdA));
+
+  // Subsequent non-empty frames must not notify again.
+  SubmitNonEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  allocator_.GenerateId();
+  SubmitNonEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_THAT(client_.notifications(), testing::ElementsAre(kFrameSinkIdA));
+
+  support.reset();
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
+// A frame that damages only part of its output_rect can paint content over
+// several frames, because the pixels outside the damage stay on screen.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, PartiallyDamagedFrameNotifies) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  manager_->RequestNonEmptyFrameNotification(kFrameSinkIdA);
+  auto support = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+
+  allocator_.GenerateId();
+  SubmitEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_TRUE(client_.notifications().empty());
+
+  // A single solid color quad that only repaints part of the frame.
+  support->SubmitCompositorFrame(
+      allocator_.GetCurrentLocalSurfaceId(),
+      CompositorFrameBuilder()
+          .AddRenderPass(RenderPassBuilder(kFrameRect)
+                             .AddSolidColorQuad(kFrameRect, SkColors::kRed)
+                             .SetDamageRect(gfx::Rect(0, 0, 10, 10)))
+          .Build());
+  EXPECT_THAT(client_.notifications(), testing::ElementsAre(kFrameSinkIdA));
+
+  support.reset();
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
+// Only the requested FrameSinkId is reported.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, OnlyNotifiesRequestedFrameSink) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  manager_->RegisterFrameSinkId(kFrameSinkIdB, false);
+  manager_->RequestNonEmptyFrameNotification(kFrameSinkIdB);
+  auto support_a = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  auto support_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+
+  allocator_.GenerateId();
+  SubmitNonEmptyFrame(support_a.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_TRUE(client_.notifications().empty());
+
+  ParentLocalSurfaceIdAllocator allocator_b;
+  allocator_b.GenerateId();
+  SubmitNonEmptyFrame(support_b.get(), allocator_b.GetCurrentLocalSurfaceId());
+  EXPECT_THAT(client_.notifications(), testing::ElementsAre(kFrameSinkIdB));
+
+  support_a.reset();
+  support_b.reset();
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+}
+
+// A request that arrives after a non-empty frame has already activated is
+// reported immediately, rather than waiting for the client to paint again.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, LateRequestSeesExistingFrame) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  auto support = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+
+  allocator_.GenerateId();
+  SubmitNonEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_TRUE(client_.notifications().empty());
+
+  manager_->RequestNonEmptyFrameNotification(kFrameSinkIdA);
+  EXPECT_THAT(client_.notifications(), testing::ElementsAre(kFrameSinkIdA));
+
+  support.reset();
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
+// A late request must not fire if the client has only produced empty frames.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, LateRequestIgnoresEmptyFrame) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  auto support = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+
+  allocator_.GenerateId();
+  SubmitEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+
+  manager_->RequestNonEmptyFrameNotification(kFrameSinkIdA);
+  EXPECT_TRUE(client_.notifications().empty());
+
+  SubmitNonEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_THAT(client_.notifications(), testing::ElementsAre(kFrameSinkIdA));
+
+  support.reset();
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
+// Regression test for the bypass that motivated tracking this state per
+// FrameSinkId instead of per CompositorFrameSinkSupport: a compromised client
+// submits a non-empty frame and immediately closes its CompositorFrameSink
+// pipe. The surface stays alive and on screen, so the notification must still
+// have been delivered.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, SupportDestroyedAfterNonEmptyFrame) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  manager_->RequestNonEmptyFrameNotification(kFrameSinkIdA);
+  auto support = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+
+  allocator_.GenerateId();
+  SubmitNonEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  support.reset();
+
+  EXPECT_THAT(client_.notifications(), testing::ElementsAre(kFrameSinkIdA));
+
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
+// Destroying and recreating the CompositorFrameSink must not disarm the
+// request, since the client controls when that happens.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, RequestSurvivesSupportRecreation) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  manager_->RequestNonEmptyFrameNotification(kFrameSinkIdA);
+
+  auto support = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  allocator_.GenerateId();
+  SubmitEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  support.reset();
+  EXPECT_TRUE(client_.notifications().empty());
+
+  support = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  allocator_.GenerateId();
+  SubmitNonEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_THAT(client_.notifications(), testing::ElementsAre(kFrameSinkIdA));
+
+  support.reset();
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
+// An explicitly cancelled request does not fire.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, CancelledRequestDoesNotNotify) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  manager_->RequestNonEmptyFrameNotification(kFrameSinkIdA);
+  manager_->CancelNonEmptyFrameNotification(kFrameSinkIdA);
+  auto support = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+
+  allocator_.GenerateId();
+  SubmitNonEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_TRUE(client_.notifications().empty());
+
+  support.reset();
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
+// Cancelling without a pending request, or for an unknown FrameSinkId, is a
+// no-op rather than a crash.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, CancelWithoutRequestIsSafe) {
+  manager_->CancelNonEmptyFrameNotification(kFrameSinkIdA);
+  EXPECT_TRUE(client_.notifications().empty());
+}
+
+// Requesting for a FrameSinkId with no CompositorFrameSinkSupport yet is
+// expected (the browser arms before the sink is created) and must not crash.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, RequestBeforeSupportExists) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  manager_->RequestNonEmptyFrameNotification(kFrameSinkIdA);
+  EXPECT_TRUE(client_.notifications().empty());
+
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
+// Invalidation drops the request, so a FrameSinkId that is later reused does
+// not inherit a stale notification.
+TEST_F(FrameSinkManagerNonEmptyFrameTest, InvalidateClearsRequest) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  manager_->RequestNonEmptyFrameNotification(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, false);
+  auto support = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  allocator_.GenerateId();
+  SubmitNonEmptyFrame(support.get(), allocator_.GetCurrentLocalSurfaceId());
+  EXPECT_TRUE(client_.notifications().empty());
+
+  support.reset();
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+}
+
 }  // namespace viz

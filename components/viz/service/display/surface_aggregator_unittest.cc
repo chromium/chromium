@@ -10491,6 +10491,7 @@ class OnScreenshotCapturedWaiter : public mojom::FrameSinkManagerClient {
 
   // mojom::FrameSinkManagerClient:
   void OnFirstSurfaceActivation(const SurfaceInfo&) override {}
+  void OnFirstNonEmptyFrame(const FrameSinkId&) override {}
   void OnFrameTokenChanged(const FrameSinkId&,
                            uint32_t,
                            base::TimeTicks) override {}

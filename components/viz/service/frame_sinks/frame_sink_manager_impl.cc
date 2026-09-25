@@ -30,6 +30,7 @@
 #include "components/input/utils.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/performance_hint_utils.h"
+#include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/service/display/overdraw_tracker.h"
@@ -226,11 +227,63 @@ void FrameSinkManagerImpl::InvalidateFrameSinkId(
 
   MaybeEraseHitTestQuery(frame_sink_id);
 
+  pending_non_empty_frame_notifications_.erase(frame_sink_id);
+
   // Destroy the [Root]CompositorFrameSinkImpl if there is one.
   sink_map_.erase(frame_sink_id);
   root_sink_map_.erase(frame_sink_id);
 
   frame_sink_data_.erase(frame_sink_id);
+}
+
+void FrameSinkManagerImpl::RequestNonEmptyFrameNotification(
+    const FrameSinkId& frame_sink_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The client only arms registered frame sinks, and messages are ordered on
+  // the same pipe, so registration has already arrived. The request is dropped
+  // again by InvalidateFrameSinkId(), so it cannot outlive registration.
+  CHECK(frame_sink_data_.contains(frame_sink_id));
+
+  pending_non_empty_frame_notifications_.insert(frame_sink_id);
+
+  // Callers are expected to arm before Create(Root)CompositorFrameSink() so
+  // that no frame can be processed first. Handle a late request anyway, in case
+  // a non-empty frame has already activated: otherwise the notification would
+  // never arrive until the client happened to paint again.
+  //
+  // This is best effort and does not replace the ordering requirement. It only
+  // consults the client's current support and its last activated surface, so it
+  // misses a non-empty frame whose client has since closed its
+  // CompositorFrameSink, and one that has since been followed by an empty frame
+  // in a newer LocalSurfaceId. Security sensitive callers must arm first.
+  auto support_it = support_map_.find(frame_sink_id);
+  if (support_it == support_map_.end()) {
+    return;
+  }
+  Surface* surface = surface_manager_.GetSurfaceForId(
+      support_it->second->last_activated_surface_id());
+  if (surface && surface->HasActiveFrame() &&
+      surface->GetActiveFrame().HasVisuallyNonEmptyContent()) {
+    NotifyFirstNonEmptyFrame(frame_sink_id);
+  }
+}
+
+void FrameSinkManagerImpl::CancelNonEmptyFrameNotification(
+    const FrameSinkId& frame_sink_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pending_non_empty_frame_notifications_.erase(frame_sink_id);
+}
+
+void FrameSinkManagerImpl::NotifyFirstNonEmptyFrame(
+    const FrameSinkId& frame_sink_id) {
+  // The erase makes this one-shot: subsequent non-empty frames are ignored
+  // until the client arms another request.
+  bool erased = pending_non_empty_frame_notifications_.erase(frame_sink_id);
+  CHECK(erased);
+  if (client_) {
+    client_->OnFirstNonEmptyFrame(frame_sink_id);
+  }
 }
 
 void FrameSinkManagerImpl::SetFrameSinkDebugLabel(
@@ -593,6 +646,32 @@ void FrameSinkManagerImpl::OnFirstSurfaceActivation(
   if (frame_sink_data && client_ && frame_sink_data->report_activation) {
     client_->OnFirstSurfaceActivation(surface_info);
   }
+}
+
+void FrameSinkManagerImpl::OnSurfaceActivated(const SurfaceId& surface_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Almost always empty, so this is a single check on the activation hot path.
+  if (pending_non_empty_frame_notifications_.empty()) {
+    return;
+  }
+  if (!pending_non_empty_frame_notifications_.contains(
+          surface_id.frame_sink_id())) {
+    return;
+  }
+
+  // Note that this observes SurfaceManager rather than
+  // CompositorFrameSinkSupport, so a client cannot suppress the notification by
+  // destroying its CompositorFrameSink immediately after submitting a frame:
+  // the surface has already activated (and may still be drawn on screen) by the
+  // time the sink goes away.
+  Surface* surface = surface_manager_.GetSurfaceForId(surface_id);
+  if (!surface || !surface->HasActiveFrame() ||
+      !surface->GetActiveFrame().HasVisuallyNonEmptyContent()) {
+    return;
+  }
+
+  NotifyFirstNonEmptyFrame(surface_id.frame_sink_id());
 }
 
 void FrameSinkManagerImpl::UpdateHitTestRegionData(
