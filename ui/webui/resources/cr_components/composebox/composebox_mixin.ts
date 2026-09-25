@@ -1502,10 +1502,20 @@ export const ComposeboxEmbedderMixin =
             // mapped into `attachedContext`. Consume it here; note the
             // `delete()` must run even when the status is unused, so that it
             // is not left behind for a later tab that reuses the token.
-            const earlyStatus = this.earlyTerminalUploads.get(token) ?? null;
+            const existingStatus =
+                this.attachedContext.get(token)?.status ?? null;
+            const earlyStatus = this.earlyTerminalUploads.get(token) ??
+                (existingStatus !== null &&
+                         isContextUploadStatusTerminal(existingStatus) ?
+                     existingStatus :
+                     null);
             this.earlyTerminalUploads.delete(token);
             if (earlyStatus !== null &&
                 earlyStatus !== ContextUploadStatus.kUploadSuccessful) {
+              if (this.attachedContext.has(token)) {
+                this.attachedContext.delete(token);
+                this.attachedContext = new Map([...this.attachedContext]);
+              }
               return null;
             }
             // `createFromTab` optimistically reports `kUploadSuccessful`, which
@@ -2784,7 +2794,10 @@ export const ComposeboxEmbedderMixin =
               this.attachedContext.set(token, file);
               this.attachedContext = new Map([...this.attachedContext]);
             }
-          } else if (this.shouldShowGhostFiles) {
+          } else if (
+              this.shouldShowGhostFiles &&
+              (!isContextUploadStatusTerminal(status) ||
+               status === ContextUploadStatus.kUploadSuccessful)) {
             // File is unknown but its status is known. Show this if
             // ghost/unknown files in frontend are allowed to be in
             // carousel.
@@ -2795,10 +2808,12 @@ export const ComposeboxEmbedderMixin =
               dataUrl: null,
               type: '',
               inputType: InputType.kLensFile,
-              // Override this since first upload status is this or
-              // processing. Need this or processing in order to show tab
-              // spinner.
-              status: ContextUploadStatus.kUploadStarted,
+              // Override non-terminal statuses with kUploadStarted so the tab
+              // spinner is shown, while preserving kUploadSuccessful if the
+              // upload already completed before addTabContext resolved.
+              status: status === ContextUploadStatus.kUploadSuccessful ?
+                  ContextUploadStatus.kUploadSuccessful :
+                  ContextUploadStatus.kUploadStarted,
               url: null,
               tabId: null,
               isDeletable: true,

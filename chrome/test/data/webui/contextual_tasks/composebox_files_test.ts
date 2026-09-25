@@ -1523,6 +1523,50 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
       assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
       assertEquals(1, innerComposebox.attachedContext.size);
     });
+
+    test(
+        'ghost file upload finishing before addTabContext stays completed',
+        async () => {
+          await mountApp();
+          const {innerComposebox} = parts;
+          innerComposebox.shouldShowGhostFiles = true;
+          await innerComposebox.updateComplete;
+
+          let resolveAddTabContext!: (token: UnguessableToken) => void;
+          mockSearchboxPageHandler.resetResolver(ADD_TAB_CONTEXT_FN);
+          mockSearchboxPageHandler.setResultFor(
+              ADD_TAB_CONTEXT_FN, new Promise<UnguessableToken>(resolve => {
+                resolveAddTabContext = resolve;
+              }));
+
+          getEntrypointAndMenu().fire('add-tab-context', {
+            id: 2,
+            title: 'Manual tab',
+            url: 'https://manual.example.com',
+            delayUpload: false,
+            origin: TabUploadOrigin.CURRENT_TAB_CHIP,
+          });
+          await mockSearchboxPageHandler.whenCalled(ADD_TAB_CONTEXT_FN);
+
+          // Simulate Page remote notifications arriving before PageHandler's
+          // addTabContext response callback runs.
+          searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+              MANUAL_TOKEN, ContextUploadStatus.kProcessing, null);
+          searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+              MANUAL_TOKEN, ContextUploadStatus.kUploadSuccessful, null);
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await settle();
+
+          // Now resolve addTabContext.
+          resolveAddTabContext(MANUAL_TOKEN);
+          await settle();
+
+          assertEquals(1, innerComposebox.attachedContext.size);
+          const file = innerComposebox.attachedContext.get(MANUAL_TOKEN);
+          assertTrue(!!file);
+          assertEquals(ContextUploadStatus.kUploadSuccessful, file.status);
+          assertTrue(innerComposebox.fileUploadsComplete);
+        });
   });
 
   // The searchbox Smart Tab Sharing surface is gated out of the
