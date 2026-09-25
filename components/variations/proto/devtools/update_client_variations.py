@@ -39,8 +39,8 @@ OUTPUT_TEMPLATE = """\
 """
 
 
-def transpile_typescript(node_path: str, tsc_path: str, parser_ts: str,
-                         gen_proto_ts: str, out_dir: str) -> str:
+def transpile_typescript(parser_ts: str, gen_proto_ts: str,
+                         out_dir: str) -> str:
   """Transpiles the parser and its proto dependency to JavaScript."""
   # We need to map @bufbuild/protobuf and the local proto bindings.
   # tsc will compile both the parser and its dependency (the generated proto)
@@ -79,19 +79,18 @@ def transpile_typescript(node_path: str, tsc_path: str, parser_ts: str,
   with open(tsconfig_path, 'w') as f:
     json.dump(tsconfig, f)
 
-  cmd = [node_path, tsc_path, '-p', tsconfig_path]
-  subprocess.check_call(cmd)
+  node.RunNode([node_modules.PathToTypescript(), '-p', tsconfig_path])
 
   # The output JS for the parser will be in out_dir mirroring the source tree.
   rel_parser_js = os.path.relpath(parser_ts, ROOT).replace('.ts', '.js')
   return os.path.join(out_dir, rel_parser_js)
 
 
-def bundle_with_rollup(node_path: str, rollup_path: str, plugin_path: str,
-                       parser_js: str, gen_proto_ts: str, bundle_js: str,
+def bundle_with_rollup(parser_js: str, gen_proto_ts: str, bundle_js: str,
                        tmp_dir: str) -> None:
   """Bundles the transpiled parser and its dependencies using Rollup."""
   # On Windows, absolute paths must be valid file:// URLs for ESM loading.
+  plugin_path = os.path.join(HERE_DIR, 'rollup_plugin.mjs')
   plugin_url = pathlib.Path(plugin_path).as_uri()
 
   # Custom resolver for rollup to avoid needing node-resolve plugin.
@@ -122,16 +121,13 @@ export default {{
   with open(rollup_config_path, 'w') as f:
     f.write(rollup_config)
 
-  cmd = [node_path, rollup_path, '--config', rollup_config_path]
-  subprocess.check_call(cmd)
+  node.RunNode([node_modules.PathToRollup(), '--config', rollup_config_path])
 
 
-def minify_with_terser(node_path: str, terser_path: str, bundle_js: str,
-                       minified_js: str) -> None:
+def minify_with_terser(bundle_js: str, minified_js: str) -> None:
   """Minifies the Rollup bundle using Terser."""
-  cmd = [
-      node_path,
-      terser_path,
+  node.RunNode([
+      node_modules.PathToTerser(),
       bundle_js,
       '--module',
       '--compress',
@@ -140,29 +136,19 @@ def minify_with_terser(node_path: str, terser_path: str, bundle_js: str,
       'max_line_len=500',
       '-o',
       minified_js,
-  ]
-  subprocess.check_call(cmd)
+  ])
 
 
 def generate_bundle(parser_ts: str, gen_proto_ts: str, output_file: str) -> None:
   """Transpiles, bundles, and minifies the parser into output_file."""
-  plugin_path = os.path.join(HERE_DIR, 'rollup_plugin.mjs')
-
-  node_path = node.GetBinaryPath()
-  tsc_path = node_modules.PathToTypescript()
-  rollup_path = node_modules.PathToRollup()
-  terser_path = node_modules.PathToTerser()
-
   with tempfile.TemporaryDirectory() as tmp_dir:
-    parser_js = transpile_typescript(node_path, tsc_path, parser_ts,
-                                     gen_proto_ts, tmp_dir)
+    parser_js = transpile_typescript(parser_ts, gen_proto_ts, tmp_dir)
 
     bundle_js = os.path.join(tmp_dir, 'bundle.js')
-    bundle_with_rollup(node_path, rollup_path, plugin_path, parser_js,
-                       gen_proto_ts, bundle_js, tmp_dir)
+    bundle_with_rollup(parser_js, gen_proto_ts, bundle_js, tmp_dir)
 
     minified_js = os.path.join(tmp_dir, 'bundle.min.js')
-    minify_with_terser(node_path, terser_path, bundle_js, minified_js)
+    minify_with_terser(bundle_js, minified_js)
 
     with open(minified_js, 'r') as f:
       minified_content = f.read().strip()
