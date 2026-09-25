@@ -12,6 +12,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.view.View;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,6 +39,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.IntSupplier;
 
 /** Unit tests for {@link BottomSheetDisclaimerHost}. */
 @RunWith(ParameterizedRunner.class)
@@ -45,10 +48,11 @@ public class BottomSheetDisclaimerHostUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private EnterpriseSignalsDisclaimerBottomSheetView mSheetContent;
+    @Mock private View mContentView;
+    @Mock private IntSupplier mVerticalScrollOffsetSupplier;
     @Mock private Consumer<@DismissalCause Integer> mSheetDismissedCallback;
 
-    @Captor private ArgumentCaptor<Runnable> mDestroyedCallbackCaptor;
+    @Captor private ArgumentCaptor<BottomSheetContent> mSheetContentCaptor;
 
     private BottomSheetDisclaimerHost mHost;
 
@@ -69,7 +73,24 @@ public class BottomSheetDisclaimerHostUnitTest {
     public void setUp() {
         mHost =
                 new BottomSheetDisclaimerHost(
-                        mBottomSheetController, mSheetContent, mSheetDismissedCallback);
+                        mBottomSheetController,
+                        mContentView,
+                        mVerticalScrollOffsetSupplier,
+                        mSheetDismissedCallback);
+    }
+
+    /** Shows the host and returns the {@link BottomSheetContent} it requested to show. */
+    private BottomSheetContent showAndCaptureSheetContent() {
+        mHost.show();
+        verify(mBottomSheetController).requestShowContent(mSheetContentCaptor.capture(), eq(true));
+        return mSheetContentCaptor.getValue();
+    }
+
+    /** Shows the host and makes its content the current sheet content. */
+    private BottomSheetContent showAsCurrentSheetContent() {
+        BottomSheetContent content = showAndCaptureSheetContent();
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(content);
+        return content;
     }
 
     @Test
@@ -81,32 +102,54 @@ public class BottomSheetDisclaimerHostUnitTest {
     public void testShow_requestsShowContent() {
         Assert.assertFalse(mHost.isActive());
 
-        when(mBottomSheetController.requestShowContent(eq(mSheetContent), eq(true)))
-                .thenReturn(true);
-        mHost.show();
+        when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
+        showAndCaptureSheetContent();
 
         Assert.assertTrue(mHost.isActive());
-        verify(mSheetContent).setOnDestroyedCallback(any());
-        verify(mBottomSheetController).requestShowContent(eq(mSheetContent), eq(true));
+    }
+
+    @Test
+    public void testSheetContent_wrapsContentView() {
+        BottomSheetContent content = showAndCaptureSheetContent();
+
+        Assert.assertSame(mContentView, content.getContentView());
+        Assert.assertNull(content.getToolbarView());
+    }
+
+    @Test
+    public void testSheetContent_verticalScrollOffset_delegatesToSupplier() {
+        BottomSheetContent content = showAndCaptureSheetContent();
+        when(mVerticalScrollOffsetSupplier.getAsInt()).thenReturn(42);
+
+        Assert.assertEquals(42, content.getVerticalScrollOffset());
+    }
+
+    @Test
+    public void testSheetContent_configuration() {
+        BottomSheetContent content = showAndCaptureSheetContent();
+
+        Assert.assertEquals(BottomSheetContent.ContentPriority.HIGH, content.getPriority());
+        Assert.assertTrue(content.swipeToDismissEnabled());
+        Assert.assertTrue(content.showHandlebar());
+        Assert.assertEquals(
+                BottomSheetContent.HeightMode.WRAP_CONTENT, content.getFullHeightRatio(), 0f);
     }
 
     @Test
     public void testDismiss_hidesContent() {
-        mHost.show();
+        BottomSheetContent content = showAndCaptureSheetContent();
 
         mHost.dismiss(DismissalCause.TAPPED_ACCEPT);
 
         verify(mBottomSheetController)
-                .hideContent(
-                        eq(mSheetContent), eq(true), eq(StateChangeReason.INTERACTION_COMPLETE));
+                .hideContent(eq(content), eq(true), eq(StateChangeReason.INTERACTION_COMPLETE));
         verify(mSheetDismissedCallback, never()).accept(any());
     }
 
     @Test
     public void testDismiss_invokesCallbackWithDismissalCause() {
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        showAsCurrentSheetContent();
 
-        mHost.show();
         mHost.dismiss(DismissalCause.TAPPED_ACCEPT);
         verify(mSheetDismissedCallback, never()).accept(any());
 
@@ -117,42 +160,38 @@ public class BottomSheetDisclaimerHostUnitTest {
 
     @Test
     public void testDestroy_unregistersObserverAndHidesContent() {
-        mHost.show();
+        BottomSheetContent content = showAndCaptureSheetContent();
         Assert.assertTrue(mHost.isActive());
 
         mHost.destroy();
 
         Assert.assertFalse(mHost.isActive());
         verify(mBottomSheetController).removeObserver(mHost);
-        verify(mBottomSheetController).hideContent(eq(mSheetContent), eq(false));
+        verify(mBottomSheetController).hideContent(eq(content), eq(false));
         verify(mSheetDismissedCallback, never()).accept(any());
     }
 
     @Test
     public void testDestroy_calledAfterDismiss_doesNotHideContentAgain() {
-        mHost.show();
+        BottomSheetContent content = showAndCaptureSheetContent();
         mHost.dismiss(DismissalCause.TAPPED_ACCEPT);
 
         mHost.destroy();
 
         verify(mBottomSheetController, times(1))
-                .hideContent(
-                        eq(mSheetContent), eq(true), eq(StateChangeReason.INTERACTION_COMPLETE));
-        verify(mBottomSheetController, never()).hideContent(eq(mSheetContent), eq(false));
+                .hideContent(eq(content), eq(true), eq(StateChangeReason.INTERACTION_COMPLETE));
+        verify(mBottomSheetController, never()).hideContent(eq(content), eq(false));
     }
 
     @Test
-    public void testOnDestroyedCallback_setsInactive() {
-        mHost.show();
+    public void testSheetContentDestroyed_setsInactive() {
+        BottomSheetContent content = showAndCaptureSheetContent();
         Assert.assertTrue(mHost.isActive());
 
-        verify(mSheetContent).setOnDestroyedCallback(mDestroyedCallbackCaptor.capture());
-        Runnable callback = mDestroyedCallbackCaptor.getValue();
-        Assert.assertNotNull(callback);
-
-        callback.run();
+        content.destroy();
 
         Assert.assertFalse(mHost.isActive());
+        verify(mSheetDismissedCallback, never()).accept(any());
     }
 
     @Test
@@ -168,9 +207,8 @@ public class BottomSheetDisclaimerHostUnitTest {
 
     @Test
     public void testSheetClosed_swipe_invokesCallbackWithDismissedBySwipeDown() {
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        showAsCurrentSheetContent();
 
-        mHost.show();
         mHost.onSheetOpened(StateChangeReason.NONE);
         mHost.onSheetClosed(StateChangeReason.SWIPE);
 
@@ -179,9 +217,8 @@ public class BottomSheetDisclaimerHostUnitTest {
 
     @Test
     public void testSheetClosed_backPress_invokesCallbackWithDismissedByBackPress() {
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        showAsCurrentSheetContent();
 
-        mHost.show();
         mHost.onSheetOpened(StateChangeReason.NONE);
         mHost.onSheetClosed(StateChangeReason.BACK_PRESS);
 
@@ -190,9 +227,8 @@ public class BottomSheetDisclaimerHostUnitTest {
 
     @Test
     public void testSheetClosed_tapScrim_invokesCallbackWithDismissedByTapOutside() {
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        showAsCurrentSheetContent();
 
-        mHost.show();
         mHost.onSheetOpened(StateChangeReason.NONE);
         mHost.onSheetClosed(StateChangeReason.TAP_SCRIM);
 
@@ -201,9 +237,8 @@ public class BottomSheetDisclaimerHostUnitTest {
 
     @Test
     public void testSheetClosed_closeButton_invokesCallbackWithDismissedByCloseButton() {
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        showAsCurrentSheetContent();
 
-        mHost.show();
         mHost.onSheetOpened(StateChangeReason.NONE);
         mHost.onSheetClosed(StateChangeReason.CLOSE_BUTTON);
 
@@ -214,9 +249,8 @@ public class BottomSheetDisclaimerHostUnitTest {
     @UseMethodParameter(NonUserActionReasonsParams.class)
     public void testSheetClosed_nonUserActionReason_invokesCallbackWithDismissedWithoutUserAction(
             @StateChangeReason int reason) {
-        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        showAsCurrentSheetContent();
 
-        mHost.show();
         mHost.onSheetOpened(StateChangeReason.NONE);
         mHost.onSheetClosed(reason);
 

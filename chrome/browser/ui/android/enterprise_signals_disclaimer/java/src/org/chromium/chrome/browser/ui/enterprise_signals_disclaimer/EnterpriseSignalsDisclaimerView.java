@@ -50,7 +50,7 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
      * @param context The Android {@link Context}.
      * @param isDialog Whether this view is shown inside a dialog.
      */
-    protected EnterpriseSignalsDisclaimerView(Context context, boolean isDialog) {
+    EnterpriseSignalsDisclaimerView(Context context, boolean isDialog) {
         super(context);
         LayoutInflater.from(context)
                 .inflate(R.layout.enterprise_signals_disclaimer_layout, this, true);
@@ -83,15 +83,6 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
                 controller, R.id.device_info_card, /* isTop= */ false, /* isBottom= */ true);
 
         mDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
-    }
-
-    /**
-     * Creates an {@link EnterpriseSignalsDisclaimerView} configured for a modal dialog.
-     *
-     * @param context The Android {@link Context}.
-     */
-    public static EnterpriseSignalsDisclaimerView createForModalDialog(Context context) {
-        return new EnterpriseSignalsDisclaimerView(context, /* isDialog= */ true);
     }
 
     /** Returns the scroll Y offset. */

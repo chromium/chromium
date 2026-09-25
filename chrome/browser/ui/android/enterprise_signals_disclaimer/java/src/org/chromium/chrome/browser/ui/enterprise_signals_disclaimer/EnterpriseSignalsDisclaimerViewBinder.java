@@ -8,14 +8,14 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** ViewBinder class for mapping PropertyModel to EnterpriseSignalsDisclaimerBottomSheetView. */
+/** ViewBinder class for mapping PropertyModel to EnterpriseSignalsDisclaimerView. */
 @NullMarked
 class EnterpriseSignalsDisclaimerViewBinder {
     /**
      * Binds property changes in the model to the view.
      *
      * @param model The PropertyModel.
-     * @param view The EnterpriseSignalsDisclaimerBottomSheetView.
+     * @param view The EnterpriseSignalsDisclaimerView.
      * @param propertyKey The key of the property that changed.
      */
     public static void bind(

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
+import android.view.View;
+
 import androidx.activity.OnBackPressedCallback;
 
 import org.chromium.build.annotations.NullMarked;
@@ -32,7 +34,7 @@ class ModalDialogDisclaimerHost
 
     public ModalDialogDisclaimerHost(
             ModalDialogManager modalDialogManager,
-            EnterpriseSignalsDisclaimerView view,
+            View view,
             Consumer<@DismissalCause Integer> onDialogDismissedCallback) {
         mModalDialogManager = modalDialogManager;
         mDialogDismissedCallback = onDialogDismissedCallback;

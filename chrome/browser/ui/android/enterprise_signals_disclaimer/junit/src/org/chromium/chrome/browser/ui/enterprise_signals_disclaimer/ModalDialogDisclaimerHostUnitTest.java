@@ -12,6 +12,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.view.View;
+
 import androidx.activity.OnBackPressedCallback;
 
 import org.junit.Assert;
@@ -48,7 +50,7 @@ public class ModalDialogDisclaimerHostUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private EnterpriseSignalsDisclaimerView mView;
+    @Mock private View mView;
     @Mock private Consumer<@DismissalCause Integer> mDialogDismissedCallback;
     @Captor private ArgumentCaptor<PropertyModel> mDialogModelCaptor;
 

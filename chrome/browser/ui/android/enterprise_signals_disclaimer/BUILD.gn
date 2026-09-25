@@ -47,7 +47,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/BottomSheetDisclaimerHost.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerAckSyncer.java",
-    "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerBridge.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerController.java",
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerCoordinator.java",

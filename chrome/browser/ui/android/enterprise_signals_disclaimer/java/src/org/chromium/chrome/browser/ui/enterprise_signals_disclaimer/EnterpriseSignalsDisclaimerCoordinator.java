@@ -88,16 +88,18 @@ public class EnterpriseSignalsDisclaimerCoordinator
         // For the large form factors a modal dialog will be displayed, while smaller screens will
         // get a bottom sheet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            mView = EnterpriseSignalsDisclaimerView.createForModalDialog(context);
+            mView = new EnterpriseSignalsDisclaimerView(context, /* isDialog= */ true);
             mDisclaimerHost =
                     new ModalDialogDisclaimerHost(
                             modalDialogManager, mView, this::onDialogDismissed);
         } else {
-            var sheetContent = new EnterpriseSignalsDisclaimerBottomSheetView(context);
-            mView = sheetContent;
+            mView = new EnterpriseSignalsDisclaimerView(context, /* isDialog= */ false);
             mDisclaimerHost =
                     new BottomSheetDisclaimerHost(
-                            bottomSheetController, sheetContent, this::onDialogDismissed);
+                            bottomSheetController,
+                            mView,
+                            mView::getScrollViewScrollY,
+                            this::onDialogDismissed);
         }
 
         mView.addOnAttachStateChangeListener(this);
