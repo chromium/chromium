@@ -1954,6 +1954,18 @@ TEST(AutocompleteGrouperSectionsTest, IOSNTPZpsSection) {
           CreateMatch(93, omnibox::GROUP_TRENDS)},
          {100, 99, 98, 97, 96, 95, 94, 93});
   }
+
+  {
+    SCOPED_TRACE(
+        "Given cross-device tab matches, should display at most 1 above "
+        "psuggest and trends");
+    test({CreateMatch(102, omnibox::GROUP_MOBILE_CLIPBOARD),
+          CreateMatch(101, omnibox::GROUP_CROSS_DEVICE_TABS),
+          CreateMatch(100, omnibox::GROUP_CROSS_DEVICE_TABS),
+          CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+          CreateMatch(98, omnibox::GROUP_TRENDS)},
+         {102, 101, 99, 98});
+  }
 }
 
 // Tests the groups and limits for DesktopSecondaryNTPZpsSection.

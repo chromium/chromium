@@ -861,7 +861,7 @@ void IOSNTPZpsSection::InitFromMatches(ACMatches& matches) {
     // Hacky and delicate, but follows a pattern found in other sections of this
     // file.
     const_cast<Group::LimitAndCount&>(
-        groups_[1].group_id_limits_and_counts().at(
+        groups_[2].group_id_limits_and_counts().at(
             omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST))
         .limit = 0;
   }
@@ -877,6 +877,10 @@ IOSNTPZpsSection::IOSNTPZpsSection(const omnibox::GroupConfigMap& group_configs,
               Group(1,
                     {
                         {omnibox::GROUP_MOBILE_CLIPBOARD, 1},
+                    }),
+              Group(1,
+                    {
+                        {omnibox::GROUP_CROSS_DEVICE_TABS, 1},
                     }),
               Group(20,
                     {
@@ -910,6 +914,10 @@ IOSSRPZpsSection::IOSSRPZpsSection(const omnibox::GroupConfigMap& group_configs)
                         {omnibox::GROUP_MOBILE_MOST_VISITED,
                          kMobileMostVisitedTilesLimit},
                     }),
+              Group(1,
+                    {
+                        {omnibox::GROUP_CROSS_DEVICE_TABS, 1},
+                    }),
               Group(8,
                     {
                         {omnibox::GROUP_PREVIOUS_SEARCH_RELATED, 8},
@@ -937,6 +945,10 @@ IOSWebZpsSection::IOSWebZpsSection(const omnibox::GroupConfigMap& group_configs)
                     {
                         {omnibox::GROUP_MOBILE_MOST_VISITED,
                          kMobileMostVisitedTilesLimit},
+                    }),
+              Group(1,
+                    {
+                        {omnibox::GROUP_CROSS_DEVICE_TABS, 1},
                     }),
               Group(8,
                     {

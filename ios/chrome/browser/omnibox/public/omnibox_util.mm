@@ -52,6 +52,7 @@ OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
   switch (type) {
     case AutocompleteMatchType::BOOKMARK_TITLE:
     case AutocompleteMatchType::CLIPBOARD_URL:
+    case AutocompleteMatchType::CROSS_DEVICE_TAB:
     case AutocompleteMatchType::DOCUMENT_SUGGESTION:
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::HISTORY_CLUSTER:
