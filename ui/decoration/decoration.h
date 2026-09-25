@@ -44,6 +44,16 @@ class Decoration final : public ui::ImplicitAnimationObserver,
   DecorationSource* source() { return source_.get(); }
   const DecorationSource* source() const { return source_.get(); }
 
+  // Returns the source as a `T`, or nullptr if it isn't one.
+  template <typename T>
+  T* GetSourceAs() {
+    return source()->AsA<T>();
+  }
+  template <typename T>
+  const T* GetSourceAs() const {
+    return source()->AsA<T>();
+  }
+
   // Moves and resizes the decoration layer to frame |content_bounds|.
   // This should be used to adjust the decoration's size and position (rather
   // than applying transformations to the `layer()` of this Decoration).

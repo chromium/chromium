@@ -84,10 +84,10 @@ class DecorationTest : public testing::Test {
  protected:
   Decoration& decoration() { return *decoration_; }
   TestDecorationSource& source() {
-    return *decoration_->source()->AsA<TestDecorationSource>();
+    return *decoration_->GetSourceAs<TestDecorationSource>();
   }
   const TestDecorationSource& source() const {
-    return *decoration_->source()->AsA<TestDecorationSource>();
+    return *std::as_const(*decoration_).GetSourceAs<TestDecorationSource>();
   }
 
   void set_details(std::optional<Details> details) {
