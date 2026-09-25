@@ -22,7 +22,7 @@ bool VerifyPreconditions(
   return std::ranges::all_of(aliases, [&](const auto& pair) {
     const FirstPartySetEntryOverride* alias_override =
         base::FindOrNull(customizations, pair.first);
-    if (!alias_override || alias_override->IsDeletion()) {
+    if (!alias_override) {
       return false;
     }
     const FirstPartySetEntryOverride* canonical_override =

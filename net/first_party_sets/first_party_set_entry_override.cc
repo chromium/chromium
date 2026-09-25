@@ -10,7 +10,6 @@
 
 namespace net {
 
-FirstPartySetEntryOverride::FirstPartySetEntryOverride() = default;
 FirstPartySetEntryOverride::FirstPartySetEntryOverride(FirstPartySetEntry entry)
     : entry_(std::move(entry)) {}
 
@@ -31,11 +30,7 @@ bool FirstPartySetEntryOverride::operator==(
 std::ostream& operator<<(std::ostream& os,
                          const FirstPartySetEntryOverride& override) {
   os << "{";
-  if (override.IsDeletion()) {
-    os << "<deleted>";
-  } else {
-    os << override.GetEntry();
-  }
+  os << override.GetEntry();
   os << "}";
   return os;
 }

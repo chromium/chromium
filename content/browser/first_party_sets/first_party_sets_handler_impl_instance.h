@@ -62,16 +62,13 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   void SetPublicFirstPartySets(const base::Version& version,
                                base::File sets_file) override;
   std::optional<net::FirstPartySetEntry> FindEntry(
-      const net::SchemefulSite& site,
-      const net::FirstPartySetsContextConfig& config) const override;
+      const net::SchemefulSite& site) const override;
   [[nodiscard]] bool WhenInitComplete(base::OnceClosure callback) override;
   void ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
       base::optional_ref<const net::SchemefulSite> top_frame_site,
-      const net::FirstPartySetsContextConfig& config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) override;
   bool ForEachEffectiveSetEntry(
-      const net::FirstPartySetsContextConfig& config,
       base::FunctionRef<bool(const net::SchemefulSite&,
                              const net::FirstPartySetEntry&)> f) const override;
 
@@ -101,7 +98,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   void ComputeFirstPartySetMetadataInternal(
       const net::SchemefulSite& site,
       base::optional_ref<const net::SchemefulSite> top_frame_site,
-      const net::FirstPartySetsContextConfig& config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
   // Whether Init has been called already or not.

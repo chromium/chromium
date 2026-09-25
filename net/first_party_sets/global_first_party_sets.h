@@ -58,35 +58,15 @@ class NET_EXPORT GlobalFirstPartySets {
   // Creates a clone of this instance.
   GlobalFirstPartySets Clone() const;
 
-  // Returns a FirstPartySetsContextConfig that respects the overrides given by
-  // `mutation`, relative to this instance's state.
-  FirstPartySetsContextConfig ComputeConfig(SetsMutation mutation) const;
-
-  // Returns the entry corresponding to the given `site`, if one exists.
-  // Respects any customization/overlay specified by `config`. This is
-  // semi-agnostic to scheme: it just cares whether the scheme is secure or
+  // Returns the entry corresponding to the given `site`, if one exists.  This
+  // is semi-agnostic to scheme: it just cares whether the scheme is secure or
   // insecure.
-  std::optional<FirstPartySetEntry> FindEntry(
-      const SchemefulSite& site,
-      const FirstPartySetsContextConfig& config) const;
+  std::optional<FirstPartySetEntry> FindEntry(const SchemefulSite& site) const;
 
   // Computes the First-Party Set metadata related to the given request context.
   FirstPartySetMetadata ComputeMetadata(
       const SchemefulSite& site,
-      base::optional_ref<const SchemefulSite> top_frame_site,
-      const FirstPartySetsContextConfig& fps_context_config) const;
-
-
-  // Directly sets this instance's manual config. This is unsafe, because it
-  // assumes that the config was computed by this instance (or one with
-  // identical data), but cannot enforce that as a precondition.
-  //
-  // This must be public since at least one caller is above the //net layer, so
-  // we can't refer to the caller's type here (and therefore can't "friend" it
-  // and also can't use a base::Passkey).
-  //
-  // Must not be called if the manual config has already been set.
-  void UnsafeSetManualConfig(FirstPartySetsContextConfig manual_config);
+      base::optional_ref<const SchemefulSite> top_frame_site) const;
 
   // Synchronously iterate over all entries in the public sets (i.e. not
   // including any manual set entries). Returns early if any of the iterations
@@ -97,29 +77,17 @@ class NET_EXPORT GlobalFirstPartySets {
       base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
           f) const;
 
-  // Synchronously iterate over the manual config. Returns early if any of the
-  // iterations returns false. Returns false if iteration was incomplete; true
-  // if all iterations returned true. No guarantees are made re: iteration
-  // order.
-  bool ForEachManualConfigEntry(
-      base::FunctionRef<bool(const SchemefulSite&,
-                             const FirstPartySetEntryOverride&)> f) const;
-
   // Synchronously iterate over all the effective entries (i.e. anything that
-  // could be returned by `FindEntry` using this instance and `config`,
-  // including the manual set, policy sets, and aliases). Returns early if any
-  // of the iterations returns false. Returns false if iteration was incomplete;
-  // true if all iterations returned true. No guarantees are made re: iteration
-  // order.
+  // could be returned by `FindEntry` using this instance, including aliases).
+  // Returns early if any of the iterations returns false. Returns false if
+  // iteration was incomplete; true if all iterations returned true. No
+  // guarantees are made re: iteration order.
   bool ForEachEffectiveSetEntry(
-      const FirstPartySetsContextConfig& config,
       base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
           f) const;
 
   // Whether the global sets are empty.
-  bool empty() const {
-    return public_config_.empty() && manual_config_.empty();
-  }
+  bool empty() const { return public_config_.empty(); }
 
   const base::Version& public_sets_version() const {
     return public_sets_version_;
@@ -133,63 +101,9 @@ class NET_EXPORT GlobalFirstPartySets {
   friend NET_EXPORT std::ostream& operator<<(std::ostream& os,
                                              const GlobalFirstPartySets& sets);
 
-  GlobalFirstPartySets(base::Version public_sets_version,
-                       FirstPartySetsContextConfig public_config,
-                       FirstPartySetsContextConfig manual_config);
-
-  // Same as the public version of FindEntry, but is allowed to omit the
-  // `config` argument (i.e. pass nullptr instead of a reference).
-  std::optional<FirstPartySetEntry> FindEntry(
-      const SchemefulSite& site,
-      const FirstPartySetsContextConfig* config) const;
-
-  using FlattenedSets = base::flat_map<SchemefulSite, FirstPartySetEntry>;
-
-  // Finds the existing primary sites whose sets are affected by a set of custom
-  // additions.
-  base::flat_map<SchemefulSite, FirstPartySetEntry>
-  FindPrimariesAffectedByAdditions(const FlattenedSets& additions) const;
-
-  // Finds the existing primary sites whose sets are affected by a set of custom
-  // replacements.
-  //
-  // Returns the set of existing primaries that may become a singleton (along
-  // with the sites in their set that have left due to the replacements); and
-  // the set of existing primaries that themselves were in a replacement set.
-  std::pair<base::flat_map<SchemefulSite, base::flat_set<SchemefulSite>>,
-            base::flat_set<SchemefulSite>>
-  FindPrimariesAffectedByReplacements(
-      const FlattenedSets& replacements,
-      const FlattenedSets& additions,
-      const base::flat_map<SchemefulSite, FirstPartySetEntry>&
-          addition_intersected_primaries) const;
-
-  // Preprocesses a collection of "addition" sets, such that any sets that
-  // transitively overlap (when taking the current `entries_` of this map, plus
-  // the manual config, into account) are unioned together. I.e., this ensures
-  // that at most one addition set intersects with any given global set.
-  std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
-  NormalizeAdditionSets(
-      const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
-          addition_sets) const;
-
-  // Same as the public version of ForEachEffectiveSetEntry, but is allowed to
-  // omit the `config` argument (i.e. pass nullptr instead of a reference).
-  bool ForEachEffectiveSetEntry(
-      base::optional_ref<const FirstPartySetsContextConfig> config,
-      base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
-          f) const;
-
-  // Iterates over the alias mappings in `manual_config_` and `aliases_`
-  // (skipping entries of `aliases_` that are shadowed), invoking `f` for each
-  // `alias, canonical` pair.
-  void ForEachAlias(base::FunctionRef<void(const SchemefulSite&,
-                                           const SchemefulSite&)> f) const;
-
   // Synchronously iterate over all the effective entries. Returns true iff all
   // the entries are valid.
-  bool IsValid(base::optional_ref<const FirstPartySetsContextConfig> config =
-                   std::nullopt) const;
+  bool IsValid() const;
 
   // Resolves an alias site into the canonical representative site, if possible.
   // The returned reference's lifetime is the *minimum* of the lifetimes of
@@ -205,10 +119,6 @@ class NET_EXPORT GlobalFirstPartySets {
 
   // Stores the sets defined by the public repository.
   FirstPartySetsContextConfig public_config_;
-
-  // Stores the customizations induced by the manually-specified set. May be
-  // empty if no switch was provided.
-  FirstPartySetsContextConfig manual_config_;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

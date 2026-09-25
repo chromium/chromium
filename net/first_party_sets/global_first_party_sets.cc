@@ -18,7 +18,6 @@
 #include "base/functional/function_ref.h"
 #include "base/types/optional_ref.h"
 #include "net/base/schemeful_site.h"
-#include "net/first_party_sets/addition_overlaps_union_find.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_entry_override.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -27,50 +26,15 @@
 
 namespace net {
 
-namespace {
-
-using FlattenedSets = base::flat_map<SchemefulSite, FirstPartySetEntry>;
-using SingleSet = base::flat_map<SchemefulSite, FirstPartySetEntry>;
-
-// Converts a list of First-Party Sets from a SingleSet to a FlattenedSet
-// representation.
-FlattenedSets Flatten(const std::vector<SingleSet>& set_list) {
-  FlattenedSets sets;
-  for (const auto& set : set_list) {
-    for (const auto& site_and_entry : set) {
-      bool inserted = sets.emplace(site_and_entry).second;
-      CHECK(inserted);
-    }
-  }
-  return sets;
-}
-
-std::pair<SchemefulSite, FirstPartySetEntryOverride>
-SiteAndEntryToSiteAndOverride(
-    const std::pair<SchemefulSite, FirstPartySetEntry>& pair) {
-  return std::make_pair(pair.first, FirstPartySetEntryOverride(pair.second));
-}
-
-}  // namespace
-
 GlobalFirstPartySets::GlobalFirstPartySets() = default;
 
 GlobalFirstPartySets::GlobalFirstPartySets(
     base::Version public_sets_version,
     FirstPartySetsContextConfig public_config)
-    : GlobalFirstPartySets(std::move(public_sets_version),
-                           std::move(public_config),
-                           /*manual_config=*/{}) {}
-
-GlobalFirstPartySets::GlobalFirstPartySets(
-    base::Version public_sets_version,
-    FirstPartySetsContextConfig public_config,
-    FirstPartySetsContextConfig manual_config)
     : public_sets_version_(std::move(public_sets_version)),
       public_config_(public_sets_version_.IsValid()
                          ? std::move(public_config)
-                         : FirstPartySetsContextConfig{}),
-      manual_config_(std::move(manual_config)) {
+                         : FirstPartySetsContextConfig{}) {
   if (!public_sets_version_.IsValid()) {
     CHECK(public_config_.empty());
   }
@@ -78,7 +42,6 @@ GlobalFirstPartySets::GlobalFirstPartySets(
   public_config_.ForEachCustomizationEntry(
       [&](const SchemefulSite& site,
           const FirstPartySetEntryOverride& entry_overide) -> bool {
-        CHECK(!entry_overide.IsDeletion());
         return true;
       });
   CHECK(IsValid()) << "Sets must be valid";
@@ -108,302 +71,24 @@ bool GlobalFirstPartySets::operator==(const GlobalFirstPartySets& other) const =
     default;
 
 GlobalFirstPartySets GlobalFirstPartySets::Clone() const {
-  return GlobalFirstPartySets(public_sets_version_, public_config_.Clone(),
-                              manual_config_.Clone());
+  return GlobalFirstPartySets(public_sets_version_, public_config_.Clone());
 }
 
 std::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
-    const SchemefulSite& site,
-    const FirstPartySetsContextConfig& config) const {
-  return FindEntry(site, &config);
-}
-
-std::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
-    const SchemefulSite& site,
-    const FirstPartySetsContextConfig* config) const {
-  for (const auto* cfg :
-       std::initializer_list<const FirstPartySetsContextConfig*>{
-           config,
-           &manual_config_,
-           &public_config_,
-       }) {
-    if (!cfg) {
-      continue;
-    }
-    if (const auto entry_override = cfg->FindOverride(site);
-        entry_override.has_value()) {
-      return entry_override->IsDeletion()
-                 ? std::nullopt
-                 : std::make_optional(entry_override->GetEntry());
-    }
+    const SchemefulSite& site) const {
+  if (const auto entry_override = public_config_.FindOverride(site);
+      entry_override.has_value()) {
+    return std::make_optional(entry_override->GetEntry());
   }
   return std::nullopt;
 }
 
 FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
     const SchemefulSite& site,
-    base::optional_ref<const SchemefulSite> top_frame_site,
-    const FirstPartySetsContextConfig& fps_context_config) const {
-  return FirstPartySetMetadata(
-      FindEntry(site, fps_context_config),
-      top_frame_site ? FindEntry(*top_frame_site, fps_context_config)
-                     : std::nullopt);
-}
-
-
-void GlobalFirstPartySets::UnsafeSetManualConfig(
-    FirstPartySetsContextConfig manual_config) {
-  CHECK(manual_config_.empty());
-  manual_config_ = std::move(manual_config);
-}
-
-base::flat_map<SchemefulSite, FirstPartySetEntry>
-GlobalFirstPartySets::FindPrimariesAffectedByAdditions(
-    const FlattenedSets& additions) const {
-  std::vector<std::pair<SchemefulSite, FirstPartySetEntry>>
-      addition_intersected_primaries;
-  for (const auto& [new_member, new_entry] : additions) {
-    if (const auto entry = FindEntry(new_member, /*config=*/nullptr);
-        entry.has_value()) {
-      // Found an overlap with the existing list of sets.
-      addition_intersected_primaries.emplace_back(entry->primary(), new_entry);
-    }
-  }
-  return addition_intersected_primaries;
-}
-
-std::pair<base::flat_map<SchemefulSite, base::flat_set<SchemefulSite>>,
-          base::flat_set<SchemefulSite>>
-GlobalFirstPartySets::FindPrimariesAffectedByReplacements(
-    const FlattenedSets& replacements,
-    const FlattenedSets& additions,
-    const base::flat_map<SchemefulSite, FirstPartySetEntry>&
-        addition_intersected_primaries) const {
-  if (replacements.empty()) {
-    return {{}, {}};
-  }
-
-  std::map<SchemefulSite, std::set<SchemefulSite>> canonical_to_aliases;
-  ForEachAlias([&](const SchemefulSite& alias, const SchemefulSite& canonical) {
-    canonical_to_aliases[canonical].insert(alias);
-  });
-  // Runs the given FunctionRef for all (existing) variants of the given site,
-  // i.e. all the aliases and the "canonical" variant.
-  const auto for_all_variants =
-      [this, canonical_to_aliases = std::move(canonical_to_aliases)](
-          const SchemefulSite& site,
-          const base::FunctionRef<void(const SchemefulSite&)> f) {
-        const SchemefulSite& canonical = ResolveAlias(site);
-        f(canonical);
-        if (const std::set<SchemefulSite>* aliases =
-                base::FindOrNull(canonical_to_aliases, canonical)) {
-          for (const auto& alias : *aliases) {
-            f(alias);
-          }
-        }
-      };
-
-  // Maps an existing primary site to the members it lost due to replacement.
-  base::flat_map<SchemefulSite, base::flat_set<SchemefulSite>>
-      potential_singletons;
-  // Stores existing primary sites which have left their sets (via
-  // replacement), and whose existing members should be removed from the set
-  // (excluding any custom sets that those members are involved in).
-  base::flat_set<SchemefulSite> replaced_existing_primaries;
-  for (const auto& [new_site, unused_entry] : replacements) {
-    const auto existing_entry = FindEntry(new_site, /*config=*/nullptr);
-    if (!existing_entry.has_value()) {
-      continue;
-    }
-    if (!addition_intersected_primaries.contains(existing_entry->primary()) &&
-        !additions.contains(existing_entry->primary()) &&
-        !replacements.contains(existing_entry->primary())) {
-      // The existing site's primary isn't involved in any of the customized
-      // sets, so it might become a singleton (if all of its variants and
-      // non-primaries [and their variants] are replaced by the
-      // customizations).
-      for_all_variants(new_site, [&](const SchemefulSite& variant) {
-        if (existing_entry->primary() != variant) {
-          potential_singletons[existing_entry->primary()].insert(variant);
-        }
-      });
-    }
-
-    if (existing_entry->primary() == new_site) {
-      // `new_site` was a primary in the existing sets, but is in the
-      // replacement sets, so its non-primaries (and aliases) might need to be
-      // deleted/hidden.
-      bool inserted =
-          replaced_existing_primaries.emplace(existing_entry->primary()).second;
-      CHECK(inserted);
-    }
-  }
-
-  return std::make_pair(potential_singletons, replaced_existing_primaries);
-}
-
-FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
-    SetsMutation mutation) const {
-  if (std::ranges::all_of(mutation.replacements(), &SingleSet::empty) &&
-      std::ranges::all_of(mutation.additions(), &SingleSet::empty)) {
-    // Nothing to do.
-    return FirstPartySetsContextConfig();
-  }
-
-  const FlattenedSets replacements = Flatten(mutation.replacements());
-  const FlattenedSets additions =
-      Flatten(NormalizeAdditionSets(mutation.additions()));
-
-  // Maps a site to its override.
-  std::vector<std::pair<SchemefulSite, FirstPartySetEntryOverride>>
-      site_to_override;
-  std::ranges::transform(replacements, std::back_inserter(site_to_override),
-                         SiteAndEntryToSiteAndOverride);
-  std::ranges::transform(additions, std::back_inserter(site_to_override),
-                         SiteAndEntryToSiteAndOverride);
-
-  // Maps old primary site to new entry.
-  const base::flat_map<SchemefulSite, FirstPartySetEntry>
-      addition_intersected_primaries =
-          FindPrimariesAffectedByAdditions(additions);
-
-  auto [potential_singletons, replaced_existing_primaries] =
-      FindPrimariesAffectedByReplacements(replacements, additions,
-                                          addition_intersected_primaries);
-
-  if (!addition_intersected_primaries.empty() ||
-      !potential_singletons.empty() || !replaced_existing_primaries.empty()) {
-    // Find out which potential singletons are actually singletons; delete
-    // members whose primaries left; and reparent the sets that intersected with
-    // an addition set.
-    // Note: use a null config here, to avoid taking unrelated policy sets into
-    // account.
-    ForEachEffectiveSetEntry(
-        /*config=*/std::nullopt,
-        [&](const SchemefulSite& member, const FirstPartySetEntry& set_entry) {
-          // Reparent all sites in any intersecting addition sets.
-          if (const FirstPartySetEntry* entry = base::FindOrNull(
-                  addition_intersected_primaries, set_entry.primary());
-              entry && !replacements.contains(member)) {
-            site_to_override.emplace_back(
-                member, FirstPartySetEntry(entry->primary(),
-                                           member == entry->primary()
-                                               ? SiteType::kPrimary
-                                               : SiteType::kAssociated));
-          }
-          if (member == set_entry.primary())
-            return true;
-          // Remove non-singletons from the potential list.
-          if (const auto singletons_it =
-                  potential_singletons.find(set_entry.primary());
-              singletons_it != potential_singletons.end() &&
-              !singletons_it->second.contains(member)) {
-            // This primary lost members, but it still has at least one
-            // (`member`), so it's not a singleton.
-            potential_singletons.erase(singletons_it);
-          }
-          // Remove members from sets whose primary left.
-          if (replaced_existing_primaries.contains(set_entry.primary()) &&
-              !replacements.contains(member) &&
-              !addition_intersected_primaries.contains(set_entry.primary())) {
-            site_to_override.emplace_back(member, FirstPartySetEntryOverride());
-          }
-
-          return true;
-        });
-
-    // Any primary remaining in `potential_singleton` is a real singleton, so
-    // delete it:
-    for (const auto& [primary, members] : potential_singletons) {
-      site_to_override.emplace_back(primary, FirstPartySetEntryOverride());
-    }
-  }
-
-  // For every pre-existing alias that would now refer to a site in the overlay,
-  // which is not already contained in the overlay, we explicitly ignore that
-  // alias.
-  ForEachAlias([&](const SchemefulSite& alias, const SchemefulSite& canonical) {
-    if (std::ranges::contains(
-            site_to_override, canonical,
-            &std::pair<SchemefulSite, FirstPartySetEntryOverride>::first) &&
-        !std::ranges::contains(
-            site_to_override, alias,
-            &std::pair<SchemefulSite, FirstPartySetEntryOverride>::first)) {
-      site_to_override.emplace_back(alias, FirstPartySetEntryOverride());
-    }
-  });
-
-  // Verify that the original set of aliases in the overlay don't refer to
-  // anything that was removed from the overlay. No alias can refer to a
-  // deletion.
-  CHECK(std::ranges::none_of(
-      mutation.aliases(), [&](const auto& alias_pair) -> bool {
-        const auto alias_override_it = std::ranges::find_if(
-            site_to_override, [&](const auto& site_override_pair) -> bool {
-              return site_override_pair.first == alias_pair.first;
-            });
-        return alias_override_it == site_to_override.end() ||
-               alias_override_it->second.IsDeletion();
-      }));
-
-  std::optional<FirstPartySetsContextConfig> config =
-      FirstPartySetsContextConfig::Create(std::move(site_to_override),
-                                          mutation.aliases());
-  CHECK(config.has_value());  // This class ensures the invariants that the
-                              // config relies on.
-  CHECK(IsValid(config)) << "Sets must not contain singleton or orphan";
-  return std::move(config).value();
-}
-
-std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
-GlobalFirstPartySets::NormalizeAdditionSets(
-    const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
-        addition_sets) const {
-  if (std::ranges::all_of(addition_sets, &SingleSet::empty)) {
-    // Nothing to do.
-    return {};
-  }
-
-  // Find all the addition sets that intersect with any given public set.
-  base::flat_map<SchemefulSite, base::flat_set<size_t>> addition_set_overlaps;
-  for (size_t set_idx = 0; set_idx < addition_sets.size(); set_idx++) {
-    for (const auto& site_and_entry : addition_sets[set_idx]) {
-      if (const auto entry =
-              FindEntry(site_and_entry.first, /*config=*/nullptr);
-          entry.has_value()) {
-        addition_set_overlaps[entry->primary()].insert(set_idx);
-      }
-    }
-  }
-
-  // Union together all transitively-overlapping addition sets.
-  AdditionOverlapsUnionFind union_finder(addition_sets.size());
-  for (const auto& [public_site, addition_set_indices] :
-       addition_set_overlaps) {
-    for (size_t representative : addition_set_indices) {
-      union_finder.Union(*addition_set_indices.begin(), representative);
-    }
-  }
-
-  // Now build the new addition sets, with all transitive overlaps eliminated.
-  std::vector<SingleSet> normalized_additions;
-  for (const auto& [rep, children] : union_finder.SetsMapping()) {
-    SingleSet normalized = addition_sets[rep];
-    const SchemefulSite& rep_primary =
-        addition_sets[rep].begin()->second.primary();
-    for (size_t child_set_idx : children) {
-      for (const auto& child_site_and_entry : addition_sets[child_set_idx]) {
-        bool inserted =
-            normalized
-                .emplace(child_site_and_entry.first,
-                         FirstPartySetEntry(rep_primary, SiteType::kAssociated))
-                .second;
-        CHECK(inserted);
-      }
-    }
-    normalized_additions.push_back(normalized);
-  }
-  return normalized_additions;
+    base::optional_ref<const SchemefulSite> top_frame_site) const {
+  return FirstPartySetMetadata(FindEntry(site), top_frame_site
+                                                    ? FindEntry(*top_frame_site)
+                                                    : std::nullopt);
 }
 
 bool GlobalFirstPartySets::ForEachPublicSetEntry(
@@ -412,85 +97,23 @@ bool GlobalFirstPartySets::ForEachPublicSetEntry(
   return public_config_.ForEachCustomizationEntry(
       [&](const SchemefulSite& site,
           const FirstPartySetEntryOverride& entry_overide) -> bool {
-        // `GetEntry()` is safe to call because the GlobalFirstPartySets ctor
-        // CHECKs that all of `public_config_`'s entries are non-deletions.
         return f(site, entry_overide.GetEntry());
       });
 }
 
-bool GlobalFirstPartySets::ForEachManualConfigEntry(
-    base::FunctionRef<bool(const SchemefulSite&,
-                           const FirstPartySetEntryOverride&)> f) const {
-  return manual_config_.ForEachCustomizationEntry(f);
-}
-
 bool GlobalFirstPartySets::ForEachEffectiveSetEntry(
-    const FirstPartySetsContextConfig& config,
     base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)> f)
     const {
-  return ForEachEffectiveSetEntry(&config, f);
-}
-
-bool GlobalFirstPartySets::ForEachEffectiveSetEntry(
-    base::optional_ref<const FirstPartySetsContextConfig> config,
-    base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)> f)
-    const {
-  // Higher-precedence configs appear earlier in the array.
-  const std::array ordered_configs = {
-      config.as_ptr(),
-      &manual_config_,
-      &public_config_,
-  };
-
-  const auto is_shadowed_by_higher_precedence_config =
-      [&](size_t current, const SchemefulSite& site) -> bool {
-    return std::ranges::any_of(
-        base::span(ordered_configs).subspan(/*offset=*/0U, /*count=*/current),
-        [&](const FirstPartySetsContextConfig* higher_cfg) {
-          return higher_cfg && higher_cfg->Contains(site);
-        });
-  };
-
-  for (size_t i = 0; i < ordered_configs.size(); ++i) {
-    const auto* cfg = ordered_configs[i];
-    if (!cfg) {
-      continue;
-    }
-    if (!cfg->ForEachCustomizationEntry(
-            [&](const SchemefulSite& site,
-                const FirstPartySetEntryOverride& entry_override) {
-              // Only run the `f` if the entry is not a deletion and not
-              // shadowed. Deletions and shadowed entries don't abort the loop
-              // early.
-              return entry_override.IsDeletion() ||
-                     is_shadowed_by_higher_precedence_config(i, site) ||
-                     f(site, entry_override.GetEntry());
-            })) {
-      return false;
-    }
-  }
-  return true;
-}
-
-void GlobalFirstPartySets::ForEachAlias(
-    base::FunctionRef<void(const SchemefulSite&, const SchemefulSite&)> f)
-    const {
-  manual_config_.ForEachAlias(f);
-
-  public_config_.ForEachAlias(
-      [&](const SchemefulSite& alias, const SchemefulSite& site) {
-        if (manual_config_.Contains(alias)) {
-          return;
-        }
-        f(alias, site);
+  return public_config_.ForEachCustomizationEntry(
+      [&](const SchemefulSite& site,
+          const FirstPartySetEntryOverride& entry_override) {
+        return f(site, entry_override.GetEntry());
       });
 }
 
-bool GlobalFirstPartySets::IsValid(
-    base::optional_ref<const FirstPartySetsContextConfig> config) const {
+bool GlobalFirstPartySets::IsValid() const {
   FirstPartySetsValidator validator;
   ForEachEffectiveSetEntry(
-      config,
       [&](const SchemefulSite& site, const FirstPartySetEntry& entry) -> bool {
         validator.Update(site, entry.primary());
         return true;
@@ -501,9 +124,6 @@ bool GlobalFirstPartySets::IsValid(
 
 const SchemefulSite& GlobalFirstPartySets::ResolveAlias(
     const SchemefulSite& site) const {
-  if (manual_config_.Contains(site)) {
-    return manual_config_.ResolveAlias(site);
-  }
   CHECK(public_config_.Contains(site));
   return public_config_.ResolveAlias(site);
 }
@@ -513,13 +133,6 @@ std::ostream& operator<<(std::ostream& os, const GlobalFirstPartySets& sets) {
   sets.ForEachPublicSetEntry(
       [&](const SchemefulSite& site, const FirstPartySetEntry& entry) {
         os << "{" << site.Serialize() << ": " << entry << "},";
-        return true;
-      });
-  os << "}, manual_config = {";
-  sets.ForEachManualConfigEntry(
-      [&](const SchemefulSite& site,
-          const FirstPartySetEntryOverride& override) {
-        os << "{" << site.Serialize() << ": " << override << "},";
         return true;
       });
   os << "}}";

@@ -45,13 +45,11 @@ void SetComponentSets(FirstPartySetsLoader& loader,
 
 base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> FindEntries(
     const net::GlobalFirstPartySets& sets,
-    const base::flat_set<net::SchemefulSite>& sites,
-    const net::FirstPartySetsContextConfig& config) {
+    const base::flat_set<net::SchemefulSite>& sites) {
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> got;
   got.reserve(sites.size());
   for (const auto& site : sites) {
-    std::optional<net::FirstPartySetEntry> maybe_entry =
-        sets.FindEntry(site, config);
+    std::optional<net::FirstPartySetEntry> maybe_entry = sets.FindEntry(site);
     if (maybe_entry) {
       got.emplace_back(site, std::move(maybe_entry).value());
     }
@@ -79,8 +77,7 @@ TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidFile) {
   SetComponentSets(loader(), base::Version("1.2.3"),
                    "certainly not valid JSON");
   EXPECT_EQ(WaitAndGetResult().FindEntry(
-                net::SchemefulSite(GURL("https://example.test")),
-                net::FirstPartySetsContextConfig()),
+                net::SchemefulSite(GURL("https://example.test"))),
             std::nullopt);
 }
 
@@ -92,8 +89,7 @@ TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidVersion) {
       "{\"primary\": \"https://foo.test\",\"associatedSites\": "
       "[\"https://associatedsite2.test\"]}");
   EXPECT_EQ(WaitAndGetResult().FindEntry(
-                net::SchemefulSite(GURL("https://example.test")),
-                net::FirstPartySetsContextConfig()),
+                net::SchemefulSite(GURL("https://example.test"))),
             std::nullopt);
 }
 
@@ -111,8 +107,7 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
       "[\"https://associatedsite2.test\"]}");
 
   EXPECT_THAT(
-      FindEntries(WaitAndGetResult(), {example, associated1, foo, associated2},
-                  net::FirstPartySetsContextConfig()),
+      FindEntries(WaitAndGetResult(), {example, associated1, foo, associated2}),
       UnorderedElementsAre(
           Pair(example,
                net::FirstPartySetEntry(example, net::SiteType::kPrimary)),
@@ -144,8 +139,7 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
 
   // The second call to SetComponentSets should have had no effect.
   EXPECT_THAT(
-      FindEntries(WaitAndGetResult(), {example, foo, example2, foo2},
-                  net::FirstPartySetsContextConfig()),
+      FindEntries(WaitAndGetResult(), {example, foo, example2, foo2}),
       UnorderedElementsAre(
           Pair(example,
                net::FirstPartySetEntry(example, net::SiteType::kPrimary)),

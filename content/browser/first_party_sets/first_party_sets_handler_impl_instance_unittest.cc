@@ -65,13 +65,12 @@ constexpr char kMostDelayedQueryDeltaHistogram[] =
 
 base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> FindEntries(
     const FirstPartySetsHandler& handler,
-    const base::flat_set<net::SchemefulSite>& sites,
-    const net::FirstPartySetsContextConfig& config) {
+    const base::flat_set<net::SchemefulSite>& sites) {
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> got;
   got.reserve(sites.size());
   for (const auto& site : sites) {
     std::optional<net::FirstPartySetEntry> maybe_entry =
-        handler.FindEntry(site, config);
+        handler.FindEntry(site);
     if (maybe_entry) {
       got.emplace_back(site, std::move(maybe_entry).value());
     }
@@ -152,8 +151,7 @@ TEST_F(FirstPartySetsHandlerImplDisabledTest, InitImmediately) {
                       net::SchemefulSite(GURL("https://example.test")),
                       net::SchemefulSite(GURL("https://associatedsite1.test")),
                       net::SchemefulSite(GURL("https://associatedsite2.test")),
-                  },
-                  net::FirstPartySetsContextConfig()),
+                  }),
       IsEmpty());
 }
 
@@ -192,8 +190,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
 
   WaitUntilInitComplete();
 
-  EXPECT_THAT(FindEntries(handler(), {example, associated},
-                          net::FirstPartySetsContextConfig()),
+  EXPECT_THAT(FindEntries(handler(), {example, associated}),
               UnorderedElementsAre(
                   Pair(example, net::FirstPartySetEntry(
                                     example, net::SiteType::kPrimary)),
@@ -240,8 +237,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, WhenInitComplete_AfterSetsReady) {
 
   WaitUntilInitComplete();
 
-  EXPECT_THAT(FindEntries(handler(), {example, associated},
-                          net::FirstPartySetsContextConfig()),
+  EXPECT_THAT(FindEntries(handler(), {example, associated}),
               UnorderedElementsAre(
                   Pair(example, net::FirstPartySetEntry(
                                     example, net::SiteType::kPrimary)),
@@ -272,8 +268,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, WhenInitComplete_BeforeSetsReady) {
 
   EXPECT_TRUE(handler().WhenInitComplete(base::NullCallback()));
 
-  EXPECT_THAT(FindEntries(handler(), {example, associated},
-                          net::FirstPartySetsContextConfig()),
+  EXPECT_THAT(FindEntries(handler(), {example, associated}),
               UnorderedElementsAre(
                   Pair(example, net::FirstPartySetEntry(
                                     example, net::SiteType::kPrimary)),
@@ -297,7 +292,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   handler().ComputeFirstPartySetMetadata(
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://associatedsite.test")),
-      net::FirstPartySetsContextConfig(), future.GetCallback());
+      future.GetCallback());
   EXPECT_TRUE(future.IsReady());
   EXPECT_NE(future.Take(), net::FirstPartySetMetadata());
 }
@@ -309,7 +304,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   handler().ComputeFirstPartySetMetadata(
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://associatedsite.test")),
-      net::FirstPartySetsContextConfig(), future.GetCallback());
+      future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
   handler().Init(scoped_dir_.GetPath());
@@ -331,7 +326,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   // Verifies calling ForEachEffectiveSetEntry before the sets are ready returns
   // false.
   EXPECT_FALSE(handler().ForEachEffectiveSetEntry(
-      net::FirstPartySetsContextConfig(),
       [&](const net::SchemefulSite& site,
           const net::FirstPartySetEntry& entry) {
         NOTREACHED();
@@ -352,7 +346,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>
       set_entries;
   EXPECT_TRUE(handler().ForEachEffectiveSetEntry(
-      net::FirstPartySetsContextConfig(),
       [&](const net::SchemefulSite& site,
           const net::FirstPartySetEntry& entry) {
         set_entries.emplace_back(site, entry);
@@ -365,50 +358,5 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                   Pair(associated, net::FirstPartySetEntry(
                                        example, net::SiteType::kAssociated))));
 }
-
-TEST_F(FirstPartySetsHandlerImplEnabledTest,
-       ForEachEffectiveSetEntry_WithNonEmptyConfig) {
-  net::SchemefulSite example(GURL("https://example.test"));
-  net::SchemefulSite associated1(GURL("https://associatedsite1.test"));
-  net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
-
-  handler().Init(scoped_dir_.GetPath());
-
-  const std::string input =
-      R"({"primary": "https://example.test", )"
-      R"("associatedSites": ["https://associatedsite1.test"]})";
-  ASSERT_TRUE(
-      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-  handler().SetPublicFirstPartySets(base::Version("1.2.3"),
-                                    WritePublicSetsFile(input));
-  WaitUntilInitComplete();
-
-  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>
-      set_entries;
-  // Calling ForEachEffectiveSetEntry with context config which add a new
-  // associated site https://associatedsite2.test to the above set.
-  EXPECT_TRUE(handler().ForEachEffectiveSetEntry(
-      net::FirstPartySetsContextConfig::Create(
-          {{associated2,
-            net::FirstPartySetEntryOverride(
-                net::FirstPartySetEntry(example, net::SiteType::kAssociated))}})
-          .value(),
-      [&](const net::SchemefulSite& site,
-          const net::FirstPartySetEntry& entry) {
-        set_entries.emplace_back(site, entry);
-        return true;
-      }));
-  EXPECT_THAT(
-      set_entries,
-      UnorderedElementsAre(
-          Pair(example,
-               net::FirstPartySetEntry(example, net::SiteType::kPrimary)),
-          Pair(associated1,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated)),
-          Pair(associated2,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated))));
-}
-
-
 
 }  // namespace content

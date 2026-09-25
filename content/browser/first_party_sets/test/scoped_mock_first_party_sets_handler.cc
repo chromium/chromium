@@ -37,9 +37,8 @@ void ScopedMockFirstPartySetsHandler::SetPublicFirstPartySets(
 
 std::optional<net::FirstPartySetEntry>
 ScopedMockFirstPartySetsHandler::FindEntry(
-    const net::SchemefulSite& site,
-    const net::FirstPartySetsContextConfig& config) const {
-  return global_sets_.FindEntry(site, config);
+    const net::SchemefulSite& site) const {
+  return global_sets_.FindEntry(site);
 }
 
 void ScopedMockFirstPartySetsHandler::Init(
@@ -77,13 +76,12 @@ bool ScopedMockFirstPartySetsHandler::WhenInitComplete(
 void ScopedMockFirstPartySetsHandler::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
     base::optional_ref<const net::SchemefulSite> top_frame_site,
-    const net::FirstPartySetsContextConfig& config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   if (should_deadlock_) {
     return;
   }
   net::FirstPartySetMetadata metadata =
-      global_sets_.ComputeMetadata(site, top_frame_site, config);
+      global_sets_.ComputeMetadata(site, top_frame_site);
   if (invoke_callbacks_asynchronously_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(metadata)));
@@ -93,13 +91,12 @@ void ScopedMockFirstPartySetsHandler::ComputeFirstPartySetMetadata(
 }
 
 bool ScopedMockFirstPartySetsHandler::ForEachEffectiveSetEntry(
-    const net::FirstPartySetsContextConfig& config,
     base::FunctionRef<bool(const net::SchemefulSite&,
                            const net::FirstPartySetEntry&)> f) const {
   if (invoke_callbacks_asynchronously_) {
     return false;
   }
-  return global_sets_.ForEachEffectiveSetEntry(config, f);
+  return global_sets_.ForEachEffectiveSetEntry(f);
 }
 
 void ScopedMockFirstPartySetsHandler::SetGlobalSets(

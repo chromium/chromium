@@ -19,8 +19,7 @@ using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 MATCHER_P(OverridesTo, entry, "") {
-  return !arg.IsDeletion() &&
-         testing::ExplainMatchResult(entry, arg.GetEntry(), result_listener);
+  return testing::ExplainMatchResult(entry, arg.GetEntry(), result_listener);
 }
 
 namespace net {
@@ -43,16 +42,6 @@ TEST(FirstPartySetsContextConfigTest, FindOverride_irrelevant) {
             std::nullopt);
 }
 
-TEST(FirstPartySetsContextConfigTest, FindOverride_deletion) {
-  SchemefulSite example(GURL("https://example.test"));
-
-  EXPECT_THAT(FirstPartySetsContextConfig::Create(
-                  {{example, FirstPartySetEntryOverride()}})
-                  .value()
-                  .FindOverride(example),
-              Optional(FirstPartySetEntryOverride()));
-}
-
 TEST(FirstPartySetsContextConfigTest, FindOverride_modification) {
   SchemefulSite example(GURL("https://example.test"));
   FirstPartySetEntry entry(example, SiteType::kPrimary);
@@ -70,7 +59,7 @@ TEST(FirstPartySetsContextConfigTest, Contains) {
 
   FirstPartySetsContextConfig config =
       FirstPartySetsContextConfig::Create(
-          {{example, FirstPartySetEntryOverride()}})
+          {{example, FirstPartySetEntryOverride(FirstPartySetEntry())}})
           .value();
 
   EXPECT_TRUE(config.Contains(example));
@@ -83,8 +72,8 @@ TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntry_FullIteration) {
 
   FirstPartySetsContextConfig config =
       FirstPartySetsContextConfig::Create(
-          {{example, FirstPartySetEntryOverride()},
-           {foo, FirstPartySetEntryOverride()}})
+          {{example, FirstPartySetEntryOverride(FirstPartySetEntry())},
+           {foo, FirstPartySetEntryOverride(FirstPartySetEntry())}})
           .value();
 
   int count = 0;
@@ -103,8 +92,8 @@ TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntry_EarlyReturn) {
 
   FirstPartySetsContextConfig config =
       FirstPartySetsContextConfig::Create(
-          {{example, FirstPartySetEntryOverride()},
-           {foo, FirstPartySetEntryOverride()}})
+          {{example, FirstPartySetEntryOverride(FirstPartySetEntry())},
+           {foo, FirstPartySetEntryOverride(FirstPartySetEntry())}})
           .value();
 
   int count = 0;

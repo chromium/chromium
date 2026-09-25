@@ -21,13 +21,11 @@ class FirstPartySetEntryOverrideDataView;
 namespace net {
 
 // This class represents a single modification to be applied on top of the
-// global First-Party Sets list. A modifications may be a deletion, remapping,
-// or new mapping.
+// global First-Party Sets list. A modification may be a new mapping.
 class NET_EXPORT FirstPartySetEntryOverride {
  public:
-  // Creates a new modification representing a deletion.
-  FirstPartySetEntryOverride();
-  // Creates a new modification representing a remapping/additional mapping.
+  FirstPartySetEntryOverride() = delete;
+  // Creates a new modification representing an additional mapping.
   explicit FirstPartySetEntryOverride(FirstPartySetEntry entry);
 
   FirstPartySetEntryOverride(FirstPartySetEntryOverride&& other);
@@ -40,15 +38,8 @@ class NET_EXPORT FirstPartySetEntryOverride {
 
   bool operator==(const FirstPartySetEntryOverride& other) const;
 
-  // Returns true iff this override is a deletion.
-  bool IsDeletion() const { return !entry_.has_value(); }
-
-  // Returns the new target entry, if this override is not a deletion. Must not
-  // be called if `IsDeletion()` is true.
-  const FirstPartySetEntry& GetEntry() const {
-    CHECK(!IsDeletion());
-    return entry_.value();
-  }
+  // Returns the new target entry.
+  const FirstPartySetEntry& GetEntry() const { return entry_; }
 
  private:
   // mojo (de)serialization needs access to private details.
@@ -56,7 +47,7 @@ class NET_EXPORT FirstPartySetEntryOverride {
       network::mojom::FirstPartySetEntryOverrideDataView,
       FirstPartySetEntryOverride>;
 
-  std::optional<FirstPartySetEntry> entry_;
+  FirstPartySetEntry entry_;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

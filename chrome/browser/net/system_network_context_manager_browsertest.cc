@@ -768,7 +768,7 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
     base::test::TestFuture<net::FirstPartySetMetadata> future;
     net::SchemefulSite site(GURL("https://a.test"));
     content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
-        site, site, net::FirstPartySetsContextConfig(), future.GetCallback());
+        site, site, future.GetCallback());
     ASSERT_TRUE(future.Wait());
   }
 

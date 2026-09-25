@@ -136,8 +136,7 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
   }
 
   content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
-      site, top_frame_site, net::FirstPartySetsContextConfig(),
-      std::move(callback));
+      site, top_frame_site, std::move(callback));
 }
 
 void FirstPartySetsPolicyService::OnRelatedWebsiteSetsEnabledChanged(
@@ -211,8 +210,7 @@ std::optional<net::FirstPartySetEntry> FirstPartySetsPolicyService::FindEntry(
     return std::nullopt;
   }
 
-  return content::FirstPartySetsHandler::GetInstance()->FindEntry(
-      site, net::FirstPartySetsContextConfig());
+  return content::FirstPartySetsHandler::GetInstance()->FindEntry(site);
 }
 
 bool FirstPartySetsPolicyService::IsSiteInManagedSet(
@@ -229,7 +227,7 @@ bool FirstPartySetsPolicyService::ForEachEffectiveSetEntry(
     return false;
   }
   return content::FirstPartySetsHandler::GetInstance()
-      ->ForEachEffectiveSetEntry(net::FirstPartySetsContextConfig(), f);
+      ->ForEachEffectiveSetEntry(f);
 }
 
 void FirstPartySetsPolicyService::OnReadyToNotifyDelegates() {

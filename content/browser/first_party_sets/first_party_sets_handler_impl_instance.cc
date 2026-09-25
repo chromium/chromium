@@ -227,13 +227,12 @@ void FirstPartySetsHandlerImplInstance::InvokePendingQueries() {
 
 std::optional<net::FirstPartySetEntry>
 FirstPartySetsHandlerImplInstance::FindEntry(
-    const net::SchemefulSite& site,
-    const net::FirstPartySetsContextConfig& config) const {
+    const net::SchemefulSite& site) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!global_sets_.has_value()) {
     return std::nullopt;
   }
-  return global_sets_->FindEntry(site, config);
+  return global_sets_->FindEntry(site);
 }
 
 net::GlobalFirstPartySets FirstPartySetsHandlerImplInstance::GetGlobalSetsSync()
@@ -260,7 +259,6 @@ bool FirstPartySetsHandlerImplInstance::WhenInitComplete(
 void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
     base::optional_ref<const net::SchemefulSite> top_frame_site,
-    const net::FirstPartySetsContextConfig& config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!global_sets_.has_value()) {
@@ -268,35 +266,31 @@ void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadata(
                                           ComputeFirstPartySetMetadataInternal,
                                       base::Unretained(this), site,
                                       top_frame_site.CopyAsOptional(),
-                                      config.Clone(), std::move(callback)));
+                                      std::move(callback)));
     return;
   }
 
-  std::move(callback).Run(
-      global_sets_->ComputeMetadata(site, top_frame_site, config));
+  std::move(callback).Run(global_sets_->ComputeMetadata(site, top_frame_site));
 }
 
 void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadataInternal(
     const net::SchemefulSite& site,
     base::optional_ref<const net::SchemefulSite> top_frame_site,
-    const net::FirstPartySetsContextConfig& config,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(global_sets_.has_value());
 
-  std::move(callback).Run(
-      global_sets_->ComputeMetadata(site, top_frame_site, config));
+  std::move(callback).Run(global_sets_->ComputeMetadata(site, top_frame_site));
 }
 
 bool FirstPartySetsHandlerImplInstance::ForEachEffectiveSetEntry(
-    const net::FirstPartySetsContextConfig& config,
     base::FunctionRef<bool(const net::SchemefulSite&,
                            const net::FirstPartySetEntry&)> f) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!global_sets_.has_value()) {
     return false;
   }
-  return global_sets_->ForEachEffectiveSetEntry(config, f);
+  return global_sets_->ForEachEffectiveSetEntry(f);
 }
 
 }  // namespace content
