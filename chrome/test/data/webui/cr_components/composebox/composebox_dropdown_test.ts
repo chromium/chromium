@@ -46,6 +46,7 @@ suite('ComposeboxDropdown', () => {
   test('renders groups and headers when flag enabled', async () => {
     dropdown.richImageSuggestionsEnabled = true;
     dropdown.result = createAutocompleteResultForTesting({
+      sequenceId: 7,
       suggestionGroupsMap: {
         100: {
           header: 'Recent searches',
@@ -97,6 +98,13 @@ suite('ComposeboxDropdown', () => {
     const gridMatches =
         gridMatchesContainer.querySelectorAll('cr-composebox-match');
     assertEquals(2, gridMatches.length);
+
+    const allMatches =
+        dropdown.shadowRoot.querySelectorAll('cr-composebox-match');
+    assertEquals(3, allMatches.length);
+    for (const matchElement of allMatches) {
+      assertEquals(7, matchElement.resultSequenceId);
+    }
   });
 
 
