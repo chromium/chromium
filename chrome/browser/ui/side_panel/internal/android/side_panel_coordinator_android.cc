@@ -104,6 +104,21 @@ void SidePanelCoordinatorAndroid::ClosePanel(bool suppress_animations) {
 bool SidePanelCoordinatorAndroid::HasContentToShow(TabAndroid* tab) {
   CHECK(tab);
 
+  // A closing tab should never show the side panel.
+  //
+  // The check here prevents any calls to HasContentToShow() from incorrectly
+  // returning `true` when the given tab is closing.
+  //
+  // For example, Java `SideUiCoordinatorImpl#updateUiInternal()` calls this
+  // function, and `updateUiInternal()` can be triggered by top controls' height
+  // changes during tab closure. In this case, we may still have an active
+  // window-scoped `SidePanelEntry`, or a deferred entry for the given `tab`
+  // (to support undo "close all tabs" in Grid Tab Switcher).
+  if (tab->IsClosing()) {
+    SPLOG("HasContentToShow - tab is closing, returning false");
+    return false;
+  }
+
   // Check if the tab has an active tab-scoped (contextual) entry.
   if (auto* tab_scoped_registry = SidePanelRegistry::From(tab)) {
     if (auto active_entry = tab_scoped_registry->GetActiveEntry()) {

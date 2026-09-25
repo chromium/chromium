@@ -340,6 +340,11 @@ void TabAndroid::SetWindowSessionID(SessionID window_id) {
   session_tab_helper->SetWindowID(session_window_id_);
 }
 
+bool TabAndroid::IsClosing() const {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabImpl_isClosing(env, GetJavaObject(env));
+}
+
 bool TabAndroid::IsCustomTab() const {
   JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_isCustomTab(env, GetJavaObject(env));

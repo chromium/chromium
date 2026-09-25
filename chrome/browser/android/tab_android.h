@@ -176,6 +176,7 @@ class TabAndroid : public tabs::TabInterface,
 
   void SetWindowSessionID(SessionID window_id);
 
+  bool IsClosing() const;
   bool IsCustomTab() const;
   bool IsHidden() const;
 

@@ -1435,6 +1435,7 @@ class TabImpl implements Tab, TabInternal {
         }
     }
 
+    @CalledByNative
     @Override
     public boolean isClosing() {
         return mIsClosing;
