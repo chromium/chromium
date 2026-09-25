@@ -36,9 +36,12 @@ class JavaChecker(object):
 
   EXTENSIONS = ['.java']
 
-  # This regular expression will be used to extract filenames from import
-  # statements.
-  _EXTRACT_IMPORT_PATH = re.compile(r'^import\s+(?:static\s+)?([\w\.]+)\s*;')
+  # This regular expression extracts the top-level class (`<package>.<Class>`)
+  # from import statements, stripping any trailing nested class or static member
+  # names (e.g. `import static foo.bar.Outer.Inner.CONST;` -> `foo.bar.Outer`)
+  # so that it matches the `<package>.<filename_stem>` keys in `_classmap`.
+  _EXTRACT_IMPORT_PATH = re.compile(
+      r'^import\s+(?:static\s+)?((?:[a-z0-9_]+\.)+[A-Z]\w*)(?:\.[\w\*]+)*\s*;')
 
   def __init__(self, base_directory, verbose, added_imports=None,
                allow_multiple_definitions=None):

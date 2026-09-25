@@ -347,17 +347,34 @@ class CheckDepsTest(unittest.TestCase):
 
       checker = checkdeps.DepsChecker(base_directory=temp_dir)
 
-      # Scenario 1: Importing a git-tracked class from an allowed directory
-      # (exercises the `git ls-files` + `target_filenames` fast path).
-      self.assertFalse(checker.CheckAddedJavaImports(
-          [[foo_java, ['import org.chromium.allowed.Good;']]]))
+      # Scenario 1: Importing a git-tracked class (including nested classes and
+      # static members) from an allowed directory (exercises the `git ls-files`
+      # + `target_filenames` fast path).
+      self.assertFalse(checker.CheckAddedJavaImports([[
+          foo_java,
+          [
+              'import org.chromium.allowed.Good;',
+              'import org.chromium.allowed.Good.Nested;',
+              'import static org.chromium.allowed.Good.SOME_CONST;',
+              'import static org.chromium.allowed.Good.Nested.someMethod;',
+          ],
+      ]]))
 
-      # Scenario 2: Importing a git-tracked class from a disallowed directory
-      # reports a DEPS violation with the resolved file path.
-      problems = checker.CheckAddedJavaImports(
-          [[foo_java, ['import org.chromium.disallowed.Bad;']]])
-      self.assertEqual(1, len(problems))
-      self.assertIn('disallowed/Bad.java', problems[0][2])
+      # Scenario 2: Importing a git-tracked class (direct, nested, or static
+      # member) from a disallowed directory reports a DEPS violation with the
+      # resolved top-level file path.
+      problems = checker.CheckAddedJavaImports([[
+          foo_java,
+          [
+              'import org.chromium.disallowed.Bad;',
+              'import org.chromium.disallowed.Bad.Nested;',
+              'import static org.chromium.disallowed.Bad.SOME_CONST;',
+              'import static org.chromium.disallowed.Bad.Nested.*;',
+          ],
+      ]])
+      self.assertEqual(4, len(problems))
+      for problem in problems:
+        self.assertIn('disallowed/Bad.java', problem[2])
 
       # Scenario 3: An untracked file included in `added_imports` (not yet in
       # `git ls-files`) is still prescanned via the `added_imports` supplement.
