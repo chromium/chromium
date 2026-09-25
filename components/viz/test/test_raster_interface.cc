@@ -140,6 +140,7 @@ void TestRasterInterface::ShallowFlushCHROMIUM() {
 
 bool TestRasterInterface::ReadbackImagePixels(
     const gpu::Mailbox& source_mailbox,
+    const gfx::Size& source_size,
     const SkImageInfo& dst_info,
     GLuint dst_row_bytes,
     int src_x,

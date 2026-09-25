@@ -4633,7 +4633,8 @@ GLboolean GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
       SkColorTypeBytesPerPixel(static_cast<SkColorType>(dst_sk_color_type));
   RelaxedAtomicWriteMemcpyImageRowsSkippingPadding(
       /*dst=*/dst, /*src=*/src, /*row_bytes=*/min_row_bytes,
-      /*height=*/dst_height, /*stride=*/dst_row_bytes);
+      /*height=*/dst_height, /*dst_stride=*/dst_row_bytes,
+      /*src_stride=*/dst_row_bytes);
   return GL_TRUE;
 }
 

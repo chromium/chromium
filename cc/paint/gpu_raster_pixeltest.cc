@@ -283,7 +283,8 @@ class GpuRasterPixelTest : public testing::Test,
         image_size.width(), image_size.height(), color_space);
     SkBitmap result;
     result.allocPixels(image_info);
-    ri->ReadbackImagePixels(mailbox, image_info, image_info.minRowBytes(), 0, 0,
+    ri->ReadbackImagePixels(mailbox, image_size, image_info,
+                            image_info.minRowBytes(), 0, 0,
                             /*plane_index=*/0, result.getPixels());
     return result;
   }
@@ -2774,9 +2775,10 @@ TEST_F(GpuRasterPixelTest, CopySharedImage) {
     readback_bitmap.allocPixels(SkImageInfo::MakeN32Premul(
         size.width(), size.height(), dest_color_space.ToSkColorSpace()));
 
-    ri->ReadbackImagePixels(dest_client_si->mailbox(), readback_bitmap.info(),
-                            readback_bitmap.rowBytes(), 0, 0,
-                            /*plane_index=*/0, readback_bitmap.getPixels());
+    ri->ReadbackImagePixels(dest_client_si->mailbox(), size,
+                            readback_bitmap.info(), readback_bitmap.rowBytes(),
+                            0, 0, /*plane_index=*/0,
+                            readback_bitmap.getPixels());
   }
 
   // The pixel value should be unchanged, even though the source and dest are

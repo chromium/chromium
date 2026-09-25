@@ -145,8 +145,8 @@ class LayerTreeHostReadbackPixelTest
     bitmap.allocPixels(SkImageInfo::MakeN32Premul(
         size.width(), size.height(), color_space.ToSkColorSpace()));
 
-    ri->ReadbackImagePixels(mailbox, bitmap.info(), bitmap.rowBytes(), 0, 0,
-                            /*plane_index=*/0, bitmap.getPixels());
+    ri->ReadbackImagePixels(mailbox, size, bitmap.info(), bitmap.rowBytes(), 0,
+                            0, /*plane_index=*/0, bitmap.getPixels());
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
 
     return bitmap;

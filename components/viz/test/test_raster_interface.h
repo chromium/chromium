@@ -137,6 +137,7 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
       base::OnceCallback<void()> release_mailbox,
       base::OnceCallback<void(bool)> readback_done) override {}
   bool ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
+                           const gfx::Size& source_size,
                            const SkImageInfo& dst_info,
                            GLuint dst_row_bytes,
                            int src_x,

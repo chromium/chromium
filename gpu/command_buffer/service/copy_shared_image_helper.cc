@@ -606,9 +606,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
 namespace {
 
 // Graphite only supports asynchronous reads, and the asynchronous reads require
-// that the src rect is contained within the image. This function automatically
-// adjusts the parameters to match the permissiveness of Ganesh's
-// SkImage::readPixels and makes it synchronous.
+// that the src rect is contained within the image.
 bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
                              sk_sp<SkImage> sk_image,
                              GrSurfaceOrigin src_surface_origin,
@@ -619,40 +617,8 @@ bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
                              size_t row_bytes) {
   gfx::Rect src_rect(src_x, src_y, dst_info.width(), dst_info.height());
   gfx::Rect src_image_bounds(sk_image->width(), sk_image->height());
+  CHECK(src_image_bounds.Contains(src_rect));
 
-  // TODO(crbug.com/40942998): Once all src rects are required to be contained
-  // in the image, the !Contains branch can be removed.
-  if (!src_image_bounds.Contains(src_rect)) {
-    src_rect.Intersect(src_image_bounds);
-    if (src_rect.IsEmpty()) {
-      // NOTE: This is consistent with SkImage::readPixels on a Ganesh image,
-      // which permits src_rect to not be fully contained, but can't be disjoint
-      return false;
-    }
-
-    // Adjust the pixel address to account for any intersection, so that the
-    // available content remains aligned with the intended dst pixel data.
-    // When `src_rect` was originally contained in the src image bounds, this
-    // is equal to the original `pixel_address`.
-    uint8_t* subset_pixel_addr =
-        UNSAFE_TODO(static_cast<uint8_t*>(pixel_address) +
-                    (src_rect.y() - src_y) * row_bytes +
-                    (src_rect.x() - src_x) * dst_info.bytesPerPixel());
-    SkImageInfo subset_dst_info =
-        dst_info.makeWH(src_rect.width(), src_rect.height());
-
-    // src_rect.Intersect(src_image_bounds) should ensure this call skips the
-    // !Contains branch and actually reads the pixels. Check here to prevent
-    // infinite recursion.
-    CHECK(src_image_bounds.Contains(src_rect));
-    return GraphiteImageReadPixels(graphite_shared_context, std::move(sk_image),
-                                   src_surface_origin, src_rect.x(),
-                                   src_rect.y(), subset_dst_info,
-                                   subset_pixel_addr, row_bytes);
-  }
-
-  // Now that `src_rect` meets the requirements of the asyncRead API, call the
-  // async function, then submit and block until it's completed.
   CHECK(graphite_shared_context);
   ReadPixelsContext context;
 
@@ -763,8 +729,17 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
                                     "Couldn't create SkImage for reading."));
   }
 
-  // TODO(crbug.com/40942998): Add back src_rect validation once renderer passes
-  // a correct rect size.
+  gfx::Rect src_rect(src_x, src_y, dst_info.width(), dst_info.height());
+  gfx::Rect src_image_bounds(sk_image->width(), sk_image->height());
+  if (!src_image_bounds.Contains(src_rect)) {
+    source_scoped_access->ApplyBackendSurfaceEndState();
+    shared_context_state_->SubmitIfNecessary(
+        std::move(end_semaphores),
+        source_scoped_access->NeedGraphiteContextSubmit());
+    return base::unexpected(GLError(GL_INVALID_VALUE, "ReadPixels",
+                                    "Trying to read outside source image."));
+  }
+
   bool success = false;
   if (gr_context) {
     success = sk_image->readPixels(gr_context, dst_info, pixel_address,

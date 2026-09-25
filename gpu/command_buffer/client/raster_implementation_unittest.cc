@@ -15,14 +15,18 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <numeric>
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
@@ -278,16 +282,17 @@ class RasterImplementationTest : public testing::Test {
   }
 
   bool ReadbackImagePixelsINTERNAL(const gpu::Mailbox& source_mailbox,
+                                   const gfx::Size& source_size,
                                    const SkImageInfo& dst_info,
                                    GLuint dst_row_bytes,
                                    int src_x,
                                    int src_y,
                                    int plane_index,
                                    base::OnceCallback<void(bool)> readback_done,
-                                   void* dst_pixels) {
+                                   base::span<uint8_t> dst_pixels) {
     return gl_->ReadbackImagePixelsINTERNAL(
-        source_mailbox, dst_info, dst_row_bytes, src_x, src_y, plane_index,
-        std::move(readback_done), dst_pixels);
+        source_mailbox, source_size, dst_info, dst_row_bytes, src_x, src_y,
+        plane_index, std::move(readback_done), dst_pixels);
   }
 
   static SharedMemoryLimits SharedMemoryLimitsForTesting() {
@@ -896,6 +901,7 @@ TEST_F(RasterImplementationTest, SetActiveURLCHROMIUM) {
 
 // https://crbug.com/543707066
 TEST_F(RasterImplementationTest, ReadbackImagePixelsSyncPadding) {
+  base::test::ScopedFeatureList feature({}, {kDisableErrorHandlingForReadback});
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   SkImageInfo dst_info = SkImageInfo::MakeN32Premul(2, 2);
   GLuint dst_row_bytes =
@@ -905,48 +911,48 @@ TEST_F(RasterImplementationTest, ReadbackImagePixelsSyncPadding) {
       sizeof(cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result),
       sizeof(uint64_t));
   GLuint pixels_offset = color_space_offset;
-  GLuint dst_size = dst_info.computeByteSize(dst_row_bytes);
+  GLuint shm_size = dst_info.computeMinByteSize();
   GLuint total_size =
       pixels_offset +
-      base::bits::AlignUp(dst_size, static_cast<GLuint>(sizeof(uint64_t)));
+      base::bits::AlignUp(shm_size, static_cast<GLuint>(sizeof(uint64_t)));
 
   ExpectedMemoryInfo mem = GetExpectedMappedMemory(total_size);
 
   std::vector<uint8_t> dst_pixels(dst_row_bytes * dst_info.height(), 0xAA);
 
   EXPECT_CALL(*command_buffer(), OnFlush())
-      .WillOnce([mem, pixels_offset, dst_size]() {
+      .WillOnce([mem, pixels_offset, shm_size]() {
         // Write 1 to readback_result (at the beginning of shm).
         auto* result = reinterpret_cast<
             cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(mem.ptr);
         *result = 1;
 
         // Write test data to the pixel portion of the shared memory.
-        auto src_pixels = mem.span.subspan(pixels_offset, dst_size);
-        // Fill src_pixels with distinct values, e.g. 1 to dst_size
-        for (size_t i = 0; i < dst_size; ++i) {
+        auto src_pixels = mem.span.subspan(pixels_offset, shm_size);
+        // Fill src_pixels with distinct values, e.g. 1 to shm_size
+        for (size_t i = 0; i < shm_size; ++i) {
           src_pixels[i] = static_cast<uint8_t>(i + 1);
         }
       })
       .RetiresOnSaturation();
 
-  bool success = gl_->ReadbackImagePixels(mailbox, dst_info, dst_row_bytes,
-                                          /*src_x=*/0, /*src_y=*/0,
-                                          /*plane_index=*/0, dst_pixels.data());
+  bool success = gl_->ReadbackImagePixels(
+      mailbox, /*source_size=*/gfx::Size(2, 2), dst_info, dst_row_bytes,
+      /*src_x=*/0, /*src_y=*/0, /*plane_index=*/0, dst_pixels.data());
 
   EXPECT_TRUE(success);
 
   // Expected output:
-  // Row 1 (pixels: 0 to 7) copied from src_pixels (0 to 7): 1, 2, 3, 4, 5, 6,
-  // 7, 8. Row 1 (padding: 8 to 11) untouched: 0xAA, 0xAA, 0xAA, 0xAA. Row 2
-  // (pixels: 12 to 19) copied from src_pixels (12 to 19): 13, 14, 15, 16, 17,
-  // 18, 19, 20. Row 2 (padding: 20 to 23) untouched: 0xAA, 0xAA, 0xAA, 0xAA.
+  // - Row 1 (pixels: 0 to 7) copied from src_pixels (0 to 7): 1..8.
+  // - Row 1 (padding: 8 to 11) untouched: 0xAA, 0xAA, 0xAA, 0xAA.
+  // - Row 2 (pixels: 12 to 19) copied from src_pixels (8 to 15): 9..16.
+  // - Row 2 (padding: 20 to 23) untouched: 0xAA, 0xAA, 0xAA, 0xAA.
 
   std::vector<uint8_t> expected_pixels(dst_row_bytes * dst_info.height(), 0xAA);
   for (int y = 0; y < dst_info.height(); ++y) {
     for (size_t x = 0; x < dst_info.minRowBytes(); ++x) {
       size_t dst_idx = y * dst_row_bytes + x;
-      size_t src_idx = y * dst_row_bytes + x;
+      size_t src_idx = y * dst_info.minRowBytes() + x;
       expected_pixels[dst_idx] = static_cast<uint8_t>(src_idx + 1);
     }
   }
@@ -965,10 +971,10 @@ TEST_F(RasterImplementationTest, ReadbackImagePixelsAsyncPadding) {
       sizeof(cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result),
       sizeof(uint64_t));
   GLuint pixels_offset = color_space_offset;
-  GLuint dst_size = dst_info.computeByteSize(dst_row_bytes);
+  GLuint shm_size = dst_info.computeMinByteSize();
   GLuint total_size =
       pixels_offset +
-      base::bits::AlignUp(dst_size, static_cast<GLuint>(sizeof(uint64_t)));
+      base::bits::AlignUp(shm_size, static_cast<GLuint>(sizeof(uint64_t)));
 
   ExpectedMemoryInfo mem = GetExpectedMappedMemory(total_size);
 
@@ -991,8 +997,9 @@ TEST_F(RasterImplementationTest, ReadbackImagePixelsAsyncPadding) {
       &callback_run, &callback_success);
 
   bool success = ReadbackImagePixelsINTERNAL(
-      mailbox, dst_info, dst_row_bytes, /*src_x=*/0, /*src_y=*/0,
-      /*plane_index=*/0, std::move(readback_done), dst_pixels.data());
+      mailbox, /*source_size=*/gfx::Size(2, 2), dst_info, dst_row_bytes,
+      /*src_x=*/0, /*src_y=*/0, /*plane_index=*/0, std::move(readback_done),
+      dst_pixels);
 
   EXPECT_TRUE(success);
   EXPECT_FALSE(callback_run);
@@ -1004,8 +1011,8 @@ TEST_F(RasterImplementationTest, ReadbackImagePixelsAsyncPadding) {
           mem.ptr);
   *result = 1;
 
-  auto src_pixels = mem.span.subspan(pixels_offset, dst_size);
-  for (size_t i = 0; i < dst_size; ++i) {
+  auto src_pixels = mem.span.subspan(pixels_offset, shm_size);
+  for (size_t i = 0; i < shm_size; ++i) {
     src_pixels[i] = static_cast<uint8_t>(i + 1);
   }
 
@@ -1023,12 +1030,127 @@ TEST_F(RasterImplementationTest, ReadbackImagePixelsAsyncPadding) {
   for (int y = 0; y < dst_info.height(); ++y) {
     for (size_t x = 0; x < dst_info.minRowBytes(); ++x) {
       size_t dst_idx = y * dst_row_bytes + x;
-      size_t src_idx = y * dst_row_bytes + x;
+      size_t src_idx = y * dst_info.minRowBytes() + x;
       expected_pixels[dst_idx] = static_cast<uint8_t>(src_idx + 1);
     }
   }
 
   EXPECT_EQ(dst_pixels, expected_pixels);
+}
+
+TEST_F(RasterImplementationTest, ReadbackImagePixelsSyncOutOfBounds) {
+  base::test::ScopedFeatureList feature({}, {kDisableErrorHandlingForReadback});
+  // Request a 4x4 read starting at (-1, -1) with row padding (20 bytes/row).
+  // The intersection with the 2x2 source image is (0, 0, 2, 2), which lands at
+  // offset (1, 1) in the 4x4 destination buffer.
+  SkImageInfo dst_info = SkImageInfo::MakeN32Premul(4, 4);
+  GLuint dst_row_bytes = 20;  // 4 pixels * 4 bytes/pixel = 16 + 4 padding.
+  SkImageInfo clipped_info = SkImageInfo::MakeN32Premul(2, 2);
+
+  GLuint pixels_offset = base::bits::AlignUp(
+      sizeof(cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result),
+      sizeof(uint64_t));
+  GLuint shm_size = clipped_info.computeMinByteSize();
+  GLuint total_size =
+      pixels_offset +
+      base::bits::AlignUp(shm_size, static_cast<GLuint>(sizeof(uint64_t)));
+  ExpectedMemoryInfo mem = GetExpectedMappedMemory(total_size);
+
+  EXPECT_CALL(*command_buffer(), OnFlush()).WillOnce([&]() {
+    *reinterpret_cast<cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(
+        mem.ptr) = 1;
+    std::ranges::iota(mem.span.subspan(pixels_offset, shm_size), 0);
+  });
+
+  std::vector<uint8_t> dst_pixels(dst_row_bytes * dst_info.height(), 0xAA);
+  EXPECT_TRUE(gl_->ReadbackImagePixels(
+      gpu::Mailbox::Generate(), /*source_size=*/gfx::Size(2, 2), dst_info,
+      dst_row_bytes, /*src_x=*/-1, /*src_y=*/-1, /*plane_index=*/0,
+      dst_pixels.data()));
+
+  std::vector<uint8_t> expected_pixels(dst_row_bytes * dst_info.height(), 0xAA);
+  for (int y = 0; y < clipped_info.height(); ++y) {
+    for (size_t x = 0; x < clipped_info.minRowBytes(); ++x) {
+      size_t dst_idx = (y + 1) * dst_row_bytes + dst_info.bytesPerPixel() + x;
+      size_t src_idx = y * clipped_info.minRowBytes() + x;
+      expected_pixels[dst_idx] = static_cast<uint8_t>(src_idx);
+    }
+  }
+  EXPECT_EQ(dst_pixels, expected_pixels);
+}
+
+TEST_F(RasterImplementationTest, ReadbackImagePixelsSyncCompletelyOutOfBounds) {
+  base::test::ScopedFeatureList feature({}, {kDisableErrorHandlingForReadback});
+  // Read a 2x2 image at index (3, 3), that is, completely out of bounds.
+  SkImageInfo dst_info = SkImageInfo::MakeN32Premul(2, 2);
+  std::vector<uint8_t> dst_pixels(dst_info.computeMinByteSize(), 0xAA);
+  EXPECT_FALSE(gl_->ReadbackImagePixels(
+      gpu::Mailbox::Generate(), /*source_size=*/gfx::Size(2, 2), dst_info,
+      dst_info.minRowBytes(), /*src_x=*/3, /*src_y=*/3, /*plane_index=*/0,
+      dst_pixels.data()));
+
+  EXPECT_EQ(dst_pixels,
+            std::vector<uint8_t>(dst_info.computeMinByteSize(), 0xAA));
+}
+
+TEST_F(RasterImplementationTest, ReadbackImagePixelsAsyncOutOfBounds) {
+  // Request a 4x4 read starting at (-1, -1) with row padding (20 bytes/row).
+  // The intersection with the 2x2 source image is (0, 0, 2, 2), which lands at
+  // offset (1, 1) in the 4x4 destination buffer.
+  SkImageInfo dst_info = SkImageInfo::MakeN32Premul(4, 4);
+  GLuint dst_row_bytes = 20;
+  SkImageInfo clipped_info = SkImageInfo::MakeN32Premul(2, 2);
+
+  GLuint pixels_offset = base::bits::AlignUp(
+      sizeof(cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result),
+      sizeof(uint64_t));
+  GLuint shm_size = clipped_info.computeMinByteSize();
+  GLuint total_size =
+      pixels_offset +
+      base::bits::AlignUp(shm_size, static_cast<GLuint>(sizeof(uint64_t)));
+  ExpectedMemoryInfo mem = GetExpectedMappedMemory(total_size);
+
+  EXPECT_CALL(*gpu_control_, DoSignalQuery(_, _))
+      .WillOnce([&](uint32_t query, base::OnceClosure* callback) {
+        *reinterpret_cast<
+            cmds::ReadbackARGBImagePixelsINTERNALImmediate::Result*>(mem.ptr) =
+            1;
+        std::ranges::iota(mem.span.subspan(pixels_offset, shm_size), 0);
+        std::move(*callback).Run();
+      });
+
+  base::test::TestFuture<bool> result_future;
+  std::vector<uint8_t> dst_pixels(dst_row_bytes * dst_info.height(), 0xAA);
+  EXPECT_TRUE(ReadbackImagePixelsINTERNAL(
+      gpu::Mailbox::Generate(), /*source_size=*/gfx::Size(2, 2), dst_info,
+      dst_row_bytes, /*src_x=*/-1, /*src_y=*/-1, /*plane_index=*/0,
+      result_future.GetCallback(), dst_pixels));
+  EXPECT_TRUE(result_future.Get());
+
+  std::vector<uint8_t> expected_pixels(dst_row_bytes * dst_info.height(), 0xAA);
+  for (int y = 0; y < clipped_info.height(); ++y) {
+    for (size_t x = 0; x < clipped_info.minRowBytes(); ++x) {
+      size_t dst_idx = (y + 1) * dst_row_bytes + dst_info.bytesPerPixel() + x;
+      size_t src_idx = y * clipped_info.minRowBytes() + x;
+      expected_pixels[dst_idx] = static_cast<uint8_t>(src_idx);
+    }
+  }
+  EXPECT_EQ(dst_pixels, expected_pixels);
+}
+
+TEST_F(RasterImplementationTest,
+       ReadbackImagePixelsAsyncCompletelyOutOfBounds) {
+  // Read a 2x2 image at index (3, 3), that is, completely out of bounds.
+  SkImageInfo dst_info = SkImageInfo::MakeN32Premul(2, 2);
+  std::vector<uint8_t> dst_pixels(dst_info.computeMinByteSize(), 0xAA);
+  base::test::TestFuture<bool> result_future;
+  EXPECT_FALSE(ReadbackImagePixelsINTERNAL(
+      gpu::Mailbox::Generate(), /*source_size=*/gfx::Size(2, 2), dst_info,
+      dst_info.minRowBytes(), /*src_x=*/3, /*src_y=*/3, /*plane_index=*/0,
+      result_future.GetCallback(), dst_pixels));
+  EXPECT_FALSE(result_future.Get());
+  EXPECT_EQ(dst_pixels,
+            std::vector<uint8_t>(dst_info.computeMinByteSize(), 0xAA));
 }
 
 // https://crbug.com/543707066

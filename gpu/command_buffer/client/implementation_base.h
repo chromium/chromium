@@ -168,7 +168,8 @@ GLES2_IMPL_EXPORT void RelaxedAtomicWriteMemcpyImageRowsSkippingPadding(
     base::span<uint8_t> src,
     size_t row_bytes,
     size_t height,
-    size_t stride);
+    size_t dst_stride,
+    size_t src_stride);
 
 }  // namespace gpu
 

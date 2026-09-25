@@ -72,7 +72,7 @@ sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
       static_cast<uint8_t*>(image_pixels->writable_data());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   if (!ri->ReadbackImagePixels(
-          GetMailbox(), sk_image_info_,
+          GetMailbox(), shared_image_->size(), sk_image_info_,
           static_cast<GLuint>(sk_image_info_.minRowBytes()), 0, 0,
           /*plane_index=*/0, writable_pixels)) {
     return nullptr;
@@ -89,9 +89,9 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
                                        int src_y) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-  return ri->ReadbackImagePixels(GetMailbox(), dst_info,
-                                 static_cast<GLuint>(dst_info.minRowBytes()),
-                                 src_x, src_y, /*plane_index=*/0, dst_pixels);
+  return ri->ReadbackImagePixels(GetMailbox(), shared_image_->size(), dst_info,
+                                 static_cast<GLuint>(dst_row_bytes), src_x,
+                                 src_y, /*plane_index=*/0, dst_pixels);
 }
 
 }  // namespace blink

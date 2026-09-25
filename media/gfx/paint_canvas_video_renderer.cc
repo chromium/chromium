@@ -853,8 +853,9 @@ class VideoTextureBacking : public cc::TextureBacking {
     CHECK(raster_context_provider_);
     gpu::raster::RasterInterface* ri =
         raster_context_provider_->RasterInterface();
-    return ri->ReadbackImagePixels(shared_image_->mailbox(), dst_info,
-                                   dst_info.minRowBytes(), src_x, src_y,
+    return ri->ReadbackImagePixels(shared_image_->mailbox(),
+                                   shared_image_->size(), dst_info,
+                                   dst_row_bytes, src_x, src_y,
                                    /*plane_index=*/0, dst_pixels);
   }
 

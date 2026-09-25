@@ -758,9 +758,11 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
   std::unique_ptr<gpu::RasterScopedAccess> ri_access =
       src_frame.shared_image()->BeginRasterAccess(ri, sync_token,
                                                   /*readonly=*/true);
-  bool readback_result =
-      ri->ReadbackImagePixels(mailbox, info, dest_stride, src_rect.x(),
-                              src_rect.y(), src_plane, dest_pixels);
+  gfx::Size plane_size = src_frame.shared_image()->format().GetPlaneSize(
+      src_plane, src_frame.shared_image()->size());
+  bool readback_result = ri->ReadbackImagePixels(
+      mailbox, plane_size, info, dest_stride, src_rect.x(), src_rect.y(),
+      src_plane, dest_pixels);
 
   bool result = readback_result &&
                 ri->GetGraphicsResetStatusKHR() == GL_NO_ERROR &&
