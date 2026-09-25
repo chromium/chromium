@@ -365,21 +365,27 @@ TEST_F(NotificationPlatformBridgeMacTest, TestGetDisplayed) {
   EXPECT_EQ(1u, banner_dispatcher()->notifications().size());
 
   {
-    base::test::TestFuture<std::set<std::string>, bool> notifications;
-    bridge->GetDisplayed(profile(), notifications.GetCallback());
-    EXPECT_EQ(1u, notifications.Get<0>().size());
+    base::test::TestFuture<std::set<std::string>, bool> future;
+    bridge->GetDisplayed(profile(), future.GetCallback());
+    auto [notifications, supports_synchronization] = future.Get();
+    EXPECT_TRUE(notifications.empty());
+    EXPECT_FALSE(supports_synchronization);
   }
   {
-    base::test::TestFuture<std::set<std::string>, bool> notifications;
+    base::test::TestFuture<std::set<std::string>, bool> future;
     bridge->GetDisplayedForOrigin(profile(), GURL("https://gmail.com"),
-                                  notifications.GetCallback());
-    EXPECT_EQ(1u, notifications.Get<0>().size());
+                                  future.GetCallback());
+    auto [notifications, supports_synchronization] = future.Get();
+    EXPECT_EQ(1u, notifications.size());
+    EXPECT_TRUE(supports_synchronization);
   }
   {
-    base::test::TestFuture<std::set<std::string>, bool> notifications;
+    base::test::TestFuture<std::set<std::string>, bool> future;
     bridge->GetDisplayedForOrigin(profile(), GURL("https://example.com"),
-                                  notifications.GetCallback());
-    EXPECT_TRUE(notifications.Get<0>().empty());
+                                  future.GetCallback());
+    auto [notifications, supports_synchronization] = future.Get();
+    EXPECT_TRUE(notifications.empty());
+    EXPECT_TRUE(supports_synchronization);
   }
 }
 

@@ -47,8 +47,7 @@ BASE_FEATURE(kAppShimLaunchChromeSilently, base::FEATURE_ENABLED_BY_DEFAULT);
 // When enabled, notifications coming from PWAs will be displayed via their app
 // shim processes, rather than directly by chrome.
 // https://crbug.com/40616749
-BASE_FEATURE(kAppShimNotificationAttribution,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAppShimNotificationAttribution, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, app shims used by PWAs will be signed with an ad-hoc signature
 // https://crbug.com/40276068

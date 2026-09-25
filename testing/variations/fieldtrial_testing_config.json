@@ -1302,21 +1302,6 @@
             ]
         }
     ],
-    "AppShimNotificationAttribution": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AppShimNotificationAttribution"
-                    ]
-                }
-            ]
-        }
-    ],
     "ApplyDeviceChoiceRenewal": [
         {
             "platforms": [
