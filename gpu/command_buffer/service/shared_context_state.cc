@@ -1107,7 +1107,7 @@ void SharedContextState::RemoveContextLostObserver(ContextLostObserver* obs) {
   context_lost_observers_.RemoveObserver(obs);
 }
 
-void SharedContextState::PurgeGaneshMemory(int memory_limit) {
+void SharedContextState::PurgeGaneshMemory(base::MemoryLimit memory_limit) {
   DCHECK(gr_context_);
 
   if (memory_limit <= base::kCriticalMemoryPressureThreshold) {
@@ -1139,7 +1139,7 @@ void SharedContextState::PurgeGaneshMemory(int memory_limit) {
   }
 }
 
-void SharedContextState::PurgeGraphiteMemory(int memory_limit) {
+void SharedContextState::PurgeGraphiteMemory(base::MemoryLimit memory_limit) {
   DCHECK(gpu_main_graphite_cache_controller_);
 
   if (memory_limit <= base::kCriticalMemoryPressureThreshold) {
@@ -1149,7 +1149,7 @@ void SharedContextState::PurgeGraphiteMemory(int memory_limit) {
   }
 }
 
-void SharedContextState::PurgeMemory(int memory_limit) {
+void SharedContextState::PurgeMemory(base::MemoryLimit memory_limit) {
   // Ensure the context is current before doing any GPU cleanup.
   if (!MakeCurrent(nullptr)) {
     return;
@@ -1180,7 +1180,7 @@ void SharedContextState::PurgeMemory(int memory_limit) {
   }
 }
 
-void SharedContextState::OnUpdateMemoryLimit(int memory_limit) {
+void SharedContextState::OnUpdateMemoryLimit(base::MemoryLimit memory_limit) {
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     if (transfer_cache_) {
       transfer_cache_->OnUpdateMemoryLimit(memory_limit);

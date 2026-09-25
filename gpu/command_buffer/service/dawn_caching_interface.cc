@@ -154,14 +154,16 @@ void DawnCachingInterfaceFactory::ReleaseHandle(
   backends_.erase(handle);
 }
 
-void DawnCachingInterfaceFactory::OnUpdateMemoryLimit(int memory_limit) {
+void DawnCachingInterfaceFactory::OnUpdateMemoryLimit(
+    base::MemoryLimit memory_limit) {
   current_memory_limit_ = memory_limit;
   for (auto& [key, backend] : backends_) {
     backend->OnUpdateMemoryLimit(memory_limit);
   }
 }
 
-void DawnCachingInterfaceFactory::OnReleaseMemory(int memory_limit) {
+void DawnCachingInterfaceFactory::OnReleaseMemory(
+    base::MemoryLimit memory_limit) {
   current_memory_limit_ = memory_limit;
   for (auto& [key, backend] : backends_) {
     CHECK(std::holds_alternative<GpuDiskCacheDawnGraphiteHandle>(key) ||

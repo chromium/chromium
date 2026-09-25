@@ -73,7 +73,7 @@ size_t DiscardableCacheSizeLimit() {
 
 // TODO(crbug.com/465068849): Scale linearly between thresholds in a future CL.
 size_t DiscardableCacheSizeLimitForPressure(size_t base_cache_limit,
-                                            int memory_limit) {
+                                            base::MemoryLimit memory_limit) {
   if (memory_limit <= base::kCriticalMemoryPressureThreshold) {
     return 0;
   }
@@ -393,7 +393,7 @@ int ServiceTransferCache::RemoveOldEntriesUntil(
   return removed_count;
 }
 
-void ServiceTransferCache::OnUpdateMemoryLimit(int memory_limit) {
+void ServiceTransferCache::OnUpdateMemoryLimit(base::MemoryLimit memory_limit) {
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     size_t target_limit = gpu::UpdateShaderCacheSizeOnMemoryLimit(
         max_cache_size_limit_, memory_limit);
@@ -402,7 +402,7 @@ void ServiceTransferCache::OnUpdateMemoryLimit(int memory_limit) {
   }
 }
 
-void ServiceTransferCache::OnReleaseMemory(int memory_limit) {
+void ServiceTransferCache::OnReleaseMemory(base::MemoryLimit memory_limit) {
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     // In OnUpdateMemoryLimit(), cache_size_limit_ is clamped to total_size_
     // to avoid unexpected eviction during subsequent CreateLocalEntry() calls.

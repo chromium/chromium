@@ -421,7 +421,7 @@ class SlopBucket::Manager : public base::MemoryConsumer {
 
     // Responds to a memory pressure notification by emptying the free pool and
     // possibly disabling SlopBucket.
-    const int disable_limit_threshold =
+    const base::MemoryLimit disable_limit_threshold =
         configuration_.memory_pressure_disable_level() ==
                 base::MEMORY_PRESSURE_LEVEL_CRITICAL
             ? base::kCriticalMemoryPressureThreshold

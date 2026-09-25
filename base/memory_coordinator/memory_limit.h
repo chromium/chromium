@@ -49,16 +49,15 @@ class BASE_EXPORT MemoryLimit {
     return MemoryLimit(percent);
   }
 
-  // Implicit constructor and conversion operator to facilitate phased
-  // migration from raw int across Chromium.
-  // TODO(crbug.com/441951621): Make constructor private and remove conversion
-  // operator after call site migration is complete.
+  // Implicit constructor to facilitate phased migration from raw int across
+  // Chromium.
+  // TODO(crbug.com/441951621): Make constructor private after call site
+  // migration is complete.
   constexpr MemoryLimit(int percent) : percent_(percent) {
     // Memory limits cannot be negative. Uses CHECK instead of CHECK_GE to avoid
     // including base/check_op.h in this header for this single use case.
     CHECK(percent >= 0);
   }
-  constexpr operator int() const { return percent_; }
 
   // Disallow floating point conversions to prevent silent truncation of ratios
   // (e.g., passing 0.5 becoming 0% / critical pressure).

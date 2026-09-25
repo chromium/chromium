@@ -277,7 +277,8 @@ void GlicWebContentsWarmingPool::EnsurePreload(ContainerCreationReason reason) {
   }
 }
 
-void GlicWebContentsWarmingPool::OnMemoryPressure(int memory_limit) {
+void GlicWebContentsWarmingPool::OnMemoryPressure(
+    base::MemoryLimit memory_limit) {
   memory_limit_ = memory_limit;
 
   // Clear the warmed container when receiving critical memory pressure.

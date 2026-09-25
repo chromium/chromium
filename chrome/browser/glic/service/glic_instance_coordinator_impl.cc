@@ -1599,7 +1599,7 @@ void GlicInstanceCoordinatorImpl::MaybeDaisyChainNewTab(
 
 void GlicInstanceCoordinatorImpl::OnMemoryPressure(
     base::MemoryPressureLevel level) {
-  const int memory_limit = GetMemoryLimit();
+  const base::MemoryLimit memory_limit = GetMemoryLimit();
 
   metrics_.OnMemoryPressure(memory_limit);
   web_contents_warming_pool_->OnMemoryPressure(memory_limit);

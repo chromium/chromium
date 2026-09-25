@@ -28,23 +28,25 @@ namespace {
 
 double LerpBetweenThresholds(size_t start_limit,
                              size_t end_limit,
-                             int start_threshold,
-                             int end_threshold,
-                             int percentage) {
-  const double t = static_cast<double>(percentage - start_threshold) /
-                   (end_threshold - start_threshold);
+                             base::MemoryLimit start_threshold,
+                             base::MemoryLimit end_threshold,
+                             base::MemoryLimit memory_limit) {
+  const double t =
+      static_cast<double>(memory_limit.percent() - start_threshold.percent()) /
+      (end_threshold.percent() - start_threshold.percent());
   return std::lerp(start_limit, end_limit, t);
 }
 
 }  // namespace
 
 size_t CalculateAwakeInstancesLimit(size_t default_limit,
-                                    int memory_limit_percentage) {
+                                    base::MemoryLimit memory_limit) {
+  // The thresholds are constants, so check their ordering at compile time.
+  static_assert(base::kModerateMemoryPressureThreshold >
+                base::kCriticalMemoryPressureThreshold);
+  static_assert(base::kNoMemoryPressureThreshold >
+                base::kModerateMemoryPressureThreshold);
   CHECK_GT(default_limit, 0u);
-  CHECK_GE(memory_limit_percentage, 0);
-  CHECK_GT(base::kModerateMemoryPressureThreshold, 0);
-  CHECK_GT(base::kNoMemoryPressureThreshold,
-           base::kModerateMemoryPressureThreshold);
 
   // Clamp scaled limits to at least 1 so that even under critical memory
   // pressure (0% budget), Glic always allows at least one instance to remain
@@ -55,15 +57,15 @@ size_t CalculateAwakeInstancesLimit(size_t default_limit,
       kGlicMaxAwakeInstancesCriticalPressureLimit.Get(), 1, moderate_limit);
 
   const double scaled_value = [&] {
-    if (memory_limit_percentage <= base::kModerateMemoryPressureThreshold) {
+    if (memory_limit <= base::kModerateMemoryPressureThreshold) {
       return LerpBetweenThresholds(critical_limit, moderate_limit,
                                    base::kCriticalMemoryPressureThreshold,
                                    base::kModerateMemoryPressureThreshold,
-                                   memory_limit_percentage);
+                                   memory_limit);
     }
     return LerpBetweenThresholds(
         moderate_limit, default_limit, base::kModerateMemoryPressureThreshold,
-        base::kNoMemoryPressureThreshold, memory_limit_percentage);
+        base::kNoMemoryPressureThreshold, memory_limit);
   }();
 
   return base::ClampRound<size_t>(scaled_value);

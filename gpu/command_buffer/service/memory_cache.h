@@ -10,6 +10,7 @@
 #include "base/containers/linked_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/gpu_gles2_export.h"
@@ -52,10 +53,10 @@ class GPU_GLES2_EXPORT MemoryCache : public base::RefCounted<MemoryCache> {
 
   // Memory coordinator interface:
   // Triggers immediate eviction of cache entries down to `memory_limit`.
-  void OnReleaseMemory(int memory_limit);
+  void OnReleaseMemory(base::MemoryLimit memory_limit);
   // Updates the target cache size limit non-destructively without forcing
   // immediate eviction.
-  void OnUpdateMemoryLimit(int memory_limit);
+  void OnUpdateMemoryLimit(base::MemoryLimit memory_limit);
 
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::ProcessMemoryDump* pmd);

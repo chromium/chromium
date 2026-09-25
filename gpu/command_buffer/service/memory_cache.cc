@@ -131,7 +131,7 @@ scoped_refptr<MemoryCacheEntry> MemoryCache::Store(
   return entry;
 }
 
-void MemoryCache::OnUpdateMemoryLimit(int memory_limit) {
+void MemoryCache::OnUpdateMemoryLimit(base::MemoryLimit memory_limit) {
   base::AutoLock lock(mutex_);
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     size_t target_limit =
@@ -141,7 +141,7 @@ void MemoryCache::OnUpdateMemoryLimit(int memory_limit) {
   }
 }
 
-void MemoryCache::OnReleaseMemory(int memory_limit) {
+void MemoryCache::OnReleaseMemory(base::MemoryLimit memory_limit) {
   base::AutoLock lock(mutex_);
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     // In OnUpdateMemoryLimit(), size_limit_ is clamped to current_size_

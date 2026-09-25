@@ -84,9 +84,9 @@ class ClientDiscardableSharedMemoryManagerTest : public testing::Test {
       : task_env_(base::test::TaskEnvironment::MainThreadType::UI,
                   base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-  void NotifyUpdateMemoryLimitAndRun(int percentage) {
+  void NotifyUpdateMemoryLimitAndRun(base::MemoryLimit memory_limit) {
     base::RunLoop run_loop;
-    test_registry_.NotifyUpdateMemoryLimitAsync(percentage,
+    test_registry_.NotifyUpdateMemoryLimitAsync(memory_limit,
                                                 run_loop.QuitClosure());
     run_loop.Run();
   }

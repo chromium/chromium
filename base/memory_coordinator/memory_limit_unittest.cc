@@ -32,14 +32,9 @@ TEST(MemoryLimitTest, Factories) {
   EXPECT_DOUBLE_EQ(limit_percent.ratio(), 0.75);
 }
 
-TEST(MemoryLimitTest, ImplicitConversion) {
-  // Implicit construction from int.
+TEST(MemoryLimitTest, ImplicitConstructionFromInt) {
   MemoryLimit limit = 40;
   EXPECT_EQ(limit.percent(), 40);
-
-  // Implicit conversion to int.
-  int raw_int = limit;
-  EXPECT_EQ(raw_int, 40);
 }
 
 TEST(MemoryLimitTest, Comparisons) {

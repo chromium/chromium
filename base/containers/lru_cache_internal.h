@@ -221,8 +221,9 @@ class LRUCacheBase : public PassiveMemoryConsumer {
     ordering_.swap(other.ordering_);
     index_.swap(other.index_);
     std::swap(baseline_max_size_, other.baseline_max_size_);
-    int this_limit = current_memory_limit_.load(std::memory_order_relaxed);
-    int other_limit =
+    MemoryLimit this_limit =
+        current_memory_limit_.load(std::memory_order_relaxed);
+    MemoryLimit other_limit =
         other.current_memory_limit_.load(std::memory_order_relaxed);
     current_memory_limit_.store(other_limit, std::memory_order_relaxed);
     other.current_memory_limit_.store(this_limit, std::memory_order_relaxed);
@@ -343,7 +344,7 @@ class LRUCacheBase : public PassiveMemoryConsumer {
   std::optional<size_type> baseline_max_size_;
 
   // Caches the current memory limit reported by the MemoryCoordinator.
-  std::atomic<int> current_memory_limit_{MemoryConsumer::kDefaultMemoryLimit};
+  std::atomic<MemoryLimit> current_memory_limit_{MemoryLimit::Default()};
 
   std::optional<AsyncMemoryConsumerRegistration> registration_;
 };

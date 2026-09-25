@@ -15,6 +15,7 @@
 #include "base/containers/linked_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -110,10 +111,10 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory
 
   // Memory coordinator interface:
   // Triggers immediate eviction of cache entries down to `memory_limit`.
-  void OnReleaseMemory(int memory_limit);
+  void OnReleaseMemory(base::MemoryLimit memory_limit);
   // Updates the target cache size limit non-destructively without forcing
   // immediate eviction.
-  void OnUpdateMemoryLimit(int memory_limit);
+  void OnUpdateMemoryLimit(base::MemoryLimit memory_limit);
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -132,7 +133,7 @@ class GPU_GLES2_EXPORT DawnCachingInterfaceFactory
   // Map that holds existing backends.
   base::flat_map<gpu::GpuDiskCacheHandle, scoped_refptr<MemoryCache>> backends_;
 
-  int current_memory_limit_ = base::kNoMemoryPressureThreshold;
+  base::MemoryLimit current_memory_limit_ = base::kNoMemoryPressureThreshold;
 };
 
 }  // namespace gpu::webgpu

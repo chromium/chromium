@@ -91,7 +91,8 @@ void GlicInstanceCoordinatorMetrics::RecordActivateTabCandidateTabCount(
       "Glic.ActivateTabWithConversation.CandidateTabCount", count);
 }
 
-void GlicInstanceCoordinatorMetrics::OnMemoryPressure(int memory_limit) {
+void GlicInstanceCoordinatorMetrics::OnMemoryPressure(
+    base::MemoryLimit memory_limit) {
   if (memory_limit > base::kModerateMemoryPressureThreshold) {
     return;
   }

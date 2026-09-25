@@ -605,7 +605,7 @@ void MemoryProgramCache::OnReleaseMemory() {
     return;
   }
 
-  int limit = memory_limit();
+  base::MemoryLimit limit = memory_limit();
   if (limit <= base::kCriticalMemoryPressureThreshold) {
     Trim(0);
   } else if (limit <= base::kModerateMemoryPressureThreshold) {

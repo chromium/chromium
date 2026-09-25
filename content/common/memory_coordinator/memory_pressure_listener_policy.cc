@@ -49,7 +49,7 @@ MemoryPressureListenerPolicy::~MemoryPressureListenerPolicy() = default;
 
 void MemoryPressureListenerPolicy::OnMemoryPressure(
     base::MemoryPressureLevel level) {
-  int limit = GetMemoryLimit();
+  int limit = GetMemoryLimit().percent();
 
   // Always request to release memory here. The signal was originally designed
   // for the MemoryPressureListener, which never made a distinction between

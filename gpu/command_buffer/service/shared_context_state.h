@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -184,11 +185,11 @@ class GPU_GLES2_EXPORT SharedContextState
 
   // Immediately evicts unlocked resources (scratch resources under moderate
   // pressure, or all resources under critical pressure) down to `memory_limit`.
-  void PurgeMemory(int memory_limit);
+  void PurgeMemory(base::MemoryLimit memory_limit);
 
   // Updates internal memory target budgets non-destructively without forcing
   // immediate resource purges.
-  void OnUpdateMemoryLimit(int memory_limit);
+  void OnUpdateMemoryLimit(base::MemoryLimit memory_limit);
 
   void UpdateSkiaOwnedMemorySize();
   uint64_t GetMemoryUsage();
@@ -361,8 +362,8 @@ class GPU_GLES2_EXPORT SharedContextState
 
   std::optional<error::ContextLostReason> GetResetStatus(bool needs_gl);
 
-  void PurgeGaneshMemory(int memory_limit);
-  void PurgeGraphiteMemory(int memory_limit);
+  void PurgeGaneshMemory(base::MemoryLimit memory_limit);
+  void PurgeGraphiteMemory(base::MemoryLimit memory_limit);
 
   // gpu::GLContextVirtualDelegate implementation.
   bool initialized() const override;

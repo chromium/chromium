@@ -602,13 +602,13 @@ int64_t GpuPersistentCache::GLBlobCacheGet(const void* key,
   return discovered_size;
 }
 
-void GpuPersistentCache::OnUpdateMemoryLimit(int memory_limit) {
+void GpuPersistentCache::OnUpdateMemoryLimit(base::MemoryLimit memory_limit) {
   if (memory_cache_) {
     memory_cache_->OnUpdateMemoryLimit(memory_limit);
   }
 }
 
-void GpuPersistentCache::OnReleaseMemory(int memory_limit) {
+void GpuPersistentCache::OnReleaseMemory(base::MemoryLimit memory_limit) {
   if (memory_cache_) {
     memory_cache_->OnReleaseMemory(memory_limit);
   }
@@ -1030,7 +1030,8 @@ scoped_refptr<GpuPersistentCache> GpuPersistentCacheCollection::GetCache(
   return iter->second;
 }
 
-void GpuPersistentCacheCollection::OnUpdateMemoryLimit(int memory_limit) {
+void GpuPersistentCacheCollection::OnUpdateMemoryLimit(
+    base::MemoryLimit memory_limit) {
   base::AutoLock lock(mutex_);
   current_memory_limit_ = memory_limit;
   for (auto& [_, cache] : caches_) {
@@ -1038,7 +1039,8 @@ void GpuPersistentCacheCollection::OnUpdateMemoryLimit(int memory_limit) {
   }
 }
 
-void GpuPersistentCacheCollection::OnReleaseMemory(int memory_limit) {
+void GpuPersistentCacheCollection::OnReleaseMemory(
+    base::MemoryLimit memory_limit) {
   base::AutoLock lock(mutex_);
   for (auto& [_, cache] : caches_) {
     cache->OnReleaseMemory(memory_limit);

@@ -166,7 +166,7 @@ void PassthroughProgramCache::OnReleaseMemory() {
     return;
   }
 
-  int limit = memory_limit();
+  base::MemoryLimit limit = memory_limit();
   if (limit <= base::kCriticalMemoryPressureThreshold) {
     TrimLocked(0);
   } else if (limit <= base::kModerateMemoryPressureThreshold) {

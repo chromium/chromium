@@ -316,8 +316,8 @@ void MemoryCoordinatorPolicyManager::UpdateConsumersForProcess(
 
     std::optional<int> new_effective_limit;
     if (update.memory_limit) {
-      new_effective_limit =
-          group_state.SetMemoryLimitForPolicy(policy, *update.memory_limit);
+      new_effective_limit = group_state.SetMemoryLimitForPolicy(
+          policy, update.memory_limit->percent());
     }
 
     // Redundant updates that have no observable effect on the consumer group

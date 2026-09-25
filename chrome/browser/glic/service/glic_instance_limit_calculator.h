@@ -8,6 +8,7 @@
 #include <cstddef>
 
 #include "base/feature_list.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/metrics/field_trial_params.h"
 
 namespace glic {
@@ -20,7 +21,7 @@ extern const base::FeatureParam<size_t>
     kGlicMaxAwakeInstancesCriticalPressureLimit;
 
 // Dynamically calculates the maximum awake instances limit based on the system
-// memory limit percentage (`memory_limit_percentage`).
+// memory limit (`memory_limit`).
 //
 // Performs piecewise linear interpolation across three anchor points using
 // C++20 `std::lerp`:
@@ -35,7 +36,7 @@ extern const base::FeatureParam<size_t>
 // extrapolates along the slope between moderate and no-pressure thresholds to
 // allow additional awake instances when abundant memory is available.
 size_t CalculateAwakeInstancesLimit(size_t default_limit,
-                                    int memory_limit_percentage);
+                                    base::MemoryLimit memory_limit);
 
 }  // namespace glic
 
