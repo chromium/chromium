@@ -263,8 +263,13 @@ public class NtpCustomizationConfigManager {
                 bitmap, imageInfo, NtpBackgroundType.DEFAULT, /* fromInitialization= */ true);
     }
 
-    @VisibleForTesting
-    void maybeInitializeColorTheme(Context context) {
+    /**
+     * Ensures color themes ({@link NtpBackgroundType#CHROME_COLOR} and {@link
+     * NtpBackgroundType#COLOR_FROM_HEX}) are initialized if not already initialized.
+     *
+     * @param context The context used to resolve theme color resources.
+     */
+    public void ensureInitialized(Context context) {
         if (mIsInitialized) return;
 
         mIsInitialized = true;
@@ -320,7 +325,7 @@ public class NtpCustomizationConfigManager {
         if (skipNotify) return;
 
         if (!mIsInitialized) {
-            maybeInitializeColorTheme(context);
+            ensureInitialized(context);
             return;
         }
 
@@ -967,7 +972,7 @@ public class NtpCustomizationConfigManager {
         mNtpBackgroundDataManager = manager;
     }
 
-    @Nullable NtpBackgroundDataBase getSyncedNtpBackgroundDataForTesting() {
+    public @Nullable NtpBackgroundDataBase getSyncedNtpBackgroundData() {
         return mSyncedNtpBackgroundData;
     }
 }

@@ -32,6 +32,7 @@ import static org.chromium.chrome.browser.ntp_customization.theme_sync.ServiceSt
 import static org.chromium.chrome.browser.sync.synced_set_up.CrossDeviceSettingImporter.INVALID_TASK_ID;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -876,6 +877,7 @@ public class CrossDeviceSettingImporterUnitTest {
 
         initializeCrossDeviceSettingImporter().onTabChangeOrGainFocus(mTab);
 
+        verify(mNtpCustomizationConfigManager, never()).ensureInitialized(any());
         verify(mSnackbarManager, never()).showSnackbar(any());
     }
 
@@ -1977,5 +1979,276 @@ public class CrossDeviceSettingImporterUnitTest {
         verify(mSnackbarManager).showSnackbar(any());
         // Crucially: onBackgroundDataChanged must NOT be called with a null bitmap!
         verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testPendingSnackbar_asyncActivityRecreateFromInFlightImageDownload() {
+        CustomBackgroundInfo bgInfo =
+                new CustomBackgroundInfo(
+                        new GURL("https://example.com/theme.png"),
+                        "collection_1",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection inFlightRemoteTheme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID, bgInfo, /* previewBitmap= */ null);
+
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(null);
+        when(mCrossDeviceThemeTracker.getThemeForDeviceGuid(any(), any()))
+                .thenReturn(inFlightRemoteTheme);
+        when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
+        when(mPrefService.isDefaultValuePreference(any(String.class))).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED)).thenReturn(true);
+        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(false);
+
+        Activity spyActivity = spy(mActivity);
+        SyncedSetUpUtilsBridge.setCrossDeviceSettingsForTesting(
+                Map.of(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true));
+        CrossDeviceSettingImporter importer =
+                spy(
+                        new CrossDeviceSettingImporter(
+                                mActivityLifecycleDispatcher,
+                                mActivityTabSupplier,
+                                spyActivity,
+                                mModalDialogManagerSupplier,
+                                mSnackbarManagerSupplier));
+        doReturn(123).when(importer).getTaskId();
+        doReturn(true).when(importer).matchesCurrentTask(123);
+
+        // 1. Trigger initial import on Activity 1 while theme image download is in flight.
+        importer.onTabChangeOrGainFocus(mTab);
+        verify(mSnackbarManager, times(1)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar initialUndoSnackbar = mSnackbarCaptor.getValue();
+
+        // 2. Simulate NtpSyncedThemeManager finishing the image download in flight and
+        // NtpCustomizationConfigManager triggering an async Activity recreate.
+        Bitmap downloadedBitmap = mock(Bitmap.class);
+        NtpBackgroundDataThemeCollection downloadedTheme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        bgInfo,
+                        /* backgroundImageInfo= */ null,
+                        downloadedBitmap,
+                        /* primaryColor= */ 0xFF112233,
+                        /* fileIdHash= */ "hash_1");
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(downloadedTheme);
+
+        doReturn(true).when(spyActivity).isChangingConfigurations();
+        initialUndoSnackbar.getController().onDismissNoAction(null);
+        importer.destroy();
+        doReturn(false).when(spyActivity).isChangingConfigurations();
+
+        // 3. Activity 2 starts up and restores the Undo snackbar.
+        CrossDeviceSettingImporter recreatedImporter =
+                spy(
+                        new CrossDeviceSettingImporter(
+                                mActivityLifecycleDispatcher,
+                                mActivityTabSupplier,
+                                spyActivity,
+                                mModalDialogManagerSupplier,
+                                mSnackbarManagerSupplier));
+        doReturn(123).when(recreatedImporter).getTaskId();
+        doReturn(true).when(recreatedImporter).matchesCurrentTask(123);
+
+        recreatedImporter.onTabChangeOrGainFocus(mTab);
+        verify(mSnackbarManager, times(2)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar restoredUndoSnackbar = mSnackbarCaptor.getValue();
+
+        // 4. User clicks Undo on the restored snackbar.
+        restoredUndoSnackbar.getController().onAction(null);
+        // Continuous Android theme sync is disabled and theme is reverted to initial null state.
+        verify(mSyncService).setSelectedType(UserSelectableType.THEMES, false);
+        verify(mNtpCustomizationConfigManager).onBackgroundDataChanged(any(), isNull());
+        verify(mSnackbarManager, times(3)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar redoSnackbar = mSnackbarCaptor.getValue();
+
+        // 5. Simulate Activity recreate caused by Undo reverting the theme (with destroy() called
+        // before onDismissNoAction() to verify order independence).
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(null);
+        doReturn(true).when(spyActivity).isChangingConfigurations();
+        recreatedImporter.destroy();
+        redoSnackbar.getController().onDismissNoAction(null);
+        doReturn(false).when(spyActivity).isChangingConfigurations();
+
+        // 6. Activity 3 starts up and restores the Redo snackbar.
+        CrossDeviceSettingImporter thirdImporter =
+                spy(
+                        new CrossDeviceSettingImporter(
+                                mActivityLifecycleDispatcher,
+                                mActivityTabSupplier,
+                                spyActivity,
+                                mModalDialogManagerSupplier,
+                                mSnackbarManagerSupplier));
+        doReturn(123).when(thirdImporter).getTaskId();
+        doReturn(true).when(thirdImporter).matchesCurrentTask(123);
+
+        thirdImporter.onTabChangeOrGainFocus(mTab);
+        verify(mSnackbarManager, times(4)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar restoredRedoSnackbar = mSnackbarCaptor.getValue();
+
+        // 7. User clicks Redo on the restored snackbar.
+        // Because maybeUpdateSettingsWithDownloadedTheme enriched the theme with the downloaded
+        // bitmap, Redo re-applies the downloaded image theme and resets
+        // isBitmapSaved so the image file is re-saved to disk!
+        restoredRedoSnackbar.getController().onAction(null);
+        verify(mSyncService).setSelectedType(UserSelectableType.THEMES, true);
+        ArgumentCaptor<NtpBackgroundDataBase> appliedThemeCaptor =
+                ArgumentCaptor.forClass(NtpBackgroundDataBase.class);
+        verify(mNtpCustomizationConfigManager, times(2))
+                .onBackgroundDataChanged(any(), appliedThemeCaptor.capture());
+        NtpBackgroundDataThemeCollection appliedRedoTheme =
+                (NtpBackgroundDataThemeCollection) appliedThemeCaptor.getValue();
+        assertEquals(downloadedBitmap, appliedRedoTheme.getBitmap());
+        assertEquals(Integer.valueOf(0xFF112233), appliedRedoTheme.getPrimaryColor());
+        assertFalse(appliedRedoTheme.isBitmapSaved());
+        thirdImporter.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testPendingSnackbar_inFlightDownload_preservesCrossPlatformTypeAndPrimaryColor() {
+        CustomBackgroundInfo bgInfo =
+                new CustomBackgroundInfo(
+                        new GURL("https://example.com/desktop_theme.png"),
+                        "collection_desktop",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        // Desktop theme arrives with null primaryColor and PlatformType.DESKTOP, with null bitmap
+        // while download is in flight.
+        NtpBackgroundDataThemeCollection desktopInFlightTheme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.DESKTOP,
+                        bgInfo,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        /* primaryColor= */ null,
+                        /* fileIdHash= */ null);
+
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(null);
+        when(mCrossDeviceThemeTracker.getThemeForDeviceGuid(any(), any()))
+                .thenReturn(desktopInFlightTheme);
+        when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
+        when(mPrefService.isDefaultValuePreference(any(String.class))).thenReturn(true);
+
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+        importer.onTabChangeOrGainFocus(mTab);
+        verify(mSnackbarManager, times(1)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar undoSnackbar = mSnackbarCaptor.getValue();
+
+        // Simulate Android NtpSyncedThemeManager finishing the download with PlatformType.ANDROID
+        // and a bitmap-extracted seed color (0xFF112233).
+        Bitmap downloadedBitmap = mock(Bitmap.class);
+        NtpBackgroundDataThemeCollection downloadedAndroidTheme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        bgInfo,
+                        /* backgroundImageInfo= */ null,
+                        downloadedBitmap,
+                        /* primaryColor= */ 0xFF112233,
+                        /* fileIdHash= */ "hash_desktop");
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData())
+                .thenReturn(downloadedAndroidTheme);
+
+        // User clicks Undo: because platformType is preserved as DESKTOP, THEMES sync toggle must
+        // NOT be disabled! And the original desktopInFlightTheme must not be mutated in place.
+        undoSnackbar.getController().onAction(null);
+        verify(mSyncService, never()).setSelectedType(eq(UserSelectableType.THEMES), anyBoolean());
+        assertNull(desktopInFlightTheme.getBitmap());
+        assertNull(desktopInFlightTheme.getPrimaryColor());
+
+        // User clicks Redo: because platformType is preserved as DESKTOP, Redo re-applies the
+        // enriched theme with the downloaded bitmap and extracted seed color (0xFF112233)!
+        verify(mSnackbarManager, times(2)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar redoSnackbar = mSnackbarCaptor.getValue();
+        redoSnackbar.getController().onAction(null);
+
+        ArgumentCaptor<NtpBackgroundDataBase> appliedThemeCaptor =
+                ArgumentCaptor.forClass(NtpBackgroundDataBase.class);
+        verify(mNtpCustomizationConfigManager, atLeastOnce())
+                .onBackgroundDataChanged(any(), appliedThemeCaptor.capture());
+        NtpBackgroundDataThemeCollection appliedRedoTheme =
+                (NtpBackgroundDataThemeCollection) appliedThemeCaptor.getValue();
+        assertEquals(PlatformType.DESKTOP, appliedRedoTheme.getPlatformType());
+        assertEquals(Integer.valueOf(0xFF112233), appliedRedoTheme.getPrimaryColor());
+        assertEquals(downloadedBitmap, appliedRedoTheme.getBitmap());
+        assertEquals("hash_desktop", appliedRedoTheme.getFileIdHash());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testPendingSnackbar_inFlightDownload_differentPrimaryColor_doesNotMatch() {
+        CustomBackgroundInfo bgInfo =
+                new CustomBackgroundInfo(
+                        new GURL("https://example.com/desktop_theme.png"),
+                        "collection_desktop",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        // Desktop theme with an explicit user-chosen primary color (0xFF998877).
+        NtpBackgroundDataThemeCollection desktopInFlightTheme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.DESKTOP,
+                        bgInfo,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        /* primaryColor= */ 0xFF998877,
+                        /* fileIdHash= */ null);
+
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(null);
+        when(mCrossDeviceThemeTracker.getThemeForDeviceGuid(any(), any()))
+                .thenReturn(desktopInFlightTheme);
+        when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
+        when(mPrefService.isDefaultValuePreference(any(String.class))).thenReturn(true);
+
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+        importer.onTabChangeOrGainFocus(mTab);
+        verify(mSnackbarManager, times(1)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar undoSnackbar = mSnackbarCaptor.getValue();
+
+        // Android download has a different non-null primaryColor (0xFF112233) -> must not match.
+        Bitmap downloadedBitmap = mock(Bitmap.class);
+        NtpBackgroundDataThemeCollection downloadedAndroidTheme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        bgInfo,
+                        /* backgroundImageInfo= */ null,
+                        downloadedBitmap,
+                        /* primaryColor= */ 0xFF112233,
+                        /* fileIdHash= */ "hash_desktop");
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData())
+                .thenReturn(downloadedAndroidTheme);
+
+        undoSnackbar.getController().onAction(null);
+        verify(mNtpCustomizationConfigManager).onBackgroundDataChanged(any(), isNull());
+
+        verify(mSnackbarManager, times(2)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar redoSnackbar = mSnackbarCaptor.getValue();
+        redoSnackbar.getController().onAction(null);
+
+        // Because the two non-null primary colors differed, desktopInFlightTheme was not enriched
+        // with downloadedAndroidTheme's bitmap, so Redo does not call onBackgroundDataChanged a
+        // second time (only the 1 call from Undo resetting to null).
+        verify(mNtpCustomizationConfigManager, times(1)).onBackgroundDataChanged(any(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void
+            testApplyThemeSettings_samePlatformNullBitmap_callsMaybeApplyBackgroundUpdateFromDeviceSync() {
+        CustomBackgroundInfo bgInfo =
+                new CustomBackgroundInfo(
+                        new GURL("https://example.com/android_theme.png"),
+                        "collection_1",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection androidThemeWithNullBitmap =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID, bgInfo, /* previewBitmap= */ null);
+
+        initializeCrossDeviceSettingImporter().applyThemeSettings(androidThemeWithNullBitmap);
+
+        verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
+        verify(mNtpCustomizationConfigManager)
+                .maybeApplyBackgroundUpdateFromDeviceSync(eq(mActivity));
     }
 }

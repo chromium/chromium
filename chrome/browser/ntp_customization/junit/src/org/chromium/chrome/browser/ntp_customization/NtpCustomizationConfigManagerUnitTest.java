@@ -1058,7 +1058,7 @@ public class NtpCustomizationConfigManagerUnitTest {
                 NtpBackgroundType.THEME_COLLECTION,
                 NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
         assertEquals(info, NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
-        assertEquals(themeCollectionData, manager.getSyncedNtpBackgroundDataForTesting());
+        assertEquals(themeCollectionData, manager.getSyncedNtpBackgroundData());
         assertFalse(
                 ChromeSharedPreferences.getInstance()
                         .contains(ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID));
@@ -1170,7 +1170,7 @@ public class NtpCustomizationConfigManagerUnitTest {
 
         manager.onSyncedThemeCollectionImageChanged(mContext, themeCollectionData);
         RobolectricUtil.runAllBackgroundAndUi();
-        assertEquals(themeCollectionData, manager.getSyncedNtpBackgroundDataForTesting());
+        assertEquals(themeCollectionData, manager.getSyncedNtpBackgroundData());
 
         // User manually changes background (e.g. to a color or upload image).
         NtpBackgroundDataUploadImage uploadImageData =
@@ -1184,7 +1184,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify pending sync was cleared and its unused image cleaned up.
-        assertNull(manager.getSyncedNtpBackgroundDataForTesting());
+        assertNull(manager.getSyncedNtpBackgroundData());
         verify(mNtpBackgroundDataManager).maybeCleanUpUnusedSyncedImageData(themeCollectionData);
     }
 
@@ -1208,7 +1208,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertEquals(
                 NtpBackgroundType.CHROME_COLOR,
                 NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
-        assertEquals(colorData, manager.getSyncedNtpBackgroundDataForTesting());
+        assertEquals(colorData, manager.getSyncedNtpBackgroundData());
         assertCustomizedImageMetadataCleared(imageFile);
 
         manager.maybeApplyBackgroundUpdateFromDeviceSync(mContext);
