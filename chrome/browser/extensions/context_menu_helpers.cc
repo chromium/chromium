@@ -297,9 +297,6 @@ void PopulateExtensionItems(content::BrowserContext* browser_context,
   sorted_menu_titles.erase(
       std::unique(sorted_menu_titles.begin(), sorted_menu_titles.end()),
       sorted_menu_titles.end());
-  sorted_menu_titles.erase(
-      std::unique(sorted_menu_titles.begin(), sorted_menu_titles.end()),
-      sorted_menu_titles.end());
 
   int index = 0;
   for (const auto& title : sorted_menu_titles) {
