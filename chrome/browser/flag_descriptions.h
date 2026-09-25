@@ -1070,6 +1070,13 @@ inline constexpr char
         "via CVC on a device before proceeding with risk-based or biometric "
         "authentication.";
 
+inline constexpr char kAutofillEnableCardholderNameFixFlowName[] =
+    "Enable Autofill Cardholder Name Fix Flow";
+inline constexpr char kAutofillEnableCardholderNameFixFlowDescription[] =
+    "When enabled, prompts users to confirm their cardholder name when "
+    "checking out with a server card that is missing a name, if a name was "
+    "found.";
+
 inline constexpr char
     kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName[] =
         "Enable CVC storage and filling standalone form enhancement for "

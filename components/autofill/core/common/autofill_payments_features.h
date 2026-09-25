@@ -63,6 +63,8 @@ BASE_DECLARE_FEATURE(kAutofillEnableCardBenefitsSync);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableCardOnDeviceVerificationEnforcement);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableCardholderNameFixFlow);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement);
 COMPONENT_EXPORT(AUTOFILL)

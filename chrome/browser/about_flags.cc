@@ -14072,8 +14072,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"search-settings-with-more-engines",
      flag_descriptions::kSearchSettingsWithMoreEnginesName,
-     flag_descriptions::kSearchSettingsWithMoreEnginesDescription,
-     kOsDesktop,
+     flag_descriptions::kSearchSettingsWithMoreEnginesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(switches::kSearchSettingsWithMoreEngines)},
 
 #if BUILDFLAG(IS_ANDROID)
@@ -14081,6 +14080,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAutoProjectedDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidAutoProjected)},
 #endif
+
+    {"autofill-enable-cardholder-name-fix-flow",
+     flag_descriptions::kAutofillEnableCardholderNameFixFlowName,
+     flag_descriptions::kAutofillEnableCardholderNameFixFlowDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableCardholderNameFixFlow)},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
