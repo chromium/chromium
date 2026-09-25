@@ -7,13 +7,22 @@
 
 #import <UIKit/UIKit.h>
 
+@class ActuationHeaderItem;
+
 // Header view anchored above the actuation worklog.
 //
+// One secondary item:
 // +----------------------------------------------------+
 // | (*)  Task Title              [secondary] [primary] |
 // |      Subtitle (optional)                           |
 // +----------------------------------------------------+
-// (*) = Icon, [x] = Accessory buttons (optional)
+//
+// Two or more secondary items:
+// +----------------------------------------------------+
+// | (*)  Task Title              ( [a] [b] ) [primary] |
+// |      Subtitle (optional)                           |
+// +----------------------------------------------------+
+// (*) = Icon, [x] = Accessory button, ( [a] [b] ) = Grouped capsule
 @interface ActuationHeaderView : UIView
 
 // Main title text.
@@ -26,20 +35,18 @@
 @property(nonatomic, assign, getter=isActuating) BOOL actuating;
 
 // Primary accessory button. Setting nil removes the button from the header.
-@property(nonatomic, strong) UIButton* primaryAccessoryButton;
+@property(nonatomic, strong) ActuationHeaderItem* primaryItem;
 
-// Secondary accessory button. Setting nil removes the button from the header.
-@property(nonatomic, strong) UIButton* secondaryAccessoryButton;
+// Items displayed before `primaryItem`. A single item is shown as a standalone
+// button; two or more are grouped in a capsule. Setting nil or an empty array
+// removes them from the header.
+@property(nonatomic, copy) NSArray<ActuationHeaderItem*>* secondaryItems;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // Resets the header state, clearing all internal properties.
 - (void)reset;
-
-// Helper to create a circular icon button for header accessories.
-+ (UIButton*)createCircularIconButtonWithIcon:(UIImage*)icon
-                                       action:(UIAction*)action;
 
 @end
 

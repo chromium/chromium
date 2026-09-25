@@ -218,3 +218,43 @@
 }
 
 @end
+
+@implementation ActuationHeaderItem
+
+- (instancetype)initWithIcon:(UIImage*)icon
+                       title:(NSString*)title
+     accessibilityIdentifier:(NSString*)accessibilityIdentifier
+                      action:(UIAction*)action {
+  CHECK(icon);
+  CHECK(title);
+  CHECK(action);
+
+  self = [super init];
+  if (self) {
+    _icon = icon;
+    _title = [title copy];
+    _accessibilityIdentifier = [accessibilityIdentifier copy];
+    _action = action;
+  }
+  return self;
+}
+
+- (instancetype)initWithIcon:(UIImage*)icon
+                       title:(NSString*)title
+     accessibilityIdentifier:(NSString*)accessibilityIdentifier
+                        menu:(UIMenu*)menu {
+  CHECK(icon);
+  CHECK(title);
+  CHECK(menu);
+
+  self = [super init];
+  if (self) {
+    _icon = icon;
+    _title = [title copy];
+    _accessibilityIdentifier = [accessibilityIdentifier copy];
+    _menu = menu;
+  }
+  return self;
+}
+
+@end

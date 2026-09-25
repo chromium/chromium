@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_header_view.h"
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/actor/ui/gradient_activity_indicator_view.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -40,6 +41,67 @@ UIImage* DefaultGeminiLogo() {
 #endif
 }
 
+// Creates an icon button styled by `buttonConfig` and wired to `item`. The
+// action is added as a target rather than passed to the button initializer,
+// since the latter would render the action title next to the icon.
+UIButton* CreateButton(UIButtonConfiguration* buttonConfig,
+                       ActuationHeaderItem* item) {
+  buttonConfig.image = item.icon;
+  UIButton* button = [UIButton buttonWithConfiguration:buttonConfig
+                                         primaryAction:nil];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.accessibilityLabel = item.title;
+  button.accessibilityIdentifier = item.accessibilityIdentifier;
+  if (item.menu) {
+    button.menu = item.menu;
+    button.showsMenuAsPrimaryAction = YES;
+  } else {
+    [button addAction:item.action
+        forControlEvents:UIControlEventPrimaryActionTriggered];
+  }
+  AddSquareConstraints(button, kInnerContentSize);
+  return button;
+}
+
+// Creates a standalone white circular icon button with a drop shadow.
+UIButton* CreateCircularButton(ActuationHeaderItem* item) {
+  UIButtonConfiguration* buttonConfig =
+      [UIButtonConfiguration filledButtonConfiguration];
+  buttonConfig.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  buttonConfig.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
+  buttonConfig.baseBackgroundColor = [UIColor colorNamed:kSolidWhiteColor];
+
+  UIButton* button = CreateButton(buttonConfig, item);
+  button.layer.shadowColor = [UIColor blackColor].CGColor;
+  button.layer.shadowOffset = CGSizeMake(0, kButtonShadowOffset);
+  button.layer.shadowOpacity = kButtonShadowOpacity;
+  button.layer.shadowRadius = kButtonShadowRadius;
+  button.layer.shadowPath =
+      [UIBezierPath bezierPathWithOvalInRect:CGRectMake(0, 0, kInnerContentSize,
+                                                        kInnerContentSize)]
+          .CGPath;
+  return button;
+}
+
+// Creates a gray capsule grouping one borderless icon button per item. Its
+// height matches the circular buttons so both styles stay vertically aligned.
+UIView* CreateGroupedCapsule(NSArray<ActuationHeaderItem*>* items) {
+  UIStackView* capsule = [[UIStackView alloc] init];
+  for (ActuationHeaderItem* item in items) {
+    UIButtonConfiguration* buttonConfig =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfig.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
+    buttonConfig.contentInsets = NSDirectionalEdgeInsetsZero;
+    [capsule addArrangedSubview:CreateButton(buttonConfig, item)];
+  }
+  capsule.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  capsule.layer.cornerRadius = kInnerContentSize / 2.0;
+  capsule.directionalLayoutMargins =
+      NSDirectionalEdgeInsetsMake(0.0, kSpacingTiny, 0.0, kSpacingTiny);
+  capsule.layoutMarginsRelativeArrangement = YES;
+  return capsule;
+}
+
 }  // namespace
 
 @implementation ActuationHeaderView {
@@ -72,33 +134,8 @@ UIImage* DefaultGeminiLogo() {
   self.title = nil;
   self.subtitle = nil;
   self.actuating = NO;
-  self.primaryAccessoryButton = nil;
-  self.secondaryAccessoryButton = nil;
-}
-
-// TODO(crbug.com/552512657): Add helper for textual capsule/pill buttons.
-+ (UIButton*)createCircularIconButtonWithIcon:(UIImage*)icon
-                                       action:(UIAction*)action {
-  UIButtonConfiguration* buttonConfig =
-      [UIButtonConfiguration filledButtonConfiguration];
-  buttonConfig.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-  buttonConfig.image = icon;
-  buttonConfig.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
-  buttonConfig.baseBackgroundColor = [UIColor colorNamed:kSolidWhiteColor];
-
-  UIButton* button = [UIButton buttonWithConfiguration:buttonConfig
-                                         primaryAction:action];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.layer.shadowColor = [UIColor blackColor].CGColor;
-  button.layer.shadowOffset = CGSizeMake(0, kButtonShadowOffset);
-  button.layer.shadowOpacity = kButtonShadowOpacity;
-  button.layer.shadowRadius = kButtonShadowRadius;
-  button.layer.shadowPath =
-      [UIBezierPath bezierPathWithOvalInRect:CGRectMake(0, 0, kInnerContentSize,
-                                                        kInnerContentSize)]
-          .CGPath;
-  AddSquareConstraints(button, kInnerContentSize);
-  return button;
+  self.primaryItem = nil;
+  self.secondaryItems = nil;
 }
 
 - (void)setTitle:(NSString*)title {
@@ -128,13 +165,13 @@ UIImage* DefaultGeminiLogo() {
   }
 }
 
-- (void)setPrimaryAccessoryButton:(UIButton*)primaryAccessoryButton {
-  _primaryAccessoryButton = primaryAccessoryButton;
+- (void)setPrimaryItem:(ActuationHeaderItem*)primaryItem {
+  _primaryItem = primaryItem;
   [self updateAccessoryStack];
 }
 
-- (void)setSecondaryAccessoryButton:(UIButton*)secondaryAccessoryButton {
-  _secondaryAccessoryButton = secondaryAccessoryButton;
+- (void)setSecondaryItems:(NSArray<ActuationHeaderItem*>*)secondaryItems {
+  _secondaryItems = [secondaryItems copy];
   [self updateAccessoryStack];
 }
 
@@ -214,17 +251,22 @@ UIImage* DefaultGeminiLogo() {
 }
 
 // Rebuilds the accessory buttons stack in deterministic order:
-// `[secondaryAccessoryButton (leading), primaryAccessoryButton (trailing)]`.
+// `[secondaryItems (leading), primaryItem (trailing)]`. Buttons are recreated
+// because their style depends on the number of secondary items.
 - (void)updateAccessoryStack {
   for (UIView* view in _accessoryStackView.arrangedSubviews) {
     [view removeFromSuperview];
   }
 
-  if (_secondaryAccessoryButton) {
-    [_accessoryStackView addArrangedSubview:_secondaryAccessoryButton];
+  if (_secondaryItems.count == 1) {
+    [_accessoryStackView
+        addArrangedSubview:CreateCircularButton(_secondaryItems.firstObject)];
+  } else if (_secondaryItems.count > 1) {
+    [_accessoryStackView
+        addArrangedSubview:CreateGroupedCapsule(_secondaryItems)];
   }
-  if (_primaryAccessoryButton) {
-    [_accessoryStackView addArrangedSubview:_primaryAccessoryButton];
+  if (_primaryItem) {
+    [_accessoryStackView addArrangedSubview:CreateCircularButton(_primaryItem)];
   }
   _accessoryStackView.hidden =
       (_accessoryStackView.arrangedSubviews.count == 0);

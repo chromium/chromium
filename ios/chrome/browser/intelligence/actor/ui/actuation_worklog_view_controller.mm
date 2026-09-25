@@ -38,8 +38,6 @@ using intelligence::actor::kSpacingMedium;
 @implementation ActuationWorklogViewController {
   // Header view that sits right above the worklog.
   ActuationHeaderView* _headerView;
-  // Primary accessory close button displayed in `_headerView`.
-  UIButton* _closeButton;
   // Current step layout. Visible when `_compact` is true.
   ActuationWorklogCompactView* _compactView;
   // Timeline view embedded inside a scrollview to support vertical growth as
@@ -132,7 +130,7 @@ using intelligence::actor::kSpacingMedium;
 
 - (void)reset {
   [_headerView reset];
-  _headerView.primaryAccessoryButton = _closeButton;
+  _headerView.primaryItem = [self createCloseItem];
   [_compactView reset];
   [_fullView reset];
   [_scrollView setContentOffset:CGPointZero animated:NO];
@@ -156,19 +154,17 @@ using intelligence::actor::kSpacingMedium;
 }
 
 // Creates the close button accessory for `_headerView`.
-- (UIButton*)createCloseButton {
+- (ActuationHeaderItem*)createCloseItem {
   __weak __typeof(self) weakSelf = self;
   UIAction* closeAction = [UIAction actionWithHandler:^(UIAction*) {
     [weakSelf stopActuationButtonTapped];
   }];
-  UIButton* button = [ActuationHeaderView
-      createCircularIconButtonWithIcon:SymbolWithPointSize(
-                                           SymbolXMark, kCloseButtonPointSize)
-                                action:closeAction];
-  button.accessibilityIdentifier =
-      kActuationHeaderCloseButtonAccessibilityIdentifier;
-  button.accessibilityLabel = l10n_util::GetNSString(IDS_CLOSE);
-  return button;
+  return [[ActuationHeaderItem alloc]
+                 initWithIcon:SymbolWithPointSize(SymbolXMark,
+                                                  kCloseButtonPointSize)
+                        title:l10n_util::GetNSString(IDS_CLOSE)
+      accessibilityIdentifier:kActuationHeaderCloseButtonAccessibilityIdentifier
+                       action:closeAction];
 }
 
 // Creates the view hierarchy.
@@ -176,8 +172,7 @@ using intelligence::actor::kSpacingMedium;
   _headerView = [[ActuationHeaderView alloc] initWithFrame:CGRectZero];
   _headerView.accessibilityIdentifier = kActuationHeaderAccessibilityIdentifier;
   _headerView.actuating = _actuationActive;
-  _closeButton = [self createCloseButton];
-  _headerView.primaryAccessoryButton = _closeButton;
+  _headerView.primaryItem = [self createCloseItem];
   _headerView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_headerView];
 
