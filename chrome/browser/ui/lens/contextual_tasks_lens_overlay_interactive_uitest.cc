@@ -270,11 +270,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
-                       // TODO(crbug.com/565503241): Re-enable this test
-                       DISABLED_TitleResetsWhenTransitioningFromAimToLensPage) {
+                       TitleResetsWhenTransitioningFromAimToLensPage) {
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInnerWebContentsId);
 
   const DeepQuery kPathToToolbarTitle{"contextual-tasks-app", "top-toolbar",
                                       ".top-toolbar-title"};
@@ -304,7 +304,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const GURL page_url =
       embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  const GURL aim_url("https://www.g.ai/?q=summary");
   const DeepQuery kPathToBody{"body"};
+  const DeepQuery kPathToRegionSelection{
+      "lens-overlay-app",
+      "lens-selection-overlay",
+      "#regionSelectionLayer",
+  };
 
   auto off_center_point = base::BindLambdaForTesting([this]() {
     auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
@@ -315,13 +321,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   });
 
   RunTestSequence(
-      // 1. Open the Contextual Tasks side panel with an AIM query URL.
-      Do([&]() {
+      // 1. Prepare active tab and open Contextual Tasks with an AIM query URL.
+      InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, page_url),
+      EnsurePresent(kActiveTab, kPathToBody),
+      WaitForWebContentsPainted(kActiveTab),
+      WaitForWebContentsReady(kActiveTab, page_url), Do([&]() {
         contextual_tasks::ContextualTasksUiService* ui_service =
             contextual_tasks::ContextualTasksUiServiceFactory::
                 GetForBrowserContext(browser()->GetProfile());
         tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
-        GURL aim_url("https://www.g.ai/?q=summary");
         ui_service->StartTaskUiInSidePanel(browser(), tab, aim_url, nullptr);
       }),
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
@@ -338,21 +346,18 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
       WaitForJsResultAt(kSidePanelWebContentsId, kPathToToolbarTitle,
                         "el => el.textContent.trim()", "summary"),
       // Wait for the inner AIM page to finish loading and notify the WebUI of
-      // the AI page status so that any trailing CloseLensAsync calls from
-      // SetIsAiPage are processed before we open the Lens overlay.
-      WaitForJsResultAt(kSidePanelWebContentsId,
-                        DeepQuery{"contextual-tasks-app"},
-                        "el => el.hasAttribute('is-ai-page_')"),
+      // the AI page status before opening the Lens overlay. This ensures
+      // SetIsAiPage() executes while Lens is closed (State::kOff) rather than
+      // triggering an asynchronous CloseLensAsync() teardown mid-overlay.
+      InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelWebContentsId,
+                                 0),
 
-      // 2. Open Lens Overlay and make a selection to trigger a Lens query.
-      InAnyContext(InstrumentTab(kActiveTab),
-                   NavigateWebContents(kActiveTab, page_url),
-                   EnsurePresent(kActiveTab, kPathToBody),
-                   WaitForWebContentsPainted(kActiveTab),
-                   WaitForWebContentsReady(kActiveTab, page_url),
-                   PressButton(kToolbarAppMenuButtonElementId),
+      // 2. Open Lens Overlay via the three-dot app menu and make a visual
+      // selection to trigger a Lens query.
+      InAnyContext(PressButton(kToolbarAppMenuButtonElementId),
                    WaitForShow(AppMenuModel::kShowLensOverlay),
-                   SelectMenuItem(AppMenuModel::kShowLensOverlay)),
+                   SelectMenuItem(AppMenuModel::kShowLensOverlay),
+                   WaitForHide(AppMenuModel::kShowLensOverlay)),
       InAnyContext(
           InstrumentNonTabWebView(kOverlayId,
                                   LensOverlayController::kOverlayId),
@@ -393,9 +398,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
             }
           )"),
           WaitForScreenshotRendered(kOverlayId),
-          EnsurePresent(kOverlayId,
-                        DeepQuery{"lens-overlay-app", "lens-selection-overlay",
-                                  "region-selection"}),
+          EnsurePresent(kOverlayId, kPathToRegionSelection),
           MoveMouseTo(LensOverlayController::kOverlayId),
           DragMouseTo(std::move(off_center_point)), FinishScreenshotUpload(0)),
 
