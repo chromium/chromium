@@ -206,6 +206,8 @@ class CORE_EXPORT DocumentMarkerController final
   void MergeOverlappingMarkers(DocumentMarker::MarkerType);
 
   bool HasAnyMarkersForText(const Text&) const;
+  bool PossiblyHasMarkers(DocumentMarker::MarkerTypes) const;
+  bool PossiblyHasMarkers(DocumentMarker::MarkerType) const;
   bool PossiblyHasTextMatchMarkers() const;
   Vector<gfx::Rect> LayoutRectsForTextMatchMarkers();
   void InvalidateRectsForAllTextMatchMarkers();
@@ -245,8 +247,6 @@ class CORE_EXPORT DocumentMarkerController final
   using MarkerMap = GCedHeapHashMap<WeakMember<const Text>, MarkerList>;
   using MarkerMaps = HeapVector<Member<MarkerMap>>;
 
-  bool PossiblyHasMarkers(DocumentMarker::MarkerTypes) const;
-  bool PossiblyHasMarkers(DocumentMarker::MarkerType) const;
   void RemoveMarkersFromList(MarkerMap::iterator, DocumentMarker::MarkerType);
   void RemoveMarkers(TextIterator&, DocumentMarker::MarkerTypes);
   void RemoveMarkersInternal(const Text&,

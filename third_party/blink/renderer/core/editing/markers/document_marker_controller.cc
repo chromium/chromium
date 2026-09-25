@@ -217,7 +217,7 @@ bool DocumentMarkerController::PossiblyHasMarkers(
   return PossiblyHasMarkers(DocumentMarker::MarkerTypes(type));
 }
 
-inline bool DocumentMarkerController::PossiblyHasMarkers(
+bool DocumentMarkerController::PossiblyHasMarkers(
     DocumentMarker::MarkerTypes types) const {
   DCHECK(!markers_.empty() ||
          possibly_existing_marker_types_ == DocumentMarker::MarkerTypes(0));
