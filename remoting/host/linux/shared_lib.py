@@ -54,6 +54,72 @@ USE_WAYLAND_ENV_VAR = "CHROME_REMOTE_DESKTOP_USE_WAYLAND"
 AUDIO_PIPE_ENV_VAR = "CHROME_REMOTE_DESKTOP_AUDIO_PIPE"
 # LINT.ThenChange(//remoting/host/linux/pulse_audio_capturer.cc:audio_pipe_env_var)
 
+# Environment variables imported into the systemd user manager that must be
+# unset when the session terminates so they do not interfere with the
+# multi-process host or subsequent local sessions.
+CRD_SYSTEMD_ENV_VARS_TO_UNSET = [
+    AUDIO_PIPE_ENV_VAR,
+    "CHROME_CONFIG_HOME",
+    "CHROME_REMOTE_DESKTOP_SESSION",
+    "CHROME_USER_DATA_DIR",
+    "DISPLAY",
+    "GDK_BACKEND",
+    "LD_LIBRARY_PATH",
+    "PIPEWIRE_REMOTE",
+    "PULSE_CONFIG_PATH",
+    "PULSE_RUNTIME_PATH",
+    "PULSE_SINK",
+    "PULSE_STATE_PATH",
+    "SSH_AUTH_SOCK",
+    "WAYLAND_DISPLAY",
+    "XAUTHORITY",
+    "XDG_SEAT",
+    "XDG_SESSION_ID",
+]
+
+# Complete allowlist of environment variables to import into `systemd --user`.
+# Using an explicit allowlist prevents `XDesktop` (which copies all of
+# `os.environ` into `self.child_env`) from uploading unpruned shell/SSH
+# variables into `systemd --user`.
+#
+# While most desktop environments (or
+# `/etc/X11/Xsession.d/95dbus_update-activation-env`) attempt to import their
+# environment variables into `systemd --user`, this is not guaranteed (for
+# example, when a custom `~/.chrome-remote-desktop-session` or minimal window
+# manager is used). CRD therefore imports them explicitly because:
+# 1. For the multi-process host, the desktop process is not a child of the
+#    session script; `UserDesktopSessionBackend` captures the `systemd --user`
+#    environment (via `chrome-remote-desktop-environment.service`) to launch the
+#    desktop process, which requires `DISPLAY`, `XAUTHORITY`,
+#    `WAYLAND_DISPLAY`, `GDK_BACKEND`, `CHROME_REMOTE_DESKTOP_AUDIO_PIPE`,
+#    `SSH_AUTH_SOCK`, and `LD_LIBRARY_PATH`.
+# 2. For both single-process and multi-process hosts, services and applications
+#    started via `systemd --user` or D-Bus activation (such as
+#    `xdg-desktop-portal` and its GNOME/KDE/GTK backends,
+#    `gnome-terminal-server`, and audio clients) inherit the `systemd --user`
+#    environment rather than `self.child_env`, and need the CRD display,
+#    PipeWire/PulseAudio, gnubby, and software GL variables.
+#
+# In addition to `CRD_SYSTEMD_ENV_VARS_TO_UNSET`, this includes:
+# - `PATH`: May be customized by the user's `~/.profile` via
+#   `exec_self_via_login_shell()`.
+# - `XDG_CURRENT_DESKTOP`, `XDG_SESSION_CLASS`, `XDG_SESSION_TYPE`: Needed by
+#   `xdg-desktop-portal` (to select the matching GNOME/KDE/GTK portal backend)
+#   and systemd-activated desktop services. These do not need to be unset on
+#   exit because subsequent desktop sessions overwrite them.
+# - `GDK_DEBUG`, `G_DEBUG`, `G_MESSAGES_DEBUG`, `WAYLAND_DEBUG`: Optional debug
+#   variables when `WaylandDesktop.debug` is enabled.
+SYSTEMD_ENV_VARS_TO_IMPORT = CRD_SYSTEMD_ENV_VARS_TO_UNSET + [
+    "GDK_DEBUG",
+    "G_DEBUG",
+    "G_MESSAGES_DEBUG",
+    "PATH",
+    "WAYLAND_DEBUG",
+    "XDG_CURRENT_DESKTOP",
+    "XDG_SESSION_CLASS",
+    "XDG_SESSION_TYPE",
+]
+
 # The amount of video RAM the dummy driver should claim to have, which limits
 # the maximum possible resolution.
 # 1048576 KiB = 1 GiB, which is the amount of video RAM needed to have a
@@ -490,6 +556,27 @@ class Desktop(abc.ABC):
         "crd_ssh_auth_sock")
     # LINT.ThenChange(//remoting/base/security_key_socket_name.cc:ssh_auth_sock_name)
     self.child_env["SSH_AUTH_SOCK"] = self.ssh_auth_sockname
+
+  def _import_systemd_env_vars(self):
+    """Imports session environment variables from child_env into the systemd
+    user manager."""
+    vars_to_import = [
+        var for var in SYSTEMD_ENV_VARS_TO_IMPORT if var in self.child_env
+    ]
+    if not vars_to_import:
+      return True
+    try:
+      subprocess.check_output(
+          ["systemctl", "--user", "import-environment"] + vars_to_import,
+          stderr=subprocess.STDOUT,
+          env=self.child_env,
+          text=True)
+      return True
+    except subprocess.CalledProcessError as err:
+      logging.error("Unable to import env vars into systemd, "
+                    "returncode: %s, output: %s" % (err.returncode,
+                                                    err.output))
+      return False
 
   def _launch_pipewire(self, instance_name, runtime_path, sink_name):
     self.pipewire_session_manager = get_pipewire_session_manager()
@@ -1108,14 +1195,7 @@ class WaylandDesktop(Desktop):
 
     logging.info("Wayland compositor is running, restarting the portal "
                  "services now")
-    try:
-      subprocess.check_output(["systemctl", "--user", "import-environment"],
-                              stderr=subprocess.STDOUT,
-                              env=self.child_env)
-    except subprocess.CalledProcessError as err:
-      logging.error("Unable to import env vars into systemd, "
-                    "returncode: %s, output: %s" % (err.returncode,
-                                                    err.output))
+    if not self._import_systemd_env_vars():
       logging.error("Continuing without restarting Portal services - "
                     "this may cause some unexpected problems.")
       return
@@ -1494,6 +1574,8 @@ class XDesktop(Desktop):
     if xsession_command is None:
       raise Exception("Unable to choose suitable X session command.")
 
+    self._import_systemd_env_vars()
+
     logging.info("Launching X session: %s" % xsession_command)
     self.session_proc = subprocess.Popen(xsession_command,
                                          stdin=subprocess.DEVNULL,
@@ -1592,28 +1674,17 @@ def exec_self_via_login_shell():
 
 
 def unset_crd_systemd_env_vars():
-    """Unsets environment variables set by this script that could interfere
-    with the multi-process host."""
-
-    env_vars_to_unset = [
-        AUDIO_PIPE_ENV_VAR,
-        "CHROME_REMOTE_DESKTOP_SESSION",
-        "DISPLAY",
-        "GDK_BACKEND",
-        "PIPEWIRE_REMOTE",
-        "PULSE_RUNTIME_PATH",
-        "PULSE_SINK",
-        "SSH_AUTH_SOCK",
-    ]
-    # If we immediately unset these environment variables, something (probably
-    # a (sub)process of gnome-session) will add them back, so we wait for a
-    # second to allow the GNOME session to terminate cleanly.
-    logging.info(
+  """Unsets environment variables set by this script that could interfere
+  with the multi-process host or local sessions."""
+  # If we immediately unset these environment variables, something (probably
+  # a (sub)process of gnome-session) will add them back, so we wait for a
+  # second to allow the GNOME session to terminate cleanly.
+  logging.info(
       "Waiting for one second before unsetting systemd environment variables.")
-    time.sleep(1)
-    logging.info("Unsetting systemd user environment variables.")
-    subprocess.call(["systemctl", "--user", "unset-environment"] +
-                    env_vars_to_unset)
+  time.sleep(1)
+  logging.info("Unsetting systemd user environment variables.")
+  subprocess.call(["systemctl", "--user", "unset-environment"] +
+                  CRD_SYSTEMD_ENV_VARS_TO_UNSET)
 
 
 def cleanup():
