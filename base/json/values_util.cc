@@ -4,6 +4,7 @@
 
 #include "base/json/values_util.h"
 
+#include <array>
 #include <optional>
 
 #include "base/containers/span.h"
@@ -18,22 +19,6 @@
 
 namespace base {
 
-namespace {
-
-// Helper to serialize/deserialize an UnguessableToken.
-//
-// It assumes a little-endian CPU, which is arguably a bug.
-union UnguessableTokenRepresentation {
-  struct Field {
-    uint64_t high;
-    uint64_t low;
-  } field;
-
-  uint8_t buffer[sizeof(Field)];
-};
-
-}  // namespace
-
 Value Int64ToValue(int64_t integer) {
   return Value(NumberToString(integer));
 }
@@ -43,12 +28,13 @@ std::optional<int64_t> ValueToInt64(const Value* value) {
 }
 
 std::optional<int64_t> ValueToInt64(const Value& value) {
-  if (!value.is_string()) {
+  const std::string* str = value.GetIfString();
+  if (!str) {
     return std::nullopt;
   }
 
   int64_t integer;
-  if (!StringToInt64(value.GetString(), &integer)) {
+  if (!StringToInt64(*str, &integer)) {
     return std::nullopt;
   }
 
@@ -96,17 +82,15 @@ std::optional<FilePath> ValueToFilePath(const Value* value) {
 }
 
 std::optional<FilePath> ValueToFilePath(const Value& value) {
-  if (!value.is_string()) {
+  const std::string* str = value.GetIfString();
+  if (!str) {
     return std::nullopt;
   }
-  return FilePath::FromUTF8Unsafe(value.GetString());
+  return FilePath::FromUTF8Unsafe(*str);
 }
 
 Value UnguessableTokenToValue(UnguessableToken token) {
-  UnguessableTokenRepresentation repr;
-  repr.field.high = token.GetHighForSerialization();
-  repr.field.low = token.GetLowForSerialization();
-  return Value(HexEncode(base::span(repr.buffer)));
+  return Value(HexEncode(token.AsBytes()));
 }
 
 std::optional<UnguessableToken> ValueToUnguessableToken(const Value* value) {
@@ -114,19 +98,15 @@ std::optional<UnguessableToken> ValueToUnguessableToken(const Value* value) {
 }
 
 std::optional<UnguessableToken> ValueToUnguessableToken(const Value& value) {
-  if (!value.is_string()) {
+  const std::string* str = value.GetIfString();
+  if (!str) {
     return std::nullopt;
   }
-  UnguessableTokenRepresentation repr;
-  if (!HexStringToSpan(value.GetString(), repr.buffer)) {
+  std::array<uint64_t, 2> words;
+  if (!HexStringToSpan(*str, as_writable_byte_span(words))) {
     return std::nullopt;
   }
-  std::optional<base::UnguessableToken> token =
-      UnguessableToken::Deserialize(repr.field.high, repr.field.low);
-  if (!token.has_value()) {
-    return std::nullopt;
-  }
-  return token;
+  return UnguessableToken::Deserialize(words[0], words[1]);
 }
 
 }  // namespace base
