@@ -13,25 +13,23 @@ export function getHtml(this: AppElement) {
   <textarea id="description-text" aria-labelledby="free-form-text"
       aria-required="true">
   </textarea>
-  <div id="questionnaire-notification" aria-live="polite"
-      class="off-screen">
+  <div id="questionnaire-notification" aria-live="polite" class="off-screen">
   </div>
   <p id="description-empty-error" class="description-empty-notification"
       aria-hidden="true" hidden>$i18n{noDescription}</p>
   <div>
-    <p id="additional-info-label">$i18n{additionalInfo}<p>
+    <p id="additional-info-label">$i18n{additionalInfo}</p>
   </div>
   <div id="page-url" class="text-field-container">
     <label id="page-url-label">$i18n{pageUrl}</label>
     <input id="page-url-text" aria-labelledby="page-url-label" type="text"
-            dir="ltr">
+        dir="ltr">
   </div>
   <!-- User e-mail -->
   <div id="user-email" class="text-field-container" hidden>
     <label id="user-email-label">$i18n{userEmail}</label>
     <select id="user-email-drop-down" aria-labelledby="user-email-label">
-      <option id="anonymous-user-option"
-              value="">$i18n{anonymousUser}</option>
+      <option id="anonymous-user-option" value="">$i18n{anonymousUser}</option>
     </select>
   </div>
   <!-- Attach a file -->
@@ -42,8 +40,8 @@ export function getHtml(this: AppElement) {
       <label id="attached-filename-text"></label>
       <button id="remove-attached-file" class="remove-file-button"></button>
     </div>
-    <div id="attach-error" class="attach-file-notification"
-          role="alert" hidden>$i18n{attachFileToBig}</div>
+    <div id="attach-error" class="attach-file-notification" role="alert"
+        hidden>$i18n{attachFileToBig}</div>
   </div>
   <div id="attach-file-note" aria-hidden="true">$i18n{attachFileNote}</div>
   <!-- User Consent -->
@@ -67,20 +65,19 @@ export function getHtml(this: AppElement) {
   <!-- Screenshot -->
   <div id="screenshot-container" class="checkbox-field-container">
     <input id="screenshot-checkbox" type="checkbox"
-            aria-labelledby="screenshot-chk-label">
+        aria-labelledby="screenshot-chk-label">
     <label id="screenshot-chk-label">$i18n{screenshot}</label>
     <img id="screenshot-image" aria-label="$i18n{screenshotA11y}">
   </div>
   <!-- Autofill Metadata (Googler Internal Only) -->
-  <div id="autofill-checkbox-container"
-        class="checkbox-field-container" hidden>
+  <div id="autofill-checkbox-container" class="checkbox-field-container" hidden>
     <input id="autofill-metadata-checkbox" type="checkbox" checked>
     <label id="autofill-metadata-label">$i18nRaw{autofillMetadataInfo}</label>
   </div>
   <!-- System Information -->
   <div id="sys-info-container" class="checkbox-field-container">
     <input id="sys-info-checkbox" type="checkbox"
-            aria-labelledby="sys-info-label" checked>
+        aria-labelledby="sys-info-label" checked>
     <label id="sys-info-label">$i18nRaw{sysInfo}</label>
   </div>
   <!-- Privacy note -->
@@ -97,14 +94,14 @@ export function getHtml(this: AppElement) {
     <button id="cancel-button" type="submit" class="white-button">
       $i18n{cancel}
 <if expr="is_chromeos">
-  <div id="cancel-button-hover-bg"></div>
+      <div id="cancel-button-hover-bg"></div>
 </if>
     </button>
-    <button id="send-report-button" type="submit"
-        class="blue-button" aria-describedby="questionnaire-notification">
+    <button id="send-report-button" type="submit" class="blue-button"
+        aria-describedby="questionnaire-notification">
       $i18n{sendReport}
 <if expr="is_chromeos">
-  <div id="send-button-hover-bg"></div>
+      <div id="send-button-hover-bg"></div>
 </if>
     </button>
   </div>

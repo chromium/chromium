@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ManagementUiElement} from './management_ui.js';
 
 export function getHtml(this: ManagementUiElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <if expr="not is_android">
 <cr-toolbar page-name="$i18n{toolbarTitle}" role="banner" autofocus
@@ -125,12 +124,12 @@ export function getHtml(this: ManagementUiElement) {
         </section>
       </div>
       <div ?hidden="${!this.filesUploadToCloud_}">
-         <section>
-           <h3 class="cr-title-text">$i18n{filesCloudUpload}</h3>
-           <div class="subtitle" id="files-upload-to-cloud-configuration">
-             ${this.filesUploadToCloud_}
-           </div>
-         </section>
+        <section>
+          <h3 class="cr-title-text">$i18n{filesCloudUpload}</h3>
+          <div class="subtitle" id="files-upload-to-cloud-configuration">
+            ${this.filesUploadToCloud_}
+          </div>
+        </section>
       </div>
       ${this.showDeskSyncSection_() ? html`
         <section class="desk-sync">
@@ -147,10 +146,10 @@ export function getHtml(this: ManagementUiElement) {
             </li>
           </ul>
           <div class="subtitle"
-          .innerHTML="${this.i18nAdvanced('deskSyncOptOut')}">
+              .innerHTML="${this.i18nAdvanced('deskSyncOptOut')}">
           </div>
           <div class="subtitle"
-          .innerHTML="${this.i18nAdvanced('deskSyncLearnMore')}">
+              .innerHTML="${this.i18nAdvanced('deskSyncLearnMore')}">
           </div>
         </section>
       ` : ''}
@@ -166,7 +165,8 @@ export function getHtml(this: ManagementUiElement) {
             ${this.deviceReportingInfo_!.map(item => html`
               <div class="report">
                 <cr-icon
-                    icon="${this.getIconForDeviceReportingType_(item.reportingType)}">
+                    icon="${this.getIconForDeviceReportingType_(
+                        item.reportingType)}">
                 </cr-icon>
                 <div .innerHTML="${this.getDeviceReportingHtmlContent_(item)}">
                 </div>
@@ -251,7 +251,8 @@ export function getHtml(this: ManagementUiElement) {
               <li class="connector-item" role="listitem">
                 <div class="connector-item-title">
                   <strong>$i18n{extensionName}:</strong>
-                  <div .title="${item.name}" role="presentation" class="extension-title-container">
+                  <div .title="${item.name}" role="presentation"
+                      class="extension-title-container">
                     <img .src="${item.icon || ''}" alt="" aria-hidden="true">
                     <span>${item.name}</span>
                   </div>
@@ -320,7 +321,8 @@ export function getHtml(this: ManagementUiElement) {
               <li class="connector-item" role="listitem">
                 <div class="connector-item-title">
                   <strong>$i18n{applicationName}:</strong>
-                  <div .title="${item.name}" role="presentation" class="extension-title-container">
+                  <div .title="${item.name}" role="presentation"
+                      class="extension-title-container">
                     <img .src="${item.icon || ''}" alt="" aria-hidden="true">
                     <span>${item.name}</span>
                   </div>
@@ -342,5 +344,4 @@ export function getHtml(this: ManagementUiElement) {
   </div>
 </main>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

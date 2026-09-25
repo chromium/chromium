@@ -7,13 +7,12 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PasscodeInputElement} from './passcode_input.js';
 
 export function getHtml(this: PasscodeInputElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container">
   <input id="inputElement" aria-label="${this.ariaLabel}" autocomplete="off"
       class="hidden-input" .maxLength="${this.length}"
-      ?disabled="${this.disabled}" spellcheck="false"
-      type="text" @blur="${this.onBlur}" @click="${this.onSelectionClick}"
+      ?disabled="${this.disabled}" spellcheck="false" type="text"
+      @blur="${this.onBlur}" @click="${this.onSelectionClick}"
       @keyup="${this.onSelectionKeyup}" @select="${this.onSelectionSelect}"
       @input="${this.onInput}" @focus="${this.onFocus}">
   <div class="char-box-container" aria-hidden="true">
@@ -30,5 +29,4 @@ export function getHtml(this: PasscodeInputElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

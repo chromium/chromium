@@ -8,7 +8,6 @@ import type {CastFeedbackUiElement} from './cast_feedback_ui.js';
 import {FeedbackType} from './cast_feedback_ui.js';
 
 export function getHtml(this: CastFeedbackUiElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div>
   <div id="header-banner"></div>
@@ -18,8 +17,7 @@ export function getHtml(this: CastFeedbackUiElement) {
       <div id="description" class="informative">
         $i18nRaw{formDescription}
       </div>
-      <div id="required-legend"
-           class="informative required-message">
+      <div id="required-legend" class="informative required-message">
         * $i18n{required}
       </div>
     </div>
@@ -207,8 +205,8 @@ export function getHtml(this: CastFeedbackUiElement) {
           <span class="required-message"
               ?hidden="${this.sufficientFeedback_}">*</span>
         </div>
-        <textarea placeholder="$i18n{yourAnswer}"
-            rows="8" cols="60" value="{{comments_::input}}">
+        <textarea placeholder="$i18n{yourAnswer}" rows="8" cols="60"
+            value="{{comments_::input}}">
         </textarea>
       </div>
     ` : ''}
@@ -216,10 +214,9 @@ export function getHtml(this: CastFeedbackUiElement) {
       <!-- Show the email field only if the user is logged into Chrome
            (i.e. |userEmail_| is set). -->
       <cr-checkbox ?checked="${this.allowContactByEmail_}"
-           @checked-changed="${this.onAllowContactByEmailCheckedChanged_}"
-           aria-description="$i18n{allowContactByEmail}"
-           id="allow-contact-by-email"
-           ?hidden="${!this.userEmail_}">
+          @checked-changed="${this.onAllowContactByEmailCheckedChanged_}"
+          aria-description="$i18n{allowContactByEmail}"
+          id="allow-contact-by-email" ?hidden="${!this.userEmail_}">
         <span class="checkbox-label">
           $i18n{allowContactByEmail}
         </span>
@@ -227,10 +224,8 @@ export function getHtml(this: CastFeedbackUiElement) {
       <!-- We do not allow the user to edit the email address.
            See b/228865049 for context. -->
       <cr-input placeholder="$i18n{yourEmailAddress}"
-          .value="${this.userEmail_}"
-          type="text"
-          ?hidden="${!this.allowContactByEmail_}"
-          disabled>
+          .value="${this.userEmail_}" type="text"
+          ?hidden="${!this.allowContactByEmail_}" disabled>
       </cr-input>
       <cr-checkbox ?checked="${this.attachLogs_}"
           @checked-changed="${this.onAttachLogsCheckedChanged_}"
@@ -282,5 +277,4 @@ export function getHtml(this: CastFeedbackUiElement) {
     </div>
   </cr-dialog>
 </div><!--_html_template_end_-->`;
-  // clang-format on
 }

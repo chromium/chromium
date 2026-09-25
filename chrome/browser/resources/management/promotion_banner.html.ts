@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PromotionBannerElement} from './promotion_banner.js';
 
 export function getHtml(this: PromotionBannerElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <section id="promotion-banner-section-main" class="banner-section"
     aria-label="$i18n{promotionBannerAriaLabel}">
@@ -28,8 +27,8 @@ export function getHtml(this: PromotionBannerElement) {
           $i18n{promotionBannerBtn}
         </button>
       </div>
-      <button id="promotion-dismiss-button" class="dismiss-button"
-          tabindex="0" @click="${this.onDismissPromotionClick_}"
+      <button id="promotion-dismiss-button" class="dismiss-button" tabindex="0"
+          @click="${this.onDismissPromotionClick_}"
           aria-label="$i18n{promotionBannerDismissAriaLabel}">
         <div id="close-icon-container"></div>
       </button>
@@ -37,5 +36,4 @@ export function getHtml(this: PromotionBannerElement) {
   </div>
 </section>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

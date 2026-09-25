@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AppElement} from './app.js';
 
 export function getHtml(this: AppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <header>
   <div class="header-left">
@@ -41,9 +40,7 @@ export function getHtml(this: AppElement) {
   <div class="url-checker-row">
     <h2>$i18n{urlCheckerTitle}</h2>
     <label>$i18n{urlCheckerDesc}</label>
-    <cr-input
-        type="text"
-        .value="${this.urlCheckerInput_}"
+    <cr-input type="text" .value="${this.urlCheckerInput_}"
         @input="${this.onUrlCheckerInputInput_}"
         placeholder="http://example.com/">
     </cr-input>
@@ -154,5 +151,4 @@ export function getHtml(this: AppElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ReportUnsafeSiteAppElement} from './report_unsafe_site_app.js';
 
 export function getHtml(this: ReportUnsafeSiteAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="main-content">
   <h2 class="dialog-title" tabindex="-1">$i18n{reportUnsafeSiteDialogTitle}</h2>
@@ -25,9 +24,10 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
     ` : html`
       <div id="screenshot-placeholder">
         <cr-icon
-            icon="${this.webuiRoundedIconsEnabled_
-                ? 'report_unsafe_site:visibility-off'
-                : 'report_unsafe_site:visibility-off-old'}"></cr-icon>
+            icon="${this.webuiRoundedIconsEnabled_ ?
+                'report_unsafe_site:visibility-off' :
+                'report_unsafe_site:visibility-off-old'}">
+        </cr-icon>
       </div>
     `}
     <div>
@@ -59,5 +59,4 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
 </div>
 <div class="footer">$i18nRaw{reportUnsafeSiteDialogFooter}</div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

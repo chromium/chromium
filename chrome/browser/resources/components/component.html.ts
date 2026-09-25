@@ -7,7 +7,6 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {ComponentsData} from './components.js';
 
 export function getHtml(data: ComponentsData) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container">
   <div id="top">
@@ -34,10 +33,11 @@ export function getHtml(data: ComponentsData) {
               <div>
                 <span class="component-name" dir="ltr">${item.name}</span>
                 <span>
-                  - <span>$i18n{componentVersion}</span>
-                    <span dir="ltr" id="version-${item.id}">
-                      ${item.version}
-                    </span>
+                  <span> - </span>
+                  <span>$i18n{componentVersion}</span>
+                  <span dir="ltr" id="version-${item.id}">
+                    ${item.version}
+                  </span>
                 </span>
               </div>
             </div>
@@ -45,7 +45,7 @@ export function getHtml(data: ComponentsData) {
           <div class="component-text">
             <span>$i18n{statusLabel}</span>
             -
-            <span id="status-${item.id}">${item.status}<span>
+            <span id="status-${item.id}">${item.status}</span>
           </div>
           <div class="component-actions">
             <button class="button-check-update" guest-disabled id="${item.id}">
@@ -62,5 +62,4 @@ export function getHtml(data: ComponentsData) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

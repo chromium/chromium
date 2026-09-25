@@ -7,17 +7,16 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {DefaultBrowserModalAppElement} from './app.js';
 
 export function getHtml(this: DefaultBrowserModalAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container">
   <div id="top-section">
     ${this.useSettingsIllustration ? html`
-    <img id="icon" src="chrome_logo.svg" alt="">
-    ` : html`
-    <div id="icon-container">
-      <img id="header-background" alt="">
       <img id="icon" src="chrome_logo.svg" alt="">
-    </div>
+    ` : html`
+      <div id="icon-container">
+        <img id="header-background" alt="">
+        <img id="icon" src="chrome_logo.svg" alt="">
+      </div>
     `}
 
     <div id="text-content">
@@ -26,9 +25,9 @@ export function getHtml(this: DefaultBrowserModalAppElement) {
     </div>
 
     ${this.useSettingsIllustration ? html`
-    <div id="illustration">
-      <img src="settings_illustration.svg" alt="">
-    </div>
+      <div id="illustration">
+        <img src="settings_illustration.svg" alt="">
+      </div>
     ` : ''}
   </div>
   <div id="bottom-section">
@@ -54,5 +53,4 @@ export function getHtml(this: DefaultBrowserModalAppElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

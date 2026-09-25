@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AccessCodeCastAppElement} from './access_code_cast_app.js';
 
 export function getHtml(this: AccessCodeCastAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-dialog id="dialog">
   <div slot="title" class="title-1">$i18n{dialogTitle}</div>
@@ -21,15 +20,13 @@ export function getHtml(this: AccessCodeCastAppElement) {
       <div class="center-content">
         <c2c-passcode-input aria-label="${this.inputLabel}"
             ?disabled="${!this.canCast}" id="codeInput" length="6"
-            .value="${this.accessCode}"
-            @value-changed="${this.onValueChanged}">
+            .value="${this.accessCode}" @value-changed="${this.onValueChanged}">
         </c2c-passcode-input>
       </div>
       <div class="space-1"></div>
       ${this.qrScannerEnabled ? html`
         <div class="center-content">
-          <cr-button @click="${this.onQrInputClick}"
-              class="center text-button">
+          <cr-button @click="${this.onQrInputClick}" class="center text-button">
             <cr-icon class="button-image" icon="cr:videocam"></cr-icon>
             $i18n{useCamera}
           </cr-button>
@@ -52,25 +49,24 @@ export function getHtml(this: AccessCodeCastAppElement) {
   </div>
   <div slot="button-container" id="buttons">
 <if expr="not is_win">
-      <cr-button @click="${this.onCancelClick}">
-        $i18n{cancel}
-      </cr-button>
+    <cr-button @click="${this.onCancelClick}">
+      $i18n{cancel}
+    </cr-button>
 </if>
-      <cr-button id="castButton" @click="${this.onCastClick}"
-          class="action-button" ?disabled="${this.submitDisabled}">
-        $i18n{cast}
-      </cr-button>
-      <cr-button id="backButton" @click="${this.onBackClick}"
-          class="action-button">
-        $i18n{back}
-      </cr-button>
+    <cr-button id="castButton" @click="${this.onCastClick}"
+        class="action-button" ?disabled="${this.submitDisabled}">
+      $i18n{cast}
+    </cr-button>
+    <cr-button id="backButton" @click="${this.onBackClick}"
+        class="action-button">
+      $i18n{back}
+    </cr-button>
 <if expr="is_win">
-      <cr-button @click="${this.onCancelClick}">
-        $i118n{cancel}
-      </cr-button>
+    <cr-button @click="${this.onCancelClick}">
+      $i118n{cancel}
+    </cr-button>
 </if>
   </div>
 </cr-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

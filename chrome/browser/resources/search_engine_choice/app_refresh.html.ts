@@ -7,27 +7,26 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AppRefreshElement} from './app_refresh.js';
 
 export function getHtml(this: AppRefreshElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <img class="background-shape" id="background-right" alt="">
 <img class="background-shape" id="background-bottom" alt="">
 
 <div id="content-div">
   <div class="content-child" id="showcase-illustration">
-    <cr-radio-group id="choiceList"
-        selected="${this.selectedChoice_}"
+    <cr-radio-group id="choiceList" selected="${this.selectedChoice_}"
         @selected-changed="${this.onChoiceListSelectedChanged_}"
         aria-label="$i18n{choiceListA11yLabel}" role="list">
       ${this.choiceList_.map(item => html`
         <cr-radio-button aria-label="${item.name}" role="listitem"
-            class="label-first hoverable"
-            name="${item.prepopulateId}">
+            class="label-first hoverable" name="${item.prepopulateId}">
           <div class="choice">
             <div class="choice-icon"
-                style="background-image: ${item.iconPath};"></div>
+                style="background-image: ${item.iconPath};">
+            </div>
             <div class="choice-text">
               <div class="search-engine-name">${item.name}</div>
-              <div class="marketing-snippet
+              <div
+                  class="marketing-snippet
                   ${this.getMarketingSnippetClass_(item)}">
                 ${item.marketingSnippet}
               </div>
@@ -41,7 +40,7 @@ export function getHtml(this: AppRefreshElement) {
   <div class="content-child" id="showcase-description">
     <div id="stepper-placeholder">
       <img id="product-logo" src="images/product-logo.svg"
-        alt="$i18n{productLogoAltText}" aria-hidden="true">
+          alt="$i18n{productLogoAltText}" aria-hidden="true">
     </div>
     <div id="showcase-text">
       <h1 class="title">$i18n{title}</h1>
@@ -72,8 +71,7 @@ export function getHtml(this: AppRefreshElement) {
 
 </div>
 
-${
-      this.showInfoDialog_ ? html`
+${this.showInfoDialog_ ? html`
   <cr-dialog id="infoDialog" show-on-attach>
     <div slot="title">
       <img class="info-dialog-illustration" alt="">
@@ -91,8 +89,6 @@ ${
       </cr-button>
     </div>
   </cr-dialog>
-` :
-                             ''}
+` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

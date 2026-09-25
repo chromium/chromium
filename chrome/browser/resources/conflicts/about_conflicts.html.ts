@@ -7,7 +7,6 @@ import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {ModuleListData} from './about_conflicts.js';
 
 export function getHtml(data: ModuleListData) {
-  // clang-format off
   return html`
 <div id="container" class="vbox-container">
   <div id="top" class="wbox">
@@ -30,12 +29,24 @@ export function getHtml(data: ModuleListData) {
           <td valign="top">
             <table cellpadding="2" cellspacing="0" border="0">
               <tr>
-                <th role="columnheader"><span dir="ltr">Software</span></th>
-                <th role="columnheader"><span dir="ltr">Signed by</span></th>
-                <th role="columnheader"><span dir="ltr">Version</span></th>
-                <th role="columnheader"><span dir="ltr">Code Id</span></th>
-                <th role="columnheader"><span dir="ltr">Process types</span></th>
-                <th role="columnheader"><span dir="ltr">Location</span></th>
+                <th role="columnheader">
+                  <span dir="ltr">Software</span>
+                </th>
+                <th role="columnheader">
+                  <span dir="ltr">Signed by</span>
+                </th>
+                <th role="columnheader">
+                  <span dir="ltr">Version</span>
+                </th>
+                <th role="columnheader">
+                  <span dir="ltr">Code Id</span>
+                </th>
+                <th role="columnheader">
+                  <span dir="ltr">Process types</span>
+                </th>
+                <th role="columnheader">
+                  <span dir="ltr">Location</span>
+                </th>
               </tr>
 
               ${data.moduleList.map(item => html`
@@ -80,7 +91,5 @@ export function getHtml(data: ModuleListData) {
       </table>
     </div>
   `}
-</div>
-  `;
-  // clang-format on
+</div>`;
 }
