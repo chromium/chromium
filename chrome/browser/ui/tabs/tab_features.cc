@@ -104,6 +104,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/uma_browsing_activity_observer.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
@@ -776,6 +777,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     web_payments_observer_ =
         std::make_unique<payments::WebPaymentsObserver>(tab.GetContents());
   }
+
+  uma_browsing_activity_tab_helper_ =
+      std::make_unique<UMABrowsingActivityTabHelper>(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -978,6 +982,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     web_payments_observer_ =
         std::make_unique<payments::WebPaymentsObserver>(new_contents);
   }
+
+  uma_browsing_activity_tab_helper_ =
+      std::make_unique<UMABrowsingActivityTabHelper>(new_contents);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)

@@ -77,6 +77,7 @@ class TabResourceUsageTabHelper;
 class TabUIHelper;
 class ThumbnailTabHelper;
 class TranslatePageActionController;
+class UMABrowsingActivityTabHelper;
 class ZeroSuggestPrefetchTabHelper;
 
 namespace skills {
@@ -761,6 +762,9 @@ class TabFeatures {
 
   // Observes changes in web contents for web payments.
   std::unique_ptr<payments::WebPaymentsObserver> web_payments_observer_;
+
+  std::unique_ptr<UMABrowsingActivityTabHelper>
+      uma_browsing_activity_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

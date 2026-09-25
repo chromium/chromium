@@ -8,7 +8,20 @@
 #include "base/callback_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_stats_recorder.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+
+// Notifies `UMABrowsingActivityObserver` with tab related events.
+class UMABrowsingActivityTabHelper : public content::WebContentsObserver {
+ public:
+  explicit UMABrowsingActivityTabHelper(content::WebContents* web_contents);
+  UMABrowsingActivityTabHelper(const UMABrowsingActivityTabHelper&) = delete;
+  UMABrowsingActivityTabHelper& operator=(const UMABrowsingActivityTabHelper&) =
+      delete;
+  ~UMABrowsingActivityTabHelper() override;
+
+  // content::WebContentsObserver
+  void NavigationEntryCommitted(
+      const content::LoadCommittedDetails& load_details) override;
+};
 
 // This object is instantiated during startup, before the first Browser object
 // is added to the list and deleted during shutdown. It watches for loads and
@@ -21,25 +34,9 @@ class UMABrowsingActivityObserver {
 
   static void Init();
 
-  // Notifies `UMABrowsingActivityObserver` with tab related events.
-  class TabHelper : public content::WebContentsObserver,
-                    public content::WebContentsUserData<TabHelper> {
-   public:
-    TabHelper(const TabHelper&) = delete;
-    TabHelper& operator=(const TabHelper&) = delete;
-    ~TabHelper() override;
-
-    // content::WebContentsObserver
-    void NavigationEntryCommitted(
-        const content::LoadCommittedDetails& load_details) override;
-
-   private:
-    explicit TabHelper(content::WebContents* web_contents);
-    friend class content::WebContentsUserData<TabHelper>;
-    WEB_CONTENTS_USER_DATA_KEY_DECL();
-  };
-
  private:
+  friend class UMABrowsingActivityTabHelper;
+
   UMABrowsingActivityObserver();
   ~UMABrowsingActivityObserver();
 

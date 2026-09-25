@@ -575,6 +575,7 @@ if (!is_android) {
       "//chrome/browser/ui:sad_tab",
       "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui:uma_browsing_activity_observer",
       "//chrome/browser/ui/actions:actions_util",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/blocked_content",

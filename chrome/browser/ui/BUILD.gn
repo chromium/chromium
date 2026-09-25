@@ -1085,7 +1085,6 @@ source_set("tab_helpers_impl") {
     ]
   } else {
     deps += [
-      ":uma_browsing_activity_observer",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/read_anything",

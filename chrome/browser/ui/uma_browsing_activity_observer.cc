@@ -28,7 +28,6 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/range/range.h"
 
 namespace {
@@ -179,14 +178,13 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
                            collapsed_tab_group_count);
 }
 
-UMABrowsingActivityObserver::TabHelper::TabHelper(
+UMABrowsingActivityTabHelper::UMABrowsingActivityTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<TabHelper>(*web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
-UMABrowsingActivityObserver::TabHelper::~TabHelper() = default;
+UMABrowsingActivityTabHelper::~UMABrowsingActivityTabHelper() = default;
 
-void UMABrowsingActivityObserver::TabHelper::NavigationEntryCommitted(
+void UMABrowsingActivityTabHelper::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
   // This is null in unit tests. Crash reports suggest it's possible for it to
   // be null in production. See https://crbug.com/41482621 and
@@ -198,5 +196,3 @@ void UMABrowsingActivityObserver::TabHelper::NavigationEntryCommitted(
   g_uma_browsing_activity_observer_instance->OnNavigationEntryCommitted(
       web_contents(), load_details);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(UMABrowsingActivityObserver::TabHelper);
