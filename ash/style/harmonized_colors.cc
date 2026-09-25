@@ -5,10 +5,11 @@
 #include "ash/style/harmonized_colors.h"
 
 #include <algorithm>
+#include <array>
 #include <functional>
+#include <iterator>
 #include <utility>
 
-#include "base/containers/flat_map.h"
 #include "third_party/material_color_utilities/src/cpp/palettes/tones.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -22,7 +23,7 @@ namespace {
 using material_color_utilities::TonalPalette;
 
 // Upper limits for the angle range.
-constexpr std::array<SkColor, 4> kAngles = {49, 159, 219, 360};
+constexpr std::array<int, 4> kAngles = {49, 159, 219, 360};
 constexpr std::array<SkColor, 4> kGreens = {0x5BA22FU, 0x4FA834U, 0x34A866,
                                             0x34A87AU};
 constexpr std::array<SkColor, 4> kYellows = {0xEF9800U, 0xFBBC04, 0xFBC104U,
@@ -31,32 +32,6 @@ constexpr std::array<SkColor, 4> kReds = {0xF95C45U, 0xEA7135, 0xEA6235,
                                           0xEA3553};
 constexpr std::array<SkColor, 4> kBlues = {0x3F5AA9, 0x00829D, 0x00829D,
                                            0x3F5AA9};
-
-struct HarmonizedSeeds {
-  SkColor red;
-  SkColor green;
-  SkColor yellow;
-  SkColor blue;
-};
-
-std::pair<int, HarmonizedSeeds> MakeSeedEntry(int i) {
-  HarmonizedSeeds seed;
-  seed.red = kReds[i];
-  seed.green = kGreens[i];
-  seed.yellow = kYellows[i];
-  seed.blue = kBlues[i];
-  return std::make_pair(kAngles[i], seed);
-}
-
-const base::flat_map<int, HarmonizedSeeds> MakeMap() {
-  std::vector<std::pair<int, HarmonizedSeeds>> storage;
-  storage.reserve(4);
-  for (int i = 0; i < 4; i++) {
-    storage.push_back(MakeSeedEntry(i));
-  }
-  return base::flat_map<int, HarmonizedSeeds>(base::sorted_unique_t(),
-                                              std::move(storage));
-}
 
 // Mappings of tones to ColorId as they comprise the tonal palette.
 // https://m3.material.io/styles/color/the-color-system/key-colors-tones
@@ -152,27 +127,20 @@ int HueAngle(SkColor seed_color) {
 
 void AddHarmonizedColors(ui::ColorMixer& mixer,
                          const ui::ColorProviderKey& key) {
-  // Zip the arrays into a map indexed by the angle lower bound.
-  static const base::flat_map<int, HarmonizedSeeds> kSeedMap = MakeMap();
-
-  HarmonizedSeeds seeds;
-  if (!key.user_color) {
-    // If there's no seed color, always use the last one.
-    auto last = kSeedMap.end();
-    --last;
-    seeds = last->second;
-  } else {
+  // If there's no seed color, always use the last one.
+  size_t index = kAngles.size() - 1;
+  if (key.user_color) {
     int angle = HueAngle(*key.user_color);
     DCHECK_LT(angle, 360);
-    auto iter = kSeedMap.upper_bound(angle);
-    DCHECK(iter != kSeedMap.end());
-    seeds = iter->second;
+    auto iter = std::ranges::upper_bound(kAngles, angle);
+    DCHECK(iter != kAngles.end());
+    index = std::distance(kAngles.begin(), iter);
   }
 
-  InsertIntoMixer(mixer, TonalPalette(seeds.red), kRedIds);
-  InsertIntoMixer(mixer, TonalPalette(seeds.green), kGreenIds);
-  InsertIntoMixer(mixer, TonalPalette(seeds.blue), kBlueIds);
-  InsertIntoMixer(mixer, TonalPalette(seeds.yellow), kYellowIds);
+  InsertIntoMixer(mixer, TonalPalette(kReds[index]), kRedIds);
+  InsertIntoMixer(mixer, TonalPalette(kGreens[index]), kGreenIds);
+  InsertIntoMixer(mixer, TonalPalette(kBlues[index]), kBlueIds);
+  InsertIntoMixer(mixer, TonalPalette(kYellows[index]), kYellowIds);
 }
 
 }  // namespace ash

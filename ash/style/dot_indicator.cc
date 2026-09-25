@@ -12,16 +12,9 @@
 
 namespace ash {
 
-namespace {
-
-// The shadow value installed on the dot indicator.
-const gfx::ShadowValues kIndicatorShadow =
-    gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(2);
-
-}  // namespace
-
 DotIndicator::DotIndicator(SkColor indicator_color)
-    : shadow_values_(kIndicatorShadow), indicator_color_(indicator_color) {
+    : shadow_values_(gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(2)),
+      indicator_color_(indicator_color) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetVisible(false);
