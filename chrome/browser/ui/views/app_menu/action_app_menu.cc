@@ -251,7 +251,8 @@ const gfx::FontList* ActionAppMenu::GetLabelFontList(int id) const {
     return &views::TypographyProvider::Get().GetFont(
         views::style::CONTEXT_MENU, views::style::STYLE_BODY_3_MEDIUM);
   }
-  return nullptr;
+  return &views::TypographyProvider::Get().GetFont(views::style::CONTEXT_LABEL,
+                                                   views::style::STYLE_BODY_4);
 }
 
 std::optional<SkColor> ActionAppMenu::GetLabelColor(int id) const {

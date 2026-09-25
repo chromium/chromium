@@ -213,10 +213,10 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   // Check corner radiuses for section cards (first item has top radius, last
   // has bottom radius, middle items have neither).
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(password_item->GetMenuItemBackground()->top_radius, 8);
+  EXPECT_EQ(password_item->GetMenuItemBackground()->top_radius, 12);
   EXPECT_EQ(password_item->GetMenuItemBackground()->bottom_radius, 0);
 #else
-  EXPECT_EQ(profile_item->GetMenuItemBackground()->top_radius, 8);
+  EXPECT_EQ(profile_item->GetMenuItemBackground()->top_radius, 12);
   EXPECT_EQ(profile_item->GetMenuItemBackground()->bottom_radius, 0);
   EXPECT_EQ(password_item->GetMenuItemBackground()->top_radius, 0);
   EXPECT_EQ(password_item->GetMenuItemBackground()->bottom_radius, 0);
@@ -224,7 +224,7 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   EXPECT_EQ(downloads_item->GetMenuItemBackground()->top_radius, 0);
   EXPECT_EQ(downloads_item->GetMenuItemBackground()->bottom_radius, 0);
   EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->top_radius, 0);
-  EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->bottom_radius, 8);
+  EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->bottom_radius, 12);
 
   // Standard items (32dp row height): (32 - 16) / 2 = 8dp.
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1844,8 +1844,8 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
   ASSERT_TRUE(upgrade_item->GetMenuItemBackground().has_value());
   EXPECT_EQ(upgrade_item->GetMenuItemBackground()->background_color_id,
             ui::kColorAppMenuUpgradeRowBackground);
-  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->top_radius, 8);
-  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->bottom_radius, 8);
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->top_radius, 12);
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->bottom_radius, 12);
 
   // Verify the following block section item has
   // INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN, creating 12px of
@@ -2005,8 +2005,8 @@ TEST_F(ActionAppMenuTest, DefaultBrowserNotificationRowStyling) {
   ASSERT_TRUE(default_browser_item->GetMenuItemBackground().has_value());
   EXPECT_EQ(default_browser_item->GetMenuItemBackground()->background_color_id,
             ui::kColorAppMenuUpgradeRowBackground);
-  EXPECT_EQ(default_browser_item->GetMenuItemBackground()->top_radius, 8);
-  EXPECT_EQ(default_browser_item->GetMenuItemBackground()->bottom_radius, 8);
+  EXPECT_EQ(default_browser_item->GetMenuItemBackground()->top_radius, 12);
+  EXPECT_EQ(default_browser_item->GetMenuItemBackground()->bottom_radius, 12);
 
   // Verify the following block section item has
   // INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN, creating 12px of
@@ -2160,8 +2160,8 @@ TEST_F(ActionAppMenuTest, GlobalErrorNotificationRowStyling) {
   ASSERT_TRUE(global_error_item->GetMenuItemBackground().has_value());
   EXPECT_EQ(global_error_item->GetMenuItemBackground()->background_color_id,
             ui::kColorAppMenuUpgradeRowBackground);
-  EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_radius, 8);
-  EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 8);
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_radius, 12);
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 12);
 
   views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(1);
   ASSERT_NE(block_item, nullptr);
@@ -2229,8 +2229,8 @@ TEST_F(ActionAppMenuTest,
       root->GetMenuItemByID(kActionOpenSafetyHub);
   ASSERT_TRUE(safety_hub_item);
   ASSERT_TRUE(safety_hub_item->GetMenuItemBackground().has_value());
-  EXPECT_EQ(safety_hub_item->GetMenuItemBackground()->top_radius, 8);
-  EXPECT_EQ(safety_hub_item->GetMenuItemBackground()->bottom_radius, 8);
+  EXPECT_EQ(safety_hub_item->GetMenuItemBackground()->top_radius, 12);
+  EXPECT_EQ(safety_hub_item->GetMenuItemBackground()->bottom_radius, 12);
 
   EXPECT_FALSE(root->GetMenuItemByID(kActionGlobalError));
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
@@ -2268,8 +2268,8 @@ TEST_F(ActionAppMenuTest, GlobalErrorPrioritizedOverDefaultBrowser) {
       root->GetMenuItemByID(kActionGlobalError);
   ASSERT_TRUE(global_error_item);
   ASSERT_TRUE(global_error_item->GetMenuItemBackground().has_value());
-  EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_radius, 8);
-  EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 8);
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_radius, 12);
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 12);
 
   EXPECT_FALSE(root->GetMenuItemByID(kActionSetBrowserAsDefault));
 
@@ -2309,15 +2309,15 @@ TEST_F(ActionAppMenuTest, MultipleNotificationsSeparatedBySpacingSeparator) {
       root->GetMenuItemByID(kActionUpgradeDialog);
   ASSERT_TRUE(upgrade_item);
   ASSERT_TRUE(upgrade_item->GetMenuItemBackground().has_value());
-  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->top_radius, 8);
-  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->bottom_radius, 8);
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->top_radius, 12);
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->bottom_radius, 12);
 
   views::MenuItemView* global_error_item =
       root->GetMenuItemByID(kActionGlobalError);
   ASSERT_TRUE(global_error_item);
   ASSERT_TRUE(global_error_item->GetMenuItemBackground().has_value());
-  EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_radius, 8);
-  EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 8);
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_radius, 12);
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 12);
 
   ASSERT_GE(submenu->children().size(), 3u);
   EXPECT_EQ(submenu->children()[0], upgrade_item);

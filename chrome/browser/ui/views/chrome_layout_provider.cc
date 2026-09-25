@@ -275,7 +275,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 12;
     // Block-style Action App Menu layout constants.
     case DISTANCE_ACTION_APP_MENU_CONTAINER_CORNER_RADIUS:
-      return 8;
+      return 12;
     case DISTANCE_ACTION_APP_MENU_ICON_SIZE:
       return 16;
     case DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT:
@@ -300,8 +300,9 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_CORNER_RADIUS:
     case DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN:
     case DISTANCE_ACTION_APP_MENU_BLOCK_ROW_SPACING:
-    case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_CORNER_RADIUS:
       return 8;
+    case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_CORNER_RADIUS:
+      return 12;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING:
       return 4;
     case DISTANCE_ACTION_APP_MENU_MAX_WIDTH:
