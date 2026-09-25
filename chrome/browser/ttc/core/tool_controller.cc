@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
+#include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
@@ -61,6 +62,11 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
 
   if (tool_request.name == "perform_search") {
     PerformSearch(tool_request.arguments, std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "close_current_tab") {
+    CloseCurrentTab(std::move(callback));
     return;
   }
 #endif
@@ -119,6 +125,15 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   perform_search.behavior = ToolDefinition::Behavior::kBlocking;
   perform_search.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(perform_search));
+
+  ToolDefinition close_current_tab;
+  close_current_tab.name = "close_current_tab";
+  close_current_tab.description = "Close the current browser tab.";
+  // The tool takes no arguments, so its schema is left empty.
+  close_current_tab.behavior = ToolDefinition::Behavior::kBlocking;
+  close_current_tab.verbalization =
+      ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(close_current_tab));
 #endif
 
   return tools;
@@ -199,6 +214,14 @@ void ToolController::PerformSearch(const base::DictValue& arguments,
           tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::PerformSearchToolRequest>(tab_handle,
                                                                  *query);
+      },
+      std::move(callback));
+}
+
+void ToolController::CloseCurrentTab(ToolResponseCallback callback) {
+  PerformActionOnActiveTab(
+      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::CloseTabToolRequest>(tab_handle);
       },
       std::move(callback));
 }

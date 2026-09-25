@@ -20,11 +20,14 @@
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/search_engines/template_url.h"
@@ -35,6 +38,8 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 namespace ttc {
 
@@ -141,6 +146,74 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PerformSearchMissingQuery) {
             actor::mojom::ActionResultCode::kArgumentsInvalid);
 }
 
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, CloseCurrentTab) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  // Open a second tab so that closing the active one leaves the browser open.
+  TabStripModel* tab_strip = browser()->GetTabStripModel();
+  tabs::TabHandle first_tab = tab_strip->GetActiveTab()->GetHandle();
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(tab_strip->count(), 2);
+  ASSERT_NE(tab_strip->GetActiveTab()->GetHandle(), first_tab);
+
+  base::test::TestFuture<ToolResponse> future;
+
+  ToolRequest tool_request;
+  tool_request.name = "close_current_tab";
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+  ToolResponse response = future.Take();
+  EXPECT_TRUE(response.Ok());
+
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_EQ(tab_strip->GetActiveTab()->GetHandle(), first_tab);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       CloseOnlyTabInWindowClosesWindow) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  // The default browser window has one tab.
+  TabStripModel* first_tab_strip = browser()->GetTabStripModel();
+  ASSERT_EQ(first_tab_strip->count(), 1);
+
+  // Create a second browser window with a single tab. CreateBrowser activates
+  // it.
+  BrowserWindowInterface* second_browser = CreateBrowser(profile());
+  TabStripModel* second_tab_strip = second_browser->GetTabStripModel();
+  ASSERT_EQ(second_tab_strip->count(), 1);
+
+  ProfileBrowserCollection* collection =
+      ProfileBrowserCollection::GetForProfile(profile());
+  ASSERT_TRUE(collection);
+  ASSERT_EQ(collection->GetSize(), 2u);
+  ASSERT_EQ(collection->GetLastActiveBrowser(), second_browser);
+
+  ui_test_utils::BrowserDestroyedObserver destroyed_observer(second_browser);
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "close_current_tab";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+  ToolResponse response = future.Take();
+  EXPECT_TRUE(response.Ok());
+  destroyed_observer.Wait();
+
+  EXPECT_EQ(collection->GetSize(), 1u);
+  EXPECT_EQ(collection->GetLastActiveBrowser(), browser());
+  // The session should still be alive.
+  EXPECT_NE(ttc_service().session_controller(), nullptr);
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -168,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
-  ASSERT_EQ(tools.size(), 2u);
+  ASSERT_EQ(tools.size(), 3u);
 
   const ToolDefinition& open_url = tools[0];
   EXPECT_EQ(open_url.name, "open_url");
@@ -222,6 +295,16 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(search_required);
   EXPECT_EQ(*search_required,
             base::ListValue().Append("query").Append("new_tab"));
+
+  const ToolDefinition& close_current_tab = tools[2];
+  EXPECT_EQ(close_current_tab.name, "close_current_tab");
+  EXPECT_FALSE(close_current_tab.description.empty());
+  EXPECT_EQ(close_current_tab.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(close_current_tab.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  // The tool takes no arguments.
+  EXPECT_TRUE(close_current_tab.parameters_json_schema.empty());
 }
 
 // TTC actor tasks are given TtcKeyedService's ActorUiStateManager rather than
