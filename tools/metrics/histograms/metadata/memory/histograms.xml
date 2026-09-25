@@ -512,6 +512,10 @@ chromium-metrics-reviews@google.com.
       summary="Only counting memory used by V8 javascript engine."/>
   <variant name=".V8.AllocatedObjects"
       summary="Only counting objects allocated by V8 javascript engine."/>
+  <variant name=".V8.Main"
+      summary="Only counting memory used by the main V8 isolate."/>
+  <variant name=".V8.Main.AllocatedObjects"
+      summary="Only counting objects allocated by the main V8 isolate."/>
   <variant name=".V8.Main.GlobalHandles"
       summary="Total memory used by V8 global handles in the main isolate."/>
   <variant name=".V8.Main.GlobalHandles.AllocatedObjects"
@@ -520,6 +524,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".V8.Main.Heap" summary="Only counting memory used by V8 heap"/>
   <variant name=".V8.Main.Heap.AllocatedObjects"
       summary="Only counting objects allocated in V8 heap"/>
+  <variant name=".V8.Main.Heap.CodeLargeObjectSpace"
+      summary="Only counting memory used by the code-large-object-space of V8
+               heap"/>
+  <variant name=".V8.Main.Heap.CodeLargeObjectSpace.AllocatedObjects"
+      summary="Only counting objects allocated in the code-large-object-space
+               of V8 heap"/>
   <variant name=".V8.Main.Heap.CodeSpace"
       summary="Only counting memory used by the code-space of V8 heap"/>
   <variant name=".V8.Main.Heap.CodeSpace.AllocatedObjects"
@@ -562,6 +572,13 @@ chromium-metrics-reviews@google.com.
       summary="Only counting memory used by the shared-space of V8 heap"/>
   <variant name=".V8.Main.Heap.SharedSpace.AllocatedObjects"
       summary="Only counting objects allocated in the shared-space of V8 heap"/>
+  <variant name=".V8.Main.Malloc"
+      summary="Only counting memory allocated by malloc in the main V8
+               isolate."/>
+  <variant name=".V8.Workers"
+      summary="Only counting memory used by V8 worker isolates."/>
+  <variant name=".V8.Workers.AllocatedObjects"
+      summary="Only counting objects allocated by V8 worker isolates."/>
   <variant name=".Vulkan2"
       summary="Total memory allocated by the Vulkan Memory Allocator except
                memory that is lazily allocated. Only reported when Vulkan is
@@ -647,17 +664,9 @@ chromium-metrics-reviews@google.com.
       summary="Only counting memory used by History service."/>
   <variant name=".LevelDatabase"
       summary="Only counting memory used by Level databases."/>
-  <variant name=".Malloc.Aligned.ObjectCount"
-      summary="Number of allocated objects. Only counting malloc memory
-               allocated in the partition_alloc aligned partition."/>
   <variant name=".Malloc.AlignedAlloc.WastedKiB"
       summary="Total wasted memory in KiB due to alignment rounding in
                PartitionAlloc aligned allocations."/>
-  <variant name=".Malloc.AllocatedObjects.ObjectCount"
-      summary="Number of allocated objects."/>
-  <variant name=".Malloc.Allocator.ObjectCount"
-      summary="Number of allocated objects. Only counting malloc memory
-               allocated in the partition_alloc allocator partition."/>
   <variant name=".Malloc.BRPQuarantined"
       summary="Memory used by objects quarantined by BRP, recorded when
                USE_BACKUP_REF_PTR build flag is enabled."/>
@@ -692,9 +701,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".Malloc.ExtremeLUD.SmallObjects.SizeInBytes"
       summary="Size of quarantined allocations in the ELUD quarantine at dump
                time."/>
-  <variant name=".Malloc.Original.ObjectCount"
-      summary="Number of allocated objects. Only counting malloc memory
-               allocated in the partition_alloc original partition."/>
   <variant name=".Malloc.SchedulerLoopQuarantine.CumulativeSizeInBytes"
       summary="Total size of quarantined allocations in Scheduler-Loop
                Quarantine since process start, including already
@@ -778,6 +784,14 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ProcessMemoryAllocatorTiny2">
+  <variant name=".Malloc.Aligned.ObjectCount"
+      summary="Number of allocated objects. Only counting malloc memory
+               allocated in the partition_alloc aligned partition."/>
+  <variant name=".Malloc.AllocatedObjects.ObjectCount"
+      summary="Number of allocated objects."/>
+  <variant name=".Malloc.Allocator.ObjectCount"
+      summary="Number of allocated objects. Only counting malloc memory
+               allocated in the partition_alloc allocator partition."/>
   <variant name=".Malloc.BRPQuarantinedCount"
       summary="Number of slots quarantined by BRP, recorded when
                USE_BACKUP_REF_PTR build flag is enabled."/>
@@ -810,6 +824,9 @@ chromium-metrics-reviews@google.com.
       summary="Monotonically increasing count of quarantine requests that
                were not satisfied due to the configured size limit of the
                ELUD quarantine."/>
+  <variant name=".Malloc.Original.ObjectCount"
+      summary="Number of allocated objects. Only counting malloc memory
+               allocated in the partition_alloc original partition."/>
   <variant name=".Malloc.SchedulerLoopQuarantine.Count"
       summary="Count of all quarantined allocations in Scheduler-Loop
                Quarantine at dump time."/>

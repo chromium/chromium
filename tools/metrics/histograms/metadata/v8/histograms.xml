@@ -169,6 +169,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".ConsumeCache"
         summary="in compiling a script when the 'compilation' is
                  deserializing it from the code cache"/>
+    <variant name=".ConsumeCache.BackgroundThread"
+        summary="in compiling a script on a background thread when the
+                 'compilation' is deserializing it from the code cache"/>
     <variant name=".ConsumeCache.Failed"
         summary="in compiling a script (incl. parsing/caching) when the
                  compilation tried to deserialize it from the code cache, but

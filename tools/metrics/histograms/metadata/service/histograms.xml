@@ -107,6 +107,7 @@ chromium-metrics-reviews@google.com.
   <variant name="BACKGROUND_FETCH_FAIL"/>
   <variant name="BACKGROUND_FETCH_SUCCESS"/>
   <variant name="COOKIE_CHANGE"/>
+  <variant name="EXTERNAL_REQUEST"/>
   <variant name="FETCH_FENCED_FRAME"/>
   <variant name="FETCH_MAIN_FRAME"/>
   <variant name="FETCH_SHARED_WORKER"/>
