@@ -53,6 +53,7 @@ import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
@@ -62,7 +63,10 @@ import java.util.concurrent.TimeoutException;
 /** Instrumentation tests for FinancialAccountsManagementFragment. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS})
-@DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
+@DisableFeatures({
+    ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM,
+    ChromeFeatureList.ENABLE_PIX_ACCOUNT_LINKING_NATIVE
+})
 @Batch(Batch.PER_CLASS)
 public class FinancialAccountsManagementFragmentTest {
     private static final GURL FINANCIAL_ACCOUNT_DISPLAY_ICON_URL = new GURL("http://example.com");
@@ -809,6 +813,66 @@ public class FinancialAccountsManagementFragmentTest {
                 .isEqualTo(
                         "https://pay.sandbox.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods&id="
                                 + PIX_BANK_ACCOUNT.getInstrumentId());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ENABLE_PIX_ACCOUNT_LINKING_NATIVE})
+    public void testPixAccountLinkingNativeEnabled_noBankAccounts_pixSwitchAndDefaultTitleShown()
+            throws Exception {
+        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        ChromeSwitchPreference pixSwitch = getPixSwitchPreference(activity);
+        assertThat(pixSwitch).isNotNull();
+        FinancialAccountsManagementFragment fragment =
+                (FinancialAccountsManagementFragment) activity.getMainFragment();
+        assertThat(fragment.getPageTitle().get())
+                .isEqualTo(fragment.getResources().getString(R.string.settings_manage_pix_title));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ENABLE_PIX_ACCOUNT_LINKING_NATIVE})
+    public void
+            testSearchIndexDataProvider_pixAccountLinkingNativeEnabled_noBankAccounts_pixNotIndexed() {
+        SettingsIndexData indexData = new SettingsIndexData();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FinancialAccountsManagementFragment.SEARCH_INDEX_DATA_PROVIDER
+                            .updateDynamicPreferences(
+                                    ContextUtils.getApplicationContext(),
+                                    indexData,
+                                    ProfileManager.getLastUsedRegularProfile());
+                });
+
+        assertThat(
+                        indexData.getEntryForKey(
+                                FinancialAccountsManagementFragment.class.getName(),
+                                FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX))
+                .isNull();
+    }
+
+    @Test
+    @MediumTest
+    public void testSearchIndexDataProvider_hasBankAccounts_pixIndexed() throws Exception {
+        AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
+        SettingsIndexData indexData = new SettingsIndexData();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FinancialAccountsManagementFragment.SEARCH_INDEX_DATA_PROVIDER
+                            .updateDynamicPreferences(
+                                    ContextUtils.getApplicationContext(),
+                                    indexData,
+                                    ProfileManager.getLastUsedRegularProfile());
+                });
+
+        assertThat(
+                        indexData.getEntryForKey(
+                                FinancialAccountsManagementFragment.class.getName(),
+                                FinancialAccountsManagementFragment.PREFERENCE_KEY_PIX))
+                .isNotNull();
     }
 
     private static PreferenceScreen getPreferenceScreen(SettingsActivityInterface activity) {
