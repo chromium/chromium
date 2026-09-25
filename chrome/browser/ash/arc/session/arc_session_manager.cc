@@ -736,10 +736,12 @@ void ArcSessionManager::OnProvisioningFinished(
     }
 
     // On low-end (4GB RAM) devices, shut down ARCVM after post-OOBE
-    // provisioning to free system resources. ARCVM will be re-activated
-    // on-demand when the user launches an ARC app.
+    // provisioning for unmanaged users to free system resources. ARCVM will be
+    // re-activated on-demand when the user launches an ARC app.
+    // Managed users are excluded because post-provisioning tasks (such as
+    // installing force-installed apps) require ARCVM to stay running.
     if (base::FeatureList::IsEnabled(arc::kShutDownArcPostOobeProvisioning) &&
-        was_provisioning_initiated_from_oobe && IsArcVmEnabled() &&
+        !managed && was_provisioning_initiated_from_oobe && IsArcVmEnabled() &&
         base::SysInfo::Is4GbDevice()) {
       VLOG(1) << "Shutting down ARCVM post-OOBE provisioning on 4GB device.";
       activation_is_allowed_ = false;

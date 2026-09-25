@@ -1208,6 +1208,23 @@ TEST_F(ArcSessionManagerTest, PostOobeProvisioningShutdown_FeatureDisabled) {
   arc_session_manager()->Shutdown();
 }
 
+TEST_F(ArcSessionManagerTest, PostOobeProvisioningShutdown_ManagedUser) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(arc::kShutDownArcPostOobeProvisioning);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::GiB(4));
+  profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+
+  SimulateOobeProvisioning();
+
+  // For managed users, ARCVM remains active even on 4GB device.
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  arc_session_manager()->Shutdown();
+}
+
 TEST_F(ArcSessionManagerTest, InitiatedFromOobeIsResetOnOptOut) {
   // Set up the situation that terms were accepted in the previous session.
   PrefService* const prefs = profile()->GetPrefs();
