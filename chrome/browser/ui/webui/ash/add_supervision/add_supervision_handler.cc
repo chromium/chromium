@@ -8,13 +8,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
@@ -38,9 +39,13 @@ AddSupervisionHandler::AddSupervisionHandler(
         receiver,
     content::WebUI* web_ui,
     signin::IdentityManager* identity_manager,
+    supervised_user::SupervisedUserService* supervised_user_service,
     Delegate* delegate)
     : web_ui_(web_ui),
       identity_manager_(identity_manager),
+      // The handler is only created for a supervised account, which always has
+      // a SupervisedUserService.
+      supervised_user_service_(CHECK_DEREF(supervised_user_service)),
       receiver_(this, std::move(receiver)),
       delegate_(delegate) {
   identity_manager_observation_.Observe(identity_manager_);
@@ -118,9 +123,7 @@ void AddSupervisionHandler::LogOut() {
 }
 
 void AddSupervisionHandler::NotifySupervisionEnabled() {
-  supervised_user::SupervisedUserService* service =
-      supervised_user::SupervisedUserServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
-  service->set_signout_required_after_supervision_enabled();
+  supervised_user_service_->set_signout_required_after_supervision_enabled();
 
   // Force full sign-in the next time the user is at the login screen.
   // Gellerization can only be triggered by the primary user.

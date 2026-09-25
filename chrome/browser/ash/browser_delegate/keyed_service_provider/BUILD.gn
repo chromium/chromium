@@ -12,6 +12,7 @@ group("keyed_service_provider") {
     ":feature_engagement_tracker_provider_impl",
     ":history_service_provider_impl",
     ":identity_manager_provider_impl",
+    ":supervised_user_service_provider_impl",
     ":sync_service_provider_impl",
     ":template_url_service_provider_impl",
     ":trusted_vault_service_provider_impl",
@@ -147,6 +148,25 @@ source_set("identity_manager_provider_impl") {
     "//chrome/browser/signin",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/signin:identity_manager_provider",
+  ]
+
+  visibility = [ ":keyed_service_provider" ]
+}
+
+source_set("supervised_user_service_provider_impl") {
+  sources = [
+    "supervised_user_service_provider_impl.cc",
+    "supervised_user_service_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/supervised_user",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/supervised_user:supervised_user_service_provider",
+    "//components/account_id",
+    "//content/public/browser",
   ]
 
   visibility = [ ":keyed_service_provider" ]

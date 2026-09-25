@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/profiles",
-  "+chrome/browser/supervised_user",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
   "+chrome/browser/ui/views/chrome_web_dialog_view.h",

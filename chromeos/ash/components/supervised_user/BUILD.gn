@@ -1,0 +1,15 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+component("supervised_user_service_provider") {
+  public = [ "supervised_user_service_provider.h" ]
+
+  sources = [ "supervised_user_service_provider.cc" ]
+
+  defines = [ "IS_SUPERVISED_USER_SERVICE_PROVIDER_IMPL" ]
+
+  deps = [ "//base" ]
+}

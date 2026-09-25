@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
@@ -22,6 +23,10 @@ namespace signin {
 class AccessTokenFetcher;
 struct AccessTokenInfo;
 }  // namespace signin
+
+namespace supervised_user {
+class SupervisedUserService;
+}  // namespace supervised_user
 
 class GoogleServiceAuthError;
 
@@ -52,6 +57,7 @@ class AddSupervisionHandler
           receiver,
       content::WebUI* web_ui,
       signin::IdentityManager* identity_manager,
+      supervised_user::SupervisedUserService* supervised_user_service,
       Delegate* delegate);
 
   AddSupervisionHandler(const AddSupervisionHandler&) = delete;
@@ -84,6 +90,10 @@ class AddSupervisionHandler
   // shutdown is detected.
   raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<signin::AccessTokenFetcher> oauth2_access_token_fetcher_;
+
+  // The supervised user service for the account being supervised. Injected by
+  // AddSupervisionUI, which resolves it for the account's profile.
+  raw_ref<supervised_user::SupervisedUserService> supervised_user_service_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "base/check.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
+#include "chromeos/ash/components/supervised_user/supervised_user_service_provider.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 
@@ -32,8 +33,15 @@ void LogOutHelper() {
 }
 
 bool EnrollmentCompleted() {
+  // EnrollmentCompleted() only runs from the Add Supervision dialog, which is
+  // always shown inside the primary user's session, so a primary session
+  // always exists here.
+  // TODO(crbug.com/332804822): Take the AccountId from the callers instead of
+  // resolving the primary session here.
+  const session_manager::Session* session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(session);
   supervised_user::SupervisedUserService* service =
-      supervised_user::SupervisedUserServiceFactory::GetForProfile(
-          ProfileManager::GetPrimaryUserProfile());
-  return service->signout_required_after_supervision_enabled();
+      ash::SupervisedUserServiceProvider::Get().Find(session->account_id());
+  return service && service->signout_required_after_supervision_enabled();
 }

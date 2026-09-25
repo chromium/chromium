@@ -27,8 +27,10 @@
 #include "chrome/grit/supervision_resources_map.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
+#include "chromeos/ash/components/supervised_user/supervised_user_service_provider.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -209,14 +211,17 @@ void AddSupervisionUI::SetUpForTest(signin::IdentityManager* identity_manager) {
 void AddSupervisionUI::BindInterface(
     mojo::PendingReceiver<add_supervision::mojom::AddSupervisionHandler>
         receiver) {
+  const AccountId& account_id =
+      CHECK_DEREF(AnnotatedAccountId::Get(Profile::FromWebUI(web_ui())));
   signin::IdentityManager* identity_manager =
-      test_identity_manager_
-          ? test_identity_manager_
-          : IdentityManagerProvider::Get().Find(CHECK_DEREF(
-                AnnotatedAccountId::Get(Profile::FromWebUI(web_ui()))));
+      test_identity_manager_ ? test_identity_manager_
+                             : IdentityManagerProvider::Get().Find(account_id);
+  supervised_user::SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceProvider::Get().Find(account_id);
 
   mojo_api_handler_ = std::make_unique<AddSupervisionHandler>(
-      std::move(receiver), web_ui(), identity_manager, this);
+      std::move(receiver), web_ui(), identity_manager, supervised_user_service,
+      this);
 }
 
 void AddSupervisionUI::SetUpResources(const std::string& app_locale) {
