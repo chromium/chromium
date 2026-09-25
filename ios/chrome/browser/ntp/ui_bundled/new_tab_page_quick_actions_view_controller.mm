@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -42,22 +41,6 @@ constexpr CGFloat kSymbolPointSizeUICleanup = 14.0;
 // The maximum font size for the quick actions button.
 const CGFloat kMaximumFontSize = 20.0;
 
-// The horizontal inset margin for the button stack view in a regular x regular
-// size class.
-constexpr CGFloat kHorizontalInsetRegularXRegular = 36.0;
-
-// Returns the leading margin for the button stack based on the window's size
-// class.
-CGFloat HorizontalInsetForQuickActions(
-    id<UITraitEnvironment> trait_environment) {
-  if (!IsNewTabPageUICleanupEnabled()) {
-    return 0.0;
-  }
-  return IsRegularXRegularSizeClass(trait_environment)
-             ? kHorizontalInsetRegularXRegular
-             : 0.0;
-}
-
 // The color used to match the fakebox background.
 NSString* const kFakeboxMatchingBackgroundColor =
     @"fake_omnibox_bottom_gradient_color";
@@ -78,10 +61,6 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
 @implementation NewTabPageQuickActionsViewController {
   // The stack view containing the quick actions buttons.
   UIStackView* _buttonStackView;
-
-  // Constraints for the leading and trailing edges of the `_buttonStackView`.
-  NSLayoutConstraint* _stackViewLeadingConstraint;
-  NSLayoutConstraint* _stackViewTrailingConstraint;
 }
 
 #pragma mark - UIViewController
@@ -91,33 +70,13 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
   _buttonStackView = [self createButtonStackView];
   [self.view addSubview:_buttonStackView];
 
-  CGFloat inset = HorizontalInsetForQuickActions(self);
-
-  _stackViewLeadingConstraint = [_buttonStackView.leadingAnchor
-      constraintEqualToAnchor:self.view.leadingAnchor
-                     constant:inset];
-  _stackViewTrailingConstraint = [_buttonStackView.trailingAnchor
-      constraintEqualToAnchor:self.view.trailingAnchor
-                     constant:-inset];
-
+  AddSameConstraints(_buttonStackView, self.view);
   [NSLayoutConstraint activateConstraints:@[
-    [_buttonStackView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-    [_buttonStackView.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor],
     [_buttonStackView.heightAnchor
         constraintEqualToConstant:IsNewTabPageUICleanupEnabled()
                                       ? kQuickActionsHeightUICleanup
                                       : kQuickActionsHeight],
-    _stackViewLeadingConstraint,
-    _stackViewTrailingConstraint,
   ]];
-
-  if (IsNewTabPageUICleanupEnabled()) {
-    [self registerForTraitChanges:@[
-      UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
-    ]
-                       withAction:@selector(updateButtonStackConstraints)];
-  }
 
   if (IsAimEnabledInNtp()) {
     _aimButton =
@@ -153,18 +112,6 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
 }
 
 #pragma mark - Private
-
-// Updates the horizontal constraints for the button stack view based on the
-// layout environment.
-- (void)updateButtonStackConstraints {
-  CHECK(IsNewTabPageUICleanupEnabled());
-  if (!_stackViewLeadingConstraint && !_stackViewTrailingConstraint) {
-    return;
-  }
-  CGFloat inset = HorizontalInsetForQuickActions(self);
-  _stackViewLeadingConstraint.constant = inset;
-  _stackViewTrailingConstraint.constant = -inset;
-}
 
 - (void)setupQuickActionsButtonsAccessibility {
   _incognitoButton.accessibilityLabel =
