@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/functional/callback_forward.h"
+
 class PrefService;
 
 inline constexpr char kDataControlsBlockedUrl[] = "https://block.com";
@@ -23,5 +25,9 @@ void SetCopyBlockRule(PrefService* prefs);
 
 // Waits until the pasteboard contains `expected_string`.
 [[nodiscard]] bool WaitForStringInPasteboard(NSString* expected_string);
+
+// Executes `action` (which should trigger a pasteboard change) and waits until
+// `DataControlsPasteboardManager` notifies observers of the change.
+[[nodiscard]] bool WaitForPasteboardContentChanged(base::OnceClosure action);
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_MODEL_DATA_CONTROLS_TEST_UTILS_H_

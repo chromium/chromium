@@ -4,8 +4,6 @@
 
 import("//components/enterprise/buildflags/buildflags.gni")
 
-assert(enterprise_data_controls)
-
 source_set("model") {
   sources = [
     "data_controls_edit_menu_builder.h",
@@ -39,6 +37,8 @@ source_set("model") {
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/enterprise/data_controls/utils",
     "//ios/chrome/browser/enterprise/enterprise_dialog/model",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
@@ -115,6 +115,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/enterprise/cloud_content_scanning/test:test_support",
     "//ios/chrome/browser/enterprise/common/test",
     "//ios/chrome/browser/enterprise/connectors/reporting",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/snackbar",

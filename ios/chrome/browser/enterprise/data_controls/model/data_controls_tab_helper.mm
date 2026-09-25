@@ -29,14 +29,22 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_metrics.h"
 #import "ios/chrome/browser/enterprise/data_controls/utils/ios_clipboard_context.h"
 #import "ios/chrome/browser/enterprise/enterprise_dialog/model/warning_dialog.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/spinning_overlay_request_config.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/components/enterprise/analysis/features.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/clipboard/clipboard_format_type.h"
 #import "ui/base/clipboard/clipboard_metadata.h"
@@ -74,10 +82,16 @@ bool ShouldWaitForVerdict(const std::optional<AnalysisSettings>& settings) {
 
 DataControlsTabHelper::DataControlsTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
+  web_state->AddObserver(this);
   scoped_observation_.Observe(DataControlsPasteboardManager::GetInstance());
 }
 
-DataControlsTabHelper::~DataControlsTabHelper() = default;
+DataControlsTabHelper::~DataControlsTabHelper() {
+  if (web_state_) {
+    web_state_->RemoveObserver(this);
+    web_state_ = nullptr;
+  }
+}
 
 void DataControlsTabHelper::ShouldAllowCopy(
     base::OnceCallback<void(bool)> callback) {
@@ -290,6 +304,13 @@ void DataControlsTabHelper::PasteIfNonBlockingAnalysis(
   }
 
   if (ShouldWaitForVerdict(settings)) {
+    // Start the oneshot timer for showing the spinner overlay if scanning takes
+    // longer than `kSpinnerOverlayDelay`.
+    paste_spinner_timer_.Start(
+        FROM_HERE, kSpinnerOverlayDelay,
+        base::BindOnce(&DataControlsTabHelper::ShowPasteSpinner,
+                       weak_factory_.GetWeakPtr(), destination_url));
+    paste_event_state_ = PasteEventState::kWaitingScanDecision;
     DataControlsPasteboardManager::GetInstance()->GetPasteboardTextAndImage(
         base::BindOnce(&DataControlsTabHelper::RunBlockingPastedContentAnalysis,
                        weak_factory_.GetWeakPtr(), destination_url, profile,
@@ -329,6 +350,8 @@ void DataControlsTabHelper::PasteIfAllowedByContentAnalysis(
     return;
   }
 
+  DismissPasteSpinnerIfPresented();
+
   RequestHandlerResultActionLevel action_level = ResultToActionLevel(result);
 
   // Always call `FinishPaste` if the paste is allowed because the pasteboard
@@ -336,6 +359,8 @@ void DataControlsTabHelper::PasteIfAllowedByContentAnalysis(
   switch (action_level) {
     case RequestHandlerResultActionLevel::kNotScan:
     case RequestHandlerResultActionLevel::kAudit:
+      // TODO(crbug.com/561973212): Bring up the keyboard again if paste is
+      // allowed.
       FinishPaste(std::move(callback), /*verdict_or_scan_success=*/true,
                   /*analysis_warn_bypassed=*/false);
       break;
@@ -412,7 +437,6 @@ void DataControlsTabHelper::RunBlockingPastedContentAnalysis(
       base::BindOnce(&DataControlsTabHelper::PasteIfAllowedByContentAnalysis,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 
-  paste_event_state_ = PasteEventState::kWaitingScanDecision;
   pasteboard_content_handler_->StartContentAnalysisRequest();
 }
 
@@ -561,6 +585,12 @@ void DataControlsTabHelper::SetSnackbarHandler(
     id<SnackbarCommands> snackbar_handler) {
   snackbar_handler_ = snackbar_handler;
 }
+
+void DataControlsTabHelper::SetBrowserHandler(
+    id<BrowserCommands> browser_handler) {
+  browser_handler_ = browser_handler;
+}
+
 void DataControlsTabHelper::DidFinishClipboardRead() {
   DataControlsPasteboardManager::GetInstance()
       ->RestorePlaceholderToGeneralPasteboardIfNeeded();
@@ -659,6 +689,10 @@ void DataControlsTabHelper::FinishPaste(base::OnceCallback<void(bool)> callback,
     pasteboard_content_handler_->ReportWarningBypass();
   }
 
+  // Try to dismiss the spinner again in case the paste event did not go through
+  // `PasteIfAllowedByContentAnalysis` and has a spinner showing.
+  DismissPasteSpinnerIfPresented();
+
   if (allowed) {
     DataControlsPasteboardManager::GetInstance()
         ->RestoreItemsToGeneralPasteboardIfNeeded(
@@ -686,6 +720,93 @@ void DataControlsTabHelper::ShowWarningDialog(
   }
 }
 
+void DataControlsTabHelper::ShowPasteSpinner(const GURL& destination_url) {
+  // TODO(crbug.com/564445791): Add sequence checker to ensure state is only
+  // updated in main thread.
+  //
+  // User navigated away before the paste is finished, in this case we should
+  // block the paste and not show the spinner overlay because it is no longer a
+  // valid paste event.
+  if (!web_state_ || !web_state_->IsVisible() ||
+      web_state_->GetLastCommittedURL() != destination_url) {
+    paste_event_state_ = PasteEventState::kPasteEventStale;
+    return;
+  }
+
+  // Dismiss the keyboard before showing the spinning overlay.
+  [browser_handler_ dismissSoftKeyboard];
+
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      web_state_, OverlayModality::kWebContentArea);
+  std::unique_ptr<OverlayRequest> request =
+      OverlayRequest::CreateWithConfig<SpinningOverlayRequestConfig>(
+          /*label_text=*/nil, /*is_cancellable=*/false);
+  request->GetCallbackManager()->AddCompletionCallback(
+      base::BindOnce(&DataControlsTabHelper::OnPasteSpinnerDismissed,
+                     weak_factory_.GetWeakPtr()));
+  queue->CancelAllRequests();
+  queue->AddRequest(std::move(request));
+  paste_event_state_ = PasteEventState::kDisplayingSpinner;
+}
+
+void DataControlsTabHelper::DismissPasteSpinnerIfPresented() {
+  paste_spinner_timer_.Stop();
+  if (web_state_ && paste_event_state_ == PasteEventState::kDisplayingSpinner) {
+    // Although we already have the scan result, we are waiting for the logic to
+    // go through the result and make the decision (allow, warn, block).
+    paste_event_state_ = PasteEventState::kWaitingScanDecision;
+    OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+        web_state_, OverlayModality::kWebContentArea);
+    queue->CancelAllRequests();
+  }
+}
+
+void DataControlsTabHelper::OnPasteSpinnerDismissed(
+    OverlayResponse* /*response*/) {
+  // If the spinner is not showing, it is dismissed by ourselves and we do not
+  // need to do anything.
+  if (paste_event_state_ != PasteEventState::kDisplayingSpinner) {
+    return;
+  }
+
+  // Invalidate the current paste if the spinner is being interrupted by other
+  // overlays.
+  InvalidateCurrentPaste();
+}
+
+void DataControlsTabHelper::WasHidden(web::WebState* web_state) {
+  // If the tab was hidden, the pastebin/textarea user is trying to paste into
+  // should have lost focus, which indicate the user wants to do something else
+  // before the paste is finished. In this case, we should invalidate the paste
+  // event based and not let the paste go through.
+  InvalidateCurrentPaste();
+}
+
+void DataControlsTabHelper::DidStartNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  // If the user started to navigate to a different page, the original
+  // pastebin/textarea should be gone and we should invalidate the paste event
+  // and not let the paste go through.
+  InvalidateCurrentPaste();
+}
+
+void DataControlsTabHelper::InvalidateCurrentPaste() {
+  if (paste_event_state_ == PasteEventState::kDisplayingWarningDialog) {
+    [enterprise_handler_ dismissEnterpriseWarningDialog];
+    paste_event_state_ = PasteEventState::kIdle;
+  } else if (paste_event_state_ == PasteEventState::kWaitingScanDecision ||
+             paste_event_state_ == PasteEventState::kDisplayingSpinner) {
+    DismissPasteSpinnerIfPresented();
+    paste_event_state_ = PasteEventState::kPasteEventStale;
+  }
+}
+
+void DataControlsTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  web_state_->RemoveObserver(this);
+  web_state_ = nullptr;
+}
+
 void DataControlsTabHelper::ShowRestrictSnackbar(NSString* title) {
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
   [snackbar_handler_ showSnackbarMessageAfterDismissingKeyboard:message];
@@ -703,20 +824,9 @@ std::string DataControlsTabHelper::GetManagementDomain(ProfileIOS* profile) {
 }
 
 void DataControlsTabHelper::OnPasteboardContentChanged() {
-  switch (paste_event_state_) {
-    case PasteEventState::kIdle:
-      break;
-    case PasteEventState::kDisplayingWarningDialog:
-      [enterprise_handler_ dismissEnterpriseWarningDialog];
-      paste_event_state_ = PasteEventState::kIdle;
-      break;
-    case PasteEventState::kWaitingScanDecision:
-      paste_event_state_ = PasteEventState::kPasteEventStale;
-      break;
-    case PasteEventState::kPasteEventStale:
-      // Do nothing as we have not received a Scan Result yet.
-      break;
-  }
+  // The pasteboard content is changed, we should invalidate the current paste
+  // event and block it.
+  InvalidateCurrentPaste();
 }
 
 }  // namespace data_controls
