@@ -327,6 +327,12 @@ void LevelUpService::MarkTaskCompleted(TaskType task_type) {
 }
 
 void LevelUpService::ResetAllTasksStatus() {
+  // Clear and reset UI state prefs.
+  pref_service_->ClearPref(prefs::kLevelUpUIEnabled);
+  is_ui_enabled_ = pref_service_->GetBoolean(prefs::kLevelUpUIEnabled);
+  pref_service_->ClearPref(prefs::kLevelUpNewTasksNotificationEnabled);
+
+  // Clear or override task prefs.
   completed_tasks_.clear();
   current_level_ = 1;
   pref_service_->ClearPref(prefs::kLevelUpCompletedTasks);
@@ -335,7 +341,6 @@ void LevelUpService::ResetAllTasksStatus() {
   pref_service_->SetInteger(prefs::kLevelUpPasswordsAutofilledStat, 0);
   pref_service_->SetInteger(prefs::kLevelUpPasswordsVerifiedStat, 0);
   pref_service_->SetInteger(prefs::kLevelUpPhotoSearchesPerformedStat, 0);
-  pref_service_->SetBoolean(prefs::kLevelUpNewTasksNotificationEnabled, true);
   pref_service_->SetInteger(
       prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 0);
 }
@@ -564,19 +569,20 @@ int LevelUpService::CalculateLevel(size_t completed_count) const {
 // static
 void LevelUpService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kLevelUpCompletedTasks,
-                             user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterIntegerPref(
-      prefs::kLevelUpHighestLevel, 1,
+  registry->RegisterBooleanPref(
+      prefs::kLevelUpOptIn, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kLevelUpUIEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
-      prefs::kLevelUpOptIn, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
       prefs::kLevelUpNewTasksNotificationEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  registry->RegisterListPref(prefs::kLevelUpCompletedTasks,
+                             user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kLevelUpHighestLevel, 1,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kLevelUpTabsDeclutteredStat, 0,
