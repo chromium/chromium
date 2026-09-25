@@ -218,41 +218,6 @@ class JsCheckerTest(unittest.TestCase):
     for line in lines:
       self.ShouldPassInheritDocCheck(line)
 
-  def ShouldFailPolymerLocalIdCheck(self, line):
-    """Checks that element.$.localId check marks |line| as a style error."""
-    error = self.checker.PolymerLocalIdCheck(1, line)
-    self.assertNotEqual("", error, "Should be flagged as style error: " + line)
-    self.assertTrue(".$" in test_util.GetHighlight(line, error))
-
-  def ShouldPassPolymerLocalIdCheck(self, line):
-    """Checks that element.$.localId check doesn't mark |line| as a style
-    error."""
-    self.assertEqual(
-      "",
-      self.checker.PolymerLocalIdCheck(1, line),
-      msg="Should not be flagged as a style error: " + line,
-    )
-
-  def testPolymerLocalIdFails(self):
-    lines = [
-      "cat.$.dog",
-      "thing1.$.thing2",
-      "element.$.localId",
-      'element.$["fancy-hyphenated-id"]',
-    ]
-    for line in lines:
-      self.ShouldFailPolymerLocalIdCheck(line)
-
-  def testPolymerLocalIdPasses(self):
-    lines = [
-      "this.$.id",
-      "this.$.localId",
-      'this.$["fancy-id"]',
-      "this.page.$.flushForTesting()",
-    ]
-    for line in lines:
-      self.ShouldPassPolymerLocalIdCheck(line)
-
   def ShouldFailVariableNameCheck(self, line):
     """Checks that var unix_hacker, $dollar are style errors."""
     error = self.checker.VariableNameCheck(1, line)

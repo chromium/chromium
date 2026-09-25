@@ -76,15 +76,6 @@ class JSChecker(object):
       "@inheritDoc is deprecated, use @override instead",
     )
 
-  def PolymerLocalIdCheck(self, i, line):
-    """Checks for use of element.$.localId."""
-    return self.RegexCheck(
-      i,
-      line,
-      r"(?<!this)(\.\$)[\[\.](?![a-zA-Z]+\()",
-      "Please only use this.$.localId, not element.$.localId",
-    )
-
   def RunEsLintChecks(self, affected_js_files, format="stylish"):
     """Runs lint checks using ESLint. The ESLint rules being applied are defined
     in the .eslintrc.js configuration file.
@@ -171,7 +162,6 @@ class JSChecker(object):
             self.EndJsDocCommentCheck(i, line),
             self.ExtraDotInGenericCheck(i, line),
             self.InheritDocCheck(i, line),
-            self.PolymerLocalIdCheck(i, line),
             self.VariableNameCheck(i, line),
           ]
           if _f
