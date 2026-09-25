@@ -2,12 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/base/cocoa/base_view.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-#include "ui/base/cocoa/base_view.h"
 #import "ui/base/test/cocoa_helper.h"
+#import "ui/events/test/cocoa_test_event_utils.h"
+
+// A BaseView that records the mouse events routed to -mouseEvent:.
+@interface MouseEventRecordingView : BaseView
+@property(nonatomic) NSUInteger mouseExitedCount;
+@end
+
+@implementation MouseEventRecordingView
+@synthesize mouseExitedCount = _mouseExitedCount;
+- (void)mouseEvent:(NSEvent*)theEvent {
+  if (theEvent.type == NSEventTypeMouseExited) {
+    self.mouseExitedCount++;
+  }
+}
+@end
 
 namespace {
 
@@ -47,6 +63,49 @@ TEST_F(BaseViewTest, flipNSRectToRect) {
   EXPECT_EQ(NSMinY(back_again), NSMinY(convert));
   EXPECT_EQ(NSWidth(back_again), NSWidth(convert));
   EXPECT_EQ(NSHeight(back_again), NSHeight(convert));
+}
+
+// Hiding a view while the cursor is over it must synthesize a mouse exited
+// event, since AppKit does not send one. See https://crbug.com/548314090.
+TEST_F(BaseViewTest, HideViewUnderCursorSynthesizesMouseExit) {
+  CocoaTestHelperWindow* window = [[CocoaTestHelperWindow alloc]
+      initWithContentRect:NSMakeRect(0, 0, 200, 200)];
+  window.releasedWhenClosed = NO;
+  MouseEventRecordingView* view = [[MouseEventRecordingView alloc]
+      initWithFrame:NSMakeRect(0, 0, 100, 100)];
+  [window.contentView addSubview:view];
+
+  // Cursor never entered the view: hiding it synthesizes nothing.
+  view.hidden = YES;
+  EXPECT_EQ(0u, view.mouseExitedCount);
+  view.hidden = NO;
+
+  // Cursor inside the view: hiding it synthesizes a mouse exited event.
+  [view mouseEntered:cocoa_test_event_utils::EnterEvent(NSMakePoint(50, 50),
+                                                        window)];
+  view.hidden = YES;
+  EXPECT_EQ(1u, view.mouseExitedCount);
+  view.hidden = NO;
+
+  // Cursor exited the view again: only the real exit itself is recorded,
+  // hiding does not synthesize another one.
+  [view mouseExited:cocoa_test_event_utils::ExitEvent(NSMakePoint(150, 150),
+                                                      window)];
+  EXPECT_EQ(2u, view.mouseExitedCount);
+  view.hidden = YES;
+  EXPECT_EQ(2u, view.mouseExitedCount);
+  view.hidden = NO;
+
+  // A mouse move also marks the cursor as inside, and hiding an ancestor
+  // synthesizes a mouse exited event as well.
+  [view mouseMoved:cocoa_test_event_utils::MouseEventAtPoint(
+                       NSMakePoint(50, 50), NSEventTypeMouseMoved, 0)];
+  window.contentView.hidden = YES;
+  EXPECT_EQ(3u, view.mouseExitedCount);
+  window.contentView.hidden = NO;
+
+  [view removeFromSuperview];
+  [window close];
 }
 
 }  // namespace

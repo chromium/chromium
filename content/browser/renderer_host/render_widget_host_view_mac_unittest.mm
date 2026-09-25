@@ -707,6 +707,27 @@ TEST_F(RenderWidgetHostViewMacTest, AcceptsFirstResponder) {
   EXPECT_TRUE(rwhv_cocoa_.acceptsFirstResponder);
 }
 
+// A mouse exited event arriving at a hidden view (synthesized by
+// -[BaseView viewDidHide] when the view hides under the cursor) must still be
+// delivered to the renderer so that stale :hover state is cleared. See
+// https://crbug.com/548314090.
+TEST_F(RenderWidgetHostViewMacTest, HiddenViewDeliversMouseExit) {
+  rwhv_cocoa_.hidden = YES;
+  host_->GetAndResetDispatchedMessages();
+
+  [rwhv_cocoa_ mouseEvent:cocoa_test_event_utils::ExitEvent(NSMakePoint(10, 10),
+                                                            window_)];
+
+  MockWidgetInputHandler::MessageVector events;
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    MockWidgetInputHandler::MessageVector new_events =
+        host_->GetAndResetDispatchedMessages();
+    std::move(new_events.begin(), new_events.end(), std::back_inserter(events));
+    return !events.empty();
+  }));
+  EXPECT_EQ("MouseLeave", GetMessageNames(events));
+}
+
 // This test verifies that RenderWidgetHostViewCocoa's implementation of
 // NSTextInputClientConformance conforms to requirements.
 TEST_F(RenderWidgetHostViewMacTest, NSTextInputClientConformance) {

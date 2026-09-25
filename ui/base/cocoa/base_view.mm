@@ -15,6 +15,7 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 @implementation BaseView {
   ui::ScopedCrTrackingArea _trackingArea;
   BOOL _dragging;
+  BOOL _mouseInside;
   NSEvent* __strong _pendingExitEvent;
   NSInteger _pressureEventStage;
 }
@@ -124,6 +125,7 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 }
 
 - (void)mouseMoved:(NSEvent*)theEvent {
+  _mouseInside = YES;
   [self mouseEvent:theEvent];
 }
 
@@ -139,7 +141,36 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
   [self mouseEvent:theEvent];
 }
 
+- (void)viewDidHide {
+  [super viewDidHide];
+
+  // AppKit does not send a mouse exited event when a view is hidden (or has
+  // an ancestor hidden) while the cursor is over it, e.g. on a
+  // keyboard-triggered tab switch. Synthesize one so hover state does not go
+  // stale, similar to what aura::WindowEventDispatcher::
+  // DispatchMouseExitToHidingWindow() does on other platforms. Cursor
+  // containment is tracked via the event stream in |_mouseInside| rather than
+  // queried from the window, since in headless mode the mouse location
+  // reported by the window does not reflect synthesized headless events.
+  NSWindow* window = self.window;
+  if (!window || !_mouseInside) {
+    return;
+  }
+  NSEvent* exitEvent =
+      [NSEvent enterExitEventWithType:NSEventTypeMouseExited
+                             location:window.mouseLocationOutsideOfEventStream
+                        modifierFlags:0
+                            timestamp:NSProcessInfo.processInfo.systemUptime
+                         windowNumber:window.windowNumber
+                              context:nil
+                          eventNumber:0
+                       trackingNumber:0
+                             userData:nil];
+  [self mouseExited:exitEvent];
+}
+
 - (void)mouseEntered:(NSEvent*)theEvent {
+  _mouseInside = YES;
   if (_pendingExitEvent) {
     _pendingExitEvent = nil;
     return;
@@ -149,6 +180,7 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 }
 
 - (void)mouseExited:(NSEvent*)theEvent {
+  _mouseInside = NO;
   // The tracking area will send an exit event even during a drag, which isn't
   // how the event flow for drags should work. This stores the exit event, and
   // sends it when the drag completes instead.

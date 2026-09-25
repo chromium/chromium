@@ -1149,12 +1149,18 @@ static NSWindow* __weak _deferredResignKeyWindow;
 
   if ([self shouldIgnoreMouseEvent:theEvent]) {
     // If this is the first such event, send a mouse exit to the host view.
-    if (!_mouseEventWasIgnored && !self.hidden) {
+    // Mouse exited events are also delivered for hidden views, so that hover
+    // state gets cleared when a view under the cursor is hidden (see the
+    // synthesized exit in -[BaseView viewDidHide]).
+    if (!_mouseEventWasIgnored &&
+        (!self.hidden || type == NSEventTypeMouseExited)) {
       WebMouseEvent exitEvent =
           WebMouseEventBuilder::Build(theEvent, self, _pointerType);
       exitEvent.SetType(WebInputEvent::Type::kMouseLeave);
       exitEvent.button = WebMouseEvent::Button::kNoButton;
-      _hostHelper->ForwardMouseEvent(exitEvent);
+      // Route the leave through the input event router so that it also
+      // reaches an OOPIF under the cursor.
+      _hostHelper->RouteOrProcessMouseEvent(exitEvent);
     }
     _mouseEventWasIgnored = YES;
     [self updateCursor:nil];

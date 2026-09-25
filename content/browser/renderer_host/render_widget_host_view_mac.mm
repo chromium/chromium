@@ -2160,6 +2160,13 @@ void RenderWidgetHostViewMac::RouteOrProcessMouseEvent(
   } else {
     ProcessMouseEvent(web_event, latency_info);
   }
+
+  // The tooltip is browser-side state that only changes when the renderer
+  // sends a tooltip update, so it has to be cleared explicitly once the cursor
+  // leaves the view. Otherwise a visible tooltip outlives the hover.
+  if (web_event.GetType() == WebInputEvent::Type::kMouseLeave) {
+    SetTooltipText(std::u16string());
+  }
 }
 
 void RenderWidgetHostViewMac::RouteOrProcessTouchEvent(
