@@ -628,7 +628,6 @@ _CONFIG = [
             'gfx::HDRMetadata',
             'gfx::HdrMetadataAgtm',
             'gfx::HdrMetadataExtendedRange',
-            'gfx::ICCProfile',
 
             # For fast cos/sin functions
             'gfx::SinCosDegrees',

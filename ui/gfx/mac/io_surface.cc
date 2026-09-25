@@ -21,8 +21,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/encode/SkICC.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/icc_profile.h"
 #include "ui/gfx/mac/color_space_util.h"
 
 namespace gfx {
@@ -489,17 +492,24 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
     }
   }
 
-  // Generate an ICCProfile from the parametric color space.
-  ICCProfile icc_profile =
-      ICCProfile::FromColorSpace(color_space.GetAsFullRangeRGB());
-  if (!icc_profile.IsValid())
+  // Generate an ICC profile from the parametric color space.
+  // TODO(https://crbug.com/540759552): Switch to the SkWriteICCProfile
+  // interface that takes an SkColorSpace when available.
+  SkColorSpacePrimaries primaries = color_space.GetPrimaries();
+  skcms_Matrix3x3 to_XYZD50_matrix;
+  primaries.toXYZD50(&to_XYZD50_matrix);
+  skcms_TransferFunction fn;
+  if (!color_space.GetTransferFunction(&fn)) {
     return false;
+  }
+  sk_sp<SkData> data = SkWriteICCProfile(fn, to_XYZD50_matrix);
+  if (!data) {
+    return false;
+  }
 
   // Package it as a CFDataRef and send it to the IOSurface.
-  std::vector<char> icc_profile_data = icc_profile.GetData();
-  base::apple::ScopedCFTypeRef<CFDataRef> cf_data_icc_profile(CFDataCreate(
-      nullptr, reinterpret_cast<const UInt8*>(icc_profile_data.data()),
-      icc_profile_data.size()));
+  base::apple::ScopedCFTypeRef<CFDataRef> cf_data_icc_profile(
+      CFDataCreate(nullptr, data->bytes(), data->size()));
 
   IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceColorSpace"),
                     cf_data_icc_profile.get());

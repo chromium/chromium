@@ -160,7 +160,6 @@ class CxxDependencyTest(unittest.TestCase):
         'base::RepeatingCallback<void()>',
         'gfx::ColorSpace',
         'gfx::CubicBezier',
-        'gfx::ICCProfile',
         'gfx::Point',
         'gfx::Rect',
         'scoped_refptr<base::SingleThreadTaskRunner>',
