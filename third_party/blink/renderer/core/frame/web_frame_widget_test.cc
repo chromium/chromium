@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
@@ -94,7 +95,12 @@ class TouchMoveEventListener final : public NativeEventListener {
 
 }  // namespace
 
-class WebFrameWidgetSimTest : public SimTest {};
+class WebFrameWidgetSimTest : public SimTest {
+ protected:
+  bool IsFullscreenGranted() {
+    return WebView().MainFrameViewWidget()->IsFullscreenGranted();
+  }
+};
 
 // Tests that if a WebView is auto-resized, the associated
 // WebFrameWidgetImpl requests a new viz::LocalSurfaceId to be allocated on the
@@ -184,6 +190,99 @@ TEST_F(WebFrameWidgetSimTest, ColorGamutChangeTriggersMediaQuery) {
   v8::Local<v8::Value> changed = MainFrame().ExecuteScriptAndReturnValue(
       WebScriptSource("window.__changed"));
   EXPECT_TRUE(changed->BooleanValue(Window().GetIsolate()));
+}
+
+TEST_F(WebFrameWidgetSimTest, CoalescedFullscreenEnterAndExitRejectsRequest) {
+  class CountingEventListener final : public NativeEventListener {
+   public:
+    void Invoke(ExecutionContext*, Event*) override { ++count_; }
+    int count() const { return count_; }
+
+   private:
+    int count_ = 0;
+  };
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete("<!DOCTYPE html><div id='target'></div>");
+  Compositor().BeginFrame();
+
+  Document& document = GetDocument();
+  Element* target = document.getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+
+  auto* fullscreen_change_listener =
+      MakeGarbageCollected<CountingEventListener>();
+  document.addEventListener(event_type_names::kFullscreenchange,
+                            fullscreen_change_listener, false);
+  auto* fullscreen_error_listener =
+      MakeGarbageCollected<CountingEventListener>();
+  document.addEventListener(event_type_names::kFullscreenerror,
+                            fullscreen_error_listener, false);
+
+  LocalFrame::NotifyUserActivation(
+      document.GetFrame(), mojom::blink::UserActivationNotificationType::kTest);
+  Fullscreen::RequestFullscreen(*target);
+  EXPECT_EQ(nullptr, Fullscreen::FullscreenElementFrom(document));
+
+  // Simulate a coalesced false -> true -> false transition arriving in a single
+  // VisualProperties update (`is_fullscreen_granted = false`,
+  // `fullscreen_grant_count` incremented by 1 for the intermediate entry).
+  VisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+  visual_properties.new_size_device_px = gfx::Size(800, 600);
+  visual_properties.visible_viewport_size_device_px = gfx::Size(800, 600);
+  visual_properties.is_fullscreen_granted = false;
+  visual_properties.fullscreen_grant_count = 1;
+  WebView().MainFrameWidget()->ApplyVisualProperties(visual_properties);
+  Compositor().BeginFrame();
+
+  // The intermediate entry was not granted, so the pending request is rejected:
+  // no `fullscreenchange` events fired, one `fullscreenerror` event fired,
+  // and `FullscreenController` returned to `State::kInitial`.
+  EXPECT_EQ(0, fullscreen_change_listener->count());
+  EXPECT_EQ(1, fullscreen_error_listener->count());
+  EXPECT_EQ(nullptr, Fullscreen::FullscreenElementFrom(document));
+
+  visual_properties.is_fullscreen_granted = true;
+  visual_properties.fullscreen_grant_count = 2;
+  WebView().MainFrameWidget()->ApplyVisualProperties(visual_properties);
+  EXPECT_EQ(nullptr, Fullscreen::FullscreenElementFrom(document));
+}
+
+TEST_F(WebFrameWidgetSimTest,
+       CoalescedFullscreenExitAndReenterStaysInFullscreen) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete("<!DOCTYPE html><div id='target'></div>");
+  Compositor().BeginFrame();
+
+  Document& document = GetDocument();
+  Element* target = document.getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+
+  LocalFrame::NotifyUserActivation(
+      document.GetFrame(), mojom::blink::UserActivationNotificationType::kTest);
+  Fullscreen::RequestFullscreen(*target);
+
+  VisualProperties visual_properties;
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+  visual_properties.new_size_device_px = gfx::Size(800, 600);
+  visual_properties.visible_viewport_size_device_px = gfx::Size(800, 600);
+  visual_properties.is_fullscreen_granted = true;
+  visual_properties.fullscreen_grant_count = 1;
+  WebView().MainFrameWidget()->ApplyVisualProperties(visual_properties);
+  ASSERT_EQ(target, Fullscreen::FullscreenElementFrom(document));
+
+  // Simulate a coalesced true -> false -> true transition
+  // (`is_fullscreen_granted = true`, `fullscreen_grant_count` incremented by 1
+  // for the new fullscreen entry). The document must remain in fullscreen
+  // rather than getting exited to State::kInitial.
+  visual_properties.is_fullscreen_granted = true;
+  visual_properties.fullscreen_grant_count = 2;
+  WebView().MainFrameWidget()->ApplyVisualProperties(visual_properties);
+  EXPECT_EQ(target, Fullscreen::FullscreenElementFrom(document));
+  EXPECT_TRUE(IsFullscreenGranted());
 }
 
 TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {

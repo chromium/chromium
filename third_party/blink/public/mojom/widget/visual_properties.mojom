@@ -70,6 +70,10 @@ struct VisualProperties {
   // Page scoped value.
   bool is_fullscreen_granted;
 
+  // The number of times fullscreen has been granted to this widget by the
+  // browser.
+  uint64 fullscreen_grant_count = 0;
+
   // The display mode. This will be replicated amongst subframes.
   DisplayMode display_mode = DisplayMode.kUndefined;
 

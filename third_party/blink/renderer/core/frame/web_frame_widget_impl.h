@@ -1303,8 +1303,10 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   std::optional<gfx::Point> host_context_menu_location_;
 
-  // Indicates whether tab-initiated fullscreen was granted.
+  // Indicates whether tab-initiated fullscreen was granted, and the browser's
+  // count of how many times fullscreen has been granted.
   bool is_fullscreen_granted_ = false;
+  uint64_t fullscreen_grant_count_ = 0;
 
   // Indicates whether we need to consume scroll gestures to move cursor.
   bool swipe_to_move_cursor_activated_ = false;

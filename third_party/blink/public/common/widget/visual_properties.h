@@ -108,6 +108,11 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // Indicates whether tab-initiated fullscreen was granted.
   bool is_fullscreen_granted = false;
 
+  // The number of times fullscreen has been granted to this widget by the
+  // browser. Allows the browser and renderer to detect fullscreen transitions
+  // that were coalesced while waiting for a visual properties ack.
+  uint64_t fullscreen_grant_count = 0;
+
   bool resizable = true;
 
   // Whether the window floats on top of other windows.

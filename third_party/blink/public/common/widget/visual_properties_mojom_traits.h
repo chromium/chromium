@@ -77,6 +77,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.is_fullscreen_granted;
   }
 
+  static uint64_t fullscreen_grant_count(const blink::VisualProperties& r) {
+    return r.fullscreen_grant_count;
+  }
+
   static blink::mojom::DisplayMode display_mode(
       const blink::VisualProperties& r) {
     return r.display_mode;

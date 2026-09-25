@@ -1438,6 +1438,14 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Visual properties that were most recently sent to the renderer.
   std::unique_ptr<blink::VisualProperties> old_visual_properties_;
 
+  // Tracks the last observed value of `delegate_->IsFullscreen()` and
+  // increments `fullscreen_grant_count_` each time fullscreen is entered so
+  // that fullscreen transitions coalesced while waiting for a visual properties
+  // ack are still detected.
+  void UpdateFullscreenGrantCount();
+  bool was_fullscreen_ = false;
+  uint64_t fullscreen_grant_count_ = 0;
+
   // True if the render widget host should track the render widget's size as
   // opposed to visa versa.
   bool auto_resize_enabled_ = false;

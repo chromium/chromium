@@ -1989,11 +1989,21 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
     // This needs to run before ApplyVisualPropertiesSizing below,
     // which updates the current set of screen_infos from visual properties.
     if (DidChangeFullscreenState(visual_properties)) {
+      const bool was_fullscreen_granted = is_fullscreen_granted_;
       is_fullscreen_granted_ = visual_properties.is_fullscreen_granted;
-      if (is_fullscreen_granted_)
+      fullscreen_grant_count_ = visual_properties.fullscreen_grant_count;
+      if (is_fullscreen_granted_) {
         View()->DidEnterFullscreen();
-      else
-        View()->DidExitFullscreen();
+      } else {
+        if (!was_fullscreen_granted) {
+          // If a `false -> true -> false` transition was coalesced while
+          // waiting for an ack, fullscreen was not granted, so reject any
+          // pending request.
+          View()->DidFailToEnterFullscreen();
+        } else {
+          View()->DidExitFullscreen();
+        }
+      }
     }
   }
 
@@ -2178,8 +2188,10 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
 
 bool WebFrameWidgetImpl::DidChangeFullscreenState(
     const VisualProperties& visual_properties) const {
-  if (visual_properties.is_fullscreen_granted != is_fullscreen_granted_)
+  if (visual_properties.is_fullscreen_granted != is_fullscreen_granted_ ||
+      visual_properties.fullscreen_grant_count > fullscreen_grant_count_) {
     return true;
+  }
   // If changing fullscreen from one display to another, the fullscreen
   // granted state will not change, but we still need to resolve promises
   // by considering this a change.

@@ -157,6 +157,22 @@ void FullscreenController::DidEnterFullscreen() {
   // no fullscreen element, exit fullscreen again to recover.
 }
 
+void FullscreenController::DidFailToEnterFullscreen() {
+  TRACE_EVENT("blink", __PRETTY_FUNCTION__);
+  if (state_ != State::kEnteringFullscreen &&
+      state_ != State::kChangingFullscreenDisplays) {
+    return;
+  }
+
+  if (state_ == State::kChangingFullscreenDisplays) {
+    UpdatePageScaleConstraints(true);
+  }
+
+  state_ = State::kInitial;
+
+  NotifyFramesOfFullscreenEntry(false /* granted */);
+}
+
 void FullscreenController::DidExitFullscreen() {
   TRACE_EVENT("blink", __PRETTY_FUNCTION__);
   // The browser process can exit fullscreen at any time, e.g. if the user

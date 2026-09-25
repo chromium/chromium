@@ -72,6 +72,11 @@ class CORE_EXPORT FullscreenController {
   void DidEnterFullscreen();
   void DidExitFullscreen();
 
+  // Called when a pending fullscreen request was not granted by the browser
+  // (e.g. if an entry and exit coalesced while visual property updates were
+  // being throttled). Rejects any pending request and resets state to kInitial.
+  void DidFailToEnterFullscreen();
+
   // Called by Fullscreen (via ChromeClient) to notify that the fullscreen
   // element has changed.
   void FullscreenElementChanged(Element* old_element,

@@ -1538,6 +1538,10 @@ void WebViewImpl::DidEnterFullscreen() {
   fullscreen_controller_->DidEnterFullscreen();
 }
 
+void WebViewImpl::DidFailToEnterFullscreen() {
+  fullscreen_controller_->DidFailToEnterFullscreen();
+}
+
 void WebViewImpl::DidExitFullscreen() {
   fullscreen_controller_->DidExitFullscreen();
 }

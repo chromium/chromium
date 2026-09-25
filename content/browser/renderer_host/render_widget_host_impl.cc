@@ -1091,6 +1091,8 @@ void RenderWidgetHostImpl::RemoveImeInputEventObserver(
 #endif
 
 blink::VisualProperties RenderWidgetHostImpl::GetInitialVisualProperties() {
+  was_fullscreen_ = false;
+  fullscreen_grant_count_ = 0;
   blink::VisualProperties initial_props = GetVisualProperties();
 
   // A RenderWidget being created in the renderer means the browser should
@@ -1139,7 +1141,9 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
     }
   }
 
+  UpdateFullscreenGrantCount();
   visual_properties.is_fullscreen_granted = delegate_->IsFullscreen();
+  visual_properties.fullscreen_grant_count = fullscreen_grant_count_;
 
   if (is_frame_widget) {
     visual_properties.display_mode = delegate_->GetDisplayMode();
@@ -1365,6 +1369,13 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
   if (!view_) {
     return false;
   }
+
+  // Record fullscreen state transitions before checking
+  // `visual_properties_ack_pending_` so that a fullscreen change and revert
+  // while waiting for an ack advances `fullscreen_grant_count_` and triggers an
+  // update once the ack arrives.
+  UpdateFullscreenGrantCount();
+
   // Throttle to one update at a time.
   if (visual_properties_ack_pending_) {
     return false;
@@ -2412,6 +2423,8 @@ void RenderWidgetHostImpl::RendererExited() {
   renderer_widget_created_ = false;
   // This flag is set when creating the renderer widget.
   waiting_for_init_ = false;
+  was_fullscreen_ = false;
+  fullscreen_grant_count_ = 0;
 
   blink_widget_.reset();
 
@@ -3353,6 +3366,8 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
              new_visual_properties.compositor_viewport_pixel_rect ||
          old_visual_properties->is_fullscreen_granted !=
              new_visual_properties.is_fullscreen_granted ||
+         old_visual_properties->fullscreen_grant_count !=
+             new_visual_properties.fullscreen_grant_count ||
          old_visual_properties->display_mode !=
              new_visual_properties.display_mode ||
          old_visual_properties->application_context !=
@@ -3378,6 +3393,17 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
              new_visual_properties.window_controls_overlay_rect ||
          old_visual_properties->always_on_top !=
              new_visual_properties.always_on_top;
+}
+
+void RenderWidgetHostImpl::UpdateFullscreenGrantCount() {
+  if (!delegate_) {
+    return;
+  }
+  const bool is_fullscreen = delegate_->IsFullscreen();
+  if (!was_fullscreen_ && is_fullscreen) {
+    fullscreen_grant_count_++;
+  }
+  was_fullscreen_ = is_fullscreen;
 }
 
 void RenderWidgetHostImpl::AutoscrollStart(const gfx::PointF& position) {

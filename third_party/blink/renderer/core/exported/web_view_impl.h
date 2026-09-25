@@ -544,6 +544,11 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DidEnterFullscreen();
   void DidExitFullscreen();
 
+  // Called when a pending fullscreen request was not granted by the browser
+  // (e.g. if an entry and exit coalesced while visual property updates were
+  // being throttled). Rejects any pending request and resets state to kInitial.
+  void DidFailToEnterFullscreen();
+
   // Called when some JS code has instructed the window associated to the main
   // frame to close, which will result in a request to the browser to close the
   // Widget associated to it.

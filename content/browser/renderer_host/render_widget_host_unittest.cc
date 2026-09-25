@@ -1208,6 +1208,51 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   EXPECT_EQ(1u, widget_.ReceivedVisualProperties().size());
 }
 
+// Verify that fullscreen transitions occurring while an ack is pending advance
+// `fullscreen_grant_count`, so a rapid enter/exit pair that reverts
+// `is_fullscreen_granted` before the ack arrives still triggers a
+// `VisualProperties` update with the incremented grant count once the ack is
+// received (https://crbug.com/561969557).
+TEST_F(RenderWidgetHostTest,
+       FullscreenChangeAndRevertWhileAckPendingSendsUpdatedGrantCountOnAck) {
+  // Put the host into a state where an ack is outstanding, so that any further
+  // update is subject to throttling.
+  ClearVisualProperties();
+  view_->SetBounds(gfx::Rect(0, 0, 100, 100));
+  ASSERT_TRUE(host_->SynchronizeVisualProperties());
+  ASSERT_TRUE(host_->visual_properties_ack_pending_);
+  ASSERT_FALSE(host_->old_visual_properties_->is_fullscreen_granted);
+  const uint64_t initial_grant_count =
+      host_->old_visual_properties_->fullscreen_grant_count;
+
+  ClearVisualProperties();
+
+  // Entering and immediately exiting fullscreen while
+  // `visual_properties_ack_pending_` is true is throttled, leaving
+  // `is_fullscreen_granted` back at `false`.
+  delegate_->set_is_fullscreen(true);
+  EXPECT_FALSE(host_->SynchronizeVisualProperties());
+  delegate_->set_is_fullscreen(false);
+  EXPECT_FALSE(host_->SynchronizeVisualProperties());
+  EXPECT_TRUE(widget_.ReceivedVisualProperties().empty());
+
+  // When the pending ack arrives, `StoredVisualPropertiesNeedsUpdate` detects
+  // that `fullscreen_grant_count` advanced and sends the update despite
+  // `is_fullscreen_granted` still being `false` and the size being unchanged.
+  cc::RenderFrameMetadata metadata;
+  metadata.viewport_size_in_pixels = gfx::Size(100, 100);
+  metadata.local_surface_id = std::nullopt;
+  static_cast<RenderFrameMetadataProvider::Observer&>(*host_)
+      .OnLocalSurfaceIdChanged(metadata);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !widget_.ReceivedVisualProperties().empty(); }));
+  ASSERT_EQ(1u, widget_.ReceivedVisualProperties().size());
+  EXPECT_FALSE(widget_.ReceivedVisualProperties()[0].is_fullscreen_granted);
+  EXPECT_EQ(initial_grant_count + 1,
+            widget_.ReceivedVisualProperties()[0].fullscreen_grant_count);
+}
+
 // Test that a resize event is sent if SynchronizeVisualProperties() is called
 // after a ScreenInfo change.
 TEST_F(RenderWidgetHostTest, ResizeScreenInfo) {

@@ -28,6 +28,7 @@ bool VisualProperties::operator==(const VisualProperties& other) const {
          scroll_focused_node_into_view == other.scroll_focused_node_into_view &&
          local_surface_id == other.local_surface_id &&
          is_fullscreen_granted == other.is_fullscreen_granted &&
+         fullscreen_grant_count == other.fullscreen_grant_count &&
          display_mode == other.display_mode &&
          application_context == other.application_context &&
          zoom_level == other.zoom_level &&
