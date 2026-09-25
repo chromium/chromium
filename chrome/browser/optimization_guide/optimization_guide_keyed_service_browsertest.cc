@@ -50,7 +50,6 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
@@ -1537,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(
       policy::key::kHelpMeWriteSettings,
       ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableModelQualityDogfoodLogging);
+      kEnableModelQualityDogfoodLoggingSwitch);
 
   const MqlsFeatureMetadata* metadata =
       MqlsFeatureRegistry::GetInstance().GetFeature(
@@ -1569,7 +1568,7 @@ IN_PROC_BROWSER_TEST_F(DogfoodOptimizationGuideKeyedServiceBrowserTest,
       policy::key::kHelpMeWriteSettings,
       ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableModelQualityDogfoodLogging);
+      kEnableModelQualityDogfoodLoggingSwitch);
 
   const MqlsFeatureMetadata* metadata =
       MqlsFeatureRegistry::GetInstance().GetFeature(

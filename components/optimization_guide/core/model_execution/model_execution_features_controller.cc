@@ -18,7 +18,6 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
@@ -137,7 +136,7 @@ bool ModelExecutionFeaturesController::
       dogfood_status_ == DogfoodStatus::DOGFOOD || !is_official_build_;
   bool has_logging_force_enabled =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableModelQualityDogfoodLogging);
+          kEnableModelQualityDogfoodLoggingSwitch);
   if (is_eligible_for_override && has_logging_force_enabled) {
     return true;
   }

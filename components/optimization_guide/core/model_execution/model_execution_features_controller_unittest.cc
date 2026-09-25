@@ -17,7 +17,6 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -453,7 +452,7 @@ TEST_F(ModelExecutionFeaturesControllerTest,
 
   auto feature = UserVisibleFeatureKey::kCompose;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableModelQualityDogfoodLogging);
+      kEnableModelQualityDogfoodLoggingSwitch);
   EnableSignIn();
   SetEnterprisePolicy(
       feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
@@ -475,7 +474,7 @@ TEST_F(ModelExecutionFeaturesControllerTest,
 
   auto feature = UserVisibleFeatureKey::kCompose;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableModelQualityDogfoodLogging);
+      kEnableModelQualityDogfoodLoggingSwitch);
   EnableSignIn();
   SetEnterprisePolicy(
       feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
@@ -499,7 +498,7 @@ TEST_F(
 
   auto feature = UserVisibleFeatureKey::kCompose;
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableModelQualityDogfoodLogging);
+      kEnableModelQualityDogfoodLoggingSwitch);
   EnableSignIn();
   SetEnterprisePolicy(
       feature, ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);

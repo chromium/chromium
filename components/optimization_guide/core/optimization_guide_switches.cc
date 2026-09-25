@@ -17,11 +17,6 @@ const char kDebugLoggingEnabled[] = "enable-optimization-guide-debug-logs";
 const char kOnDeviceModelExecutionOverride[] =
     "optimization-guide-ondevice-model-execution-override";
 
-// Enables model quality logs regardless of other client-side settings, as long
-// as the client is a dogfood client.
-const char kEnableModelQualityDogfoodLogging[] =
-    "enable-model-quality-dogfood-logging";
-
 const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[] =
     "optimization-guide-get-free-disk-space-with-user-visible-priority-task";
 

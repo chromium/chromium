@@ -145,6 +145,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
@@ -10464,7 +10465,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOptimizationGuideEnableDogfoodLoggingDescription,
      kOsAll,
      SINGLE_VALUE_TYPE(
-         optimization_guide::switches::kEnableModelQualityDogfoodLogging)},
+         optimization_guide::kEnableModelQualityDogfoodLoggingSwitch)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"conch", flag_descriptions::kConchName,

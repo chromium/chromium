@@ -30,6 +30,11 @@ class ManagementService;
 
 namespace optimization_guide {
 
+// Enables model quality logs regardless of other client-side settings, as long
+// as the client is a dogfood client.
+inline constexpr char kEnableModelQualityDogfoodLoggingSwitch[] =
+    "enable-model-quality-dogfood-logging";
+
 // Class that keeps track of user opt-in settings, including the visibility of
 // settings and the user's opt-in state.
 class ModelExecutionFeaturesController

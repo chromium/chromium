@@ -29,10 +29,6 @@ extern const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask();
 
-// TODO(crbug.com/514743962): Move to components/optimization_guide/core/model_execution/model_execution_features_controller.h.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kEnableModelQualityDogfoodLogging[];
-
 // TODO(crbug.com/514743962): Move to components/optimization_guide/core/optimization_guide_logger.h.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kDebugLoggingEnabled[];
