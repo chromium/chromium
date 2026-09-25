@@ -428,10 +428,9 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
         sample_format_, channel_layout_, channel_count_, sample_rate_,
         frame_count, out.size, pool_);
 
-    const auto channels = audio_buffer->channels();
-    CHECK(!channels.empty());
+    const base::span<uint8_t> bitstream_data = audio_buffer->bitstream_data();
     MediaCodecResult result = media_codec->CopyFromOutputBuffer(
-        out.index, out.offset, channels.front());
+        out.index, out.offset, bitstream_data);
 
     if (!result.is_ok()) {
       media_codec->ReleaseOutputBuffer(out.index, false);
@@ -439,13 +438,13 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
     }
 
     if (config_.codec() == AudioCodec::kAC3) {
-      frame_count = Ac3Util::ParseTotalAc3SampleCount(channels.front());
+      frame_count = Ac3Util::ParseTotalAc3SampleCount(bitstream_data);
     } else if (config_.codec() == AudioCodec::kEAC3) {
-      frame_count = Ac3Util::ParseTotalEac3SampleCount(channels.front());
+      frame_count = Ac3Util::ParseTotalEac3SampleCount(bitstream_data);
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     } else if (config_.codec() == AudioCodec::kDTS) {
       frame_count =
-          media::dts::ParseTotalSampleCount(channels.front(), AudioCodec::kDTS);
+          media::dts::ParseTotalSampleCount(bitstream_data, AudioCodec::kDTS);
       DVLOG(2) << ": DTS Frame Count = " << frame_count;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     } else {
@@ -470,10 +469,11 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
   // Copy data into AudioBuffer.
   CHECK_LE(out.size, audio_buffer->data_size());
 
-  const auto channels = audio_buffer->channels();
-  CHECK(!channels.empty());
-  MediaCodecResult result = media_codec->CopyFromOutputBuffer(
-      out.index, out.offset, channels.front());
+  const base::span<uint8_t> dest = is_passthrough_
+                                       ? audio_buffer->bitstream_data()
+                                       : audio_buffer->interleaved_data();
+  MediaCodecResult result =
+      media_codec->CopyFromOutputBuffer(out.index, out.offset, dest);
 
   // Release MediaCodec output buffer.
   media_codec->ReleaseOutputBuffer(out.index, false);
