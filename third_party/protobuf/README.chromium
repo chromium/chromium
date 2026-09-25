@@ -176,7 +176,9 @@ Description of the patches:
 
 - 0042-fix-undefined-protobuf-custom-vtable.patch
 
-  Fixes the build when PROTOBUF_CUSTOM_VTABLE is not defined.
+  Fixes the build when PROTOBUF_CUSTOM_VTABLE is not defined. Obsoleted upstream
+  by
+  https://github.com/protocolbuffers/protobuf/commit/25e2bb7ca37cc35099a79921221b8196ed625849.
 
 - 0044-trim-protoc-main.patch
 
@@ -189,7 +191,8 @@ Description of the patches:
 
 - 0051-export-template-define.patch
 
-  Adds some missing export defines to fix Windows component build.
+  Adds some missing export defines to fix Windows component build. Upstreamed in
+  https://github.com/protocolbuffers/protobuf/commit/68259eecb51b3523acea8338d322b1d43df0123b.
 
 - 0052-remove-dynamic-annotations.patch
 
@@ -204,7 +207,8 @@ Description of the patches:
 
   Fixes an incomplete type compilation error for the member pointer parameter
   `clear` in the `ClassData` constructor when `MessageLite` is only forward
-  declared.
+  declared. Obsoleted upstream by
+  https://github.com/protocolbuffers/protobuf/commit/25e2bb7ca37cc35099a79921221b8196ed625849.
 
 - 0060-export-any.patch
 
@@ -218,13 +222,16 @@ Description of the patches:
   those symbols need to be exported.
 
   See go/chrome-protobuf-wkt for an overview of how protobuf WKTs are supported
-  in Chrome.
+  in Chrome. Upstreamed in
+  https://github.com/protocolbuffers/protobuf/commit/4fa81d0204609137eefbba7b88cccec4c90ee228.
 
 - 0061-fix-invalid-enum-class-export.patch
 
   Removes invalid PROTOBUF_EXPORTs on enum classes in text_format.h.
   Under C++ / MSVC, dllexport attributes cannot be applied to enum classes,
   which triggers -Wignored-attributes under Clang on Windows component builds.
+  Upstreamed in
+  https://github.com/protocolbuffers/protobuf/commit/05ce295e1381a448bbd11a6309c8de2d716f4f74.
 
 - 0062-fix-dllexport-explicit-instantiation-decl.patch
 
@@ -232,7 +239,8 @@ Description of the patches:
   and map_field.cc by replacing the unconditional PROTOBUF_EXPORT with
   PROTOBUF_EXPORT_TEMPLATE_DECLARE (which resolves to empty) and
   PROTOBUF_EXPORT_TEMPLATE_DEFINE (which resolves to dllexport/dllimport) to
-  correctly declare and export explicit template instantiations.
+  correctly declare and export explicit template instantiations. Upstreamed in
+  https://github.com/protocolbuffers/protobuf/commit/31d1cbab9f7312fd97d54d520cc599efa804b4ad.
 
 - 0064-time-util-no-export.patch
 
@@ -284,10 +292,11 @@ Description of the patches:
 - 0071-remove-log-include-from-descriptor-h.patch
 
   Removes `absl/log/log.h` include from `descriptor.h` to avoid macro clashes
-  with Chromium's `base/logging.h` (LOG, PLOG, DLOG, VLOG, etc.). This is in
-  the process of getting upstreamed.
+  with Chromium's `base/logging.h` (LOG, PLOG, DLOG, VLOG, etc.). Upstreamed in
+  https://github.com/protocolbuffers/protobuf/commit/9a59883bc21943f3bec2c7e2743294446193dd4d.
 
 - 0072-remove-version-stamp.patch
 
   Scrubs out the non-OSS `kVersionStampBuildHasHardeningProtobuf` version
-  stamp block from `port.cc`. This has been upstreamed.
+  stamp block from `port.cc`. Upstreamed in
+  https://github.com/protocolbuffers/protobuf/commit/fa52ce297c1bd24af9c7785de2d29744edbca485.
