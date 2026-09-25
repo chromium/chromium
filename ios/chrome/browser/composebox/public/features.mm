@@ -49,26 +49,38 @@ bool AlignComposeboxCloseButtonToInputPlateTop() {
 }
 
 BASE_FEATURE(kComposeboxAdditionalAdvancedTools,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ShowComposeboxAdditionalAdvancedTools() {
   if (!EnableComposeboxServerSideState()) {
     return false;
   }
+  // Launched by default on phones.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kComposeboxAdditionalAdvancedTools);
 }
 
 bool ShowDeepSearchTool() {
+  // Launched by default on phones.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kComposeboxDeepSearch);
 }
 
-BASE_FEATURE(kComposeboxDeepSearch, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxDeepSearch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool EnableComposeboxServerSideState() {
+  // Launched by default on phones.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kComposeboxServerSideState);
 }
 
-BASE_FEATURE(kComposeboxServerSideState, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxServerSideState, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsComposeboxVerbatimSuggestionInAIMEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxVerbatimSuggestionInAIM);
