@@ -53,15 +53,19 @@ export type ScriptingMessage =
     DocumentLoadedScriptingMessage|ViewportScriptingMessage|
     SendKeyEventScriptingMessage|SimpleScriptingMessage|SelectedTextData;
 
-// LINT.IfChange(ScrollbarWidth)
 /** @return Width of a scrollbar in pixels */
 function getScrollbarWidth(): number {
-  return 14;
+  const div = document.createElement('div');
+  div.style.visibility = 'hidden';
+  div.style.overflow = 'scroll';
+  div.style.width = '50px';
+  div.style.height = '50px';
+  div.style.position = 'absolute';
+  document.body.appendChild(div);
+  const result = div.offsetWidth - div.clientWidth;
+  div.parentNode!.removeChild(div);
+  return result;
 }
-// LINT.ThenChange(
-//   //components/pdf/browser/plugin_response_writer.cc:CPPScrollbarCSS,
-//   //chrome/browser/resources/pdf/elements/scrollbar.css
-// )
 
 const HelpBubbleCrLitElementBase = HelpBubbleMixinLit(CrLitElement);
 

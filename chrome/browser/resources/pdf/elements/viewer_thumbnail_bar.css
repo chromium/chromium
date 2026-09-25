@@ -6,10 +6,6 @@
  * #type=style-lit
  * #css_wrapper_metadata_end */
 
-:host {
-  display: block;
-}
-
 :host(:focus) {
   outline: none;
 }

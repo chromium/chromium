@@ -190,7 +190,6 @@ std::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     info.allow_javascript = false;
     info.use_skia = ShouldEnableSkiaRenderer(contents);
     info.allow_xfa_forms = false;
-    info.is_print_preview = true;
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
   } else {
     return std::nullopt;

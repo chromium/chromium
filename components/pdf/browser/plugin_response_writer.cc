@@ -45,7 +45,6 @@ std::string GenerateResponse(const PdfStreamDelegate::StreamInfo& stream_info) {
   // when JavaScript is blocked throughout the browser (set in
   // chrome://settings/content/javascript). A permanent solution would likely
   // have to hook into postMessage() natively.
-  // LINT.IfChange(CPPScrollbarCSS)
   static constexpr char kResponseTemplate[] = R"(<!DOCTYPE html>
 <style>
 body,
@@ -66,28 +65,6 @@ embed {
 .fullscreen {
   overflow: hidden;
 }
-
-::-webkit-scrollbar {
-  height: 14px;
-  width: 14px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-clip: padding-box;
-  background-color: #9aa0a6; /* var(--google-grey-500) */
-  border: 4px solid transparent;
-  border-radius: 8px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: #dadce0; /* var(--google-grey-300) */
-}
-
-::-webkit-scrollbar-track,
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-$9
 </style>
 <div id="sizer"></div>
 <embed type="application/x-google-chrome-pdf" src="$1" original-url="$2"
@@ -97,24 +74,10 @@ $3
 </script>
 )";
 
-  static constexpr char kPrintPreviewCSS[] = R"(
-    @media (prefers-color-scheme: light) {
-      ::-webkit-scrollbar-track,
-      ::-webkit-scrollbar-corner {
-        background: #FFF;
-      }
-    }
-  )";
-  // LINT.ThenChange(
-  //   //chrome/browser/resources/pdf/elements/scrollbar.css,
-  //   //chrome/browser/resources/pdf/pdf_viewer_base.ts:ScrollbarWidth
-  // )
-
   // TODO(crbug.com/40792950): We should load the injected scripts as network
   // resources instead. Until then, feel free to raise this limit as necessary.
-  if (stream_info.injected_script) {
+  if (stream_info.injected_script)
     DCHECK_LE(stream_info.injected_script->size(), 16'384u);
-  }
 
   return base::ReplaceStringPlaceholders(
       kResponseTemplate,
@@ -125,8 +88,7 @@ $3
        stream_info.allow_javascript ? "allow" : "block",
        stream_info.full_frame ? " full-frame" : "",
        stream_info.use_skia ? " use-skia" : "",
-       stream_info.allow_xfa_forms ? " allow-xfa-forms" : "",
-       stream_info.is_print_preview ? kPrintPreviewCSS : ""},
+       stream_info.allow_xfa_forms ? " allow-xfa-forms" : ""},
       /*offsets=*/nullptr);
 }
 

@@ -4,6 +4,7 @@
 
 import type {Point, Rect, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {FittingType, PAGE_SHADOW, SwipeDirection} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 
 import type {MockPdfPluginElement} from './test_util.js';
 import {createMockPdfPluginForTest, getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
@@ -52,8 +53,7 @@ function whenRequestAnimationFrame(): Promise<void> {
 const tests = [
   function testScrollbarWidth() {
     const viewport = getZoomableViewport(
-        new MockElement(100, 100, null), new MockSizer(),
-        /*scrollbarWidth=*/ 43, 1);
+        new MockElement(100, 100, null), new MockSizer(), 43, 1);
 
     chrome.test.assertEq(43, viewport.scrollbarWidth);
     chrome.test.succeed();
@@ -61,20 +61,18 @@ const tests = [
 
   function testOverlayScrollbarWidthLocal() {
     const viewport = getZoomableViewport(
-        new MockElement(100, 100, null), new MockSizer(),
-        /*scrollbarWidth=*/ 43, 1);
+        new MockElement(100, 100, null), new MockSizer(), 43, 1);
 
-    chrome.test.assertEq(43, viewport.overlayScrollbarWidth);
+    chrome.test.assertEq(16, viewport.overlayScrollbarWidth);
     chrome.test.succeed();
   },
 
   function testOverlayScrollbarWidthRemote() {
     const viewport = getZoomableViewport(
-        new MockElement(100, 100, null), new MockSizer(),
-        /*scrollbarWidth=*/ 43, 1);
+        new MockElement(100, 100, null), new MockSizer(), 43, 1);
     viewport.setRemoteContent(createMockPdfPluginForTest());
 
-    chrome.test.assertEq(43, viewport.overlayScrollbarWidth);
+    chrome.test.assertEq(isMac ? 16 : 43, viewport.overlayScrollbarWidth);
     chrome.test.succeed();
   },
 

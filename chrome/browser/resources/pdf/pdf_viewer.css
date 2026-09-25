@@ -9,8 +9,7 @@
  * #import=chrome://resources/cr_elements/cr_spinner_style_lit.css.js
  * #import=./elements/shared_vars.css.js
  * #import=./pdf_viewer_shared_style.css.js
- * #import=./elements/scrollbar.css.js
- * #include=pdf-viewer-shared-style cr-hidden-style-lit cr-spinner-style-lit scrollbar
+ * #include=pdf-viewer-shared-style cr-hidden-style-lit cr-spinner-style-lit
  * #css_wrapper_metadata_end */
 
 :host {

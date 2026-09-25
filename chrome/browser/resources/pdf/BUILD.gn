@@ -141,7 +141,6 @@ build_webui("build") {
   css_files = [
     "elements/pdf_shared.css",
     "elements/shared_vars.css",
-    "elements/scrollbar.css",
     "elements/viewer_attachment.css",
     "elements/viewer_attachment_bar.css",
     "elements/viewer_bookmark.css",
