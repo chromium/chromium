@@ -142,19 +142,27 @@ UpdateSeedDateResult GetSeedDateChangeState(
   return UpdateSeedDateResult::kSameDay;
 }
 
+// Dumps without crashing if the uncompressed size of a validated seed exceeds
+// `kDumpThreshold`, alerting us that actual seeds are approaching the
+// `kMaxUncompressedSeedSize` rejection threshold in `Uncompress()`.
+void MaybeDumpIfSeedSizeApproachingLimit(size_t uncompressed_seed_size) {
+  constexpr static base::ByteSize kDumpThreshold = base::MiB(40);
+  if (uncompressed_seed_size > kDumpThreshold.InBytes()) {
+    base::debug::DumpWithoutCrashing();
+  }
+}
+
 // Remove gzip compression from |data|.
 // Returns success or error, populating result on success.
 StoreSeedResult Uncompress(const std::string& compressed, std::string* result) {
   DCHECK(result);
   uint32_t uncompressed_size = compression::GetUncompressedSize(compressed);
 
-  // Dump without crashing to alert us that actual seeds are approaching the
-  // rejection threshold below.
-  constexpr static base::ByteSize kDumpThreshold = base::MiB(40);
-  if (uncompressed_size > kDumpThreshold.InBytes()) {
-    base::debug::DumpWithoutCrashing();
-  }
-
+  // Note: We intentionally do not call `MaybeDumpIfSeedSizeApproachingLimit()`
+  // here because `GetUncompressedSize()` blindly reads the 4-byte gzip trailer
+  // before decompression or signature validation, so corrupt or truncated
+  // payloads would trigger false-positive dumps. Instead, the helper is called
+  // in `ProcessSeedData()` after `ValidateSeedBytes()` succeeds.
   // Enforce a maximum uncompressed size to prevent OOM / Gzip bomb crashes.
   // We use 50 MiB as a conservative limit, similar to seed_reader_writer.cc.
   constexpr static base::ByteSize kMaxUncompressedSeedSize = base::MiB(50);
@@ -1057,6 +1065,9 @@ VariationsSeedStore::SeedProcessingResult VariationsSeedStore::ProcessSeedData(
       *data, seed_data.base64_seed_signature,
       VariationsSeedStore::SeedType::LATEST, signature_verification_enabled,
       &validated);
+  if (validate_result == StoreSeedResult::kSuccess) {
+    MaybeDumpIfSeedSizeApproachingLimit(validated.seed_data.size());
+  }
   // Important, this must come after the above call as `data` can point to a
   // member of `seed_data` which is being moved.
   SeedProcessingResult result(std::move(seed_data), StoreSeedResult::kSuccess);

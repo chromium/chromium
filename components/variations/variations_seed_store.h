@@ -33,7 +33,7 @@ struct ClientFilterableState;
 class VariationsSeed;
 
 // A seed that has passed validation.
-struct ValidatedSeed {
+struct COMPONENT_EXPORT(VARIATIONS) ValidatedSeed {
   ValidatedSeed();
   ~ValidatedSeed();
 
@@ -309,9 +309,11 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
  private:
   FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest, VerifySeedSignature);
   FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest, ApplyDeltaPatch);
+  FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest,
+                           DumpWithoutCrashingOnlyOnValidLargeSeed);
 
   // Move-only struct containing params related to the received variations seed.
-  struct SeedData {
+  struct COMPONENT_EXPORT(VARIATIONS) SeedData {
     std::string data;
     std::string base64_seed_signature;
     std::string country_code;
@@ -333,7 +335,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   };
 
   // The result of processing a SeedData struct.
-  struct SeedProcessingResult {
+  struct COMPONENT_EXPORT(VARIATIONS) SeedProcessingResult {
     SeedData seed_data;
     StoreSeedResult result;
     // The below are only set if `result` is StoreSeedResult::kSuccess.

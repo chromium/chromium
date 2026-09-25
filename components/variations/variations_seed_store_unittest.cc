@@ -10,6 +10,8 @@
 
 #include "base/base64.h"
 #include "base/build_time.h"
+#include "base/byte_size.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -38,6 +40,7 @@
 #include "components/variations/variations_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1611,6 +1614,14 @@ TEST_P(StoreSeedDataAllGroupsTest, ParsedSeed) {
 }
 
 TEST_P(StoreSeedDataAllGroupsTest, GzipUncompressSizeLimit) {
+  static int dump_count = 0;
+  dump_count = 0;
+  base::debug::ResetDumpWithoutCrashingThrottlingForTesting();
+  base::debug::SetDumpWithoutCrashingFunction([]() { ++dump_count; });
+  absl::Cleanup reset_dump_fn = [] {
+    base::debug::SetDumpWithoutCrashingFunction(nullptr);
+  };
+
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
             GetParam().field_trial_group);
@@ -1620,9 +1631,11 @@ TEST_P(StoreSeedDataAllGroupsTest, GzipUncompressSizeLimit) {
 
   base::HistogramTester histogram_tester;
 
-  // Storing should fail because the uncompressed size exceeds the 50 MiB limit.
+  // Storing should fail because the uncompressed size exceeds the 50 MiB limit,
+  // and should not trigger DumpWithoutCrashing.
   EXPECT_FALSE(
       StoreSeedData(seed_store, compressed, {.is_gzip_compressed = true}));
+  EXPECT_EQ(dump_count, 0);
 
   histogram_tester.ExpectBucketCount("Variations.SeedStoreResult",
                                      StoreSeedResult::kGzipFullCount, 1);
@@ -1636,6 +1649,39 @@ TEST_P(StoreSeedDataAllGroupsTest, GzipUncompressSizeLimit) {
   CheckRegularSeedAndSeedPrefsAreCleared(prefs_, seed_store);
   EXPECT_FALSE(timer_.IsRunning());
   EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
+}
+
+TEST_F(VariationsSeedStoreTest, DumpWithoutCrashingOnlyOnValidLargeSeed) {
+  static int dump_count = 0;
+  dump_count = 0;
+  base::debug::ResetDumpWithoutCrashingThrottlingForTesting();
+  base::debug::SetDumpWithoutCrashingFunction([]() { ++dump_count; });
+  absl::Cleanup reset_dump_fn = [] {
+    base::debug::SetDumpWithoutCrashingFunction(nullptr);
+  };
+
+  // An invalid protobuf exceeding 40 MiB (but under 50 MiB) should fail
+  // validation without triggering DumpWithoutCrashing. Use wire type 7
+  // ('\x07') so ParseFromString() fails immediately on the first byte.
+  VariationsSeedStore::SeedData invalid_seed_data;
+  invalid_seed_data.data = std::string(base::MiB(41).InBytes(), '\x07');
+  auto invalid_result = VariationsSeedStore::ProcessSeedData(
+      /*signature_verification_enabled=*/false, std::move(invalid_seed_data));
+  EXPECT_EQ(invalid_result.result, StoreSeedResult::kSuccess);
+  EXPECT_EQ(invalid_result.validate_result, StoreSeedResult::kFailedParse);
+  EXPECT_EQ(dump_count, 0);
+
+  // A valid seed exceeding 40 MiB should succeed and trigger
+  // DumpWithoutCrashing after validation.
+  VariationsSeed valid_large_seed = CreateTestSeed();
+  valid_large_seed.set_serial_number(std::string(base::MiB(41).InBytes(), 'A'));
+  VariationsSeedStore::SeedData valid_seed_data;
+  valid_seed_data.data = SerializeSeed(valid_large_seed);
+  auto valid_result = VariationsSeedStore::ProcessSeedData(
+      /*signature_verification_enabled=*/false, std::move(valid_seed_data));
+  EXPECT_EQ(valid_result.result, StoreSeedResult::kSuccess);
+  EXPECT_EQ(valid_result.validate_result, StoreSeedResult::kSuccess);
+  EXPECT_EQ(dump_count, 1);
 }
 
 TEST_P(StoreSeedDataAllGroupsTest, CountryCode) {
