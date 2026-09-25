@@ -149,9 +149,19 @@ iwa_access_control {
     key: "amiyfm2piovvkvzy4i7glahjsd4udzlk3ghtvfxd7lxv2chcbmsfcaacai"
     value: {}
   }
+  # crbug.com/551757950
+  managed_allowlist {
+    key: "ammg52nqdvfynb7ivbolwpj6scxgwhf6ksp4jlwbqbklj2j2hzhaaaic"
+    value: {}
+  }
   # crbug.com/453958646
   managed_allowlist {
     key: "aolx6xos3h4fx7beotfbqbh36e4yp5lhqkvcyawhlidphewmmq7hsaacai"
+    value: {}
+  }
+  # crbug.com/563647573
+  managed_allowlist {
+    key: "aoxgioq3hpekkzaopx3iygepbn35esfpdh2imijym3gh7vkhzziscaacai"
     value: {}
   }
   # crbug.com/492435576
@@ -236,6 +246,11 @@ iwa_access_control {
     key: "t5y5u5ypkkszc6gproxry53r6itx72lzow6tbpxryk5xtjus6ieqaaic"
     value: {}
   }
+  # crbug.com/527874523
+  managed_allowlist {
+    key: "t754s3hmg6al6gzdheynflgbxy75kmydaodjmhw2avg2xh27dkaqaaic"
+    value: {}
+  }
   # crbug.com/492435648
   managed_allowlist {
     key: "u5guulqoop6gbmcrx5dkyee3wx6dwkmrufqpxjveipjuydqpidtqaaic"
@@ -269,11 +284,6 @@ iwa_access_control {
   # crbug.com/500617956
   managed_allowlist {
     key: "zaeekwjquidnqkdbaxlveqbqgjkwqpp76lozvs4hkgv3afuaqteaaaic"
-    value: {}
-  }
-  # crbug.com/527874523
-  managed_allowlist {
-    key: "t754s3hmg6al6gzdheynflgbxy75kmydaodjmhw2avg2xh27dkaqaaic"
     value: {}
   }
   # Apps waiting for approval
@@ -320,14 +330,15 @@ iwa_access_control {
       }
     }
   }
-  # crbug.com/501328395
+  # crbug.com/526500935
   user_install_allowlist: {
     key: "ov6jyjge37xqptadeo5e2n6ayoxdjqw62pgm4afavkqbnqfpesraaaic"
     value: {
-      enterprise_name: "Citrix Systems"
+      enterprise_name: "Cloud Software Group (Citrix)"
       entitlements {
         version_range {
-          begin: "0.0.0"
+          begin: "26.0.0"
+          end: "27.0.0"
         }
         entitlement: CONTROLLED_FRAME
         entitlement: DIRECT_SOCKETS
