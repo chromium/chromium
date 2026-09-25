@@ -1323,6 +1323,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.LoadTiming.Subresource.StartToCompleted"
+    units="ms" expires_after="2027-03-14">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time taken from (a) a subresource request starts, to (b) the response is
+    completed, when a service worker controller exists and has a fetch event
+    handler. Recorded for each subresource request regardless of whether the
+    response came from the service worker or from RaceNetworkRequest.
+  </summary>
+</histogram>
+
 <histogram
     name="ServiceWorker.LoadTiming.Subresource.WorkerReadyToFetchHandlerEnd"
     units="ms" expires_after="2027-01-10">

@@ -1177,7 +1177,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.DeclarativeNetRequest.RegexRulesEvaluationPercentage"
+    name="Extensions.DeclarativeNetRequest.RegexRulesBeforeRequestEvaluationPercentage"
     units="%" expires_after="2026-12-01">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>

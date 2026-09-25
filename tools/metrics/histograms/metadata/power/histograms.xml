@@ -970,6 +970,18 @@ tools/metrics/histograms/metadata/stability/enums.xml
   </summary>
 </histogram>
 
+<histogram name="Power.BatteryDischargeReporter.IsValidSampleInterval"
+    enum="Boolean" expires_after="2027-03-14">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records whether the time interval between two consecutive battery state
+    samples in BatteryDischargeReporter was valid (within the expected ~1 minute
+    window around the timer interval). Recorded once per battery state sample
+    after the initial sample.
+  </summary>
+</histogram>
+
 <histogram name="Power.BatteryLife.Detail.RollingAverage.{BatteryCapacityType}"
     units="minute" expires_after="2026-02-22">
   <owner>puthik@chromium.org</owner>

@@ -160,6 +160,8 @@ chromium-metrics-reviews@google.com.
       summary="DocumentLoader::CommitNavigation()"/>
   <variant name="DocumentLoader.DidCommitNavigation"
       summary="DocumentLoader::DidCommitNavigation()"/>
+  <variant name="Frame.Detach.Remove" summary="Frame::Detach() for removal"/>
+  <variant name="Frame.Detach.Swap" summary="Frame::Detach() for swapping"/>
   <variant name="Frame.SwapImpl.CloneState"
       summary="Frame::SwapImpl() cloning state to new LocalFrame"/>
   <variant name="Frame.SwapImpl.CloneState.Page"
@@ -181,6 +183,8 @@ chromium-metrics-reviews@google.com.
   <variant name="FrameLoader.DispatchUnloadEventAndFillOldDocInfo.Other"
       summary="FrameLoader::DispatchUnloadEventAndFillOldDocumentInfoIfNeeded()
                for others"/>
+  <variant name="LocalDOMWindow.FrameDestroyed"
+      summary="LocalDOMWindow::FrameDestroyed()"/>
   <variant name="LocalFrame.DetachImpl.Remove"
       summary="LocalFrame::DetachImpl() for removal"/>
   <variant name="LocalFrame.DetachImpl.Swap"
