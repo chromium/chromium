@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -77,6 +78,15 @@ const CGFloat kFeedsWidth = 70.0;
 // transparent.
 const CGFloat kAlphaValueWhenImageBackround = 0.6;
 
+// Size of the new feature badge.
+const CGFloat kNewFeatureBadgeSize = 28.0;
+
+// Font size of the new feature badge.
+const CGFloat kNewFeatureBadgeFontSize = 16.0;
+
+// Horizontal offset for the new feature badge.
+const CGFloat kNewFeatureBadgeCenterXOffset = 6.0;
+
 }  // namespace
 
 @interface HomeCustomizationBackgroundCell ()
@@ -108,6 +118,9 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
 
   // The view holding the default search engine logo.
   UIView* _logoView;
+
+  // The new badge displayed on ephemeral background cells.
+  NewFeatureBadgeView* _newBadgeView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -144,6 +157,15 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
 
     [self.borderWrapperView addSubview:self.innerContentView];
 
+    _newBadgeView = [[NewFeatureBadgeView alloc]
+        initWithBadgeSize:kNewFeatureBadgeSize
+                 fontSize:kNewFeatureBadgeFontSize];
+    _newBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
+    _newBadgeView.userInteractionEnabled = NO;
+    _newBadgeView.accessibilityElementsHidden = YES;
+    _newBadgeView.hidden = YES;
+    [self.contentView addSubview:_newBadgeView];
+
     // Constraints for positioning the border wrapper view inside the cell.
     [NSLayoutConstraint activateConstraints:@[
       [self.borderWrapperView.topAnchor
@@ -155,6 +177,11 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
           constraintEqualToAnchor:self.contentView.trailingAnchor],
       [self.borderWrapperView.bottomAnchor
           constraintEqualToAnchor:self.contentView.bottomAnchor],
+      [_newBadgeView.centerXAnchor
+          constraintEqualToAnchor:self.innerContentView.trailingAnchor
+                         constant:kNewFeatureBadgeCenterXOffset],
+      [_newBadgeView.centerYAnchor
+          constraintEqualToAnchor:self.innerContentView.topAnchor],
     ]];
 
     AddSameConstraintsWithInset(self.innerContentView, self.borderWrapperView,
@@ -186,6 +213,7 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
 
   [_backgroundImageView setImage:nil framingCoordinates:nil];
   [_backgroundImageView setAnimatedBackgroundPath:nil];
+  _newBadgeView.hidden = YES;
   _backgroundConfiguration = nil;
   [_logoView removeFromSuperview];
   _logoView = nil;
@@ -274,6 +302,11 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
   _searchEngineLogoMediator = searchEngineLogoMediator;
   self.accessibilityLabel = option.accessibilityName;
   self.accessibilityValue = option.accessibilityValue;
+
+  // The ephemeral backgrounds are considered as "New" and the the badge should
+  // be shown.
+  _newBadgeView.hidden =
+      option.backgroundStyle != HomeCustomizationBackgroundStyle::kEphemeral;
   if (option.animatedBackgroundPath.length > 0) {
     [_backgroundImageView
         setAnimatedBackgroundPath:option.animatedBackgroundPath];
