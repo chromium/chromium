@@ -4,12 +4,24 @@
 
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_suppression_manager_factory.h"
 
+#import <memory>
+#import <utility>
+
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/no_destructor.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#import "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager_impl.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/sync/base/data_type.h"
+#import "components/sync/base/report_unrecoverable_error.h"
+#import "components/sync/model/client_tag_based_data_type_processor.h"
+#import "components/sync/model/data_type_store_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
+#import "ios/chrome/common/channel_info.h"
 
 // static
 autofill::EntitySuppressionManager*
@@ -30,7 +42,9 @@ IOSAutofillEntitySuppressionManagerFactory::GetInstance() {
 IOSAutofillEntitySuppressionManagerFactory::
     IOSAutofillEntitySuppressionManagerFactory()
     : ProfileKeyedServiceFactoryIOS("EntitySuppressionManager",
-                                    ProfileSelection::kNoInstanceInIncognito) {}
+                                    ProfileSelection::kNoInstanceInIncognito) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
+}
 
 IOSAutofillEntitySuppressionManagerFactory::
     ~IOSAutofillEntitySuppressionManagerFactory() = default;
@@ -43,5 +57,15 @@ IOSAutofillEntitySuppressionManagerFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return std::make_unique<autofill::InMemoryEntitySuppressionManager>();
+  auto change_processor =
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+          syncer::AUTOFILL_ENTITY_SUPPRESSION,
+          base::BindRepeating(&syncer::ReportUnrecoverableError,
+                              ::GetChannel()));
+  auto sync_bridge = std::make_unique<autofill::EntitySuppressionSyncBridge>(
+      std::move(change_processor),
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
+      GetApplicationContext()->GetOSCryptAsync());
+  return std::make_unique<autofill::EntitySuppressionManagerImpl>(
+      std::move(sync_bridge));
 }

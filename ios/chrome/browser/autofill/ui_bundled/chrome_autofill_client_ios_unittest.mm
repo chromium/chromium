@@ -15,6 +15,7 @@
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
+#import "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -587,7 +588,9 @@ TEST_F(ChromeAutofillClientIOSTest, OnActorTaskStateChange_ReparsesForms) {
 TEST_F(ChromeAutofillClientIOSTest, GetEntitySuppressionManager) {
   base::test::ScopedFeatureList feature_list(
       features::kAutofillAmbientAutofillSuppression);
-  EXPECT_NE(client().GetEntitySuppressionManager(), nullptr);
+  EntitySuppressionManager* manager = client().GetEntitySuppressionManager();
+  ASSERT_NE(manager, nullptr);
+  EXPECT_NE(manager->GetSyncControllerDelegate(), nullptr);
 }
 
 // Test that `HideSuggestions` dismisses AtMemory when product is `kAtMemory`,

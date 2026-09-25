@@ -13,6 +13,7 @@ include_rules = [
   "+components/webauthn/core/browser",
   "+ios/chrome/browser/account_settings/model",
   "+ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h",
+  "+ios/chrome/browser/autofill/model/ios_autofill_entity_suppression_manager_factory.h",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/cobrowse/model/ios_contextual_tasks_service_factory.h",
   "+ios/chrome/browser/collaboration/model",

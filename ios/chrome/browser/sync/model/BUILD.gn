@@ -61,6 +61,7 @@ source_set("model") {
     "//google_apis",
     "//ios/chrome/browser/account_settings/model",
     "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/autofill/model:entity_suppression_manager_factory",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/cobrowse/model:factory",
     "//ios/chrome/browser/collaboration/model",

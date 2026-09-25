@@ -37,8 +37,6 @@ source_set("model") {
     "ios_autofill_entity_data_manager_factory.mm",
     "ios_autofill_entity_data_manager_observer_bridge.h",
     "ios_autofill_entity_data_manager_observer_bridge.mm",
-    "ios_autofill_entity_suppression_manager_factory.h",
-    "ios_autofill_entity_suppression_manager_factory.mm",
     "ios_autofill_field_classification_model_handler_factory.h",
     "ios_autofill_field_classification_model_handler_factory.mm",
     "ios_wallet_pass_access_manager_factory.h",
@@ -113,9 +111,29 @@ source_set("model") {
   ]
   public_deps = [
     ":constants",
+    ":entity_suppression_manager_factory",
     "//components/keyed_service/ios",
   ]
   frameworks = [ "QuartzCore.framework" ]
+}
+
+source_set("entity_suppression_manager_factory") {
+  sources = [
+    "ios_autofill_entity_suppression_manager_factory.h",
+    "ios_autofill_entity_suppression_manager_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/sync/model:data_type_store_service_factory",
+    "//ios/chrome/common",
+  ]
 }
 
 source_set("autofill_agent_delegate") {

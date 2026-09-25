@@ -34,6 +34,7 @@
 #import "components/variations/service/google_groups_manager.h"
 #import "ios/chrome/browser/account_settings/model/ios_account_setting_service_factory.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_suppression_manager_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
@@ -165,8 +166,8 @@ syncer::DataTypeController::TypeVector CreateControllers(
   builder.SetUserEventService(
       IOSUserEventServiceFactory::GetForProfile(profile));
   builder.SetNotebooksService(nullptr);
-  // TODO(crbug.com/501036619): Wire up EntitySuppressionManager on iOS.
-  builder.SetEntitySuppressionManager(nullptr);
+  builder.SetEntitySuppressionManager(
+      IOSAutofillEntitySuppressionManagerFactory::GetForProfile(profile));
 
   syncer::DataTypeController::TypeVector controllers = builder.Build(
       /*disabled_types=*/{}, sync_service, ::GetChannel());
@@ -361,6 +362,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(GoogleGroupsManagerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(IOSAutofillEntitySuppressionManagerFactory::GetInstance());
   DependsOn(IOSChromeAimEligibilityServiceFactory::GetInstance());
   DependsOn(ios::AboutSigninInternalsFactory::GetInstance());
   DependsOn(ios::AccountBookmarkSyncServiceFactory::GetInstance());
