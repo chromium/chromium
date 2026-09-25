@@ -110,8 +110,8 @@ class DiceWebSigninInterceptor : public KeyedService,
   // was closed.
   // `is_new_account` is true if the account was not already in Chrome (i.e.
   // this is not a reauth).
-  // `is_sync_signin` is true if the user is signing in with the intent of
-  // enabling sync for that account.
+  // `is_chrome_signin` is true if the user is signing in to Chrome (rather than
+  // performing a web-only sign-in).
   // `primary_is_connected` is relevant during a multi-account sign-in event.
   // It indicates whether the account is connected to the primary account
   // (`kTrue` if connected, `kFalse` if not connected—including when the profile
@@ -121,7 +121,7 @@ class DiceWebSigninInterceptor : public KeyedService,
                                        CoreAccountId account_id,
                                        signin_metrics::AccessPoint access_point,
                                        bool is_new_account,
-                                       bool is_sync_signin,
+                                       bool is_chrome_signin,
                                        signin::Tribool primary_is_connected);
 
   void OnDiceSigninSessionComplete(
@@ -154,7 +154,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   // is not signed in, and `kUnknown` otherwise).
   std::optional<SigninInterceptionHeuristicOutcome> GetHeuristicOutcome(
       bool is_new_account,
-      bool is_sync_signin,
+      bool is_chrome_signin,
       std::string_view email,
       const GaiaId& gaia_id = GaiaId(),
       const ProfileAttributesEntry** entry = nullptr,

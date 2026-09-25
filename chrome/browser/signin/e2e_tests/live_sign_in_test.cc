@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
   int current_tab_count = browser()->GetTabStripModel()->count();
   auto* signin_tab = browser()->GetTabStripModel()->GetActiveWebContents();
   DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(signin_tab);
-  ASSERT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
+  ASSERT_TRUE(dice_tab_helper->IsChromeSigninInProgress());
 
   // Use the same tab for a web sign-in.
   content::OpenURLParams params =

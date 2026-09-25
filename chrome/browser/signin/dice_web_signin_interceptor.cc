@@ -444,7 +444,7 @@ void DiceWebSigninInterceptor::RegisterProfilePrefs(
 std::optional<SigninInterceptionHeuristicOutcome>
 DiceWebSigninInterceptor::GetHeuristicOutcome(
     bool is_new_account,
-    bool is_sync_signin,
+    bool is_chrome_signin,
     std::string_view email,
     const GaiaId& gaia_id,
     const ProfileAttributesEntry** entry,
@@ -452,12 +452,12 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
   bool signin_interception_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kSigninInterceptionEnabled);
 
-  if (is_sync_signin) {
-    // Do not intercept signins from the Sync startup flow.
-    // Note: |is_sync_signin| is an approximation, and in rare cases it may be
-    // true when in fact the signin was not a sync signin. In this case the
+  if (is_chrome_signin) {
+    // Do not intercept signins from the Chrome sign-in flow.
+    // Note: |is_chrome_signin| is an approximation, and in rare cases it may be
+    // true when in fact the signin was not a Chrome signin. In this case the
     // interception is missed.
-    return SigninInterceptionHeuristicOutcome::kAbortSyncSignin;
+    return SigninInterceptionHeuristicOutcome::kAbortChromeSignin;
   }
 
   // When Gaia indicates that the account is already connected to the primary
@@ -565,7 +565,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     CoreAccountId account_id,
     signin_metrics::AccessPoint access_point,
     bool is_new_account,
-    bool is_sync_signin,
+    bool is_chrome_signin,
     signin::Tribool primary_is_connected) {
   // If the user is in sign in pending state and signs in with a different
   // account, it means that they enter an inconsistent state. Record this event
@@ -629,7 +629,7 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   DCHECK(!account_info.IsEmpty()) << "Intercepting unknown account.";
   const ProfileAttributesEntry* entry = nullptr;
   std::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
-      GetHeuristicOutcome(is_new_account, is_sync_signin,
+      GetHeuristicOutcome(is_new_account, is_chrome_signin,
                           account_info.GetEmail(), account_info.GetGaiaId(),
                           &entry, primary_is_connected);
   state_->account_id_ = account_id;

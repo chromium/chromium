@@ -1623,7 +1623,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserSiginInInterceptionInteractiveTest,
   WaitForHistogramSample(
       "Signin.Intercept.HeuristicOutcome",
       static_cast<base::HistogramBase::Sample32>(
-          SigninInterceptionHeuristicOutcome::kAbortSyncSignin),
+          SigninInterceptionHeuristicOutcome::kAbortChromeSignin),
       1, histogram_tester);
 
   // On timeout, the second interception attempt should succeed and display the

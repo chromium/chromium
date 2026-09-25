@@ -238,7 +238,7 @@ Profile* InterceptAndWaitProfileCreation(content::WebContents* contents,
   interceptor->MaybeInterceptWebSignin(
       contents, account_id, signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   // Simulate the terminal session completion since the browser test bypasses
   // the actual DiceResponseHandler token exchange flow.
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.GetAccountId(), {});
 
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.GetAccountId(), {});
 
@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
       contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.GetAccountId(), {});
   // Close the source tab during the profile creation.
@@ -886,7 +886,7 @@ class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest
         contents, account_info.GetAccountId(),
         signin_metrics::AccessPoint::kWebSignin,
         /*is_new_account=*/true,
-        /*is_sync_signin=*/false,
+        /*is_chrome_signin=*/false,
         /*primary_is_connected=*/signin::Tribool::kUnknown);
 
     return interceptor_delegate;
@@ -1183,7 +1183,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents, secondary_account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(
       secondary_account_info.GetAccountId(), {});
@@ -1668,7 +1668,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorSigninBubbleBrowserTest,
       web_contents, secondary_account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/false,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
 
   histogram_tester.ExpectBucketCount(
@@ -1704,7 +1704,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorSigninBubbleBrowserTest,
       web_contents, secondary_account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(
       secondary_account_info.GetAccountId(), {});
@@ -2016,7 +2016,7 @@ IN_PROC_BROWSER_TEST_P(
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.GetAccountId(), {});
 
@@ -2086,7 +2086,7 @@ IN_PROC_BROWSER_TEST_P(
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.GetAccountId(), {});
 
@@ -2248,7 +2248,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
@@ -2323,7 +2323,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents, primary_account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/false,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   ASSERT_EQ(profile_management_disclaimer_service
                 ->GetAccountBeingConsideredForManagementIfAny(),
@@ -2393,7 +2393,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
       web_contents, primary_account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/false,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
@@ -2533,7 +2533,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   // Wait for the interception to be complete.
   base::RunLoop run_loop;
@@ -2589,7 +2589,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
@@ -2650,7 +2650,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
@@ -2790,7 +2790,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/false,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
@@ -2845,7 +2845,7 @@ IN_PROC_BROWSER_TEST_F(
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/false,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop().RunUntilIdle();
   // Interception bubble was closed.
@@ -3001,7 +3001,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.GetAccountId(), {});
 
@@ -3327,7 +3327,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorLatePolicyCallbackUAFTest,
       web_contents, account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false,
+      /*is_chrome_signin=*/false,
       /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.GetAccountId(), {});
 

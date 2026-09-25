@@ -31,6 +31,8 @@ class SigninUIError;
 // bubble is shown or not).
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(SigninInterceptionHeuristicOutcome)
 enum class SigninInterceptionHeuristicOutcome {
   // Interception succeeded:
   kInterceptProfileSwitch = 0,
@@ -38,8 +40,8 @@ enum class SigninInterceptionHeuristicOutcome {
   kInterceptEnterprise = 2,
 
   // Interception aborted:
-  // This is a "Sync" sign in and not a "web" sign in.
-  kAbortSyncSignin = 3,
+  // This is a sign in to Chrome flow and not a "web" sign in.
+  kAbortChromeSignin = 3,
   // Another interception is already in progress.
   kAbortInterceptInProgress = 4,
   // This is not a new account (reauth).
@@ -95,6 +97,7 @@ enum class SigninInterceptionHeuristicOutcome {
 
   kMaxValue = kAbortAccountConnected,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninInterceptHeuristicOutcome)
 
 // Returns whether the heuristic outcome is a success (the signin should be
 // intercepted).

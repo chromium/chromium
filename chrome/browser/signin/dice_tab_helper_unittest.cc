@@ -337,12 +337,12 @@ TEST_F(DiceTabHelperTest, SyncHeaderMetricsWhenLstHasArrived) {
   InitializeDiceTabHelper(dice_tab_helper,
                           signin_metrics::AccessPoint::kSettings,
                           signin_metrics::Reason::kSigninPrimaryAccount);
-  EXPECT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
+  EXPECT_TRUE(dice_tab_helper->IsChromeSigninInProgress());
   dice_tab_helper->OnTokenExchangeSuccess(
       /*retry_interception_bubble_callback=*/base::DoNothing());
-  dice_tab_helper->OnSyncSigninFlowComplete();
+  dice_tab_helper->OnSigninFlowComplete();
 
-  EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+  EXPECT_FALSE(dice_tab_helper->IsChromeSigninInProgress());
   h_tester.ExpectTotalCount(
       kDiceUnexpectedSyncHeaderProcessingBeforeLstHistogramName, 0);
   h_tester.ExpectBucketCount(kDiceSyncHeaderTimeoutHistogramNameHistogramName,
@@ -365,7 +365,7 @@ TEST_F(DiceTabHelperTest, SyncHeaderMetricsOnTimeoutFromLst) {
   InitializeDiceTabHelper(dice_tab_helper,
                           signin_metrics::AccessPoint::kSettings,
                           signin_metrics::Reason::kSigninPrimaryAccount);
-  EXPECT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
+  EXPECT_TRUE(dice_tab_helper->IsChromeSigninInProgress());
 
   base::test::TestFuture<void> future;
   dice_tab_helper->OnTokenExchangeSuccess(
@@ -376,9 +376,9 @@ TEST_F(DiceTabHelperTest, SyncHeaderMetricsOnTimeoutFromLst) {
                               true, 1);
   h_tester.ExpectTotalCount(kDiceSyncHeaderArrivalTimeWindowHistogramName, 0);
 
-  // Now complete the sync flow.
-  dice_tab_helper->OnSyncSigninFlowComplete();
-  EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+  // Now complete the sign in to chrome flow.
+  dice_tab_helper->OnSigninFlowComplete();
+  EXPECT_FALSE(dice_tab_helper->IsChromeSigninInProgress());
   h_tester.ExpectTotalCount(kDiceSyncHeaderTimeoutHistogramNameHistogramName,
                             1);
   h_tester.ExpectTotalCount(kDiceSyncHeaderArrivalTimeWindowHistogramName, 1);
@@ -397,35 +397,35 @@ TEST_F(DiceTabHelperTest,
   InitializeDiceTabHelper(dice_tab_helper,
                           signin_metrics::AccessPoint::kSettings,
                           signin_metrics::Reason::kSigninPrimaryAccount);
-  EXPECT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
-  dice_tab_helper->OnSyncSigninFlowComplete();
+  EXPECT_TRUE(dice_tab_helper->IsChromeSigninInProgress());
+  dice_tab_helper->OnSigninFlowComplete();
 
-  EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+  EXPECT_FALSE(dice_tab_helper->IsChromeSigninInProgress());
   h_tester.ExpectUniqueSample(
       kDiceUnexpectedSyncHeaderProcessingBeforeLstHistogramName, true, 1);
   h_tester.ExpectBucketCount(kDiceSyncHeaderTimeoutHistogramNameHistogramName,
                              false, 1);
 }
 
-TEST_F(DiceTabHelperTest, IsSyncSigninInProgress) {
+TEST_F(DiceTabHelperTest, IsChromeSigninInProgress) {
   DiceTabHelper::CreateForWebContents(web_contents());
   DiceTabHelper* dice_tab_helper =
       DiceTabHelper::FromWebContents(web_contents());
-  EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+  EXPECT_FALSE(dice_tab_helper->IsChromeSigninInProgress());
 
-  // Non-sync signin.
+  // Non-browser signin.
   InitializeDiceTabHelper(dice_tab_helper,
                           signin_metrics::AccessPoint::kExtensions,
                           signin_metrics::Reason::kAddSecondaryAccount);
-  EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+  EXPECT_FALSE(dice_tab_helper->IsChromeSigninInProgress());
 
-  // Sync signin
+  // Browser signin flow.
   InitializeDiceTabHelper(dice_tab_helper,
                           signin_metrics::AccessPoint::kSettings,
                           signin_metrics::Reason::kSigninPrimaryAccount);
-  EXPECT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
-  dice_tab_helper->OnSyncSigninFlowComplete();
-  EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+  EXPECT_TRUE(dice_tab_helper->IsChromeSigninInProgress());
+  dice_tab_helper->OnSigninFlowComplete();
+  EXPECT_FALSE(dice_tab_helper->IsChromeSigninInProgress());
 }
 
 TEST_F(DiceTabHelperTest, SigninPendingResolutionStarted) {

@@ -59,11 +59,11 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   static std::unique_ptr<ProcessDiceHeaderDelegateImpl> Create(
       content::WebContents* web_contents);
 
-  // |is_sync_signin_tab| is true if a sync signin flow has been started in that
-  // tab.
+  // |is_chrome_signin_tab| is true if a Chrome sign-in flow has been started in
+  // that tab.
   ProcessDiceHeaderDelegateImpl(
       content::WebContents* web_contents,
-      bool is_sync_signin_tab,
+      bool is_chrome_signin_tab,
       signin_metrics::AccessPoint access_point,
       signin_metrics::PromoAction promo_action,
       GURL redirect_url,
@@ -105,7 +105,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
 
   const base::WeakPtr<content::WebContents> web_contents_;
   const raw_ref<Profile> profile_;
-  const bool is_sync_signin_tab_;
+  const bool is_chrome_signin_tab_;
   signin_metrics::AccessPoint access_point_;
   const signin_metrics::PromoAction promo_action_;
   const GURL redirect_url_;

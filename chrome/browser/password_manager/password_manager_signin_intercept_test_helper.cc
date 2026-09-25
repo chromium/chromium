@@ -113,7 +113,8 @@ void PasswordManagerSigninInterceptTestHelper::SetupProfilesForInterception(
   std::optional<SigninInterceptionHeuristicOutcome> outcome =
       GetSigninInterceptor(current_profile)
           ->GetHeuristicOutcome(
-              /*is_new_account=*/true, /*is_sync_signin=*/false, kGaiaUsername);
+              /*is_new_account=*/true, /*is_chrome_signin=*/false,
+              kGaiaUsername);
   DCHECK(outcome.has_value());
   DCHECK(SigninInterceptionHeuristicOutcomeIsSuccess(*outcome));
 }

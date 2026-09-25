@@ -1351,11 +1351,13 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="The user rejected history syncing"/>
 </enum>
 
+<!-- LINT.IfChange(SigninInterceptHeuristicOutcome) -->
+
 <enum name="SigninInterceptHeuristicOutcome">
   <int value="0" label="Intercept: profile switch"/>
   <int value="1" label="Intercept: multi-user"/>
   <int value="2" label="Intercept: enterprise"/>
-  <int value="3" label="Abort: Sync signin"/>
+  <int value="3" label="Abort: Chrome signin"/>
   <int value="4" label="Abort: intercept in progress"/>
   <int value="5" label="Abort: account not new"/>
   <int value="6" label="Abort: single account"/>
@@ -1378,6 +1380,8 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Abort: management disclaimer service in progress"/>
   <int value="23" label="Abort: account connected to primary"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/signin/web_signin_interceptor.h:SigninInterceptionHeuristicOutcome) -->
 
 <enum name="SigninInterceptionDismissReason">
   <int value="0" label="Pressing the Escape key"/>

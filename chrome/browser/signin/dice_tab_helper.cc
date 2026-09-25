@@ -200,7 +200,7 @@ void DiceTabHelper::InitializeSigninFlow(
   signin_page_load_recorded_ = false;
 
   if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
-    state_->sync_signin_flow_status = SyncSigninFlowStatus::kStarted;
+    state_->signin_flow_status = SigninFlowStatus::kStarted;
   }
 
   Profile* profile =
@@ -241,11 +241,11 @@ bool DiceTabHelper::IsChromeSigninPage() const {
   return is_chrome_signin_page_;
 }
 
-bool DiceTabHelper::IsSyncSigninInProgress() const {
-  return state_->sync_signin_flow_status == SyncSigninFlowStatus::kStarted;
+bool DiceTabHelper::IsChromeSigninInProgress() const {
+  return state_->signin_flow_status == SigninFlowStatus::kStarted;
 }
 
-void DiceTabHelper::OnSyncSigninFlowComplete() {
+void DiceTabHelper::OnSigninFlowComplete() {
   // The flow is complete, reset to initial state.
   StopInterceptionBubbleTimer();
   Reset();

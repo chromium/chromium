@@ -104,7 +104,7 @@ class MockDiceWebSigninInterceptor : public DiceWebSigninInterceptor {
                CoreAccountId account_id,
                signin_metrics::AccessPoint access_point,
                bool is_new_account,
-               bool is_sync_signin,
+               bool is_chrome_signin,
                signin::Tribool primary_is_connected),
               (override));
 
@@ -154,7 +154,7 @@ class ProcessDiceHeaderDelegateImplTest
   // Creates a ProcessDiceHeaderDelegateImpl instance.
   std::unique_ptr<ProcessDiceHeaderDelegateImpl>
   CreateDelegateAndNavigateToSignin(
-      bool is_sync_signin_tab,
+      bool is_chrome_signin_tab,
       const GURL& redirect_url,
       Reason reason = Reason::kSigninPrimaryAccount,
       signin_metrics::AccessPoint access_point = kTestAccessPoint) {
@@ -167,7 +167,7 @@ class ProcessDiceHeaderDelegateImplTest
         content::NavigationSimulator::CreateRendererInitiated(signin_url_,
                                                               main_rfh());
     simulator->Start();
-    if (is_sync_signin_tab) {
+    if (is_chrome_signin_tab) {
       DiceTabHelper::CreateForWebContents(web_contents());
       DiceTabHelper* dice_tab_helper =
           DiceTabHelper::FromWebContents(web_contents());
@@ -191,13 +191,13 @@ class ProcessDiceHeaderDelegateImplTest
     simulator->Commit();
     DCHECK_EQ(signin_url_, web_contents()->GetVisibleURL());
 
-    if (is_sync_signin_tab) {
+    if (is_chrome_signin_tab) {
       return ProcessDiceHeaderDelegateImpl::Create(web_contents());
     } else {
       // Use the constructor rather than the `Create()` method, to specify the
       // error callback.
       return std::make_unique<ProcessDiceHeaderDelegateImpl>(
-          web_contents(), /*is_sync_signin_tab=*/false,
+          web_contents(), /*is_chrome_signin_tab=*/false,
           signin_metrics::AccessPoint::kWebSignin, kTestPromoAction, GURL(),
           ProcessDiceHeaderDelegateImpl::EnableSyncCallback(),
           ProcessDiceHeaderDelegateImpl::EnableHistorySyncOptinCallback(),
@@ -285,7 +285,7 @@ class ProcessDiceHeaderDelegateImplTest
 TEST_F(ProcessDiceHeaderDelegateImplTest,
        CloseTabWhileCompletingProfileSignIn) {
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
-      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
+      CreateDelegateAndNavigateToSignin(/*is_chrome_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
 
   // Close the tab.
@@ -307,7 +307,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest,
 
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(
-          /*is_sync_signin_tab=*/true,
+          /*is_chrome_signin_tab=*/true,
           /*redirect_url=*/GURL(), Reason::kSigninPrimaryAccount,
           signin_metrics::AccessPoint::kBookmarkBubble);
 
@@ -324,7 +324,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest,
 // received.
 TEST_F(ProcessDiceHeaderDelegateImplTest, CloseTabWhileFailingSignin) {
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
-      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
+      CreateDelegateAndNavigateToSignin(/*is_chrome_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
 
   // Close the tab.
@@ -339,7 +339,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, CloseTabWhileFailingSignin) {
 // Tests that there is no redirect when `redirect_url` is empty.
 TEST_F(ProcessDiceHeaderDelegateImplTest, NoRedirect) {
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
-      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
+      CreateDelegateAndNavigateToSignin(/*is_chrome_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
   delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
   EXPECT_NE(enable_sync_called_,
@@ -354,7 +354,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, NoRedirect) {
   DiceTabHelper* dice_tab_helper =
       DiceTabHelper::FromWebContents(web_contents());
   ASSERT_TRUE(dice_tab_helper);
-  EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+  EXPECT_FALSE(dice_tab_helper->IsChromeSigninInProgress());
 }
 
 // Check that a Dice header can still be processed in a reused tab.
@@ -362,7 +362,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, NoRedirect) {
 TEST_F(ProcessDiceHeaderDelegateImplTest, TabReuse) {
   // Complete a first signin flow.
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
-      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
+      CreateDelegateAndNavigateToSignin(/*is_chrome_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
   delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
   EXPECT_NE(enable_sync_called_,
@@ -385,7 +385,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, TabReuse) {
 TEST_F(ProcessDiceHeaderDelegateImplTest, SigninHeaderReceived) {
   // Complete a first signin flow.
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
-      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
+      CreateDelegateAndNavigateToSignin(/*is_chrome_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
   ASSERT_FALSE(signin_header_received_);
 
@@ -405,7 +405,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, SigninHeaderReceived) {
 TEST_F(ProcessDiceHeaderDelegateImplTest, SigninHeaderReceived_SyncingTabOff) {
   // Complete a first signin flow.
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
-      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/false,
+      CreateDelegateAndNavigateToSignin(/*is_chrome_signin_tab=*/false,
                                         /*redirect_url=*/GURL());
   ASSERT_FALSE(signin_header_received_);
 
@@ -431,7 +431,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, AttemptChromeSigninChoiceRemembered) {
       account_info_.gaia, ChromeSigninUserChoice::kSignin);
 
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
-      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/false,
+      CreateDelegateAndNavigateToSignin(/*is_chrome_signin_tab=*/false,
                                         /*redirect_url=*/GURL());
 
   delegate->HandleTokenExchangeSuccess(
@@ -501,7 +501,7 @@ TEST_P(ProcessDiceHeaderDelegateImplTestEnableSync, EnableSync) {
     DiceTabHelper* dice_tab_helper =
         DiceTabHelper::FromWebContents(web_contents());
     ASSERT_TRUE(dice_tab_helper);
-    EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+    EXPECT_FALSE(dice_tab_helper->IsChromeSigninInProgress());
   }
 }
 
@@ -548,7 +548,7 @@ TEST_P(ProcessDiceHeaderDelegateImplTestHandleTokenExchangeFailure,
     DiceTabHelper* dice_tab_helper =
         DiceTabHelper::FromWebContents(web_contents());
     ASSERT_TRUE(dice_tab_helper);
-    EXPECT_FALSE(dice_tab_helper->IsSyncSigninInProgress());
+    EXPECT_FALSE(dice_tab_helper->IsChromeSigninInProgress());
   }
 }
 
@@ -614,7 +614,7 @@ TEST_P(ProcessDiceHeaderDelegateImplTestHandleTokenExchangeSuccess,
         DiceTabHelper::FromWebContents(web_contents());
     ASSERT_TRUE(dice_tab_helper);
     EXPECT_EQ(GetParam().sync_signin,
-              dice_tab_helper->IsSyncSigninInProgress());
+              dice_tab_helper->IsChromeSigninInProgress());
   }
 }
 

@@ -58,7 +58,7 @@ bool MultiProfileCredentialsFilter::ShouldSave(
           // (whether it's a reauth). To be conservative and avoid showing both
           // bubbles, assume that it is new.
           /*is_new_account=*/true,
-          /*is_sync_signin=*/false, email);
+          /*is_chrome_signin=*/false, email);
   if (!heuristic_outcome ||
       SigninInterceptionHeuristicOutcomeIsSuccess(*heuristic_outcome)) {
     return false;
