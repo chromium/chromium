@@ -64,8 +64,9 @@ const SettingsPageTestCase kSettingsPageTestCases[] = {
      AutofillSettingsPage::kAddresses},
     {"CreditCard", MemoryDataType::kCreditCardNumber,
      AutofillSettingsPage::kCreditCards, AutofillSettingsPage::kCreditCards},
+    {"Iban", MemoryDataType::kIban, AutofillSettingsPage::kCreditCards,
+     AutofillSettingsPage::kCreditCards},
     // Types with no settings page.
-    {"Iban", MemoryDataType::kIban, std::nullopt, std::nullopt},
     {"Unknown", MemoryDataType::kUnknown, std::nullopt, std::nullopt},
 };
 
