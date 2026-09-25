@@ -9682,9 +9682,6 @@ void NavigationRequest::UpdateLocalNetworkAccessRequestPolicy() {
   const PolicyContainerPolicies& policies =
       policy_container_builder_->FinalPolicies();
 
-  // TODO(crbug.com/433300380): The lna_secure_context_overide check needs to be
-  // done in all other policy derivation points. This boolean should probably be
-  // put into PolicyContainerPolicies.
   local_network_access_request_policy_ = DeriveLocalNetworkAccessRequestPolicy(
       policies, LocalNetworkAccessRequestContext::kSubresource);
 
