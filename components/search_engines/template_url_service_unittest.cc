@@ -366,6 +366,21 @@ TEST_F(TemplateURLServiceUnitTest, GenerateSearchURL) {
       template_url_service().GenerateSearchURLForDefaultSearchProvider(u""));
 }
 
+TEST_F(TemplateURLServiceUnitTest, ExpandUrlTemplate) {
+  EXPECT_EQ(template_url_service().ExpandUrlTemplate(
+                "https://example.com/?q={searchTerms}", u"cat pictures"),
+            GURL("https://example.com/?q=cat+pictures"));
+  EXPECT_EQ(template_url_service().ExpandUrlTemplate(
+                "https://example.com/?q={searchTerms}", u""),
+            GURL("https://example.com/?q="));
+  EXPECT_EQ(template_url_service().ExpandUrlTemplate("https://example.com/ai",
+                                                     u"query"),
+            GURL("https://example.com/ai"));
+  EXPECT_FALSE(template_url_service()
+                   .ExpandUrlTemplate("invalid_url", u"query")
+                   .is_valid());
+}
+
 TEST_F(TemplateURLServiceUnitTest, ExtractSearchMetadata) {
   TemplateURLData template_url_data;
   template_url_data.SetURL("https://www.example.com/?q={searchTerms}");

@@ -329,6 +329,12 @@ TemplateUrlServiceAndroid::GetComposeplateUrl(JNIEnv* env,
                    /*additional_params=*/{}));
 }
 
+GURL TemplateUrlServiceAndroid::ExpandUrlTemplate(
+    const std::string& url_template,
+    const std::u16string& query) {
+  return template_url_service_->ExpandUrlTemplate(url_template, query);
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 TemplateUrlServiceAndroid::GetUrlForContextualSearchQuery(
     JNIEnv* env,

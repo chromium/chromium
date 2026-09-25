@@ -329,3 +329,8 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, GetDisplayUrl) {
   EXPECT_EQ(display_url, u"http://chromium.org/search?q=%s");
 }
 
+TEST_F(TemplateUrlServiceAndroidUnitTest, ExpandUrlTemplate) {
+  EXPECT_EQ(template_url_service_android().ExpandUrlTemplate(
+                "https://example.com/search?q={searchTerms}", u"cat pictures"),
+            GURL("https://example.com/search?q=cat+pictures"));
+}

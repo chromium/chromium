@@ -475,6 +475,11 @@ class TemplateURLService final : public WebDataServiceConsumer,
   GURL GenerateSearchURLForDefaultSearchProvider(
       const std::u16string& search_terms) const;
 
+  // Expands the `url_template` by replacing search terms placeholders with
+  // `search_terms`. Returns an invalid GURL if `url_template` is invalid.
+  GURL ExpandUrlTemplate(const std::string& url_template,
+                         const std::u16string& search_terms) const;
+
   // Returns search metadata if |url| is a valid Search URL.
   std::optional<SearchMetadata> ExtractSearchMetadata(const GURL& url) const;
 

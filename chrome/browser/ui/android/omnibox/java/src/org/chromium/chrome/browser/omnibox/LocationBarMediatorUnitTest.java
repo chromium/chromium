@@ -5368,9 +5368,37 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    public void testActivationChipClicked_withUserText_stillLoadsNavigationUrlEmpty() {
-        // TODO(crbug.com/561690870): the query should be expanded into `navigationUrl`, as it is
-        // on desktop. Until then it is dropped, and this pins that known gap.
+    public void testActivationChipClicked_withUserText_expandsNavigationUrl() {
+        mAiModeButtonUiConfigSupplier.set(
+                createTestAiModeButtonUiConfig(
+                        "https://3p.com/ai?q={searchTerms}", new GURL("https://3p.com/ai")));
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        setUpMediatorAndCoordinator();
+
+        doReturn(new GURL("https://3p.com/ai?q=cat+pictures"))
+                .when(mTemplateUrlService)
+                .expandUrlTemplate(eq("https://3p.com/ai?q={searchTerms}"), eq("cat pictures"));
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        input.setInitialUserText("page.com");
+        input.setUserText("cat pictures");
+        mMediator.beginInput(input);
+
+        mMediator.onActivationChipClicked();
+
+        assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
+        verify(mNavigator).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(
+                "https://3p.com/ai?q=cat+pictures", mOmniboxLoadUrlParamsCaptor.getValue().url);
+        assertEquals(
+                PageTransition.FROM_ADDRESS_BAR,
+                mOmniboxLoadUrlParamsCaptor.getValue().transitionType);
+        verify(mAutocompleteCoordinator, never()).loadTypedOmniboxText(anyLong(), anyInt());
+    }
+
+    @Test
+    public void testActivationChipClicked_unchangedUrlBarText_loadsNavigationUrlEmpty() {
         mAiModeButtonUiConfigSupplier.set(
                 createTestAiModeButtonUiConfig(
                         "https://3p.com/ai?q={searchTerms}", new GURL("https://3p.com/ai")));
@@ -5379,6 +5407,35 @@ public class LocationBarMediatorUnitTest {
 
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.beginInput(input);
+
+        input.setInitialUserText("page.com");
+        input.setUserText("page.com");
+        doReturn("page.com").when(mUrlCoordinator).getTextWithoutAutocomplete();
+
+        mMediator.onActivationChipClicked();
+
+        assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
+        verify(mNavigator).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals("https://3p.com/ai", mOmniboxLoadUrlParamsCaptor.getValue().url);
+        verify(mTemplateUrlService, never()).expandUrlTemplate(any(), any());
+    }
+
+    @Test
+    public void testActivationChipClicked_expandUrlTemplateReturnsNull_loadsNavigationUrlEmpty() {
+        mAiModeButtonUiConfigSupplier.set(
+                createTestAiModeButtonUiConfig(
+                        "https://3p.com/ai?q={searchTerms}", new GURL("https://3p.com/ai")));
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        setUpMediatorAndCoordinator();
+
+        doReturn(null)
+                .when(mTemplateUrlService)
+                .expandUrlTemplate(eq("https://3p.com/ai?q={searchTerms}"), eq("cat pictures"));
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        input.setInitialUserText("page.com");
         input.setUserText("cat pictures");
         mMediator.beginInput(input);
 
@@ -5387,10 +5444,6 @@ public class LocationBarMediatorUnitTest {
         assertEquals(AutocompleteRequestType.AI_MODE, input.getRequestType());
         verify(mNavigator).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals("https://3p.com/ai", mOmniboxLoadUrlParamsCaptor.getValue().url);
-        assertEquals(
-                PageTransition.FROM_ADDRESS_BAR,
-                mOmniboxLoadUrlParamsCaptor.getValue().transitionType);
-        verify(mAutocompleteCoordinator, never()).loadTypedOmniboxText(anyLong(), anyInt());
     }
 
     @Test

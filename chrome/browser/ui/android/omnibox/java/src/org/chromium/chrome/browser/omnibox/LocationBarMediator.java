@@ -3766,20 +3766,37 @@ public class LocationBarMediator
      * one. Only third party engines do: Google's AI Mode is fulfilled in product by the paths
      * below, so its config carries no navigation URLs.
      *
-     * <p>TODO(crbug.com/561690870): carry the user's query over. Desktop expands it into {@code
-     * navigationUrl} with TemplateURL::GenerateSearchURL, which negotiates encoding against the
-     * engine's input_encodings and has no Java equivalent, so until that is reachable from here
-     * every engagement lands on the query-less entry point.
-     *
      * @return whether the click was consumed by navigating.
      */
     private boolean maybeLoadAiModeNavigationUrl() {
         if (mAiModeButtonUiConfig == null) return false;
 
-        String url = mAiModeButtonUiConfig.navigationUrlEmpty.getSpec();
-        if (TextUtils.isEmpty(url)) return false;
+        String userText =
+                (mCurrentInput != null && !isUrlBarTextUnchanged())
+                        ? mCurrentInput.getUserText()
+                        : null;
 
-        loadUrl(new OmniboxLoadUrlParams.Builder(url, PageTransition.FROM_ADDRESS_BAR).build());
+        GURL destination = null;
+        if (!TextUtils.isEmpty(userText)
+                && !TextUtils.isEmpty(mAiModeButtonUiConfig.navigationUrl)) {
+            TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
+            if (templateUrlService != null) {
+                destination =
+                        templateUrlService.expandUrlTemplate(
+                                mAiModeButtonUiConfig.navigationUrl, userText);
+            }
+        }
+
+        if (destination == null || !destination.isValid()) {
+            destination = mAiModeButtonUiConfig.navigationUrlEmpty;
+        }
+
+        if (GURL.isEmptyOrInvalid(destination)) return false;
+
+        loadUrl(
+                new OmniboxLoadUrlParams.Builder(
+                                destination.getSpec(), PageTransition.FROM_ADDRESS_BAR)
+                        .build());
         return true;
     }
 

@@ -1498,6 +1498,15 @@ GURL TemplateURLService::GenerateSearchURLForDefaultSearchProvider(
                           : GURL();
 }
 
+GURL TemplateURLService::ExpandUrlTemplate(
+    const std::string& url_template,
+    const std::u16string& search_terms) const {
+  TemplateURLData turl_data;
+  turl_data.SetURL(url_template);
+  TemplateURL turl(turl_data);
+  return turl.GenerateSearchURL(search_terms_data(), search_terms);
+}
+
 std::optional<TemplateURLService::SearchMetadata>
 TemplateURLService::ExtractSearchMetadata(const GURL& url) const {
   const TemplateURL* template_url = GetTemplateURLForHost(url.GetHost());

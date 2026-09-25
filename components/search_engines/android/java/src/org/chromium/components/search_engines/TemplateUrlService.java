@@ -4,6 +4,8 @@
 
 package org.chromium.components.search_engines;
 
+import android.text.TextUtils;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -345,6 +347,22 @@ public class TemplateUrlService {
     public @Nullable GURL getComposeplateUrl() {
         return TemplateUrlServiceJni.get()
                 .getComposeplateUrl(mNativeTemplateUrlServiceAndroid, this);
+    }
+
+    /**
+     * Expands the {@code urlTemplate} by substituting {@code query} for {searchTerms}.
+     *
+     * @param urlTemplate The URL template containing search terms placeholders.
+     * @param query The search query to substitute into the template.
+     * @return The expanded GURL, or null if the service is not loaded, the template is empty, or
+     *     the URL is invalid.
+     */
+    public @Nullable GURL expandUrlTemplate(String urlTemplate, String query) {
+        if (!isLoaded() || TextUtils.isEmpty(urlTemplate)) return null;
+        GURL url =
+                TemplateUrlServiceJni.get()
+                        .expandUrlTemplate(mNativeTemplateUrlServiceAndroid, urlTemplate, query);
+        return url.isValid() ? url : null;
     }
 
     /**
@@ -699,6 +717,12 @@ public class TemplateUrlService {
         GURL getUrlForVoiceSearchQuery(long nativeTemplateUrlServiceAndroid, String query);
 
         GURL getComposeplateUrl(long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
+
+        @JniType("GURL")
+        GURL expandUrlTemplate(
+                long nativeTemplateUrlServiceAndroid,
+                @JniType("std::string") String urlTemplate,
+                @JniType("std::u16string") String query);
 
         GURL getUrlForContextualSearchQuery(
                 long nativeTemplateUrlServiceAndroid,

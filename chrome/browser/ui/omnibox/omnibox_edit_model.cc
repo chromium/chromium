@@ -3584,13 +3584,9 @@ void OmniboxEditModel::NavigateToThirdPartyAiMode(
   auto* config = GetAiModeButtonUiConfig(controller_);
   std::string url(query_text.empty() ? config->navigation_url_empty
                                      : config->navigation_url);
-  TemplateURLData turl_data;
-  turl_data.SetURL(url);
-  TemplateURL turl(turl_data);
   TemplateURLService* turl_service =
       controller_->client()->GetTemplateURLService();
-  GURL ai_mode_url =
-      turl.GenerateSearchURL(turl_service->search_terms_data(), query_text);
+  GURL ai_mode_url = turl_service->ExpandUrlTemplate(url, query_text);
   if (ai_mode_url.is_valid()) {
     controller_->client()->OpenUrl(ai_mode_url);
   }
