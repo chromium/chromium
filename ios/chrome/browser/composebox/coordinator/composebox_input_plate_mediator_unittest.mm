@@ -1389,4 +1389,64 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_FALSE([mediator isWebStateIDRemoved:web_state_id]);
 }
 
+// Tests that in Co-browse mode, auto-attachment is not triggered when
+// unfocused, and changing active WebState while unfocused removes stale
+// auto-added items without attaching new ones.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       AutoAddedTabOnlyAttachedWhenOmniboxFocused) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:nullptr
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+
+  // 1. Navigation / page load events when unfocused do NOT auto-attach.
+  web::FakeWebState* fake_web_state =
+      static_cast<web::FakeWebState*>(active_web_state);
+  fake_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  EXPECT_EQ(consumer.items.count, 0U);
+
+  // 2. Create an auto-added item for the active tab to simulate an attached
+  // tab.
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* item = consumer.items.firstObject;
+  item.isAutoAdded = YES;
+
+  // 3. Changing active WebState while unfocused removes any auto-added items
+  // without attaching the new one.
+  [mediator setOmniboxFocused:NO];
+
+  auto second_web_state = std::make_unique<web::FakeWebState>();
+  web_state_list_->InsertWebState(
+      std::move(second_web_state),
+      WebStateList::InsertionParams::AtIndex(1).Activate());
+
+  EXPECT_EQ(consumer.items.count, 0U);
+}
+
 }  // namespace

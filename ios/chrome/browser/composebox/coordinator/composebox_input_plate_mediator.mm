@@ -1397,9 +1397,13 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }
 
 // Updates the automatically attached tab for the active WebState if the current
-// entrypoint is Co-browse.
+// entrypoint is Co-browse and the omnibox is focused.
 - (void)updateAutoAttachedCurrentTabIfNeeded {
   if (_entrypoint != ComposeboxEntrypoint::kCobrowse) {
+    return;
+  }
+  if (!_omniboxFocused) {
+    [self removeAutoAddedItems];
     return;
   }
   [self attachCurrentTabContentWithAutoAdded:YES];
