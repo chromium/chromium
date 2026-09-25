@@ -344,8 +344,11 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillPageQueryRequest& query) {
   out << Tr{} << "client_version:" << query.client_version();
   for (const auto& form : query.forms()) {
     LogBuffer form_buffer(LogBuffer::IsActive(true));
+    bool is_first = true;
     for (const auto& field : form.fields()) {
-      form_buffer << "Signature: " << field.signature();
+      form_buffer << (is_first ? "" : ", ")
+                  << "Signature: " << field.signature();
+      is_first = false;
     }
     out << Tr{} << ("Form " + base::NumberToString(form.signature()))
         << std::move(form_buffer);
