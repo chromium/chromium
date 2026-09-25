@@ -113,7 +113,8 @@ def _all_files(path):
     if os.path.isfile(path):
         return [path]
     assert os.path.isdir(path), 'Not a file or dir: ' + path
-    ret = glob.glob('**/*', include_hidden=False)
+    # glob ignores dotfiles, which is what we want.
+    ret = glob.glob('**/*')
     # Same ignore pattern is used in copy_runtime_deps().
     return [f for f in ret if os.path.isfile(f) and '__pycache__' not in f]
 
