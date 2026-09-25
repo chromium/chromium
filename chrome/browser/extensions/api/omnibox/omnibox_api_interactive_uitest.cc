@@ -1105,7 +1105,6 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedSendSuggestions) {
   ASSERT_TRUE(extension);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
-  chrome::FocusLocationBar(browser());
 
   // Test that our extension can send suggestions back to us.
   AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,
@@ -1194,7 +1193,6 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedDeleteSuggestions) {
   ASSERT_TRUE(extension);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
-  chrome::FocusLocationBar(browser());
 
   // Test that our extension can send suggestions back to us.
   AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,
@@ -1337,7 +1335,6 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedSuggestionGrouping) {
   ASSERT_TRUE(extension);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
-  chrome::FocusLocationBar(browser());
 
   // Test that our extension can send suggestions back to us.
   AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,
@@ -1394,7 +1391,6 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, LimitSuggestions) {
   ASSERT_TRUE(extension);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
-  chrome::FocusLocationBar(browser());
 
   // Test that our extension can send suggestions back to us.
   AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,
@@ -1469,7 +1465,6 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnActionExecuted) {
 
   ExtensionTestMessageListener listener("do_something-sending input");
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
-  chrome::FocusLocationBar(browser());
 
   // Send an input to the extension and wait for the sggestion to arrive before
   // we can select it.
@@ -1542,7 +1537,6 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, ActionIconAppliedToMatch) {
 
   ExtensionTestMessageListener listener("do_something-sending input");
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
-  chrome::FocusLocationBar(browser());
 
   // Send an input to the extension and wait for the sggestion to arrive before
   // we can select it.
@@ -1617,7 +1611,6 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
   ASSERT_TRUE(extension2);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
-  chrome::FocusLocationBar(browser());
 
   // Prevent the stop timer from killing the hints fetch early, which might
   // cause test flakiness due to timeout.
@@ -1686,7 +1679,6 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedExtensionZeroSuggest) {
   ASSERT_TRUE(extension);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
-  chrome::FocusLocationBar(browser());
 
   // Test that our extension can send suggestions back to us on NTP.
   AutocompleteInput input_ntp(u"", metrics::OmniboxEventProto::NTP,
@@ -1793,7 +1785,6 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
   ASSERT_TRUE(extension2);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
-  chrome::FocusLocationBar(browser());
 
   // Test that our extension can send suggestions back to us.
   AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP,
