@@ -854,10 +854,20 @@ input[type="button" i], input[type="submit" i], input[type="reset" i] {
 input[type="file" i]::-webkit-file-upload-button {
     appearance: auto;
     -webkit-user-modify: read-only !important;
-    white-space: nowrap;
-    margin: 0;
-    margin-inline-end: 4px; /* See FileUploadControlIntrinsicInlineSize() */
-    font-size: inherit;
+
+    @supports not blink-feature(AppearanceBase) {
+        white-space: nowrap;
+        margin: 0;
+        margin-inline-end: 4px; /* See FileUploadControlIntrinsicInlineSize() */
+        font-size: inherit;
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        white-space: -internal-auto-base(nowrap, revert-rule);
+        margin: -internal-auto-base(0, revert-rule);
+        margin-inline-end: -internal-auto-base(4px, revert-rule); /* See FileUploadControlIntrinsicInlineSize() */
+        font-size: -internal-auto-base(inherit, revert-rule);
+    }
 }
 
 input[type="button" i],

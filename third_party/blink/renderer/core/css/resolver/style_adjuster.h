@@ -111,7 +111,8 @@ class StyleAdjuster {
       ComputedStyleBuilder& builder,
       Element& element,
       const Element* element_or_pseudo_element,
-      const Element* styled_element);
+      const Element* styled_element,
+      const ComputedStyle* parent_style);
 
   // Whether a cache entry for A would have the same style adjustments as
   // for B, or vice versa.

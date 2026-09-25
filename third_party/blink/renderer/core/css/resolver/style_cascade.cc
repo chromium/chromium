@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -2539,11 +2540,13 @@ bool StyleCascade::ResolveAutoBaseInto(CSSParserTokenStream& stream,
     has_base_appearance = true;
   } else if (state_.StyleBuilder().InBaseAppearance()) {
     // Don't allow base appearance to be inherited to elements which actually
-    // support the appearance property.
+    // support the appearance property, other than for file selector buttons.
     bool could_support_base_appearance =
         element.SupportsBaseAppearance(AppearanceValue::kBase) ||
         element.SupportsBaseAppearance(AppearanceValue::kBaseSelect);
-    has_base_appearance = !could_support_base_appearance;
+    has_base_appearance = !could_support_base_appearance ||
+                          element.ShadowPseudoId() ==
+                              shadow_element_names::kPseudoFileUploadButton;
   }
 
   if (has_base_appearance) {

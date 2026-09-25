@@ -645,4 +645,12 @@ void FileInputType::UpdateView() {
     span->setTextContent(FileStatusText());
 }
 
+bool FileInputType::SupportsBaseAppearance(
+    Element::BaseAppearanceValue value) const {
+  if (!RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+    return false;
+  }
+  return value == Element::BaseAppearanceValue::kBase;
+}
+
 }  // namespace blink

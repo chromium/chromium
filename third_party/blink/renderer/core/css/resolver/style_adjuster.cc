@@ -1397,7 +1397,8 @@ void StyleAdjuster::RunUncacheableStyleAdjustment(
     ComputedStyleBuilder& builder,
     Element& element,
     const Element* element_or_pseudo_element,
-    const Element* styled_element) {
+    const Element* styled_element,
+    const ComputedStyle* parent_style) {
   // Elements are almost never view transition scopes (i.e., we get an
   // early-out), so it's just as cheap to do the logic here as in
   // AdjustComputedStyle().
@@ -1428,6 +1429,28 @@ void StyleAdjuster::RunUncacheableStyleAdjustment(
     }
   }
 
+  // File selector buttons must inherent appearance base from
+  // their parents. This cannot be done via a UA style rule
+  // because both auto and none appearance file inputs must
+  // have auto appearance buttons.
+  if (RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+    const AtomicString& pseudo_id = element.ShadowPseudoId();
+
+    if (pseudo_id == shadow_element_names::kPseudoFileUploadButton &&
+        builder.Appearance() == AppearanceValue::kAuto) {
+      if (parent_style) {
+        AppearanceValue parent_appearance = parent_style->EffectiveAppearance();
+
+        if (parent_appearance == AppearanceValue::kNone ||
+            parent_appearance == AppearanceValue::kAuto) {
+          builder.SetAppearance(AppearanceValue::kAuto);
+        } else if (parent_appearance == AppearanceValue::kBase) {
+          builder.SetAppearance(AppearanceValue::kBase);
+        }
+      }
+    }
+  }
+
   // The layout theme has its own style adjustment, mostly related to
   // the appearance property (although it can also modify display,
   // seemingly for historical reasons).
@@ -1452,9 +1475,12 @@ void StyleAdjuster::RunUncacheableStyleAdjustment(
   }
   if (builder.InBaseAppearance() && !builder.HasBaseAppearance()) {
     // Don't allow base appearance to be inherited to elements which actually
-    // support the appearance property.
-    if (element.SupportsBaseAppearance(AppearanceValue::kBase) ||
-        element.SupportsBaseAppearance(AppearanceValue::kBaseSelect)) {
+    // support the appearance property, other than for file selector buttons
+    // which must inherit base appearance from the input element.
+    if ((element.SupportsBaseAppearance(AppearanceValue::kBase) ||
+         element.SupportsBaseAppearance(AppearanceValue::kBaseSelect)) &&
+        element.ShadowPseudoId() !=
+            shadow_element_names::kPseudoFileUploadButton) {
       builder.SetInBaseAppearance(false);
     }
   }

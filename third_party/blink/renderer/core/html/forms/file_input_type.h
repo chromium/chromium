@@ -63,6 +63,8 @@ class CORE_EXPORT FileInputType final : public InputType,
   bool CanSetStringValue() const;
   bool ValueMissing(const String&) const;
 
+  bool SupportsBaseAppearance(Element::BaseAppearanceValue) const override;
+
  private:
   InputTypeView* CreateView() override;
   FormControlState SaveFormControlState() const override;

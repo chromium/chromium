@@ -1427,7 +1427,7 @@ const ComputedStyle* StyleResolver::ResolveStyle(
         state.StyleBuilder(), *element,
         IsForPseudoElement(*element, style_request) ? state.GetPseudoElement()
                                                     : element,
-        state.GetStyledElement());
+        state.GetStyledElement(), state.ParentStyle());
   }
 
   ApplyAnchorData(state);
@@ -1869,7 +1869,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
   StyleAdjuster::RunUncacheableStyleAdjustment(
       builder, *element,
       state.IsForPseudoElement() ? state.GetPseudoElement() : element,
-      state.GetStyledElement());
+      state.GetStyledElement(), state.ParentStyle());
 
   // Everything below here depends on the MatchResult flags
   // (e.g., what selectors were used to find the matched properties),
@@ -2053,7 +2053,7 @@ void StyleResolver::ApplyBaseStyle(
         state.StyleBuilder(), *element,
         IsForPseudoElement(*element, style_request) ? state.GetPseudoElement()
                                                     : element,
-        state.GetStyledElement());
+        state.GetStyledElement(), state.ParentStyle());
 
     // Normally done by StyleResolver::MaybeAddToMatchedPropertiesCache(),
     // when applying the cascade. Note that this is probably redundant
