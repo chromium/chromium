@@ -307,7 +307,7 @@ void ChromeAutofillClient::AtMemoryCopyPasteObserver::OnTextCopiedToClipboard(
     const std::u16string& copied_text) {
   CrossTabCopyPasteTracker* tracker =
       CrossTabCopyPasteTrackerFactory::GetForBrowserContext(
-          client_->web_contents()->GetBrowserContext());
+          client_->GetProfile());
   if (!tracker) {
     return;
   }
@@ -319,7 +319,7 @@ void ChromeAutofillClient::AtMemoryCopyPasteObserver::OnTextCopiedToClipboard(
 void ChromeAutofillClient::AtMemoryCopyPasteObserver::OnPaste() {
   CrossTabCopyPasteTracker* tracker =
       CrossTabCopyPasteTrackerFactory::GetForBrowserContext(
-          client_->web_contents()->GetBrowserContext());
+          client_->GetProfile());
   if (!tracker) {
     return;
   }
@@ -417,22 +417,19 @@ version_info::Channel ChromeAutofillClient::GetChannel() const {
 }
 
 bool ChromeAutofillClient::IsOffTheRecord() const {
-  auto* mutable_this = const_cast<ChromeAutofillClient*>(this);
-  return mutable_this->web_contents()->GetBrowserContext()->IsOffTheRecord();
+  return GetProfile()->IsOffTheRecord();
 }
 
 const subscription_eligibility::SubscriptionEligibilityService*
 ChromeAutofillClient::GetSubscriptionEligibilityService() const {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return subscription_eligibility::SubscriptionEligibilityServiceFactory::
       GetForProfile(profile);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeAutofillClient::GetURLLoaderFactory() {
-  return web_contents()
-      ->GetBrowserContext()
+  return GetProfile()
       ->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
 }
@@ -452,8 +449,7 @@ VotesUploader& ChromeAutofillClient::GetVotesUploader() {
 
 AutofillOptimizationGuideDecider*
 ChromeAutofillClient::GetAutofillOptimizationGuideDecider() const {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return profile->ShutdownStarted()
              ? nullptr
              : AutofillOptimizationGuideDeciderFactory::GetForProfile(profile);
@@ -463,7 +459,7 @@ FieldClassificationModelHandler*
 ChromeAutofillClient::GetAutofillFieldClassificationModelHandler() {
   if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
     return AutofillFieldClassificationModelServiceFactory::GetForBrowserContext(
-        web_contents()->GetBrowserContext());
+        GetProfile());
   }
   return nullptr;
 }
@@ -471,29 +467,26 @@ ChromeAutofillClient::GetAutofillFieldClassificationModelHandler() {
 FieldClassificationModelHandler*
 ChromeAutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
   return PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext());
+      GetProfile());
 }
 
 PersonalDataManager& ChromeAutofillClient::GetPersonalDataManager() {
-  return CHECK_DEREF(PersonalDataManagerFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext()));
+  return CHECK_DEREF(
+      PersonalDataManagerFactory::GetForBrowserContext(GetProfile()));
 }
 
 ValuablesDataManager* ChromeAutofillClient::GetValuablesDataManager() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return ValuablesDataManagerFactory::GetForProfile(profile);
 }
 
 EntityDataManager* ChromeAutofillClient::GetEntityDataManager() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return AutofillEntityDataManagerFactory::GetForProfile(profile);
 }
 
 WalletPassAccessManager* ChromeAutofillClient::GetWalletPassAccessManager() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return WalletPassAccessManagerFactory::GetForProfile(profile);
 }
 
@@ -515,8 +508,7 @@ ChromeAutofillClient::GetAffiliationService() {
 
 AutocompleteHistoryManager*
 ChromeAutofillClient::GetAutocompleteHistoryManager() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return AutocompleteHistoryManagerFactory::GetForProfile(profile);
 }
 
@@ -530,8 +522,7 @@ AutofillComposeDelegate* ChromeAutofillClient::GetComposeDelegate() {
 }
 
 AtMemoryQueryService* ChromeAutofillClient::GetAtMemoryQueryService() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return AtMemoryQueryServiceFactory::GetForProfile(profile);
 }
 
@@ -600,20 +591,17 @@ EntitySuppressionManager* ChromeAutofillClient::GetEntitySuppressionManager() {
 }
 
 AutofillAiModelCache* ChromeAutofillClient::GetAutofillAiModelCache() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return AutofillAiModelCacheFactory::GetForProfile(profile);
 }
 
 AutofillAiModelExecutor* ChromeAutofillClient::GetAutofillAiModelExecutor() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return AutofillAiModelExecutorFactory::GetForProfile(profile);
 }
 
 consent_auditor::ConsentAuditor* ChromeAutofillClient::GetConsentAuditor() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return ConsentAuditorFactory::GetForProfile(profile);
 }
 
@@ -644,13 +632,11 @@ PrefService* ChromeAutofillClient::GetPrefs() {
 }
 
 const PrefService* ChromeAutofillClient::GetPrefs() const {
-  return Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-      ->GetPrefs();
+  return GetProfile()->GetPrefs();
 }
 
 syncer::SyncService* ChromeAutofillClient::GetSyncService() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return SyncServiceFactory::GetForProfile(profile);
 }
 
@@ -661,8 +647,7 @@ signin::IdentityManager* ChromeAutofillClient::GetIdentityManager() {
 
 const signin::IdentityManager* ChromeAutofillClient::GetIdentityManager()
     const {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
 }
 
@@ -677,16 +662,14 @@ const GoogleGroupsManager* ChromeAutofillClient::GetGoogleGroupsManager()
     const {
   // Always return the GoogleGroupsManager of the original profile to allow us
   // to do per-profile feature checks.
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return GoogleGroupsManagerFactory::GetForBrowserContext(
       profile->GetOriginalProfile());
 }
 
 FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
   if (!form_data_importer_) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    Profile* profile = GetProfile();
     form_data_importer_ = std::make_unique<FormDataImporter>(
         this, HistoryServiceFactory::GetForProfile(
                   profile, ServiceAccessType::EXPLICIT_ACCESS));
@@ -700,8 +683,7 @@ ChromeAutofillClient::GetPaymentsAutofillClient() {
 }
 
 strike_database::StrikeDatabase* ChromeAutofillClient::GetStrikeDatabase() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   // No need to return a StrikeDatabase in incognito mode. It is primarily
   // used to determine whether or not to offer save of Autofill data. However,
   // we don't allow saving of Autofill data while in incognito anyway, so an
@@ -966,8 +948,7 @@ void ChromeAutofillClient::HideSuggestions(
 
 void ChromeAutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
 #if !BUILDFLAG(IS_ANDROID)
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   auto* hats_service =
       HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
   CHECK(hats_service);
@@ -980,8 +961,7 @@ void ChromeAutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
 void ChromeAutofillClient::TriggerPersonalizationAndTrustSurveys(
     FillingProduct filling_product,
     const HatsSurveyStringData& field_filling_stats_data) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
   if (!hats_service) {
@@ -1207,8 +1187,7 @@ ChromeAutofillClient::GetDeviceAuthenticator(std::string histogram) const {
       std::move(histogram));
 
   return ChromeDeviceAuthenticatorFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
-      web_contents()->GetTopLevelNativeWindow(), params);
+      GetProfile(), web_contents()->GetTopLevelNativeWindow(), params);
 #else
   return nullptr;
 #endif
@@ -1279,8 +1258,7 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   GetStrikeDatabase();
   if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
     autofill_ai_manager_ = std::make_unique<AutofillAiManager>(
-        this, StrikeDatabaseFactory::GetForProfile(Profile::FromBrowserContext(
-                  web_contents->GetBrowserContext())));
+        this, StrikeDatabaseFactory::GetForProfile(GetProfile()));
   }
   if (base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
     at_memory_manager_ = std::make_unique<AtMemoryManager>(
@@ -1514,8 +1492,7 @@ FormPredictionsTracker* ChromeAutofillClient::GetFormPredictionsTracker() {
 
 one_time_tokens::OneTimeTokenService*
 ChromeAutofillClient::GetOneTimeTokenService() const {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   return OneTimeTokenServiceFactory::GetForProfile(profile);
 }
 
@@ -1544,8 +1521,7 @@ PasswordFormClassification ChromeAutofillClient::ClassifyAsPasswordForm(
 optimization_guide::ModelQualityLogsUploaderService*
 ChromeAutofillClient::GetMqlsUploadService() {
 #if !BUILDFLAG(IS_ANDROID)
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  Profile* profile = GetProfile();
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   if (!optimization_guide_keyed_service) {
