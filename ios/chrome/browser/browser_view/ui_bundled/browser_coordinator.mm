@@ -2245,15 +2245,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 #pragma mark - AutofillSettingsNavigator
 
 - (void)openSettingsForPage:(AutofillSettingsPage)page {
-  [self openSettingsForPage:page completion:nil];
-}
-
-- (void)openSettingsForPage:(AutofillSettingsPage)page
-                 completion:(ProceduralBlock)completion {
-  // Only Enhanced Autofill settings report their dismissal; a completion for
-  // any other page would silently never run.
-  CHECK(!completion || page == AutofillSettingsPage::kEnhancedAutofill);
-
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(self.dispatcher, SettingsCommands);
   switch (page) {
@@ -2287,8 +2278,8 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
                                                   AutofillSettingsReferrer::
                                                       kFillingFlowDropdown];
       break;
-    case AutofillSettingsPage::kEnhancedAutofill:
-      [settingsHandler showEnhancedAutofillSettingsWithCompletion:completion];
+    case AutofillSettingsPage::kSuggestionsFromGemini:
+      [settingsHandler showSuggestionsFromGemini];
       break;
     case AutofillSettingsPage::kSuggestionsFromGeminiHelpImprove:
       [settingsHandler showSuggestionsFromGeminiHelpImprove];

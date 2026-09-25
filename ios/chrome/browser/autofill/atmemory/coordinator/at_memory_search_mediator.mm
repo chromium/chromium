@@ -200,7 +200,7 @@ constexpr std::string_view kNoticeInteractionsHistogram =
       kNoticeInteractionsHistogram,
       autofill::AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked);
   [self.settingsNavigator
-      openSettingsForPage:AutofillSettingsPage::kEnhancedAutofill];
+      openSettingsForPage:AutofillSettingsPage::kSuggestionsFromGemini];
 }
 
 - (void)didSelectSearchResultItem:(AtMemorySearchItem*)item {

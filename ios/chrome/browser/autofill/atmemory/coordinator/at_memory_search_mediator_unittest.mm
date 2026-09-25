@@ -498,7 +498,7 @@ TEST_F(AtMemorySearchMediatorTest,
   mediator_.settingsNavigator = mock_navigator;
 
   OCMExpect([mock_navigator
-      openSettingsForPage:AutofillSettingsPage::kEnhancedAutofill]);
+      openSettingsForPage:AutofillSettingsPage::kSuggestionsFromGemini]);
 
   HistogramTester histogram_tester;
 

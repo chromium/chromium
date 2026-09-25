@@ -373,12 +373,12 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
   [self stopManualFillAllPasswordCoordinator];
 
   [self dismissAlertCoordinator];
-  [self dismissAtMemory];
+  [self stopAtMemoryCoordinator];
   [self dismissSourcesSheetAnimated:NO];
 }
 
 - (void)stopChildren {
-  [self dismissAtMemory];
+  [self stopAtMemoryCoordinator];
   _formInputAccessoryMediator.formInputInteractionDelegate = nil;
   for (ChromeCoordinator* coordinator in self.childCoordinators) {
     [coordinator stop];
@@ -933,6 +933,14 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
 }
 
 - (void)dismissAtMemory {
+  if (_atMemoryCoordinator.settingsPresented) {
+    return;
+  }
+  [self stopAtMemoryCoordinator];
+}
+
+// Stops and removes `_atMemoryCoordinator`.
+- (void)stopAtMemoryCoordinator {
   if (!_atMemoryCoordinator) {
     return;
   }
@@ -940,21 +948,6 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
   _atMemoryCoordinator = nil;
   [coordinator stop];
   [self.childCoordinators removeObject:coordinator];
-}
-
-- (void)openAutofillSettings {
-  __weak __typeof(self) weakSelf = self;
-  id<SettingsCommands> settingsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SettingsCommands);
-  [settingsHandler showEnhancedAutofillSettingsWithCompletion:^{
-    [weakSelf onAutofillSettingsDismissed];
-  }];
-}
-
-- (void)openManageEnhancedAutofillDetails {
-  id<SettingsCommands> settingsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SettingsCommands);
-  [settingsHandler showSuggestionsFromGeminiHelpImprove];
 }
 
 #pragma mark - SecurityAlertCommands
@@ -1347,16 +1340,6 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
 
   // Ensure the keyboard accessory knows we are now in manual filling mode.
   [self updateKeyboardAccessoryForManualFilling];
-}
-
-// Handles dismissal of the Autofill settings page opened from AtMemory notice.
-- (void)onAutofillSettingsDismissed {
-  if (!self.browser) {
-    return;
-  }
-  if (!autofill::IsEnhancedAutofillEnabled(self.browser->GetProfile())) {
-    [self dismissAtMemory];
-  }
 }
 
 @end

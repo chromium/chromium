@@ -176,9 +176,10 @@ TEST_F(AtMemoryGranularFillMediatorTest,
 }
 
 // Tests that selecting the manage enhanced autofill item falls back to the
-// Enhanced Autofill settings page when the suggestion has no matching page.
+// Suggestions from Gemini settings page when the suggestion has no matching
+// page.
 TEST_F(AtMemoryGranularFillMediatorTest,
-       SelectManageEnhancedAutofillItemFallsBackToEnhancedAutofill) {
+       SelectManageEnhancedAutofillItemFallsBackToSuggestionsFromGemini) {
   Suggestion suggestion(base::SysNSStringToUTF16(kPassportTitle),
                         SuggestionType::kAtMemorySearchResult);
   suggestion.payload = Suggestion::AtMemoryPayload(
@@ -187,7 +188,7 @@ TEST_F(AtMemoryGranularFillMediatorTest,
   CreateMediator(std::move(suggestion));
 
   OCMExpect([mock_settings_navigator_
-      openSettingsForPage:AutofillSettingsPage::kEnhancedAutofill]);
+      openSettingsForPage:AutofillSettingsPage::kSuggestionsFromGemini]);
 
   [mediator_ didSelectManageEnhancedAutofillItem];
 

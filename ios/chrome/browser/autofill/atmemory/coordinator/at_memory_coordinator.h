@@ -17,6 +17,11 @@
 // granular fill child coordinators.
 @interface AtMemoryCoordinator : ChromeCoordinator
 
+// YES if a Settings navigation controller is currently presented by this
+// coordinator.
+@property(nonatomic, readonly, getter=isSettingsPresented)
+    BOOL settingsPresented;
+
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                            contentInjector:

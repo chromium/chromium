@@ -39,6 +39,9 @@ enum class PushNotificationClientId;
 // Shows the Gemini settings UI.
 - (void)showGeminiSettings;
 
+// Shows the Suggestions from Gemini settings UI.
+- (void)showSuggestionsFromGemini;
+
 // Shows the Suggestions from Gemini Help Improve settings UI.
 - (void)showSuggestionsFromGeminiHelpImprove;
 
@@ -175,10 +178,6 @@ enum class PushNotificationClientId;
 
 // Shows the Autofill settings UI from an Autofill notice (no back button).
 - (void)showAutofillSettingsFromNotice;
-
-// Shows the Enhanced Autofill settings UI (no back button). `completion` is
-// executed after the UI is dismissed.
-- (void)showEnhancedAutofillSettingsWithCompletion:(ProceduralBlock)completion;
 
 @end
 

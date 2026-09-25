@@ -77,7 +77,7 @@ std::optional<AutofillSettingsPage> AutofillSettingsPageForAtMemorySuggestion(
   }
 
   if (payload->is_personal_context_sourced) {
-    return AutofillSettingsPage::kEnhancedAutofill;
+    return AutofillSettingsPage::kSuggestionsFromGemini;
   }
 
   return AutofillSettingsPageForMemoryDataType(payload->memory_data_type);

@@ -9,8 +9,6 @@
 
 #import <optional>
 
-#import "base/ios/block_types.h"
-
 namespace autofill {
 enum class EntityTypeName;
 enum class MemoryDataType;
@@ -26,7 +24,7 @@ enum class AutofillSettingsPage {
   kIdentityDocs,
   kShopping,
   kTravel,
-  kEnhancedAutofill,
+  kSuggestionsFromGemini,
   kSuggestionsFromGeminiHelpImprove,
 };
 
@@ -44,8 +42,8 @@ std::optional<AutofillSettingsPage> AutofillSettingsPageForMemoryDataType(
 // Returns the `AutofillSettingsPage` corresponding to the AtMemory
 // `suggestion`, or `std::nullopt` if no settings page hosts it. Suggestions
 // sourced from personal context map to
-// `AutofillSettingsPage::kEnhancedAutofill`; all others are routed by their
-// memory data type.
+// `AutofillSettingsPage::kSuggestionsFromGemini`; all others are routed by
+// their memory data type.
 std::optional<AutofillSettingsPage> AutofillSettingsPageForAtMemorySuggestion(
     const autofill::Suggestion& suggestion);
 
@@ -54,12 +52,6 @@ std::optional<AutofillSettingsPage> AutofillSettingsPageForAtMemorySuggestion(
 
 // Requests to open the settings page for the specified `page`.
 - (void)openSettingsForPage:(AutofillSettingsPage)page;
-
-// Same as above, but invokes `completion` once the settings UI is dismissed.
-// Only `AutofillSettingsPage::kEnhancedAutofill` reports its dismissal, so a
-// non-nil `completion` is only valid for that page.
-- (void)openSettingsForPage:(AutofillSettingsPage)page
-                 completion:(ProceduralBlock)completion;
 
 @end
 

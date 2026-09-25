@@ -22,7 +22,7 @@ using autofill::Suggestion;
   // Suggestion containing attributes to display.
   std::optional<Suggestion> _suggestion;
   // Settings page opened by the "Manage enhanced autofill" row. Defaults to
-  // the Enhanced Autofill page when `_suggestion` has no more specific
+  // the Suggestions from Gemini page when `_suggestion` has no more specific
   // destination, as the row is always displayed.
   AutofillSettingsPage _settingsPage;
 }
@@ -32,7 +32,7 @@ using autofill::Suggestion;
   if (self) {
     _suggestion = std::move(suggestion);
     _settingsPage = AutofillSettingsPageForAtMemorySuggestion(*_suggestion)
-                        .value_or(AutofillSettingsPage::kEnhancedAutofill);
+                        .value_or(AutofillSettingsPage::kSuggestionsFromGemini);
   }
   return self;
 }
