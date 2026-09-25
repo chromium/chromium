@@ -178,6 +178,10 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
   auto bind_frame_host_receiver =
       [](RenderFrameHostImpl* impl,
          mojo::PendingAssociatedReceiver<mojom::FrameHost> receiver) {
+        if (impl->frame_host_associated_receiver_.is_bound()) {
+          mojo::ReportBadMessage("FrameHost is already bound.");
+          return;
+        }
         impl->frame_host_associated_receiver_.Bind(std::move(receiver));
         impl->frame_host_associated_receiver_.SetFilter(
             impl->CreateMessageFilterForAssociatedReceiver(
@@ -191,6 +195,12 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
       [](RenderFrameHostImpl* impl,
          mojo::PendingAssociatedReceiver<
              blink::mojom::BackForwardCacheControllerHost> receiver) {
+        if (impl->back_forward_cache_controller_host_associated_receiver_
+                .is_bound()) {
+          mojo::ReportBadMessage(
+              "BackForwardCacheControllerHost is already bound.");
+          return;
+        }
         impl->back_forward_cache_controller_host_associated_receiver_.Bind(
             std::move(receiver));
         impl->back_forward_cache_controller_host_associated_receiver_.SetFilter(
@@ -205,6 +215,10 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
           [](RenderFrameHostImpl* impl,
              mojo::PendingAssociatedReceiver<blink::mojom::LocalFrameHost>
                  receiver) {
+            if (impl->local_frame_host_receiver_.is_bound()) {
+              mojo::ReportBadMessage("LocalFrameHost is already bound.");
+              return;
+            }
             impl->local_frame_host_receiver_.Bind(std::move(receiver));
             impl->local_frame_host_receiver_.SetFilter(
                 impl->CreateMessageFilterForAssociatedReceiver(
@@ -212,13 +226,16 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
           },
           base::Unretained(this)));
 
-
   if (is_main_frame()) {
     associated_registry_->AddInterface<blink::mojom::LocalMainFrameHost>(
         base::BindRepeating(
             [](RenderFrameHostImpl* impl,
                mojo::PendingAssociatedReceiver<blink::mojom::LocalMainFrameHost>
                    receiver) {
+              if (impl->local_main_frame_host_receiver_.is_bound()) {
+                mojo::ReportBadMessage("LocalMainFrameHost is already bound.");
+                return;
+              }
               impl->local_main_frame_host_receiver_.Bind(std::move(receiver));
               impl->local_main_frame_host_receiver_.SetFilter(
                   impl->CreateMessageFilterForAssociatedReceiver(
