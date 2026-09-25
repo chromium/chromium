@@ -47,9 +47,8 @@ public interface TabGroupObserver {
      * This method is called before a group is moved.
      *
      * @param tabGroupId The tab group id of the group being moved.
-     * @param currentIndex The current index of the group in the {@link TabModel}.
      */
-    default void willMoveTabGroup(Token tabGroupId, int currentIndex) {}
+    default void willMoveTabGroup(Token tabGroupId) {}
 
     /**
      * This method is called before a tab within a group is moved out of the group.
@@ -109,9 +108,8 @@ public interface TabGroupObserver {
      * selection editor, or by longpressing a link on a tab and using the context menu.
      *
      * @param destinationTab The destination tab of the group after merge.
-     * @param tabModel The {@link TabModel} that the new group event triggers on.
      */
-    default void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {}
+    default void didCreateNewGroup(Tab destinationTab) {}
 
     /**
      * This method is called after a new title is set on a tab group.
@@ -164,12 +162,4 @@ public interface TabGroupObserver {
      * @param isHiding Whether the tab group is set to hide.
      */
     default void willCloseTabGroup(Token tabGroupId, boolean isHiding) {}
-
-    /**
-     * Called when a tab group closure is fully committed.
-     *
-     * @param tabGroupId The tab group id.
-     * @param wasHiding Whether the tab group was set to hide when it started closing.
-     */
-    default void committedTabGroupClosure(Token tabGroupId, boolean wasHiding) {}
 }

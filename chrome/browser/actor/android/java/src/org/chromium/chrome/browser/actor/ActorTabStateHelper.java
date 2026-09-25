@@ -297,11 +297,8 @@ public class ActorTabStateHelper {
             Tab sourceTab,
             int destinationTabId) {
         if (syncService == null || !ActorUtils.isTabGroupSyncHandlingEnabled()) return;
-        Token tabGroupId = sourceTab.getTabGroupId();
-        if (tabGroupId == null) return;
-
-        LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(model, tabGroupId);
-        if (localTabGroupId == null) return;
+        LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(sourceTab);
+        if (localTabGroupId == null || !model.tabGroupExists(localTabGroupId.tabGroupId)) return;
 
         SavedTabGroup savedGroup = syncService.getGroup(localTabGroupId);
         if (savedGroup == null) return;

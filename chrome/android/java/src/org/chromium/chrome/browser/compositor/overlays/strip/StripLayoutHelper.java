@@ -235,7 +235,7 @@ public class StripLayoutHelper
     private final TabGroupObserver mTabGroupObserver =
             new TabGroupObserver() {
                 @Override
-                public void willMoveTabGroup(Token tabGroupId, int currentIndex) {
+                public void willMoveTabGroup(Token tabGroupId) {
                     mMovingGroup = true;
                 }
 
@@ -302,7 +302,7 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
+                public void didCreateNewGroup(Tab destinationTab) {
                     rebuildStripViews();
                 }
 

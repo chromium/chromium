@@ -54,7 +54,7 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
                 }
 
                 @Override
-                public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
+                public void didCreateNewGroup(Tab destinationTab) {
                     updateText();
                 }
             };

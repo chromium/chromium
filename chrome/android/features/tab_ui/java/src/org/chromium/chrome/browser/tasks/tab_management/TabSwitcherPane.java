@@ -86,7 +86,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                 }
 
                 @Override
-                public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
+                public void didCreateNewGroup(Tab destinationTab) {
                     // Unfortunately it's difficult to wait for a recycler view to finish  binding
                     // and fully showing views. So just wait with a short delay.
                     PostTask.postDelayedTask(

@@ -1074,9 +1074,8 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
+                    public void didCreateNewGroup(Tab destinationTab) {
                         assertEquals(tab0, destinationTab);
-                        assertEquals(mCollectionModel, tabModel);
                         didCreateNewGroupHelper.notifyCalled();
                     }
                 };
@@ -1248,8 +1247,7 @@ public class TabCollectionTabModelImplTest {
         TabGroupObserver groupObserver =
                 new TabGroupObserver() {
                     @Override
-                    public void willMoveTabGroup(Token tabGroupId, int currentIndex) {
-                        assertEquals(1, currentIndex);
+                    public void willMoveTabGroup(Token tabGroupId) {
                         assertEquals(groupId, tabGroupId);
                         willMoveTabGroupHelper.notifyCalled();
                     }
@@ -1369,7 +1367,7 @@ public class TabCollectionTabModelImplTest {
         TabGroupObserver groupObserver =
                 new TabGroupObserver() {
                     @Override
-                    public void willMoveTabGroup(Token tabGroupId, int currentIndex) {
+                    public void willMoveTabGroup(Token tabGroupId) {
                         fail("willMoveTabGroup should not be called for individual tab.");
                     }
 
@@ -2514,8 +2512,7 @@ public class TabCollectionTabModelImplTest {
                     TabGroupObserver observer =
                             new TabGroupObserver() {
                                 @Override
-                                public void didCreateNewGroup(
-                                        Tab destinationTab, TabModel tabModel) {
+                                public void didCreateNewGroup(Tab destinationTab) {
                                     assertEquals(tab0, destinationTab);
                                     didCreateNewGroupHelper.notifyCalled();
                                 }
@@ -4361,9 +4358,7 @@ public class TabCollectionTabModelImplTest {
         assertTabsInOrderAre(List.of(tab0, tab1, tab2));
 
         CallbackHelper willCloseTabGroupHelper = new CallbackHelper();
-        CallbackHelper committedTabGroupClosureHelper = new CallbackHelper();
         AtomicBoolean hidingInWillClose = new AtomicBoolean();
-        AtomicBoolean hidingInCommitted = new AtomicBoolean();
 
         TabGroupObserver groupObserver =
                 new TabGroupObserver() {
@@ -4372,13 +4367,6 @@ public class TabCollectionTabModelImplTest {
                         assertEquals(tabGroupId, id);
                         hidingInWillClose.set(hiding);
                         willCloseTabGroupHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void committedTabGroupClosure(Token id, boolean hiding) {
-                        assertEquals(tabGroupId, id);
-                        hidingInCommitted.set(hiding);
-                        committedTabGroupClosureHelper.notifyCalled();
                     }
                 };
 
@@ -4407,7 +4395,6 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.commitTabClosure(tab0.getId());
                     mCollectionModel.commitTabClosure(tab1.getId());
                 });
-        committedTabGroupClosureHelper.waitForOnly();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -4437,9 +4424,7 @@ public class TabCollectionTabModelImplTest {
         assertTabsInOrderAre(List.of(tab0, tab1, tab2));
 
         CallbackHelper willCloseTabGroupHelper = new CallbackHelper();
-        CallbackHelper committedTabGroupClosureHelper = new CallbackHelper();
         AtomicBoolean hidingInWillClose = new AtomicBoolean();
-        AtomicBoolean hidingInCommitted = new AtomicBoolean();
 
         TabGroupObserver groupObserver =
                 new TabGroupObserver() {
@@ -4448,13 +4433,6 @@ public class TabCollectionTabModelImplTest {
                         assertEquals(tabGroupId, id);
                         hidingInWillClose.set(hiding);
                         willCloseTabGroupHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void committedTabGroupClosure(Token id, boolean hiding) {
-                        assertEquals(tabGroupId, id);
-                        hidingInCommitted.set(hiding);
-                        committedTabGroupClosureHelper.notifyCalled();
                     }
                 };
 
@@ -4469,12 +4447,10 @@ public class TabCollectionTabModelImplTest {
                 });
 
         willCloseTabGroupHelper.waitForOnly();
-        committedTabGroupClosureHelper.waitForOnly();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(hidingInWillClose.get());
-                    assertTrue(hidingInCommitted.get());
                     assertFalse(mCollectionModel.isTabGroupHiding(tabGroupId));
                     assertFalse(mCollectionModel.detachedTabGroupExists(tabGroupId));
                     assertTrue(tab0.isDestroyed());
@@ -4503,11 +4479,6 @@ public class TabCollectionTabModelImplTest {
                     @Override
                     public void willCloseTabGroup(Token id, boolean hiding) {
                         fail("willCloseTabGroup should not be called for partial closure.");
-                    }
-
-                    @Override
-                    public void committedTabGroupClosure(Token id, boolean hiding) {
-                        fail("committedTabGroupClosure should not be called for partial closure.");
                     }
                 };
 

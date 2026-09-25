@@ -608,7 +608,6 @@ public class TabGroupSyncLocalObserverUnitTest {
 
         // Commit.
         modelObserver.onFinishingMultipleTabClosure(List.of(mTab1, mTab2), /* canRestore= */ true);
-        groupObserver.committedTabGroupClosure(TOKEN_1, hiding);
         assertFalse(mLocalObserver.hasAnyPendingTabGroupClosuresForTesting());
         verify(mTabGroupSyncService)
                 .removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1, ClosingSource.CLOSED_BY_USER);
@@ -683,7 +682,6 @@ public class TabGroupSyncLocalObserverUnitTest {
 
         // Commit.
         modelObserver.onFinishingMultipleTabClosure(List.of(mTab1, mTab2), /* canRestore= */ true);
-        groupObserver.committedTabGroupClosure(TOKEN_1, hiding);
         assertFalse(mLocalObserver.hasAnyPendingTabGroupClosuresForTesting());
 
         RobolectricUtil.runAllBackgroundAndUi();
@@ -718,7 +716,7 @@ public class TabGroupSyncLocalObserverUnitTest {
 
     @Test
     public void testDidCreateNewGroup() {
-        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab1, mTabModel);
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab1);
         verify(mTabGroupSyncService, times(1)).addGroup(mSavedTabGroupCaptor.capture());
         Assert.assertEquals(LOCAL_TAB_GROUP_ID_1, mSavedTabGroupCaptor.getValue().localId);
     }

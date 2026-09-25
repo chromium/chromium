@@ -346,7 +346,7 @@ public class ModelTrackingOrchestratorUnitTest {
         MockTab tab = new MockTab(1, mProfile);
         tab.setTabGroupId(groupId);
 
-        observer.didCreateNewGroup(tab, mRegularTabModel);
+        observer.didCreateNewGroup(tab);
 
         observer.didChangeTabGroupColor(groupId, 0);
 
@@ -367,7 +367,7 @@ public class ModelTrackingOrchestratorUnitTest {
         MockTab tab = new MockTab(1, mProfile);
         tab.setTabGroupId(groupId);
 
-        observer.didCreateNewGroup(tab, mRegularTabModel);
+        observer.didCreateNewGroup(tab);
 
         observer.didChangeTabGroupCollapsed(groupId, true, false);
         observer.didChangeTabGroupTitle(groupId, "New Title");
@@ -390,7 +390,7 @@ public class ModelTrackingOrchestratorUnitTest {
         MockTab tab = new MockTab(1, mProfile);
         tab.setTabGroupId(groupId);
 
-        observer.didCreateNewGroup(tab, mRegularTabModel);
+        observer.didCreateNewGroup(tab);
 
         observer.didRemoveTabGroup(groupId, DidRemoveTabGroupReason.CLOSE);
 

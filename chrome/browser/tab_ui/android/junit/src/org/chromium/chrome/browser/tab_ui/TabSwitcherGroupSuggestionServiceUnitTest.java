@@ -293,7 +293,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         reset(mSuggestionLifecycleObserverHandler);
-        observer.willMoveTabGroup(new Token(1L, 2L), 0);
+        observer.willMoveTabGroup(new Token(1L, 2L));
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         reset(mSuggestionLifecycleObserverHandler);
@@ -301,7 +301,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         reset(mSuggestionLifecycleObserverHandler);
-        observer.didCreateNewGroup(mockTab, mTabModel);
+        observer.didCreateNewGroup(mockTab);
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         reset(mSuggestionLifecycleObserverHandler);

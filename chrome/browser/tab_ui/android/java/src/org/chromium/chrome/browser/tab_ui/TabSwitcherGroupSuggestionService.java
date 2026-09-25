@@ -199,7 +199,7 @@ public class TabSwitcherGroupSuggestionService {
                 }
 
                 @Override
-                public void willMoveTabGroup(Token tabGroupId, int currentIndex) {
+                public void willMoveTabGroup(Token tabGroupId) {
                     clearSuggestions();
                 }
 
@@ -210,7 +210,7 @@ public class TabSwitcherGroupSuggestionService {
                 }
 
                 @Override
-                public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
+                public void didCreateNewGroup(Tab destinationTab) {
                     clearSuggestions();
                 }
 

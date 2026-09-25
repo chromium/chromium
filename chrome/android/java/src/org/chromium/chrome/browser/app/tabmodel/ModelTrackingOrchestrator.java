@@ -177,7 +177,7 @@ public class ModelTrackingOrchestrator {
     private final TabGroupObserver mVisualDataUpdateObserver =
             new TabGroupObserver() {
                 @Override
-                public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
+                public void didCreateNewGroup(Tab destinationTab) {
                     Token groupId = destinationTab.getTabGroupId();
                     assert groupId != null;
                     mGroupIncognitoStatus.put(groupId, destinationTab.isOffTheRecord());

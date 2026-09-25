@@ -63,13 +63,6 @@ public final class TabGroupSyncUtils {
         return false;
     }
 
-    /** Conversion method to get a {@link LocalTabGroupId} from a root ID. */
-    public static @Nullable LocalTabGroupId getLocalTabGroupId(
-            TabModel tabModel, @Nullable Token tabGroupId) {
-        if (tabGroupId == null || !tabModel.tabGroupExists(tabGroupId)) return null;
-        return new LocalTabGroupId(tabGroupId);
-    }
-
     /** Util method to get a {@link LocalTabGroupId} from a tab. */
     public static @Nullable LocalTabGroupId getLocalTabGroupId(Tab tab) {
         Token tabGroupId = tab.getTabGroupId();

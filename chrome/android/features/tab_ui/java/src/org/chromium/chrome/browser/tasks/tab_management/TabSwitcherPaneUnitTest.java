@@ -1051,7 +1051,7 @@ public class TabSwitcherPaneUnitTest {
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         reset(mUserEducationHelper);
 
-        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab, mTabModel);
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mUserEducationHelper).requestShowIph(argThat(remoteGroupIph()));
@@ -1131,20 +1131,20 @@ public class TabSwitcherPaneUnitTest {
 
         // Case 1: null tab.
         when(mTabModel.getRepresentativeTabAt(1)).thenReturn(null);
-        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab, mTabModel);
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper).requestShowIph(argThat(remoteGroupIph()));
 
         // Case 2: not in group.
         Tab tab = mock(Tab.class);
         when(mTabModel.getRepresentativeTabAt(1)).thenReturn(tab);
-        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab, mTabModel);
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(2)).requestShowIph(argThat(remoteGroupIph()));
 
         // Case 3: no token.
         when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
-        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab, mTabModel);
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(3)).requestShowIph(argThat(remoteGroupIph()));
 
@@ -1153,7 +1153,7 @@ public class TabSwitcherPaneUnitTest {
         LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
         when(tab.getTabGroupId()).thenReturn(tabGroupId);
         when(mTabGroupSyncService.getGroup(localTabGroupId)).thenReturn(null);
-        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab, mTabModel);
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(4)).requestShowIph(argThat(remoteGroupIph()));
 
@@ -1161,7 +1161,7 @@ public class TabSwitcherPaneUnitTest {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.collaborationId = "My collab";
         when(mTabGroupSyncService.getGroup(localTabGroupId)).thenReturn(savedTabGroup);
-        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab, mTabModel);
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(5)).requestShowIph(argThat(remoteGroupIph()));
 
@@ -1169,13 +1169,13 @@ public class TabSwitcherPaneUnitTest {
         savedTabGroup.collaborationId = null;
         savedTabGroup.creatorCacheGuid = "test guid";
         when(mTabGroupSyncService.isRemoteDevice("test guid")).thenReturn(false);
-        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab, mTabModel);
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(6)).requestShowIph(argThat(remoteGroupIph()));
 
         // Case 7: no anchor view.
         savedTabGroup.creatorCacheGuid = null;
-        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab, mTabModel);
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mUserEducationHelper, times(7)).requestShowIph(argThat(remoteGroupIph()));
     }

@@ -50,7 +50,6 @@ public final class TabGroupSyncLocalObserver {
 
     private final TabModelObserver mTabModelObserver;
     private final TabGroupObserver mTabGroupObserver;
-    private final NavigationTracker mNavigationTracker;
     private final NavigationObserver mNavigationObserver;
     private final HashSet<Integer> mTabIdsSelectedInSession = new HashSet<>();
     private boolean mIsObserving;
@@ -73,7 +72,6 @@ public final class TabGroupSyncLocalObserver {
         mTabModel = tabModel;
         mTabGroupSyncService = tabGroupSyncService;
         mRemoteTabGroupMutationHelper = remoteTabGroupMutationHelper;
-        mNavigationTracker = navigationTracker;
 
         // Start observing tab groups and tab model.
         mTabModelObserver = createTabModelObserver();
@@ -83,7 +81,7 @@ public final class TabGroupSyncLocalObserver {
 
         // Start observing navigations.
         mNavigationObserver =
-                new NavigationObserver(tabModelSelector, mTabGroupSyncService, mNavigationTracker);
+                new NavigationObserver(tabModelSelector, mTabGroupSyncService, navigationTracker);
     }
 
     /** Called on destroy. */
@@ -222,14 +220,14 @@ public final class TabGroupSyncLocalObserver {
             public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didChangeTabGroupColor, tabGroupId = " + tabGroupId);
-                updateVisualData(TabGroupSyncUtils.getLocalTabGroupId(mTabModel, tabGroupId));
+                updateVisualData(tabGroupId);
             }
 
             @Override
             public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didChangeTabGroupTitle, tabGroupId = " + tabGroupId);
-                updateVisualData(TabGroupSyncUtils.getLocalTabGroupId(mTabModel, tabGroupId));
+                updateVisualData(tabGroupId);
             }
 
             @Override
@@ -238,9 +236,7 @@ public final class TabGroupSyncLocalObserver {
                 LogUtils.log(TAG, "didMergeTabToGroup, tabGroupId = " + movedTab.getTabGroupId());
 
                 LocalTabGroupId localTabGroupId =
-                        assertNonNull(
-                                TabGroupSyncUtils.getLocalTabGroupId(
-                                        mTabModel, movedTab.getTabGroupId()));
+                        assertNonNull(TabGroupSyncUtils.getLocalTabGroupId(movedTab));
                 if (TabGroupSyncPendingReconciliation.isSuppressed(movedTab)) {
                     assert groupExistsInSync(localTabGroupId);
                     reconcilePendingTab(localTabGroupId, movedTab);
@@ -270,9 +266,7 @@ public final class TabGroupSyncLocalObserver {
                 // The tab position was changed. Update sync.
                 int positionInGroup = mTabModel.getIndexOfTabInGroup(movedTab);
                 LocalTabGroupId localTabGroupId =
-                        assertNonNull(
-                                TabGroupSyncUtils.getLocalTabGroupId(
-                                        mTabModel, movedTab.getTabGroupId()));
+                        assertNonNull(TabGroupSyncUtils.getLocalTabGroupId(movedTab));
                 Log.w(
                         TAG,
                         String.format(
@@ -296,13 +290,11 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didCreateNewGroup(Tab destinationTab, TabModel tabModel) {
+            public void didCreateNewGroup(Tab destinationTab) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didCreateNewGroup");
                 LocalTabGroupId localTabGroupId =
-                        assertNonNull(
-                                TabGroupSyncUtils.getLocalTabGroupId(
-                                        mTabModel, destinationTab.getTabGroupId()));
+                        assertNonNull(TabGroupSyncUtils.getLocalTabGroupId(destinationTab));
                 if (groupExistsInSync(localTabGroupId)) return;
 
                 mRemoteTabGroupMutationHelper.createRemoteTabGroup(localTabGroupId);
@@ -336,11 +328,11 @@ public final class TabGroupSyncLocalObserver {
         };
     }
 
-    private void updateVisualData(@Nullable LocalTabGroupId tabGroupId) {
+    private void updateVisualData(Token tabGroupId) {
         // During group creation from sync, we set the title and color before the group is actually
-        // created. Hence, tab group ID could be null.
-        if (tabGroupId == null) return;
-        mRemoteTabGroupMutationHelper.updateVisualData(tabGroupId);
+        // created.
+        if (!mTabModel.tabGroupExists(tabGroupId)) return;
+        mRemoteTabGroupMutationHelper.updateVisualData(new LocalTabGroupId(tabGroupId));
     }
 
     private boolean groupExistsInSync(LocalTabGroupId localTabGroupId) {
