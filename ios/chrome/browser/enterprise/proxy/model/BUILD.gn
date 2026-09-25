@@ -16,6 +16,7 @@ source_set("model") {
     "proxy_service_controller_factory.mm",
   ]
   deps = [
+    ":proxy_auth_challenge_util",
     "//base",
     "//components/enterprise/net/core",
     "//components/keyed_service/core",
@@ -25,23 +26,49 @@ source_set("model") {
     "//ios/chrome/browser/signin/model",
     "//ios/web/public",
     "//ios/web/public/proxy",
+    "//net",
     "//services/network/public/cpp",
+    "//url",
   ]
+}
+
+source_set("proxy_auth_challenge_util") {
+  sources = [
+    "proxy_auth_challenge_util.h",
+    "proxy_auth_challenge_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//url",
+  ]
+
+  public_deps = [ "//net" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "proxy_service_controller_unittest.mm" ]
+  sources = [
+    "proxy_auth_challenge_util_unittest.mm",
+    "proxy_service_controller_unittest.mm",
+  ]
   deps = [
     ":model",
+    ":proxy_auth_challenge_util",
     "//base",
     "//base/test:test_support",
     "//components/enterprise/net/core",
     "//components/enterprise/net/core:test_support",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public",
     "//ios/web/public/proxy",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
     "//net",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }
