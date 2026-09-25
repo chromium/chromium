@@ -72,6 +72,9 @@ specific_include_rules = {
     "+ash/ambient/test/ambient_ash_test_helper.h",
     "+ui/message_center/message_center.h",
   ],
+  "personalization_app_sea_pen_provider_impl_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
+  ],
   "personalization_app_utils_unittest\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
     "+chrome/browser/global_features.h",
