@@ -58,6 +58,7 @@ using test::kKeyedPromoFeature;
 using test::kKeyedPromoFeature2;
 using test::kLegalNoticeFeature;
 using test::kLegalNoticeFeature2;
+using test::kLightweightLegalNoticeFeature;
 using test::kRotatingPromoIPHFeature;
 using test::kSnoozeIPHFeature;
 using test::kTestIPHFeature;
@@ -83,6 +84,13 @@ class BrowserFeaturePromoPolicyTestBaseWithPriority
     spec = FeaturePromoSpecification::CreateForTutorialPromo(
         kLegalNoticeFeature2, kToolbarAppMenuButtonElementId, IDS_OK,
         kTestTutorialIdentifier);
+    spec.set_promo_subtype_for_testing(
+        FeaturePromoSpecification::PromoSubtype::kLegalNotice);
+    registry()->RegisterFeature(std::move(spec));
+
+    spec = FeaturePromoSpecification::CreateForToastPromo(
+        kLightweightLegalNoticeFeature, kToolbarAppMenuButtonElementId, IDS_OK,
+        IDS_CANCEL, {});
     spec.set_promo_subtype_for_testing(
         FeaturePromoSpecification::PromoSubtype::kLegalNotice);
     registry()->RegisterFeature(std::move(spec));
@@ -425,6 +433,17 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerPolicyTest,
       ResetSessionData(kMoreThanGracePeriod), MaybeShowPromo(kTestIPHFeature),
       ClosePromo(), AdvanceTime(kLessThanCooldown),
       AdvanceTime(kMoreThanGracePeriod), MaybeShowPromo(kTutorialIPHFeature));
+}
+
+// Regression test for https://crbug.com/552506922
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerPolicyTest,
+                       LightweightLegalNoticeDoesTriggerCooldown) {
+  RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
+                  MaybeShowPromo(kLightweightLegalNoticeFeature), ClosePromo(),
+                  AdvanceTime(kLessThanCooldown),
+                  AdvanceTime(kMoreThanGracePeriod),
+                  MaybeShowPromo(kTutorialIPHFeature,
+                                 FeaturePromoResult::kBlockedByCooldown));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerPolicyTest,

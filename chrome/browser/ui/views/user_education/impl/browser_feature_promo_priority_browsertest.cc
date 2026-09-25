@@ -211,29 +211,6 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerPriorityTest,
 
 IN_PROC_BROWSER_TEST_F(
     BrowserFeaturePromoControllerPriorityTest,
-    MultipleStartupPromosHighPriorityToastThenLowPriorityAllowed) {
-  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
-                         second_promo_callback);
-  FeaturePromoParams second_params(kSnoozeIPHFeature);
-  second_params.show_promo_result_callback = second_promo_callback.Get();
-  RunTestSequence(  // Since the second promo cannot show during grace period,
-                    // assume this is a browser restart during a session.
-      ResetSessionData(kMoreThanGracePeriod),
-      ObserveState(kStartupCallbackState, &second_promo_callback,
-                   FeaturePromoResult::Success()),
-      MaybeShowStartupPromo(kLegalNoticeFeature),
-      MaybeShowStartupPromo(std::move(second_params)),
-      WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
-      ExpectShowingPromo(&kLegalNoticeFeature),
-      // This is required so we don't try to close on the same call
-      // stack as the bubble was shown on.
-      ClosePromo(), WaitForState(kStartupCallbackState, true),
-      WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting),
-      ExpectShowingPromo(&kSnoozeIPHFeature), ClosePromo());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    BrowserFeaturePromoControllerPriorityTest,
     MultipleStartupPromosHighPriorityLowPriorityToastAllowedAfterHeavyweight) {
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          second_promo_callback);

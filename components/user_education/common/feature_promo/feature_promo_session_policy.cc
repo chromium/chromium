@@ -40,7 +40,11 @@ FeaturePromoPriorityProvider::GetPromoPriorityInfo(
     case FeaturePromoSpecification::PromoType::kToast:
     case FeaturePromoSpecification::PromoType::kLegacy:
     case FeaturePromoSpecification::PromoType::kRotating:
-      promo_info.weight = PromoWeight::kLight;
+      // Toast promos that are high priority have buttons and are therefore
+      // heavyweight.
+      promo_info.weight = promo_info.priority == PromoPriority::kHigh
+                              ? PromoWeight::kHeavy
+                              : PromoWeight::kLight;
       break;
     case FeaturePromoSpecification::PromoType::kSnooze:
     case FeaturePromoSpecification::PromoType::kTutorial:

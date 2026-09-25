@@ -51,6 +51,7 @@ BASE_DECLARE_FEATURE(kCustomActionIPHFeature);
 BASE_DECLARE_FEATURE(kDefaultCustomActionIPHFeature);
 BASE_DECLARE_FEATURE(kLegalNoticeFeature);
 BASE_DECLARE_FEATURE(kLegalNoticeFeature2);
+BASE_DECLARE_FEATURE(kLightweightLegalNoticeFeature);
 BASE_DECLARE_FEATURE(kActionableAlertIPHFeature);
 BASE_DECLARE_FEATURE(kActionableAlertIPHFeature2);
 BASE_DECLARE_FEATURE(kKeyedPromoFeature);

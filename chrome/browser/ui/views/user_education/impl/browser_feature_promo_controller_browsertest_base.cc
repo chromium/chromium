@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -70,6 +71,7 @@ BASE_FEATURE(kCustomActionIPHFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDefaultCustomActionIPHFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLegalNoticeFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLegalNoticeFeature2, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLightweightLegalNoticeFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActionableAlertIPHFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActionableAlertIPHFeature2, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kKeyedPromoFeature, base::FEATURE_ENABLED_BY_DEFAULT);
