@@ -353,18 +353,21 @@ class MockAudioContextManager : public mojom::blink::AudioContextManager {
     stopped_count_++;
   }
   void AudioContextCreated(uint32_t id) override {}
-  void AudioContextClosed(uint32_t id) override {}
+  void AudioContextClosed(uint32_t id) override { ++closed_count_; }
 
   int started_count() const { return started_count_; }
   int stopped_count() const { return stopped_count_; }
+  int closed_count() const { return closed_count_; }
   void reset() {
     started_count_ = 0;
     stopped_count_ = 0;
+    closed_count_ = 0;
   }
 
  private:
   int started_count_ = 0;
   int stopped_count_ = 0;
+  int closed_count_ = 0;
   mojo::ReceiverSet<mojom::blink::AudioContextManager> receivers_;
 };
 
@@ -1501,6 +1504,74 @@ TEST_F(AudioContextStatsTest, HasPendingActivityAfterClose) {
   audio_context->closeContext(script_state, exception_state);
 
   EXPECT_FALSE(audio_context->HasPendingActivity());
+}
+
+// Test that closed AudioContext instances are reclaimed by Oilpan garbage
+// collection, even if closeContext() is called before the permission service
+// finishes its initial check.
+TEST_F(AudioContextTest, ClosedAudioContextReclaimedByGarbageCollection) {
+  WeakPersistent<AudioContext> weak_context;
+  {
+    AudioContextOptions* options = AudioContextOptions::Create();
+    AudioContext* audio_context = AudioContext::Create(
+        GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+    weak_context = audio_context;
+
+    ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+    ScriptState::Scope scope(script_state);
+    DummyExceptionStateForTesting exception_state;
+    audio_context->closeContext(script_state, exception_state);
+  }
+
+  test::RunPendingTasks();
+  WebHeap::CollectAllGarbageForTesting();
+  EXPECT_EQ(weak_context.Get(), nullptr);
+}
+
+// Test that a closed AudioContext is reclaimed by garbage collection even if
+// the permission service check completed before closeContext() was called.
+TEST_F(AudioContextStatsTest, ClosedAudioContextReclaimedAfterPermissionBound) {
+  WeakPersistent<AudioContext> weak_context;
+  {
+    AudioContextOptions* options = AudioContextOptions::Create();
+    AudioContext* audio_context = AudioContext::Create(
+        GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+    weak_context = audio_context;
+
+    FlushPermissionService(audio_context);
+    EXPECT_TRUE(audio_context->HasPendingActivity());
+
+    ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+    ScriptState::Scope scope(script_state);
+    DummyExceptionStateForTesting exception_state;
+    audio_context->closeContext(script_state, exception_state);
+    EXPECT_FALSE(audio_context->HasPendingActivity());
+  }
+
+  test::RunPendingTasks();
+  WebHeap::CollectAllGarbageForTesting();
+  EXPECT_EQ(weak_context.Get(), nullptr);
+}
+
+// Test that tearing down the frame/context on an already-closed AudioContext
+// (where audio_context_manager_ was reset) does not re-execute DidClose() or
+// crash when GetWindow()->GetFrame() is null.
+TEST_F(AudioContextTest, ClosedAudioContextContextDestroyedDoesNotCrash) {
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+  DummyExceptionStateForTesting exception_state;
+  audio_context->closeContext(script_state, exception_state);
+  EXPECT_EQ(audio_context->ContextState(), V8AudioContextState::Enum::kClosed);
+  test::RunPendingTasks();
+  EXPECT_EQ(mock_audio_context_manager()->closed_count(), 1);
+
+  GetFrame().DomWindow()->FrameDestroyed();
+  test::RunPendingTasks();
+  EXPECT_EQ(mock_audio_context_manager()->closed_count(), 1);
 }
 
 TEST_F(AudioContextStatsTest, PlaybackStatsCoarsening) {

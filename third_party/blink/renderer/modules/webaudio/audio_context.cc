@@ -697,7 +697,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
   permission_service_->HasPermission(
       CreatePermissionDescriptor(microphone_permission_name),
       blink::BindOnce(&AudioContext::DidInitialPermissionCheck,
-                      WrapPersistent(this),
+                      WrapWeakPersistent(this),
                       CreatePermissionDescriptor(microphone_permission_name)));
 
   // Initializes MediaDeviceService and `output_device_ids_` only for a valid
@@ -727,7 +727,6 @@ void AudioContext::Uninitialize() {
   StopRendering();
   DidClose();
   RecordAutoplayMetrics();
-  UninitializeMediaDeviceService();
   BaseAudioContext::Uninitialize();
   DCHECK_EQ(pending_resume_resolvers_.size(), 0u);
 }
@@ -1043,6 +1042,10 @@ ScriptPromise<IDLUndefined> AudioContext::closeContext(
 }
 
 void AudioContext::DidClose() {
+  if (is_closed_) {
+    return;
+  }
+
   // Cancel any pending async transition to the "running" state.
   pending_initial_transition_to_running_ = false;
   // Clear the pending state transition to the "suspended" state.
@@ -1051,6 +1054,7 @@ void AudioContext::DidClose() {
   EnsureAudioContextManagerService();
   if (audio_context_manager_.is_bound()) {
     audio_context_manager_->AudioContextClosed(context_id_);
+    audio_context_manager_.reset();
   }
 
   SetContextState(V8AudioContextState::Enum::kClosed);
@@ -1086,6 +1090,15 @@ void AudioContext::DidClose() {
 
   if (auto* frame = GetLocalFrame()) {
     frame->RemoveVisibilityObserver(this);
+  }
+
+  SetPage(nullptr);
+
+  permission_service_.reset();
+  permission_receiver_.reset();
+  UninitializeMediaDeviceService();
+  if (media_player_host_.is_bound()) {
+    OnMediaPlayerDisconnect();
   }
 
   is_closed_ = true;
@@ -1560,12 +1573,14 @@ void AudioContext::ContextDestroyed() {
 }
 
 bool AudioContext::HasPendingActivity() const {
-  // There's activity if the context is is not closed.  Suspended contexts count
-  // as having activity even though they are basically idle with nothing going
-  // on.  However, they can be resumed at any time, so we don't want contexts
-  // going away prematurely.
-  return ((ContextState() != V8AudioContextState::Enum::kClosed) &&
-          BaseAudioContext::HasPendingActivity()) ||
+  // There's no pending activity if the context is closed.
+  if (ContextState() == V8AudioContextState::Enum::kClosed) {
+    return false;
+  }
+  // Suspended contexts count as having activity even though they are basically
+  // idle with nothing going on. However, they can be resumed at any time, so we
+  // don't want contexts going away prematurely.
+  return BaseAudioContext::HasPendingActivity() ||
          permission_receiver_.is_bound();
 }
 
@@ -1775,7 +1790,8 @@ void AudioContext::NotifyAudibleAudioStopped(unsigned sequence_id,
 }
 
 void AudioContext::EnsureAudioContextManagerService() {
-  if (audio_context_manager_.is_bound() || !GetWindow()) {
+  if (audio_context_manager_.is_bound() || !GetWindow() ||
+      !GetWindow()->GetFrame()) {
     return;
   }
 
@@ -1831,6 +1847,10 @@ void AudioContext::OnPermissionStatusChange(
 void AudioContext::DidInitialPermissionCheck(
     mojom::blink::PermissionDescriptorPtr descriptor,
     mojom::blink::PermissionStatusWithDetailsPtr status_with_details) {
+  if (ContextState() == V8AudioContextState::Enum::kClosed) {
+    return;
+  }
+
   mojom::blink::PermissionStatus status = status_with_details->status;
   if (descriptor->name == mojom::blink::PermissionName::AUDIO_CAPTURE &&
       status == mojom::blink::PermissionStatus::GRANTED) {
