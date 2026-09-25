@@ -7,17 +7,25 @@
 #include <memory>
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/help_app_ui/help_app_ui.mojom-shared.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/borealis/testing/features.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,32 +46,48 @@ class MockSettingsWindowManager : public chrome::SettingsWindowManager {
 
 }  // namespace
 
-class HelpAppUiDelegateTest : public BrowserWithTestWindowTest {
+class HelpAppUiDelegateTest : public testing::Test {
  public:
-  HelpAppUiDelegateTest() : web_ui_(std::make_unique<content::TestWebUI>()) {}
+  HelpAppUiDelegateTest() = default;
+  ~HelpAppUiDelegateTest() override = default;
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    user_session_test_env_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            TestingBrowserProcess::GetGlobal()));
+
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("user@test.com", GaiaId("1234567890"));
+    ASSERT_TRUE(user_session_test_env_->AddRegularUser(account_id));
+    user_session_test_env_->LogIn(account_id);
+
+    Profile* profile = Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
     web_contents_ =
-        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-    user_manager_ = static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
+        content::WebContentsTester::CreateTestWebContents(profile, nullptr);
+    web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(web_contents_.get());
-    delegate_ = std::make_unique<ChromeHelpAppUIDelegate>(web_ui());
+    delegate_ = std::make_unique<ChromeHelpAppUIDelegate>(web_ui_.get());
   }
 
   void TearDown() override {
     delegate_.reset();
     web_ui_.reset();
     web_contents_.reset();
-    BrowserWithTestWindowTest::TearDown();
+    user_session_test_env_.reset();
   }
 
  protected:
-  content::WebUI* web_ui() { return web_ui_.get(); }
+  content::BrowserTaskEnvironment task_environment_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+
+  std::unique_ptr<ash::test::UserSessionTestEnvironment> user_session_test_env_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<ChromeHelpAppUIDelegate> delegate_;
@@ -78,8 +102,8 @@ TEST_F(HelpAppUiDelegateTest, DeviceInfoWhenBorealisIsNotAllowed) {
 }
 
 TEST_F(HelpAppUiDelegateTest, DeviceInfoWhenBorealisIsAllowed) {
-  borealis::AllowBorealis(profile(), &scoped_feature_list_, user_manager_,
-                          /*also_enable=*/false);
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kBorealis, ash::features::kBorealisPermitted}, {});
 
   base::test::TestFuture<help_app::mojom::DeviceInfoPtr> info_future;
   delegate_->GetDeviceInfo(info_future.GetCallback());
