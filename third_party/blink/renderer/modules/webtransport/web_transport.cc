@@ -101,6 +101,9 @@ constexpr base::TimeDelta kDefaultIncomingMaxAge = base::Seconds(60);
 // applying to datagrams that have already arrived.
 constexpr size_t kDatagramsReadableHighWaterMark = 0;
 
+constexpr char kInvalidStateMessage[] =
+    "The WebTransport connection is not open.";
+
 // Converts the Blink congestion control enum to its Mojo equivalent for
 // renderer-to-browser IPC.
 network::mojom::blink::WebTransportCongestionControl
@@ -1301,8 +1304,6 @@ ScriptPromise<WritableStream> WebTransport::createUnidirectionalStream(
   }
 
   if (!connection_pending_ && !transport_remote_.is_bound()) {
-    constexpr char kInvalidStateMessage[] =
-        "The WebTransport connection is not open.";
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<WritableStream>>(
             script_state, exception_state.GetContext());
@@ -1353,8 +1354,6 @@ ScriptPromise<BidirectionalStream> WebTransport::createBidirectionalStream(
   }
 
   if (!connection_pending_ && !transport_remote_.is_bound()) {
-    constexpr char kInvalidStateMessage[] =
-        "The WebTransport connection is not open.";
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<BidirectionalStream>>(
             script_state, exception_state.GetContext());
@@ -2282,8 +2281,6 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
   cleanup_started_ = true;
   v8::Isolate* isolate = script_state_->GetIsolate();
 
-  constexpr char kInvalidStateMessage[] =
-      "The WebTransport connection is not open.";
   v8::Local<v8::Value> stream_error = V8ThrowDOMException::CreateOrEmpty(
       isolate, DOMExceptionCode::kInvalidStateError, kInvalidStateMessage);
   RejectPendingStreamCreations(stream_error);
@@ -2616,6 +2613,12 @@ void WebTransport::setAnticipatedConcurrentIncomingBidirectionalStreams(
 
 WebTransportSendGroup* WebTransport::createSendGroup(
     ExceptionState& exception_state) {
+  if (!connection_pending_ && !transport_remote_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kInvalidStateMessage);
+    return nullptr;
+  }
+
   if (next_send_group_id_ == std::numeric_limits<uint32_t>::max()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Too many send groups.");

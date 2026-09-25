@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] createSendGroup() throws InvalidStateError on a closed transport
-  assert_throws_dom: createSendGroup on closed transport should throw InvalidStateError function "() => {\n    wt.createSendGroup();\n  }" did not throw
-Harness: the test ran to completion.
-
