@@ -2031,11 +2031,12 @@ void HTMLTreeBuilder::ResetInsertionModeAppropriately() {
     const HTMLTag tag = item->GetHTMLTag();
     if (item->IsHTMLNamespace()) {
       switch (tag) {
-        case HTMLTag::kTemplate:
-          return SetInsertionMode(template_insertion_modes_.back());
         case HTMLTag::kTd:
         case HTMLTag::kTh:
-          return SetInsertionMode(kInCellMode);
+          if (!last) {
+            return SetInsertionMode(kInCellMode);
+          }
+          break;
         case HTMLTag::kTr:
           return SetInsertionMode(kInRowMode);
         case HTMLTag::kTbody:
@@ -2048,12 +2049,13 @@ void HTMLTreeBuilder::ResetInsertionModeAppropriately() {
           return SetInsertionMode(kInColumnGroupMode);
         case HTMLTag::kTable:
           return SetInsertionMode(kInTableMode);
+        case HTMLTag::kTemplate:
+          return SetInsertionMode(template_insertion_modes_.back());
         case HTMLTag::kHead:
-          if (!fragment_context_.FragmentTarget() ||
-              fragment_context_.ContextElement() != item->GetNode()) {
+          if (!last) {
             return SetInsertionMode(kInHeadMode);
           }
-          return SetInsertionMode(kInBodyMode);
+          break;
         case HTMLTag::kBody:
           return SetInsertionMode(kInBodyMode);
         case HTMLTag::kFrameset:
