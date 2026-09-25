@@ -766,6 +766,49 @@ suite('KeywordModeManagerTest', () => {
     assertEquals(12, lastKeywordCleared.cursorPosition);
   });
 
+  test('clearKeyword clears keyword and restores text with prefix', () => {
+    assertFalse(manager.clearKeyword('test'));
+
+    manager.enter(
+        'google.com', 'Search Google', KeywordModeEntryMethod.TAB,
+        'Search Google');
+    assertTrue(manager.clearKeyword('search query'));
+    assertFalse(manager.isInKeywordMode);
+    assertTrue(!!lastKeywordCleared);
+    assertEquals('google.com search query', lastKeywordCleared.restoredText);
+    assertEquals(11, lastKeywordCleared.cursorPosition);
+
+    // Tab entry without typing.
+    manager.enter(
+        'google.com', 'Search Google', KeywordModeEntryMethod.TAB,
+        'Search Google');
+    assertTrue(manager.clearKeyword(''));
+    assertFalse(manager.isInKeywordMode);
+    assertTrue(!!lastKeywordCleared);
+    assertEquals('google.com', lastKeywordCleared.restoredText);
+    assertEquals(10, lastKeywordCleared.cursorPosition);
+
+    // Question mark entry.
+    manager.enter(
+        'google.com', 'Search Google', KeywordModeEntryMethod.QUESTION_MARK,
+        'Search Google');
+    assertTrue(manager.clearKeyword('query'));
+    assertFalse(manager.isInKeywordMode);
+    assertTrue(!!lastKeywordCleared);
+    assertEquals('?query', lastKeywordCleared.restoredText);
+    assertEquals(1, lastKeywordCleared.cursorPosition);
+
+    // Keyboard shortcut entry.
+    manager.enter(
+        'google.com', 'Search Google', KeywordModeEntryMethod.KEYBOARD_SHORTCUT,
+        'Search Google');
+    assertTrue(manager.clearKeyword('query'));
+    assertFalse(manager.isInKeywordMode);
+    assertTrue(!!lastKeywordCleared);
+    assertEquals('query', lastKeywordCleared.restoredText);
+    assertEquals(0, lastKeywordCleared.cursorPosition);
+  });
+
   test('handleKeywordClick', () => {
     const matchWithoutKeyword = createSearchMatchForTesting({
       keywordModel: undefined,

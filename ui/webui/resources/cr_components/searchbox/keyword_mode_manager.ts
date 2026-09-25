@@ -148,6 +148,36 @@ export class KeywordModeManager {
   }
 
   /**
+   * Clears keyword mode, restoring the text with appropriate prefix based on
+   * entry method, and notifies delegate.
+   * Returns true if keyword mode was cleared.
+   */
+  clearKeyword(currentText: string): boolean {
+    if (!this.isInKeywordMode) {
+      return false;
+    }
+
+    let prefix = this.activeKeyword ? `${this.activeKeyword} ` : '';
+    if (this.entryMethod_ === KeywordModeEntryMethod.TAB && !currentText) {
+      prefix = this.activeKeyword;
+    } else if (this.entryMethod_ === KeywordModeEntryMethod.QUESTION_MARK) {
+      prefix = '?';
+    } else if (this.entryMethod_ === KeywordModeEntryMethod.KEYBOARD_SHORTCUT) {
+      prefix = '';
+    }
+
+    const restoredText = prefix + currentText;
+    const newCursorPos = prefix.length;
+
+    this.exit();
+    this.delegate_.onKeywordCleared({
+      restoredText: restoredText,
+      cursorPosition: newCursorPos,
+    });
+    return true;
+  }
+
+  /**
    * Handles Backspace when cursor is at index 0 in keyword mode, exiting
    * keyword mode and notifying the delegate of the restored text and cursor.
    * Returns true if Backspace was handled.
@@ -159,24 +189,7 @@ export class KeywordModeManager {
       return false;
     }
 
-    let prefix = this.activeKeyword ? `${this.activeKeyword} ` : '';
-    if (this.entryMethod_ === KeywordModeEntryMethod.TAB && !inputState.value) {
-      prefix = this.activeKeyword;
-    } else if (this.entryMethod_ === KeywordModeEntryMethod.QUESTION_MARK) {
-      prefix = '?';
-    } else if (this.entryMethod_ === KeywordModeEntryMethod.KEYBOARD_SHORTCUT) {
-      prefix = '';
-    }
-
-    const restoredText = prefix + inputState.value;
-    const newCursorPos = prefix.length;
-
-    this.exit();
-    this.delegate_.onKeywordCleared({
-      restoredText: restoredText,
-      cursorPosition: newCursorPos,
-    });
-    return true;
+    return this.clearKeyword(inputState.value);
   }
 
   /**

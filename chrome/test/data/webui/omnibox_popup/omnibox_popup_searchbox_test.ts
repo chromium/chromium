@@ -5,6 +5,7 @@
 import {isMac} from '//resources/js/platform.js';
 import {OmniboxEscapeAction, omniboxPopupBrowserProxyFactory, OmniboxPopupPageHandlerRemote, sanitizeTextForPaste, SearchboxBrowserProxy, stripJavascriptSchemas} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxInputState, OmniboxPopupContextualEntrypointButtonElement, OmniboxPopupPageRemote, OmniboxPopupSearchboxElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {KeywordModeEntryMethod} from 'chrome://resources/cr_components/searchbox/keyword_mode_manager.js';
 import {createAutocompleteResultForTesting, createMatchKeywordModelForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {KeywordType, RenderType, SelectionDirection, SelectionLineState, SelectionStep, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -2051,6 +2052,46 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(0, inputEl.selectionStart);
    assertEquals(testUrl.length, inputEl.selectionEnd);
    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+ });
+
+ test('CmdCtrlL_ClearsKeywordModeAndSelectsRestoredText', async () => {
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text: '',
+     userInputInProgress: true,
+     isFocused: true,
+     queryZps: false,
+   }));
+   await microtasksFinished();
+
+   // Enter keyword mode with some text.
+   searchbox.keywordModeManager.enter(
+       'google.com', 'Search Google', KeywordModeEntryMethod.TAB,
+       'Search Google');
+   searchbox.getInputElement().setInputText('flowers');
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+
+   testProxy.handler.resetResolver('queryAutocomplete');
+   const inputEl = searchbox.getInputElement().inputElement;
+
+   // Dispatch Cmd/Ctrl + L.
+   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+     key: 'l',
+     ctrlKey: !isMac,
+     metaKey: isMac,
+     bubbles: true,
+     composed: true,
+   }));
+   await microtasksFinished();
+
+   // Keyword mode should be cleared, text restored with keyword prefix, and all
+   // text selected.
+   assertFalse(searchbox.keywordModeManager.isInKeywordMode);
+   assertEquals('google.com flowers', inputEl.value);
+   assertEquals(0, inputEl.selectionStart);
+   assertEquals('google.com flowers'.length, inputEl.selectionEnd);
+   assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+   const [, , queryText] = testProxy.handler.getArgs('queryAutocomplete')[0];
+   assertEquals('google.com flowers', queryText);
  });
 
  test('FocusSearch_ClearsPermanentUrlWhenUserInputNotInProgress', async () => {

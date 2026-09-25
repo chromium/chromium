@@ -842,10 +842,14 @@ export class OmniboxPopupSearchboxElement extends
         return;
       }
       if (key === 'l' && !e.shiftKey && !e.altKey) {
-        // Cmd/Ctrl + L -> Select omnibox text & query ZPS if no user input in
-        // progress.
+        // Cmd/Ctrl + L -> Clear keyword mode if active, select omnibox text, &
+        // query ZPS if no user input in progress.
         e.preventDefault();
         e.stopPropagation();
+        if (this.keywordModeManager.isInKeywordMode) {
+          this.keywordModeManager.clearKeyword(
+              this.getInputElement().inputElement.value);
+        }
         this.getInputElement().select();
         if (!this.userInputInProgress_ && !this.dropdownIsVisible) {
           this.queryAutocomplete(
