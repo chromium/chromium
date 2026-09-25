@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
@@ -340,6 +341,12 @@ public class BackgroundTabPoolTest {
         // Calling markDirty() directly triggers save via TabStateAttributes observer
         liveTab.markDirty();
         mExecutor.runAll();
+
+        // Verify that saveTabToCache cleared the dirtiness state on TabStateAttributes
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, BackgroundTabPool.class);
+        assertNotNull(attributes);
+        assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
 
         // Verify state is persisted by loading cold from a new pool
         mPool.destroy();

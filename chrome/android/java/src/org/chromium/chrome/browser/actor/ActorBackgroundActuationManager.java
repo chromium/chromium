@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor;
 
 import android.app.Activity;
+import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.view.View;
 
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -57,6 +59,8 @@ public class ActorBackgroundActuationManager {
 
     // List of active background sessions.
     private final List<BackgroundSession> mBackgroundSessions = new ArrayList<>();
+    // Map of triggering message ID to pending tab undergoing initial about:blank load.
+    private final Map<String, Tab> mPendingActuationTabs = new ArrayMap<>();
 
     /** Returns the list of currently active background sessions. */
     public List<BackgroundSession> getBackgroundSessions() {
@@ -122,16 +126,6 @@ public class ActorBackgroundActuationManager {
                             TAG,
                             "Background tab ready for JNI call. messageId=%s",
                             glicTriggerMessageId);
-                    if (findSessionByMessageId(glicTriggerMessageId) == null) {
-                        // TODO(crbug.com/534401462): Revisit if notifySetupFailed is needed here.
-                        // This depends on whether the handler expects a failure callback when
-                        // setup is cancelled.
-                        Log.d(
-                                TAG,
-                                "Context %s was cleaned up before page load finished.",
-                                glicTriggerMessageId);
-                        return;
-                    }
                     ActorKeyedService actorService =
                             ActorKeyedServiceFactory.getForProfile(profile);
                     if (actorService == null) {
@@ -139,6 +133,10 @@ public class ActorBackgroundActuationManager {
                         notifySetupFailed(profile, glicTriggerMessageId);
                         return;
                     }
+                    mPendingActuationTabs.remove(glicTriggerMessageId);
+                    BackgroundSession session = new BackgroundSession(tab, glicTriggerMessageId);
+                    mBackgroundSessions.add(session);
+                    ingestSessionsIntoPool(profile, List.of(session));
                     actorService.setPreparedBackgroundTab(tab, glicTriggerMessageId);
                 });
     }
@@ -172,6 +170,7 @@ public class ActorBackgroundActuationManager {
                     } else {
                         session.addTab(preparedTab);
                     }
+                    ingestSessionsIntoPool(profile, List.of(session));
                     callback.onResult(preparedTab);
                 });
     }
@@ -206,7 +205,7 @@ public class ActorBackgroundActuationManager {
             for (BackgroundSession session : sessions) {
                 for (BackgroundSession.BackgroundTabData tabData : session.getTabDataList()) {
                     Tab tab = tabData.getTab();
-                    if (tab != null && !tab.isDestroyed()) {
+                    if (tab != null && !tab.isDestroyed() && pool.getLiveTab(tab.getId()) == null) {
                         Integer placeholderId = tabData.getPlaceholderTabId();
                         int placeholderTabId =
                                 placeholderId != null ? placeholderId : Tab.INVALID_TAB_ID;
@@ -217,6 +216,7 @@ public class ActorBackgroundActuationManager {
                                         placeholderTabId,
                                         session.getTaskId(),
                                         tabData.getOriginalTabIndex());
+                        LiveBackgroundTab.markDirty(tab);
                         pool.addLiveTab(liveTab);
                     }
                 }
@@ -233,13 +233,24 @@ public class ActorBackgroundActuationManager {
      */
     public void cleanupContext(String glicTriggerMessageId) {
         ThreadUtils.assertOnUiThread();
+        Tab pendingTab = mPendingActuationTabs.remove(glicTriggerMessageId);
+        if (pendingTab != null) {
+            OffscreenRenderingManager.getInstance().stopOffscreenRendering(pendingTab);
+            pendingTab.destroy();
+            return;
+        }
+
         BackgroundSession session = findSessionByMessageId(glicTriggerMessageId);
         if (session != null) {
             restoreWarmSession(session);
-            if (mBackgroundSessions.remove(session)) {
-                Tab lastActiveTab = session.getLastActiveTab();
-                if (lastActiveTab != null) {
-                    OffscreenRenderingManager.getInstance().stopOffscreenRendering(lastActiveTab);
+            if (mBackgroundSessions.contains(session)) {
+                for (Tab tab : session.getTabs()) {
+                    if (tab != null) {
+                        if (!tab.isDestroyed()) {
+                            LiveBackgroundTab.markDirty(tab);
+                        }
+                        OffscreenRenderingManager.getInstance().stopOffscreenRendering(tab);
+                    }
                 }
             }
         }
@@ -275,6 +286,14 @@ public class ActorBackgroundActuationManager {
     /** Destroys all active background sessions. */
     public void destroy() {
         ThreadUtils.assertOnUiThread();
+        for (Tab pendingTab : mPendingActuationTabs.values()) {
+            if (pendingTab != null) {
+                OffscreenRenderingManager.getInstance().stopOffscreenRendering(pendingTab);
+                pendingTab.destroy();
+            }
+        }
+        mPendingActuationTabs.clear();
+
         restoreWarmSessions();
         // Copy to avoid ConcurrentModificationException when onDestroyed triggers callback
         List<BackgroundSession> sessions = new ArrayList<>(mBackgroundSessions);
@@ -503,11 +522,16 @@ public class ActorBackgroundActuationManager {
         ThreadUtils.assertOnUiThread();
         Log.d(TAG, "Provisioning offscreen tab for message: %s", glicTriggerMessageId);
         Tab tab = createOffscreenTab(profile);
+        mPendingActuationTabs.put(glicTriggerMessageId, tab);
 
-        BackgroundSession session = new BackgroundSession(tab, glicTriggerMessageId);
-        mBackgroundSessions.add(session);
-
-        loadBlankThenCallback(tab, callback);
+        loadBlankThenCallback(
+                tab,
+                (preparedTab) -> {
+                    if (!mPendingActuationTabs.containsKey(glicTriggerMessageId)) {
+                        return;
+                    }
+                    callback.onResult(preparedTab);
+                });
     }
 
     private void loadBlankThenCallback(Tab tab, Callback<@Nullable Tab> callback) {

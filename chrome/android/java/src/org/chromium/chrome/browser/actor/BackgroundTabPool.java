@@ -25,13 +25,13 @@ import org.chromium.chrome.browser.app.tabmodel.TabCacheKey;
 import org.chromium.chrome.browser.app.tabmodel.TabCacheManager;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 
 import java.util.Collections;
 import java.util.List;
@@ -396,8 +396,9 @@ public class BackgroundTabPool
     }
 
     private void removeTabObserver(Tab tab) {
-        if (!tab.isDestroyed()) {
-            TabStateAttributes attributes = getTabStateAttributes(tab);
+        if (!tab.isDestroyed() && tab.getUserDataHost() != null) {
+            TabStateAttributes attributes =
+                    TabStateAttributesRegistry.getAttributesFor(tab, BackgroundTabPool.class);
             if (attributes != null) {
                 attributes.removeObserver(this);
             }
@@ -411,13 +412,9 @@ public class BackgroundTabPool
         TabStateAttributes attributes =
                 TabStateAttributesRegistry.getAttributesFor(tab, BackgroundTabPool.class);
         if (attributes == null) {
-            attributes =
-                    TabStateAttributesRegistry.getAttributesFor(
-                            tab, TabStateAttributes.StoreKey.class);
-        }
-        if (attributes == null) {
-            attributes =
-                    TabStateAttributesRegistry.getAttributesFor(tab, TabPersistentStoreImpl.class);
+            TabStateAttributesRegistry.createAttributesForTab(
+                    tab, BackgroundTabPool.class, TabCreationState.LIVE_IN_BACKGROUND);
+            attributes = TabStateAttributesRegistry.getAttributesFor(tab, BackgroundTabPool.class);
         }
         return attributes;
     }
@@ -428,6 +425,10 @@ public class BackgroundTabPool
             return;
         }
         mTabCache.saveTabState(getCacheKey(tab.getId()), tab.getId(), tabState);
+        TabStateAttributes attributes = getTabStateAttributes(tab);
+        if (attributes != null) {
+            attributes.clearTabStateDirtiness();
+        }
     }
 
     private static TabCacheKey getCacheKey(@TabId int tabId) {

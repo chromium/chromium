@@ -76,6 +76,8 @@ public class ActorBackgroundActuationManagerTest {
     private static final String MESSAGE_ID_CANCELLED = "message_id_cancelled";
     private static final String TEST_URL = "about:blank";
 
+    private static final int TAB_ID = 100;
+
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
@@ -103,6 +105,7 @@ public class ActorBackgroundActuationManagerTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mProfile.isNativeInitialized()).thenReturn(true);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTab.getId()).thenReturn(TAB_ID);
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mTabModel.getProfile()).thenReturn(mProfile);
 
@@ -150,6 +153,12 @@ public class ActorBackgroundActuationManagerTest {
         MultiWindowTestUtils.resetInstanceInfo();
     }
 
+    private void triggerPageLoadFinished() {
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(mTab, atLeastOnce()).addObserver(captor.capture());
+        captor.getValue().onPageLoadFinished(mTab, new GURL(TEST_URL));
+    }
+
     @Test
     public void testStartBackgroundActuation_Success() {
         mManager.startBackgroundActuation(mProfile, MESSAGE_ID_SUCCESS);
@@ -167,6 +176,14 @@ public class ActorBackgroundActuationManagerTest {
         // Verify the tab was prepared and set on ActorKeyedService
         verify(mActorKeyedService).setPreparedBackgroundTab(mTab, MESSAGE_ID_SUCCESS);
         verify(mActorKeyedService, never()).notifyBackgroundSetupFailed(any());
+
+        // Verify the provisioned background tab was registered in BackgroundTabPool
+        BackgroundTabPool pool = BackgroundTabPoolManager.acquire(mProfile);
+        try {
+            assertNotNull(pool.getLiveTab(TAB_ID));
+        } finally {
+            BackgroundTabPoolManager.release(pool);
+        }
     }
 
     @Test
@@ -182,9 +199,10 @@ public class ActorBackgroundActuationManagerTest {
 
         // Verify setup failed notification was sent to native
         verify(mActorKeyedService).notifyBackgroundSetupFailed(MESSAGE_ID_FAIL);
-        // Verify cleanup stopped offscreen rendering
+        // Verify cleanup stopped offscreen rendering and destroyed tab
         verify(mTab).removeObserver(observer);
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        verify(mTab).destroy();
     }
 
     @Test
@@ -202,6 +220,7 @@ public class ActorBackgroundActuationManagerTest {
         verify(mActorKeyedService).notifyBackgroundSetupFailed(MESSAGE_ID_CRASH);
         verify(mTab).removeObserver(observer);
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        verify(mTab).destroy();
     }
 
     @Test
@@ -216,19 +235,15 @@ public class ActorBackgroundActuationManagerTest {
         // Cancel/Cleanup before load finished
         mManager.cleanupContext(MESSAGE_ID_CANCELLED);
 
-        // Verify cleanup stopped offscreen rendering
+        // Verify cleanup stopped offscreen rendering and destroyed tab directly
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
-
-        // Simulate native destruction triggering onDestroyed
-        observer.onDestroyed(mTab);
-
-        // Verify observer removed itself
-        verify(mTab).removeObserver(observer);
+        verify(mTab).destroy();
+        assertEquals(0, mManager.getBackgroundSessions().size());
 
         // Now trigger page load finish
         observer.onPageLoadFinished(mTab, new GURL(TEST_URL));
 
-        // Verify setPreparedBackgroundTab was NOT called because of our fast-guard
+        // Verify setPreparedBackgroundTab was NOT called because session was cleaned up
         verify(mActorKeyedService, never()).setPreparedBackgroundTab(any(), any());
     }
 
@@ -354,6 +369,14 @@ public class ActorBackgroundActuationManagerTest {
 
         // Verify callback invoked with tab
         verify(callback).onResult(mTab);
+
+        // Verify the provisioned background tab was registered in BackgroundTabPool
+        BackgroundTabPool pool = BackgroundTabPoolManager.acquire(mProfile);
+        try {
+            assertNotNull(pool.getLiveTab(TAB_ID));
+        } finally {
+            BackgroundTabPoolManager.release(pool);
+        }
     }
 
     @Test
@@ -441,11 +464,19 @@ public class ActorBackgroundActuationManagerTest {
         // Verify offscreen rendering started
         verify(mOffscreenRenderingManager).startOffscreenRendering(eq(mTab), anyInt(), anyInt());
 
-        // Call cleanupContext which should trigger save tab state if TabState != null
+        // Capture observer and complete page load to ingest session into BackgroundTabPool
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(mTab).addObserver(captor.capture());
+        captor.getValue().onPageLoadFinished(mTab, new GURL(TEST_URL));
+
+        // Call cleanupContext on the ingested session
         mManager.cleanupContext("test_msg_id");
 
         // Verify offscreen rendering stopped
-        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        verify(mOffscreenRenderingManager, atLeastOnce()).stopOffscreenRendering(mTab);
+
+        // Verify the ingested session is retained in mBackgroundSessions when no warm activity was alive
+        assertEquals(1, mManager.getBackgroundSessions().size());
 
         TabStateExtractor.resetTabStatesForTesting();
     }
@@ -459,6 +490,7 @@ public class ActorBackgroundActuationManagerTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
 
         mManager.startBackgroundActuation(mProfile, "msg_warm_test");
+        triggerPageLoadFinished();
         assertEquals(1, mManager.getBackgroundSessions().size());
 
         mManager.destroy();
@@ -477,12 +509,13 @@ public class ActorBackgroundActuationManagerTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
 
         mManager.startBackgroundActuation(mProfile, "msg_uninit_test");
+        triggerPageLoadFinished();
         assertEquals(1, mManager.getBackgroundSessions().size());
 
         mManager.destroy();
 
         verify(mTab, never()).updateAttachment(any(), any());
-        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        verify(mOffscreenRenderingManager, atLeastOnce()).stopOffscreenRendering(mTab);
         verify(mTabPersistentStore, never()).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }
@@ -496,12 +529,13 @@ public class ActorBackgroundActuationManagerTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
 
         mManager.startBackgroundActuation(mProfile, "msg_finishing_test");
+        triggerPageLoadFinished();
         assertEquals(1, mManager.getBackgroundSessions().size());
 
         mManager.destroy();
 
         verify(mTab, never()).updateAttachment(any(), any());
-        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        verify(mOffscreenRenderingManager, atLeastOnce()).stopOffscreenRendering(mTab);
         verify(mTabPersistentStore, never()).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }
@@ -524,6 +558,7 @@ public class ActorBackgroundActuationManagerTest {
         ApplicationStatus.onStateChangeForTesting(coldActivity, ActivityState.STOPPED);
 
         mManager.startBackgroundActuation(mProfile, "msg_mixed_test");
+        triggerPageLoadFinished();
 
         mManager.destroy();
 
@@ -541,6 +576,7 @@ public class ActorBackgroundActuationManagerTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
 
         mManager.startBackgroundActuation(mProfile, "msg_cleanup_warm");
+        triggerPageLoadFinished();
         assertEquals(1, mManager.getBackgroundSessions().size());
 
         mManager.cleanupContext("msg_cleanup_warm");
@@ -557,12 +593,13 @@ public class ActorBackgroundActuationManagerTest {
         ApplicationStatus.onStateChangeForTesting(nonTabbedActivity, ActivityState.STOPPED);
 
         mManager.startBackgroundActuation(mProfile, "msg_non_tabbed_test");
+        triggerPageLoadFinished();
         assertEquals(1, mManager.getBackgroundSessions().size());
 
         mManager.destroy();
 
         verify(mTab, never()).updateAttachment(any(), any());
-        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+        verify(mOffscreenRenderingManager, atLeastOnce()).stopOffscreenRendering(mTab);
         verify(mTabPersistentStore, never()).saveState();
         assertEquals(0, mManager.getBackgroundSessions().size());
     }
@@ -619,6 +656,7 @@ public class ActorBackgroundActuationManagerTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
 
         mManager.startBackgroundActuation(mProfile, "msg_null_factory");
+        triggerPageLoadFinished();
         assertEquals(1, mManager.getBackgroundSessions().size());
 
         mManager.destroy();
