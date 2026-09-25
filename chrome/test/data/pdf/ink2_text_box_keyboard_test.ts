@@ -531,6 +531,11 @@ chrome.test.runTests([
     chrome.test.assertFalse(
         manager.getCurrentTextAttributes().styles[TextStyle.STRIKETHROUGH]);
 
+    keyDownOn(textbox, 0, getCtrlModifier(), 'u');
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.UNDERLINE]);
+
     chrome.test.succeed();
   },
 
@@ -607,6 +612,30 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertFalse(
         manager.getCurrentTextAttributes().styles[TextStyle.STRIKETHROUGH]);
+
+    chrome.test.succeed();
+  },
+
+  async function testUnderlineShortcut() {
+    const {textbox, manager} = await setupTextBoxTest();
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+
+    // Initial style is not underline.
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.UNDERLINE]);
+
+    // Ctrl+U on the textarea should toggle underline on.
+    keyDownOn(textbox.$.textbox, 0, getCtrlModifier(), 'u');
+    await microtasksFinished();
+    chrome.test.assertTrue(
+        manager.getCurrentTextAttributes().styles[TextStyle.UNDERLINE]);
+
+    // Ctrl+U on the textarea again should toggle underline off.
+    keyDownOn(textbox.$.textbox, 0, getCtrlModifier(), 'u');
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.UNDERLINE]);
 
     chrome.test.succeed();
   },

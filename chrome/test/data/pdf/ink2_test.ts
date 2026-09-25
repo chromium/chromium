@@ -482,8 +482,8 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Test bold, italic, and strikethrough keyboard shortcuts toggle styles in
-  // text mode.
+  // Test bold, italic, strikethrough, and underline keyboard shortcuts toggle
+  // styles in text mode.
   async function testTextAnnotationStyleKeyboardShortcuts() {
     await enableTextAnnotations(true);
     await setAnnotationMode(AnnotationMode.OFF);
@@ -493,6 +493,7 @@ chrome.test.runTests([
     keyDownOn(viewer, 0, getCtrlModifier(), 'b');
     keyDownOn(viewer, 0, getCtrlModifier(), 'i');
     keyDownOn(viewer, 0, getStrikethroughModifiers(), getStrikethroughKey());
+    keyDownOn(viewer, 0, getCtrlModifier(), 'u');
     await microtasksFinished();
     chrome.test.assertFalse(
         manager.getCurrentTextAttributes().styles[TextStyle.BOLD]);
@@ -500,6 +501,8 @@ chrome.test.runTests([
         manager.getCurrentTextAttributes().styles[TextStyle.ITALIC]);
     chrome.test.assertFalse(
         manager.getCurrentTextAttributes().styles[TextStyle.STRIKETHROUGH]);
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.UNDERLINE]);
 
     // Enable text annotation mode.
     await setAnnotationMode(AnnotationMode.TEXT);
@@ -536,6 +539,17 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertFalse(
         manager.getCurrentTextAttributes().styles[TextStyle.STRIKETHROUGH]);
+
+    // Toggle underline on and off.
+    keyDownOn(viewer, 0, getCtrlModifier(), 'u');
+    await microtasksFinished();
+    chrome.test.assertTrue(
+        manager.getCurrentTextAttributes().styles[TextStyle.UNDERLINE]);
+
+    keyDownOn(viewer, 0, getCtrlModifier(), 'u');
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.UNDERLINE]);
 
     chrome.test.succeed();
   },

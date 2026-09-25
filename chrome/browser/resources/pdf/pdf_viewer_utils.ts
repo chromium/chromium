@@ -107,6 +107,8 @@ export function getTextStyleForShortcut(e: KeyboardEvent): TextStyle|null {
         return TextStyle.BOLD;
       case 'i':
         return TextStyle.ITALIC;
+      case 'u':
+        return TextStyle.UNDERLINE;
       default:
         return null;
     }

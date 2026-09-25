@@ -449,12 +449,24 @@ chrome.test.runTests([
         {bold: false, italic: true, strikethrough: false, underline: false};
     assertTextUpdate(8, expectedAttributes);
 
+    // Toggle underline style on.
+    manager.toggleTextStyle(TextStyle.UNDERLINE);
+    expectedAttributes.styles =
+        {bold: false, italic: true, strikethrough: false, underline: true};
+    assertTextUpdate(9, expectedAttributes);
+
+    // Toggle underline style off.
+    manager.toggleTextStyle(TextStyle.UNDERLINE);
+    expectedAttributes.styles =
+        {bold: false, italic: true, strikethrough: false, underline: false};
+    assertTextUpdate(10, expectedAttributes);
+
     // Set style to bold + italic explicitly.
     const boldItalic =
         {bold: true, italic: true, strikethrough: false, underline: false};
     manager.setTextStyles(boldItalic);
     expectedAttributes.styles = boldItalic;
-    assertTextUpdate(9, expectedAttributes);
+    assertTextUpdate(11, expectedAttributes);
 
     chrome.test.succeed();
   },
