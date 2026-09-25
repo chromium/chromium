@@ -100,19 +100,16 @@ ActorTask::ActorTask(ActorTaskId task_id,
                      bool allow_incognito_web_states,
                      AggregatedJournal* journal,
                      ActorToolFactory* tool_factory,
-                     BrowserList* browser_list,
-                     origin_gating::OriginGatingChecker* gating_checker)
+                     BrowserList* browser_list)
     : task_id_(task_id),
       browser_list_(browser_list),
       title_(title),
       allow_incognito_web_states_(allow_incognito_web_states),
       journal_(journal),
-      tool_factory_(tool_factory),
-      gating_checker_(gating_checker) {
+      tool_factory_(tool_factory) {
   CHECK(journal);
   CHECK(tool_factory);
   CHECK(browser_list);
-  CHECK(gating_checker);
   // TODO(crbug.com/504704411): Allow incognito WebStates.
   CHECK(!allow_incognito_web_states_);
   engine_ = std::make_unique<ActorEngine>(/*execution_updates_delegate=*/this,
@@ -212,10 +209,13 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
 
     // Attach a policy decider to intercept and gate implicit navigations
     // (e.g., link clicks, redirects) against origin policies.
-    if (gating_checker_) {
+    if (engine_) {
       policy_deciders_[web_state->GetUniqueIdentifier()] =
           std::make_unique<ActorWebStatePolicyDecider>(
-              web_state, gating_checker_, task_id_,
+              web_state,
+              tool_factory_->profile_context_resolver()
+                  .GetOriginGatingService(),
+              engine_->GetOriginGatingCheckerId(), task_id_,
               base::BindRepeating(&ActorTask::OnNavigationBlocked,
                                   weak_ptr_factory_.GetWeakPtr()));
     }
@@ -647,9 +647,5 @@ void ActorTask::OnHeartbeatPingResponse(web::WebStateID web_state_id,
   }
 }
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-
-origin_gating::OriginGatingChecker* ActorTask::GetOriginGatingChecker() const {
-  return gating_checker_;
-}
 
 }  // namespace actor

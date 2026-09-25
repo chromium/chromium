@@ -78,9 +78,8 @@ void FakeToolDelegate::InterruptFromTool() {}
 
 void FakeToolDelegate::UninterruptFromTool() {}
 
-origin_gating::OriginGatingChecker* FakeToolDelegate::GetOriginGatingChecker()
-    const {
-  return gating_checker_;
+origin_gating::CheckerId FakeToolDelegate::GetOriginGatingCheckerId() const {
+  return gating_checker_id_;
 }
 
 void FakeToolDelegate::SetWebStateListForWindowId(

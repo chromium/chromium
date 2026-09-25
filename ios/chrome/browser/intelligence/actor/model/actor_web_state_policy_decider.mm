@@ -14,11 +14,13 @@ namespace actor {
 
 ActorWebStatePolicyDecider::ActorWebStatePolicyDecider(
     web::WebState* web_state,
-    origin_gating::OriginGatingChecker* gating_checker,
+    origin_gating::OriginGatingService* gating_service,
+    origin_gating::CheckerId gating_checker_id,
     ActorTaskId task_id,
     NavigationBlockedCallback navigation_blocked_callback)
     : web::WebStatePolicyDecider(web_state),
-      gating_checker_(gating_checker),
+      gating_service_(gating_service),
+      gating_checker_id_(gating_checker_id),
       navigation_blocked_callback_(std::move(navigation_blocked_callback)) {}
 
 ActorWebStatePolicyDecider::~ActorWebStatePolicyDecider() = default;
@@ -55,8 +57,12 @@ void ActorWebStatePolicyDecider::ShouldAllowRequest(
     return;
   }
 
+  origin_gating::OriginGatingChecker* gating_checker =
+      gating_service_ ? gating_service_->GetChecker(gating_checker_id_)
+                      : nullptr;
+
   // Feature is enabled: checker is required. Fail closed if missing.
-  if (!gating_checker_) {
+  if (!gating_checker) {
     std::move(callback).Run(PolicyDecision::Cancel());
     if (navigation_blocked_callback_) {
       navigation_blocked_callback_.Run(
@@ -69,7 +75,7 @@ void ActorWebStatePolicyDecider::ShouldAllowRequest(
       web_state() ? web_state()->GetLastCommittedURL() : GURL();
   auto context = std::make_unique<origin_gating::GatingDecisionContext>();
 
-  gating_checker_->ComputeGatingDecision(
+  gating_checker->ComputeGatingDecision(
       std::move(context), origin_gating::GateableEvent::kNavigationRequest,
       source_url, destination_url,
       base::BindOnce(&ActorWebStatePolicyDecider::OnGatingDecisionComputed,

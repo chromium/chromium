@@ -191,8 +191,8 @@ class ToolControllerTest : public PlatformTest, public ToolDelegate {
   }
   void InterruptFromTool() override {}
   void UninterruptFromTool() override {}
-  origin_gating::OriginGatingChecker* GetOriginGatingChecker() const override {
-    return nullptr;
+  origin_gating::CheckerId GetOriginGatingCheckerId() const override {
+    return origin_gating::CheckerId();
   }
 
   base::test::TaskEnvironment task_environment_{

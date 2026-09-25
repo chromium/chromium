@@ -38,6 +38,10 @@ class ActorToolFactory {
   virtual std::vector<optimization_guide::proto::Action::ActionCase>
   GetSupportedCapabilities() const;
 
+  const ProfileContextResolver& profile_context_resolver() const {
+    return profile_context_resolver_;
+  }
+
  private:
   // A utility class to let tools get data associated with the `ProfileIOS`.
   ProfileContextResolver profile_context_resolver_;

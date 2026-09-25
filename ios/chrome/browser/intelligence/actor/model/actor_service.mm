@@ -12,11 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/actor/core/aggregated_journal.h"
-#import "components/actor/core/safety_list_manager.h"
-#import "components/origin_gating/core/origin_gating_configuration.h"
-#import "components/origin_gating/core/types.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
-#import "ios/chrome/browser/intelligence/actor/model/actor_origin_gating_checker_delegate_ios.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
@@ -46,44 +42,13 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_utils.h"
 #endif
 
-namespace {
-
-// Evaluates the destination against the Actor Safety List component data.
-origin_gating::Decision EvaluateSafetyListPredicate(
-    origin_gating::GatingDecisionContext* context,
-    const GURL& source,
-    const GURL& destination) {
-  actor::SafetyListManager* safety_list_manager =
-      actor::SafetyListManager::GetInstance();
-  if (!safety_list_manager) {
-    return origin_gating::Decision::kNoDecision;
-  }
-
-  const GURL& effective_source = source.is_empty() ? destination : source;
-  switch (safety_list_manager->Find(effective_source, destination)) {
-    case actor::SafetyListManager::Decision::kAllow:
-      return origin_gating::Decision::kAllowed;
-    case actor::SafetyListManager::Decision::kBlock:
-      return origin_gating::Decision::kBlocked;
-    case actor::SafetyListManager::Decision::kNone:
-      return origin_gating::Decision::kNoDecision;
-  }
-}
-
-}  // namespace
-
 namespace actor {
 
 ActorService::ActorService(ProfileIOS* profile)
     : profile_(profile),
       tool_factory_(std::make_unique<ActorToolFactory>(profile)),
-      journal_(std::make_unique<AggregatedJournal>()),
-      origin_gating_checker_(
-          std::make_unique<origin_gating::OriginGatingChecker>(
-              origin_gating_delegate_.GetWeakPtr(),
-              CreateOriginGatingConfig())) {
+      journal_(std::make_unique<AggregatedJournal>()) {
   CHECK(tool_factory_);
-  CHECK(origin_gating_checker_);
 }
 
 ActorService::~ActorService() {
@@ -92,6 +57,7 @@ ActorService::~ActorService() {
 
 void ActorService::Shutdown() {
   task_observers_.clear();
+  active_tasks_.clear();
 }
 
 ActorTaskId ActorService::CreateTask(const std::string& title,
@@ -102,7 +68,7 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
   auto task = std::make_unique<ActorTask>(
       task_id, title, allow_incognito_web_states, journal_.get(),
-      tool_factory_.get(), browser_list, origin_gating_checker_.get());
+      tool_factory_.get(), browser_list);
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   RegisterBackgroundTask(task.get());
@@ -265,10 +231,6 @@ void ActorService::AddControlledWebState(ActorTaskId task_id,
   if (it != active_tasks_.end()) {
     it->second->AddControlledWebState(web_state);
   }
-}
-
-origin_gating::OriginGatingChecker* ActorService::GetOriginGatingChecker() {
-  return origin_gating_checker_.get();
 }
 
 #pragma mark - Private
@@ -441,31 +403,5 @@ bool ActorService::RegisterBackgroundTask(ActorTask* task) {
   return true;
 }
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-
-// static
-origin_gating::OriginGatingConfiguration
-ActorService::CreateOriginGatingConfig() {
-  return origin_gating::OriginGatingConfiguration(
-      /*predicates=*/
-      {
-          origin_gating::PredicateConfiguration(
-              /*predicate=*/origin_gating::CustomPredicate(
-                  base::BindRepeating(&EvaluateSafetyListPredicate),
-                  ActorCustomPredicate::kSafetyList),
-              /*events=*/
-              {// Gate explicit navigation requests to prevent the actor from
-               // navigating to unapproved or dangerous destinations.
-               origin_gating::GateableEvent::kNavigationRequest,
-               // Gate navigations to prevent the actor from navigating to
-               // unapproved or dangerous destinations.
-               origin_gating::GateableEvent::kNavigationResponse,
-               // Gate user/actor page interactions (clicks, from inputs,
-               // etc.) within the loaded page.
-               origin_gating::GateableEvent::kPageAction}),
-      },
-      // Do not cache decisions per-site, as actor safety policies require
-      // re-evaluating each navigation and page action dynamically.
-      /*use_site_keyed_cache=*/false);
-}
 
 }  // namespace actor

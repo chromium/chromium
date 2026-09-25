@@ -11,12 +11,19 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/actor/public/mojom/actor_types.mojom-forward.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_origin_gating_checker_delegate_ios.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_id.h"
 
 @class ActorTaskInterventionHandler;
+
+namespace origin_gating {
+class OriginGatingChecker;
+class OriginGatingConfiguration;
+class OriginGatingRegistration;
+}  // namespace origin_gating
 
 namespace web {
 class WebState;
@@ -123,10 +130,16 @@ class ActorEngine : public ToolDelegate {
       int32_t window_id,
       const web::NavigationManager::WebLoadParams& load_params,
       bool in_background) override;
-  origin_gating::OriginGatingChecker* GetOriginGatingChecker() const override;
+  origin_gating::CheckerId GetOriginGatingCheckerId() const override;
+
+  // Returns the OriginGatingChecker instance for gating navigation actions.
+  origin_gating::OriginGatingChecker* GetOriginGatingChecker();
 
  private:
   friend class ActorEngineTest;
+
+  // Helper to build the configuration and custom predicates for the checker.
+  static origin_gating::OriginGatingConfiguration CreateOriginGatingConfig();
 
   // Executes the next action.
   void ExecuteNextAction();
@@ -195,6 +208,11 @@ class ActorEngine : public ToolDelegate {
 
   // The ActorTask that owns this ActorEngine.
   raw_ptr<ActorTask> owner_task_ = nullptr;
+
+  // Delegate and registration for origin gating.
+  ActorOriginGatingCheckerDelegateIOS origin_gating_delegate_;
+  std::unique_ptr<origin_gating::OriginGatingRegistration>
+      origin_gating_registration_;
 
   // The handler for form filling and login tasks.
   std::unique_ptr<ActorTaskFormFillingHandler> form_filling_handler_;

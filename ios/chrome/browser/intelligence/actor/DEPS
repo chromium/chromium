@@ -3,6 +3,7 @@ include_rules = [
   "+components/actor/public/mojom",
   "+components/origin_gating/core",
   "+ios/chrome/browser/app_bar/ui/app_bar_constants.h",
+  "+ios/chrome/browser/origin_gating/model",
   "+ios/chrome/browser/tab_insertion/model",
 
   # TODO(crbug.com/496196467): Invert dependencies on //ios/chrome/app/.

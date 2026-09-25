@@ -40,10 +40,6 @@ namespace web {
 class WebState;
 }
 
-namespace origin_gating {
-class OriginGatingChecker;
-}  // namespace origin_gating
-
 namespace actor {
 
 class ActorToolFactory;
@@ -62,8 +58,7 @@ class ActorTask : public web::WebStateObserver,
             bool allow_incognito_web_states,
             AggregatedJournal* journal,
             ActorToolFactory* tool_factory,
-            BrowserList* browser_list,
-            origin_gating::OriginGatingChecker* gating_checker);
+            BrowserList* browser_list);
   ~ActorTask() override;
 
   ActorTask(const ActorTask&) = delete;
@@ -153,10 +148,6 @@ class ActorTask : public web::WebStateObserver,
   void SetBackgroundTaskContext(
       BackgroundContinuedProcessingTaskContext* background_task_context);
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-
-  // Returns the origin gating checker used for evaluating navigation and
-  // actuation policies, or nullptr if unavailable.
-  origin_gating::OriginGatingChecker* GetOriginGatingChecker() const;
 
   // web::WebStateObserver overrides.
   void DidStopLoading(web::WebState* web_state) override;
@@ -270,11 +261,6 @@ class ActorTask : public web::WebStateObserver,
   // The tool factory used for creating tools under this task. Owned by the
   // ActorService, which is guaranteed to outlive this ActorTask.
   raw_ptr<ActorToolFactory> tool_factory_;
-
-  // The origin gating checker used for evaluating navigation and actuation
-  // policies. Owned by ActorService, which is guaranteed to outlive this
-  // ActorTask.
-  raw_ptr<origin_gating::OriginGatingChecker> gating_checker_ = nullptr;
 
   // Set of web states actively controlled (observed and/or being actuated on)
   // by this task.

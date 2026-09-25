@@ -11,11 +11,11 @@
 #import "base/memory/weak_ptr.h"
 #import "components/actor/public/mojom/actor_types.mojom-forward.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
+#import "components/origin_gating/core/origin_gating_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 
 namespace origin_gating {
-class OriginGatingChecker;
 struct GatingDecision;
 class GatingDecisionContext;
 }  // namespace origin_gating
@@ -32,7 +32,8 @@ class ActorWebStatePolicyDecider : public web::WebStatePolicyDecider {
  public:
   ActorWebStatePolicyDecider(
       web::WebState* web_state,
-      origin_gating::OriginGatingChecker* gating_checker,
+      origin_gating::OriginGatingService* gating_service,
+      origin_gating::CheckerId gating_checker_id,
       ActorTaskId task_id,
       NavigationBlockedCallback navigation_blocked_callback);
   ~ActorWebStatePolicyDecider() override;
@@ -53,7 +54,8 @@ class ActorWebStatePolicyDecider : public web::WebStatePolicyDecider {
       std::unique_ptr<origin_gating::GatingDecisionContext> context,
       origin_gating::GatingDecision decision);
 
-  raw_ptr<origin_gating::OriginGatingChecker> gating_checker_ = nullptr;
+  raw_ptr<origin_gating::OriginGatingService> gating_service_ = nullptr;
+  origin_gating::CheckerId gating_checker_id_;
   const ActorTaskId task_id_;
   NavigationBlockedCallback navigation_blocked_callback_;
 

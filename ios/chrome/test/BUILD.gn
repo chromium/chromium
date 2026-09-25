@@ -466,6 +466,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/omnibox/ui/popup:unit_tests",
     "//ios/chrome/browser/omnibox/ui/popup/carousel:unit_tests",
     "//ios/chrome/browser/optimization_guide/model:unit_tests",
+    "//ios/chrome/browser/origin_gating/model:unit_tests",
     "//ios/chrome/browser/overlays/model:unit_tests",
     "//ios/chrome/browser/overlays/model/public/common/confirmation:unit_tests",
     "//ios/chrome/browser/overlays/model/public/infobar_banner:unit_tests",

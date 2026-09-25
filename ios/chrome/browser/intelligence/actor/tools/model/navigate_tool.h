@@ -13,6 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "components/origin_gating/core/checker_id.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
 class GURL;
@@ -25,7 +26,7 @@ class WebState;
 
 namespace origin_gating {
 class GatingDecisionContext;
-class OriginGatingChecker;
+class OriginGatingService;
 struct GatingDecision;
 }  // namespace origin_gating
 
@@ -38,7 +39,8 @@ class NavigateTool : public ActorTool {
       base::WeakPtr<web::WebState> web_state,
       const optimization_guide::proto::NavigateAction& action,
       base::WeakPtr<UrlLoadingBrowserAgent> url_loader,
-      origin_gating::OriginGatingChecker* gating_checker);
+      origin_gating::OriginGatingService* gating_service,
+      origin_gating::CheckerId gating_checker_id);
 
   ~NavigateTool() override;
 
@@ -52,7 +54,8 @@ class NavigateTool : public ActorTool {
   NavigateTool(base::WeakPtr<web::WebState> web_state,
                std::optional<std::string> url,
                base::WeakPtr<UrlLoadingBrowserAgent> url_loader,
-               origin_gating::OriginGatingChecker* gating_checker);
+               origin_gating::OriginGatingService* gating_service,
+               origin_gating::CheckerId gating_checker_id);
 
   void OnGatingDecisionComputed(
       const GURL& destination_url,
@@ -64,7 +67,8 @@ class NavigateTool : public ActorTool {
   std::optional<std::string> url_;
   base::WeakPtr<web::WebState> web_state_;
   base::WeakPtr<UrlLoadingBrowserAgent> url_loader_;
-  raw_ptr<origin_gating::OriginGatingChecker> gating_checker_ = nullptr;
+  raw_ptr<origin_gating::OriginGatingService> gating_service_ = nullptr;
+  origin_gating::CheckerId gating_checker_id_;
 
   base::WeakPtrFactory<NavigateTool> weak_ptr_factory_{this};
 };

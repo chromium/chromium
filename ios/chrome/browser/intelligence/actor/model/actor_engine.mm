@@ -7,10 +7,16 @@
 #import "base/check_op.h"
 #import "base/functional/bind.h"
 #import "base/strings/stringprintf.h"
+#import "components/actor/core/safety_list_manager.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
+#import "components/origin_gating/core/origin_gating_checker.h"
+#import "components/origin_gating/core/origin_gating_configuration.h"
+#import "components/origin_gating/core/origin_gating_registration.h"
+#import "components/origin_gating/core/origin_gating_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task_intervention_handler.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_task_form_filling_handler.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
@@ -19,6 +25,28 @@
 namespace actor {
 
 namespace {
+
+// Evaluates the destination against the Actor Safety List component data.
+origin_gating::Decision EvaluateSafetyListPredicate(
+    origin_gating::GatingDecisionContext* context,
+    const GURL& source,
+    const GURL& destination) {
+  actor::SafetyListManager* safety_list_manager =
+      actor::SafetyListManager::GetInstance();
+  if (!safety_list_manager) {
+    return origin_gating::Decision::kNoDecision;
+  }
+
+  const GURL& effective_source = source.is_empty() ? destination : source;
+  switch (safety_list_manager->Find(effective_source, destination)) {
+    case actor::SafetyListManager::Decision::kAllow:
+      return origin_gating::Decision::kAllowed;
+    case actor::SafetyListManager::Decision::kBlock:
+      return origin_gating::Decision::kBlocked;
+    case actor::SafetyListManager::Decision::kNone:
+      return origin_gating::Decision::kNoDecision;
+  }
+}
 
 // Returns the string representation of the ActorEngine::State.
 std::string ActorEngineStateToString(ActorEngine::State state) {
@@ -91,6 +119,14 @@ ActorEngine::ActorEngine(ExecutionUpdatesDelegate* execution_updates_delegate,
       owner_task_(owner_task) {
   CHECK(execution_updates_delegate_);
   CHECK(owner_task_);
+  origin_gating::OriginGatingService* origin_gating_service =
+      owner_task_->GetToolFactory()
+          .profile_context_resolver()
+          .GetOriginGatingService();
+  CHECK(origin_gating_service);
+  origin_gating_registration_ = origin_gating_service->CreateAndRegisterChecker(
+      origin_gating_delegate_.GetWeakPtr(), CreateOriginGatingConfig());
+  CHECK(origin_gating_registration_);
 }
 
 ActorEngine::~ActorEngine() = default;
@@ -188,13 +224,42 @@ web::WebState* ActorEngine::InsertWebState(
   return owner_task_->InsertWebState(window_id, load_params, in_background);
 }
 
-origin_gating::OriginGatingChecker* ActorEngine::GetOriginGatingChecker()
-    const {
-  CHECK(owner_task_);
-  return owner_task_->GetOriginGatingChecker();
+origin_gating::CheckerId ActorEngine::GetOriginGatingCheckerId() const {
+  return origin_gating_registration_->id();
+}
+
+origin_gating::OriginGatingChecker* ActorEngine::GetOriginGatingChecker() {
+  return origin_gating_registration_->service().GetChecker(
+      origin_gating_registration_->id());
 }
 
 #pragma mark - Private
+
+// static
+origin_gating::OriginGatingConfiguration
+ActorEngine::CreateOriginGatingConfig() {
+  return origin_gating::OriginGatingConfiguration(
+      /*predicates=*/
+      {
+          origin_gating::PredicateConfiguration(
+              /*predicate=*/origin_gating::CustomPredicate(
+                  base::BindRepeating(&EvaluateSafetyListPredicate),
+                  ActorCustomPredicate::kSafetyList),
+              /*events=*/
+              {// Gate explicit navigation requests to prevent the actor from
+               // navigating to unapproved or dangerous destinations.
+               origin_gating::GateableEvent::kNavigationRequest,
+               // Gate navigations to prevent the actor from navigating to
+               // unapproved or dangerous destinations.
+               origin_gating::GateableEvent::kNavigationResponse,
+               // Gate user/actor page interactions (clicks, from inputs,
+               // etc.) within the loaded page.
+               origin_gating::GateableEvent::kPageAction}),
+      },
+      // Do not cache decisions per-site, as actor safety policies require
+      // re-evaluating each navigation and page action dynamically.
+      /*use_site_keyed_cache=*/false);
+}
 
 void ActorEngine::ExecuteNextAction() {
   if (next_action_index_ >= action_sequence_.size()) {

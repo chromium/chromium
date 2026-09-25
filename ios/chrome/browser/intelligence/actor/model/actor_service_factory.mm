@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/origin_gating/model/origin_gating_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -27,6 +28,7 @@ ActorServiceFactory::ActorServiceFactory()
     : ProfileKeyedServiceFactoryIOS("ActorService",
                                     ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(BrowserListFactory::GetInstance());
+  DependsOn(origin_gating::OriginGatingServiceFactory::GetInstance());
 }
 
 ActorServiceFactory::~ActorServiceFactory() {}

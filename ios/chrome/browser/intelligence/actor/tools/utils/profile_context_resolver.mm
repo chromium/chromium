@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_browser_utils.h"
+#import "ios/chrome/browser/origin_gating/model/origin_gating_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -78,6 +79,12 @@ ProfileContextResolver::ResolveTab(int32_t tab_id) const {
   result.web_state = web_state->GetWeakPtr();
   result.web_state_list = web_state_list->AsWeakPtr();
   return result;
+}
+
+origin_gating::OriginGatingService*
+ProfileContextResolver::GetOriginGatingService() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return origin_gating::OriginGatingServiceFactory::GetForProfile(profile_);
 }
 
 }  // namespace actor

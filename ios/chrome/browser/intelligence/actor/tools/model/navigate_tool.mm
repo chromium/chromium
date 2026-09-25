@@ -11,6 +11,7 @@
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
+#import "components/origin_gating/core/origin_gating_service.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -26,13 +27,14 @@ std::unique_ptr<NavigateTool> NavigateTool::Create(
     base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::NavigateAction& action,
     base::WeakPtr<UrlLoadingBrowserAgent> url_loader,
-    origin_gating::OriginGatingChecker* gating_checker) {
+    origin_gating::OriginGatingService* gating_service,
+    origin_gating::CheckerId gating_checker_id) {
   std::optional<std::string> url = std::nullopt;
   if (action.has_url()) {
     url = action.url();
   }
-  return std::unique_ptr<NavigateTool>(
-      new NavigateTool(web_state, url, url_loader, gating_checker));
+  return std::unique_ptr<NavigateTool>(new NavigateTool(
+      web_state, url, url_loader, gating_service, gating_checker_id));
 }
 
 void NavigateTool::Validate(ToolExecutionCallback callback) {
@@ -47,11 +49,13 @@ void NavigateTool::Validate(ToolExecutionCallback callback) {
 NavigateTool::NavigateTool(base::WeakPtr<web::WebState> web_state,
                            std::optional<std::string> url,
                            base::WeakPtr<UrlLoadingBrowserAgent> url_loader,
-                           origin_gating::OriginGatingChecker* gating_checker)
+                           origin_gating::OriginGatingService* gating_service,
+                           origin_gating::CheckerId gating_checker_id)
     : url_(url),
       web_state_(web_state),
       url_loader_(url_loader),
-      gating_checker_(gating_checker) {}
+      gating_service_(gating_service),
+      gating_checker_id_(gating_checker_id) {}
 
 NavigateTool::~NavigateTool() = default;
 
@@ -86,11 +90,14 @@ void NavigateTool::Execute(ToolExecutionCallback callback) {
   }
 
   // Feature is enabled: checker is required.
-  CHECK(gating_checker_);
+  CHECK(gating_service_);
+  origin_gating::OriginGatingChecker* gating_checker =
+      gating_service_->GetChecker(gating_checker_id_);
+  CHECK(gating_checker);
 
   const GURL source_url = web_state_->GetLastCommittedURL();
   auto context = std::make_unique<origin_gating::GatingDecisionContext>();
-  gating_checker_->ComputeGatingDecision(
+  gating_checker->ComputeGatingDecision(
       std::move(context), origin_gating::GateableEvent::kNavigationRequest,
       source_url, destination_url,
       base::BindOnce(&NavigateTool::OnGatingDecisionComputed,

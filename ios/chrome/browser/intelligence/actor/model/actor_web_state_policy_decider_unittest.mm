@@ -10,6 +10,8 @@
 #import "base/test/test_future.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
 #import "components/origin_gating/core/origin_gating_configuration.h"
+#import "components/origin_gating/core/origin_gating_registration.h"
+#import "components/origin_gating/core/origin_gating_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -79,6 +81,14 @@ class ActorWebStatePolicyDeciderTest : public PlatformTest {
     web_state_ = std::make_unique<web::FakeWebState>();
   }
 
+  std::unique_ptr<origin_gating::OriginGatingRegistration>
+  CreateCheckerRegistration(TestOriginGatingCheckerDelegate& delegate) {
+    return gating_service_->CreateAndRegisterChecker(
+        delegate.GetWeakPtr(),
+        origin_gating::OriginGatingConfiguration(
+            /*predicates=*/{}, /*use_site_keyed_cache=*/false));
+  }
+
   web::WebStatePolicyDecider::RequestInfo CreateRequestInfo(
       bool target_frame_is_main = true,
       ui::PageTransition transition_type =
@@ -94,6 +104,8 @@ class ActorWebStatePolicyDeciderTest : public PlatformTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<origin_gating::OriginGatingService> gating_service_ =
+      origin_gating::OriginGatingService::CreateForTesting();
   std::unique_ptr<web::FakeWebState> web_state_;
 };
 
@@ -101,13 +113,12 @@ class ActorWebStatePolicyDeciderTest : public PlatformTest {
 // task.
 TEST_F(ActorWebStatePolicyDeciderTest, AllowsPermissibleNavigation) {
   TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/true);
-  origin_gating::OriginGatingChecker checker(
-      delegate.GetWeakPtr(),
-      origin_gating::OriginGatingConfiguration(
-          /*predicates=*/{}, /*use_site_keyed_cache=*/false));
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
 
   base::test::TestFuture<mojom::ActionResultCode> blocked_future;
-  ActorWebStatePolicyDecider decider(web_state_.get(), &checker, kTestTaskId,
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
                                      blocked_future.GetRepeatingCallback());
 
   NSURLRequest* request =
@@ -126,13 +137,12 @@ TEST_F(ActorWebStatePolicyDeciderTest, AllowsPermissibleNavigation) {
 // kBrowserFailure.
 TEST_F(ActorWebStatePolicyDeciderTest, CancelsBlockedNavigationAndReportsCode) {
   TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
-  origin_gating::OriginGatingChecker checker(
-      delegate.GetWeakPtr(),
-      origin_gating::OriginGatingConfiguration(
-          /*predicates=*/{}, /*use_site_keyed_cache=*/false));
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
 
   base::test::TestFuture<mojom::ActionResultCode> blocked_future;
-  ActorWebStatePolicyDecider decider(web_state_.get(), &checker, kTestTaskId,
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
                                      blocked_future.GetRepeatingCallback());
 
   NSURLRequest* request = [NSURLRequest
@@ -155,13 +165,12 @@ TEST_F(ActorWebStatePolicyDeciderTest, AllowsNavigationWhenFeatureDisabled) {
 
   // Even if the delegate would block, disabling the feature bypasses the check.
   TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
-  origin_gating::OriginGatingChecker checker(
-      delegate.GetWeakPtr(),
-      origin_gating::OriginGatingConfiguration(
-          /*predicates=*/{}, /*use_site_keyed_cache=*/false));
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
 
   base::test::TestFuture<mojom::ActionResultCode> blocked_future;
-  ActorWebStatePolicyDecider decider(web_state_.get(), &checker, kTestTaskId,
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
                                      blocked_future.GetRepeatingCallback());
 
   NSURLRequest* request = [NSURLRequest
@@ -180,7 +189,8 @@ TEST_F(ActorWebStatePolicyDeciderTest, AllowsNavigationWhenFeatureDisabled) {
 TEST_F(ActorWebStatePolicyDeciderTest, CancelsNavigationWhenCheckerIsNull) {
   base::test::TestFuture<mojom::ActionResultCode> blocked_future;
   ActorWebStatePolicyDecider decider(web_state_.get(),
-                                     /*gating_checker=*/nullptr, kTestTaskId,
+                                     /*gating_service=*/nullptr,
+                                     origin_gating::CheckerId(), kTestTaskId,
                                      blocked_future.GetRepeatingCallback());
 
   NSURLRequest* request = [NSURLRequest
@@ -199,13 +209,12 @@ TEST_F(ActorWebStatePolicyDeciderTest, CancelsNavigationWhenCheckerIsNull) {
 // Test that subframe navigations are allowed without gating.
 TEST_F(ActorWebStatePolicyDeciderTest, AllowsSubframeNavigation) {
   TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
-  origin_gating::OriginGatingChecker checker(
-      delegate.GetWeakPtr(),
-      origin_gating::OriginGatingConfiguration(
-          /*predicates=*/{}, /*use_site_keyed_cache=*/false));
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
 
   base::test::TestFuture<mojom::ActionResultCode> blocked_future;
-  ActorWebStatePolicyDecider decider(web_state_.get(), &checker, kTestTaskId,
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
                                      blocked_future.GetRepeatingCallback());
 
   NSURLRequest* request = [NSURLRequest
@@ -224,13 +233,12 @@ TEST_F(ActorWebStatePolicyDeciderTest, AllowsSubframeNavigation) {
 // Test that invalid URLs are rejected.
 TEST_F(ActorWebStatePolicyDeciderTest, CancelsInvalidUrl) {
   TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/true);
-  origin_gating::OriginGatingChecker checker(
-      delegate.GetWeakPtr(),
-      origin_gating::OriginGatingConfiguration(
-          /*predicates=*/{}, /*use_site_keyed_cache=*/false));
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
 
   base::test::TestFuture<mojom::ActionResultCode> blocked_future;
-  ActorWebStatePolicyDecider decider(web_state_.get(), &checker, kTestTaskId,
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
                                      blocked_future.GetRepeatingCallback());
 
   NSURLRequest* request =
@@ -249,13 +257,12 @@ TEST_F(ActorWebStatePolicyDeciderTest, CancelsInvalidUrl) {
 // even if the destination origin would otherwise be blocked.
 TEST_F(ActorWebStatePolicyDeciderTest, AllowsExplicitAutoToplevelNavigation) {
   TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
-  origin_gating::OriginGatingChecker checker(
-      delegate.GetWeakPtr(),
-      origin_gating::OriginGatingConfiguration(
-          /*predicates=*/{}, /*use_site_keyed_cache=*/false));
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
 
   base::test::TestFuture<mojom::ActionResultCode> blocked_future;
-  ActorWebStatePolicyDecider decider(web_state_.get(), &checker, kTestTaskId,
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
                                      blocked_future.GetRepeatingCallback());
 
   NSURLRequest* request = [NSURLRequest
@@ -278,13 +285,12 @@ TEST_F(ActorWebStatePolicyDeciderTest, AllowsExplicitAutoToplevelNavigation) {
 TEST_F(ActorWebStatePolicyDeciderTest,
        CancelsRedirectedAutoToplevelNavigation) {
   TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
-  origin_gating::OriginGatingChecker checker(
-      delegate.GetWeakPtr(),
-      origin_gating::OriginGatingConfiguration(/*predicates=*/{},
-                                               /*use_site_keyed_cache=*/false));
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      CreateCheckerRegistration(delegate);
 
   base::test::TestFuture<mojom::ActionResultCode> blocked_future;
-  ActorWebStatePolicyDecider decider(web_state_.get(), &checker, kTestTaskId,
+  ActorWebStatePolicyDecider decider(web_state_.get(), gating_service_.get(),
+                                     registration->id(), kTestTaskId,
                                      blocked_future.GetRepeatingCallback());
 
   NSURLRequest* request = [NSURLRequest

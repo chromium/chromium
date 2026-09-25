@@ -5,16 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_TOOL_DELEGATE_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_TOOL_DELEGATE_H_
 
+#import "components/origin_gating/core/checker_id.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 namespace web {
 class WebState;
 }  // namespace web
-
-namespace origin_gating {
-class OriginGatingChecker;
-}  // namespace origin_gating
 
 namespace actor {
 class ActorToolFactory;
@@ -62,10 +59,9 @@ class ToolDelegate {
       const web::NavigationManager::WebLoadParams& load_params,
       bool in_background) = 0;
 
-  // Returns the origin gating checker used for evaluating navigation and
-  // actuation policies, or nullptr if unavailable.
-  virtual origin_gating::OriginGatingChecker* GetOriginGatingChecker()
-      const = 0;
+  // Returns the origin gating checker ID used for evaluating navigation and
+  // actuation policies.
+  virtual origin_gating::CheckerId GetOriginGatingCheckerId() const = 0;
 };
 
 }  // namespace actor

@@ -6,6 +6,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/origin_gating/model/origin_gating_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -85,6 +86,14 @@ TEST_F(ProfileContextResolverTest, ResolveIncognitoTab) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kTabWentAway);
   EXPECT_FALSE(result.error().internal_code().has_value());
+}
+
+// Tests that GetOriginGatingService returns the OriginGatingService associated
+// with the profile.
+TEST_F(ProfileContextResolverTest, GetOriginGatingService) {
+  EXPECT_EQ(
+      resolver_->GetOriginGatingService(),
+      origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get()));
 }
 
 }  // namespace actor

@@ -12,10 +12,13 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
 #import "components/origin_gating/core/origin_gating_configuration.h"
+#import "components/origin_gating/core/origin_gating_registration.h"
+#import "components/origin_gating/core/origin_gating_service.h"
 #import "components/origin_gating/core/types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/origin_gating/model/origin_gating_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -105,14 +108,15 @@ class NavigateToolTest : public PlatformTest {
     UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())
         ->AddObserver(&url_loading_observer_);
     UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
-    default_gating_checker_ =
-        std::make_unique<origin_gating::OriginGatingChecker>(
-            default_gating_delegate_.GetWeakPtr(),
-            origin_gating::OriginGatingConfiguration(
-                {}, /*use_site_keyed_cache=*/false));
+    default_gating_registration_ =
+        origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get())
+            ->CreateAndRegisterChecker(default_gating_delegate_.GetWeakPtr(),
+                                       origin_gating::OriginGatingConfiguration(
+                                           {}, /*use_site_keyed_cache=*/false));
   }
 
   ~NavigateToolTest() override {
+    default_gating_registration_.reset();
     UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get())
         ->RemoveObserver(&url_loading_observer_);
   }
@@ -124,19 +128,22 @@ class NavigateToolTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   TestUrlLoadingObserver url_loading_observer_;
   TestOriginGatingCheckerDelegate default_gating_delegate_{/*is_allowed=*/true};
-  std::unique_ptr<origin_gating::OriginGatingChecker> default_gating_checker_;
+  std::unique_ptr<origin_gating::OriginGatingRegistration>
+      default_gating_registration_;
 
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
   CreateToolAndValidate(const optimization_guide::proto::NavigateAction& action,
                         web::WebState* web_state,
-                        std::optional<origin_gating::OriginGatingChecker*>
-                            gating_checker = std::nullopt) {
-    origin_gating::OriginGatingChecker* checker =
-        gating_checker.value_or(default_gating_checker_.get());
+                        std::optional<origin_gating::CheckerId>
+                            gating_checker_id = std::nullopt) {
+    origin_gating::CheckerId checker_id =
+        gating_checker_id.value_or(default_gating_registration_->id());
     std::unique_ptr<NavigateTool> tool = NavigateTool::Create(
         web_state ? web_state->GetWeakPtr() : nullptr, action,
         UrlLoadingBrowserAgent::FromBrowser(browser_.get())->AsWeakPtr(),
-        checker);
+        origin_gating::OriginGatingServiceFactory::GetForProfile(
+            profile_.get()),
+        checker_id);
     CHECK(tool);
     base::test::TestFuture<ToolExecutionResult> validate_future;
     tool->Validate(validate_future.GetCallback());
@@ -386,16 +393,18 @@ TEST_F(NavigateToolTest, Execute_OriginGatingBlocksNavigation) {
 
   // Delegate configured to block.
   TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
-  origin_gating::OriginGatingChecker checker(
-      delegate.GetWeakPtr(), origin_gating::OriginGatingConfiguration(
-                                 {}, /*use_site_keyed_cache=*/false));
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get())
+          ->CreateAndRegisterChecker(delegate.GetWeakPtr(),
+                                     origin_gating::OriginGatingConfiguration(
+                                         {}, /*use_site_keyed_cache=*/false));
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url("https://malicious.example.com/");
   action.mutable_navigate()->set_tab_id(tab_id);
 
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-      maybe_tool =
-          CreateToolAndValidate(action.navigate(), web_state_ptr, &checker);
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr,
+                                         registration->id());
   ASSERT_TRUE(maybe_tool.has_value());
 
   base::test::TestFuture<ToolExecutionResult> future;
@@ -424,17 +433,19 @@ TEST_F(NavigateToolTest, Execute_OriginGatingAllowsNavigation) {
 
   // Delegate configured to allow.
   TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/true);
-  origin_gating::OriginGatingChecker checker(
-      delegate.GetWeakPtr(), origin_gating::OriginGatingConfiguration(
-                                 {}, /*use_site_keyed_cache=*/false));
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get())
+          ->CreateAndRegisterChecker(delegate.GetWeakPtr(),
+                                     origin_gating::OriginGatingConfiguration(
+                                         {}, /*use_site_keyed_cache=*/false));
   const std::string kUrl = "https://safe.example.com/";
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
 
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-      maybe_tool =
-          CreateToolAndValidate(action.navigate(), web_state_ptr, &checker);
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr,
+                                         registration->id());
   ASSERT_TRUE(maybe_tool.has_value());
 
   base::test::TestFuture<ToolExecutionResult> future;
@@ -461,9 +472,11 @@ TEST_F(NavigateToolTest, Execute_OriginGatingFeatureDisabled_BypassesCheck) {
 
   // Delegate configured to block, but the feature flag is OFF.
   TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
-  origin_gating::OriginGatingChecker checker(
-      delegate.GetWeakPtr(), origin_gating::OriginGatingConfiguration(
-                                 {}, /*use_site_keyed_cache=*/false));
+  std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
+      origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get())
+          ->CreateAndRegisterChecker(delegate.GetWeakPtr(),
+                                     origin_gating::OriginGatingConfiguration(
+                                         {}, /*use_site_keyed_cache=*/false));
 
   const std::string kUrl = "https://example.com/";
   optimization_guide::proto::Action action;
@@ -471,8 +484,8 @@ TEST_F(NavigateToolTest, Execute_OriginGatingFeatureDisabled_BypassesCheck) {
   action.mutable_navigate()->set_tab_id(tab_id);
 
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-      maybe_tool =
-          CreateToolAndValidate(action.navigate(), web_state_ptr, &checker);
+      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr,
+                                         registration->id());
   ASSERT_TRUE(maybe_tool.has_value());
 
   base::test::TestFuture<ToolExecutionResult> future;
@@ -501,8 +514,9 @@ TEST_F(NavigateToolTest, Execute_MissingChecker_Crashes) {
   action.mutable_navigate()->set_tab_id(tab_id);
 
   base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-      maybe_tool = CreateToolAndValidate(action.navigate(), web_state_ptr,
-                                         /*gating_checker=*/nullptr);
+      maybe_tool = CreateToolAndValidate(
+          action.navigate(), web_state_ptr,
+          /*gating_checker_id=*/origin_gating::CheckerId());
   ASSERT_TRUE(maybe_tool.has_value());
 
   base::test::TestFuture<ToolExecutionResult> future;

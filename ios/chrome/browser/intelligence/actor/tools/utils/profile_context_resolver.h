@@ -15,6 +15,10 @@
 class ProfileIOS;
 class UrlLoadingBrowserAgent;
 
+namespace origin_gating {
+class OriginGatingService;
+}  // namespace origin_gating
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -45,6 +49,9 @@ class ProfileContextResolver {
   // Resolves the given `tab_id` to its associated objects.
   base::expected<TabResolutionResult, ToolExecutionResult> ResolveTab(
       int32_t tab_id) const;
+
+  // Returns the OriginGatingService associated with the profile.
+  origin_gating::OriginGatingService* GetOriginGatingService() const;
 
  private:
   // The ProfileIOS is guaranteed to outlive this resolver instance.
