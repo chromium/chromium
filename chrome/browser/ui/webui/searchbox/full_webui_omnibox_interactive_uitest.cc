@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -52,6 +53,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
@@ -2138,6 +2140,38 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
                                    "el => el.aimButtonVisible_", true)));
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       AlignmentMatchesLocationBar) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "el => !!el.shadowRoot.querySelector('#input')"),
+      Do([this]() {
+        auto* location_bar =
+            BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBar();
+        const gfx::Rect location_bar_bounds = location_bar->BoundsInScreen();
+        auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
+            location_bar->GetOmniboxPopupView());
+        auto* webui = popup_view->presenter()->GetWebUIContent();
+        content::EvalJsResult result =
+            content::EvalJs(webui->GetWebContents(), R"(
+              const r = document.querySelector('omnibox-full-app')
+                  ?.shadowRoot?.querySelector('omnibox-popup-searchbox')
+                  ?.shadowRoot?.querySelector('#input')?.getBoundingClientRect();
+              [r.x, r.y, r.width, r.height];
+            )");
+        const auto& rect = result.ExtractList();
+        const gfx::Point origin = webui->GetBoundsInScreen().origin();
+        EXPECT_EQ(std::round(origin.x() + rect[0].GetDouble()),
+                  location_bar_bounds.x());
+        EXPECT_EQ(std::round(origin.y() + rect[1].GetDouble()),
+                  location_bar_bounds.y());
+        EXPECT_EQ(std::round(rect[2].GetDouble()), location_bar_bounds.width());
+        EXPECT_EQ(std::round(rect[3].GetDouble()),
+                  location_bar_bounds.height());
+      }));
+}
 
 class FullWebUIOmniboxSimplificationInteractiveTest
     : public FullWebUIOmniboxAimInteractiveTestBase {

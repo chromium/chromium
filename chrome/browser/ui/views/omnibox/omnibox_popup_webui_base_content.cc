@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
+#include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -169,7 +170,10 @@ void OmniboxPopupWebUIBaseContent::OnLocationBarBoundsChanged() {
 
   int width =
       location_bar_width +
-      RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets().width();
+      (is_full_webui_omnibox()
+           ? FullWebUIOmniboxFrame::GetLocationBarAlignmentInsets().width()
+           : RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets()
+                 .width());
 
   if (popup_presenter_) {
     width = std::max(width, popup_presenter_->get_minimum_size().width());

@@ -150,6 +150,10 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
+      isMac_: {
+        type: Boolean,
+        reflect: true,
+      },
       /**
        * Whether this page, rather than the Views frame, paints the popup's
        * drop shadow. See `omnibox::kOmniboxFullWebUIShadow`.
@@ -263,6 +267,7 @@ export class OmniboxPopupSearchboxElement extends
   // TODO(b/519185419): Remove `isTouchUi_` property and from `loadTimeData` and
   // get layout constants and font sizes from a C++ layout helper instead.
   protected accessor isTouchUi_: boolean = loadTimeData.getBoolean('isTouchUi');
+  protected accessor isMac_: boolean = isMac;
   protected accessor webuiShadowEnabled_: boolean =
       loadTimeData.getBoolean('omniboxFullWebUIShadowEnabled');
   protected accessor searchboxDynamicColorScheme_: boolean =
