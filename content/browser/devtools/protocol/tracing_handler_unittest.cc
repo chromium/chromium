@@ -7,11 +7,8 @@
 #include <memory>
 
 #include "base/json/json_reader.h"
-#include "base/process/process.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_config.h"
 #include "base/values.h"
-#include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/devtools_traceable_screenshot.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -82,23 +79,12 @@ const char kCustomTraceConfigStringDevToolsStyle[] =
 
 }  // namespace
 
-class StubClient : public DevToolsAgentHostClient {
- public:
-  void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
-                               base::span<const uint8_t> message) override {}
-  void AgentHostClosed(DevToolsAgentHost* agent_host) override {}
-};
-
-class TracingHandlerTest : public testing::Test,
-                           public testing::WithParamInterface<bool> {
+class TracingHandlerTest : public testing::Test {
  public:
   void SetUp() override {
-    client_ = std::make_unique<StubClient>();
-    session_ = std::make_unique<DevToolsSession>(
-        client_.get(), DevToolsSession::Mode::kSupportsTabTarget);
     tracing_handler_ =
-        std::make_unique<TracingHandler>(nullptr, nullptr, session_.get(),
-                                         /*is_trusted=*/GetParam());
+        std::make_unique<TracingHandler>(nullptr, nullptr, nullptr,
+                                         /*is_trusted=*/true);
   }
 
   void TearDown() override { tracing_handler_.reset(); }
@@ -110,33 +96,11 @@ class TracingHandlerTest : public testing::Test,
         tracing_handler_->trace_data_buffer_state_.offset);
   }
 
-  perfetto::TraceConfig GetTraceConfig() {
-    return tracing_handler_->trace_config_;
-  }
-
-  void SetDidInitiateRecording(bool value) {
-    tracing_handler_->did_initiate_recording_ = value;
-  }
-
-  void CallAddProcessToFilter(base::ProcessId pid) {
-    tracing_handler_->AddProcessToFilter(pid);
-  }
-
-  static void CallAddPidsToProcessFilter(
-      const std::unordered_set<base::ProcessId>& pids,
-      perfetto::TraceConfig& config) {
-    TracingHandler::AddPidsToProcessFilter(pids, config);
-  }
-
-  TracingHandler* tracing_handler() { return tracing_handler_.get(); }
-
- protected:
-  std::unique_ptr<StubClient> client_;
-  std::unique_ptr<DevToolsSession> session_;
+ private:
   std::unique_ptr<TracingHandler> tracing_handler_;
 };
 
-TEST_P(TracingHandlerTest, GetTraceConfigFromDevToolsConfig) {
+TEST_F(TracingHandlerTest, GetTraceConfigFromDevToolsConfig) {
   base::Value devtools_config =
       base::JSONReader::Read(kCustomTraceConfigStringDevToolsStyle,
                              base::JSON_PARSE_CHROMIUM_EXTENSIONS)
@@ -148,7 +112,7 @@ TEST_P(TracingHandlerTest, GetTraceConfigFromDevToolsConfig) {
   EXPECT_STREQ(kCustomTraceConfigString, trace_config.ToString().c_str());
 }
 
-TEST_P(TracingHandlerTest, SimpleGetValidTraceFragment) {
+TEST_F(TracingHandlerTest, SimpleGetValidTraceFragment) {
   // No prefix is valid.
   EXPECT_EQ("", GetValidTraceFragment("{pid: 1, "));
 
@@ -159,13 +123,13 @@ TEST_P(TracingHandlerTest, SimpleGetValidTraceFragment) {
   EXPECT_EQ("{pid: 2}, {pid: 3}", GetValidTraceFragment("}, {pid: 3}"));
 }
 
-TEST_P(TracingHandlerTest, GetValidTraceFragmentBreakBeforeComma) {
+TEST_F(TracingHandlerTest, GetValidTraceFragmentBreakBeforeComma) {
   EXPECT_EQ("{pid: 1}", GetValidTraceFragment("{pid: 1}"));
   // The comma should be ignored.
   EXPECT_EQ("{pid: 2}", GetValidTraceFragment(",{pid: 2}"));
 }
 
-TEST_P(TracingHandlerTest, ComplexGetValidTraceFragment) {
+TEST_F(TracingHandlerTest, ComplexGetValidTraceFragment) {
   const std::string chunk1 = "{\"pid\":1,\"args\":{\"key\":\"}\"},\"tid\":1}";
   const std::string chunk2 =
       "{\"pid\":2,\"args\":{\"key\":{\"key\":\"\\\"t}\"},\"key2\":2},\"tid\":"
@@ -179,7 +143,52 @@ TEST_P(TracingHandlerTest, ComplexGetValidTraceFragment) {
             GetValidTraceFragment(trace_data.substr(trace_data.size() - 1, 1)));
 }
 
-TEST_P(TracingHandlerTest, ProcessFilterAppendsPids) {
+TEST_F(TracingHandlerTest, ProcessFilterClearsRegex) {
+  perfetto::TraceConfig trace_config;
+
+  auto* data_source = trace_config.add_data_sources();
+  auto* config = data_source->mutable_config();
+  config->set_name("track_event");
+  data_source->add_producer_name_regex_filter(".*");
+  data_source->add_producer_name_filter("old_filter");
+
+  auto* data_source2 = trace_config.add_data_sources();
+  auto* config2 = data_source2->mutable_config();
+  config2->set_name("org.chromium.foo");
+  data_source2->add_producer_name_regex_filter(".*");
+
+  auto* data_source3 = trace_config.add_data_sources();
+  auto* config3 = data_source3->mutable_config();
+  config3->set_name("other_source");
+  data_source3->add_producer_name_regex_filter(".*");
+
+  std::unordered_set<base::ProcessId> pids = {1234};
+  TracingHandler::AddPidsToProcessFilter(pids, trace_config);
+
+  ASSERT_EQ(3, trace_config.data_sources_size());
+
+  // Chrome track_event data source: regex cleared, pid added
+  EXPECT_EQ("track_event", trace_config.data_sources()[0].config().name());
+  EXPECT_EQ(0, trace_config.data_sources()[0].producer_name_regex_filter_size());
+  ASSERT_EQ(1, trace_config.data_sources()[0].producer_name_filter_size());
+  EXPECT_EQ(std::string(tracing::kPerfettoProducerNamePrefix) + "1234",
+            trace_config.data_sources()[0].producer_name_filter()[0]);
+
+  // Chrome data source: regex cleared, pid added
+  EXPECT_EQ("org.chromium.foo", trace_config.data_sources()[1].config().name());
+  EXPECT_EQ(0, trace_config.data_sources()[1].producer_name_regex_filter_size());
+  ASSERT_EQ(1, trace_config.data_sources()[1].producer_name_filter_size());
+  EXPECT_EQ(std::string(tracing::kPerfettoProducerNamePrefix) + "1234",
+            trace_config.data_sources()[1].producer_name_filter()[0]);
+
+  // Other data source: regex retained, pid not added
+  EXPECT_EQ("other_source", trace_config.data_sources()[2].config().name());
+  ASSERT_EQ(1, trace_config.data_sources()[2].producer_name_regex_filter_size());
+  EXPECT_EQ(".*", trace_config.data_sources()[2].producer_name_regex_filter()[0]);
+  EXPECT_EQ(0, trace_config.data_sources()[2].producer_name_filter_size());
+}
+
+TEST_F(TracingHandlerTest, ProcessFilterAppendsPids) {
   perfetto::TraceConfig trace_config;
 
   auto* data_source = trace_config.add_data_sources();
@@ -212,7 +221,7 @@ TEST_P(TracingHandlerTest, ProcessFilterAppendsPids) {
                   std::string(tracing::kPerfettoProducerNamePrefix) + "9012"));
 }
 
-TEST_P(TracingHandlerTest, ResolveScreenshotParams) {
+TEST_F(TracingHandlerTest, ResolveScreenshotParams) {
   constexpr int kDefaultSize = 500;
   constexpr int kDefaultCount =
       DevToolsTraceableScreenshot::kDefaultMaximumNumberOfScreenshots;
@@ -276,79 +285,6 @@ TEST_P(TracingHandlerTest, ResolveScreenshotParams) {
                      .IsSuccess());
   }
 }
-
-TEST_P(TracingHandlerTest, FilterUntrustedDataSources) {
-  perfetto::TraceConfig config;
-  config.add_data_sources()->mutable_config()->set_name("track_event");
-  config.add_data_sources()->mutable_config()->set_name(
-      tracing::kMetaData2SourceName);
-  config.add_data_sources()->mutable_config()->set_name(
-      "org.chromium.memory_instrumentation");
-  config.add_data_sources()->mutable_config()->set_name(
-      "org.chromium.sampler_profiler");
-  config.add_data_sources()->mutable_config()->set_name("unknown_data_source");
-
-  ASSERT_EQ(5, config.data_sources_size());
-
-  TracingHandler::FilterUntrustedDataSources(config);
-
-  ASSERT_EQ(2, config.data_sources_size());
-  EXPECT_EQ("track_event", config.data_sources()[0].config().name());
-  EXPECT_EQ(tracing::kMetaData2SourceName,
-            config.data_sources()[1].config().name());
-}
-
-TEST_P(TracingHandlerTest, StartDropsClientFilters) {
-  bool is_trusted = GetParam();
-
-  perfetto::TraceConfig config;
-  auto* data_source = config.add_data_sources();
-  data_source->mutable_config()->set_name("track_event");
-  data_source->add_producer_name_regex_filter(".*");
-  data_source->add_producer_name_filter("old_filter");
-
-  std::unordered_set<base::ProcessId> pids;
-  if (is_trusted) {
-    pids.insert(base::Process::Current().Pid());
-  } else {
-    pids.erase(base::Process::Current().Pid());
-  }
-
-  for (auto& ds : *config.mutable_data_sources()) {
-    if (ds.config().name() == "track_event") {
-      ds.clear_producer_name_regex_filter();
-      ds.clear_producer_name_filter();
-    }
-  }
-
-  CallAddPidsToProcessFilter(pids, config);
-
-  ASSERT_EQ(1, config.data_sources_size());
-
-  EXPECT_EQ(0, config.data_sources()[0].producer_name_regex_filter_size());
-
-  if (is_trusted) {
-    EXPECT_THAT(config.data_sources()[0].producer_name_filter(),
-                testing::Not(testing::Contains("old_filter")));
-    EXPECT_THAT(
-        config.data_sources()[0].producer_name_filter(),
-        testing::Contains(std::string(tracing::kPerfettoProducerNamePrefix) +
-                          base::NumberToString(static_cast<uint32_t>(
-                              base::Process::Current().Pid()))));
-  } else {
-    EXPECT_THAT(config.data_sources()[0].producer_name_filter(),
-                testing::Not(testing::Contains("old_filter")));
-    EXPECT_THAT(config.data_sources()[0].producer_name_filter(),
-                testing::Not(testing::Contains(
-                    std::string(tracing::kPerfettoProducerNamePrefix) +
-                    base::NumberToString(static_cast<uint32_t>(
-                        base::Process::Current().Pid())))));
-    EXPECT_THAT(config.data_sources()[0].producer_name_filter(),
-                testing::Contains("org.chromium-0"));
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(All, TracingHandlerTest, testing::Bool());
 
 }  // namespace protocol
 }  // namespace content

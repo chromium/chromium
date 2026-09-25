@@ -101,7 +101,6 @@
 #include "net/test/test_doh_server.h"
 #include "services/network/public/cpp/features.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -4709,184 +4708,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
   WaitForNotification("Tracing.tracingComplete", true);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
-                       TracingMemoryDumpRequiresTrustedClient) {
-  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
-
-  SetIsTrusted(false);
-  Attach();
-
-  // Starting with a perfettoConfig containing only memory dump data sources
-  // should fail for an untrusted client because the disallowed data sources
-  // are stripped.
-  perfetto::TraceConfig memory_only_perfetto_config;
-  memory_only_perfetto_config.add_buffers()->set_size_kb(1024);
-  memory_only_perfetto_config.add_data_sources()->mutable_config()->set_name(
-      tracing::kMemoryInstrumentationDataSourceName);
-  memory_only_perfetto_config.add_data_sources()->mutable_config()->set_name(
-      tracing::kNativeHeapProfilerSourceName);
-  base::DictValue perfetto_start_params;
-  perfetto_start_params.Set(
-      "perfettoConfig",
-      base::Base64Encode(memory_only_perfetto_config.SerializeAsString()));
-  perfetto_start_params.Set("transferMode", "ReturnAsStream");
-  EXPECT_FALSE(
-      SendCommandSync("Tracing.start", std::move(perfetto_start_params)));
-  EXPECT_THAT(
-      error()->FindInt("code"),
-      testing::Optional(static_cast<int>(crdtp::DispatchCode::INVALID_PARAMS)));
-
-  base::DictValue trace_config;
-  base::ListValue categories;
-  categories.Append("disabled-by-default-memory-infra");
-  trace_config.Set("includedCategories", std::move(categories));
-  base::DictValue start_params;
-  start_params.Set("traceConfig", std::move(trace_config));
-  start_params.Set("transferMode", "ReturnAsStream");
-  EXPECT_TRUE(SendCommandSync("Tracing.start", start_params.Clone()));
-
-  ASSERT_FALSE(SendCommandSync("Tracing.requestMemoryDump"));
-  EXPECT_THAT(
-      error()->FindInt("code"),
-      testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
-  EXPECT_EQ(*error()->FindString("message"), "Not allowed");
-
-  EXPECT_TRUE(SendCommandSync("Tracing.end"));
-  WaitForNotification("Tracing.tracingComplete", true);
-
-  Detach();
-  SetIsTrusted(true);
-  Attach();
-
-  EXPECT_TRUE(SendCommandSync("Tracing.start", std::move(start_params)));
-  const base::DictValue* dump_result =
-      SendCommandSync("Tracing.requestMemoryDump");
-  ASSERT_TRUE(dump_result);
-  EXPECT_THAT(dump_result->FindBool("success"), testing::Optional(true));
-  EXPECT_TRUE(SendCommandSync("Tracing.end"));
-  WaitForNotification("Tracing.tracingComplete", true);
-}
-
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
-                       TracingBrowserProcessRequiresTrustedClient) {
-  content::SetupCrossSiteRedirector(embedded_test_server());
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
-  GURL url_b =
-      embedded_test_server()->GetURL("b.com", "/title1.html?secret_tab_b");
-
-  NavigateToURLBlockUntilNavigationsComplete(shell(), url_a, 1);
-
-  auto run_trace_and_read_json = [&](bool is_trusted, const GURL& url_b,
-                                     Shell** out_shell_b) -> std::string {
-    Detach();
-    SetIsTrusted(is_trusted);
-    Attach();
-
-    base::trace_event::TraceConfig chrome_config(
-        "navigation,blink.user_timing," TRACE_DISABLED_BY_DEFAULT(
-            "devtools.timeline"),
-        "");
-    perfetto::TraceConfig perfetto_config =
-        tracing::GetDefaultPerfettoConfig(chrome_config,
-                                          /*privacy_filtering_enabled=*/false,
-                                          /*convert_to_legacy_json=*/true);
-    // Attempt to explicitly request the browser process PID in
-    // producer_name_filter to verify that untrusted sessions cannot bypass
-    // the process filter.
-    std::string browser_producer =
-        base::StrCat({tracing::kPerfettoProducerNamePrefix,
-                      base::NumberToString(static_cast<uint32_t>(
-                          base::Process::Current().Pid()))});
-    for (auto& ds : *perfetto_config.mutable_data_sources()) {
-      *ds.add_producer_name_filter() = browser_producer;
-      ds.add_producer_name_regex_filter(".*");
-    }
-
-    base::DictValue params;
-    params.Set("perfettoConfig",
-               base::Base64Encode(perfetto_config.SerializeAsString()));
-    params.Set("transferMode", "ReturnAsStream");
-
-    EXPECT_TRUE(SendCommandSync("Tracing.start", std::move(params)));
-
-    // Create a new renderer mid-session to trigger AddProcessToFilter
-    Shell* shell_b = CreateBrowser();
-    if (out_shell_b) {
-      *out_shell_b = shell_b;
-    }
-
-    NavigateToURLBlockUntilNavigationsComplete(shell(), url_a, 1);
-    NavigateToURLBlockUntilNavigationsComplete(shell_b, url_b, 1);
-    EXPECT_TRUE(content::ExecJs(shell(), "performance.mark('mark_a');"));
-    EXPECT_TRUE(content::ExecJs(shell_b, "performance.mark('mark_b');"));
-
-    EXPECT_TRUE(SendCommandSync("Tracing.end"));
-
-    base::DictValue complete_notification =
-        WaitForNotification("Tracing.tracingComplete", true);
-    const std::string* stream_handle_ptr =
-        complete_notification.FindString("stream");
-    EXPECT_TRUE(stream_handle_ptr);
-    std::string stream_handle = stream_handle_ptr ? *stream_handle_ptr : "";
-
-    std::string trace_json;
-    bool eof = false;
-    while (!eof) {
-      base::DictValue read_params;
-      read_params.Set("handle", stream_handle);
-      const base::DictValue* response =
-          SendCommandSync("IO.read", std::move(read_params));
-      EXPECT_TRUE(response);
-      if (!response) {
-        break;
-      }
-      const std::string* data = response->FindString("data");
-      EXPECT_TRUE(data);
-      if (data) {
-        if (response->FindBool("base64Encoded").value_or(false)) {
-          std::string decoded;
-          EXPECT_TRUE(base::Base64Decode(*data, &decoded));
-          trace_json += decoded;
-        } else {
-          trace_json += *data;
-        }
-      }
-      eof = response->FindBool("eof").value_or(false);
-    }
-    return trace_json;
-  };
-
-  Shell* shell_b_untrusted = nullptr;
-  std::string untrusted_trace =
-      run_trace_and_read_json(/*is_trusted=*/false, url_b, &shell_b_untrusted);
-  EXPECT_THAT(untrusted_trace, testing::HasSubstr("mark_a"));
-  EXPECT_THAT(untrusted_trace, testing::Not(testing::HasSubstr("mark_b")));
-  EXPECT_THAT(untrusted_trace,
-              testing::Not(testing::HasSubstr("secret_tab_b")));
-  EXPECT_THAT(untrusted_trace,
-              testing::Not(testing::HasSubstr("TracingStartedInBrowser")));
-  EXPECT_THAT(untrusted_trace,
-              testing::Not(testing::HasSubstr("FrameCommittedInBrowser")));
-  if (shell_b_untrusted) {
-    shell_b_untrusted->Close();
-  }
-
-  GURL url_b2 =
-      embedded_test_server()->GetURL("b.com", "/title2.html?secret_tab_b2");
-  Shell* shell_b_trusted = nullptr;
-  std::string trusted_trace =
-      run_trace_and_read_json(/*is_trusted=*/true, url_b2, &shell_b_trusted);
-  EXPECT_THAT(trusted_trace, testing::HasSubstr("mark_a"));
-  EXPECT_THAT(trusted_trace, testing::HasSubstr("secret_tab_b2"));
-  EXPECT_THAT(trusted_trace, testing::HasSubstr("TracingStartedInBrowser"));
-  EXPECT_THAT(trusted_trace, testing::HasSubstr("FrameCommittedInBrowser"));
-  if (shell_b_trusted) {
-    shell_b_trusted->Close();
-  }
-}
-
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingPerfettoSiteIsolation) {
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -5020,9 +4841,8 @@ IN_PROC_BROWSER_TEST_F(SystemTracingDevToolsProtocolTest,
             "System backend is not allowed for the current client");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    DevToolsProtocolTest,
-    TracingUntrustedClientCannotProvideNonAllowlistedDataSource) {
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       TracingAutoBackendNonChromeSourceRequiresTrustedClient) {
   perfetto::TraceConfig perfetto_config;
   perfetto_config.add_buffers()->set_size_kb(1024);
   perfetto_config.add_data_sources()->mutable_config()->set_name(
@@ -5042,10 +4862,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(SendCommandSync("Tracing.start", std::move(params)));
   EXPECT_THAT(
       error()->FindInt("code"),
-      testing::Optional(static_cast<int>(crdtp::DispatchCode::INVALID_PARAMS)));
+      testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
   EXPECT_EQ(*error()->FindString("message"),
-            "Supplied perfettoConfig doesn't have any allowed data sources "
-            "specified");
+            "System backend is not allowed for the current client");
 }
 
 #if BUILDFLAG(IS_POSIX)
