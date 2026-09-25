@@ -448,6 +448,15 @@ void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
       text_input_v3_
           ? connection_->window_manager()->GetCurrentTextInputFocusedWindow()
           : connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
+  if (!focused_window && text_input_v3_ && focused_ && window_) {
+    // The text input client may be focused before the compositor sends
+    // zwp_text_input_v3.enter (e.g. when the window regains focus). The cursor
+    // rect is still needed so that it can be sent along with the enable
+    // request, which resets all state on the compositor side. Compute it
+    // relative to the root window of this context, which is the surface that
+    // will receive text input focus.
+    focused_window = window_->GetRootParentWindow();
+  }
   if (!focused_window) {
     return;
   }

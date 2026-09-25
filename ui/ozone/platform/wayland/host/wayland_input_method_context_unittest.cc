@@ -439,6 +439,67 @@ TEST_F(WaylandInputMethodContextV3Test,
   });
 }
 
+// The cursor location may be set after the text input client is focused but
+// before zwp_text_input_v3.enter is received. It must be sent along with the
+// enable request since enable resets all state on the compositor side.
+TEST_F(WaylandInputMethodContextV3Test,
+       CursorLocationSetBeforeEnterSentOnEnable) {
+  constexpr gfx::Rect kCursorLocation(50, 20, 1, 1);
+  constexpr gfx::Rect kWindowBounds(20, 10, 100, 100);
+  constexpr gfx::Rect kExpectedRect(30, 10, 1, 1);
+  window_->SetBoundsInDIP(kWindowBounds);
+  connection_->window_manager()->SetTextInputFocusedWindow(nullptr);
+
+  LinuxInputMethodContext::TextInputClientAttributes attributes;
+  attributes.input_type = TEXT_INPUT_TYPE_TEXT;
+  input_method_context_->UpdateFocus(true, TEXT_INPUT_TYPE_NONE, attributes,
+                                     ui::TextInputClient::FOCUS_REASON_OTHER);
+  input_method_context_->SetCursorLocation(kCursorLocation);
+  connection_->Flush();
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->text_input_manager_v3()->text_input());
+  });
+
+  PostToServerAndWait([kExpectedRect](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input,
+                SetCursorRect(kExpectedRect.x(), kExpectedRect.y(),
+                              kExpectedRect.width(), kExpectedRect.height()))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  connection_->window_manager()->SetTextInputFocusedWindow(window_.get());
+  connection_->Flush();
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->text_input_manager_v3()->text_input());
+  });
+}
+
+// Without a focused text input client, the cursor location must not be cached
+// for a window that doesn't have text input focus.
+TEST_F(WaylandInputMethodContextV3Test,
+       CursorLocationIgnoredWithoutFocusedClient) {
+  connection_->window_manager()->SetTextInputFocusedWindow(nullptr);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*server->text_input_manager_v3()->text_input(),
+                SetCursorRect(_, _, _, _))
+        .Times(0);
+  });
+  input_method_context_->SetCursorLocation(gfx::Rect(50, 20, 1, 1));
+  connection_->Flush();
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->text_input_manager_v3()->text_input());
+  });
+}
+
 TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   // Activate is called only when both InputMethod's TextInputClient focus and
   // Wayland's keyboard focus is met.
