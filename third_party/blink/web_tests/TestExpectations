@@ -3185,7 +3185,7 @@ crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-r
 crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-signature_verification_error-downgraded.tentative.html [ Crash ]
 crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-signature_verification_error.tentative.html [ Crash ]
 crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_fetch_error-downgraded.tentative.html [ Timeout ]
-crbug.com/428744357 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/wheel.py [ Failure ]
+crbug.com/428744357 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/wheel.py [ Failure Pass Timeout ]
 crbug.com/428744357 [ Android ] external/wpt/webdriver/tests/classic/perform_actions/wheel.py [ Failure Timeout ]
 crbug.com/428759817 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-signature_verification_error-downgraded.tentative.html [ Crash ]
 crbug.com/425827681 [ Win11-arm64 ] external/wpt/cookies/attributes/max-age.html [ Crash ]
@@ -9186,3 +9186,7 @@ crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_with_auth/invalid.py [ Failure Pass ]
 crbug.com/559885106 [ Linux ] external/wpt/webdriver/tests/classic/new_session/unhandled_prompt_behavior.py [ Failure Pass ]
 crbug.com/560754596 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/key_events.py [ Failure Pass ]
+
+# Gardener 2026-09-25
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/coordinates.py [ Pass Timeout ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_modifier.py [ Failure Pass ]
