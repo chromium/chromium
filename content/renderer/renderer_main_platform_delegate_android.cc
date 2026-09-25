@@ -5,9 +5,8 @@
 #include "content/renderer/renderer_main_platform_delegate.h"
 
 #include "base/android/android_info.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/trace_event/trace_event.h"
 #include "base/system/sys_info.h"
+#include "base/trace_event/trace_event.h"
 #include "content/renderer/seccomp_sandbox_status_android.h"
 #include "sandbox/linux/seccomp-bpf-helpers/seccomp_starter_android.h"
 #include "sandbox/sandbox_buildflags.h"
@@ -70,9 +69,6 @@ bool RendererMainPlatformDelegate::EnableSandbox() {
   starter.StartSandbox();
 
   SetSeccompSandboxStatus(starter.status());
-  UMA_HISTOGRAM_ENUMERATION("Android.SeccompStatus.RendererSandbox",
-                            starter.status(),
-                            sandbox::SeccompSandboxStatus::STATUS_MAX);
 
   return true;
 }

@@ -467,14 +467,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetrics.java:AndroidSearchEngineChoiceEventsV2) -->
 
-<enum name="AndroidSeccompSandboxStatus">
-  <int value="0" label="Not Supported"/>
-  <int value="1" label="Detection Failed"/>
-  <int value="2" label="Feature Disabled"/>
-  <int value="3" label="Feature Enabled"/>
-  <int value="4" label="Sandbox Engaged"/>
-</enum>
-
 <!-- LINT.IfChange(AndroidSideUiResizeHandleTouchState) -->
 
 <enum name="AndroidSideUiResizeHandleTouchState">

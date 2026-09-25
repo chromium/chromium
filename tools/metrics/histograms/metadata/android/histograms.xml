@@ -5757,16 +5757,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.SeccompStatus.RendererSandbox"
-    enum="AndroidSeccompSandboxStatus" expires_after="2024-04-28">
-  <owner>rsesek@chromium.org</owner>
-  <summary>
-    Reports the status of the seccomp-bpf sandbox in renderer processes.
-    Anything other than &quot;Sandbox Engaged&quot; indicates the sandbox is not
-    turned on. See https://crbug.com/477049.
-  </summary>
-</histogram>
-
 <histogram name="Android.SelectFileDialogContentSelected"
     enum="SelectFileDialogContent" expires_after="2026-09-30">
   <owner>finnur@chromium.org</owner>
