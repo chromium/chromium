@@ -53,9 +53,6 @@ class CaptureButtonView : public views::View {
   std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
   GetHighlightableItems() const;
 
-  // views::View:
-  void OnThemeChanged() override;
-
  private:
   // Sets up the given `button`'s ink drop style and focus behavior.
   void SetupButton(views::Button* button);
