@@ -16,7 +16,7 @@
 #include "ui/decoration/decoration_source.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace ui::decoration {
 
@@ -47,8 +47,14 @@ class Decoration final : public ui::ImplicitAnimationObserver,
   // Moves and resizes the decoration layer to frame |content_bounds|.
   // This should be used to adjust the decoration's size and position (rather
   // than applying transformations to the `layer()` of this Decoration).
-  void SetContentBounds(const gfx::RRectF& content_bounds);
-  const gfx::RRectF& content_bounds() const { return content_bounds_; }
+  void SetContentBounds(const gfx::Rect& content_bounds);
+  const gfx::Rect& content_bounds() const { return content_bounds_; }
+
+  // Sets the radii of the corners of the content this decoration frames.
+  void SetRoundedCorners(const gfx::RoundedCornersF& rounded_corners);
+  const gfx::RoundedCornersF& rounded_corners() const {
+    return rounded_corners_;
+  }
 
   // ui::ImplicitAnimationObserver overrides:
   void OnImplicitAnimationsCompleted() override;
@@ -97,9 +103,10 @@ class Decoration final : public ui::ImplicitAnimationObserver,
   // Draws this decoration. Never null.
   const std::unique_ptr<DecorationSource> source_;
 
-  // Bounds of the content that the decoration encloses, carrying its corner
-  // radii clamped to fit.
-  gfx::RRectF content_bounds_;
+  // Bounds of the content that the decoration encloses, and the radii of that
+  // content's corners.
+  gfx::Rect content_bounds_;
+  gfx::RoundedCornersF rounded_corners_;
 
   // Currently active appearance set on `decoration_layer()`.
   std::optional<DecorationSource::Appearance> active_appearance_;

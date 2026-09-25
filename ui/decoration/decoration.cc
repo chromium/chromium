@@ -17,30 +17,25 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/geometry/rrect_f.h"
 
 namespace ui::decoration {
 
 namespace {
 
-// Returns `bounds` with each corner radius clamped to half of the smaller
-// dimension of its rect, as larger radii would produce invalid ninebox
+// Returns `rounded_corners` with each radius clamped to half of the smaller
+// dimension of `bounds`, as larger radii would produce invalid ninebox
 // geometry.
-gfx::RRectF ClampRadiiToBounds(const gfx::RRectF& bounds) {
-  const gfx::RectF rect = bounds.rect();
+gfx::RoundedCornersF ClampRadiiToBounds(
+    const gfx::Rect& bounds,
+    const gfx::RoundedCornersF& rounded_corners) {
   const float max_radius =
-      std::floor(std::min(rect.width(), rect.height()) / 2.0f);
-  const auto radius = [&bounds, max_radius](gfx::RRectF::Corner corner) {
-    return std::min(bounds.GetCornerRadii(corner).x(), max_radius);
-  };
-  return gfx::RRectF(
-      rect, gfx::RoundedCornersF(radius(gfx::RRectF::Corner::kUpperLeft),
-                                 radius(gfx::RRectF::Corner::kUpperRight),
-                                 radius(gfx::RRectF::Corner::kLowerRight),
-                                 radius(gfx::RRectF::Corner::kLowerLeft)));
+      std::floor(std::min(bounds.width(), bounds.height()) / 2.0f);
+  return gfx::RoundedCornersF(
+      std::min(rounded_corners.upper_left(), max_radius),
+      std::min(rounded_corners.upper_right(), max_radius),
+      std::min(rounded_corners.lower_right(), max_radius),
+      std::min(rounded_corners.lower_left(), max_radius));
 }
 
 }  // namespace
@@ -64,19 +59,27 @@ Decoration::Decoration(std::unique_ptr<DecorationSource> source)
 
 Decoration::~Decoration() = default;
 
-void Decoration::SetContentBounds(const gfx::RRectF& content_bounds) {
-  const gfx::RRectF clamped_content_bounds = ClampRadiiToBounds(content_bounds);
-
+void Decoration::SetContentBounds(const gfx::Rect& content_bounds) {
   // The layer's bounds should change with the content bounds accordingly. Need
   // to recalculate the layer bounds if the layer bounds were modified after the
   // content bounds were last set. When the window moves but doesn't change
   // size, this is a no-op. (The origin stays the same in this case.)
-  if (clamped_content_bounds == content_bounds_ &&
+  if (content_bounds == content_bounds_ &&
       layer()->bounds() == last_layer_bounds_) {
     return;
   }
 
-  content_bounds_ = clamped_content_bounds;
+  content_bounds_ = content_bounds;
+  UpdateAppearance();
+}
+
+void Decoration::SetRoundedCorners(
+    const gfx::RoundedCornersF& rounded_corners) {
+  if (rounded_corners == rounded_corners_) {
+    return;
+  }
+
+  rounded_corners_ = rounded_corners;
   UpdateAppearance();
 }
 
@@ -159,8 +162,11 @@ void Decoration::CrossFadeToNewAppearance(base::TimeDelta duration) {
 
 void Decoration::UpdateAppearanceImmediately() {
   const std::optional<DecorationSource::Details> details =
-      content_bounds_.IsEmpty() ? std::nullopt
-                                : source_->GetDetails(content_bounds_);
+      content_bounds_.IsEmpty()
+          ? std::nullopt
+          : source_->GetDetails(
+                content_bounds_,
+                ClampRadiiToBounds(content_bounds_, rounded_corners_));
 
   // Compare only the appearance, so geometry or occlusion changes don't
   // re-upload the image.
@@ -194,7 +200,7 @@ void Decoration::UpdateAppearanceImmediately() {
   // |content_bounds_|.
   const gfx::Insets margins =
       appearance.has_value() ? appearance->margins : gfx::Insets();
-  gfx::Rect new_layer_bounds = gfx::ToRoundedRect(content_bounds_.rect());
+  gfx::Rect new_layer_bounds = content_bounds_;
   new_layer_bounds.Inset(margins);
   gfx::Rect decoration_layer_bounds(new_layer_bounds.size());
 

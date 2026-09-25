@@ -16,7 +16,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ui::decoration {
@@ -35,13 +34,6 @@ DecorationSource::Details MakeDetails(int margin,
   };
 }
 
-// The content geometry formed by `rect` and `corners`.
-gfx::RRectF ContentBounds(
-    const gfx::Rect& rect,
-    const gfx::RoundedCornersF& corners = gfx::RoundedCornersF()) {
-  return gfx::RRectF(gfx::RectF(rect), corners);
-}
-
 class TestDecorationSource : public DecorationSource {
  public:
   DECLARE_SAFE_CAST_TARGET()
@@ -52,16 +44,19 @@ class TestDecorationSource : public DecorationSource {
   ~TestDecorationSource() override = default;
 
   std::optional<Details> GetDetails(
-      const gfx::RRectF& content_bounds) override {
+      const gfx::Rect& content_bounds,
+      const gfx::RoundedCornersF& rounded_corners) override {
     last_content_bounds_ = content_bounds;
+    last_rounded_corners_ = rounded_corners;
     return details_;
   }
 
   void set_details(std::optional<Details> details) {
     details_ = std::move(details);
   }
-  const gfx::RRectF& last_content_bounds() const {
-    return last_content_bounds_;
+  const gfx::Rect& last_content_bounds() const { return last_content_bounds_; }
+  const gfx::RoundedCornersF& last_rounded_corners() const {
+    return last_rounded_corners_;
   }
 
   void TriggerChanged(
@@ -71,7 +66,8 @@ class TestDecorationSource : public DecorationSource {
 
  private:
   std::optional<Details> details_;
-  gfx::RRectF last_content_bounds_;
+  gfx::Rect last_content_bounds_;
+  gfx::RoundedCornersF last_rounded_corners_;
 };
 
 DEFINE_SAFE_CAST_TARGET(TestDecorationSource)
@@ -97,8 +93,11 @@ class DecorationTest : public testing::Test {
   void set_details(std::optional<Details> details) {
     source().set_details(std::move(details));
   }
-  const gfx::RRectF& last_content_bounds() const {
+  const gfx::Rect& last_content_bounds() const {
     return source().last_content_bounds();
+  }
+  const gfx::RoundedCornersF& last_rounded_corners() const {
+    return source().last_rounded_corners();
   }
 
  private:
@@ -109,15 +108,16 @@ TEST_F(DecorationTest, BasicInitialization) {
   EXPECT_TRUE(decoration().layer());
   EXPECT_TRUE(decoration().decoration_layer_for_testing());
   EXPECT_FALSE(decoration().fading_layer_for_testing());
-  EXPECT_EQ(gfx::RRectF(), decoration().content_bounds());
+  EXPECT_EQ(gfx::Rect(), decoration().content_bounds());
+  EXPECT_EQ(gfx::RoundedCornersF(), decoration().rounded_corners());
 }
 
 TEST_F(DecorationTest, SetContentBoundsAndAppearance) {
   const gfx::Rect content_bounds(50, 50, 200, 200);
-  decoration().SetContentBounds(ContentBounds(content_bounds));
+  decoration().SetContentBounds(content_bounds);
 
-  EXPECT_EQ(ContentBounds(content_bounds), decoration().content_bounds());
-  EXPECT_EQ(ContentBounds(content_bounds), last_content_bounds());
+  EXPECT_EQ(content_bounds, decoration().content_bounds());
+  EXPECT_EQ(content_bounds, last_content_bounds());
 
   // Layer bounds are outset by margins (-10 -> +10 outwards).
   gfx::Rect expected_layer_bounds = content_bounds;
@@ -135,7 +135,7 @@ TEST_F(DecorationTest, EmptyContentBounds) {
 
   // Set non-empty content bounds.
   const gfx::Rect content_bounds(100, 100, 300, 300);
-  decoration().SetContentBounds(ContentBounds(content_bounds));
+  decoration().SetContentBounds(content_bounds);
   gfx::Rect expected_layer_bounds = content_bounds;
   expected_layer_bounds.Inset(gfx::Insets(-10));
   EXPECT_EQ(expected_layer_bounds, decoration().layer()->bounds());
@@ -143,13 +143,13 @@ TEST_F(DecorationTest, EmptyContentBounds) {
             decoration().decoration_layer_for_testing()->bounds().size());
 
   // Reset to empty content bounds. Layer bounds should collapse to empty.
-  decoration().SetContentBounds(ContentBounds(gfx::Rect()));
+  decoration().SetContentBounds(gfx::Rect());
   EXPECT_TRUE(decoration().content_bounds().IsEmpty());
   EXPECT_TRUE(decoration().layer()->bounds().IsEmpty());
   EXPECT_TRUE(decoration().decoration_layer_for_testing()->bounds().IsEmpty());
 
   // Restore non-empty content bounds.
-  decoration().SetContentBounds(ContentBounds(content_bounds));
+  decoration().SetContentBounds(content_bounds);
   EXPECT_EQ(expected_layer_bounds, decoration().layer()->bounds());
   EXPECT_EQ(expected_layer_bounds.size(),
             decoration().decoration_layer_for_testing()->bounds().size());
@@ -159,8 +159,8 @@ TEST_F(DecorationTest, EmptyContentBounds) {
 // bounds can reset the layer bounds.
 TEST_F(DecorationTest, ResetLayerBoundsBySettingSameContentBounds) {
   const gfx::Rect content_bounds(100, 100, 300, 300);
-  decoration().SetContentBounds(ContentBounds(content_bounds));
-  EXPECT_EQ(ContentBounds(content_bounds), decoration().content_bounds());
+  decoration().SetContentBounds(content_bounds);
+  EXPECT_EQ(content_bounds, decoration().content_bounds());
 
   const gfx::Rect layer_bounds = decoration().layer()->bounds();
 
@@ -170,12 +170,12 @@ TEST_F(DecorationTest, ResetLayerBoundsBySettingSameContentBounds) {
   EXPECT_EQ(decoration().layer()->bounds(), modified_bounds);
 
   // Reset layer bounds by setting the same content bounds.
-  decoration().SetContentBounds(ContentBounds(content_bounds));
+  decoration().SetContentBounds(content_bounds);
   EXPECT_EQ(layer_bounds, decoration().layer()->bounds());
 }
 
 TEST_F(DecorationTest, RecreateLayer) {
-  decoration().SetContentBounds(ContentBounds(gfx::Rect(0, 0, 100, 100)));
+  decoration().SetContentBounds(gfx::Rect(0, 0, 100, 100));
 
   ui::Layer* original_root_layer = decoration().layer();
   ASSERT_TRUE(original_root_layer);
@@ -186,19 +186,32 @@ TEST_F(DecorationTest, RecreateLayer) {
   EXPECT_EQ(gfx::Rect(-10, -10, 120, 120), decoration().layer()->bounds());
 }
 
-TEST_F(DecorationTest, RoundedContentBounds) {
-  const gfx::RRectF content_bounds = ContentBounds(
-      gfx::Rect(0, 0, 100, 100), gfx::RoundedCornersF(5, 10, 15, 20));
+TEST_F(DecorationTest, SetRoundedCorners) {
+  const gfx::Rect content_bounds(0, 0, 100, 100);
+  const gfx::RoundedCornersF rounded_corners(5, 10, 15, 20);
   decoration().SetContentBounds(content_bounds);
+  decoration().SetRoundedCorners(rounded_corners);
 
   EXPECT_EQ(content_bounds, decoration().content_bounds());
+  EXPECT_EQ(rounded_corners, decoration().rounded_corners());
   EXPECT_EQ(content_bounds, last_content_bounds());
+  EXPECT_EQ(rounded_corners, last_rounded_corners());
+}
+
+// The corner radii can be set before the content they belong to is known.
+TEST_F(DecorationTest, SetRoundedCornersBeforeContentBounds) {
+  const gfx::RoundedCornersF rounded_corners(5, 10, 15, 20);
+  decoration().SetRoundedCorners(rounded_corners);
+  decoration().SetContentBounds(gfx::Rect(0, 0, 100, 100));
+
+  EXPECT_EQ(rounded_corners, decoration().rounded_corners());
+  EXPECT_EQ(rounded_corners, last_rounded_corners());
 }
 
 TEST_F(DecorationTest, OcclusionRectTranslatedToLayerSpace) {
   // Content-relative occlusion: the content inset by 5 on every side.
   set_details(MakeDetails(10, gfx::Rect(5, 5, 90, 90)));
-  decoration().SetContentBounds(ContentBounds(gfx::Rect(50, 50, 100, 100)));
+  decoration().SetContentBounds(gfx::Rect(50, 50, 100, 100));
 
   // Margins are -10, so the content sits at (10, 10) within the layer.
   EXPECT_EQ(gfx::Rect(15, 15, 90, 90),
@@ -208,7 +221,7 @@ TEST_F(DecorationTest, OcclusionRectTranslatedToLayerSpace) {
 // The nine-patch image does not need re-uploading when only occlusion moves.
 TEST_F(DecorationTest, OcclusionChangesWithoutAppearanceChange) {
   set_details(MakeDetails(10, gfx::Rect(5, 5, 90, 90)));
-  decoration().SetContentBounds(ContentBounds(gfx::Rect(0, 0, 100, 100)));
+  decoration().SetContentBounds(gfx::Rect(0, 0, 100, 100));
 
   const gfx::Rect aperture =
       decoration().decoration_layer_for_testing()->aperture();
@@ -237,19 +250,18 @@ TEST(AppearanceTest, EqualityIgnoresOcclusionRect) {
 
 TEST_F(DecorationTest, SizeAdjustedRoundedCornersClamping) {
   // Content dimension is 40x40, max radius is 20.
-  const gfx::Rect content_bounds(0, 0, 40, 40);
-  decoration().SetContentBounds(
-      ContentBounds(content_bounds, gfx::RoundedCornersF(30, 10, 25, 5)));
+  const gfx::RoundedCornersF rounded_corners(30, 10, 25, 5);
+  decoration().SetContentBounds(gfx::Rect(0, 0, 40, 40));
+  decoration().SetRoundedCorners(rounded_corners);
 
-  // Radii too large for the content are clamped to fit it.
-  const gfx::RRectF clamped_bounds =
-      ContentBounds(content_bounds, gfx::RoundedCornersF(20, 10, 20, 5));
-  EXPECT_EQ(clamped_bounds, decoration().content_bounds());
-  EXPECT_EQ(clamped_bounds, last_content_bounds());
+  // Radii too large for the content are clamped to fit it when drawn, but the
+  // decoration holds on to the radii it was given.
+  EXPECT_EQ(rounded_corners, decoration().rounded_corners());
+  EXPECT_EQ(gfx::RoundedCornersF(20, 10, 20, 5), last_rounded_corners());
 }
 
 TEST_F(DecorationTest, CrossFade) {
-  decoration().SetContentBounds(ContentBounds(gfx::Rect(0, 0, 100, 100)));
+  decoration().SetContentBounds(gfx::Rect(0, 0, 100, 100));
 
   EXPECT_FALSE(decoration().fading_layer_for_testing());
   source().TriggerChanged(base::Milliseconds(100));
@@ -264,7 +276,7 @@ TEST_F(DecorationTest, CrossFade) {
 
 TEST_F(DecorationTest, NulloptDetailsResetsDecorationLayer) {
   const gfx::Rect content_bounds(0, 0, 100, 100);
-  decoration().SetContentBounds(ContentBounds(content_bounds));
+  decoration().SetContentBounds(content_bounds);
 
   // Layer bounds initially outset by margins (-10 -> +10 outwards).
   gfx::Rect expected_layer_bounds = content_bounds;
@@ -285,7 +297,7 @@ TEST_F(DecorationTest, NulloptDetailsResetsDecorationLayer) {
 }
 
 TEST_F(DecorationTest, NulloptDetailsWithFadingLayer) {
-  decoration().SetContentBounds(ContentBounds(gfx::Rect(0, 0, 100, 100)));
+  decoration().SetContentBounds(gfx::Rect(0, 0, 100, 100));
 
   source().TriggerChanged(base::Milliseconds(100));
   ASSERT_TRUE(decoration().fading_layer_for_testing());
@@ -304,7 +316,7 @@ TEST_F(DecorationTest, NulloptDetailsWithFadingLayer) {
 
 TEST_F(DecorationTest, NotifyDecorationChanged) {
   const gfx::Rect content_bounds(0, 0, 100, 100);
-  decoration().SetContentBounds(ContentBounds(content_bounds));
+  decoration().SetContentBounds(content_bounds);
 
   set_details(MakeDetails(20));
   source().TriggerChanged();

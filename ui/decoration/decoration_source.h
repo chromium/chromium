@@ -13,7 +13,7 @@
 #include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ui::decoration {
@@ -84,11 +84,13 @@ class DecorationSource : public ui::SafeCastable {
 
   ~DecorationSource() override;
 
-  // Returns the active decoration details for the given content bounds, whose
-  // corner radii have already been clamped to fit the content size. Returns
-  // std::nullopt if no decoration should be drawn.
+  // Returns the active decoration details for content occupying
+  // `content_bounds` with corners of `rounded_corners`, which have already
+  // been clamped to fit the content size. Returns std::nullopt if no
+  // decoration should be drawn.
   virtual std::optional<Details> GetDetails(
-      const gfx::RRectF& content_bounds) = 0;
+      const gfx::Rect& content_bounds,
+      const gfx::RoundedCornersF& rounded_corners) = 0;
 
   void set_details_changed_callback(OnDetailsChangedCallback callback) {
     on_details_changed_callback_ = std::move(callback);
