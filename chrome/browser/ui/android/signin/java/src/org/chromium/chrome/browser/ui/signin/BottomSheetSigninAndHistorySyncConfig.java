@@ -10,8 +10,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.lang.annotation.Retention;
@@ -175,14 +173,11 @@ public final class BottomSheetSigninAndHistorySyncConfig {
         assert bottomSheetStrings != null;
         assert historySyncConfig != null;
         if (withAccountSigninMode == WithAccountSigninMode.SEAMLESS_SIGNIN) {
-            assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
             assert selectedCoreAccountId != null
                     : "Must provide a nonnullable CoreAccountId for seamless sign-in flow";
             assert shouldShowSigninSnackbar
                     : "Must enable sign-in snackbar for seamless sign-in flow";
         }
-        assert !shouldShowSigninSnackbar
-                || SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
         this.bottomSheetStrings = bottomSheetStrings;
         this.historySyncConfig = historySyncConfig;
         this.noAccountSigninMode = noAccountSigninMode;

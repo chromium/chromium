@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivity;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
@@ -431,7 +430,6 @@ public class SigninButtonCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     // TODO(crbug.com/551756560): Once SIGNIN_BUTTON_PROFILE_MENU is launched, restrict
     // this test by form factor instead of disabling the flag.
     @DisableFeatures(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)
@@ -447,30 +445,6 @@ public class SigninButtonCoordinatorTest {
                         withId(R.id.account_picker_header_title),
                         withText(R.string.signin_account_picker_bottom_sheet_title)));
         pressBack();
-    }
-
-    @Test
-    @MediumTest
-    // TODO(crbug.com/551756560): Once SIGNIN_BUTTON_PROFILE_MENU is launched, restrict
-    // this test by form factor instead of disabling the flag.
-    @DisableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU
-    })
-    public void testClickSigninButton_SignedOut_SeamlessSigninDisabled() {
-        startActivityOnNtp();
-
-        ViewUtils.waitForVisibleView(withId(R.id.signin_button));
-
-        // Clicking the signed-out button should lead to the sign-in activity.
-        Activity signinActivity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        SigninAndHistorySyncActivity.class,
-                        () -> onView(withId(R.id.signin_button)).perform(click()));
-        assertNotNull("Signin activity should not be null.", signinActivity);
-        ViewUtils.waitForVisibleView(withText(R.string.signin_account_picker_bottom_sheet_title));
-        ApplicationTestUtils.finishActivity(signinActivity);
     }
 
     @Test
