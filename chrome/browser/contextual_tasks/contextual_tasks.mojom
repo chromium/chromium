@@ -192,12 +192,6 @@ interface PageHandler {
   // option user selects.
   ReopenTabs();
 
-  // Pins the side panel to the toolbar.
-  PinSidePanel();
-
-  // Unpins the side panel from the toolbar.
-  UnpinSidePanel();
-
   // Called when the user opens the composebox contextual action menu dialog.
   OnContextMenuOpened();
 
@@ -354,10 +348,6 @@ interface Page {
   // Called by the browser process (C++) to show or hide the reopen tabs
   // section.
   SetShowReopenTabs(bool show);
-
-  // Called by the browser process (C++) to notify the UI when the pin state
-  // changes.
-  OnSidePanelPinStateChanged(bool is_pinned);
 
   // Called by the browser process (C++) to notify the UI whether the expand
   // button should be enabled.

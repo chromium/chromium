@@ -20,13 +20,20 @@ interface PageHandlerFactory {
 // Browser-side handler for requests from the Toolbar WebUI page.
 // (TypeScript -> C++ (browser process))
 interface PageHandler {
+  // Pins the side panel to the toolbar.
+  PinSidePanel();
+
+  // Unpins the side panel from the toolbar.
+  UnpinSidePanel();
 };
 
 // WebUI-side handler for requests from the browser.
 // (C++ -> TypeScript)
 interface Page {
+  // Called by the browser process (C++) to notify the UI when the pin state
+  // changes.
+  OnSidePanelPinStateChanged(bool is_pinned);
 };
-
 // Observer interface (page) implemented by WebUI to receive push
 // updates from browser process.
 interface ContextualTasksToolbarUIObserver {

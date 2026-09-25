@@ -75,7 +75,6 @@ class MockContextualTasksPage : public mojom::Page {
               RemoveInjectedInput,
               (const base::UnguessableToken& file_token),
               (override));
-  MOCK_METHOD(void, OnSidePanelPinStateChanged, (bool is_pinned), (override));
   MOCK_METHOD(void, SetInNlm, (bool in_nlm), (override));
   MOCK_METHOD(void,
               OnWindowClosed,

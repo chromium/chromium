@@ -694,45 +694,6 @@ TEST_F(ContextualTasksPageHandlerTest, ShowThreadHistory) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(ContextualTasksPageHandlerTest, PinSidePanel) {
-  auto* model = PinnedToolbarActionsModel::Get(profile());
-  ASSERT_TRUE(model);
-
-  // Initial state should be unpinned.
-  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
-
-  // We expect the page to be notified when the action is pinned.
-  EXPECT_CALL(page_, OnSidePanelPinStateChanged(true)).Times(1);
-
-  // Pin the side panel.
-  page_handler_->PinSidePanel();
-  EXPECT_TRUE(model->Contains(kActionSidePanelShowContextualTasks));
-
-  // Now unpin.
-  EXPECT_CALL(page_, OnSidePanelPinStateChanged(false))
-      .Times(testing::AtLeast(1));
-  page_handler_->UnpinSidePanel();
-  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
-}
-
-TEST_F(ContextualTasksPageHandlerTest, PinSidePanel_FeatureDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitAndDisableFeature(
-      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
-
-  auto* model = PinnedToolbarActionsModel::Get(profile());
-  ASSERT_TRUE(model);
-
-  // Initial state should be unpinned.
-  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
-
-  // Pin the side panel (should be a no-op when feature is disabled).
-  page_handler_->PinSidePanel();
-
-  // Should still be false.
-  EXPECT_FALSE(model->Contains(kActionSidePanelShowContextualTasks));
-}
-
 TEST_F(ContextualTasksPageHandlerTest, MaybeTriggerPinningPromo_PanelClosed) {
   // If the side panel is not open for Contextual Tasks, we should not attempt
   // to trigger the promo (no-op).
@@ -1260,34 +1221,6 @@ TEST_F(ContextualTasksPageHandlerTest,
                                ContextualTasksService::TriggerSource::kLocal);
   run_loop.Run();
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(ContextualTasksPageHandlerTest, OnReceivedPinStateChanged) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEnableContextualTasksPinButtonInToolbar);
-
-  // Ignore any unpinned syncs fired initially by constructor setup.
-  EXPECT_CALL(page_, OnSidePanelPinStateChanged(false))
-      .Times(testing::AnyNumber());
-
-  // Recreate page_handler_ to pick up the feature flag.
-  page_handler_ = std::make_unique<ContextualTasksPageHandler>(
-      mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
-      mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_,
-      mock_panel_controller_.get());
-  page_handler_->set_skip_feedback_ui_for_testing(true);
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(page_, OnSidePanelPinStateChanged(true))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-
-  auto* model = PinnedToolbarActionsModel::Get(profile());
-  ASSERT_TRUE(model);
-  model->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
-
-  run_loop.Run();
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ContextualTasksPageHandlerTest,
        OnReceivedInjectInput_OverridesExisting) {

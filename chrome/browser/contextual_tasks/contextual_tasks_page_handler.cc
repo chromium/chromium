@@ -273,17 +273,6 @@ ContextualTasksPageHandler::ContextualTasksPageHandler(
   ui_service_->EnsureCookiesSynced(
       base::BindOnce(&ContextualTasksPageHandler::OnCookieSyncCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
-    Profile* profile = web_ui_controller_->GetProfile();
-    if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
-      pinned_toolbar_actions_model_observation_.Observe(model);
-      bool is_pinned = model->Contains(kActionSidePanelShowContextualTasks);
-      OnPinStateChanged(is_pinned);
-    }
-  }
-#endif
 }
 
 ContextualTasksPageHandler::~ContextualTasksPageHandler() = default;
@@ -413,9 +402,6 @@ void ContextualTasksPageHandler::ShowThreadHistory() {
 }
 
 void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
-  if (contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
-    OnActionsChanged();
-  }
   std::move(callback).Run(web_ui_controller_->IsShownInTab());
 }
 
@@ -873,18 +859,6 @@ void ContextualTasksPageHandler::OnReceivedRemoveInjectedInput(
   }
 }
 
-void ContextualTasksPageHandler::PinSidePanel() {
-  if (!contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
-    return;
-  }
-#if !BUILDFLAG(IS_ANDROID)
-  Profile* profile = web_ui_controller_->GetProfile();
-  if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
-    model->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
-  }
-#endif
-}
-
 void ContextualTasksPageHandler::OnContextMenuOpened() {
 #if !BUILDFLAG(IS_ANDROID)
   if (!contextual_tasks::ContextualTasksContextService::
@@ -960,30 +934,6 @@ void ContextualTasksPageHandler::CloseWindow(
   if (ui_service_) {
     ui_service_->CloseTrackedWindow(window_id);
   }
-}
-
-void ContextualTasksPageHandler::UnpinSidePanel() {
-  if (!contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
-    return;
-  }
-#if !BUILDFLAG(IS_ANDROID)
-  Profile* profile = web_ui_controller_->GetProfile();
-  if (auto* model = PinnedToolbarActionsModel::Get(profile)) {
-    model->UpdatePinnedState(kActionSidePanelShowContextualTasks, false);
-  }
-#endif
-}
-
-void ContextualTasksPageHandler::OnPinStateChanged(bool is_pinned) {
-  web_ui_controller_->GetPageRemote()->OnSidePanelPinStateChanged(is_pinned);
-}
-
-void ContextualTasksPageHandler::OnActionsChanged() {
-  bool effective_pin_state =
-      contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
-      contextual_tasks::GetEffectivePinState(
-          web_ui_controller_ ? web_ui_controller_->GetProfile() : nullptr);
-  OnPinStateChanged(effective_pin_state);
 }
 
 void ContextualTasksPageHandler::MaybeTriggerPinningPromo() {

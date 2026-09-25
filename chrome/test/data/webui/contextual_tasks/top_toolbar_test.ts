@@ -6,6 +6,7 @@ import 'chrome://contextual-tasks/top_toolbar.js';
 import 'chrome://contextual-tasks/sources_menu.js';
 
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
+import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import type {ContextualTasksFaviconGroupElement} from 'chrome://contextual-tasks/favicon_group.js';
 import type {TopToolbarElement} from 'chrome://contextual-tasks/top_toolbar.js';
 import type {UnboundedDialog} from 'chrome://contextual-tasks/utils.js';
@@ -16,16 +17,19 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertHTMLElement} from './contextual_tasks_test_utils.js';
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {TestContextualTasksBrowserProxy, TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 suite('TopToolbarTest', () => {
   let topToolbar: TopToolbarElement;
   let proxy: TestContextualTasksBrowserProxy;
+  let toolbarProxy: TestToolbarBrowserProxy;
 
   setup(() => {
     proxy = new TestContextualTasksBrowserProxy(
         'chrome://webui-test/contextual_tasks/test.html');
     BrowserProxyImpl.setInstance(proxy);
+    toolbarProxy = new TestToolbarBrowserProxy();
+    ToolbarBrowserProxyImpl.setInstance(toolbarProxy);
     loadTimeData.overrideValues({
       contextManagementInComposeboxEnabled: false,
       contextualTasksEnableSpatialModelToolbarLayout: false,
@@ -483,12 +487,13 @@ suite('TopToolbarTest', () => {
           pinButton.innerText.trim(), loadTimeData.getString('pinTooltip'));
 
       pinButton.click();
-      await proxy.handler.whenCalled('pinSidePanel');
+      await toolbarProxy.handler.whenCalled('pinSidePanel');
     });
 
     test('handles unpin button click', async () => {
       // Simulate pinned state.
-      proxy.callbackRouterRemote.onSidePanelPinStateChanged(true);
+      toolbarProxy.callbackRouterRemote.onSidePanelPinStateChanged(true);
+      await toolbarProxy.callbackRouterRemote.$.flushForTesting();
       await microtasksFinished();
 
       const moreButton =
@@ -508,7 +513,48 @@ suite('TopToolbarTest', () => {
           pinButton.innerText.trim(), loadTimeData.getString('unpinTooltip'));
 
       pinButton.click();
-      await proxy.handler.whenCalled('unpinSidePanel');
+      await toolbarProxy.handler.whenCalled('unpinSidePanel');
+    });
+
+    test('updates pin state via Mojo', async () => {
+      toolbarProxy.callbackRouterRemote.onSidePanelPinStateChanged(true);
+      await toolbarProxy.callbackRouterRemote.$.flushForTesting();
+      await topToolbar.updateComplete;
+
+      // Note: isPinned property on topToolbar is protected. We check via unpin
+      // button in menu.
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+              '#overflowMenuButton');
+      assertTrue(!!moreButton);
+      moreButton.click();
+      await microtasksFinished();
+
+      const menu = topToolbar.$.overflowMenu.get();
+      const pinButton =
+          menu.shadowRoot.querySelector<HTMLElement>('#pinButton');
+      assertTrue(!!pinButton);
+      assertEquals(
+          pinButton.innerText.trim(), loadTimeData.getString('unpinTooltip'));
+
+      // Toggling back to unpinned should update the button text.
+      toolbarProxy.callbackRouterRemote.onSidePanelPinStateChanged(false);
+      await toolbarProxy.callbackRouterRemote.$.flushForTesting();
+      await topToolbar.updateComplete;
+      await microtasksFinished();
+
+      assertEquals(
+          pinButton.innerText.trim(), loadTimeData.getString('pinTooltip'));
+    });
+
+    test('pin state listener is removed on disconnect', async () => {
+      topToolbar.remove();
+
+      toolbarProxy.callbackRouterRemote.onSidePanelPinStateChanged(true);
+      await toolbarProxy.callbackRouterRemote.$.flushForTesting();
+      await topToolbar.updateComplete;
+
+      assertFalse((topToolbar as any).isPinned);
     });
 
     test('resets handshake complete when leaving AI page', async () => {

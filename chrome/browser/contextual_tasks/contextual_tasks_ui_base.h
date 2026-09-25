@@ -16,6 +16,11 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"  // nogncheck
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#endif
+
 class BrowserWindowInterface;
 
 namespace content {
@@ -54,7 +59,12 @@ class ContextualTasksUIBase
       public contextual_tasks_toolbar::mojom::PageHandlerFactory,
       public contextual_tasks_toolbar::mojom::PageHandler,
       public contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIService,
-      public help_bubble::mojom::HelpBubbleHandlerFactory {
+      public help_bubble::mojom::HelpBubbleHandlerFactory
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+      public PinnedToolbarActionsModel::Observer
+#endif
+{
  public:
   explicit ContextualTasksUIBase(content::WebUI* web_ui);
   ContextualTasksUIBase(const ContextualTasksUIBase&) = delete;
@@ -69,6 +79,15 @@ class ContextualTasksUIBase
       mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> page,
       mojo::PendingReceiver<contextual_tasks_toolbar::mojom::PageHandler>
           page_handler) override;
+
+  // contextual_tasks_toolbar::mojom::PageHandler:
+  void PinSidePanel() override;
+  void UnpinSidePanel() override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // PinnedToolbarActionsModel::Observer:
+  void OnActionsChanged() override;
+#endif
 
   void BindInterface(
       mojo::PendingReceiver<contextual_tasks_toolbar::mojom::PageHandlerFactory>
@@ -111,7 +130,7 @@ class ContextualTasksUIBase
   BrowserWindowInterface* GetBrowser();
   ContextualTasksPanelController* GetPanelController();
   contextual_tasks_toolbar::mojom::Page* GetToolbarPageRemote() {
-    return toolbar_page_.get();
+    return toolbar_page_.is_bound() ? toolbar_page_.get() : nullptr;
   }
 
   // Returns the Contextual Tasks toolbar WebUI controller hosted by
@@ -136,7 +155,6 @@ class ContextualTasksUIBase
   mojo::Receiver<contextual_tasks_toolbar::mojom::PageHandler>
       toolbar_page_handler_receiver_{this};
   mojo::Remote<contextual_tasks_toolbar::mojom::Page> toolbar_page_;
-
   mojo::Receiver<
       contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIService>
       receiver_{this};
@@ -145,6 +163,12 @@ class ContextualTasksUIBase
       toolbar_ui_observers_;
   toolbar_ui_api::mojom::PermissionDashboardStatePtr
       last_pushed_permission_dashboard_state_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  base::ScopedObservation<PinnedToolbarActionsModel,
+                          PinnedToolbarActionsModel::Observer>
+      pinned_toolbar_actions_model_observation_{this};
+#endif
 
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>

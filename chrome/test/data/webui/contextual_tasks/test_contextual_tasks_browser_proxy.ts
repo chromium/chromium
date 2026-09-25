@@ -244,8 +244,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'setThreadTitle',
       'showThreadHistory',
       'submitQuery',
-      'pinSidePanel',
-      'unpinSidePanel',
       'isSidePanelPinned',
       'notifySmartTabSharingTryItIphResult',
       'notifySmartTabSharingDefaultOnIphResult',
@@ -443,15 +441,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
-
-  pinSidePanel() {
-    this.methodCalled('pinSidePanel');
-  }
-
-  unpinSidePanel() {
-    this.methodCalled('unpinSidePanel');
-  }
-
   isSidePanelPinned() {
     this.methodCalled('isSidePanelPinned');
     return Promise.resolve({isPinned: false});
@@ -608,7 +597,18 @@ export class TestExtensionBrowserProxy extends TestBrowserProxy implements
 export class TestToolbarPageHandler extends TestBrowserProxy implements
     ToolbarPageHandlerInterface {
   constructor() {
-    super([]);
+    super([
+      'pinSidePanel',
+      'unpinSidePanel',
+    ]);
+  }
+
+  pinSidePanel() {
+    this.methodCalled('pinSidePanel');
+  }
+
+  unpinSidePanel() {
+    this.methodCalled('unpinSidePanel');
   }
 }
 
