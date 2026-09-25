@@ -33,9 +33,8 @@ export function getHtml(this: DummyTestElement) {
 
   <!-- Case 6: Multiline ternary expression in attribute -->
   <cr-icon
-      icon="${
-          this.someConditionEnabled_ ? 'my-dummy-icons:first-icon' :
-                                       'my-dummy-icons:second-icon'}">
+      icon="${this.someConditionEnabled_ ? 'my-dummy-icons:first-icon' :
+                                           'my-dummy-icons:second-icon'}">
   </cr-icon>
 
   <!-- Case 7: Multiline tag with text child where total length exceeds limit -->

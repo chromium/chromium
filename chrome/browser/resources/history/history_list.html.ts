@@ -90,9 +90,8 @@ export function getHtml(this: HistoryListElement) {
           $i18n{reviewGeminiActivity}
         </button>
         <div class="hr"
-            ?hidden="${
-                !this.canShowReviewGeminiActivity_() &&
-                    !this.canShowGoToGeminiChat_()}">
+            ?hidden="${!this.canShowReviewGeminiActivity_() &&
+                !this.canShowGoToGeminiChat_()}">
         </div>
         <button id="menuRemoveButton" class="dropdown-item"
             ?hidden="${!this.canDeleteHistory_}"

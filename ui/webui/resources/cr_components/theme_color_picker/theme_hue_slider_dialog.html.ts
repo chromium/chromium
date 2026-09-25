@@ -23,7 +23,8 @@ export function getHtml(this: ThemeHueSliderDialogElement) {
         .value="${this.selectedHue}"
         @cr-slider-value-changed="${this.onCrSliderValueChanged_}"
         @pointerup="${this.onSliderPointerup_}" @keyup="${this.onSliderKeyup_}"
-        .style="--hue-gradient_: ${this.hueGradient_}; --knob-hue_: ${this.knobHue_}"
+        .style="--hue-gradient_: ${this.hueGradient_}; --knob-hue_: ${
+            this.knobHue_}"
         aria-label="${
             this.i18n('hueSliderAriaLabel', this.minHue_, this.maxHue_)}">
     </cr-slider>

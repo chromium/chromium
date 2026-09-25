@@ -193,26 +193,39 @@ function formatAttributeWithPlaceholders(attr, attrIndentStr, placeholderMap) {
     const suffixAndClosingLen =
         1 + staticOnSameLine.length + (staticHasNewline ? 0 : 2);
 
+    const exprLines = innerExpr.split('\n');
+    const isMultilineExpr = exprLines.length > 1;
+    const firstLineCheckLen = isMultilineExpr ?
+        exprLines[0].length :
+        innerExpr.length + suffixAndClosingLen;
+
     if (innerExpr.startsWith('\n')) {
       // Case 1: The expression was already wrapped across multiple lines by
       // formatTsExpressions (e.g. a long ternary or multiline call) and
       // already starts with a newline and indentation.
       result += innerExpr;
-      currentLineLen = innerExpr.split('\n').at(-1).length;
-    } else if (
-        currentLineLen + innerExpr.length + suffixAndClosingLen >
-        LINE_LENGTH_LIMIT) {
-      // Case 2: The single-line expression fits on its own wrapped line, but
-      // exceeds 80 characters when combined with the preceding attribute name,
-      // static prefix, or trailing static suffix. Break the line immediately
-      // after '${' and indent the expression body.
-      result += `\n${exprIndentStr}${innerExpr}`;
-      currentLineLen = exprIndentStr.length + innerExpr.length;
+      currentLineLen = exprLines.at(-1).length;
+    } else if (currentLineLen + firstLineCheckLen > LINE_LENGTH_LIMIT) {
+      // Case 2: The expression fits on its own wrapped line, but exceeds 80
+      // characters when combined with the preceding attribute name, static
+      // prefix, or trailing static suffix. Break the line immediately after
+      // '${' and indent the first line of the expression. For multiline
+      // expressions, indent the first line by the attribute prefix length
+      // (`attr="${`) so it starts at the exact column clang-format aligned
+      // subsequent lines against.
+      const firstLineIndent = isMultilineExpr ?
+          attrIndentStr + ' '.repeat(attrName.length + 4) :
+          exprIndentStr;
+      result += `\n${firstLineIndent}${innerExpr}`;
+      currentLineLen = isMultilineExpr ?
+          exprLines.at(-1).length :
+          firstLineIndent.length + innerExpr.length;
     } else {
-      // Case 3: The expression and any following static text fit on the
-      // current line without needing a line break after '${'.
+      // Case 3: The expression (or its first line) fits on the current line
+      // without needing a line break after '${'.
       result += innerExpr;
-      currentLineLen += innerExpr.length;
+      currentLineLen = isMultilineExpr ? exprLines.at(-1).length :
+                                         currentLineLen + innerExpr.length;
     }
 
     if (staticOnSameLine !== '' &&

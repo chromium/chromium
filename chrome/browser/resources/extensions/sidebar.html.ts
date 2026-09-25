@@ -15,10 +15,9 @@ export function getHtml(this: ExtensionsSidebarElement) {
   <a role="menuitem" class="cr-nav-menu-item" id="sectionsExtensions" href="/"
       @click="${this.onLinkClick_}" data-path="itemsList">
     <cr-icon
-        icon="${
-            this.webuiRoundedIconsEnabled_ ?
-                'extensions-icons:chrome-extension' :
-                'extensions-icons:my_extensions-old'}">
+        icon="${this.webuiRoundedIconsEnabled_ ?
+            'extensions-icons:chrome-extension' :
+            'extensions-icons:my_extensions-old'}">
     </cr-icon>
     $i18n{sidebarExtensions}
     <cr-ripple></cr-ripple>
@@ -27,10 +26,9 @@ export function getHtml(this: ExtensionsSidebarElement) {
       ?hidden="${!this.enableEnhancedSiteControls}" href="/sitePermissions"
       @click="${this.onLinkClick_}" data-path="site-permissions">
     <cr-icon
-        icon="${
-            this.webuiRoundedIconsEnabled_ ?
-                'extensions-icons:tune' :
-                'extensions-icons:site_permissions-old'}">
+        icon="${this.webuiRoundedIconsEnabled_ ?
+            'extensions-icons:tune' :
+            'extensions-icons:site_permissions-old'}">
     </cr-icon>
     $i18n{sitePermissions}
     <cr-ripple></cr-ripple>
@@ -39,10 +37,9 @@ export function getHtml(this: ExtensionsSidebarElement) {
       href="/shortcuts" @click="${this.onLinkClick_}"
       data-path="keyboard-shortcuts">
     <cr-icon
-        icon="${
-            this.webuiRoundedIconsEnabled_ ?
-                'extensions-icons:keyboard' :
-                'extensions-icons:keyboard_shortcuts-old'}">
+        icon="${this.webuiRoundedIconsEnabled_ ?
+            'extensions-icons:keyboard' :
+            'extensions-icons:keyboard_shortcuts-old'}">
     </cr-icon>
     $i18n{keyboardShortcuts}
     <cr-ripple></cr-ripple>

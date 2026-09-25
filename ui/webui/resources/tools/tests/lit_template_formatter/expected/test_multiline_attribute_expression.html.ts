@@ -8,24 +8,21 @@ export function getHtml(this: DummyTestElement) {
   return html`<!--_html_template_start_-->
 <div id="container">
   <cr-icon ?hidden="${!this.someCondition}"
-      icon="${
-          this.someOtherConditionProperty ? 'my-dummy-icons:hello' :
-                                            'my-dummy-icons:world'}"
+      icon="${this.someOtherConditionProperty ? 'my-dummy-icons:hello' :
+                                                'my-dummy-icons:world'}"
       alt="" title="hello world">
   </cr-icon>
   <button
-      ?hidden="${
-          this.someLongHiddenCondition && this.myCoolFeature &&
-              !this.someOtherConditionThatIsLong}"
+      ?hidden="${this.someLongHiddenCondition && this.myCoolFeature &&
+          !this.someOtherConditionThatIsLong}"
       @some-very-very-long-event-name="${
           this.onMyButtonWithExtraTextSomeVeryVeryLongEventName}">
     Click Me!
   </button>
   <select>
     <option value="${this.someConfigObject.someSelectedOptionValue}"
-        ?selected="${
-            this.isSomeOptionSelected_(
-                this.someConfigObject.someSelectedOptionValue)}">
+        ?selected="${this.isSomeOptionSelected_(
+            this.someConfigObject.someSelectedOptionValue)}">
       Some Option
     </option>
   </select>
@@ -53,6 +50,20 @@ export function getHtml(this: DummyTestElement) {
               this.someCondition ? 'first-class' : 'second-class'
           } trailing-static-class ${this.someValue}">
         Some other text
+      </div>
+      <div
+          class="some initial static classes ${
+              this.someCondition ? 'first-class' : 'second-class'
+          } trailing-static-class ${this.someMethodCall_(
+              this.someProperty_, this.someOtherProperty_)}">
+        More Text!!!
+      </div>
+      <div
+          .style="color: ${this.getColor_()};
+                   background-color: ${this.getBackgroundColor_()};
+                   margin: 0px;
+                   left: ${this.getLeftPosition_()};">
+        Styled Text
       </div>
     </div>
   </div>

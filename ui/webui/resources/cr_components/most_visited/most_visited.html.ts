@@ -24,18 +24,18 @@ export function getHtml(this: MostVisitedElement) {
       <a href="${item.url}" aria-label="${item.title}" draggable="false"></a>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
           title="${this.getMoreActionText_(item.title)}"
-          @click="${this.onTileActionButtonClick_}" tabindex="0" ?hidden="${
-              this.nonEditable ||
-                  (!this.customLinksEnabled_ &&
-                   !this.isFromEnterpriseShortcut_(item.source))}"
+          @click="${this.onTileActionButtonClick_}" tabindex="0"
+          ?hidden="${this.nonEditable ||
+              (!this.customLinksEnabled_ &&
+               !this.isFromEnterpriseShortcut_(item.source))}"
           data-index="${index}">
       </cr-icon-button>
       <cr-icon-button id="removeButton" class="icon-clear"
           title="${this.getRemoveButtonText_(item.title)}"
-          @click="${this.onTileRemoveButtonClick_}" tabindex="0" ?hidden="${
-              this.nonEditable ||
-                  (this.customLinksEnabled_ ||
-                   this.isFromEnterpriseShortcut_(item.source))}"
+          @click="${this.onTileRemoveButtonClick_}" tabindex="0"
+          ?hidden="${this.nonEditable ||
+              (this.customLinksEnabled_ ||
+               this.isFromEnterpriseShortcut_(item.source))}"
           data-index="${index}">
       </cr-icon-button>
       <div class="tile-icon">
@@ -113,9 +113,9 @@ export function getHtml(this: MostVisitedElement) {
           ?invalid="${this.dialogTileUrlInvalid_}"
           .errorMessage="${this.dialogTileUrlError_}" spellcheck="false"
           type="url" @blur="${this.onDialogTileUrlBlur_}"
-          @value-changed="${this.onDialogTileUrlValueChanged_}" ?readonly="${
-              this.dialogIsReadonly_ ||
-                  this.isFromEnterpriseShortcut_(this.dialogSource_)}">
+          @value-changed="${this.onDialogTileUrlValueChanged_}"
+          ?readonly="${this.dialogIsReadonly_ ||
+              this.isFromEnterpriseShortcut_(this.dialogSource_)}">
       </cr-input>
     </div>
     <div slot="button-container">

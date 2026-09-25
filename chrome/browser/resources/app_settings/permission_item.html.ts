@@ -15,7 +15,8 @@ ${this.available_ ? html`
       label="${this.permissionLabel}" ?managed="${this.isManaged_()}"
       ?disabled="${this.isDisabled_()}" ?value="${this.getValue_()}"
       aria-description="Click to toggle ${this.permissionLabel} permissions."
-      i18n-aria-descrirption="Label for toggle button to change ${this.permissionLabel} permissions.">
+      i18n-aria-descrirption="Label for toggle button to change ${
+          this.permissionLabel} permissions.">
     <slot name="description" slot="description"></slot>
   </app-management-toggle-row>
 ` : ''}

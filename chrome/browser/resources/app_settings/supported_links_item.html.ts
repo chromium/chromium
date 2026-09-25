@@ -18,9 +18,8 @@ export function getHtml(this: SupportedLinksItemElement) {
 ${this.disabled_ ? html`
   <span class="info-text-row" id="disabledExplanationText">
     <cr-icon id="infoIcon"
-        icon="${
-            this.webuiRoundedIconsEnabled_ ? 'app-management:info' :
-                                             'app-management:info-old'}">
+        icon="${this.webuiRoundedIconsEnabled_ ? 'app-management:info' :
+                                                 'app-management:info-old'}">
     </cr-icon>
     <localized-link id="infoString"
         .localizedString="${this.getDisabledExplanation_()}">

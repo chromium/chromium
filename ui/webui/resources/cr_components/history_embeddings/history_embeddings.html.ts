@@ -13,10 +13,9 @@ ${!this.enableAnswers_ ? html`
   <div id="cardWithoutAnswers" class="card">
     <h2 class="heading results-heading">
       <cr-icon
-          icon="${
-              this.webuiRoundedIconsEnabled_ ?
-                  'history-embeddings:astrophotography-mode' :
-                  'history-embeddings:heading-old'}">
+          icon="${this.webuiRoundedIconsEnabled_ ?
+              'history-embeddings:astrophotography-mode' :
+              'history-embeddings:heading-old'}">
       </cr-icon>
       ${this.getHeadingText_()}
     </h2>
@@ -106,7 +105,8 @@ ${this.enableAnswers_ ? html`
                 @auxclick="${this.onAnswerLinkAuxclick_}"
                 @contextmenu="${this.onAnswerLinkContextmenu_}">
               <div class="favicon"
-                  .style="background-image: ${this.getFavicon_(this.answerSource_)}">
+                  .style="background-image: ${
+                      this.getFavicon_(this.answerSource_)}">
               </div>
               <div class="result-url">${this.answerSource_.urlForDisplay}</div>
             </a>

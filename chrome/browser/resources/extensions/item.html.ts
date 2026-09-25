@@ -107,10 +107,9 @@ export function getHtml(this: ItemElement) {
       ${this.showAllowlistWarning_() ? html`
         <div id="allowlist-warning">
           <cr-icon class="message-icon"
-              icon="${
-                  this.webuiRoundedIconsEnabled_ ?
-                      'extensions-icons:android-security-privacy-alert' :
-                      'extensions-icons:safebrowsing_warning-old'}">
+              icon="${this.webuiRoundedIconsEnabled_ ?
+                  'extensions-icons:android-security-privacy-alert' :
+                  'extensions-icons:safebrowsing_warning-old'}">
           </cr-icon>
           <span class="cr-secondary-text" aria-describedby="a11yAssociation">
             $i18n{itemAllowlistWarning}
@@ -180,10 +179,10 @@ export function getHtml(this: ItemElement) {
     </div>
     ${this.showAccountUploadButton_() ? html`
       <cr-icon-button id="account-upload-button" class="no-overlap"
-          title="$i18n{itemUpload}" aria-label="$i18n{itemUpload}" iron-icon="${
-              this.webuiRoundedIconsEnabled_ ?
-                  'extensions-icons:cloud-upload' :
-                  'extensions-icons:extension_cloud_upload-old'}"
+          title="$i18n{itemUpload}" aria-label="$i18n{itemUpload}"
+          iron-icon="${this.webuiRoundedIconsEnabled_ ?
+              'extensions-icons:cloud-upload' :
+              'extensions-icons:extension_cloud_upload-old'}"
           aria-describedby="a11yAssociation" @click="${this.onUploadClick_}">
       </cr-icon-button>
     ` : ''}

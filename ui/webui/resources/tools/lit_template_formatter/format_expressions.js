@@ -68,12 +68,11 @@ const ExpressionConfig = {
 
 /**
  * Computes the column limit for clang-format for an expression.
- * For attributes (e.g. attr="${expr}"), the initial limit accounts for the
- * attribute indentation (WRAPPED_LINE_INDENT_SIZE) but not the attribute name
- * itself, since subsequent lines of multiline expressions are aligned with the
- * attribute indent rather than the attribute name. If the first line of the
- * formatted expression exceeds the space available with the attribute name, it
- * will be wrapped to a new line after "${".
+ * For attributes (e.g. attr="${expr}"), the limit accounts for the attribute
+ * indentation (WRAPPED_LINE_INDENT_SIZE) and the closing '}">' (-3 via
+ * columnLimitAdjustment), while the attribute name and '="${' on the opening
+ * line are accounted for by prepending a synthetic assignment prefix of the
+ * same length (`x...x = `) to the snippet passed to clang-format.
  */
 function computeColumnLimit(value, type) {
   const indent = value.indent || 0;
@@ -124,50 +123,32 @@ export async function formatTsExpressions(
         codeToFormat.trim().split('\n').map(l => l.trim()).join('\n');
 
     const limit = computeColumnLimit(value, type);
+    const attrPrefix =
+        value.attrName ? 'x'.repeat(value.attrName.length + 1) + ' = ' : '';
+    const inputToFormat = attrPrefix + codeToFormat;
 
     // If the snippet is a simple identifier, property access, or negation that
     // already fits within the column limit, clang-format will never modify it.
     // Skip spawning a process to improve formatting speed.
     const isSimpleToken = /^!*[a-zA-Z0-9_$.]+$/.test(codeToFormat) &&
-        codeToFormat.length <= limit;
+        inputToFormat.length <= limit;
     let formattedCode = codeToFormat;
     if (!isSimpleToken) {
       // Run clang-format on the snippet using inline JSON style override
       const style = `{BasedOnStyle: Chromium, ColumnLimit: ${limit}}`;
       formattedCode = await runClangFormat(
           clangFormatPath, ['-assume-filename=f.ts', `-style=${style}`],
-          codeToFormat);
+          inputToFormat);
 
       // Remove trailing newline added by clang-format if any
       formattedCode = formattedCode.replace(/\n$/, '');
+      if (attrPrefix) {
+        formattedCode = formattedCode.replace(/^x+ *= ?/, '');
+      }
     }
 
-    let baseIndent =
+    const baseIndent =
         (value.indent || 0) + (value.attrName ? WRAPPED_LINE_INDENT_SIZE : 0);
-    // For attributes (e.g. attr="${expr}"), the opening line has the attribute
-    // name, '="' (2 chars), the closing '"' (1 char), and potentially the
-    // closing '>' (1 char) on the tag. Subtract the additional characters
-    // beyond what columnLimitAdjustment (-3 for '${' and '}') already accounts
-    // for to check if the first line fits with the attribute name. If not, put
-    // the expression on a new line after "${". Note: this will be slightly
-    // conservative for cases where ">" does not occur on the first line, but
-    // line breaks have not been determined at this point.
-    const firstLineLimit =
-        value.attrName ? limit - (value.attrName.length + 4) : limit;
-    if (value.attrName &&
-        (formattedCode.includes('\n') ||
-         formattedCode.length > firstLineLimit)) {
-      baseIndent += WRAPPED_LINE_INDENT_SIZE;
-      const newLimit = 80 - baseIndent + config.columnLimitAdjustment;
-      if (newLimit !== limit) {
-        const newStyle = `{BasedOnStyle: Chromium, ColumnLimit: ${newLimit}}`;
-        formattedCode = await runClangFormat(
-            clangFormatPath, ['-assume-filename=f.ts', `-style=${newStyle}`],
-            codeToFormat);
-        formattedCode = formattedCode.replace(/\n$/, '');
-      }
-      formattedCode = '\n' + formattedCode;
-    }
 
     // Apply indentation to later lines of multiline expressions.
     if (formattedCode.includes('\n')) {
