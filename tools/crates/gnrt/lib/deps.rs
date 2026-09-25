@@ -261,13 +261,18 @@ pub fn collect_dependencies(
     let mut memoization_tables = MemoizationTables::new();
     let cargo_set = {
         let mut cargo_options = CargoOptions::new();
-        // TODO(https://crbug.com/565885820): `guppy` defaults to the newest resolver, but
-        // Chromium's `third_party/rust/chromium_crates_io/Cargo.toml` uses the
-        // version 2 resolver (implied by `edition = "2021"`).  Pinning
-        // V1 here preserves the behavior of older `guppy` versions; we
-        // postpone switching to V2 to a follow-up CL to minimize risk and
-        // chrun.
-        cargo_options.set_resolver(CargoResolverVersion::V1);
+
+        // Match the feature resolver that `cargo` uses for the root manifests
+        // that `gnrt` works with:
+        // * `third_party/rust/chromium_crates_io/Cargo.toml`
+        // * `build/rust/std/fake_root/Cargo.toml.template`
+        // Both use `edition = "2021"`, which implies the version 2 resolver.
+        //
+        // This is set explicitly (rather than relying on `guppy`'s default)
+        // so that `guppy` upgrades cannot silently change how Chromium's
+        // dependencies are resolved.
+        cargo_options.set_resolver(CargoResolverVersion::V2);
+
         let initials = resolve_root_package_set(graph, root_package_name)?
             .to_feature_set(StandardFeatures::Default);
         let no_extra_features = graph.resolve_none().to_feature_set(StandardFeatures::Default);
@@ -1220,4 +1225,28 @@ mod tests {
     // `gnrt/sample_package4` directory.  See the `Cargo.toml` for more
     // information.
     static SAMPLE_CARGO_METADATA4: &str = include_str!("test_metadata4.json");
+
+    #[test]
+    fn collect_dependencies_on_sample_output5() {
+        let config = BuildConfig::default();
+        let metadata = PackageGraph::from_json(SAMPLE_CARGO_METADATA5).unwrap();
+        let dependencies = collect_dependencies(&metadata, "sample_package5", &config).unwrap();
+        let dependencies = dependencies
+            .into_iter()
+            .map(|package| (package.package_name.to_string(), package))
+            .collect::<HashMap<_, _>>();
+
+        // The version 2 resolver (implied by `edition = "2021"`) does not
+        // unify features across normal and build dependencies.  Therefore
+        // `target_only` should only be enabled for the normal dependency.
+        let shared = &dependencies["shared"];
+        assert_eq!(shared.dependency_kinds[&DependencyKind::Normal].features, &["target_only"]);
+        let empty_str_slice: &'static [&'static str] = &[];
+        assert_eq!(shared.dependency_kinds[&DependencyKind::Build].features, empty_str_slice);
+    }
+
+    // `test_metadata5.json` contains the output of `cargo metadata` run in
+    // `gnrt/sample_package5` directory.  See the `Cargo.toml` for more
+    // information.
+    static SAMPLE_CARGO_METADATA5: &str = include_str!("test_metadata5.json");
 }

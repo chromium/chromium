@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This `Cargo.toml` is a test input for some unit tests of `gnrt`.  Output of
+# `cargo metadata` has been saved in `gnrt/lib/test_metadata5.json`.
+#
+# The main point of this test is checking which version of Cargo's feature
+# resolver `gnrt` simulates.  `shared` is both a normal dependency (with the
+# `target_only` feature) and a build dependency (without that feature).  The
+# version 2 resolver (implied by `edition = "2021"`) does not unify features
+# across host (build) and target (normal) dependencies, so the `build.rs`
+# dependency should not see `target_only`.
+
+[package]
+name = "sample_package5"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+shared = { path = "shared", features = ["target_only"] }
+
+[build-dependencies]
+shared = { path = "shared" }
