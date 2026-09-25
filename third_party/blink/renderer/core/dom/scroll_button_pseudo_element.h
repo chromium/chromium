@@ -43,6 +43,7 @@ class ScrollButtonPseudoElement : public PseudoElement,
   // Returns true if activation behavior was performed and the event should be
   // considered handled.
   bool HandleButtonActivation();
+  bool CalculateEnabledState() const;
 
   bool enabled_ = true;
 };
