@@ -11893,7 +11893,7 @@
             ]
         }
     ],
-    "MagiChromeBatch1": [
+    "MagiChromePasskeySignIn": [
         {
             "platforms": [
                 "linux",
@@ -11902,12 +11902,13 @@
             ],
             "experiments": [
                 {
-                    "name": "IllustrationAndPromoCardPhoneAndRemoveGuestMode_20260528",
+                    "name": "Autofill",
                     "params": {
+                        "flow_type": "autofill",
                         "magichrome_fre_exp_branch": "1"
                     },
                     "enable_features": [
-                        "MagiChromeSignInExperimentsBatch1"
+                        "MagiChromePasskeySignIn"
                     ]
                 }
             ]

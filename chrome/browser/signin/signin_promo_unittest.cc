@@ -166,17 +166,73 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceWithHistorySyncOptin) {
                               GURL("https://continue_url/")));
 }
 
-TEST_F(SigninPromoUrlTest, SigninURLForDiceMagiChromeExperiments) {
+TEST_F(SigninPromoUrlTest, SigninURLForDiceForwardsGaiaExpBranch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{switches::kMagiChromeSignInExperimentsBatch1,
-                             {{"magichrome_fre_exp_branch", "test_branch"}}},
+      /*enabled_features=*/{{switches::kMagiChromePasskeySignIn,
+                             {{"flow_type", "autofill"},
+                              {"magichrome_fre_exp_branch", "2"}}},
                             {syncer::kReplaceSyncPromosWithSignInPromos, {}}},
       /*disabled_features=*/{});
 
   EXPECT_EQ(
       "https://accounts.google.com/signin/chrome/sync?ssp=1&"
-      "flow=history_opt_in&theme=mn&magichrome_fre_exp_branch=test_branch",
+      "flow=history_opt_in&theme=mn&magichrome_fre_exp_branch=2",
+      GetChromeSyncURLForDice({}));
+}
+
+TEST_F(SigninPromoUrlTest, SigninURLForDiceForwardsServerOnlyGaiaExpBranch) {
+  // A server-only arm sets no `flow_type`.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{switches::kMagiChromePasskeySignIn,
+                             {{"magichrome_fre_exp_branch", "3"}}},
+                            {syncer::kReplaceSyncPromosWithSignInPromos, {}}},
+      /*disabled_features=*/{});
+
+  EXPECT_EQ(
+      "https://accounts.google.com/signin/chrome/sync?ssp=1&"
+      "flow=history_opt_in&theme=mn&magichrome_fre_exp_branch=3",
+      GetChromeSyncURLForDice({}));
+}
+
+TEST_F(SigninPromoUrlTest, SigninURLForDiceUnsetGaiaExpBranchAddsNoParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{switches::kMagiChromePasskeySignIn,
+                             {{"flow_type", "autofill"}}},
+                            {syncer::kReplaceSyncPromosWithSignInPromos, {}}},
+      /*disabled_features=*/{});
+
+  EXPECT_EQ(
+      "https://accounts.google.com/signin/chrome/sync?ssp=1&"
+      "flow=history_opt_in&theme=mn",
+      GetChromeSyncURLForDice({}));
+}
+
+TEST_F(SigninPromoUrlTest, SigninURLForDiceNonNumericGaiaExpBranchAddsNoParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{switches::kMagiChromePasskeySignIn,
+                             {{"magichrome_fre_exp_branch", "autofill"}}},
+                            {syncer::kReplaceSyncPromosWithSignInPromos, {}}},
+      /*disabled_features=*/{});
+
+  EXPECT_EQ(
+      "https://accounts.google.com/signin/chrome/sync?ssp=1&"
+      "flow=history_opt_in&theme=mn",
+      GetChromeSyncURLForDice({}));
+}
+
+TEST_F(SigninPromoUrlTest, SigninURLForDicePasskeyFeatureDisabledAddsNoParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+      /*disabled_features=*/{switches::kMagiChromePasskeySignIn});
+
+  EXPECT_EQ(
+      "https://accounts.google.com/signin/chrome/sync?ssp=1&"
+      "flow=history_opt_in&theme=mn",
       GetChromeSyncURLForDice({}));
 }
 

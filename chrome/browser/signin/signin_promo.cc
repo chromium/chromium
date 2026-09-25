@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -113,14 +112,11 @@ GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
     url = net::AppendQueryParameter(url, "theme", "mn");
   }
 
-  if (base::FeatureList::IsEnabled(
-          switches::kMagiChromeSignInExperimentsBatch1)) {
-    std::string exp_param = base::GetFieldTrialParamValueByFeature(
-        switches::kMagiChromeSignInExperimentsBatch1,
-        "magichrome_fre_exp_branch");
-    if (!exp_param.empty()) {
+  if (base::FeatureList::IsEnabled(switches::kMagiChromePasskeySignIn)) {
+    int exp_branch = switches::kMagiChromePasskeySignInGaiaExpBranch.Get();
+    if (exp_branch > 0) {
       url = net::AppendQueryParameter(url, "magichrome_fre_exp_branch",
-                                      exp_param);
+                                      base::NumberToString(exp_branch));
     }
   }
   static const char kMagiChromeHybridTransportSupportedHistogram[] =

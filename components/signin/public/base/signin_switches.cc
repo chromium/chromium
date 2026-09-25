@@ -750,6 +750,8 @@ BASE_FEATURE(kIgnoreInvalidGrantError, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kMagiChromePasskeySignIn, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kMagiChromePasskeySignInFlowType{
     &kMagiChromePasskeySignIn, "flow_type", ""};
+const base::FeatureParam<int> kMagiChromePasskeySignInGaiaExpBranch{
+    &kMagiChromePasskeySignIn, "magichrome_fre_exp_branch", 0};
 bool IsMagiChromePasskeyAutofillEnabled() {
   return base::FeatureList::IsEnabled(kMagiChromePasskeySignIn) &&
          kMagiChromePasskeySignInFlowType.Get() == "autofill";
@@ -758,11 +760,6 @@ bool IsMagiChromePasskeyBannerEnabled() {
   return base::FeatureList::IsEnabled(kMagiChromePasskeySignIn) &&
          kMagiChromePasskeySignInFlowType.Get() == "banner";
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-BASE_FEATURE(kMagiChromeSignInExperimentsBatch1,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)

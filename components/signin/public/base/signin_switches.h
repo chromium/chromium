@@ -706,9 +706,16 @@ BASE_DECLARE_FEATURE(kIgnoreInvalidGrantError);
 // Autofill-based promo flow or the native Views-based banner flow.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kMagiChromePasskeySignIn);
-// Controls which flow is active: "autofill" or "banner".
+// Controls which client flow is active. The client only acts on "autofill";
+// any other value means no client passkey UI.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<std::string> kMagiChromePasskeySignInFlowType;
+// Numeric Gaia experiment arm, forwarded to Gaia as the
+// `magichrome_fre_exp_branch` URL query parameter. Arms start at 1; the
+// default 0 (also used for unset or non-integer values) forwards nothing.
+// Each Finch arm must set this consistently with `flow_type`.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<int> kMagiChromePasskeySignInGaiaExpBranch;
 // Returns true if the MagiChrome passkey sign-in Autofill flow is active.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsMagiChromePasskeyAutofillEnabled();
@@ -716,12 +723,6 @@ bool IsMagiChromePasskeyAutofillEnabled();
 // active.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsMagiChromePasskeyBannerEnabled();
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Controls experiments for MagiChrome (e.g. Gaia sign-in URL parameters).
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kMagiChromeSignInExperimentsBatch1);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)
