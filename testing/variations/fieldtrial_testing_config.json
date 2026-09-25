@@ -7836,27 +7836,6 @@
             ]
         }
     ],
-    "EnergyEffectVisdStudy": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnergyEffectFusebox",
-                    "params": {
-                        "EnergyEffectVariantParam": "energy-effect-fusebox"
-                    },
-                    "enable_features": [
-                        "EnergyEffect"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnhancedFieldsForSecOps": [
         {
             "platforms": [

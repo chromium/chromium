@@ -25,13 +25,13 @@ BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearch);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchButton);
 BASE_DECLARE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard);
 enum class EnergyEffectVariant {
-  // Default (M149 / 12% shadow)
+  // M149 / 12% shadow
   kEnergyEffectOriginal = 0,
   // Variant 1 (20% shadow)
   kEnergyEffectDarkerShadow = 1,
   // Variant 2 (reduced original shadow + darker border)
   kPreEnergyEffectWithBorder = 2,
-  // Variant 4 (Fusebox shadow @ 16%)
+  // Default / Launch (Fusebox shadow @ 16%)
   kEnergyEffectFusebox = 3,
 };
 
