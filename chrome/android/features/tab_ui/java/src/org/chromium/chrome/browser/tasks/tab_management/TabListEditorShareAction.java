@@ -179,7 +179,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
                         R.plurals.tab_selection_editor_share_sheet_preview_message,
                         sortedTabList.size(),
                         sortedTabList.size()));
-        shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         float padding =
                 resources.getDimension(

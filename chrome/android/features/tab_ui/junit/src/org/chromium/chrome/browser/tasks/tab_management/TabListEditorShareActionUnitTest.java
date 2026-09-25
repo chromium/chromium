@@ -201,6 +201,8 @@ public class TabListEditorShareActionUnitTest {
                     Assert.assertEquals(
                             "1 link from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
                     Assert.assertNotNull(result.getClipData());
+                    Assert.assertNotEquals(
+                            0, result.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 });
 
         Assert.assertTrue(mAction.perform());
@@ -268,6 +270,8 @@ public class TabListEditorShareActionUnitTest {
                     Assert.assertEquals(
                             "3 links from Chrome", result.getStringExtra(Intent.EXTRA_TITLE));
                     Assert.assertNotNull(result.getClipData());
+                    Assert.assertNotEquals(
+                            0, result.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 });
 
         Assert.assertTrue(mAction.perform());
