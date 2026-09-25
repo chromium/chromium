@@ -38,6 +38,9 @@ extern NSString* const kAtMemoryUnsupportedQueryCellAccessibilityIdentifier;
 // Accessibility identifier for the AtMemory search cell.
 extern NSString* const kAtMemorySearchCellAccessibilityIdentifier;
 
+// Accessibility identifier for the AtMemory zero-state empty view.
+extern NSString* const kAtMemoryEmptyViewAccessibilityIdentifier;
+
 // Accessibility identifier for the AtMemory fetching cell.
 extern NSString* const kAtMemoryFetchingCellAccessibilityIdentifier;
 

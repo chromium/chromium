@@ -12,6 +12,8 @@ source_set("item") {
 
 source_set("ui") {
   sources = [
+    "at_memory_empty_view.h",
+    "at_memory_empty_view.mm",
     "at_memory_granular_fill_cell_content_configuration.h",
     "at_memory_granular_fill_cell_content_configuration.mm",
     "at_memory_granular_fill_consumer.h",

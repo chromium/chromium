@@ -25,6 +25,9 @@ NSString* const kAtMemoryUnsupportedQueryCellAccessibilityIdentifier =
 NSString* const kAtMemorySearchCellAccessibilityIdentifier =
     @"AtMemorySearchCell";
 
+NSString* const kAtMemoryEmptyViewAccessibilityIdentifier =
+    @"AtMemoryEmptyView";
+
 NSString* const kAtMemoryFetchingCellAccessibilityIdentifier =
     @"AtMemoryFetchingCell";
 

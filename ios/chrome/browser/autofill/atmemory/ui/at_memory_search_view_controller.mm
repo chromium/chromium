@@ -13,6 +13,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
+#import "ios/chrome/browser/autofill/atmemory/ui/at_memory_empty_view.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_inline_notice_view.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_consumer.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
@@ -79,6 +80,9 @@ enum class ItemIdentifier {
 @end
 
 @implementation AtMemorySearchViewController {
+  // Custom zero-state empty view.
+  AtMemoryEmptyView* _zeroStateEmptyView;
+
   // The table view for this view controller.
   UITableViewDiffableDataSource<NSNumber*, id>* _dataSource;
   // Search controller for users to type a query for performing an AtMemory
@@ -640,15 +644,23 @@ enum class ItemIdentifier {
     [self setEmptyTableViewBackground];
     return;
   }
+  _zeroStateEmptyView = nil;
   self.tableView.backgroundView = nil;
 }
 
 // Sets the table view background to the empty state.
 - (void)setEmptyTableViewBackground {
+  if (_zeroStateEmptyView &&
+      self.tableView.backgroundView == _zeroStateEmptyView) {
+    return;
+  }
   UIImage* image = [UIImage imageNamed:@"at_memory_empty"];
-  [self addEmptyTableViewWithMessage:
-            l10n_util::GetNSString(IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE)
-                               image:image];
+  _zeroStateEmptyView = [[AtMemoryEmptyView alloc]
+      initWithFrame:self.tableView.bounds
+              image:image
+            message:l10n_util::GetNSString(
+                        IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE)];
+  self.tableView.backgroundView = _zeroStateEmptyView;
 }
 
 // Reloads the snapshot for the cell with the given `itemIdentifier`.
