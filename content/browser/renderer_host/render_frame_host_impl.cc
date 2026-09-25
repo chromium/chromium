@@ -8469,7 +8469,10 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
 
 void RenderFrameHostImpl::UpdateLocalResourceLoader(
     blink::mojom::LocalResourceLoaderConfigPtr loader_config) {
-  local_resource_loader_config_ = loader_config.Clone();
+  // `loader_config` is a move-only mojo::StructPtr passed by value. Since
+  // nothing else has a reference to it and it will be destroyed at the end of
+  // the scope, move it to avoid an expensive deep clone.
+  local_resource_loader_config_ = std::move(loader_config);
 }
 
 blink::FrameOwnerElementType RenderFrameHostImpl::GetFrameOwnerElementType() {
