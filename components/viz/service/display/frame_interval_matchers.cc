@@ -93,6 +93,11 @@ std::optional<FrameIntervalMatcher::Result> MatchContentIntervalType(
             // If the target is below the range minimum (too fast), determine
             // the minimum cadence necessary to reach the minimum interval.
             if (content_interval.value() < range_min) {
+              // A zero content interval (e.g. two frames with identical
+              // timestamps) has no meaningful cadence; use the range minimum.
+              if (content_interval.value().is_zero()) {
+                return range_min;
+              }
               int cadence = std::ceil(range_min / content_interval.value());
               base::TimeDelta cadence_interval =
                   cadence * content_interval.value();
@@ -423,7 +428,7 @@ SlowScrollThrottleMatcher::~SlowScrollThrottleMatcher() = default;
 
 std::optional<FrameIntervalMatcher::Result> SlowScrollThrottleMatcher::Match(
     const Inputs& matcher_inputs) {
-  CHECK(std::holds_alternative<std::monostate>(
+  CHECK(!std::holds_alternative<FixedIntervalSettings>(
       matcher_inputs.settings->interval_settings));
   float scroll_speed = 0.f;
   bool ignored_extra_update = false;
@@ -470,8 +475,14 @@ std::optional<FrameIntervalMatcher::Result> SlowScrollThrottleMatcher::Match(
 
   for (const auto& velocity_point : velocity_points_) {
     if (speed_dps >= velocity_point.dp_per_second) {
-      return ResultInterval{base::Hertz(velocity_point.frame_per_second),
-                            ResultIntervalType::kAtLeast};
+      base::TimeDelta interval = base::Hertz(velocity_point.frame_per_second);
+      if (const auto* continuous_range_settings =
+              std::get_if<ContinuousRangeSettings>(
+                  &matcher_inputs.settings->interval_settings)) {
+        interval = std::clamp(interval, continuous_range_settings->min_interval,
+                              continuous_range_settings->max_interval);
+      }
+      return ResultInterval{interval, ResultIntervalType::kAtLeast};
     }
   }
   return std::nullopt;

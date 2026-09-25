@@ -70,6 +70,12 @@ BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
 BASE_FEATURE(kUseFrameIntervalDeciderAdaptiveFrameRate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, FrameIntervalDecider uses ContinuousRangeSettings bounded by the
+// display's max supported refresh rate, instead of passing matched frame
+// intervals through unbounded.
+BASE_FEATURE(kAndroidFrameIntervalContinuousRange,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, `ExternalBeginFrameSourceAndroid::AChoreographerImpl` derives a
 // VSync interval from the frame timelines that the OS provided via the callback
 // registered through `AChoreographer_postVsyncCallback` (as long as the OS
