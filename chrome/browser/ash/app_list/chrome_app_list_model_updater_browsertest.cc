@@ -38,7 +38,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/test/fake_sync_change_processor.h"
-#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_system.h"
 
@@ -75,7 +75,7 @@ class OemAppPositionTest : public ash::LoginManagerTest {
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
     const std::string user_id_hash =
-        user_manager::FakeUserManager::GetFakeUsernameHash(
+        user_manager::TestHelper::GetFakeUsernameHash(
             login_mixin_.users()[0].account_id);
     const base::FilePath user_profile_path = user_data_dir.Append(
         base::FilePath(ash::BrowserContextHelper::GetUserBrowserContextDirName(

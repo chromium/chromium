@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom-forward.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
