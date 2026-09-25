@@ -138,7 +138,6 @@ public class ActorPictureInPictureController
 
     /** Checks if there are active Actor tasks. */
     public boolean shouldEnterPip() {
-        if (!ActorUtils.isActorPipSupported()) return false;
         if (mActivity.isFinishing() || mActivity.isDestroyed()) return false;
         ActorKeyedService service = maybeGetActorService();
         if (service == null) return false;

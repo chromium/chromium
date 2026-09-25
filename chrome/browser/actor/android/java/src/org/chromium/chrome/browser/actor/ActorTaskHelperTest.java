@@ -32,7 +32,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -523,16 +522,8 @@ public class ActorTaskHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.GLIC_BACKGROUND_ACTUATION + ":require_notifications/false"})
-    public void testBackgroundActuation_Desktop() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        setNotificationsEnabled(true);
-        assertFalse(ActorUtils.isBackgroundActuationEnabled());
-    }
-
-    @Test
-    public void testOnStop_Desktop_StartsOffscreenRendering() {
-        DeviceInfo.setIsDesktopForTesting(true);
+    @Config(qualifiers = "sw600dp")
+    public void testOnStop_Tablet_StartsOffscreenRendering() {
         when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
         when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
         when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
@@ -545,8 +536,8 @@ public class ActorTaskHelperTest {
     }
 
     @Test
-    public void testOnStop_Desktop_NoActingTab_NoOffscreenRendering() {
-        DeviceInfo.setIsDesktopForTesting(true);
+    @Config(qualifiers = "sw600dp")
+    public void testOnStop_Tablet_NoActingTab_NoOffscreenRendering() {
         when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
         when(mActorTask.getLastActedTabs()).thenReturn(Collections.emptySet());
 
@@ -558,40 +549,7 @@ public class ActorTaskHelperTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    public void testOnStop_Tablet_PausesTaskWithoutOffscreenRendering() {
-        when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
-        when(mActorTask.getState()).thenReturn(ActorTaskState.ACTING);
-        when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
-        when(mActorService.getActiveTasks()).thenReturn(Collections.singletonList(mActorTask));
-
-        mActivity.findViewById(android.R.id.content).layout(0, 0, 800, 1200);
-
-        mActorTaskHelper.onStopWithNative();
-
-        verify(mActorTask).pause();
-        verify(mOffscreenRenderingManager, never())
-                .startOffscreenRendering(any(), anyInt(), anyInt());
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp")
-    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testOnStop_Tablet_BackgroundActuationEnabled_TransitionsToBackground() {
-        NotificationProxyUtils.setNotificationEnabledForTest(true);
-        ActorForegroundServiceController mockFgsController =
-                mock(ActorForegroundServiceController.class);
-        ActorForegroundServiceController.setInstanceForTesting(mockFgsController);
-
-        mActorTaskHelper.onStopWithNative();
-
-        verify(mockFgsController).transitionActiveTasksToBackground(mTabModelSelector);
-        verify(mOffscreenRenderingManager, never())
-                .startOffscreenRendering(any(), anyInt(), anyInt());
-    }
-
-    @Test
     public void testOnStart_StopsOffscreenRendering() {
-        DeviceInfo.setIsDesktopForTesting(true);
         when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
         when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
         when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
@@ -606,8 +564,8 @@ public class ActorTaskHelperTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     public void testOnTaskStateChanged_CompletedState_StopsOffscreenRendering() {
-        DeviceInfo.setIsDesktopForTesting(true);
         when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
         when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
         when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
@@ -622,8 +580,8 @@ public class ActorTaskHelperTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     public void testOnTaskStateChanged_NonCompletedState_DoesNotStopOffscreenRendering() {
-        DeviceInfo.setIsDesktopForTesting(true);
         when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
         when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
         when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
@@ -638,8 +596,8 @@ public class ActorTaskHelperTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     public void testDestroy_StopsOffscreenRendering() {
-        DeviceInfo.setIsDesktopForTesting(true);
         when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
         when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
         when(mTabModelSelector.getTabById(1)).thenReturn(mTab);

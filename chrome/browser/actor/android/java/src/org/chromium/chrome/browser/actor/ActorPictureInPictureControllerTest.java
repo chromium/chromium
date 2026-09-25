@@ -36,11 +36,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
@@ -136,22 +134,6 @@ public class ActorPictureInPictureControllerTest {
         when(mActorService.getActiveTasksCount()).thenReturn(1);
         when(mActorService.getTask(taskId)).thenReturn(mockTask);
         return mockTask;
-    }
-
-    @Test
-    public void testShouldEnterPip_Desktop_ReturnsFalse() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        when(mActorService.getActiveTasksCount()).thenReturn(1);
-
-        assertFalse(mController.shouldEnterPip());
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp")
-    public void testShouldEnterPip_Tablet_ReturnsTrue() {
-        when(mActorService.getActiveTasksCount()).thenReturn(1);
-
-        assertTrue(mController.shouldEnterPip());
     }
 
     @Test
