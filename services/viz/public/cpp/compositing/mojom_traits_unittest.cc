@@ -630,7 +630,7 @@ TEST_F(CompositingStructTraitsTest, CompositorFrame) {
   // TransferableResource constants.
   const ResourceId single_plane_id(1337);
   const ResourceId multi_plane_id(1338);
-  const SharedImageFormat single_plane_format = SinglePlaneFormat::kALPHA_8;
+  const SharedImageFormat single_plane_format = SinglePlaneFormat::kRGBA_8888;
   const SharedImageFormat multi_plane_format = MultiPlaneFormat::kNV12;
   const gfx::Size tr_size(1234, 5678);
   TransferableResource single_plane_resource = TransferableResource::Make(
@@ -1513,7 +1513,7 @@ TEST_F(CompositingStructTraitsTest, OffsetTagDefinition) {
 
 TEST_F(CompositingStructTraitsTest, TransferableResource) {
   const ResourceId id(1337);
-  const SharedImageFormat format = SinglePlaneFormat::kALPHA_8;
+  const SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1234, 5678);
   const int8_t mailbox_name[GL_MAILBOX_SIZE_CHROMIUM] = {
       0, 9, 8, 7, 6, 5, 4, 3, 2, 1, 9, 7, 5, 3, 1, 2};

@@ -10,7 +10,6 @@ enum SingleplanarFormat {
   RGBA_8888,
   RGBA_4444,
   BGRA_8888,
-  ALPHA_8,
   BGR_565,
   ETC1,
   R_8,

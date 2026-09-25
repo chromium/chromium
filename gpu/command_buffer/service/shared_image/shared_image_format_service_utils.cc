@@ -62,8 +62,6 @@ VkFormat ToVkFormatSinglePlanarInternal(viz::SharedImageFormat format) {
     return VK_FORMAT_A2B10G10R10_UNORM_PACK32;
   } else if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
     return VK_FORMAT_A2R10G10B10_UNORM_PACK32;
-  } else if (format == viz::SinglePlaneFormat::kALPHA_8) {
-    return VK_FORMAT_R8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kETC1) {
     return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
   } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
@@ -86,8 +84,6 @@ GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
       return GL_RGBA;
     } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
       return GL_BGRA_EXT;
-    } else if (format == viz::SinglePlaneFormat::kALPHA_8) {
-      return GL_ALPHA;
     } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
       return GL_LUMINANCE;
     } else if (format == viz::SinglePlaneFormat::kBGR_565 ||
@@ -120,7 +116,6 @@ GLenum GLDataType(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
     if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
         format == viz::SinglePlaneFormat::kBGRA_8888 ||
-        format == viz::SinglePlaneFormat::kALPHA_8 ||
         format == viz::SinglePlaneFormat::kETC1 ||
         format == viz::SinglePlaneFormat::kR_8 ||
         format == viz::SinglePlaneFormat::kRG_88 ||
@@ -212,8 +207,6 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
       return GL_RGBA16F_EXT;
     } else if (format == viz::SinglePlaneFormat::kRGBA_4444) {
       return GL_RGBA4;
-    } else if (format == viz::SinglePlaneFormat::kALPHA_8) {
-      return GL_ALPHA8_EXT;
     } else if (format == viz::SinglePlaneFormat::kBGR_565) {
       return GL_RGB565;
     } else if (format == viz::SinglePlaneFormat::kR_8) {
@@ -403,16 +396,10 @@ GLFormatDesc GLFormatCaps::ToGLFormatDescOverrideHalfFloatType(
 }
 
 GLenum GLFormatCaps::GetFallbackFormatIfNotSupported(GLenum gl_format) const {
-  // Fallback to GL_ALPHA for unsized RED format.
-  if (gl_format == GL_RED_EXT && !ext_texture_rg_) {
-    return GL_ALPHA;
-  }
-  // Fallback to GL_ALPHA8 for sized R8 format.
-  if (gl_format == GL_R8_EXT && !ext_texture_rg_) {
-    return GL_ALPHA8_EXT;
-  }
-  // No fallback for sized/unsize RG8 format without texture_rg extension.
-  if ((gl_format == GL_RG_EXT || gl_format == GL_RG8_EXT) && !ext_texture_rg_) {
+  // No fallback for sized/unsize R8, RG8 format without texture_rg extension.
+  if ((gl_format == GL_RED_EXT || gl_format == GL_R8_EXT ||
+       gl_format == GL_RG_EXT || gl_format == GL_RG8_EXT) &&
+      !ext_texture_rg_) {
     return GL_ZERO;
   }
   // No fallback for R16, RG16 format without texture_norm16 extension.
@@ -571,8 +558,7 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
   } else if (format == viz::SinglePlaneFormat::kBGRA_8888 ||
              format == viz::SinglePlaneFormat::kBGRX_8888) {
     return wgpu::TextureFormat::BGRA8Unorm;
-  } else if (format == viz::SinglePlaneFormat::kR_8 ||
-             format == viz::SinglePlaneFormat::kALPHA_8) {
+  } else if (format == viz::SinglePlaneFormat::kR_8) {
     return wgpu::TextureFormat::R8Unorm;
   } else if (format == viz::SinglePlaneFormat::kRG_88) {
     return wgpu::TextureFormat::RG8Unorm;

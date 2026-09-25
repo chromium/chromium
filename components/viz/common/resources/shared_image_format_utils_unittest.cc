@@ -122,13 +122,6 @@ TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSinglePlaneRGBX) {
   TestToClosestSkColorType(expected_types, format);
 }
 
-TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSinglePlaneAlpha) {
-  // Single planar ALPHA_8
-  SharedImageFormat format = SinglePlaneFormat::kALPHA_8;
-  std::vector<SkColorType> expected_types = {kAlpha_8_SkColorType};
-  TestToClosestSkColorType(expected_types, format);
-}
-
 TEST_F(SharedImageFormatUtilsTest, ToClosestSkColorTypeSoftwareBGRA) {
   // Software Compositing.
   // Usually it is single planar BGRA_8888

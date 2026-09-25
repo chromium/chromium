@@ -68,12 +68,6 @@ class WrappedSkImageBackingFactoryTest
       GTEST_SKIP();
     }
 
-    // We don't use WrappedSkImageBacking with ALPHA8 if it's GL context.
-    if (format == viz::SinglePlaneFormat::kALPHA_8 &&
-        gr_context_type == GrContextType::kGL) {
-      GTEST_SKIP();
-    }
-
     // We don't support RGBA_4444 as format is not supported with Dawn.
     if (gr_context_type == GrContextType::kGraphiteDawn &&
         format == viz::SinglePlaneFormat::kRGBA_4444) {
@@ -251,8 +245,7 @@ std::string TestParamToString(
 // BGRA_1010102 fails to create backing. BGRX_8888 and BGR_565 "work" but Skia
 // just thinks is RGBX_8888 and RGB_565 respectively so upload doesn't work.
 // TODO(kylechar): Add RGBA_F16 where it works.
-const auto kFormats = ::testing::Values(viz::SinglePlaneFormat::kALPHA_8,
-                                        viz::SinglePlaneFormat::kR_8,
+const auto kFormats = ::testing::Values(viz::SinglePlaneFormat::kR_8,
                                         viz::SinglePlaneFormat::kRG_88,
                                         viz::SinglePlaneFormat::kRGBA_4444,
                                         viz::SinglePlaneFormat::kRGBA_8888,

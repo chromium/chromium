@@ -176,16 +176,8 @@ bool WrappedSkImageBackingFactory::IsSupported(
     }
   }
 
-  if (format == viz::SinglePlaneFormat::kALPHA_8) {
-    // For ALPHA8 skia will pick format depending on context version and
-    // extensions available and we'll have to match that format when we record
-    // DDLs. To avoid matching logic here, fallback to other backings (e.g
-    // GLTextureImageBacking) where we control what format was used.
-    if (gr_context_type == GrContextType::kGL) {
-      return false;
-    }
-  } else if (format == viz::SinglePlaneFormat::kBGRX_8888 ||
-             format == viz::SinglePlaneFormat::kBGR_565) {
+  if (format == viz::SinglePlaneFormat::kBGRX_8888 ||
+      format == viz::SinglePlaneFormat::kBGR_565) {
     // For BGRX_8888/BGR_565 there is no equivalent SkColorType. Skia will use
     // the RGBX_8888/RGB_565 color type on upload so R/B channels are reversed.
     if (usage.Has(SHARED_IMAGE_USAGE_CPU_UPLOAD) || !pixel_data.empty()) {

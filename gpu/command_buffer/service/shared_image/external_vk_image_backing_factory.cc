@@ -148,11 +148,6 @@ bool IsFormatSupported(viz::SharedImageFormat format,
     }
   }
 
-  // ALPHA_8 is only used by UI and should never need GL/Vulkan interop.
-  if (format == viz::SinglePlaneFormat::kALPHA_8) {
-    return false;
-  }
-
   return true;
 }
 

@@ -27,17 +27,10 @@ namespace {
 std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
     viz::SharedImageFormat plane_format,
     const GLFormatCaps& caps) {
-  if (plane_format == viz::SinglePlaneFormat::kR_8) {
-    bool fallback = !caps.ext_texture_rg();
-    base::UmaHistogramBoolean("GPU.SharedImage.R8ToAlpha8Fallback", fallback);
-    if (fallback) {
-      // Fallback to ALPHA_8 for R_8 format.
-      return viz::SinglePlaneFormat::kALPHA_8;
-    }
-  }
-  if (plane_format == viz::SinglePlaneFormat::kRG_88 &&
+  if ((plane_format == viz::SinglePlaneFormat::kR_8 ||
+       plane_format == viz::SinglePlaneFormat::kRG_88) &&
       !caps.ext_texture_rg()) {
-    // No fallback for RG_88 format.
+    // No fallback for R_8, RG_88 format.
     return std::nullopt;
   }
   if ((plane_format == viz::SinglePlaneFormat::kR_16 ||
@@ -169,13 +162,6 @@ GLCommonImageBackingFactory::GLCommonImageBackingFactory(
     if (enable_texture_storage && !info.is_compressed &&
         validators->texture_internal_format_storage.IsValid(
             info.storage_internal_format)) {
-      // GL_ALPHA8_EXT requires EXT_texture_storage even with ES3. We should not
-      // rely on validating command decoder logic that allows GL_ALPHA8, but
-      // working around here for now until proper fix.
-      if (info.storage_internal_format == GL_ALPHA8_EXT && use_passthrough_) {
-        continue;
-      }
-
       info.supports_storage = true;
       info.adjusted_storage_internal_format =
           gles2::TextureManager::AdjustTexStorageFormat(

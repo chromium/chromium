@@ -763,7 +763,7 @@ TEST_F(SurfaceSynchronizationTest, ResourcesOnlyReturnedOnce) {
   // the child submits a CompositorFrame. The CompositorFrame also has
   // resources in its resource list.
   auto shared_image = gpu::ClientSharedImage::CreateForTesting(
-      {SinglePlaneFormat::kALPHA_8, gfx::Size(1234, 5678), gfx::ColorSpace(),
+      {SinglePlaneFormat::kRGBA_8888, gfx::Size(1234, 5678), gfx::ColorSpace(),
        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ});
   TransferableResource resource = TransferableResource::Make(

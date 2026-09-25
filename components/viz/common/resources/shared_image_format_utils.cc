@@ -43,8 +43,6 @@ SharedImageFormatUMA GetSharedImageFormatUMA(SharedImageFormat format) {
       return SharedImageFormatUMA::kRGBA_4444;
     } else if (format == SinglePlaneFormat::kBGRA_8888) {
       return SharedImageFormatUMA::kBGRA_8888;
-    } else if (format == SinglePlaneFormat::kALPHA_8) {
-      return SharedImageFormatUMA::kALPHA_8;
     } else if (format == SinglePlaneFormat::kBGR_565) {
       return SharedImageFormatUMA::kBGR_565;
     } else if (format == SinglePlaneFormat::kETC1) {
@@ -144,8 +142,6 @@ SkColorType ToClosestSkColorType(SharedImageFormat format) {
     return kRGBA_8888_SkColorType;
   } else if (format == SinglePlaneFormat::kBGRA_8888) {
     return kBGRA_8888_SkColorType;
-  } else if (format == SinglePlaneFormat::kALPHA_8) {
-    return kAlpha_8_SkColorType;
   } else if (format == SinglePlaneFormat::kBGR_565) {
     return kRGB_565_SkColorType;
   } else if (format == SinglePlaneFormat::kRGBX_8888 ||
@@ -212,8 +208,6 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
       return SinglePlaneFormat::kRGBA_8888;
     case kRGBA_F16_SkColorType:
       return SinglePlaneFormat::kRGBA_F16;
-    case kAlpha_8_SkColorType:
-      return SinglePlaneFormat::kALPHA_8;
     case kRGB_565_SkColorType:
       return SinglePlaneFormat::kBGR_565;
     case kRGB_888x_SkColorType:
