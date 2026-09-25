@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.actor;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -92,11 +93,23 @@ public class ActorUtils {
     }
 
     /**
-     * Returns whether background actuation is enabled and allowed (i.e. the base
-     * GlicBackgroundActuation feature flag is enabled, and either notifications are enabled or the
-     * feature param is configured not to require notifications).
+     * Returns whether Actor picture-in-picture is available on this device. Desktop keeps tasks
+     * running with offscreen rendering instead, so it never enters Actor picture-in-picture.
+     */
+    public static boolean isActorPipSupported() {
+        return !DeviceInfo.isDesktop();
+    }
+
+    /**
+     * Returns whether background actuation is enabled and allowed (i.e. the device is not a
+     * desktop, the base GlicBackgroundActuation feature flag is enabled, and either notifications
+     * are enabled or the feature param is configured not to require notifications).
      */
     public static boolean isBackgroundActuationEnabled() {
+        // Desktop keeps tasks running with offscreen rendering rather than background actuation.
+        if (DeviceInfo.isDesktop()) {
+            return false;
+        }
         if (!ChromeFeatureList.sGlicBackgroundActuation.isEnabled()) {
             return false;
         }
