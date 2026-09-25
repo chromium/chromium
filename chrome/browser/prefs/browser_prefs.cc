@@ -1017,6 +1017,10 @@ constexpr char kLastLauncherAppAlmanacCallTimestamp[] =
     "app_discovery_service.last_launcher_app_almanac_call_timestamp";
 inline constexpr char kActivityTimeAfterOnboarding[] =
     "oobe.activity_time_after_onboarding";
+inline constexpr char kHatsAudioOutputProcSurveyCycleEndTs[] =
+    "hats_audio_output_proc_cycle_end_timestamp";
+inline constexpr char kHatsAudioOutputProcDeviceIsSelected[] =
+    "hats_audio_output_proc_device_is_selected";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deprecated 09/2026.
@@ -1435,6 +1439,8 @@ void RegisterProfilePrefsForMigration(
                              base::Time());
   registry->RegisterTimeDeltaPref(kActivityTimeAfterOnboarding,
                                   base::TimeDelta());
+  registry->RegisterInt64Pref(kHatsAudioOutputProcSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(kHatsAudioOutputProcDeviceIsSelected, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Deprecated 09/2026.
@@ -2796,6 +2802,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHatsOnboardingDeviceIsSelected);
   profile_prefs->ClearPref(kLastLauncherAppAlmanacCallTimestamp);
   profile_prefs->ClearPref(kActivityTimeAfterOnboarding);
+  profile_prefs->ClearPref(kHatsAudioOutputProcSurveyCycleEndTs);
+  profile_prefs->ClearPref(kHatsAudioOutputProcDeviceIsSelected);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Added 09/2026.

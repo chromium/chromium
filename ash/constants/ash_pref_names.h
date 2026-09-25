@@ -3553,16 +3553,6 @@ inline constexpr char kHatsAudioDeviceIsSelected[] =
     "hats_audio_device_is_selected";
 
 // An int64 pref. This is the timestamp, microseconds after epoch, that
-// indicates the end of the most recent Audio Output Processing survey cycle.
-inline constexpr char kHatsAudioOutputProcSurveyCycleEndTs[] =
-    "hats_audio_output_proc_cycle_end_timestamp";
-
-// A boolean pref. Indicates if the device is selected for the Audio Output
-// Processing survey
-inline constexpr char kHatsAudioOutputProcDeviceIsSelected[] =
-    "hats_audio_output_proc_device_is_selected";
-
-// An int64 pref. This is the timestamp, microseconds after epoch, that
 // indicates the end of the Battery life experience survey.
 inline constexpr char kHatsBatteryLifeCycleEndTs[] =
     "hats_battery_life_cycle_end_timestamp";

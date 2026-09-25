@@ -1847,7 +1847,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
   <token key="Survey">
     <variant name="Audio"/>
-    <variant name="AudioOutputProc"/>
     <variant name="BatteryLife"/>
     <variant name="BluetoothAudio"/>
     <variant name="CameraApp"/>
