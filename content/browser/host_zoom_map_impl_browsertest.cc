@@ -66,6 +66,27 @@ class HostZoomMapImplBrowserTest : public ContentBrowserTest {
   raw_ptr<HostZoomMapImpl> host_zoom_map_impl_;
 };
 
+// For a URL without a host the zoom level is keyed by spec. A same-document
+// fragment navigation must not change the key.
+IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,
+                       HostlessURLKeepsZoomAcrossFragmentNavigation) {
+  const GURL file_url = GetTestUrl("", "title1.html");
+  ASSERT_TRUE(file_url.GetHost().empty());
+  EXPECT_TRUE(NavigateToURL(shell(), file_url));
+  WebContents* web_contents = shell()->web_contents();
+
+  HostZoomMap::SetZoomLevel(web_contents, 2.5);
+  EXPECT_DOUBLE_EQ(2.5, HostZoomMap::GetZoomLevel(web_contents));
+
+  const GURL fragment_url(file_url.spec() + "#fragment");
+  EXPECT_TRUE(NavigateToURL(shell(), fragment_url));
+  EXPECT_EQ(fragment_url,
+            web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+
+  EXPECT_DOUBLE_EQ(2.5, HostZoomMap::GetZoomLevel(web_contents));
+  EXPECT_EQ(file_url, HostZoomMap::GetURLForWebContents(web_contents));
+}
+
 // Test to make sure that GetZoomLevel() works properly for zoom levels
 // stored by host value, and can distinguish temporary zoom levels from
 // these.

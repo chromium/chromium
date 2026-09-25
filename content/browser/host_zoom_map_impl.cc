@@ -55,8 +55,12 @@ GURL GetURLForRenderFrameHostPtr(const RenderFrameHost* rfh) {
   // If a user lands on an error page, and then modifies the zoom level, it
   // should be attributed to the error-page host and not the page they were
   // trying to reach.
-  return rfh->IsErrorDocument() ? GURL(kUnreachableWebDataURL)
-                                : rfh->GetLastCommittedURL();
+  if (rfh->IsErrorDocument()) {
+    return GURL(kUnreachableWebDataURL);
+  }
+  // Zoom levels for URLs without a host are keyed by spec; drop the fragment
+  // so that same-document navigations keep the key.
+  return rfh->GetLastCommittedURL().GetWithoutRef();
 }
 
 std::string GetHostFromProcessFrame(RenderFrameHostImpl* rfh) {

@@ -61,13 +61,14 @@ class HostZoomMap {
 
   typedef std::vector<ZoomLevelChange> ZoomLevelVector;
 
-  // Gets the last committed URL for the RenderFrameHost, or
-  // kUnreachableWebDataURL if it's on an error page.
+  // Gets the URL that zoom levels for the RenderFrameHost are keyed on: its
+  // last committed URL without the fragment, or kUnreachableWebDataURL if
+  // it's on an error page.
   CONTENT_EXPORT static GURL GetURLForRenderFrameHost(
       GlobalRenderFrameHostId rfh_id);
 
-  // Gets the last committed URL for the WebContent's primary main frame
-  // RenderFrameHost, or kUnreachableWebDataURL if it's on an error page.
+  // Same as GetURLForRenderFrameHost() for the WebContents' primary main
+  // frame.
   CONTENT_EXPORT static GURL GetURLForWebContents(WebContents* web_contents);
 
   CONTENT_EXPORT static HostZoomMap* GetDefaultForBrowserContext(
