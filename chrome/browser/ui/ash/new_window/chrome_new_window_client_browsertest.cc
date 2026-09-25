@@ -20,8 +20,8 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -43,7 +43,7 @@ void CreateAndStartUserSession(const AccountId& account_id) {
   known_user.SetProfileRequiresPolicy(
       account_id, user_manager::ProfileRequiresPolicy::kNoPolicyRequired);
   const std::string user_id_hash =
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+      user_manager::TestHelper::GetFakeUsernameHash(account_id);
   SessionManager::Get()->CreateSession(account_id, user_id_hash,
                                        /*new_user=*/false,
                                        /*has_active_session=*/false);

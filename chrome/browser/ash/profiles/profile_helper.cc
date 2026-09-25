@@ -59,7 +59,7 @@ class ProfileHelperImpl : public ProfileHelper {
  private:
   std::unique_ptr<BrowserContextHelper> browser_context_helper_;
 
-  // Used for testing by unit tests and FakeUserManager.
+  // Used for testing by unit tests and FakeChromeUserManager.
   std::map<const user_manager::User*, raw_ptr<Profile, CtnExperimental>>
       user_to_profile_for_testing_;
 };

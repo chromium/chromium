@@ -35,7 +35,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #else
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -314,7 +314,7 @@ base::FilePath TestingProfileManager::GetProfilePath(
             : profile_name;
     profile_path =
         profile_path.Append(ash::ProfileHelper::Get()->GetUserProfileDir(
-            user_manager::FakeUserManager::GetFakeUsernameHash(
+            user_manager::TestHelper::GetFakeUsernameHash(
                 AccountId::FromUserEmail(fake_email))));
   } else {
     profile_path = profile_path.AppendASCII(profile_name);

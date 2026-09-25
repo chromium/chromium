@@ -50,7 +50,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/test_helper.h"
 #include "content/public/test/test_utils.h"
@@ -214,7 +213,7 @@ class QuickUnlockPrivateUnitTest
         user_manager::TestHelper(user_manager).AddRegularUser(auth_account_id));
     user_manager->UserLoggedIn(
         auth_account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(auth_account_id));
+        user_manager::TestHelper::GetFakeUsernameHash(auth_account_id));
 
     // Setup the primary user mapping.
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
@@ -224,7 +223,7 @@ class QuickUnlockPrivateUnitTest
     // Generate an auth token.
     auth_token_user_context_.SetAccountId(auth_account_id);
     auth_token_user_context_.SetUserIDHash(
-        user_manager::FakeUserManager::GetFakeUsernameHash(auth_account_id));
+        user_manager::TestHelper::GetFakeUsernameHash(auth_account_id));
     auth_token_user_context_.SetSessionLifetime(
         base::Time::Now() + ash::quick_unlock::AuthToken::kTokenExpiration);
 

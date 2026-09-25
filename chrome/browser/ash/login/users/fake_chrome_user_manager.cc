@@ -22,9 +22,9 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/user_login_permission_tracker.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_names.h"
@@ -83,7 +83,7 @@ FakeChromeUserManager::AddUserWithAffiliationAndTypeAndProfile(
   // Use `is_affiliated` value for managed, too, for now.
   user->SetUserPolicyStatus(/*is_managed=*/is_affiliated, is_affiliated);
   user->set_username_hash(
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+      user_manager::TestHelper::GetFakeUsernameHash(account_id));
   user->SetStubImage(
       std::make_unique<user_manager::UserImage>(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -106,7 +106,7 @@ user_manager::User* FakeChromeUserManager::AddKioskChromeAppUser(
   user_manager::User* user =
       user_manager::User::CreateKioskChromeAppUser(account_id);
   user->set_username_hash(
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+      user_manager::TestHelper::GetFakeUsernameHash(account_id));
   user_storage_.emplace_back(user);
   persisted_users_.push_back(user);
   return user;
@@ -117,7 +117,7 @@ user_manager::User* FakeChromeUserManager::AddKioskWebAppUser(
   user_manager::User* user =
       user_manager::User::CreateKioskWebAppUser(account_id);
   user->set_username_hash(
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+      user_manager::TestHelper::GetFakeUsernameHash(account_id));
   user_storage_.emplace_back(user);
   persisted_users_.push_back(user);
   return user;
@@ -127,7 +127,7 @@ user_manager::User* FakeChromeUserManager::AddKioskIwaUser(
     const AccountId& account_id) {
   user_manager::User* user = user_manager::User::CreateKioskIwaUser(account_id);
   user->set_username_hash(
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+      user_manager::TestHelper::GetFakeUsernameHash(account_id));
   user_storage_.emplace_back(user);
   persisted_users_.push_back(user);
   return user;
@@ -146,7 +146,7 @@ user_manager::User* FakeChromeUserManager::AddGuestUser() {
   user_manager::User* user =
       user_manager::User::CreateGuestUser(user_manager::GuestAccountId());
   user->set_username_hash(
-      user_manager::FakeUserManager::GetFakeUsernameHash(user->GetAccountId()));
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   user_storage_.emplace_back(user);
   persisted_users_.push_back(user);
   return user;
@@ -157,7 +157,7 @@ user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
   user_manager::User* user =
       user_manager::User::CreatePublicAccountUser(account_id);
   user->set_username_hash(
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+      user_manager::TestHelper::GetFakeUsernameHash(account_id));
   user->SetStubImage(
       std::make_unique<user_manager::UserImage>(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -171,7 +171,7 @@ user_manager::User* FakeChromeUserManager::AddPublicAccountUser(
 void FakeChromeUserManager::LoginUser(const AccountId& account_id,
                                       bool set_profile_created_flag) {
   UserLoggedIn(account_id,
-               user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+               user_manager::TestHelper::GetFakeUsernameHash(account_id));
 
   if (!set_profile_created_flag) {
     return;

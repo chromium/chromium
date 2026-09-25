@@ -28,6 +28,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/hash.h"
 #include "crypto/nss_util_internal.h"
@@ -200,7 +201,7 @@ class ClientCertSourceWritableUnitTest
   bool use_hardware_backed() const { return GetParam(); }
 
   std::string username_hash() const {
-    return user_manager::FakeUserManager::GetFakeUsernameHash(account_);
+    return user_manager::TestHelper::GetFakeUsernameHash(account_);
   }
 #endif
 
