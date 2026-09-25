@@ -19,6 +19,8 @@ generated GN target `<generate_jni's target name>_java`.
 **Key Variables:**
 
 - `sources`: List of `.java` files to generate JNI bindings for.
+- `deps`: (Optional) Other `generate_jni` targets whose `@JniType`-annotated
+  `JniTypeToken` interfaces are referenced by safe pointers in `sources`.
 - `use_weak_called_by_natives`: (Optional) Emits `@CalledByNative` stubs with
 - `[[gnu::weak]]` fallback implementations. Allows the bindings to be used
 - with or without a `generate_final_jni()` target.
@@ -34,8 +36,14 @@ generate_jni("abcd_jni") {
 
 android_library("abcd_java") {
   ...
-  # For the generated `${Bar}Jni` classes.
-  deps = [ ":abcd_jni_java" ]
+  deps = [
+    # For the generated `${Bar}Jni` classes.
+    ":abcd_jni_java",
+
+    # For the JNI annotations (including @JniType) and the safe pointer
+    # wrappers (JniUniquePtr, JniRawPtr).
+    "//third_party/jni_zero:jni_zero_java",
+  ]
 }
 
 source_set("abcd") {
@@ -301,3 +309,21 @@ Common ones include:
 | `GURL`                             | `GURL`              | `url/android/gurl_android.h`               |
 | `base::Token`                      | `Token`             | `base/android/token_android.h`             |
 | `base::UnguessableToken`           | `UnguessableToken`  | `base/android/unguessable_token_android.h` |
+
+## Safe JNI Pointers in Chromium
+
+In Chromium builds, `//base` wires runtime checks into JNI Zero's safe pointer
+wrappers during initialization:
+
+- **Leak detection**: `JniUniquePtr` and `JniRawPtr` instances register with
+  `LifetimeAssert`. If an instance is garbage-collected without calling
+  `destroy()` or `release()`, `LifetimeAssert` reports a leak in builds with
+  assertions enabled. Classes using `JniUniquePtr` or `JniRawPtr` do not need a
+  separate `LifetimeAssert` field to guard the native pointer. Handles created
+  with `createForTesting()` are tracked as well, so tests must also call
+  `destroy()` or `release()` on them.
+- **BackupRefPtr protection**: When BackupRefPtr is enabled and the pointee is
+  allocated by PartitionAlloc, `//base` acquires a BackupRefPtr quarantine
+  reference when `JniRawPtr` crosses into Java and drops it when `release()` is
+  called, mitigating use-after-free if C++ frees the object while Java still
+  holds the handle.
