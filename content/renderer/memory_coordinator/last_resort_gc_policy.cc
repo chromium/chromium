@@ -58,7 +58,7 @@ LastResortGCPolicy::~LastResortGCPolicy() {
 void LastResortGCPolicy::OnV8HeapLastResortGC() {
   // The V8 heap is full and can't free enough memory. To help the impending GC,
   // notify consumers that retain references to the v8 heap.
-  SetLimit(0, /*release_memory=*/true);
+  SetLimit(base::MemoryLimit::FromPercent(0), /*release_memory=*/true);
 
   // Immediately restore the limit if there is no delay.
   if (kRestoreLimitSeconds.Get() == 0) {
@@ -72,8 +72,7 @@ void LastResortGCPolicy::OnV8HeapLastResortGC() {
 }
 
 void LastResortGCPolicy::OnRestoreLimitTimerFired() {
-  SetLimit(base::MemoryLimit::Default().percent(),
-           /*release_memory=*/false);
+  SetLimit(base::MemoryLimit::Default(), /*release_memory=*/false);
 }
 
 }  // namespace content

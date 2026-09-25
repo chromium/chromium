@@ -32,12 +32,11 @@ void PredicateMemoryCoordinatorPolicy::OnConsumerGroupAdded(
                      child_process_id)) {
     // Only update if the limit is not the default or if memory release is
     // requested.
-    if (percentage_ != base::MemoryLimit::Default().percent() ||
-        release_memory_) {
+    if (memory_limit_ != base::MemoryLimit::Default() || release_memory_) {
       manager().UpdateConsumers(
-          this,
-          {GlobalMemoryConsumerUpdate{
-              child_process_id, {consumer_id, percentage_, release_memory_}}});
+          this, {GlobalMemoryConsumerUpdate{
+                    child_process_id,
+                    {consumer_id, memory_limit_, release_memory_}}});
     }
   }
 }
@@ -46,20 +45,19 @@ void PredicateMemoryCoordinatorPolicy::OnConsumerGroupRemoved(
     uint32_t consumer_id,
     ChildProcessId child_process_id) {}
 
-void PredicateMemoryCoordinatorPolicy::SetLimit(int percentage,
+void PredicateMemoryCoordinatorPolicy::SetLimit(base::MemoryLimit memory_limit,
                                                 bool release_memory) {
-  if (percentage == percentage_ && release_memory == release_memory_) {
+  if (memory_limit == memory_limit_ && release_memory == release_memory_) {
     // If this is a repeated request to release memory, and we are actually
     // under pressure (limit < 100%), trigger a repeated release for stateless
     // consumers.
-    if (release_memory &&
-        percentage < base::MemoryLimit::NoPressureThreshold().percent()) {
+    if (release_memory && memory_limit < base::MemoryLimit::Default()) {
       TriggerRepeatedRelease();
     }
     return;
   }
 
-  percentage_ = percentage;
+  memory_limit_ = memory_limit;
   release_memory_ = release_memory;
 
   manager().UpdateConsumers(
@@ -70,7 +68,7 @@ void PredicateMemoryCoordinatorPolicy::SetLimit(int percentage,
         return predicate_.Run(consumer_id, consumer_name, traits, process_type,
                               child_process_id);
       },
-      percentage_, release_memory_);
+      memory_limit_, release_memory_);
 }
 
 void PredicateMemoryCoordinatorPolicy::TriggerRepeatedRelease() {

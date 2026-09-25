@@ -76,7 +76,7 @@ void BrowserMemoryCoordinatorBridge::SetOverrideLimit(
     uint32_t consumer_id,
     base::MemoryLimit memory_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  manager().SetMemoryLimitOverride(consumer_id, memory_limit.percent());
+  manager().SetMemoryLimitOverride(consumer_id, memory_limit);
 }
 
 void BrowserMemoryCoordinatorBridge::ClearOverrideLimit(

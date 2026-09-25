@@ -1342,7 +1342,7 @@ IN_PROC_BROWSER_TEST_P(SpareRenderProcessHostManagerMemoryPressureParamTest,
   // Trigger memory pressure.
   content::test::ScopedMemoryLimitOverride memory_override(
       "SpareRenderProcessHostManagerImpl");
-  memory_override.SetLimit(GetParam().memory_limit.percent());
+  memory_override.SetLimit(GetParam().memory_limit);
   memory_override.NotifyReleaseMemory();
 
   EXPECT_EQ(spare_manager.GetSpares().size(),

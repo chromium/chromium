@@ -18,11 +18,11 @@ ScopedMemoryLimitOverride::~ScopedMemoryLimitOverride() {
   ClearLimit();
 }
 
-void ScopedMemoryLimitOverride::SetLimit(int percentage) {
+void ScopedMemoryLimitOverride::SetLimit(base::MemoryLimit memory_limit) {
   BrowserMemoryCoordinator::Get()
       .policy_manager_for_testing()
-      .SetMemoryLimitOverride(consumer_id_, percentage);
-  limit_ = percentage;
+      .SetMemoryLimitOverride(consumer_id_, memory_limit);
+  limit_ = memory_limit;
 }
 
 void ScopedMemoryLimitOverride::ClearLimit() {

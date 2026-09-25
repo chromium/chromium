@@ -16,6 +16,7 @@
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/observer_list.h"
 #include "content/common/buildflags.h"
@@ -118,14 +119,15 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   // filter.
   void UpdateConsumers(MemoryCoordinatorPolicy* policy,
                        ConsumerFilter filter,
-                       std::optional<int> percentage,
+                       std::optional<base::MemoryLimit> memory_limit,
                        bool release_memory);
 
   // Override utilities --------------------------------------------------------
 
   // Sets or updates a memory limit override for the consumer with the given ID.
   // This override takes precedence over any limits calculated by policies.
-  void SetMemoryLimitOverride(uint32_t consumer_id, int percentage);
+  void SetMemoryLimitOverride(uint32_t consumer_id,
+                              base::MemoryLimit memory_limit);
 
   // Clears the memory limit override for the consumer with the given ID.
   // Fails a CHECK if an override does not exist for this consumer.
@@ -141,34 +143,37 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
                base::MemoryConsumerTraits traits);
     ~GroupState();
 
-    // Updates the limit requested by `policy`. If `percentage` is 100, the
-    // policy's limit is cleared. Returns the new aggregate limit if it changed,
-    // or std::nullopt otherwise.
-    std::optional<int> SetMemoryLimitForPolicy(MemoryCoordinatorPolicy* policy,
-                                               int percentage);
+    // Updates the limit requested by `policy`. If `memory_limit` is the
+    // default, the policy's limit is cleared. Returns the new aggregate limit
+    // if it changed, or std::nullopt otherwise.
+    std::optional<base::MemoryLimit> SetMemoryLimitForPolicy(
+        MemoryCoordinatorPolicy* policy,
+        base::MemoryLimit memory_limit);
 
     const std::string& consumer_name() const { return consumer_name_; }
     base::MemoryConsumerTraits traits() const { return traits_; }
-    int current_limit() const { return current_limit_; }
+    base::MemoryLimit current_limit() const { return current_limit_; }
 
     // Sets a memory limit override. Returns the new effective limit if it
     // changed.
-    std::optional<int> SetOverrideLimit(std::optional<int> percentage);
+    std::optional<base::MemoryLimit> SetOverrideLimit(
+        std::optional<base::MemoryLimit> memory_limit);
 
    private:
-    int RecomputeMemoryLimit() const;
+    base::MemoryLimit RecomputeMemoryLimit() const;
 
     const std::string consumer_name_;
     const base::MemoryConsumerTraits traits_;
 
     // The limit requested by each policy.
-    base::flat_map<MemoryCoordinatorPolicy*, int> requested_limits_;
+    base::flat_map<MemoryCoordinatorPolicy*, base::MemoryLimit>
+        requested_limits_;
 
     // The last memory limit that was applied to this group.
-    int current_limit_ = base::MemoryLimit::Default().percent();
+    base::MemoryLimit current_limit_ = base::MemoryLimit::Default();
 
     // The memory limit override.
-    std::optional<int> override_limit_;
+    std::optional<base::MemoryLimit> override_limit_;
   };
 
   struct HostState {
@@ -189,7 +194,8 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 
   // Applies the memory limit override to all registered consumers with the
   // given ID.
-  void ApplyMemoryLimitOverride(uint32_t consumer_id, int percentage);
+  void ApplyMemoryLimitOverride(uint32_t consumer_id,
+                                base::MemoryLimit memory_limit);
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   base::ObserverList<DiagnosticObserver> diagnostic_observers_;
@@ -202,7 +208,8 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 
   // Overrides for specific consumers. These take precedence over limits
   // calculated by policies.
-  base::flat_map<uint32_t /* consumer_id */, int> memory_limit_overrides_;
+  base::flat_map<uint32_t /* consumer_id */, base::MemoryLimit>
+      memory_limit_overrides_;
 };
 
 }  // namespace content

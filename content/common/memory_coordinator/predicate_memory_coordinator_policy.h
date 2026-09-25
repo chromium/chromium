@@ -62,11 +62,11 @@ class CONTENT_EXPORT PredicateMemoryCoordinatorPolicy
   // Updates the memory limit and/or release memory request for all consumers
   // matching the predicate. This will also apply to any matching consumer
   // added in the future.
-  void SetLimit(int percentage, bool release_memory);
+  void SetLimit(base::MemoryLimit memory_limit, bool release_memory);
 
  private:
   const ConsumerPredicate predicate_;
-  int percentage_ = base::MemoryLimit::Default().percent();
+  base::MemoryLimit memory_limit_ = base::MemoryLimit::Default();
   bool release_memory_ = false;
 
   void TriggerRepeatedRelease();
