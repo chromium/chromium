@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ProgressScreenProperties.MESSAGE_TEXT;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ProgressScreenProperties.SHOW_GPAY_ICON;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +48,7 @@ public class FacilitatedPaymentsProgressScreen implements FacilitatedPaymentsSeq
 
     /**
      * Updates the progress screen view based on property changes within the underlying model, such
-     * as setting or hiding the progress message text.
+     * as setting or hiding the progress message text or GPay icon.
      */
     static void bindProgressScreen(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == MESSAGE_TEXT) {
@@ -59,6 +60,9 @@ public class FacilitatedPaymentsProgressScreen implements FacilitatedPaymentsSeq
                 messageView.setText(message);
                 messageView.setVisibility(View.VISIBLE);
             }
+        } else if (propertyKey == SHOW_GPAY_ICON) {
+            View gpayIcon = view.findViewById(R.id.gpay_icon);
+            gpayIcon.setVisibility(model.get(SHOW_GPAY_ICON) ? View.VISIBLE : View.GONE);
         }
     }
 

@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_TEXT_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.VIDEO_LINK_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ProgressScreenProperties.SHOW_GPAY_ICON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
@@ -791,6 +792,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         runOnUiThreadBlocking(
                 () -> {
                     mModel.set(SCREEN, PROGRESS_SCREEN);
+                    mModel.get(SCREEN_VIEW_MODEL).set(SHOW_GPAY_ICON, true);
                     mModel.set(VISIBLE_STATE, SHOWN);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -799,6 +801,27 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(
                 containsViewOfClass((ViewGroup) mView.getContentView(), ProgressBar.class),
                 is(true));
+        assertThat(
+                mView.getContentView().findViewById(R.id.gpay_icon).getVisibility(),
+                is(View.VISIBLE));
+    }
+
+    @Test
+    @MediumTest
+    public void testProgressScreenShown_GpayIconHidden() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, PROGRESS_SCREEN);
+                    mModel.get(SCREEN_VIEW_MODEL).set(SHOW_GPAY_ICON, false);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(
+                containsViewOfClass((ViewGroup) mView.getContentView(), ProgressBar.class),
+                is(true));
+        assertThat(
+                mView.getContentView().findViewById(R.id.gpay_icon).getVisibility(), is(View.GONE));
     }
 
     @Test

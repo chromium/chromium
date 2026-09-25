@@ -337,7 +337,11 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         static final WritableObjectPropertyKey<String> MESSAGE_TEXT =
                 new WritableObjectPropertyKey<>("message_text");
 
-        static final PropertyKey[] ALL_KEYS = {MESSAGE_TEXT};
+        /** Whether the GPay icon should be displayed. */
+        static final WritableBooleanPropertyKey SHOW_GPAY_ICON =
+                new WritableBooleanPropertyKey("show_gpay_icon");
+
+        static final PropertyKey[] ALL_KEYS = {MESSAGE_TEXT, SHOW_GPAY_ICON};
 
         private ProgressScreenProperties() {}
     }

@@ -40,6 +40,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.VIDEO_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ProgressScreenProperties.MESSAGE_TEXT;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ProgressScreenProperties.SHOW_GPAY_ICON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
@@ -302,7 +303,14 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
                     case ProgressScreenType.ACCOUNT_LINKING -> "";
                     default -> "";
                 };
+        boolean showGpayIcon =
+                switch (type) {
+                    case ProgressScreenType.PAYMENT -> true;
+                    case ProgressScreenType.ACCOUNT_LINKING -> false;
+                    default -> false;
+                };
         mModel.get(SCREEN_VIEW_MODEL).set(MESSAGE_TEXT, progressText);
+        mModel.get(SCREEN_VIEW_MODEL).set(SHOW_GPAY_ICON, showGpayIcon);
         mModel.set(SURVIVES_NAVIGATION, false);
         mModel.set(VISIBLE_STATE, SHOWN);
     }
