@@ -53,6 +53,7 @@ source_set("read_anything") {
     "//components/dom_distiller/content/browser",
     "//components/language/core/common",
     "//components/language_detection/core",
+    "//components/pdf/common:constants",
     "//components/pdf/common:util",
     "//components/user_education/webui",
     "//components/user_education/webui:mojo_bindings",

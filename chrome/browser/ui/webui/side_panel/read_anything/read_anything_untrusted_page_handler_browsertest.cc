@@ -591,12 +591,19 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
     EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false))
         .Times(2);
   }
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true)).Times(1);
+  ui::AXTreeID notified_pdf_tree_id;
+  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true))
+      .WillOnce(testing::SaveArg<0>(&notified_pdf_tree_id));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
   handler_->DidStopLoading();
+
+  content::RenderFrameHost* pdf_rfh =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(pdf_rfh);
+  EXPECT_EQ(notified_pdf_tree_id, pdf_rfh->GetAXTreeID());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -609,7 +616,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
 
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true)).Times(1);
+  content::RenderFrameHost* pdf_rfh =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(pdf_rfh);
+  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(pdf_rfh->GetAXTreeID(), _,
+                                             /*is_pdf=*/true))
+      .Times(1);
   handler_ = CreateHandler();
 }
 
@@ -622,10 +634,40 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
 
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true)).Times(2);
+  content::RenderFrameHost* pdf_rfh =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(pdf_rfh);
+  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(pdf_rfh->GetAXTreeID(), _,
+                                             /*is_pdf=*/true))
+      .Times(2);
 
   handler_ = CreateHandler();
   handler_->OnActiveAXTreeIDChanged();
+}
+
+// Deleting the PDF content frame must clear the cached "found a PDF frame"
+// state, otherwise the handler stops looking for a content frame and never
+// notifies of the PDF again.
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       PdfContentFrameDeleted_ChecksForPdfContentAgain) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+
+  content::RenderFrameHost* pdf_rfh =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(pdf_rfh);
+  // Once on construction, then again after the content frame is deleted.
+  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(pdf_rfh->GetAXTreeID(), _,
+                                             /*is_pdf=*/true))
+      .Times(2);
+
+  handler_ = CreateHandler();
+  handler_->RenderFrameDeleted(pdf_rfh);
+  handler_->DidStopLoading();
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -2220,7 +2262,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
       browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
 
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true)).Times(1);
+  content::RenderFrameHost* pdf_rfh =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(pdf_rfh);
+  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(pdf_rfh->GetAXTreeID(), _,
+                                             /*is_pdf=*/true))
+      .Times(1);
   EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
   handler_ = CreateHandler();
 }
@@ -2234,7 +2281,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
       browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
 
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true)).Times(2);
+  content::RenderFrameHost* pdf_rfh =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(pdf_rfh);
+  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(pdf_rfh->GetAXTreeID(), _,
+                                             /*is_pdf=*/true))
+      .Times(2);
   EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
 
   handler_ = CreateHandler();
@@ -3186,6 +3238,115 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   // Selection change requests succeed for local PDF tree.
   handler_remote_->OnSelectionChange(pdf_rfh->GetAXTreeID(),
+                                     /*anchor_node_id=*/1, 0,
+                                     /*focus_node_id=*/2, 5);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForSelection.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       PdfContentFrame_AllowsActions) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+  SetUpHandler();
+
+  content::RenderFrameHost* pdf_content_rfh =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(pdf_content_rfh);
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  GrantUserActivation(rfh);
+
+  // Link clicks succeed for PDF content frame tree.
+  handler_remote_->OnLinkClicked(pdf_content_rfh->GetAXTreeID(),
+                                 /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForLinkClick.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Image data requests succeed for PDF content frame tree.
+  handler_remote_->OnImageDataRequested(pdf_content_rfh->GetAXTreeID(),
+                                        /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Scroll requests succeed for PDF content frame tree.
+  handler_remote_->ScrollToTargetNode(pdf_content_rfh->GetAXTreeID(),
+                                      /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForScrollToTargetNode.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Selection change requests succeed for PDF content frame tree.
+  handler_remote_->OnSelectionChange(pdf_content_rfh->GetAXTreeID(),
+                                     /*anchor_node_id=*/1, 0,
+                                     /*focus_node_id=*/2, 5);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForSelection.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       LocalPdfContentFrame_AllowsActions) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(LoadPdf(chrome_test_utils::GetTestUrl(
+      base::FilePath(FILE_PATH_LITERAL("pdf")),
+      base::FilePath(FILE_PATH_LITERAL("test.pdf")))));
+  SetUpHandler();
+
+  content::RenderFrameHost* pdf_content_rfh =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(pdf_content_rfh);
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  GrantUserActivation(rfh);
+
+  // Link clicks succeed for local PDF content frame tree.
+  handler_remote_->OnLinkClicked(pdf_content_rfh->GetAXTreeID(),
+                                 /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForLinkClick.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Image data requests succeed for local PDF content frame tree.
+  handler_remote_->OnImageDataRequested(pdf_content_rfh->GetAXTreeID(),
+                                        /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Scroll requests succeed for local PDF content frame tree.
+  handler_remote_->ScrollToTargetNode(pdf_content_rfh->GetAXTreeID(),
+                                      /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForScrollToTargetNode.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+
+  // Selection change requests succeed for local PDF content frame tree.
+  handler_remote_->OnSelectionChange(pdf_content_rfh->GetAXTreeID(),
                                      /*anchor_node_id=*/1, 0,
                                      /*focus_node_id=*/2, 5);
   handler_remote_.FlushForTesting();

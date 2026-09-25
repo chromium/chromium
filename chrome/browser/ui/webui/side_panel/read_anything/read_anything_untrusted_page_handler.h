@@ -131,6 +131,7 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
   void DidUpdateAudioMutingState(bool muted) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
   // base::SafeRef used since the lifetime of ReadAnythingWebContentsObserver is
   // completely contained by page_handler_. See
@@ -217,8 +218,11 @@ class ReadAnythingUntrustedPageHandler :
   void DidUpdateAudioMutingState(bool muted);
   void WebContentsDestroyed();
   void DidFinishNavigation(content::NavigationHandle* navigation_handle);
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host);
   void OnActiveAXTreeIDChanged();
-  bool CheckForPdfContentAfterLoad();
+  // Sends the PDF content frame's tree if it now exists. Returns whether the
+  // frame has been found.
+  bool CheckForPdfContentFrame();
 
   // read_anything::mojom::UntrustedPageHandler:
   void GetPresentationState() override;
@@ -501,10 +505,6 @@ class ReadAnythingUntrustedPageHandler :
   // frame has loaded. This allows the page handler to trigger distillation if
   // the page would now be recognized as a pdf after it finishes loading.
   bool is_pdf_with_frame_ = false;
-  // When the current distilled page is recognized as a pdf, the pdf frame
-  // itself has not necessarily loaded in yet, so wait for that frame before
-  // notifying of the new tree using the info from the pdf frame itself.
-  bool is_waiting_for_pdf_frame_ = false;
 
   // Subscription for tab discard events.
   base::CallbackListSubscription tab_discard_subscription_;
