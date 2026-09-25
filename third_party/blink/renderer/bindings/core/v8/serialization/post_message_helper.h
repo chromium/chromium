@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SERIALIZATION_POST_MESSAGE_HELPER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -46,6 +48,11 @@ class CORE_EXPORT PostMessageHelper {
   static mojom::blink::UserActivationSnapshotPtr CreateUserActivationSnapshot(
       ExecutionContext*,
       const PostMessageOptions*);
+
+  static mojom::blink::DelegatedCapability MapStringToDelegatedCapability(
+      const String& capability_string,
+      ExecutionContext* execution_context,
+      ExceptionState& exception_state);
 
   // Extracts target origin from |options|. Throws SyntaxError, if the origin
   // provided is an invalid URL.

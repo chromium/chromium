@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 
+#include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
 #include "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -128,6 +130,39 @@ scoped_refptr<const SecurityOrigin> PostMessageHelper::GetTargetOrigin(
     return nullptr;
   }
   return target;
+}
+
+mojom::blink::DelegatedCapability
+PostMessageHelper::MapStringToDelegatedCapability(
+    const String& capability_string,
+    ExecutionContext* execution_context,
+    ExceptionState& exception_state) {
+  Vector<StringView> capability_list =
+      StringView(capability_string).SplitSkippingEmpty(' ');
+
+  if (capability_list.Contains("payment")) {
+    return mojom::blink::DelegatedCapability::kPaymentRequest;
+  }
+  if (capability_list.Contains("fullscreen")) {
+    return mojom::blink::DelegatedCapability::kFullscreenRequest;
+  }
+  if (capability_list.Contains("display-capture")) {
+    return mojom::blink::DelegatedCapability::kDisplayCaptureRequest;
+  }
+  if (RuntimeEnabledFeatures::CapabilityDelegationDigitalCredentialsEnabled(
+          execution_context) &&
+      capability_list.Contains("digital-credentials-create")) {
+    return mojom::blink::DelegatedCapability::kDigitalCredentialsCreate;
+  }
+  if (RuntimeEnabledFeatures::CapabilityDelegationDigitalCredentialsEnabled(
+          execution_context) &&
+      capability_list.Contains("digital-credentials-get")) {
+    return mojom::blink::DelegatedCapability::kDigitalCredentialsGet;
+  }
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kNotSupportedError,
+      StrCat({"Delegation of \'", capability_string, "\' is not supported."}));
+  return mojom::blink::DelegatedCapability::kNone;
 }
 
 }  // namespace blink

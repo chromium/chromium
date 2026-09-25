@@ -12,4 +12,9 @@
 
 dictionary PostMessageOptions : StructuredSerializeOptions {
     boolean includeUserActivation = false;
+    // The capability to delegate to the recipient window (e.g. 'payment',
+    // 'fullscreen', 'display-capture', 'digital-credentials-create',
+    // 'digital-credentials-get').
+    // See https://wicg.github.io/capability-delegation/spec.html
+    DOMString? delegate;
 };

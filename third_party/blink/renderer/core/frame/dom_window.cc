@@ -1066,31 +1066,9 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   mojom::blink::DelegatedCapability delegated_capability =
       mojom::blink::DelegatedCapability::kNone;
   if (options->hasDelegate()) {
-    Vector<StringView> capability_list =
-        StringView(options->delegate()).SplitSkippingEmpty(' ');
-    if (capability_list.Contains("payment")) {
-      delegated_capability = mojom::blink::DelegatedCapability::kPaymentRequest;
-    } else if (capability_list.Contains("fullscreen")) {
-      delegated_capability =
-          mojom::blink::DelegatedCapability::kFullscreenRequest;
-    } else if (capability_list.Contains("display-capture")) {
-      delegated_capability =
-          mojom::blink::DelegatedCapability::kDisplayCaptureRequest;
-    } else if (RuntimeEnabledFeatures::
-                   CapabilityDelegationDigitalCredentialsEnabled(source) &&
-               capability_list.Contains("digital-credentials-create")) {
-      delegated_capability =
-          mojom::blink::DelegatedCapability::kDigitalCredentialsCreate;
-    } else if (RuntimeEnabledFeatures::
-                   CapabilityDelegationDigitalCredentialsEnabled(source) &&
-               capability_list.Contains("digital-credentials-get")) {
-      delegated_capability =
-          mojom::blink::DelegatedCapability::kDigitalCredentialsGet;
-    } else {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          StrCat({"Delegation of \'", options->delegate(),
-                  "\' is not supported."}));
+    delegated_capability = PostMessageHelper::MapStringToDelegatedCapability(
+        options->delegate(), source, exception_state);
+    if (exception_state.HadException()) {
       return;
     }
 
