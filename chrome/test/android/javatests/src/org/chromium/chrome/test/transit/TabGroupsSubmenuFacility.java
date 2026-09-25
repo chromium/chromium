@@ -21,21 +21,25 @@ import androidx.annotation.IdRes;
 
 import org.chromium.base.test.transit.RootSpec;
 import org.chromium.base.test.transit.ScrollableFacility;
-import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /** Facility representing the Tab Groups Submenu popup in the App Menu. */
-public class TabGroupsSubmenuFacility<HostStationT extends Station<?>>
+public class TabGroupsSubmenuFacility<
+                HostStationT extends ChromeActivityTabModelBoundStation<ChromeTabbedActivity>>
         extends ScrollableFacility<HostStationT> {
     private final AppMenuFacility<?> mParentAppMenu;
     private final List<String> mExpectedGroups;
     private final List<String> mExcludedGroups;
     private final Map<String, Item> mGroupItems = new HashMap<>();
+    private Item mCreateNewTabGroupItem;
+    private Item mAddToGroupItem;
 
     public TabGroupsSubmenuFacility(
             AppMenuFacility<?> parentAppMenu,
@@ -60,12 +64,15 @@ public class TabGroupsSubmenuFacility<HostStationT extends Station<?>>
 
     @Override
     protected void declareItems(ItemsBuilder items) {
-        declarePossibleMenuItem(items, R.id.create_new_tab_group_menu_id);
+        mCreateNewTabGroupItem = declarePossibleMenuItem(items, R.id.create_new_tab_group_menu_id);
+        mAddToGroupItem = declarePossibleMenuItem(items, R.id.add_to_group_menu_id);
         for (String title : mExpectedGroups) {
             Item item =
                     items.declareItem(
                             allOf(
-                                    anyOf(withId(R.id.tab_group_menu_item_id), withId(R.id.add_to_existing_group_menu_item_id)),
+                                    anyOf(
+                                            withId(R.id.tab_group_menu_item_id),
+                                            withId(R.id.add_to_existing_group_menu_item_id)),
                                     hasDescendant(withText(title))),
                             null);
             mGroupItems.put(title, item);
@@ -78,6 +85,29 @@ public class TabGroupsSubmenuFacility<HostStationT extends Station<?>>
                                     hasDescendant(withText(title)))),
                     null);
         }
+    }
+
+    /** Selects "New tab group" from the submenu to create a group for the current tab via UI. */
+    public NewTabGroupDialogFacility<HostStationT> clickNewTabGroup() {
+        return Journeys.beginNewTabGroupUiFlow(
+                mCreateNewTabGroupItem.scrollToAndSelectTo().exitFacilityAnd(mParentAppMenu));
+    }
+
+    /**
+     * Selects "Add to group" from the submenu, opening the {@link AddToGroupSubmenuFacility}.
+     *
+     * @param expectedGroups List of group titles expected to be present in the submenu.
+     * @param excludedGroups List of group titles expected to be absent from the submenu.
+     * @return the {@link AddToGroupSubmenuFacility}.
+     */
+    public AddToGroupSubmenuFacility<HostStationT> openAddToGroupSubmenu(
+            List<String> expectedGroups, List<String> excludedGroups) {
+        assertNotNull("Add to group menu item not found", mAddToGroupItem);
+        return mAddToGroupItem
+                .scrollToAndSelectWithoutClosingTo()
+                .enterFacility(
+                        new AddToGroupSubmenuFacility<>(
+                                mParentAppMenu, this, expectedGroups, excludedGroups));
     }
 
     /** Selects a tab group item from the submenu, exiting both the submenu and parent menu. */
