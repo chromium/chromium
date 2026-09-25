@@ -1688,6 +1688,41 @@ TEST_F(DataProtectionClipboardDistilledURLTest, CopyTextToClipboard_Block) {
                 IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
 }
 
+TEST_F(DataProtectionClipboardDistilledURLTest, CopyImageToClipboard_Allowed) {
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  const SkBitmap bitmap = gfx::test::CreateBitmap(3, 2);
+  CopyImageToClipboard(*test_web_contents_->GetPrimaryMainFrame(), bitmap);
+
+  base::test::TestFuture<const std::vector<uint8_t>&> future;
+  ui::Clipboard::GetForCurrentThread()->ReadPng(ui::ClipboardBuffer::kCopyPaste,
+                                                /*data_dst=*/std::nullopt,
+                                                future.GetCallback());
+  SkBitmap pasted_bitmap = gfx::PNGCodec::Decode(future.Get());
+  ASSERT_FALSE(pasted_bitmap.isNull());
+  EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, pasted_bitmap));
+}
+
+TEST_F(DataProtectionClipboardDistilledURLTest, CopyImageToClipboard_Block) {
+  SetBlockCopyingFromSourceURLRule();
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  const SkBitmap bitmap = gfx::test::CreateBitmap(3, 2);
+  CopyImageToClipboard(*test_web_contents_->GetPrimaryMainFrame(), bitmap);
+
+  base::test::TestFuture<std::u16string> text_future;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+      text_future.GetCallback());
+  EXPECT_EQ(text_future.Get(),
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
+
+  base::test::TestFuture<const std::vector<uint8_t>&> png_future;
+  ui::Clipboard::GetForCurrentThread()->ReadPng(ui::ClipboardBuffer::kCopyPaste,
+                                                /*data_dst=*/std::nullopt,
+                                                png_future.GetCallback());
+  EXPECT_TRUE(png_future.Get().empty());
+}
+
 TEST_F(DataProtectionClipboardTest, PrepopulateFindBarTextAllowed) {
   data_controls::SetDataControls(profile_->GetPrefs(), {R"({
                     "sources": {

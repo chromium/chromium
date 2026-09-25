@@ -114,11 +114,14 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   }
 
   using RenderViewContextMenu::AppendImageItems;
+  using RenderViewContextMenu::GetIndigoReplacementImageURL;
+  using RenderViewContextMenu::GetIndigoReplacementInfo;
   using RenderViewContextMenu::GetIsNewFeatureAtValue;
 
   // RenderViewContextMenu:
   void Show() override;
-  GURL GetIndigoReplacementImageURL() const override;
+  std::optional<IndigoReplacementInfo> GetIndigoReplacementInfo()
+      const override;
 #if BUILDFLAG(IS_CHROMEOS)
   const policy::DlpRulesManager* GetDlpRulesManager() const override;
 #endif

@@ -137,21 +137,22 @@ void TestRenderViewContextMenu::SetChromeComposeClient(
 }
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
-GURL TestRenderViewContextMenu::GetIndigoReplacementImageURL() const {
-  GURL url = RenderViewContextMenu::GetIndigoReplacementImageURL();
-  if (!url.is_empty()) {
-    return url;
+std::optional<RenderViewContextMenu::IndigoReplacementInfo>
+TestRenderViewContextMenu::GetIndigoReplacementInfo() const {
+  if (std::optional<IndigoReplacementInfo> info =
+          RenderViewContextMenu::GetIndigoReplacementInfo()) {
+    return info;
   }
   // In tests, `params_.image_replacement_frame_token` may be populated directly
   // from a child RenderFrameHost's LocalFrameToken across process boundaries
   // rather than from a placeholder RemoteFrameToken in the parent process.
   if (!params_.image_replacement_frame_token.has_value() ||
       !params_.image_replacement_frame_token->Is<blink::LocalFrameToken>()) {
-    return GURL();
+    return std::nullopt;
   }
   content::RenderFrameHost* frame_host = GetRenderFrameHost();
   if (!frame_host) {
-    return GURL();
+    return std::nullopt;
   }
   content::RenderFrameHost* subframe_host = nullptr;
   if (content::WebContents* web_contents =
@@ -165,13 +166,17 @@ GURL TestRenderViewContextMenu::GetIndigoReplacementImageURL() const {
   }
   if (!subframe_host || &subframe_host->GetPage() != &frame_host->GetPage() ||
       subframe_host->GetParent() != frame_host) {
-    return GURL();
+    return std::nullopt;
   }
   auto* manager =
       indigo::IndigoImageReplacementManager::GetForPage(frame_host->GetPage());
   if (!manager) {
-    return GURL();
+    return std::nullopt;
   }
   auto* replacement = manager->GetImageReplacementForFrame(*subframe_host);
-  return replacement ? replacement->GetReplacementImageURL() : GURL();
+  if (!replacement || replacement->GetReplacementImageURL().is_empty()) {
+    return std::nullopt;
+  }
+  return IndigoReplacementInfo{manager, subframe_host,
+                               replacement->GetReplacementImageURL()};
 }

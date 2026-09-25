@@ -290,6 +290,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -3883,8 +3884,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_COPYIMAGE:
-      // TODO(b/530284842): Support copying replacement image data to
-      // clipboard.
       ExecCopyImageAt();
       break;
 
@@ -5228,7 +5227,36 @@ void RenderViewContextMenu::ExecCopyImageAt() {
     return;
   }
 
-  frame_host->CopyImageAt(params_.x, params_.y);
+  // When an image has been replaced with an Indigo transformation, the rendered
+  // pixels are derived from the generated replacement image rather than the
+  // original merchant image in the main frame DOM. Note that in this case only
+  // the bitmap representation is copied to the clipboard; other formats (such
+  // as HTML or URL) written by the standard CopyImageAt path are omitted.
+  std::optional<IndigoReplacementInfo> indigo_info;
+  if (base::FeatureList::IsEnabled(features::kIndigoContextMenuCopy)) {
+    indigo_info = GetIndigoReplacementInfo();
+  }
+
+  if (indigo_info) {
+    // `indigo_info->subframe_rfh` is the child extension subframe that keys the
+    // replacement in `IndigoImageReplacementManager`, whereas `frame_host` is
+    // the parent embedder frame to which clipboard source attribution and
+    // Enterprise Data Protection policies apply.
+    content::GlobalRenderFrameHostId rfh_id = frame_host->GetGlobalId();
+    indigo_info->manager->GetReplacementImageForExport(
+        *indigo_info->subframe_rfh,
+        base::BindOnce(
+            [](content::GlobalRenderFrameHostId rfh_id,
+               const SkBitmap& bitmap) {
+              if (content::RenderFrameHost* rfh =
+                      content::RenderFrameHost::FromID(rfh_id)) {
+                enterprise_data_protection::CopyImageToClipboard(*rfh, bitmap);
+              }
+            },
+            rfh_id));
+  } else {
+    frame_host->CopyImageAt(params_.x, params_.y);
+  }
 
 #if !BUILDFLAG(IS_ANDROID)
   if (enterprise_data_protection::IsClipboardCopyAllowedByPolicyForUI(
@@ -6116,13 +6144,14 @@ bool RenderViewContextMenu::IsLinkToIsolatedWebApp() const {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-GURL RenderViewContextMenu::GetIndigoReplacementImageURL() const {
+std::optional<RenderViewContextMenu::IndigoReplacementInfo>
+RenderViewContextMenu::GetIndigoReplacementInfo() const {
   if (!params_.image_replacement_frame_token.has_value()) {
-    return GURL();
+    return std::nullopt;
   }
   RenderFrameHost* frame_host = GetRenderFrameHost();
   if (!frame_host) {
-    return GURL();
+    return std::nullopt;
   }
 
   content::RenderFrameHost* subframe_host =
@@ -6130,16 +6159,22 @@ GURL RenderViewContextMenu::GetIndigoReplacementImageURL() const {
                                       *params_.image_replacement_frame_token);
   if (!subframe_host || &subframe_host->GetPage() != &frame_host->GetPage() ||
       subframe_host->GetParent() != frame_host) {
-    return GURL();
+    return std::nullopt;
   }
   auto* manager =
       indigo::IndigoImageReplacementManager::GetForPage(frame_host->GetPage());
   if (!manager) {
-    return GURL();
+    return std::nullopt;
   }
   auto* replacement = manager->GetImageReplacementForFrame(*subframe_host);
-  if (!replacement) {
-    return GURL();
+  if (!replacement || replacement->GetReplacementImageURL().is_empty()) {
+    return std::nullopt;
   }
-  return replacement->GetReplacementImageURL();
+  return IndigoReplacementInfo{manager, subframe_host,
+                               replacement->GetReplacementImageURL()};
+}
+
+GURL RenderViewContextMenu::GetIndigoReplacementImageURL() const {
+  std::optional<IndigoReplacementInfo> info = GetIndigoReplacementInfo();
+  return info ? info->image_url : GURL();
 }

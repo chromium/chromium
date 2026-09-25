@@ -39,11 +39,13 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/clipboard_types.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
@@ -876,6 +878,14 @@ content::ClipboardEndpoint MakeClipboardEndpoint(
       *rfh);
 }
 
+content::ClipboardEndpoint MakeClipboardEndpoint(
+    content::RenderFrameHost& rfh) {
+  ui::DataTransferEndpoint dte(
+      GetUrlFromRenderFrameHost(&rfh),
+      {.off_the_record = rfh.GetBrowserContext()->IsOffTheRecord()});
+  return MakeClipboardEndpoint(std::move(dte), &rfh);
+}
+
 std::optional<content::ClipboardEndpoint> GetValidURLEndpoint(
     content::WebContents* web_contents) {
   if (!web_contents) {
@@ -1462,23 +1472,9 @@ void CopyTextToClipboard(content::RenderFrameHost* rfh,
     return;
   }
 
-  ui::DataTransferEndpoint dte(
-      GetUrlFromRenderFrameHost(rfh),
-      {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
-  content::ClipboardEndpoint clipboard_endpoint =
-      content::ClipboardEndpoint::ForFrame(
-          dte,
-          base::BindRepeating(
-              [](content::GlobalRenderFrameHostId rfh_id)
-                  -> content::BrowserContext* {
-                auto* rfh = content::RenderFrameHost::FromID(rfh_id);
-                if (!rfh) {
-                  return nullptr;
-                }
-                return rfh->GetBrowserContext();
-              },
-              rfh->GetGlobalId()),
-          *rfh);
+  content::ClipboardEndpoint clipboard_endpoint = MakeClipboardEndpoint(*rfh);
+  auto dte = std::make_unique<ui::DataTransferEndpoint>(
+      *clipboard_endpoint.data_transfer_endpoint());
 
   content::ClipboardPasteData data;
   data.text = text;
@@ -1504,7 +1500,64 @@ void CopyTextToClipboard(content::RenderFrameHost* rfh,
               scw.WriteText(data.text);
             }
           },
-          std::make_unique<ui::DataTransferEndpoint>(std::move(dte))));
+          std::move(dte)));
+}
+
+void CopyImageToClipboard(content::RenderFrameHost& rfh,
+                          const SkBitmap& bitmap) {
+  if (rfh.IsInactiveAndDisallowActivation(
+          content::DisallowActivationReasonId::kClipboard)) {
+    return;
+  }
+  if (bitmap.drawsNothing()) {
+    return;
+  }
+
+  content::ClipboardEndpoint clipboard_endpoint = MakeClipboardEndpoint(rfh);
+  auto dte = std::make_unique<ui::DataTransferEndpoint>(
+      *clipboard_endpoint.data_transfer_endpoint());
+
+  content::ClipboardPasteData paste_data;
+  paste_data.bitmap = bitmap;
+  content::GlobalRenderFrameHostId rfh_id = rfh.GetGlobalId();
+
+  IsClipboardCopyAllowedByPolicy(
+      std::move(clipboard_endpoint),
+      {
+          .size = bitmap.computeByteSize(),
+          .format_type = ui::ClipboardFormatType::BitmapType(),
+      },
+      std::move(paste_data),
+      base::BindOnce(
+          [](content::GlobalRenderFrameHostId rfh_id,
+             std::unique_ptr<ui::DataTransferEndpoint> dte,
+             const ui::ClipboardFormatType& data_type,
+             const content::ClipboardPasteData& data,
+             std::optional<std::u16string> replacement_data) {
+            content::RenderFrameHost* rfh =
+                content::RenderFrameHost::FromID(rfh_id);
+            if (!rfh || rfh->IsInactiveAndDisallowActivation(
+                            content::DisallowActivationReasonId::kClipboard)) {
+              return;
+            }
+            // When policy blocks the copy without replacement warning text,
+            // `IsClipboardCopyAllowedByPolicy` passes an empty
+            // `ClipboardPasteData`. Return before creating
+            // `ScopedClipboardWriter` to avoid overwriting the clipboard.
+            if (!replacement_data && data.bitmap.drawsNothing()) {
+              return;
+            }
+            ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
+                                          std::move(dte));
+            content::AddSourceDataToClipboardWriter(scw, *rfh);
+
+            if (replacement_data) {
+              scw.WriteText(std::move(*replacement_data));
+            } else {
+              scw.WriteImage(data.bitmap);
+            }
+          },
+          rfh_id, std::move(dte)));
 }
 
 void PasteFromGeminiIfAllowedByPolicy(content::RenderFrameHost* destination,

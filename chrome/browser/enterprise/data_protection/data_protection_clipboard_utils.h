@@ -22,6 +22,7 @@ static_assert(BUILDFLAG(ENTERPRISE_DATA_CONTROLS));
 
 class GURL;
 class Profile;
+class SkBitmap;
 
 namespace content {
 class ClipboardEndpoint;
@@ -203,10 +204,15 @@ void ShouldAllowSearchWith(content::WebContents* web_contents,
 // long-running content analysis or asynchronous dialogs.
 bool IsClipboardCopyAllowedByPolicyForUI(content::WebContents* web_contents);
 
-// Copies `text` to the user's clipboard. This checks the Data Controls rules to
-// ensure the copy is allowed.
+// Copies `text` to the OS clipboard. This routes the data to
+// `IsClipboardCopyAllowedByPolicy` to check if the copy is allowed.
 void CopyTextToClipboard(content::RenderFrameHost* rfh,
                          const std::u16string& text);
+
+// Copies `bitmap` to the OS clipboard. This routes the data to
+// `IsClipboardCopyAllowedByPolicy` to check if the copy is allowed.
+void CopyImageToClipboard(content::RenderFrameHost& rfh,
+                          const SkBitmap& bitmap);
 
 // Returns the URL to use for data protection checks for `rfh`. If the main
 // frame's last committed URL is invalid, about:blank, or about:srcdoc, this
