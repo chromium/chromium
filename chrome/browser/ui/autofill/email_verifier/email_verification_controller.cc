@@ -82,8 +82,15 @@ void EmailVerificationController::HidePopup() {
   hide_popup_timer_.Stop();
   const bool was_loading = popup_controller_->is_loading();
   popup_controller_->Dismiss();
-  if (was_loading && !toast_timer_.IsRunning()) {
-    loading_start_time_.reset();
+  if (was_loading) {
+    // The popup is activatable and took focus when the user clicked "Verify".
+    // Once it closes, give focus back to the page so it returns to the form
+    // field, rather than letting the platform hand activation to the
+    // completion toast (whose first focusable view is its menu button).
+    web_contents_->Focus();
+    if (!toast_timer_.IsRunning()) {
+      loading_start_time_.reset();
+    }
   }
 }
 

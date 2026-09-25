@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_controller.h"
@@ -23,13 +24,17 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/controls/webview/webview.h"
@@ -544,8 +549,8 @@ TEST_F(EmailVerificationPopupViewTest, NoInitialButtonFocus) {
 }
 
 // Tests that ShowLoadingState() transitions the confirm button into its loading
-// state with an active spinner, disables both buttons, and preserves the button
-// text.
+// state with an active spinner, disables the cancel button, and keeps the
+// confirm button's size and color while hiding its text.
 TEST_F(EmailVerificationPopupViewTest, ShowLoadingStateRealView) {
   auto controller =
       std::make_unique<EmailVerificationPopupController>(web_contents());
@@ -562,17 +567,27 @@ TEST_F(EmailVerificationPopupViewTest, ShowLoadingStateRealView) {
   EXPECT_TRUE(view->cancel_button_for_testing()->GetEnabled());
   EXPECT_EQ(view->throbber_for_testing(), nullptr);
 
+  const gfx::Size confirm_button_size =
+      view->confirm_button_for_testing()->GetPreferredSize();
+
   view->ShowLoadingState();
 
-  EXPECT_FALSE(view->confirm_button_for_testing()->GetEnabled());
-  EXPECT_FALSE(view->cancel_button_for_testing()->GetEnabled());
+  // The confirm button keeps its size and prominent color; only its label is
+  // swapped out for the spinner.
+  EXPECT_TRUE(view->confirm_button_for_testing()->GetEnabled());
+  EXPECT_EQ(view->confirm_button_for_testing()->GetPreferredSize(),
+            confirm_button_size);
+  EXPECT_TRUE(view->confirm_button_for_testing()->GetText().empty());
   EXPECT_EQ(
-      view->confirm_button_for_testing()->GetText(),
+      view->confirm_button_for_testing()
+          ->GetViewAccessibility()
+          .GetCachedName(),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_VERIFY));
+  EXPECT_FALSE(view->cancel_button_for_testing()->GetEnabled());
   ASSERT_TRUE(view->throbber_for_testing());
   EXPECT_TRUE(view->throbber_for_testing()->GetVisible());
   EXPECT_EQ(view->throbber_for_testing()->GetColorId(),
-            ui::kColorButtonForegroundDisabled);
+            ui::kColorButtonForegroundProminent);
 
   view->GetWidget()->CloseNow();
 }
@@ -854,6 +869,97 @@ TEST_F(EmailVerificationPopupViewTest,
   // Subsequent completion toasts must still defer.
   evp_controller->ShowVerifiedToast(GURL("https://issuer.com"));
   EXPECT_TRUE(test_api(*evp_controller).is_toast_timer_running());
+}
+
+// A `WebContentsViewDelegate` that records calls to `WebContents::Focus()`. It
+// is installed through `FocusRecordingContentBrowserClient` because the test
+// `RenderWidgetHostView` does not track focus.
+class FocusRecordingWebContentsViewDelegate
+    : public content::WebContentsViewDelegate {
+ public:
+  explicit FocusRecordingWebContentsViewDelegate(int& focus_count)
+      : focus_count_(focus_count) {}
+
+  // `WebContentsView::Focus()` calls this on all desktop platforms (unlike
+  // `Focus()`, which the Mac implementation does not forward to the delegate).
+  void ResetStoredFocus() override { ++*focus_count_; }
+
+ private:
+  raw_ref<int> focus_count_;
+};
+
+class FocusRecordingContentBrowserClient
+    : public content::ContentBrowserClient {
+ public:
+  std::unique_ptr<content::WebContentsViewDelegate> GetWebContentsViewDelegate(
+      content::WebContents* web_contents) override {
+    return std::make_unique<FocusRecordingWebContentsViewDelegate>(
+        focus_count_);
+  }
+
+  int focus_count() const { return focus_count_; }
+
+ private:
+  int focus_count_ = 0;
+};
+
+class EmailVerificationPopupViewFocusTest
+    : public EmailVerificationPopupViewTest {
+ public:
+  void SetUp() override {
+    // The client must be installed before the test WebContents is created so
+    // that its view picks up the recording delegate.
+    scoped_client_setting_ =
+        std::make_unique<content::ScopedContentBrowserClientSetting>(
+            &browser_client_);
+    EmailVerificationPopupViewTest::SetUp();
+  }
+
+  void TearDown() override {
+    EmailVerificationPopupViewTest::TearDown();
+    scoped_client_setting_.reset();
+  }
+
+  int focus_count() const { return browser_client_.focus_count(); }
+
+ private:
+  FocusRecordingContentBrowserClient browser_client_;
+  std::unique_ptr<content::ScopedContentBrowserClientSetting>
+      scoped_client_setting_;
+};
+
+// Tests that dismissing the popup after it entered the loading state returns
+// focus to the WebContents, so that the form field regains focus instead of
+// the completion toast.
+TEST_F(EmailVerificationPopupViewFocusTest,
+       HidePopupReturnsFocusToWebContentsWhenLoading) {
+  auto evp_controller =
+      std::make_unique<EmailVerificationController>(web_contents());
+  auto popup_controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+  SetupMockViewFactory(popup_controller.get(), mock_view);
+  test_api(*evp_controller).set_popup_controller(std::move(popup_controller));
+
+  TestFuture<EmailVerificationPermissionUiStatus> future;
+  evp_controller->ShowPopup(gfx::RectF(0, 0, 10, 10),
+                            net::SchemefulSite(GURL("https://issuer.com")),
+                            u"user@example.com", future.GetCallback());
+
+  ASSERT_TRUE(mock_view);
+  EXPECT_CALL(*mock_view, ShowLoadingState);
+  std::move(mock_view->decision_callback()).Run(true);
+
+  // Let the minimum loading duration elapse so that HidePopup() dismisses the
+  // popup immediately.
+  task_environment()->FastForwardBy(
+      EmailVerificationController::kMinimumLoadingDuration);
+
+  const int focus_count_before = focus_count();
+  EXPECT_CALL(*mock_view, Hide);
+  evp_controller->HidePopup();
+  EXPECT_EQ(focus_count(), focus_count_before + 1);
 }
 
 }  // namespace

@@ -31,6 +31,9 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/md_text_button_with_spinner.h"
 #include "ui/views/controls/image_view.h"
@@ -48,7 +51,7 @@ namespace autofill {
 namespace {
 constexpr int kMinIconSize = 16;
 constexpr int kDesiredIconSize = 20;
-constexpr int kEmailVerificationMaxWidth = 480;
+constexpr int kEmailVerificationMaxWidth = 400;
 }  // namespace
 
 EmailVerificationPopupView::EmailVerificationPopupView(
@@ -91,9 +94,9 @@ EmailVerificationPopupView::EmailVerificationPopupView(
               kVerticalPadding, kHorizontalMargin, 0, kHorizontalMargin)))
           .Build());
 
-  icon_view_ = headline->AddChildView(std::make_unique<views::ImageView>(
-      ui::ImageModel::FromVectorIcon(vector_icons::kEmailOutlineOldIcon,
-                                     ui::kColorIcon, kDesiredIconSize)));
+  icon_view_ = headline->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          vector_icons::kMarkEmailReadIcon, ui::kColorIcon, kDesiredIconSize)));
   icon_view_->SetImageSize(gfx::Size(kDesiredIconSize, kDesiredIconSize));
 
   if (controller && controller->GetWebContents()) {
@@ -155,7 +158,7 @@ EmailVerificationPopupView::EmailVerificationPopupView(
       views::Builder<views::MdTextButton>()
           .SetText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_EMAIL_VERIFIER_PROMPT_NOT_NOW))
-          .SetStyle(ui::ButtonStyle::kDefault)
+          .SetStyle(ui::ButtonStyle::kTonal)
           .SetCallback(base::BindRepeating(
               &EmailVerificationPopupView::OnCancel, base::Unretained(this)))
           .SetID(static_cast<int>(PopupViewId::kCancelButton))
@@ -176,7 +179,26 @@ EmailVerificationPopupView::~EmailVerificationPopupView() = default;
 
 void EmailVerificationPopupView::ShowLoadingState() {
   if (confirm_button_) {
-    confirm_button_->SetEnabled(false);
+    // Per UX, the button keeps its prominent color while loading instead of
+    // greying out, so it is not disabled via SetEnabled(), which would also
+    // grey out the spinner. Instead, make it inert: ignore mouse events (no
+    // hover/press ink drop), take it out of the focus order, and expose it as
+    // disabled to assistive technologies.
+    confirm_button_->SetCanProcessEventsWithinSubtree(false);
+    confirm_button_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+    views::InkDrop::Get(confirm_button_)
+        ->SetMode(views::InkDropHost::InkDropMode::OFF);
+    confirm_button_->SetState(views::Button::STATE_NORMAL);
+    confirm_button_->GetViewAccessibility().SetIsEnabled(false);
+
+    // Pin the button to its current size before hiding the label; otherwise it
+    // would shrink to fit just the spinner.
+    confirm_button_->SetPreferredSize(confirm_button_->GetPreferredSize());
+    const std::u16string label(confirm_button_->GetText());
+    confirm_button_->SetText(std::u16string());
+    // SetText() also sets the accessible name, so restore it afterwards to keep
+    // the button's name as "Verify" rather than empty.
+    confirm_button_->GetViewAccessibility().SetName(label);
     confirm_button_->SetSpinnerVisible(true);
     confirm_button_->GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(IDS_EMAIL_VERIFICATION_LOADING));
