@@ -50,8 +50,8 @@ use std::path::{Path, PathBuf};
 ///       unsafe code, but it is based on heuristics and may sometimes fail to
 ///       determine correct settings)."#)]
 pub fn vendor(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
-    // Vendoring needs to work with real crates.io, not with our locally vendored
-    // crates.
+    // Vendoring needs to work with real crates.io, not with our locally
+    // vendored crates.
     without_cargo_config_toml(paths, || download_crates(&args, paths))?;
 
     // Updating metadata should be performed on the locally vendored crates
@@ -108,8 +108,8 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
         }
 
         // In theory we could use a different `crate_dir` for placeholders (e.g.
-        // `some-crate-v1-placeholder` rather than `some-crate-v1`), but always using
-        // the same name simplifies other tooling (e.g. how
+        // `some-crate-v1-placeholder` rather than `some-crate-v1`), but always
+        // using the same name simplifies other tooling (e.g. how
         // `create_update_cl.py` calculates the vendored directory).
         let crate_path = get_vendor_dir_for_package(paths, p.name(), p.version());
         let crate_dirname = crate_path.file_name().unwrap();
@@ -168,10 +168,11 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
     let config_file_path = paths.third_party_config_file;
     let config = config::BuildConfig::from_path(config_file_path)?;
 
-    // Fetch the package graph again based on the locally vendored crates, to ensure
-    // that locally applied patches which impact the package graph are considered.
-    // Although --offline is passed, this function also expects to be executed
-    // with a cargo config.toml that uses the locally vendored crates.
+    // Fetch the package graph again based on the locally vendored crates, to
+    // ensure that locally applied patches which impact the package graph
+    // are considered. Although --offline is passed, this function also
+    // expects to be executed with a cargo config.toml that uses the locally
+    // vendored crates.
     let graph = get_guppy_package_graph(
         paths.third_party_cargo_root.into(),
         vec!["--offline".to_string()],
@@ -180,7 +181,12 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
     // TODO(crbug.com/468223119): Remove this once exact_length_collection is
     // stabilized: https://github.com/rust-lang/rust/issues/149266
     #[allow(unstable_name_collisions)]
-    let root = match graph.query_workspace().initials().exactly_one() {
+    let root = match graph
+        .query_workspace()
+        .initials()
+        .packages(guppy::graph::DependencyDirection::Forward)
+        .exactly_one()
+    {
         Ok(root) => root,
         Err(_) => anyhow::bail!("cargo workspace must contain exactly one package"),
     }
@@ -264,8 +270,8 @@ fn generate_readme_files(
     all_readme_files: &HashMap<PathBuf, ReadmeFile>,
     dump_template_input: bool,
 ) -> Result<()> {
-    // `unwrap` ok, because `BuildConfig::from_path` would have failed if there is
-    // no parent.
+    // `unwrap` ok, because `BuildConfig::from_path` would have failed if there
+    // is no parent.
     let third_party_dir = paths.third_party_config_file.parent().unwrap();
     let readme_template_path = third_party_dir.join(&config.gn_config.readme_file_template);
     let handlebars = init_handlebars_with_template_paths(&[&readme_template_path])
@@ -606,11 +612,11 @@ fn forward_to_owners_file_in_build_dir(
 ) -> Result<()> {
     let build_dir = get_build_dir_for_package(paths, package.name(), package.version());
 
-    // We could in theory check first `//t/r/crate_name/v1/OWNERS` (in addition to
-    // checking `//t/r/crate_name/OWNERS` as we already do below).  We don't do
-    // this because the epoch-specific dirs are auto-deleted by `gnrt` when the
-    // epoch goes away.  (i.e. we expect non-generated files to be outside of
-    // the epoch-specific dirs).
+    // We could in theory check first `//t/r/crate_name/v1/OWNERS` (in addition
+    // to checking `//t/r/crate_name/OWNERS` as we already do below).  We
+    // don't do this because the epoch-specific dirs are auto-deleted by
+    // `gnrt` when the epoch goes away.  (i.e. we expect non-generated files
+    // to be outside of the epoch-specific dirs).
     let build_dir_owners_file = build_dir.parent().unwrap().join("OWNERS");
     if std::fs::exists(&build_dir_owners_file).unwrap_or(false) {
         use std::io::Write;
@@ -784,8 +790,9 @@ mod test {
 
         write_placeholder_crate_for_tests(SAMPLE_CARGO_METADATA2, "quote", crate_dir).unwrap();
 
-        // Check that `get_package_id_from_vendored_dir` can detect the crate name and
-        // version and that `is_placeholder_crate` returns true now.
+        // Check that `get_package_id_from_vendored_dir` can detect the crate
+        // name and version and that `is_placeholder_crate` returns true
+        // now.
         assert!(is_placeholder_crate(crate_dir));
         let Some(package_id) = get_package_id_from_vendored_dir(crate_dir) else {
             panic!("`None` returned from get_package_id_from_vendored_dir");

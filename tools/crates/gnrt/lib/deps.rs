@@ -11,11 +11,11 @@ use crate::{
 
 use anyhow::{bail, Context, Result};
 use guppy::{
-    graph::cargo::{CargoOptions, CargoSet},
+    graph::cargo::{CargoLinkContext, CargoOptions, CargoResolverVersion, CargoSet},
     graph::feature::{FeatureSet, StandardFeatures},
     graph::{
         BuildTargetId, BuildTargetKind, DependencyDirection, PackageGraph, PackageLink,
-        PackageMetadata, PackageQuery, PackageSet,
+        PackageMetadata, PackageSet,
     },
     platform::PlatformStatus,
 };
@@ -220,7 +220,8 @@ impl LibType {
 
         // All the other
         // [crate types](https://doc.rust-lang.org/nightly/cargo/reference/cargo-targets.html#the-crate-type-field)
-        // should be either handled earlier by `get_build_targets` or unsupported:
+        // should be either handled earlier by `get_build_targets` or
+        // unsupported:
         // - `bin` - handled via `BuildTargetKind::Binary` and
         //   `BuildTargetId::Binary(_)`
         // - `dylib` - currently not supported by `cargo_crate.gni`
@@ -259,13 +260,20 @@ pub fn collect_dependencies(
     // Ask `guppy` to run Cargo feature/dependency resolution.
     let mut memoization_tables = MemoizationTables::new();
     let cargo_set = {
-        let cargo_options = CargoOptions::new();
+        let mut cargo_options = CargoOptions::new();
+        // TODO(https://crbug.com/565885820): `guppy` defaults to the newest resolver, but
+        // Chromium's `third_party/rust/chromium_crates_io/Cargo.toml` uses the
+        // version 2 resolver (implied by `edition = "2021"`).  Pinning
+        // V1 here preserves the behavior of older `guppy` versions; we
+        // postpone switching to V2 to a follow-up CL to minimize risk and
+        // chrun.
+        cargo_options.set_resolver(CargoResolverVersion::V1);
         let initials = resolve_root_package_set(graph, root_package_name)?
             .to_feature_set(StandardFeatures::Default);
         let no_extra_features = graph.resolve_none().to_feature_set(StandardFeatures::Default);
-        let resolver =
-            PackageResolver { extra_config, memoization_tables: &mut memoization_tables };
-        CargoSet::with_package_resolver(initials, no_extra_features, resolver, &cargo_options)?
+        let visitor =
+            ChromiumLinkVisitor { extra_config, memoization_tables: &mut memoization_tables };
+        CargoSet::with_cargo_link_visitor(initials, no_extra_features, visitor, &cargo_options)?
     };
     let cargo_set_links = cargo_set
         .build_dep_links()
@@ -367,9 +375,9 @@ fn resolve_root_package_set<'g>(
     }
 }
 
-/// Graph traversal resolver that rejects dependency links that would have been
+/// Graph traversal visitor that rejects dependency links that would have been
 /// `Condition::is_always_false` on Chromium platforms.
-struct PackageResolver<'a> {
+struct ChromiumLinkVisitor<'a> {
     extra_config: &'a BuildConfig,
     memoization_tables: &'a mut MemoizationTables,
 }
@@ -437,8 +445,8 @@ impl MemoizationTables {
     }
 }
 
-impl<'g> guppy::graph::PackageResolver<'g> for PackageResolver<'_> {
-    fn accept(&mut self, _query: &PackageQuery<'g>, link: PackageLink<'g>) -> bool {
+impl<'g> guppy::graph::cargo::CargoLinkVisitor<'g> for ChromiumLinkVisitor<'_> {
+    fn visit_link(&mut self, _cx: &CargoLinkContext<'_, 'g>, link: PackageLink<'g>) -> bool {
         // Remove dependency links rejected by `gnrt_config.toml`.
         if self.extra_config.resolve.remove_crates.contains(link.to().name()) {
             return false;
@@ -480,7 +488,8 @@ fn adjust_reverse_condition_if_crossing_target_to_host(
     };
     let link_applies_to_chromium = !condition.is_always_false();
     if link_applies_to_chromium && link_is_present && link_crosses_from_target_to_host {
-        // Reverse condition for `link.to()` needs to support it on all host platforms.
+        // Reverse condition for `link.to()` needs to support it on all host
+        // platforms.
         condition = Condition::always_true();
     }
 
@@ -933,7 +942,8 @@ mod tests {
 
         assert_eq!(dependencies[i].package_name, "time");
         assert_eq!(dependencies[i].version, Version::new(0, 3, 14));
-        // `time` is a dependency of `foo`, so should also get classified as `Test`:
+        // `time` is a dependency of `foo`, so should also get classified as
+        // `Test`:
         assert_eq!(dependencies[i].group, Group::Test);
         assert_eq!(
             dependencies[i].dependency_kinds.get(&DependencyKind::Normal).unwrap().features,
@@ -1195,10 +1205,10 @@ mod tests {
             Some("current_cpu == \"arm64\"".to_string()),
         );
 
-        // We can cross-compile for arm64 **target** when building on x86 **host**.
-        // Therefore the arm64 condition should *not* propagate 1) into when
-        // `prost` is enabled via its reverse dependencies, nor 2) into transitive
-        // dependnecies of `prost`.
+        // We can cross-compile for arm64 **target** when building on x86
+        // **host**. Therefore the arm64 condition should *not*
+        // propagate 1) into when `prost` is enabled via its reverse
+        // dependencies, nor 2) into transitive dependnecies of `prost`.
         let prost = &dependencies["prost-derive"];
         assert_eq!(prost.dependencies.len(), 5);
         assert_eq!(prost.dependencies[0].package_name, "anyhow");
