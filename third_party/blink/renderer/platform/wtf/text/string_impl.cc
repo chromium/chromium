@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
+#include <hwy/highway.h>
+
 #include <algorithm>
 #include <memory>
 
@@ -722,6 +724,191 @@ const std::array<UChar, 256> StringImpl::kLatin1CaseFoldTable = {
     0x00f3, 0x00f4, 0x00f5, 0x00f6, 0x00f7, 0x00f8, 0x00f9, 0x00fa, 0x00fb,
     0x00fc, 0x00fd, 0x00fe, 0x00ff,
 };
+
+// The vectorized parts of StringImpl::CopyChars() and EqualIgnoringAsciiCase().
+// They are here and not in the header because <hwy/highway.h> is expensive to
+// include. See the comment at StringImpl::kMinLengthForSimd8.
+#if HWY_TARGET != HWY_SCALAR
+
+#if HWY_HAVE_CONSTEXPR_LANES
+
+static_assert(
+    StringImpl::kMinLengthForSimd8 ==
+    hwy::HWY_NAMESPACE::Lanes(hwy::HWY_NAMESPACE::FixedTag<uint8_t, 16>()));
+static_assert(
+    StringImpl::kMinLengthForSimd16 ==
+    hwy::HWY_NAMESPACE::Lanes(hwy::HWY_NAMESPACE::FixedTag<uint16_t, 8>()));
+
+#endif
+
+void StringImpl::CopyCharsSimd(base::span<UChar> destination,
+                               base::span<const LChar> source) {
+  namespace hw = hwy::HWY_NAMESPACE;
+
+  constexpr hw::FixedTag<uint16_t, 8> d16;
+  constexpr hw::FixedTag<uint8_t, 16> d8;
+  HWY_LANES_CONSTEXPR size_t kLanes = hw::Lanes(d8);
+
+  const size_t length = source.size();
+  const LChar* src = source.data();
+  UChar* dst = destination.data();
+
+  // SAFETY: The SIMD code requires raw buffer access.
+  UNSAFE_BUFFERS({
+    size_t i = 0;
+    if (length >= kLanes) {
+      for (; i + kLanes <= length; i += kLanes) {
+        const auto v8 = hw::LoadU(d8, src + i);
+        const auto v16_low = hw::PromoteLowerTo(d16, v8);
+        const auto v16_high = hw::PromoteUpperTo(d16, v8);
+        hw::StoreU(v16_low, d16, reinterpret_cast<uint16_t*>(dst + i));
+        hw::StoreU(v16_high, d16,
+                   reinterpret_cast<uint16_t*>(dst + i + hw::Lanes(d16)));
+      }
+    }
+
+    for (; i < length; ++i) {
+      dst[i] = src[i];
+    }
+  });
+}
+
+bool EqualIgnoringAsciiCaseSimd(base::span<const LChar> a,
+                                base::span<const LChar> b) {
+  namespace hw = hwy::HWY_NAMESPACE;
+  constexpr hw::FixedTag<uint8_t, 16> d;
+  HWY_LANES_CONSTEXPR size_t kLanes = hw::Lanes(d);
+
+  // SAFETY: The SIMD code requires raw buffer access.
+  UNSAFE_BUFFERS({
+    size_t i = 0;
+    if (a.size() >= kLanes) {
+      const auto upper_A = hw::Set(d, 'A');
+      const auto upper_Z = hw::Set(d, 'Z');
+      const auto case_bit = hw::Set(d, 0x20);
+      for (; i + kLanes <= a.size(); i += kLanes) {
+        auto va = hw::LoadU(d, reinterpret_cast<const uint8_t*>(a.data() + i));
+        auto vb = hw::LoadU(d, reinterpret_cast<const uint8_t*>(b.data() + i));
+        auto is_upper_a = hw::And(hw::Ge(va, upper_A), hw::Le(va, upper_Z));
+        va = hw::IfThenElse(is_upper_a, hw::Or(va, case_bit), va);
+        auto is_upper_b = hw::And(hw::Ge(vb, upper_A), hw::Le(vb, upper_Z));
+        vb = hw::IfThenElse(is_upper_b, hw::Or(vb, case_bit), vb);
+        if (!hw::AllTrue(d, hw::Eq(va, vb))) {
+          return false;
+        }
+      }
+    }
+    for (; i < a.size(); ++i) {
+      if (ToAsciiLower(a.data()[i]) != ToAsciiLower(b.data()[i])) {
+        return false;
+      }
+    }
+  });
+  return true;
+}
+
+bool EqualIgnoringAsciiCaseSimd(base::span<const UChar> a,
+                                base::span<const LChar> b) {
+  namespace hw = hwy::HWY_NAMESPACE;
+  constexpr hw::FixedTag<uint16_t, 8> d16;
+  constexpr hw::FixedTag<uint8_t, 8> d8;
+  HWY_LANES_CONSTEXPR size_t kLanes = hw::Lanes(d16);
+
+  // SAFETY: The SIMD code requires raw buffer access.
+  UNSAFE_BUFFERS({
+    size_t i = 0;
+    if (a.size() >= kLanes) {
+      const auto upper_A = hw::Set(d16, 'A');
+      const auto upper_Z = hw::Set(d16, 'Z');
+      const auto case_bit = hw::Set(d16, 0x20);
+      for (; i + kLanes <= a.size(); i += kLanes) {
+        auto va =
+            hw::LoadU(d16, reinterpret_cast<const uint16_t*>(a.data() + i));
+        auto vb_8 =
+            hw::LoadU(d8, reinterpret_cast<const uint8_t*>(b.data() + i));
+        auto vb = hw::PromoteTo(d16, vb_8);
+        auto is_upper_a = hw::And(hw::Ge(va, upper_A), hw::Le(va, upper_Z));
+        va = hw::IfThenElse(is_upper_a, hw::Or(va, case_bit), va);
+        auto is_upper_b = hw::And(hw::Ge(vb, upper_A), hw::Le(vb, upper_Z));
+        vb = hw::IfThenElse(is_upper_b, hw::Or(vb, case_bit), vb);
+        if (!hw::AllTrue(d16, hw::Eq(va, vb))) {
+          return false;
+        }
+      }
+    }
+    for (; i < a.size(); ++i) {
+      if (ToAsciiLower(a.data()[i]) != ToAsciiLower(b.data()[i])) {
+        return false;
+      }
+    }
+  });
+  return true;
+}
+
+bool EqualIgnoringAsciiCaseSimd(base::span<const UChar> a,
+                                base::span<const UChar> b) {
+  namespace hw = hwy::HWY_NAMESPACE;
+  constexpr hw::FixedTag<uint16_t, 8> d;
+  HWY_LANES_CONSTEXPR size_t kLanes = hw::Lanes(d);
+
+  // SAFETY: The SIMD code requires raw buffer access.
+  UNSAFE_BUFFERS({
+    size_t i = 0;
+    if (a.size() >= kLanes) {
+      const auto upper_A = hw::Set(d, 'A');
+      const auto upper_Z = hw::Set(d, 'Z');
+      const auto case_bit = hw::Set(d, 0x20);
+      for (; i + kLanes <= a.size(); i += kLanes) {
+        auto va = hw::LoadU(d, reinterpret_cast<const uint16_t*>(a.data() + i));
+        auto vb = hw::LoadU(d, reinterpret_cast<const uint16_t*>(b.data() + i));
+        auto is_upper_a = hw::And(hw::Ge(va, upper_A), hw::Le(va, upper_Z));
+        va = hw::IfThenElse(is_upper_a, hw::Or(va, case_bit), va);
+        auto is_upper_b = hw::And(hw::Ge(vb, upper_A), hw::Le(vb, upper_Z));
+        vb = hw::IfThenElse(is_upper_b, hw::Or(vb, case_bit), vb);
+        if (!hw::AllTrue(d, hw::Eq(va, vb))) {
+          return false;
+        }
+      }
+    }
+    for (; i < a.size(); ++i) {
+      if (ToAsciiLower(a.data()[i]) != ToAsciiLower(b.data()[i])) {
+        return false;
+      }
+    }
+  });
+  return true;
+}
+
+#else  // HWY_TARGET != HWY_SCALAR
+
+void StringImpl::CopyCharsSimd(base::span<UChar> destination,
+                               base::span<const LChar> source) {
+  const LChar* src = source.data();
+  UChar* dst = destination.data();
+  // SAFETY: The caller checked that both spans have the same size.
+  UNSAFE_BUFFERS({
+    for (size_t i = 0; i < source.size(); ++i) {
+      dst[i] = src[i];
+    }
+  });
+}
+
+bool EqualIgnoringAsciiCaseSimd(base::span<const LChar> a,
+                                base::span<const LChar> b) {
+  return EqualIgnoringAsciiCase<LChar, LChar>(a, b);
+}
+
+bool EqualIgnoringAsciiCaseSimd(base::span<const UChar> a,
+                                base::span<const LChar> b) {
+  return EqualIgnoringAsciiCase<UChar, LChar>(a, b);
+}
+
+bool EqualIgnoringAsciiCaseSimd(base::span<const UChar> a,
+                                base::span<const UChar> b) {
+  return EqualIgnoringAsciiCase<UChar, UChar>(a, b);
+}
+
+#endif  // HWY_TARGET != HWY_SCALAR
 
 bool DeprecatedEqualIgnoringCase(base::span<const LChar> a,
                                  base::span<const LChar> b) {
