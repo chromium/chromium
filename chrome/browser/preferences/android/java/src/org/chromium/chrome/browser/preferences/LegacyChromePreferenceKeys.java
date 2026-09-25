@@ -112,8 +112,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION,
                 ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID,
                 ChromePreferenceKeys.TOS_ACKED_ACCOUNTS,
-                ChromePreferenceKeys.TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_CLEAR_DATA,
-                ChromePreferenceKeys.TWA_DIALOG_NUMBER_OF_DISMISSALS_ON_UNINSTALL,
                 ChromePreferenceKeys.TWA_DISCLOSURE_ACCEPTED_PACKAGES,
                 ChromePreferenceKeys.UI_THEME_SETTING,
                 ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS,
