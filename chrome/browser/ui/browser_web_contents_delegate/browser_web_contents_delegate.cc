@@ -123,11 +123,6 @@
 #include "ui/display/types/display_constants.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-// Kill switch for merge safety for a fix for https://crbug.com/489205993
-// TODO(crbug.com/489205993): Remove in M150 or later.
-BASE_FEATURE(kBackgroundActorTaskPopupsOpenInBackground,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 DEFINE_USER_DATA(BrowserWebContentsDelegate);
 
 namespace {
@@ -733,9 +728,7 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
 
   // If a backgrounded actor task triggered a new tab/popup, don't interrupt the
   // user.
-  if (base::FeatureList::IsEnabled(
-          kBackgroundActorTaskPopupsOpenInBackground) &&
-      source && actor::IsRunningBackgroundActorTask(*source)) {
+  if (source && actor::IsRunningBackgroundActorTask(*source)) {
     if (disposition == WindowOpenDisposition::NEW_POPUP) {
       window_action = NavigateParams::WindowAction::kShowWindowInactive;
     } else if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
