@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1275,6 +1276,74 @@ TEST_F(AnimationBuilderTest, SetInterpolatedTransform) {
   EXPECT_FALSE(target->layer()->GetAnimator()->is_animating());
   EXPECT_EQ(target->delegate()->GetTransformForAnimation(),
             expected_end_transform);
+}
+
+// Regression test for the ~AnimationBuilder destructor loop dereferencing
+// stale ui::Layer* multimap keys after a re-entrant client callback deletes a
+// later animation target.
+//
+// The destructor iterates `layer_animation_sequences_` (keyed by bare
+// ui::Layer*, in pointer order) and calls target->GetAnimator() /
+// StartTogether() per target. StartTogether() synchronously dispatches
+// LayerAnimationObserver callbacks (e.g. via preemption of a conflicting
+// animation, Step() of an expired sequence, or
+// FinishAnyAnimationWithZeroDuration()). Production callbacks delete Views
+// and their Layers from these callbacks (e.g. ash
+// AshNotificationView::AnimateResizeAfterRemoval -> RemoveChildViewT()). If
+// such a callback deletes a *later* target of the builder, the loop resumes
+// with a dangling Layer* and dereferences freed memory.
+//
+// Under ASan this test reports heap-use-after-free in ui::Layer::GetAnimator
+// called from views::AnimationBuilder::~AnimationBuilder.
+TEST_F(AnimationBuilderTest, DestructorLoopUsesLayerDeletedByCallback) {
+  auto owner_a = std::make_unique<TestAnimatibleLayerOwner>();
+  auto owner_b = std::make_unique<TestAnimatibleLayerOwner>();
+
+  // The multimap is ordered by Layer* value; make `first` the target that the
+  // destructor loop visits first and `victim` the one visited afterwards.
+  const bool a_first = owner_a->layer() < owner_b->layer();
+  std::unique_ptr<TestAnimatibleLayerOwner>& first =
+      a_first ? owner_a : owner_b;
+  std::unique_ptr<TestAnimatibleLayerOwner>& victim =
+      a_first ? owner_b : owner_a;
+
+  ui::Layer* first_layer = first->layer();
+  ui::Layer* victim_layer = victim->layer();
+
+  // Builder 1: leave a pending bounds animation on `first` whose
+  // ended/aborted callback destroys `victim` and its Layer. This models the
+  // shipping ash grouped-notification callbacks
+  // (on_notification_slid_out / on_animation_aborted), which synchronously
+  // delete sibling child Views (and thus their Layers) via RemoveChildViewT.
+  {
+    AnimationBuilder builder;
+    builder.OnEnded(base::BindLambdaForTesting([&]() { victim.reset(); }));
+    builder.OnAborted(base::BindLambdaForTesting([&]() { victim.reset(); }));
+    builder.Once()
+        .SetDuration(base::Seconds(1))
+        .SetBounds(first_layer, gfx::Rect(10, 10, 100, 100));
+  }
+  ASSERT_TRUE(victim);
+  ASSERT_TRUE(first_layer->GetAnimator()->is_animating());
+
+  // Builder 2: one builder with sequences for both layers, mirroring
+  // AshNotificationView::AnimateResizeAfterRemoval() which adds a bounds
+  // sequence for every remaining grouped child to a single builder. Its
+  // destructor starts the `first` sequence; the animator's default
+  // IMMEDIATELY_SET_NEW_TARGET preemption synchronously finishes builder 1's
+  // conflicting animation, running the callback above which frees
+  // `victim_layer` while it is still a not-yet-visited key of the destructor
+  // loop. The loop then resumes and dereferences the freed Layer.
+  {
+    AnimationBuilder builder;
+    builder.Once()
+        .SetDuration(base::Seconds(1))
+        .SetBounds(first_layer, gfx::Rect(0, 0, 50, 50))
+        .SetBounds(victim_layer, gfx::Rect(0, 0, 60, 60));
+  }  // Heap-use-after-free: ~AnimationBuilder -> victim_layer->GetAnimator().
+
+  // Not reached under ASan.
+  EXPECT_FALSE(victim);
 }
 
 }  // namespace views
