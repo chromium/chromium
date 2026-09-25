@@ -54,10 +54,10 @@ USE_WAYLAND_ENV_VAR = "CHROME_REMOTE_DESKTOP_USE_WAYLAND"
 AUDIO_PIPE_ENV_VAR = "CHROME_REMOTE_DESKTOP_AUDIO_PIPE"
 # LINT.ThenChange(//remoting/host/linux/pulse_audio_capturer.cc:audio_pipe_env_var)
 
-# Environment variables imported into the systemd user manager that must be
-# unset when the session terminates so they do not interfere with the
-# multi-process host or subsequent local sessions.
-CRD_SYSTEMD_ENV_VARS_TO_UNSET = [
+# Environment variables that CRD imports into the systemd user manager and
+# that must be unset when the session terminates so they do not interfere with
+# the multi-process host or subsequent local sessions.
+CRD_SYSTEMD_ENV_VARS_TO_IMPORT_AND_UNSET = [
     AUDIO_PIPE_ENV_VAR,
     "CHROME_CONFIG_HOME",
     "CHROME_REMOTE_DESKTOP_SESSION",
@@ -100,7 +100,7 @@ CRD_SYSTEMD_ENV_VARS_TO_UNSET = [
 #    environment rather than `self.child_env`, and need the CRD display,
 #    PipeWire/PulseAudio, gnubby, and software GL variables.
 #
-# In addition to `CRD_SYSTEMD_ENV_VARS_TO_UNSET`, this includes:
+# In addition to `CRD_SYSTEMD_ENV_VARS_TO_IMPORT_AND_UNSET`, this includes:
 # - `PATH`: May be customized by the user's `~/.profile` via
 #   `exec_self_via_login_shell()`.
 # - `XDG_CURRENT_DESKTOP`, `XDG_SESSION_CLASS`, `XDG_SESSION_TYPE`: Needed by
@@ -109,7 +109,7 @@ CRD_SYSTEMD_ENV_VARS_TO_UNSET = [
 #   exit because subsequent desktop sessions overwrite them.
 # - `GDK_DEBUG`, `G_DEBUG`, `G_MESSAGES_DEBUG`, `WAYLAND_DEBUG`: Optional debug
 #   variables when `WaylandDesktop.debug` is enabled.
-SYSTEMD_ENV_VARS_TO_IMPORT = CRD_SYSTEMD_ENV_VARS_TO_UNSET + [
+CRD_SYSTEMD_ENV_VARS_TO_IMPORT = CRD_SYSTEMD_ENV_VARS_TO_IMPORT_AND_UNSET + [
     "GDK_DEBUG",
     "G_DEBUG",
     "G_MESSAGES_DEBUG",
@@ -118,6 +118,19 @@ SYSTEMD_ENV_VARS_TO_IMPORT = CRD_SYSTEMD_ENV_VARS_TO_UNSET + [
     "XDG_CURRENT_DESKTOP",
     "XDG_SESSION_CLASS",
     "XDG_SESSION_TYPE",
+]
+
+# Environment variables to unset from `systemd --user` when the session
+# terminates.
+#
+# In addition to `CRD_SYSTEMD_ENV_VARS_TO_IMPORT_AND_UNSET`, this includes
+# variables that CRD does not import, but that the desktop environment may
+# import (e.g. `/etc/X11/Xsession.d/95dbus_update-activation-env` imports the
+# whole session environment):
+# - `SSH_CONNECTION`: If set, libpulse makes a blocking connection to
+#   `$DISPLAY`, which deadlocks gnome-shell against its own Xwayland on startup.
+CRD_SYSTEMD_ENV_VARS_TO_UNSET = CRD_SYSTEMD_ENV_VARS_TO_IMPORT_AND_UNSET + [
+    "SSH_CONNECTION",
 ]
 
 # The amount of video RAM the dummy driver should claim to have, which limits
@@ -561,7 +574,7 @@ class Desktop(abc.ABC):
     """Imports session environment variables from child_env into the systemd
     user manager."""
     vars_to_import = [
-        var for var in SYSTEMD_ENV_VARS_TO_IMPORT if var in self.child_env
+        var for var in CRD_SYSTEMD_ENV_VARS_TO_IMPORT if var in self.child_env
     ]
     if not vars_to_import:
       return True
