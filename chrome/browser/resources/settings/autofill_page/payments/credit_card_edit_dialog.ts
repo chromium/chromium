@@ -10,23 +10,20 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
-import '../../settings_shared.css.js';
-import '../../settings_vars.css.js';
 
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
-import {getTemplate} from './credit_card_edit_dialog.html.js';
+import {getCss} from './credit_card_edit_dialog.css.js';
+import {getHtml} from './credit_card_edit_dialog.html.js';
 
 /**
  * Regular expression for invalid nickname. Nickname containing any digits will
@@ -68,7 +65,7 @@ export interface SettingsCreditCardEditDialogElement {
 }
 
 const SettingsCreditCardEditDialogElementBase =
-    PrefServiceObserverMixin(I18nMixin(PolymerElement));
+    PrefServiceObserverMixinLit(I18nMixinLit(CrLitElement));
 
 export class SettingsCreditCardEditDialogElement extends
     SettingsCreditCardEditDialogElementBase {
@@ -76,50 +73,38 @@ export class SettingsCreditCardEditDialogElement extends
     return 'settings-credit-card-edit-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      cvcStoragePref_: Object,
+      cvcStoragePref_: {type: Object},
 
       /**
        * The underlying credit card object for the dialog. After initialization
        * of the dialog, this object is only modified once the 'Save' button is
        * clicked.
        */
-      creditCard: Object,
+      creditCard: {type: Object},
 
       /**
        * The actual title that's used for this dialog. Will be context sensitive
        * based on if |creditCard| is being created or edited.
        */
-      title_: String,
+      title_: {type: String},
 
       /**
        * The list of months to show in the dropdown.
        */
-      monthList_: {
-        type: Array,
-        value: [
-          '01',
-          '02',
-          '03',
-          '04',
-          '05',
-          '06',
-          '07',
-          '08',
-          '09',
-          '10',
-          '11',
-          '12',
-        ],
-      },
+      monthList_: {type: Array},
 
       /** The list of years to show in the dropdown. */
-      yearList_: Array,
+      yearList_: {type: Array},
 
       /**
        * Backing data for inputs in the dialog, each bound to the corresponding
@@ -128,34 +113,24 @@ export class SettingsCreditCardEditDialogElement extends
        * Note that rawCardNumber_ is unsanitized; code should instead use
        * `sanitizedCardNumber_`.
        */
-      name_: String,
-      rawCardNumber_: String,
-      cvc_: String,
-      nickname_: String,
-      expirationYear_: String,
-      expirationMonth_: String,
+      name_: {type: String},
+      rawCardNumber_: {type: String},
+      cvc_: {type: String},
+      nickname_: {type: String},
+      expirationYear_: {type: String},
+      expirationMonth_: {type: String},
 
       /**
        * A sanitized version of `rawCardNumber_` that strips out commonly used
        * separators and trims whitespace.
        */
-      sanitizedCardNumber_: {
-        type: String,
-        computed: 'sanitizeCardNumber_(rawCardNumber_)',
-        observer: 'onSanitizedCardNumberChanged_',
-      },
+      sanitizedCardNumber_: {type: String},
 
       /** Whether the current nickname input is invalid. */
-      nicknameInvalid_: {
-        type: Boolean,
-        value: false,
-      },
+      nicknameInvalid_: {type: Boolean},
 
       /** Whether the current card number field is invalid. */
-      cardNumberValidationState_: {
-        type: CardNumberValidationState,
-        value: false,
-      },
+      cardNumberValidationState_: {type: String},
 
       /**
        * Computed property that tracks if the entered credit card is expired -
@@ -163,43 +138,53 @@ export class SettingsCreditCardEditDialogElement extends
        */
       expired_: {
         type: Boolean,
-        computed: 'computeExpired_(expirationMonth_, expirationYear_)',
-        reflectToAttribute: true,
-        observer: 'onExpiredChanged_',
+        reflect: true,
       },
 
       /**
        * Checks if CVC storage is available based on the feature flag.
        */
-      cvcStorageAvailable_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('cvcStorageAvailable');
-        },
-      },
+      cvcStorageAvailable_: {type: Boolean},
     };
   }
 
-  declare private cvcStoragePref_: chrome.settingsPrivate.PrefObject<boolean>|
+  private accessor cvcStoragePref_: chrome.settingsPrivate.PrefObject<boolean>|
       undefined;
-  declare creditCard: chrome.autofillPrivate.CreditCardEntry;
-  declare private title_: string;
-  declare private monthList_: string[];
-  declare private yearList_: string[];
-  declare private name_?: string;
-  declare private rawCardNumber_: string;
-  declare private cvc_?: string;
-  declare private nickname_?: string;
-  declare private expirationYear_?: string;
-  declare private expirationMonth_?: string;
-  declare private sanitizedCardNumber_: string;
-  declare private nicknameInvalid_: boolean;
-  declare private cardNumberValidationState_: CardNumberValidationState;
-  declare private expired_: boolean;
-  declare private cvcStorageAvailable_: boolean;
+  accessor creditCard: chrome.autofillPrivate.CreditCardEntry = {
+    expirationMonth: '01',
+    expirationYear: '2099',
+  };
+  protected accessor title_: string = '';
+  protected accessor monthList_: string[] = [
+    '01',
+    '02',
+    '03',
+    '04',
+    '05',
+    '06',
+    '07',
+    '08',
+    '09',
+    '10',
+    '11',
+    '12',
+  ];
+  protected accessor yearList_: string[] = [];
+  protected accessor name_: string = '';
+  protected accessor rawCardNumber_: string = '';
+  protected accessor cvc_: string = '';
+  protected accessor nickname_: string = '';
+  protected accessor expirationYear_: string = '';
+  protected accessor expirationMonth_: string = '';
+  private accessor sanitizedCardNumber_: string = '';
+  protected accessor nicknameInvalid_: boolean = false;
+  private accessor cardNumberValidationState_: CardNumberValidationState =
+      CardNumberValidationState.INVALID_NO_ERROR;
+  private accessor expired_: boolean = false;
+  private accessor cvcStorageAvailable_: boolean =
+      loadTimeData.getBoolean('cvcStorageAvailable');
 
   override connectedCallback() {
-    super.connectedCallback();
     this.mirrorPref('autofill.payment_cvc_storage', 'cvcStoragePref_');
 
     this.title_ = this.i18n(
@@ -230,15 +215,53 @@ export class SettingsCreditCardEditDialogElement extends
     }
     this.yearList_ = yearList;
 
-    microTask.run(() => {
-      this.expirationYear_ = selectedYear.toString();
-      this.expirationMonth_ = this.creditCard.expirationMonth;
-      this.cvc_ = this.creditCard.cvc;
-      this.name_ = this.creditCard.name;
-      this.rawCardNumber_ = this.creditCard.cardNumber || '';
-      this.nickname_ = this.creditCard.nickname;
-      this.$.dialog.showModal();
-    });
+    super.connectedCallback();
+
+    this.expirationYear_ = selectedYear.toString();
+    this.expirationMonth_ = this.creditCard.expirationMonth || '';
+    this.cvc_ = this.creditCard.cvc || '';
+    this.name_ = this.creditCard.name || '';
+    this.rawCardNumber_ = this.creditCard.cardNumber || '';
+    this.nickname_ = this.creditCard.nickname || '';
+    this.$.dialog.showModal();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('rawCardNumber_')) {
+      this.sanitizedCardNumber_ = this.sanitizeCardNumber_();
+    }
+    if (changedPrivateProperties.has('sanitizedCardNumber_')) {
+      this.onSanitizedCardNumberChanged_();
+    }
+    if (changedPrivateProperties.has('expirationMonth_') ||
+        changedPrivateProperties.has('expirationYear_')) {
+      this.expired_ = this.computeExpired_();
+    }
+    if (changedPrivateProperties.has('nickname_')) {
+      // Validate no digits are used in nickname. Display error message and
+      // disable the save button when invalid.
+      this.nicknameInvalid_ = NICKNAME_INVALID_REGEX.test(this.nickname_);
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('expired_')) {
+      this.onExpiredChanged_();
+    }
+    if (changedPrivateProperties.has('monthList_')) {
+      this.$.month.value = this.expirationMonth_;
+    }
+    if (changedPrivateProperties.has('yearList_')) {
+      this.$.year.value = this.expirationYear_;
+    }
   }
 
   /** Closes the dialog. */
@@ -246,17 +269,33 @@ export class SettingsCreditCardEditDialogElement extends
     this.$.dialog.close();
   }
 
+  protected onRawCardNumberValueChanged_(e: CustomEvent<{value: string}>) {
+    this.rawCardNumber_ = e.detail.value;
+  }
+
+  protected onCvcValueChanged_(e: CustomEvent<{value: string}>) {
+    this.cvc_ = e.detail.value;
+  }
+
+  protected onNameValueChanged_(e: CustomEvent<{value: string}>) {
+    this.name_ = e.detail.value;
+  }
+
+  protected onNicknameValueChanged_(e: CustomEvent<{value: string}>) {
+    this.nickname_ = e.detail.value;
+  }
+
   /**
    * Handler for tapping the 'cancel' button. Should just dismiss the dialog.
    */
-  private onCancelButtonClick_() {
+  protected onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
 
   /**
    * Handler for tapping the save button.
    */
-  private onSaveButtonClick_() {
+  protected onSaveButtonClick_() {
     if (!this.saveEnabled_()) {
       return;
     }
@@ -269,9 +308,7 @@ export class SettingsCreditCardEditDialogElement extends
     // Take the user entered CVC input as-is. This is due to PCI compliance.
     this.creditCard.cvc = this.cvc_;
     this.trimCreditCard_();
-    this.dispatchEvent(new CustomEvent(
-        'save-credit-card',
-        {bubbles: true, composed: true, detail: this.creditCard}));
+    this.fire('save-credit-card', this.creditCard);
     this.close();
   }
 
@@ -280,24 +317,23 @@ export class SettingsCreditCardEditDialogElement extends
         this.sanitizedCardNumber_, /*isBlur=*/ false);
   }
 
-  private onNumberInputBlurred_(event: Event) {
+  protected onNumberInputBlur_(event: Event) {
     assert(event.type === 'blur');
     this.cardNumberValidationState_ = this.computeCardNumberValidationState_(
         this.sanitizedCardNumber_, /*isBlur=*/ true);
   }
 
-  private showErrorForCardNumber_(
-      cardNumberValidationState: CardNumberValidationState) {
-    return cardNumberValidationState ===
+  protected showErrorForCardNumber_(): boolean {
+    return this.cardNumberValidationState_ ===
         CardNumberValidationState.INVALID_WITH_ERROR;
   }
 
-  private onMonthChange_() {
-    this.expirationMonth_ = this.monthList_[this.$.month.selectedIndex];
+  protected onMonthChange_() {
+    this.expirationMonth_ = this.monthList_[this.$.month.selectedIndex] || '';
   }
 
-  private onYearChange_() {
-    this.expirationYear_ = this.yearList_[this.$.year.selectedIndex];
+  protected onYearChange_() {
+    this.expirationYear_ = this.yearList_[this.$.year.selectedIndex] || '';
   }
 
   /**
@@ -309,16 +345,12 @@ export class SettingsCreditCardEditDialogElement extends
     // Readding attributes is needed for consistent announcement by VoiceOver
     if (this.expired_) {
       errorElement.setAttribute('role', 'alert');
-      this.shadowRoot!.querySelector(`#month`)!.setAttribute(
-          'aria-errormessage', ERROR_ID);
-      this.shadowRoot!.querySelector(`#year`)!.setAttribute(
-          'aria-errormessage', ERROR_ID);
+      this.$.month.setAttribute('aria-errormessage', ERROR_ID);
+      this.$.year.setAttribute('aria-errormessage', ERROR_ID);
     } else {
       errorElement.removeAttribute('role');
-      this.shadowRoot!.querySelector(`#month`)!.removeAttribute(
-          'aria-errormessage');
-      this.shadowRoot!.querySelector(`#year`)!.removeAttribute(
-          'aria-errormessage');
+      this.$.month.removeAttribute('aria-errormessage');
+      this.$.year.removeAttribute('aria-errormessage');
     }
   }
 
@@ -326,16 +358,15 @@ export class SettingsCreditCardEditDialogElement extends
    * @return 'true' or 'false' for the aria-invalid attribute
    *     of expiration selectors.
    */
-  private getExpirationAriaInvalid_(): string {
+  protected getExpirationAriaInvalid_(): string {
     return this.expired_ ? 'true' : 'false';
   }
 
-  private checkIfCvcStorageIsAvailable_(cvcStorageToggleEnabled: boolean):
-      boolean {
-    return this.cvcStorageAvailable_ && cvcStorageToggleEnabled;
+  protected checkIfCvcStorageIsAvailable_(): boolean {
+    return this.cvcStorageAvailable_ && !!this.cvcStoragePref_?.value;
   }
 
-  private getCvcImageSource_(): string {
+  protected getCvcImageSource_(): string {
     // An icon is shown to the user to help them look for their CVC.
     // The location differs for AmEx and non-AmEx cards, so we have to get
     // the first two digits of the card number for AmEx cards before we can
@@ -344,7 +375,7 @@ export class SettingsCreditCardEditDialogElement extends
                                 'chrome://settings/images/cvc.svg';
   }
 
-  private getCvcImageTooltip_(): string {
+  protected getCvcImageTooltip_(): string {
     // An icon is shown to the user to help them look for their CVC.
     // The location differs for AmEx and non-AmEx cards, so we have to get
     // the first two digits of the card number for AmEx cards before we can
@@ -354,23 +385,7 @@ export class SettingsCreditCardEditDialogElement extends
                              'creditCardCvcImageTitle');
   }
 
-  /**
-   * Validate no digits are used in nickname. Display error message and disable
-   * the save button when invalid.
-   */
-  private validateNickname_() {
-    this.nicknameInvalid_ = NICKNAME_INVALID_REGEX.test(this.nickname_!);
-  }
-
-  /**
-   * @param  nickname of the card, undefined when not set.
-   * @return nickname character length.
-   */
-  private computeNicknameCharCount_(nickname?: string): number {
-    return (nickname || '').length;
-  }
-
-  private saveEnabled_() {
+  protected saveEnabled_(): boolean {
     if (this.cardNumberValidationState_ !== CardNumberValidationState.VALID) {
       return false;
     }
@@ -382,8 +397,7 @@ export class SettingsCreditCardEditDialogElement extends
    * @return True iff the provided expiration date is passed.
    */
   private computeExpired_(): boolean {
-    if (this.expirationYear_ === undefined ||
-        this.expirationMonth_ === undefined) {
+    if (!this.expirationYear_ || !this.expirationMonth_) {
       return false;
     }
     const now = new Date();
@@ -421,8 +435,10 @@ export class SettingsCreditCardEditDialogElement extends
    * Sanitize the raw card number entered by the user, trimming whitespace and
    * removing commonly used separators.
    */
-  private sanitizeCardNumber_(cardNumber: string): string {
-    return cardNumber ? cardNumber.trim().replaceAll(/ |-/g, '') : '';
+  private sanitizeCardNumber_(): string {
+    return this.rawCardNumber_ ?
+        this.rawCardNumber_.trim().replaceAll(/ |-/g, '') :
+        '';
   }
 
   /**
@@ -523,6 +539,8 @@ export class SettingsCreditCardEditDialogElement extends
     return (sum % 10) === 0;
   }
 }
+
+export type CreditCardEditDialogElement = SettingsCreditCardEditDialogElement;
 
 declare global {
   interface HTMLElementTagNameMap {

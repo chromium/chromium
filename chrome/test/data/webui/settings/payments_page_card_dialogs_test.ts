@@ -5,13 +5,12 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrInputElement, SettingsSimpleConfirmationDialogElement, SettingsCreditCardEditDialogElement, SettingsVirtualCardUnenrollDialogElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement} from 'chrome://settings/settings.js';
 import {loadTimeData, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createCreditCardEntry, createEmptyCreditCardEntry} from './autofill_fake_data.js';
@@ -54,7 +53,6 @@ suite('PaymentsPageCardDialogs', function() {
     const dialog = document.createElement('settings-credit-card-edit-dialog');
     dialog.creditCard = creditCardItem;
     document.body.appendChild(dialog);
-    flush();
     return dialog;
   }
 
@@ -68,7 +66,6 @@ suite('PaymentsPageCardDialogs', function() {
         document.createElement('settings-virtual-card-unenroll-dialog');
     dialog.creditCard = creditCardItem;
     document.body.appendChild(dialog);
-    flush();
     return dialog;
   }
 
@@ -81,6 +78,7 @@ suite('PaymentsPageCardDialogs', function() {
     inputElement.value = input;
     await inputElement.updateComplete;
     inputElement.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
   }
 
   test('verifyAddVsEditCreditCardTitle', function() {
@@ -90,7 +88,7 @@ suite('PaymentsPageCardDialogs', function() {
     const oldCreditCardDialog = createCreditCardDialog(oldCreditCard);
 
     function getTitle(dialog: SettingsCreditCardEditDialogElement): string {
-      return dialog.shadowRoot!.querySelector('[slot=title]')!.textContent;
+      return dialog.shadowRoot.querySelector('[slot=title]')!.textContent;
     }
 
     const oldTitle = getTitle(oldCreditCardDialog);
@@ -119,7 +117,7 @@ suite('PaymentsPageCardDialogs', function() {
     const now = new Date();
     const maxYear = now.getFullYear() + 19;
     const yearInput =
-        creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
+        creditCardDialog.shadowRoot.querySelector<HTMLSelectElement>('#year');
     const yearOptions = yearInput!.options;
 
     assertEquals('2015', yearOptions[0]!.textContent.trim());
@@ -141,7 +139,7 @@ suite('PaymentsPageCardDialogs', function() {
 
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
     const yearInput =
-        creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
+        creditCardDialog.shadowRoot.querySelector<HTMLSelectElement>('#year');
     const yearOptions = yearInput!.options;
 
     assertEquals(
@@ -165,7 +163,7 @@ suite('PaymentsPageCardDialogs', function() {
 
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
     const yearInput =
-        creditCardDialog.shadowRoot!.querySelector<HTMLSelectElement>('#year');
+        creditCardDialog.shadowRoot.querySelector<HTMLSelectElement>('#year');
     const yearOptions = yearInput!.options;
 
     assertEquals(
@@ -188,28 +186,28 @@ suite('PaymentsPageCardDialogs', function() {
 
     // Not expired, but still can't be saved, because there's no card number.
     const expiredError =
-        creditCardDialog.shadowRoot!.querySelector<HTMLElement>(
-            '#expiredError');
+        creditCardDialog.shadowRoot.querySelector<HTMLElement>('#expiredError');
     assertEquals('hidden', getComputedStyle(expiredError!).visibility);
 
     const saveButton =
-        creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+        creditCardDialog.shadowRoot.querySelector<CrButtonElement>(
             '#saveButton');
     assertTrue(saveButton!.disabled);
 
     // Add a card number to enable saving.
-    creditCardDialog.set('rawCardNumber_', '4444333322221111');
-    flush();
+    creditCardDialog.$.numberInput.value = '4444333322221111';
+    await microtasksFinished();
 
     assertEquals('hidden', getComputedStyle(expiredError!).visibility);
     assertFalse(saveButton!.disabled);
 
     const cvcInput =
-        creditCardDialog.shadowRoot!.querySelector<HTMLInputElement>(
+        creditCardDialog.shadowRoot.querySelector<HTMLInputElement>(
             '#cvcInput');
     assertTrue(!!cvcInput);
     assertTrue(isVisible(cvcInput));
     cvcInput.value = '123';
+    await microtasksFinished();
 
     const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
     saveButton!.click();
@@ -226,12 +224,12 @@ suite('PaymentsPageCardDialogs', function() {
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
     const numberInput =
-        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+        creditCardDialog.shadowRoot.querySelector<CrInputElement>(
             '#numberInput');
     assertTrue(!!numberInput, 'Precondition failed: numberInput should exist.');
 
     const saveButton =
-        creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+        creditCardDialog.shadowRoot.querySelector<CrButtonElement>(
             '#saveButton');
     assertTrue(!!saveButton, 'Precondition failed: saveButton should exist.');
 
@@ -252,7 +250,6 @@ suite('PaymentsPageCardDialogs', function() {
     for (const cardNumber of validCardNumbers) {
       // First set the input to something invalid, to reset the dialog.
       await simulateInput(numberInput, '0000000000000001');
-      flush();
       assertTrue(
           numberInput.invalid,
           'Precondition failed: numberInput should initially be invalid');
@@ -262,7 +259,6 @@ suite('PaymentsPageCardDialogs', function() {
 
       // Now check the test case.
       await simulateInput(numberInput, cardNumber);
-      flush();
       assertFalse(numberInput.invalid, `Expected ${cardNumber} to be valid`);
       assertFalse(
           saveButton.disabled,
@@ -270,6 +266,7 @@ suite('PaymentsPageCardDialogs', function() {
 
       // Blur the input; the card should continue to be considered valid.
       numberInput.blur();
+      await microtasksFinished();
       assertFalse(
           numberInput.invalid, `Expected ${cardNumber} to be valid after blur`);
       assertFalse(
@@ -287,13 +284,13 @@ suite('PaymentsPageCardDialogs', function() {
         await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
         const numberInput =
-            creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+            creditCardDialog.shadowRoot.querySelector<CrInputElement>(
                 '#numberInput');
         assertTrue(
             !!numberInput, 'Precondition failed: numberInput should exist.');
 
         const saveButton =
-            creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+            creditCardDialog.shadowRoot.querySelector<CrButtonElement>(
                 '#saveButton');
         assertTrue(
             !!saveButton, 'Precondition failed: saveButton should exist.');
@@ -308,7 +305,6 @@ suite('PaymentsPageCardDialogs', function() {
         for (const cardNumber of invalidCardNumbers) {
           // First set the input to something valid, to reset the dialog.
           await simulateInput(numberInput, '4444333322221111');
-          flush();
           assertFalse(
               numberInput.invalid,
               'Precondition failed: numberInput should initially be valid');
@@ -318,7 +314,6 @@ suite('PaymentsPageCardDialogs', function() {
 
           // Now check the test case.
           await simulateInput(numberInput, cardNumber);
-          flush();
           assertFalse(
               numberInput.invalid, `Expected ${cardNumber} to be valid`);
           assertTrue(
@@ -328,6 +323,7 @@ suite('PaymentsPageCardDialogs', function() {
           // Blur the input; this should do full verification and change the
           // card to be invalid.
           numberInput.blur();
+          await microtasksFinished();
           assertTrue(
               numberInput.invalid,
               `Expected ${cardNumber} to be invalid after blur`);
@@ -345,12 +341,12 @@ suite('PaymentsPageCardDialogs', function() {
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
     const numberInput =
-        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+        creditCardDialog.shadowRoot.querySelector<CrInputElement>(
             '#numberInput');
     assertTrue(!!numberInput, 'Precondition failed: numberInput should exist.');
 
     const saveButton =
-        creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+        creditCardDialog.shadowRoot.querySelector<CrButtonElement>(
             '#saveButton');
     assertTrue(!!saveButton, 'Precondition failed: saveButton should exist.');
 
@@ -366,7 +362,6 @@ suite('PaymentsPageCardDialogs', function() {
     for (const cardNumber of invalidCardNumbers) {
       // First set the input to something valid, to reset the dialog.
       await simulateInput(numberInput, '4444333322221111');
-      flush();
       assertFalse(
           numberInput.invalid,
           'Precondition failed: numberInput should initially be valid');
@@ -376,7 +371,6 @@ suite('PaymentsPageCardDialogs', function() {
 
       // Now check the test case.
       await simulateInput(numberInput, cardNumber);
-      flush();
       assertTrue(numberInput.invalid, `Expected ${cardNumber} to be invalid`);
       assertTrue(
           saveButton.disabled,
@@ -384,6 +378,7 @@ suite('PaymentsPageCardDialogs', function() {
 
       // Blur the input; the card number should remain invalid.
       numberInput.blur();
+      await microtasksFinished();
       assertTrue(
           numberInput.invalid,
           `Expected ${cardNumber} to still be invalid after blur`);
@@ -401,13 +396,13 @@ suite('PaymentsPageCardDialogs', function() {
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
     // Edit a entry.
-    creditCardDialog.set('name_', 'EditedName');
-    creditCardDialog.set('nickname_', 'NickName');
-    creditCardDialog.set('rawCardNumber_', '0000000000001234');
-    flush();
+    creditCardDialog.$.nameInput.value = 'EditedName';
+    creditCardDialog.$.nicknameInput.value = 'NickName';
+    creditCardDialog.$.numberInput.value = '0000000000001234';
+    await microtasksFinished();
 
     const cancelButton =
-        creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+        creditCardDialog.shadowRoot.querySelector<CrButtonElement>(
             '#cancelButton');
     cancelButton!.click();
 
@@ -416,9 +411,10 @@ suite('PaymentsPageCardDialogs', function() {
     creditCardDialog = createCreditCardDialog(creditCard);
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
-    assertEquals(creditCardDialog.get('name_'), creditCard.name);
-    assertEquals(creditCardDialog.get('rawCardNumber_'), creditCard.cardNumber);
-    assertEquals(creditCardDialog.get('nickname_'), creditCard.nickname);
+    assertEquals(creditCardDialog.$.nameInput.value, creditCard.name);
+    assertEquals(creditCardDialog.$.numberInput.value, creditCard.cardNumber);
+    assertEquals(
+        creditCardDialog.$.nicknameInput.value, creditCard.nickname || '');
   });
 
   test('verifyNicknameCharacterCount', async function() {
@@ -428,7 +424,7 @@ suite('PaymentsPageCardDialogs', function() {
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
     const charCount =
-        creditCardDialog.shadowRoot!.querySelector<HTMLElement>('#charCount');
+        creditCardDialog.shadowRoot.querySelector<HTMLElement>('#charCount');
     assertTrue(!!charCount);
     assertTrue(charCount.hidden);
 
@@ -457,7 +453,7 @@ suite('PaymentsPageCardDialogs', function() {
     const closePromise = eventToPromise('close', creditCardDialog);
 
     const cancelButton =
-        creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+        creditCardDialog.shadowRoot.querySelector<CrButtonElement>(
             '#cancelButton');
     assertTrue(!!cancelButton);
     cancelButton.click();
@@ -487,11 +483,11 @@ suite('PaymentsPageCardDialogs', function() {
         firstEntry.shadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     assertFalse(page.$.menuRemoveCreditCard.hidden);
     page.$.menuRemoveCreditCard.click();
-    flush();
+    await microtasksFinished();
 
     const confirmationDialog =
         page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
@@ -504,7 +500,7 @@ suite('PaymentsPageCardDialogs', function() {
     const removeButton = confirmationDialog.$.confirm;
     assertTrue(!!removeButton);
     removeButton.click();
-    flush();
+    await microtasksFinished();
 
     // Wait for the dialog close event to propagate to the PaymentManager.
     await closePromise;
@@ -534,11 +530,11 @@ suite('PaymentsPageCardDialogs', function() {
         firstEntry.shadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     assertFalse(page.$.menuRemoveCreditCard.hidden);
     page.$.menuRemoveCreditCard.click();
-    flush();
+    await microtasksFinished();
 
     const confirmationDialog =
         page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
@@ -550,7 +546,7 @@ suite('PaymentsPageCardDialogs', function() {
     const cancelButton = confirmationDialog.$.cancel;
     assertTrue(!!cancelButton);
     cancelButton.click();
-    flush();
+    await microtasksFinished();
 
     // Wait for the dialog close event to propagate to the PaymentManager.
     await closePromise;
@@ -601,7 +597,7 @@ suite('PaymentsPageCardDialogs', function() {
       await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
       const cvcInput =
-          creditCardDialog.shadowRoot!.querySelector<HTMLInputElement>(
+          creditCardDialog.shadowRoot.querySelector<HTMLInputElement>(
               '#cvcInput');
       assertEquals(cvcStorageToggleEnabled, !!cvcInput);
       assertEquals(cvcStorageToggleEnabled, isVisible(cvcInput));
@@ -618,7 +614,7 @@ suite('PaymentsPageCardDialogs', function() {
 
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
     const cvcInput =
-        creditCardDialog.shadowRoot!.querySelector<HTMLInputElement>(
+        creditCardDialog.shadowRoot.querySelector<HTMLInputElement>(
             '#cvcInput');
     assertTrue(!!cvcInput);
     assertTrue(isVisible(cvcInput));
@@ -649,14 +645,14 @@ suite('PaymentsPageCardDialogs', function() {
 
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
     const cvcInputImage =
-        creditCardDialog.shadowRoot!.querySelector<HTMLImageElement>(
+        creditCardDialog.shadowRoot.querySelector<HTMLImageElement>(
             '#cvcImage');
     assertTrue(!!cvcInputImage);
     assertEquals(
         loadTimeData.getString('creditCardCvcImageTitle'), cvcInputImage.title);
 
     const numberInput =
-        creditCardDialog.shadowRoot!.querySelector<CrInputElement>(
+        creditCardDialog.shadowRoot.querySelector<CrInputElement>(
             '#numberInput');
     assertTrue(!!numberInput);
     assertTrue(isVisible(numberInput));

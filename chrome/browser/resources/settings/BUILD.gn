@@ -569,6 +569,7 @@ build_webui("build") {
     "autofill_page/autofill_shared.css",
     "autofill_page/autofill_shared_lit.css",
     "autofill_page/passwords/passwords_shared.css",
+    "autofill_page/payments/credit_card_edit_dialog.css",
     "autofill_page/payments/credit_card_list_entry.css",
     "autofill_page/payments/iban_edit_dialog.css",
     "autofill_page/payments/iban_list_entry.css",
