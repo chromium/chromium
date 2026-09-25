@@ -183,7 +183,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             mAiModeButtonUiConfigSupplier;
     private @Nullable Callback<@Nullable AiModeButtonUiConfig>
             mAiModeButtonUiConfigSupplierObserver;
-    private @Nullable AiModeButtonUiConfig mAiModeButtonUiConfig;
     private @Nullable HomeModulesCoordinator mHomeModulesCoordinator;
     private @Nullable ViewGroup mHomeModulesContainer;
     private SetupListManager.@Nullable Observer mSetupListObserver;
@@ -586,7 +585,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                     && ComposeplateUtils.canShowComposeplateButtonOnNtp(mProfile);
         }
 
-        return ComposeplateUtils.canShowComposeplateButtonOnNtp(mAiModeButtonUiConfig != null);
+        return ComposeplateUtils.canShowComposeplateButtonOnNtp(
+                mSearchProviderInfoDelegate.hasAiModeEntryPoint());
     }
 
     @VisibleForTesting
@@ -881,13 +881,12 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     /** Called when the default search engine's AiModeButtonUiConfig is changed. */
     private void onAiModeButtonUiConfigChanged(
             @Nullable AiModeButtonUiConfig aiModeButtonUiConfig) {
-        if (mAiModeButtonUiConfig == aiModeButtonUiConfig) return;
-
-        mAiModeButtonUiConfig = aiModeButtonUiConfig;
+        // The config must be cached before any early return below, since
+        // #initializeComposeplateFlags() relies on it.
+        if (!mSearchProviderInfoDelegate.setAiModeButtonUiConfig(aiModeButtonUiConfig)) return;
 
         // Skips if the flag hasn't been initialized since the initialization of the following
-        // components will be called again in #initialize(). Note that the config above must be
-        // cached before this early return, since #initializeComposeplateFlags() relies on it.
+        // components will be called again in #initialize().
         if (mCanShowComposeplateButton == TriState.NOT_SET) return;
 
         // When search engine is changed, the visibility of the composeplate button and
@@ -902,7 +901,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             initializeComposeplate();
         }
 
-        if (mCanShowComposeplateButton == TriState.TRUE && mAiModeButtonUiConfig != null) {
+        if (mCanShowComposeplateButton == TriState.TRUE
+                && mSearchProviderInfoDelegate.hasAiModeEntryPoint()) {
             maybeUpdateAiModeButton();
         }
 
