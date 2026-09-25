@@ -3,7 +3,7 @@ Short Name: Vulkan Utility Libraries
 Version: N/A
 URL: https://github.com/KhronosGroup/Vulkan-Utility-Libraries
 SOURCE CODE: git clone https://github.com/KhronosGroup/Vulkan-Utility-Libraries.git
-Revision: 89042504f261a90d835bac9de636820a0fe7a4cf
+Revision: d3c1125eb2e89919f8ed97ff21da8d1a31aa3f6a
 Update Mechanism: Autoroll
 Security Critical: no
 Shipped: no
