@@ -1152,6 +1152,55 @@ suite('ContextualTasksComposeboxTest', () => {
     assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
   });
 
+  test('NewThreadClearsRestoredTabsAndKeepsAutoSuggestedTab', async () => {
+    const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
+    innerComposebox.contextManagementInComposeboxEnabled = true;
+
+    const autoTab = {
+      tabId: 1,
+      title: 'Auto Tab',
+      url: 'https://example.com',
+      lastActive: {internalValue: BigInt(100)},
+      showInCurrentTabChip: true,
+      showInPreviousTabChip: false,
+    };
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(autoTab, null);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    // Tabs submitted in the previous thread.
+    innerComposebox.aimThreadRestoredTabs = [
+      {
+        tabId: 2,
+        title: 'Previous Thread Tab 1',
+        url: 'https://example.com/2',
+        lastActive: {internalValue: BigInt(50)},
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+      },
+      {
+        tabId: 3,
+        title: 'Previous Thread Tab 2',
+        url: 'https://example.com/3',
+        lastActive: {internalValue: BigInt(25)},
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+      },
+    ];
+    await innerComposebox.updateComplete;
+
+    // Calling `clearInputAndFocus()` (what `onNewThreadClick_()` calls) drops
+    // the previous thread's restored tabs but keeps the auto-suggested tab.
+    contextualTasksApp.$.composebox.clearInputAndFocus();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertEquals(0, innerComposebox.aimThreadRestoredTabs.length);
+    assertEquals(1, innerComposebox.files.size);
+    assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+  });
+
   test('SingleAutoTabFileDoesNotUpdatePlaceholder', async () => {
     const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
     const defaultApiHint =

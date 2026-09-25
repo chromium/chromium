@@ -1991,6 +1991,18 @@ export const ComposeboxEmbedderMixin =
               this.deleteFile(uuid, /*fromUserAction=*/ false);
             }
           }
+
+          // Restored tabs are the tabs submitted in the previous thread. A new
+          // thread starts with no submitted context, so drop them regardless of
+          // `shouldResetRestoredTabs()`.
+          const hadRestoredTabs = this.aimThreadRestoredTabs.length > 0;
+          this.resetRestoredTabs();
+          if (hadRestoredTabs &&
+              this.tabSuggestionsState === TabSuggestionsState.LOADED) {
+            // Restored tabs are merged into (and deduped against) the tab
+            // suggestions, so recompute them without the stale entries.
+            this.refreshTabSuggestions(/*forceRefresh=*/ true);
+          }
         }
 
         clearAllInputs(

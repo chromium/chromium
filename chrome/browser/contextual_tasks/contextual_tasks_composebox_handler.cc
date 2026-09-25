@@ -549,6 +549,15 @@ void ContextualTasksComposeboxHandler::OnTaskChanged() {
   ClearFiles(/*should_block_auto_suggested_tabs=*/false);
   SetSmartTabSharingActive(false);
   InitializeInputStateModel();
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    // InitializeInputStateModel() seeds restored tabs from the session handle,
+    // which can be carried over from the side panel and still hold the tabs
+    // submitted in the previous thread. Don't surface those in the new thread:
+    // they render as stale favicon coins and can hide the auto-suggested tab.
+    // The new thread's restored tabs are populated from the server once its
+    // context loads (see ContextualTasksUI::OnRestoredTabsFetched()).
+    SetAimThreadRestoredTabs({});
+  }
 }
 
 std::vector<int32_t> ContextualTasksComposeboxHandler::GetSelectedTabIds()

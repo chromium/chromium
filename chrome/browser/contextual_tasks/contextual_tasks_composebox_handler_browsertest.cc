@@ -4130,6 +4130,53 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
+    OnTaskChangedClearsRestoredTabsFromPreviousThread) {
+  tabs::TabInterface* tab =
+      tabs::TabLookupFromWebContents::FromWebContents(web_contents_)->model();
+  ASSERT_NE(tab, nullptr);
+
+  // The session handle still holds a tab submitted in the previous thread.
+  contextual_search::FileInfo tab_info;
+  tab_info.tab_url = GURL("about:blank#1");
+  tab_info.tab_title = "About Blank 1";
+  tab_info.tab_session_id =
+      sessions::SessionTabHelper::FromWebContents(tab->GetContents())
+          ->session_id();
+  tab_info.mime_type = lens::MimeType::kHtml;
+  tab_info.selection_time = base::Time::Now();
+
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  EXPECT_CALL(*mock_session, GetSubmittedContextFileInfos())
+      .WillRepeatedly(
+          testing::Return(std::vector<contextual_search::FileInfo>{tab_info}));
+  mock_ui_->SetSessionHandle(mock_session.get());
+
+  SetUpHandler();
+  ASSERT_NE(handler_, nullptr);
+  searchbox_page_receiver_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_searchbox_page_);
+
+  // Switching to a new thread must leave the page with no restored tabs, even
+  // though the session handle still reports the previous thread's tab.
+  std::vector<size_t> restored_tab_counts;
+  EXPECT_CALL(mock_searchbox_page_, SetAimThreadRestoredTabs(testing::_))
+      .WillRepeatedly(
+          [&](const std::vector<searchbox::mojom::TabInfoPtr>& tabs) {
+            restored_tab_counts.push_back(tabs.size());
+          });
+
+  handler_->OnTaskChanged();
+  searchbox_page_receiver_.FlushForTesting();
+
+  ASSERT_FALSE(restored_tab_counts.empty());
+  EXPECT_EQ(restored_tab_counts.back(), 0u);
+
+  mock_ui_->SetSessionHandle(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
     CacheSubmittedTabsOnInit_UnmappedClosedTab) {
   auto mock_session = std::make_unique<testing::NiceMock<
       contextual_search::MockContextualSearchSessionHandle>>();

@@ -1937,6 +1937,28 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test(
+      'clearInputsForNewThread resets restored tabs even with' +
+          ' contextManagementInComposeboxEnabled',
+      async () => {
+        element.contextManagementInComposeboxEnabled = true;
+        element.aimThreadRestoredTabs = [{
+          tabId: 1,
+          title: 'Restored Tab',
+          url: 'about:blank?1',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        }];
+        element.hasCachedSubmittedTabsThisTurn = true;
+
+        element.clearInputsForNewThread();
+        await microtasksFinished();
+
+        assertEquals(0, element.aimThreadRestoredTabs.length);
+        assertFalse(element.hasCachedSubmittedTabsThisTurn);
+      });
+
+  test(
       'undeletableFiles preserves non-deletable files but' +
           ' after, submitCleanup clears tabs',
       async () => {
