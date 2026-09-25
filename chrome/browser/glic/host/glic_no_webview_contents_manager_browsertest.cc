@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -21,17 +22,40 @@
 #include "chrome/browser/glic/test_support/glic_test_tab_added_waiter.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
+#include "components/metrics/structured/buildflags/buildflags.h"
+#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/test/test_structured_metrics_recorder.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace glic {
 
 namespace {
+
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+using StructuredErrorReason =
+    metrics::structured::events::v2::glic::GlicClientLoadErrorReason;
+
+std::vector<StructuredErrorReason> GetRecordedClientLoadErrors(
+    metrics::structured::TestStructuredMetricsRecorder& recorder) {
+  std::vector<StructuredErrorReason> reasons;
+  const std::string expected_name =
+      metrics::structured::events::v2::glic::ClientLoadError().event_name();
+  for (const auto& event : recorder.GetEvents()) {
+    if (event.event_name() == expected_name) {
+      reasons.push_back(static_cast<StructuredErrorReason>(
+          event.metric_values().at("Reason").value.GetInt()));
+    }
+  }
+  return reasons;
+}
+#endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
 GlicNoWebviewContentsManager* GetNoWebviewContentsManager(
     GlicInstanceImpl* instance) {
@@ -152,6 +176,78 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
       1);
 }
 
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+// Several of these paths render the same generic error panel, so the panel
+// type alone cannot tell them apart. Each one must report its own cause.
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       ErrorPathsReportDistinctCauses) {
+  metrics::structured::TestStructuredMetricsRecorder recorder;
+  recorder.Initialize();
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_THAT(GetRecordedClientLoadErrors(recorder), testing::IsEmpty());
+
+  // An error occurring while warming (before AttachToHost) is stashed and
+  // logged once attached.
+  {
+    GlicNoWebviewContentsManager warming_manager(GetProfile(),
+                                                 &service()->enabling(),
+                                                 /*initially_hidden=*/true);
+    warming_manager.OnGuestNavigated(GURL("https://example.com/"),
+                                     /*is_api_allowed=*/true,
+                                     mojom::GuestPageType::kLoadError,
+                                     /*is_initial_commit=*/true);
+    EXPECT_THAT(GetRecordedClientLoadErrors(recorder), testing::IsEmpty());
+    warming_manager.AttachToHost(&instance->host());
+    EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
+                testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED));
+  }
+
+  manager->OnWebClientStateChanged(mojom::WebClientState::kError);
+  EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
+              testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
+                                   StructuredErrorReason::CLIENT_ERROR));
+
+  manager->OnGuestProcessGone(base::TERMINATION_STATUS_PROCESS_CRASHED);
+  EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
+              testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
+                                   StructuredErrorReason::CLIENT_ERROR,
+                                   StructuredErrorReason::GUEST_PROCESS_GONE));
+
+  manager->OnGuestNavigated(GURL("https://example.com/"),
+                            /*is_api_allowed=*/true,
+                            mojom::GuestPageType::kLogin,
+                            /*is_initial_commit=*/true);
+  EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
+              testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
+                                   StructuredErrorReason::CLIENT_ERROR,
+                                   StructuredErrorReason::GUEST_PROCESS_GONE,
+                                   StructuredErrorReason::SIGN_IN));
+
+  manager->OnGuestNavigated(GURL("https://example.com/"),
+                            /*is_api_allowed=*/true,
+                            mojom::GuestPageType::kDisabledByAdmin,
+                            /*is_initial_commit=*/true);
+  EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
+              testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
+                                   StructuredErrorReason::CLIENT_ERROR,
+                                   StructuredErrorReason::GUEST_PROCESS_GONE,
+                                   StructuredErrorReason::SIGN_IN,
+                                   StructuredErrorReason::DISABLED_BY_ADMIN));
+
+  // A transient error does not replace a policy error, so it is not reported.
+  manager->OnWebClientStateChanged(mojom::WebClientState::kError);
+  EXPECT_THAT(GetRecordedClientLoadErrors(recorder),
+              testing::ElementsAre(StructuredErrorReason::GUEST_LOAD_FAILED,
+                                   StructuredErrorReason::CLIENT_ERROR,
+                                   StructuredErrorReason::GUEST_PROCESS_GONE,
+                                   StructuredErrorReason::SIGN_IN,
+                                   StructuredErrorReason::DISABLED_BY_ADMIN));
+}
+#endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
                        OverlayNotCreatedOnWarming) {
   GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
@@ -167,14 +263,16 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   EXPECT_EQ(manager.state(),
             GlicNoWebviewContentsManager::DisplayState::kWarming);
   EXPECT_FALSE(manager.ShouldReloadOnShow());
-  manager.SetErrorState(mojom::ErrorPanelType::kError);
+  manager.SetErrorState(mojom::ErrorPanelType::kError,
+                        ClientLoadErrorReason::kClientError);
   EXPECT_TRUE(manager.ShouldReloadOnShow());
   EXPECT_EQ(manager.overlay_contents(), nullptr);
   EXPECT_EQ(manager.state(),
             GlicNoWebviewContentsManager::DisplayState::kWarming);
 
   // Deterministic error panels (like sign-in) should not trigger a reload.
-  manager.SetErrorState(mojom::ErrorPanelType::kSignIn);
+  manager.SetErrorState(mojom::ErrorPanelType::kSignIn,
+                        ClientLoadErrorReason::kSignIn);
   EXPECT_FALSE(manager.ShouldReloadOnShow());
 
   // Becoming visible transitions to kShowingOverlay and creates overlay.
@@ -266,7 +364,8 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   // Put the manager into a transient error state that requires reload on show.
   manager = GetNoWebviewContentsManager(instance);
   ASSERT_TRUE(manager);
-  manager->SetErrorState(mojom::ErrorPanelType::kOffline);
+  manager->SetErrorState(mojom::ErrorPanelType::kOffline,
+                         ClientLoadErrorReason::kOffline);
   EXPECT_TRUE(manager->ShouldReloadOnShow());
 
   // Close the panel while in the error state.
@@ -295,7 +394,8 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   ASSERT_TRUE(manager);
   ASSERT_TRUE(manager->overlay_contents());
 
-  manager->SetErrorState(mojom::ErrorPanelType::kIneligibleAccount);
+  manager->SetErrorState(mojom::ErrorPanelType::kIneligibleAccount,
+                         ClientLoadErrorReason::kIneligibleAccount);
 
   GlicTestTabAddedWaiter waiter(GetProfile());
   ClickOverlayElement(manager->overlay_contents(),
@@ -315,7 +415,8 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   ASSERT_TRUE(manager);
   ASSERT_TRUE(manager->overlay_contents());
 
-  manager->SetErrorState(mojom::ErrorPanelType::kLocationMismatch);
+  manager->SetErrorState(mojom::ErrorPanelType::kLocationMismatch,
+                         ClientLoadErrorReason::kLocationMismatch);
 
   GlicTestTabAddedWaiter waiter(GetProfile());
   ClickOverlayElement(manager->overlay_contents(),
@@ -335,7 +436,8 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   ASSERT_TRUE(manager);
   ASSERT_TRUE(manager->overlay_contents());
 
-  manager->SetErrorState(mojom::ErrorPanelType::kDisabledByAdminWithLink);
+  manager->SetErrorState(mojom::ErrorPanelType::kDisabledByAdminWithLink,
+                         ClientLoadErrorReason::kDisabledByAdmin);
 
   base::UserActionTester user_action_tester;
   GlicTestTabAddedWaiter waiter(GetProfile());
@@ -370,7 +472,8 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   ASSERT_TRUE(manager);
   ASSERT_TRUE(manager->overlay_contents());
 
-  manager->SetErrorState(mojom::ErrorPanelType::kDisabledByAdmin);
+  manager->SetErrorState(mojom::ErrorPanelType::kDisabledByAdmin,
+                         ClientLoadErrorReason::kDisabledByAdmin);
 
   ClickOverlayElement(manager->overlay_contents(),
                       "#disabledByAdminCloseButton");
@@ -384,7 +487,8 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   ASSERT_TRUE(manager);
   ASSERT_TRUE(manager->overlay_contents());
 
-  manager->SetErrorState(mojom::ErrorPanelType::kOffline);
+  manager->SetErrorState(mojom::ErrorPanelType::kOffline,
+                         ClientLoadErrorReason::kOffline);
 
   ClickOverlayElement(manager->overlay_contents(), "#retry");
 }
@@ -541,7 +645,8 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
             GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
 
   // Set a transient error (e.g. generic failure or offline).
-  manager.SetErrorState(mojom::ErrorPanelType::kError);
+  manager.SetErrorState(mojom::ErrorPanelType::kError,
+                        ClientLoadErrorReason::kGuestLoadFailed);
   EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kError);
   EXPECT_EQ(manager.state(),
             GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
@@ -563,7 +668,8 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   manager.SetVisibility(content::Visibility::VISIBLE);
 
   // Set a policy error (e.g. sign-in required).
-  manager.SetErrorState(mojom::ErrorPanelType::kSignIn);
+  manager.SetErrorState(mojom::ErrorPanelType::kSignIn,
+                        ClientLoadErrorReason::kSignIn);
   EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kSignIn);
 
   // Guest client connects in background; policy error must not be cleared.
@@ -580,7 +686,8 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
                                        /*initially_hidden=*/false);
   manager.SetVisibility(content::Visibility::VISIBLE);
 
-  manager.SetErrorState(mojom::ErrorPanelType::kOffline);
+  manager.SetErrorState(mojom::ErrorPanelType::kOffline,
+                        ClientLoadErrorReason::kOffline);
   EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kOffline);
 
   // Starting a new guest navigation clears the transient error and displays
@@ -597,7 +704,8 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
                                        /*initially_hidden=*/false);
   manager.SetVisibility(content::Visibility::VISIBLE);
 
-  manager.SetErrorState(mojom::ErrorPanelType::kError);
+  manager.SetErrorState(mojom::ErrorPanelType::kError,
+                        ClientLoadErrorReason::kGuestLoadFailed);
   EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kError);
 
   // Guest navigates to /sorry/ CAPTCHA page; transient error is cleared to show
