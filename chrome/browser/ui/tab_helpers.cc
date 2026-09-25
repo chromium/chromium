@@ -200,7 +200,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder_tab_helper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_navigation_observer.h"
-#include "chrome/browser/ash/growth/campaigns_manager_session_tab_helper.h"
 #include "chrome/browser/ash/mahi/web_contents/mahi_tab_helper.h"
 #include "chrome/browser/chromeos/gemini_app/gemini_app_tab_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
@@ -733,10 +732,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Do not create for Incognito mode.
-  if (!profile->IsOffTheRecord()) {
-    CampaignsManagerSessionTabHelper::CreateForWebContents(web_contents);
-  }
   ash::BootTimesRecorderTabHelper::MaybeCreateForWebContents(web_contents);
 
   ash::CrosIsolatedWebAppEnabler::CreateForWebContents(web_contents);

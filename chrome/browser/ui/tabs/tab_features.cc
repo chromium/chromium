@@ -179,6 +179,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
+#include "chrome/browser/ash/growth/campaigns_manager_session_tab_helper.h"
 #include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.h"
 #endif
@@ -711,6 +712,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   }
   google_one_offer_iph_tab_helper_ =
       std::make_unique<GoogleOneOfferIphTabHelper>(tab.GetContents());
+  // Do not create for Incognito mode.
+  if (!profile->IsOffTheRecord()) {
+    campaigns_manager_session_tab_helper_ =
+        std::make_unique<CampaignsManagerSessionTabHelper>(tab.GetContents());
+  }
 #endif
 
   // The controller is created for all tabs but only affects back button
@@ -995,6 +1001,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 #if BUILDFLAG(IS_CHROMEOS)
   google_one_offer_iph_tab_helper_ =
       std::make_unique<GoogleOneOfferIphTabHelper>(new_contents);
+  if (campaigns_manager_session_tab_helper_) {
+    campaigns_manager_session_tab_helper_ =
+        std::make_unique<CampaignsManagerSessionTabHelper>(new_contents);
+  }
 #endif
 }
 

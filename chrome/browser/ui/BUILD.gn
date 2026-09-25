@@ -2579,7 +2579,6 @@ static_library("ui") {
       "//chrome/browser/ash/extensions",
       "//chrome/browser/ash/file_suggest",
       "//chrome/browser/ash/floating_workspace",
-      "//chrome/browser/ash/growth",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/guest_os/public",
       "//chrome/browser/ash/input_method",

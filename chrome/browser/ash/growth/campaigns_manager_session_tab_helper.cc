@@ -9,7 +9,6 @@
 
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 CampaignsManagerSessionTabHelper::~CampaignsManagerSessionTabHelper() = default;
 
@@ -24,8 +23,4 @@ void CampaignsManagerSessionTabHelper::PrimaryPageChanged(content::Page& page) {
 
 CampaignsManagerSessionTabHelper::CampaignsManagerSessionTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<CampaignsManagerSessionTabHelper>(
-          *web_contents) {}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CampaignsManagerSessionTabHelper);
+    : content::WebContentsObserver(web_contents) {}
