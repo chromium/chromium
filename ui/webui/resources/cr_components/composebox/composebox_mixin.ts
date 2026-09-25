@@ -968,7 +968,14 @@ export const ComposeboxEmbedderMixin =
         onContextualInputStatusChanged(
             token: UnguessableToken, status: ContextUploadStatus,
             errorType: ContextUploadErrorType|null) {
-          if (!this.attachedContext.has(token) &&
+          // Statuses arrive on the page pipe, which is not ordered with the
+          // `addTabContext` response. A ghost placeholder created for an
+          // unknown token (see `updateFileStatus()`) is not the real
+          // attachment yet, so a terminal status landing on it must still be
+          // recorded; otherwise `addTabContextHandleCallback()` replaces the
+          // ghost with an in-flight attachment that never completes.
+          const existing = this.attachedContext.get(token);
+          if ((!existing || existing.isGhost) &&
               isContextUploadStatusTerminal(status)) {
             this.earlyTerminalUploads.set(token, status);
           }

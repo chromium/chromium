@@ -93,6 +93,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeepResearchIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFirstTabMenuItemIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSecondTabMenuItemIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kImageUploadMenuItemIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFileUploadMenuItemIdForTesting);
   // Identifies the "Add tabs" / "Sharing n tabs" parent item that opens the
