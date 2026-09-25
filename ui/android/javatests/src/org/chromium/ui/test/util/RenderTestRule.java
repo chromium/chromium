@@ -5,6 +5,8 @@
 package org.chromium.ui.test.util;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Animatable2;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
@@ -14,7 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.annotation.StringDef;
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -379,8 +381,14 @@ public class RenderTestRule extends TestWatcher {
             editText.setCursorVisible(false);
         } else if (view instanceof ImageView) {
             Drawable drawable = ((ImageView) view).getDrawable();
-            if (drawable instanceof AnimatedVectorDrawableCompat) {
-                ((AnimatedVectorDrawableCompat) drawable).stop();
+            if (drawable instanceof Animatable2 a2) {
+                a2.clearAnimationCallbacks();
+            }
+            if (drawable instanceof Animatable2Compat a2c) {
+                a2c.clearAnimationCallbacks();
+            }
+            if (drawable instanceof Animatable a) {
+                a.stop();
             }
         }
         if (view instanceof TextInputLayout) {

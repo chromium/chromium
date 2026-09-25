@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -40,8 +42,9 @@ public class TabGridIphDialogCoordinator implements TabSwitcherIphController {
             String title = context.getString(R.string.iph_drag_and_drop_title);
             String description = context.getString(R.string.iph_drag_and_drop_content);
             mIphDialogView.initialize(
-                    AppCompatResources.getDrawable(
-                            context, R.drawable.iph_drag_and_drop_animated_drawable),
+                    assertNonNull(
+                            AppCompatResources.getDrawable(
+                                    context, R.drawable.iph_drag_and_drop_animated_drawable)),
                     title,
                     description);
             mModalDialogManager = modalDialogManager;
@@ -98,7 +101,9 @@ public class TabGridIphDialogCoordinator implements TabSwitcherIphController {
 
     /** Destroy the IPH component. */
     public void destroy() {
-        detachParentGlobalLayoutListener();
+        mModalDialogManager.dismissDialog(mModel, DialogDismissalCause.ACTIVITY_DESTROYED);
+        mIphDialogView.stopIphAnimation();
+        setParentView(/* parentView= */ null);
     }
 
     private void attachParentGlobalLayoutListener() {

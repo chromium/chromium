@@ -4,13 +4,12 @@
 
 package org.chromium.components.browser_ui.widget;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +45,7 @@ public class IphDialogView extends LinearLayout {
     private final int mDialogTextTopMarginPortrait;
     private final int mDialogTextTopMarginLandscape;
     private final Context mContext;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     private @Nullable View mRootView;
 
@@ -84,10 +84,15 @@ public class IphDialogView extends LinearLayout {
                 new Animatable2Compat.AnimationCallback() {
                     @Override
                     public void onAnimationEnd(Drawable drawable) {
-                        Handler handler = new Handler();
-                        handler.postDelayed(mIphAnimation::start, mIntervalMs);
+                        mHandler.postDelayed(mIphAnimation::start, mIntervalMs);
                     }
                 };
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        stopIphAnimation();
+        super.onDetachedFromWindow();
     }
 
     /**
@@ -124,6 +129,8 @@ public class IphDialogView extends LinearLayout {
 
     /** Stops the IPH animation. This is called when the IPH dialog hides. */
     public void stopIphAnimation() {
+        if (mIphDrawable == null) return;
+        mHandler.removeCallbacksAndMessages(/* token= */ null);
         AnimatedVectorDrawableCompat.unregisterAnimationCallback(mIphDrawable, mAnimationCallback);
         mIphAnimation.stop();
     }
@@ -134,13 +141,15 @@ public class IphDialogView extends LinearLayout {
      */
     public void startIphAnimation() {
         updateLayout();
+        mHandler.removeCallbacksAndMessages(/* token= */ null);
+        AnimatedVectorDrawableCompat.unregisterAnimationCallback(mIphDrawable, mAnimationCallback);
         AnimatedVectorDrawableCompat.registerAnimationCallback(mIphDrawable, mAnimationCallback);
         mIphAnimation.start();
     }
 
     /** Update the IPH view layout based on the current size of the root view. */
     public void updateLayout() {
-        assertNonNull(mRootView);
+        if (mRootView == null) return;
         int rootViewHeight = mRootView.getHeight();
         if (mParentViewHeight == rootViewHeight) return;
         mParentViewHeight = rootViewHeight;

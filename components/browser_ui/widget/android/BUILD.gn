@@ -530,6 +530,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/browser_ui/widget/CoordinatorLayoutForPointerUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/DateDividedAdapterUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/FullscreenAlertDialogUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/IphDialogViewUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/ListItemBuilderUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedCornerOutlineProviderUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/StrictButtonPressControllerUnitTest.java",
