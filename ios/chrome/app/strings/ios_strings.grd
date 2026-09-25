@@ -620,6 +620,15 @@
       <message name="IDS_IOS_APP_BAR_ASK_GEMINI" desc="Title of the button opening a gemini prompt." meaning="Tap this button to ask something to Gemini">
           Ask Gemini
           </message>
+      <message name="IDS_IOS_APP_BAR_ASSISTANT_CUSTOMIZATION_TITLE" desc="Title for the menu displaying the different customization options of the toolbar button">
+        Choose what button to show in the toolbar
+      </message>
+      <message name="IDS_IOS_APP_BAR_ASSISTANT_IPH_MESSAGE" desc="Message for the in-product help letting the users know they can customize the action of the button">
+        Press and hold to pin your favorite tool here
+      </message>
+      <message name="IDS_IOS_APP_BAR_ASSISTANT_IPH_TITLE" desc="Title for the in-product help letting the users know they can customize the action of the button">
+        Customize your toolbar
+      </message>
       <message name="IDS_IOS_APP_BAR_CONTEXT_MENU_NEW_TAB_GROUP" desc="The text for the button opening a new tab group from the app bar's context menu in the tab groups page of the tab grid.">
         New Tab Group...
       </message>
