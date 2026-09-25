@@ -638,7 +638,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSeed_NoLastFetchTime) {
       user_data_dir_path());
 
   // Simulate a first run by leaving fetch time empty.
-  EXPECT_EQ(base::Time(), field_trial_creator.GetLatestSeedFetchTime());
+  EXPECT_EQ(base::Time(),
+            field_trial_creator.seed_store()->GetLatestSeedFetchTime());
 
   // Check that field trials are created from the seed. Since the test study has
   // only one experiment with 100% probability weight, we must be part of it.

@@ -591,10 +591,6 @@ base::Time VariationsFieldTrialCreator::GetSeedFetchTime() {
              : GetSeedStore()->GetLatestSeedFetchTime();
 }
 
-base::Time VariationsFieldTrialCreator::GetLatestSeedFetchTime() {
-  return GetSeedStore()->GetLatestSeedFetchTime();
-}
-
 Study::Platform VariationsFieldTrialCreator::GetPlatform() {
   if (platform_override_.has_value()) {
     return platform_override_.value();

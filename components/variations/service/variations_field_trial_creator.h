@@ -241,10 +241,6 @@ class VariationsFieldTrialCreator {
   // latest seed. Returns base::Time() if there is no seed.
   base::Time GetSeedFetchTime();
 
-  // Returns the client-side time when the seed was last fetched. Returns
-  // base::Time() if there is no seed.
-  base::Time GetLatestSeedFetchTime();
-
   // Returns the locale that was used for evaluating trials.
   const std::string& application_locale() const { return application_locale_; }
 
