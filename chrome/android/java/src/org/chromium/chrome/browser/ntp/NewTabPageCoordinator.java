@@ -605,6 +605,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                 this::onComposeplateButtonClicked);
 
         updateComposeplateBackground();
+
+        // A new NTP receives the AiModeButtonUiConfig during #initialize(), before the
+        // composeplate exists, so apply it now rather than leaving the layout's default strings.
+        maybeUpdateAiModeButton();
     }
 
     private void onComposeplateButtonClicked(View view) {
@@ -901,10 +905,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             initializeComposeplate();
         }
 
-        if (mCanShowComposeplateButton == TriState.TRUE
-                && mSearchProviderInfoDelegate.hasAiModeEntryPoint()) {
-            maybeUpdateAiModeButton();
-        }
+        maybeUpdateAiModeButton();
 
         if (previousCanShowComposeplateButton != mCanShowComposeplateButton) {
             // When the AI mode button's visibility is changed, the height of search box might be
@@ -915,9 +916,21 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
     }
 
-    /** Updates the icon and text for AI Mode button. */
+    /**
+     * Updates the icon and text for AI Mode button, if the third party AI Mode entry point is
+     * enabled, the button can be shown and the default search engine offers an AI Mode entry point.
+     */
     private void maybeUpdateAiModeButton() {
-        // TODO(https://crbug.com/561995440): Updates the icon and text for AI Mode button.
+        if (!mIsAim3pEntrypointEnabled
+                || mComposeplateCoordinator == null
+                || mCanShowComposeplateButton != TriState.TRUE
+                || !mSearchProviderInfoDelegate.hasAiModeEntryPoint()) {
+            return;
+        }
+
+        // TODO(https://crbug.com/561995440): Updates the icon for the AI Mode button.
+        mComposeplateCoordinator.updateAiModeButtonUiConfig(
+                assumeNonNull(mSearchProviderInfoDelegate.getAiModeButtonUiConfig()));
     }
 
     /** Updates the margins for the most visited tiles layout based on what is shown above it. */

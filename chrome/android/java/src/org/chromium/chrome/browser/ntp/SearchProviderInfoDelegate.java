@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
@@ -14,6 +15,12 @@ import org.chromium.url.GURL;
 @NullMarked
 public class SearchProviderInfoDelegate {
     private final TemplateUrlService mTemplateUrlService;
+
+    /**
+     * Whether the AI Mode entry point is offered by third party search engines too, rather than by
+     * Google only. When enabled, the entry point is described by {@link #mAiModeButtonUiConfig}.
+     */
+    private final boolean mIsAim3pEntrypointEnabled;
 
     private boolean mSearchProviderHasLogo = true;
     private boolean mSearchProviderIsGoogle;
@@ -25,6 +32,7 @@ public class SearchProviderInfoDelegate {
      */
     public SearchProviderInfoDelegate(TemplateUrlService templateUrlService) {
         mTemplateUrlService = templateUrlService;
+        mIsAim3pEntrypointEnabled = OmniboxFeatures.isAim3pEntrypointEnabled();
     }
 
     /**
@@ -82,6 +90,14 @@ public class SearchProviderInfoDelegate {
 
     /** Returns the composeplate URL of the current search provider, or null if there isn't one. */
     public @Nullable GURL getComposeplateUrl() {
+        // Third party search engines carry their own AI Mode URL in the config. Google's is empty
+        // there, since it is navigated to via the regular search engine plumbing.
+        if (mIsAim3pEntrypointEnabled
+                && mAiModeButtonUiConfig != null
+                && !mAiModeButtonUiConfig.navigationUrlEmpty.isEmpty()) {
+            return mAiModeButtonUiConfig.navigationUrlEmpty;
+        }
+
         return mTemplateUrlService.getComposeplateUrl();
     }
 

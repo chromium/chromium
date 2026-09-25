@@ -26,6 +26,7 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -784,7 +785,19 @@ public class NewTabPageCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)
     public void testAiModeButtonUiConfig_AvailableBeforeInitialize() {
-        testAiModeButtonUiConfigImpl(/* isConfigAvailableBeforeInitialize= */ true);
+        testAiModeButtonUiConfigImpl(
+                /* isGoogle= */ true, /* isConfigAvailableBeforeInitialize= */ true);
+    }
+
+    /**
+     * Verifies that a new NTP renders the AI Mode button from the config of a third party default
+     * search engine which is already available before the coordinator is initialized.
+     */
+    @Test
+    @EnableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)
+    public void testAiModeButtonUiConfig_ThirdPartyAvailableBeforeInitialize() {
+        testAiModeButtonUiConfigImpl(
+                /* isGoogle= */ false, /* isConfigAvailableBeforeInitialize= */ true);
     }
 
     /**
@@ -794,7 +807,8 @@ public class NewTabPageCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)
     public void testAiModeButtonUiConfig_AvailableAfterInitialize() {
-        testAiModeButtonUiConfigImpl(/* isConfigAvailableBeforeInitialize= */ false);
+        testAiModeButtonUiConfigImpl(
+                /* isGoogle= */ true, /* isConfigAvailableBeforeInitialize= */ false);
     }
 
     @Test
@@ -882,15 +896,15 @@ public class NewTabPageCoordinatorUnitTest {
         verify(mMockComposeplate).setVisibility(eq(false), anyBoolean());
     }
 
-    private void testAiModeButtonUiConfigImpl(boolean isConfigAvailableBeforeInitialize) {
+    private void testAiModeButtonUiConfigImpl(
+            boolean isGoogle, boolean isConfigAvailableBeforeInitialize) {
         // Destroys the coordinator created in setUp() since the config must be supplied before
         // NewTabPageCoordinator#initialize() is called. This also detaches its observer, so the
         // supplier can be reset below.
         mCoordinator.destroy();
-        mAiModeButtonUiConfigSupplier.set(
-                isConfigAvailableBeforeInitialize
-                        ? createAiModeButtonUiConfig(/* isGoogle= */ true)
-                        : null);
+        AiModeButtonUiConfig config =
+                isConfigAvailableBeforeInitialize ? createAiModeButtonUiConfig(isGoogle) : null;
+        mAiModeButtonUiConfigSupplier.set(config);
 
         createCoordinator();
 
@@ -899,11 +913,14 @@ public class NewTabPageCoordinatorUnitTest {
             assertEquals(TriState.FALSE, mCoordinator.getIsComposeplateEnabledForTesting());
             assertNull(mCoordinator.getComposeplateCoordinatorForTesting());
 
-            changeSearchEngine(/* isGoogle= */ true, /* hasAiModeButtonUiConfig= */ true);
+            config = changeSearchEngine(isGoogle, /* hasAiModeButtonUiConfig= */ true);
         }
 
         assertEquals(TriState.TRUE, mCoordinator.getIsComposeplateEnabledForTesting());
         assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        // The newly created composeplate must render the config, rather than the layout's default.
+        TextView buttonText = mNewTabPageLayout.findViewById(R.id.composeplate_button_text);
+        assertEquals(config.text, buttonText.getText().toString());
     }
 
     private void testSwitchSearchEngineImpl(
@@ -920,11 +937,16 @@ public class NewTabPageCoordinatorUnitTest {
 
         clearInvocations(mMockComposeplate);
 
-        changeSearchEngine(targetIsGoogle, hasTargetConfig);
+        AiModeButtonUiConfig targetConfig = changeSearchEngine(targetIsGoogle, hasTargetConfig);
 
         assertEquals(
                 hasTargetConfig ? TriState.TRUE : TriState.FALSE,
                 mCoordinator.getIsComposeplateEnabledForTesting());
+        if (hasTargetConfig) {
+            verify(mMockComposeplate).updateAiModeButtonUiConfig(eq(targetConfig));
+        } else {
+            verify(mMockComposeplate, never()).updateAiModeButtonUiConfig(any());
+        }
         mCoordinator.updateActionButtonVisibility();
         verify(mMockComposeplate, atLeastOnce()).setVisibility(eq(hasTargetConfig), anyBoolean());
     }
@@ -936,11 +958,16 @@ public class NewTabPageCoordinatorUnitTest {
      * @param isGoogle Whether the new default search engine is Google.
      * @param hasAiModeButtonUiConfig Whether the new default search engine offers an AI Mode entry
      *     point.
+     * @return The config pushed to the supplier, or null if the engine doesn't offer an AI Mode
+     *     entry point.
      */
-    private void changeSearchEngine(boolean isGoogle, boolean hasAiModeButtonUiConfig) {
+    private AiModeButtonUiConfig changeSearchEngine(
+            boolean isGoogle, boolean hasAiModeButtonUiConfig) {
         mCoordinator.setSearchProviderInfo(/* hasLogo= */ isGoogle, isGoogle);
-        mAiModeButtonUiConfigSupplier.set(
-                hasAiModeButtonUiConfig ? createAiModeButtonUiConfig(isGoogle) : null);
+        AiModeButtonUiConfig aiModeButtonUiConfig =
+                hasAiModeButtonUiConfig ? createAiModeButtonUiConfig(isGoogle) : null;
+        mAiModeButtonUiConfigSupplier.set(aiModeButtonUiConfig);
+        return aiModeButtonUiConfig;
     }
 
     /**
@@ -952,7 +979,7 @@ public class NewTabPageCoordinatorUnitTest {
      */
     private static AiModeButtonUiConfig createAiModeButtonUiConfig(boolean isGoogle) {
         return new AiModeButtonUiConfig(
-                "AI Mode",
+                isGoogle ? "AI Mode" : "Red AI",
                 isGoogle ? "Ask AI Mode in Google Search" : "Ask AI Mode",
                 "AI Mode button",
                 "Always show AI Mode",

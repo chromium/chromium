@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.StyleRes;
 import androidx.test.core.app.ApplicationProvider;
@@ -37,8 +38,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ComposeplateViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -152,6 +155,41 @@ public class ComposeplateViewBinderUnitTest {
         @StyleRes int textStyleResId = R.style.TextAppearance_MediumStyle;
         mPropertyModel.set(ComposeplateProperties.TEXT_STYLE_RES_ID, textStyleResId);
         verify(mViewMock).setTextStyle(eq(textStyleResId));
+    }
+
+    @Test
+    public void testSetAiModeButtonUiConfig_withMockView() {
+        AiModeButtonUiConfig aiModeButtonUiConfig = createAiModeButtonUiConfig();
+        mPropertyModel.set(ComposeplateProperties.AI_MODE_BUTTON_UI_CONFIG, aiModeButtonUiConfig);
+        verify(mViewMock).setAiModeButtonUiConfig(eq(aiModeButtonUiConfig));
+    }
+
+    @Test
+    public void testSetAiModeButtonUiConfig() {
+        // Bind PropertyModel with mView.
+        PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
+
+        AiModeButtonUiConfig aiModeButtonUiConfig = createAiModeButtonUiConfig();
+        mPropertyModel.set(ComposeplateProperties.AI_MODE_BUTTON_UI_CONFIG, aiModeButtonUiConfig);
+
+        TextView composeplateButtonText = mView.findViewById(R.id.composeplate_button_text);
+        assertEquals(aiModeButtonUiConfig.text, composeplateButtonText.getText().toString());
+
+        View composeplateButton = mView.findViewById(R.id.composeplate_button);
+        assertEquals(aiModeButtonUiConfig.tooltip, composeplateButton.getTooltipText());
+        assertEquals(aiModeButtonUiConfig.a11yLabel, composeplateButton.getContentDescription());
+    }
+
+    private static AiModeButtonUiConfig createAiModeButtonUiConfig() {
+        return new AiModeButtonUiConfig(
+                "AI Mode",
+                "Ask AI Mode",
+                "AI Mode button",
+                "Always show AI Mode",
+                "Ask AI Mode",
+                /* faviconUrl= */ JUnitTestGURLs.RED_1,
+                /* navigationUrl= */ "https://www.red.com/search?q={searchTerms}",
+                /* navigationUrlEmpty= */ JUnitTestGURLs.URL_2);
     }
 
     private void verifyApplyBackground(View view) {

@@ -14,6 +14,7 @@ import androidx.annotation.StyleRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -175,6 +176,16 @@ public class ComposeplateCoordinator {
         @StyleRes int textStyleResId = ComposeplateUtils.getSearchBoxTextStyleResId(apply);
         mModel.set(ComposeplateProperties.COLOR_STATE_LIST, colorStateList);
         mModel.set(ComposeplateProperties.TEXT_STYLE_RES_ID, textStyleResId);
+    }
+
+    /**
+     * Updates the AI Mode button with the UI config of the default search engine. The config
+     * carries the strings to show, which vary per search engine.
+     *
+     * @param aiModeButtonUiConfig The {@link AiModeButtonUiConfig} of the default search engine.
+     */
+    public void updateAiModeButtonUiConfig(AiModeButtonUiConfig aiModeButtonUiConfig) {
+        mModel.set(ComposeplateProperties.AI_MODE_BUTTON_UI_CONFIG, aiModeButtonUiConfig);
     }
 
     public PropertyModel getModelForTesting() {

@@ -38,7 +38,9 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ComposeplateCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -178,6 +180,28 @@ public class ComposeplateCoordinatorUnitTest {
         verifyComposeplateWidth(
                 /* lateralMargin= */ mContext.getResources()
                         .getDimensionPixelSize(R.dimen.composeplate_view_lateral_margin));
+    }
+
+    @Test
+    public void testUpdateAiModeButtonUiConfig() {
+        assertNull(mPropertyModel.get(ComposeplateProperties.AI_MODE_BUTTON_UI_CONFIG));
+
+        AiModeButtonUiConfig aiModeButtonUiConfig =
+                new AiModeButtonUiConfig(
+                        "AI Mode",
+                        "Ask AI Mode",
+                        "AI Mode button",
+                        "Always show AI Mode",
+                        "Ask AI Mode",
+                        /* faviconUrl= */ JUnitTestGURLs.RED_1,
+                        /* navigationUrl= */ "https://www.red.com/search?q={searchTerms}",
+                        /* navigationUrlEmpty= */ JUnitTestGURLs.URL_2);
+        mCoordinator.updateAiModeButtonUiConfig(aiModeButtonUiConfig);
+
+        assertEquals(
+                aiModeButtonUiConfig,
+                mPropertyModel.get(ComposeplateProperties.AI_MODE_BUTTON_UI_CONFIG));
+        verify(mComposeplateView).setAiModeButtonUiConfig(eq(aiModeButtonUiConfig));
     }
 
     private void verifyComposeplateWidth(int lateralMargin) {

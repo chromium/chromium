@@ -13,10 +13,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.StyleRes;
+import androidx.core.view.ViewCompat;
 
 import org.jni_zero.internal.Nullable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 
 @NullMarked
 /** View for the composeplate layout which is shown below the fake search box on NTP. */
@@ -84,6 +86,23 @@ public class ComposeplateView extends LinearLayout {
         if (mIncognitoButton != null) {
             setTextStyle(mIncognitoButton.findViewById(R.id.incognito_button_text), textStyleResId);
         }
+    }
+
+    /**
+     * Updates the AI Mode button with the strings provided by the default search engine.
+     *
+     * @param aiModeButtonUiConfig The {@link AiModeButtonUiConfig} of the default search engine.
+     */
+    void setAiModeButtonUiConfig(AiModeButtonUiConfig aiModeButtonUiConfig) {
+        if (mComposeplateButton == null) return;
+
+        TextView textView = mComposeplateButton.findViewById(R.id.composeplate_button_text);
+        if (textView != null) {
+            textView.setText(aiModeButtonUiConfig.text);
+        }
+
+        ViewCompat.setTooltipText(mComposeplateButton, aiModeButtonUiConfig.tooltip);
+        mComposeplateButton.setContentDescription(aiModeButtonUiConfig.a11yLabel);
     }
 
     private void setColorStateList(@Nullable ImageView view, ColorStateList colorStateList) {

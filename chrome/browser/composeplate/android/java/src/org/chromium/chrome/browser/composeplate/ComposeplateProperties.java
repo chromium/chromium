@@ -9,6 +9,7 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -32,6 +33,10 @@ interface ComposeplateProperties {
             new WritableObjectPropertyKey<>();
     WritableIntPropertyKey TEXT_STYLE_RES_ID = new WritableIntPropertyKey();
 
+    /** The UI config of the AI Mode button offered by the default search engine. */
+    WritableObjectPropertyKey<AiModeButtonUiConfig> AI_MODE_BUTTON_UI_CONFIG =
+            new WritableObjectPropertyKey<>();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
@@ -41,5 +46,6 @@ interface ComposeplateProperties {
                 APPLY_WHITE_BACKGROUND,
                 COLOR_STATE_LIST,
                 TEXT_STYLE_RES_ID,
+                AI_MODE_BUTTON_UI_CONFIG,
             };
 }
