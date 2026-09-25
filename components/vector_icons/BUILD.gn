@@ -545,7 +545,8 @@ if (current_toolchain == default_toolchain) {
         "google_chrome/google_drive_monochrome.icon",
         "google_chrome/google_g_logo.icon",
         "google_chrome/google_g_logo_monochrome.icon",
-        "google_chrome/google_gmail.icon",
+        "google_chrome/google_gmail.icon",  # Monochrome outline.
+        "google_chrome/google_gmail_logo.icon",  # 4-color logo.
         "google_chrome/google_keep_note.icon",
         "google_chrome/google_lens_full_logo.icon",
         "google_chrome/google_lens_full_logo_dark.icon",

@@ -3923,7 +3923,7 @@ deps = {
 
   'src/components/vector_icons/google_chrome': {
       'url': Var('chrome_git') + '/chrome/vector_icons/google_chrome.git' + '@' +
-        'b9ab0d24177148a8246af8a2848b7b87ea4df34d',
+        'f780a676feb2400384c881901656758f1a02f382',
       'condition': 'checkout_src_internal',
   },
 
