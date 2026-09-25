@@ -81,7 +81,6 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
-    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
     SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
 })
 public class AccountMenuMediatorTest {
@@ -153,10 +152,7 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @DisableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @DisableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testSignedOut_showsPromoCardAndSigninsOnClick() {
         assertEquals(4, mModelList.size());
         ListItem item = mModelList.get(0);
@@ -178,10 +174,7 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @EnableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testSignedOut_activitylessSigninOnClick() {
         assertEquals(4, mModelList.size());
         ListItem item = mModelList.get(0);

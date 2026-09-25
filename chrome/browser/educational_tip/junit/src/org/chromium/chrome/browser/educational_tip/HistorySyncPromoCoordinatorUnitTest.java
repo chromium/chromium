@@ -45,10 +45,7 @@ import java.util.Set;
 
 /** Test relating to {@link HistorySyncPromoCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-    SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-})
+@EnableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
 public class HistorySyncPromoCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Runnable mOnModuleClickedCallback;
@@ -159,10 +156,7 @@ public class HistorySyncPromoCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @DisableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testOnCardClicked_legacy() {
         mHistorySyncPromoCoordinator.onCardClicked();
 

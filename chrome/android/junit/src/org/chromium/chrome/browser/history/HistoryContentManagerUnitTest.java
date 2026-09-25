@@ -25,7 +25,6 @@ import org.robolectric.Robolectric;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -59,7 +58,6 @@ import java.util.function.Supplier;
  * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Features.EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
 public class HistoryContentManagerUnitTest {
 
     @Rule(order = Rule.DEFAULT_ORDER - 1)

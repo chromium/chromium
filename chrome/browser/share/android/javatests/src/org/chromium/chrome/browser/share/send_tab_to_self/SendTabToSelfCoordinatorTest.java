@@ -194,10 +194,7 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @DisabledTest(message = "https://crbug.com/40215923")
-    @DisableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @DisableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     // TODO(crbug.com/448227402): Remove this test once the migration to the activity-less sign-in
     // flow is complete.
     public void testShowDeviceListIfSignedIn() {
@@ -217,10 +214,7 @@ public class SendTabToSelfCoordinatorTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     // This test asserts the old bottom sheet UI and must run with the enhanced
     // bottom sheet feature disabled.
     @DisableFeatures({ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET})
@@ -253,7 +247,6 @@ public class SendTabToSelfCoordinatorTest {
     // This test asserts the old bottom sheet UI and must run with the enhanced
     // bottom sheet feature disabled.
     @DisableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -280,10 +273,7 @@ public class SendTabToSelfCoordinatorTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @EnableFeatures({SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT})
     // This test asserts the old bottom sheet UI and must run with the enhanced
     // bottom sheet feature disabled.
     @DisableFeatures({ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET})
@@ -319,7 +309,6 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -351,7 +340,6 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -420,7 +408,6 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -464,7 +451,6 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -504,7 +490,6 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -551,7 +536,6 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -579,7 +563,6 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -693,7 +676,6 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET,
         ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST
@@ -748,7 +730,6 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST
     })
@@ -800,7 +781,6 @@ public class SendTabToSelfCoordinatorTest {
     // On Automotive, the way this test detects the Toast (via a11y APIs) doesn't work.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST
     })
@@ -912,7 +892,6 @@ public class SendTabToSelfCoordinatorTest {
     @LargeTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/543459081
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -944,16 +923,15 @@ public class SendTabToSelfCoordinatorTest {
      * with all target devices, the `send_button`, and the `manage_devices_link` visible and
      * accessible.
      *
-     * In landscape orientation on phones, `BottomSheet.isSmallScreen()` evaluates to `true`
-     * because the vertical screen clearance between half and full states is less than 160dp
-     * (`(1 - HALF_HEIGHT_RATIO) * mContainerHeight < 160dp`). This disables `SheetState.HALF` and
-     * forces the sheet to open directly in `SheetState.FULL`.
+     * <p>In landscape orientation on phones, `BottomSheet.isSmallScreen()` evaluates to `true`
+     * because the vertical screen clearance between half and full states is less than 160dp (`(1 -
+     * HALF_HEIGHT_RATIO) * mContainerHeight < 160dp`). This disables `SheetState.HALF` and forces
+     * the sheet to open directly in `SheetState.FULL`.
      */
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -984,7 +962,7 @@ public class SendTabToSelfCoordinatorTest {
      * allow scrolling while keeping the `send_button` and `manage_devices_link` visible and
      * accessible.
      *
-     * In landscape orientation on phones, `BottomSheet.isSmallScreen()` evaluates to `true`
+     * <p>In landscape orientation on phones, `BottomSheet.isSmallScreen()` evaluates to `true`
      * because vertical clearance between half and full states is less than 160dp. This disables
      * `SheetState.HALF` and forces the sheet to open directly in `SheetState.FULL`.
      */
@@ -992,7 +970,6 @@ public class SendTabToSelfCoordinatorTest {
     @LargeTest
     @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -1025,7 +1002,7 @@ public class SendTabToSelfCoordinatorTest {
      * Tests that rotating a phone from portrait to landscape while the enhanced device picker is
      * shown keeps the `send_button` and `manage_devices_link` visible and accessible.
      *
-     * When rotating a phone to landscape, `BottomSheet.isSmallScreen()` evaluates to `true`
+     * <p>When rotating a phone to landscape, `BottomSheet.isSmallScreen()` evaluates to `true`
      * because vertical clearance between half and full states is less than 160dp. This disables
      * `SheetState.HALF` and forces the sheet into `SheetState.FULL`.
      */
@@ -1033,7 +1010,6 @@ public class SendTabToSelfCoordinatorTest {
     @LargeTest
     @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -1061,7 +1037,7 @@ public class SendTabToSelfCoordinatorTest {
      * where the manage devices link is hidden, and reveals the manage devices link when expanded to
      * full state.
      *
-     * In landscape orientation on tablets, `BottomSheet.isSmallScreen()` evaluates to `false`
+     * <p>In landscape orientation on tablets, `BottomSheet.isSmallScreen()` evaluates to `false`
      * because the vertical screen clearance is large (distance between half and full states exceeds
      * 160dp). Consequently, `SheetState.HALF` remains enabled and the sheet opens in half-state.
      */
@@ -1069,7 +1045,6 @@ public class SendTabToSelfCoordinatorTest {
     @LargeTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -1109,7 +1084,6 @@ public class SendTabToSelfCoordinatorTest {
     @LargeTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })
@@ -1145,14 +1119,13 @@ public class SendTabToSelfCoordinatorTest {
     }
 
     /**
-     * Tests that rotating a tablet from portrait to landscape maintains sheet stability and
-     * allows expanding to full state with all action controls visible.
+     * Tests that rotating a tablet from portrait to landscape maintains sheet stability and allows
+     * expanding to full state with all action controls visible.
      */
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SEND_TAB_TO_SELF_ENHANCED_BOTTOMSHEET
     })

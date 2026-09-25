@@ -64,10 +64,7 @@ import java.util.concurrent.TimeoutException;
 // TODO(http://crbug.com/495529795): Enable side panel and fix this test.
 @DisableFeatures({ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
 @DoNotBatch(reason = "This test relies on native initialization")
-@EnableFeatures({
-    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-    SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-})
+@EnableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
 public class MismatchNotificationControllerTest {
     private static final String TEST_URL = "https://www.google.com";
 
@@ -137,10 +134,7 @@ public class MismatchNotificationControllerTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @DisableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testSignedOutMessagePrimaryButton_legacy() {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

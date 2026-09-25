@@ -341,10 +341,7 @@ public class SigninBridgeTest {
     }
 
     @Test
-    @DisableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @DisableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testAccountPickerHasNoLimitIfAccountIsSpecified_legacy() {
         Assume.assumeTrue(mIsWebSignin);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
@@ -383,10 +380,7 @@ public class SigninBridgeTest {
     }
 
     @Test
-    @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @EnableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testAccountPickerHasNoLimitIfAccountIsSpecified() {
         Assume.assumeTrue(mIsWebSignin);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
@@ -412,10 +406,7 @@ public class SigninBridgeTest {
     }
 
     @Test
-    @DisableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @DisableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testAccountPickerShown_legacy() {
         Assume.assumeTrue(mIsWebSignin);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
@@ -445,10 +436,7 @@ public class SigninBridgeTest {
     }
 
     @Test
-    @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @EnableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testAccountPickerShown() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -465,10 +453,7 @@ public class SigninBridgeTest {
     }
 
     @Test
-    @DisableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @DisableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testAccountPickerShownWithNoSelectedAccountId_legacy() {
         Assume.assumeTrue(mIsWebSignin);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
@@ -494,10 +479,7 @@ public class SigninBridgeTest {
     }
 
     @Test
-    @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @EnableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testAccountPickerShownWithNoSelectedAccountId() {
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -515,10 +497,7 @@ public class SigninBridgeTest {
 
     @Test
     @EnableFeatures(SigninFeatures.ENABLE_ADD_SESSION_REDIRECT)
-    @DisableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
-    })
+    @DisableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
     public void testBottomSheetInvokedAfterAddAccountFlow_legacy() {
         Assume.assumeTrue(mIsWebSignin);
         ArgumentCaptor<WindowAndroid.IntentCallback> intentCaptor =
@@ -561,7 +540,6 @@ public class SigninBridgeTest {
     @Test
     @EnableFeatures({
         SigninFeatures.ENABLE_ADD_SESSION_REDIRECT,
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
     })
     public void testBottomSheetInvokedAfterAddAccountFlow() {

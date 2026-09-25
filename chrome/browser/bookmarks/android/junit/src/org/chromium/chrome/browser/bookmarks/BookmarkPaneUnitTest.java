@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -63,7 +65,7 @@ import java.util.function.DoubleConsumer;
  * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.BOOKMARK_PANE_ANDROID, SigninFeatures.ENABLE_SEAMLESS_SIGNIN})
+@EnableFeatures(ChromeFeatureList.BOOKMARK_PANE_ANDROID)
 @DisableFeatures({
     ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
@@ -100,6 +102,7 @@ public class BookmarkPaneUnitTest {
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
+    @Mock private BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
     @Mock private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     @Mock private ImageServiceBridge.Natives mImageServiceBridgeNatives;
     @Mock private FaviconHelper.Natives mFaviconHelperNatives;
@@ -133,6 +136,14 @@ public class BookmarkPaneUnitTest {
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperNatives);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
+
+        // The promo coordinator is now assigned unconditionally, so the factory must not
+        // return null.
+        when(mSigninAndHistorySyncActivityLauncher
+                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                any(), any(), any(), any(), any(), any(), any(), any(), any(),
+                                anyInt()))
+                .thenReturn(mSigninCoordinator);
 
         mBookmarkPane =
                 new BookmarkPane(

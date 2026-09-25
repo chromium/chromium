@@ -116,13 +116,11 @@ public final class SigninFeatureMap extends FeatureMap {
     /**
      * Returns whether the activityless sign-in is enabled for all entry points.
      *
-     * <p>{@link SigninFeatures#ENABLE_SEAMLESS_SIGNIN} is for enabling the new activity-less
-     * sign-in flow. {@link SigninFeatures#ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT} is for
-     * migrating rest of the sign-in entry points.
+     * <p>{@link SigninFeatures#ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT} is for migrating rest of
+     * the sign-in entry points.
      */
     public boolean isActivitylessSigninAllEntryPointEnabled() {
-        return isEnabledInNative(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-                && isEnabledInNative(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT);
+        return isEnabledInNative(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT);
     }
 
     /**

@@ -204,7 +204,6 @@ import java.util.function.Supplier;
 @EnableFeatures({
     ChromeFeatureList.HTTPS_FIRST_DIALOG_UI,
     SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
     ChromeFeatureList.GLIC,
     SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING
 })

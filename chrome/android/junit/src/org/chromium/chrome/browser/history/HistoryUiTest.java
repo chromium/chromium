@@ -127,10 +127,7 @@ import java.util.function.Supplier;
     ChromeFeatureList.APP_SPECIFIC_HISTORY,
     ChromeFeatureList.ANDROID_DESKTOP_HISTORY_LAYOUT
 })
-@EnableFeatures({
-    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
-    SigninFeatures.ENABLE_SEAMLESS_SIGNIN
-})
+@EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
 public class HistoryUiTest {
     private static final int PAGE_INCREMENT = 2;
     private static final String HISTORY_SEARCH_QUERY = "some page";

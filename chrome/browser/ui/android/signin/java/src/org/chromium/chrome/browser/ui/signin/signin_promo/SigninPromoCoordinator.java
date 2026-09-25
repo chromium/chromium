@@ -34,8 +34,6 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -56,8 +54,7 @@ public class SigninPromoCoordinator
     private final SigninPromoDelegate mDelegate;
     private final SigninPromoMediator mMediator;
 
-    // TODO(https://crbug.com/469778109): Remove nullability after launching Seamless sign-in.
-    protected @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
+    protected BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
     private @Nullable ImpressionTracker mImpressionTracker;
     private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
@@ -114,30 +111,24 @@ public class SigninPromoCoordinator
                         delegate,
                         this);
 
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-            OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
-            profileSupplier.set(profile);
-            mSigninCoordinator =
-                    launcher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
-                            windowAndroid,
-                            activity,
-                            activityResultTracker,
-                            this,
-                            deviceLockActivityLauncher,
-                            profileSupplier,
-                            bottomSheetController,
-                            SupplierUtils.of(modalDialogManager),
-                            SupplierUtils.of(snackbarManager),
-                            mDelegate.getAccessPoint());
-        } else {
-            mSigninCoordinator = null;
-        }
+        OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+        profileSupplier.set(profile);
+        mSigninCoordinator =
+                launcher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                        windowAndroid,
+                        activity,
+                        activityResultTracker,
+                        this,
+                        deviceLockActivityLauncher,
+                        profileSupplier,
+                        bottomSheetController,
+                        SupplierUtils.of(modalDialogManager),
+                        SupplierUtils.of(snackbarManager),
+                        mDelegate.getAccessPoint());
     }
 
     public void destroy() {
-        if (mSigninCoordinator != null) {
-            mSigninCoordinator.destroy();
-        }
+        mSigninCoordinator.destroy();
         mMediator.destroy();
         destroyPropertyModelChangeProcessor();
     }
@@ -184,15 +175,12 @@ public class SigninPromoCoordinator
     /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate} */
     @Override
     public void onSigninUndone() {
-        assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
         mMediator.onSigninUndone();
     }
 
     /** Implements {@link SigninPromoMediator.Delegate} */
     @Override
     public void startSigninFlow(BottomSheetSigninAndHistorySyncConfig config) {
-        assert (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-                && mSigninCoordinator != null);
         mMediator.onFlowStarted();
         mSigninCoordinator.startSigninFlow(config);
     }

@@ -361,7 +361,6 @@ public class MultiColumnSettingsTest {
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         ChromeFeatureList.SETTINGS_MULTI_COLUMN,
     })

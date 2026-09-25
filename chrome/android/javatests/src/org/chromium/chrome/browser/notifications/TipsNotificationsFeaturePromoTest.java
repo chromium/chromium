@@ -57,7 +57,6 @@ import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.chrome.test.transit.signin.SigninBottomSheetFacility;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -69,10 +68,7 @@ import java.util.List;
 // TODO(crbug.com/478907175): Remove casting when value returns the view type.
 /** Integration and render tests for the tips notifications feature promo. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS,
-    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
-})
+@EnableFeatures(ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS)
 @DisableFeatures({
     ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
     ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398

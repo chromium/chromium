@@ -120,7 +120,6 @@ import java.util.function.Supplier;
 @EnableFeatures({
     ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER_V2,
     ChromeFeatureList.FEED_CONTAINMENT,
-    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
     SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT
 })

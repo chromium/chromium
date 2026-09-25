@@ -252,7 +252,6 @@ import org.chromium.components.messages.MessageContainer;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -1806,21 +1805,19 @@ public class RootUiCoordinator
                                     mSnackbarManagerSupplier,
                                     SigninAccessPoint.WEB_SIGNIN));
         }
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-            mExtensionsSigninAndHistorySyncCoordinatorSupplier.set(
-                    SigninAndHistorySyncActivityLauncherImpl.get()
-                            .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
-                                    mWindowAndroid,
-                                    mActivity,
-                                    mActivityResultTracker,
-                                    new BottomSheetSigninAndHistorySyncCoordinator.Delegate() {},
-                                    assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
-                                    profileSupplier,
-                                    getBottomSheetControllerSupplier().asNonNull(),
-                                    mModalDialogManagerSupplier,
-                                    mSnackbarManagerSupplier,
-                                    SigninAccessPoint.EXTENSIONS));
-        }
+        mExtensionsSigninAndHistorySyncCoordinatorSupplier.set(
+                SigninAndHistorySyncActivityLauncherImpl.get()
+                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                mWindowAndroid,
+                                mActivity,
+                                mActivityResultTracker,
+                                new BottomSheetSigninAndHistorySyncCoordinator.Delegate() {},
+                                assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
+                                profileSupplier,
+                                getBottomSheetControllerSupplier().asNonNull(),
+                                mModalDialogManagerSupplier,
+                                mSnackbarManagerSupplier,
+                                SigninAccessPoint.EXTENSIONS));
     }
 
     private void initIncognitoReauthController(Profile profile) {
