@@ -87,10 +87,11 @@ class JourneyLogger {
     // .show() was allowed without a user activaiton.
     kActivationlessShow = 1 << 10,
 
-    // Correspond to the merchant specifying requestShipping,
-    // requestPayerName,
-    // requestPayerEmail, requestPayerPhone.
+    // Corresponds to the merchant specifying requestShipping.
     kRequestShipping = 1 << 11,
+    // Corresponds to the merchant specifying requestPayerName.
+    kRequestPayerName = 1 << 12,
+    // See more request payer options with higher bit-indexes below.
 
     // The merchent requested a Google Pay Authentication method.
     kRequestMethodGooglePayAuthentication = 1 << 13,
@@ -119,6 +120,12 @@ class JourneyLogger {
     kHasEnrolledInstrumentCalled = 1 << 25,
     // Whether the PaymentRequest was initiated in a cross-site iframe.
     kInitiatedInCrossSiteIframe = 1 << 26,
+
+    // See more request payer options with lower bit-indexes above.
+    // Corresponds to the merchant specifying requestPayerEmail.
+    kRequestPayerEmail = 1 << 27,
+    // Corresponds to the merchant specifying requestPayerPhone.
+    kRequestPayerPhone = 1 << 28,
 
     // Bits for secure-payment-confirmation method.
     kNoMatchingCredentials = 1 << 29,

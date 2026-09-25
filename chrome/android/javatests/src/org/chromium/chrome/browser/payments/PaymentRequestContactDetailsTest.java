@@ -387,6 +387,9 @@ public class PaymentRequestContactDetailsTest {
                         | Event2.PAY_CLICKED
                         | Event2.HAD_INITIAL_FORM_OF_PAYMENT
                         | Event2.REQUEST_PAYER_DATA
+                        | Event2.REQUEST_PAYER_NAME
+                        | Event2.REQUEST_PAYER_PHONE
+                        | Event2.REQUEST_PAYER_EMAIL
                         | Event2.REQUEST_METHOD_BASIC_CARD
                         | Event2.REQUEST_METHOD_OTHER
                         | Event2.SELECTED_OTHER;

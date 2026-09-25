@@ -119,6 +119,7 @@ public class PaymentRequestPhoneAndFreeShippingTest {
                         | Event2.COMPLETED
                         | Event2.HAD_INITIAL_FORM_OF_PAYMENT
                         | Event2.REQUEST_PAYER_DATA
+                        | Event2.REQUEST_PAYER_PHONE
                         | Event2.REQUEST_SHIPPING
                         | Event2.REQUEST_METHOD_OTHER
                         | Event2.SELECTED_OTHER;

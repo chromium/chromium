@@ -219,14 +219,17 @@ void JourneyLogger::SetRequestedInformation(bool requested_shipping,
 
   if (requested_email) {
     SetEvent2Occurred(Event2::kRequestPayerData);
+    SetEvent2Occurred(Event2::kRequestPayerEmail);
   }
 
   if (requested_phone) {
     SetEvent2Occurred(Event2::kRequestPayerData);
+    SetEvent2Occurred(Event2::kRequestPayerPhone);
   }
 
   if (requested_name) {
     SetEvent2Occurred(Event2::kRequestPayerData);
+    SetEvent2Occurred(Event2::kRequestPayerName);
   }
 }
 
