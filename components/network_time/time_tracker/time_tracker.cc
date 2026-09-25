@@ -6,21 +6,22 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 
 namespace {
 // Amount of divergence allowed between wall clock and tick clock.
-constexpr uint32_t kClockDivergenceSeconds = 60;
+constexpr base::TimeDelta kMaxClockDivergence = base::Seconds(60);
 }  // namespace
 
 namespace network_time {
-TimeTracker::TimeTracker(const base::Time& system_time,
-                         const base::TimeTicks& system_ticks,
-                         const base::Time& time,
-                         const base::TimeDelta& uncertainty)
+TimeTracker::TimeTracker(base::Time system_time,
+                         base::TimeTicks system_ticks,
+                         base::Time time,
+                         base::TimeDelta uncertainty)
     : state_{system_time, system_ticks, time, uncertainty} {}
 
-bool TimeTracker::GetTime(const base::Time& system_time,
-                          const base::TimeTicks& system_ticks,
+bool TimeTracker::GetTime(base::Time system_time,
+                          base::TimeTicks system_ticks,
                           base::Time* time,
                           base::TimeDelta* uncertainty) const {
   base::TimeDelta tick_delta = system_ticks - state_.system_ticks;
@@ -31,7 +32,7 @@ bool TimeTracker::GetTime(const base::Time& system_time,
   }
 
   base::TimeDelta divergence = tick_delta - time_delta;
-  if (divergence.magnitude() > base::Seconds(kClockDivergenceSeconds)) {
+  if (divergence.magnitude() > kMaxClockDivergence) {
     DVLOG(1) << "Time unavailable due to clocks diverging";
     return false;
   }

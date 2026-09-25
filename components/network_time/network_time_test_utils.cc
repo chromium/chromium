@@ -5,36 +5,26 @@
 #include "components/network_time/network_time_test_utils.h"
 
 #include <memory>
+#include <string>
 
 #include "base/metrics/field_trial_params.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "net/http/http_response_headers.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/network_time/network_time_tracker.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace network_time {
 
-// Update as follows:
-//
-// curl -i \
-//   "http://clients2.google.com/time/1/current?cup2key=ML-DSA-44-10:123123123"
-//
-// where 10 is the key version and 123123123 is the nonce. Copy the response
-// and the x-cup-server-proof header into |kGoodTimeResponseBody| and
-// |kGoodTimeResponseServerProofHeader| respectively, and the
-// 'current_time_millis' value of the response into
-// |kGoodTimeResponseHandlerJsTime|. Do this five times, so that the five
-// requests appear in order below.
-
 std::unique_ptr<net::test_server::HttpResponse> GoodTimeResponseHandler(
     const net::test_server::HttpRequest& request) {
-  net::test_server::BasicHttpResponse* response =
-      new net::test_server::BasicHttpResponse();
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HTTP_OK);
   response->set_content(kGoodTimeResponseBody[0]);
   response->AddCustomHeader("x-cup-server-proof",
                             kGoodTimeResponseServerProofHeader[0]);
-  return std::unique_ptr<net::test_server::HttpResponse>(response);
+  return response;
 }
 
 FieldTrialTest::FieldTrialTest() = default;

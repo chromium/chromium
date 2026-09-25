@@ -15,9 +15,9 @@ static_library("network_time") {
     "//components/client_update_protocol",
     "//components/network_time/time_tracker",
     "//components/prefs",
-    "//components/variations",
     "//net",
     "//services/network/public/cpp",
+    "//url",
   ]
 }
 
@@ -30,9 +30,8 @@ source_set("unit_tests") {
     ":network_time_test_support",
     "//base",
     "//base/test:test_support",
-    "//components/client_update_protocol",
+    "//components/network_time/time_tracker",
     "//components/prefs:test_support",
-    "//components/variations",
     "//net",
     "//net:test_support",
     "//services/network:test_support",
@@ -51,9 +50,7 @@ source_set("network_time_test_support") {
     ":network_time",
     "//base",
     "//base/test:test_support",
-    "//components/variations",
     "//net",
     "//net:test_support",
-    "//testing/gtest",
   ]
 }

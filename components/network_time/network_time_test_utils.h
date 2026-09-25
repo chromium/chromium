@@ -17,6 +17,17 @@ class HttpResponse;
 
 namespace network_time {
 
+// Update as follows:
+//
+// curl -i \
+//   "http://clients2.google.com/time/1/current?cup2key=ML-DSA-44-10:123123123"
+//
+// where 10 is the key version and 123123123 is the nonce.  Copy the response
+// and the x-cup-server-proof header into |kGoodTimeResponseBody| and
+// |kGoodTimeResponseServerProofHeader| respectively, and the
+// 'current_time_millis' value of the response into
+// |kGoodTimeResponseHandlerJsTime|.  Do this five times, so that the five
+// requests appear in order below.
 inline constexpr const char* kGoodTimeResponseBody[] = {
     ")]}'\n{\"current_time_millis\":1790187633674,\"server_nonce\":-3."
     "7842584544271977E-177}",
@@ -375,8 +386,8 @@ inline constexpr const char* kGoodTimeResponseServerProofHeader[] = {
 inline constexpr double kGoodTimeResponseHandlerJsTime[] = {
     1790187633674, 1790187883074, 1790187909304, 1790187909412, 1790187909589};
 
-// Returns a valid network time response using the constants above. See
-// comments in the .cc for how to update the time returned in the response.
+// Returns a valid network time response using the constants above. See the
+// comment on |kGoodTimeResponseBody| for how to regenerate them.
 std::unique_ptr<net::test_server::HttpResponse> GoodTimeResponseHandler(
     const net::test_server::HttpRequest& request);
 
@@ -388,7 +399,7 @@ class FieldTrialTest {
   FieldTrialTest(const FieldTrialTest&) = delete;
   FieldTrialTest& operator=(const FieldTrialTest&) = delete;
 
-  virtual ~FieldTrialTest();
+  ~FieldTrialTest();
 
   void SetFeatureParams(bool enable,
                         float query_probability,

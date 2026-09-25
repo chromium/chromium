@@ -4,26 +4,36 @@
 
 #include "components/network_time/network_time_tracker.h"
 
+#include <stdint.h>
+
+#include <array>
 #include <memory>
+#include <optional>
 #include <string>
-#include <string_view>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
-#include "components/client_update_protocol/cup.h"
 #include "components/network_time/network_time_pref_names.h"
 #include "components/network_time/network_time_test_utils.h"
+#include "components/network_time/time_tracker/time_tracker.h"
 #include "components/prefs/testing_pref_service.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -45,7 +55,7 @@ struct MockedResponse {
   network::URLLoaderCompletionStatus status;
 };
 
-static constexpr auto kDevKeyPubBytes = std::to_array<uint8_t>({
+constexpr auto kDevKeyPubBytes = std::to_array<uint8_t>({
     0x30, 0x82, 0x05, 0x32, 0x30, 0x0B, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
     0x65, 0x03, 0x04, 0x03, 0x11, 0x03, 0x82, 0x05, 0x21, 0x00, 0x70, 0x43,
     0xFB, 0x88, 0x56, 0x36, 0x2E, 0xB9, 0x09, 0xB9, 0x24, 0xED, 0x1E, 0x29,
@@ -193,13 +203,13 @@ class NetworkTimeTrackerTest : public ::testing::Test {
   explicit NetworkTimeTrackerTest(bool dev_keys)
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::IO),
-        field_trial_test_(new FieldTrialTest()),
+        field_trial_test_(std::make_unique<FieldTrialTest>()),
         clock_(new base::SimpleTestClock),
         tick_clock_(new base::SimpleTestTickClock) {
     NetworkTimeTracker::RegisterPrefs(pref_service_.registry());
 
     field_trial_test_->SetFeatureParams(
-        true, 0.0 /* query probability */,
+        true, /*query_probability=*/0.0,
         NetworkTimeTracker::FETCHES_IN_BACKGROUND_AND_ON_DEMAND);
 
     url_loader_factory_.SetInterceptor(base::BindRepeating(
@@ -215,11 +225,6 @@ class NetworkTimeTrackerTest : public ::testing::Test {
     // Do this to be sure that |is_null| returns false.
     clock_->Advance(base::Days(111));
     tick_clock_->Advance(base::Days(222));
-
-    // Can not be smaller than 15, it's the NowFromSystemTime() resolution.
-    resolution_ = base::Milliseconds(17);
-    latency_ = base::Milliseconds(50);
-    adjustment_ = 7 * base::Milliseconds(kTicksResolutionMs);
   }
 
   // Sets `response_handler` as handler for all requests made through
@@ -363,16 +368,16 @@ class NetworkTimeTrackerTest : public ::testing::Test {
   }
 
   // Updates the notifier's time with the specified parameters.
-  void UpdateNetworkTime(const base::Time& network_time,
-                         const base::TimeDelta& resolution,
-                         const base::TimeDelta& latency,
-                         const base::TimeTicks& post_time) {
+  void UpdateNetworkTime(base::Time network_time,
+                         base::TimeDelta resolution,
+                         base::TimeDelta latency,
+                         base::TimeTicks post_time) {
     tracker_->UpdateNetworkTime(network_time, resolution, latency, post_time);
   }
 
   // Advances both the system clock and the tick clock.  This should be used for
   // the normal passage of time, i.e. when neither clock is doing anything odd.
-  void AdvanceBoth(const base::TimeDelta& delta) {
+  void AdvanceBoth(base::TimeDelta delta) {
     tick_clock_->Advance(delta);
     clock_->Advance(delta);
   }
@@ -380,9 +385,10 @@ class NetworkTimeTrackerTest : public ::testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<FieldTrialTest> field_trial_test_;
-  base::TimeDelta resolution_;
-  base::TimeDelta latency_;
-  base::TimeDelta adjustment_;
+  // Can not be smaller than 15, it's the NowFromSystemTime() resolution.
+  base::TimeDelta resolution_ = base::Milliseconds(17);
+  base::TimeDelta latency_ = base::Milliseconds(50);
+  base::TimeDelta adjustment_ = 7 * base::Milliseconds(kTicksResolutionMs);
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<NetworkTimeTracker> tracker_;
   raw_ptr<base::SimpleTestClock> clock_;

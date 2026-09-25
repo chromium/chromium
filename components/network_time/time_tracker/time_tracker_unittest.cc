@@ -4,6 +4,8 @@
 
 #include "components/network_time/time_tracker/time_tracker.h"
 
+#include <string_view>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"

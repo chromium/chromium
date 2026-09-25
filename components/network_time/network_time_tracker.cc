@@ -4,28 +4,39 @@
 
 #include "components/network_time/network_time_tracker.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
-#include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_checker.h"
+#include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/client_update_protocol/cup.h"
 #include "components/network_time/network_time_pref_names.h"
@@ -33,13 +44,14 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/load_flags.h"
-#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/gurl.h"
 
 // Time updates happen in two ways. First, other components may call
 // UpdateNetworkTime() if they happen to obtain the time securely. This will
@@ -110,7 +122,7 @@ constexpr base::FeatureParam<NetworkTimeTracker::FetchBehavior> kFetchBehavior{
 constexpr uint32_t kNumTimeMeasurements = 7;
 
 // Maximum time lapse before deserialized data are considered stale.
-constexpr uint32_t kSerializedDataMaxAgeDays = 7;
+constexpr base::TimeDelta kSerializedDataMaxAge = base::Days(7);
 
 // Name of a pref that stores the wall clock time, via
 // |InMillisecondsFSinceUnixEpoch|.
@@ -126,11 +138,19 @@ constexpr char kPrefUncertainty[] = "uncertainty";
 // |InMillisecondsFSinceUnixEpoch|.
 constexpr char kPrefNetworkTime[] = "network";
 
-// Time server's maximum allowable clock skew, in seconds.  (This is a property
-// of the time server that we happen to know.  It's unlikely that it would ever
-// be that badly wrong, but all the same it's included here to document the very
-// rough nature of the time service provided by this class.)
-constexpr uint32_t kTimeServerMaxSkewSeconds = 10;
+// Time server's maximum allowable clock skew.  (This is a property of the time
+// server that we happen to know.  It's unlikely that it would ever be that
+// badly wrong, but all the same it's included here to document the very rough
+// nature of the time service provided by this class.)
+constexpr base::TimeDelta kTimeServerMaxSkew = base::Seconds(10);
+
+// Maximum size of a time server response body. Responses are a single small
+// JSON object, so this is generously above the expected size.
+constexpr size_t kMaxResponseSizeBytes = 1024;
+
+// Prefix prepended by the server to defeat cross-site script inclusion. It is
+// stripped before the body is parsed as JSON.
+constexpr std::string_view kJsonSafetyPrefix = ")]}'\n";
 
 constexpr char kTimeServiceURL[] = "http://clients2.google.com/time/1/current";
 
@@ -251,13 +271,13 @@ constexpr auto kPubKey = std::to_array<uint8_t>({
     0xE2, 0xDE,
 });
 
-std::string GetServerProof(
-    scoped_refptr<net::HttpResponseHeaders> response_headers) {
-  std::string proof;
-  return response_headers->EnumerateHeader(nullptr, "x-cup-server-proof",
-                                           &proof)
-             ? proof
-             : std::string();
+std::string GetServerProof(const net::HttpResponseHeaders& response_headers) {
+  // Note: this deliberately reads only the first value. Do not switch to
+  // GetNormalizedHeader(), which coalesces repeated headers and
+  // comma-separated values into a single string.
+  return std::string(
+      response_headers.EnumerateHeader(nullptr, "x-cup-server-proof")
+          .value_or(""));
 }
 
 }  // namespace
@@ -297,11 +317,10 @@ NetworkTimeTracker::NetworkTimeTracker(
     std::optional<FetchBehavior> fetch_behavior,
     base::span<const uint8_t> pubkey)
     : server_url_(kTimeServiceURL),
-      max_response_size_(1024),
+      max_response_size_(kMaxResponseSizeBytes),
       query_signer_(kKeyVersion, pubkey.empty() ? kPubKey : pubkey),
       clock_(std::move(clock)),
       tick_clock_(std::move(tick_clock)),
-      time_query_completed_(false),
       fetch_behavior_(fetch_behavior) {
   // If `pref_service` is null, defer the remaining initialization. This allows
   // the NetworkTimeTracker to be created, and subscribed-to, very early in
@@ -358,8 +377,7 @@ void NetworkTimeTracker::Initialize(
     base::Time now = clock_->Now();
     if (ticks_at_last_measurement > tick_clock_->NowTicks() ||
         time_at_last_measurement > now ||
-        now - time_at_last_measurement >
-            base::Days(kSerializedDataMaxAgeDays)) {
+        now - time_at_last_measurement > kSerializedDataMaxAge) {
       // Drop saved mapping if either clock has run backward, or the data are
       // too old.
       pref_service_->ClearPref(prefs::kNetworkTimeMapping);
@@ -474,9 +492,7 @@ void NetworkTimeTracker::RemoveObserver(NetworkTimeObserver* obs) {
 
 bool NetworkTimeTracker::GetTrackerState(
     TimeTracker::TimeTrackerState* state) const {
-  base::Time unused;
-  auto res = GetNetworkTime(&unused, nullptr);
-  if (res != NETWORK_TIME_AVAILABLE) {
+  if (!IsNetworkTimeAvailable()) {
     return false;
   }
   *state = tracker_->GetStateAtCreation();
@@ -633,7 +649,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   if (time_fetcher_->ResponseInfo() && time_fetcher_->ResponseInfo()->headers) {
     response_code = time_fetcher_->ResponseInfo()->headers->response_code();
   }
-  if (response_code != 200 || !response_body) {
+  if (response_code != net::HTTP_OK || !response_body) {
     time_query_completed_ = true;
     DVLOG(1) << "fetch failed code=" << response_code;
     return false;
@@ -642,11 +658,11 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   std::string_view response(*response_body);
 
   if (!query_signer_.ValidateResponse(
-          response, GetServerProof(time_fetcher_->ResponseInfo()->headers))) {
+          response, GetServerProof(*time_fetcher_->ResponseInfo()->headers))) {
     DVLOG(1) << "invalid signature";
     return false;
   }
-  response.remove_prefix(5);  // Skips leading )]}'\n
+  response.remove_prefix(kJsonSafetyPrefix.size());
   std::optional<base::DictValue> value = base::JSONReader::ReadDict(
       response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
@@ -664,8 +680,7 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   // to make the server's response unpredictable.
   base::Time current_time =
       base::Time::FromMillisecondsSinceUnixEpoch(*current_time_millis);
-  base::TimeDelta resolution =
-      base::Milliseconds(1) + base::Seconds(kTimeServerMaxSkewSeconds);
+  base::TimeDelta resolution = base::Milliseconds(1) + kTimeServerMaxSkew;
 
   // Record histograms for the latency of the time query and the time delta
   // between time fetches.
@@ -733,10 +748,9 @@ bool NetworkTimeTracker::ShouldIssueTimeQuery() {
     return false;
   }
 
-  // If GetNetworkTime() does not return NETWORK_TIME_AVAILABLE,
-  // synchronization has been lost and a query is needed.
-  base::Time network_time;
-  if (GetNetworkTime(&network_time, nullptr) != NETWORK_TIME_AVAILABLE) {
+  // If network time is not available, synchronization has been lost and a
+  // query is needed.
+  if (!IsNetworkTimeAvailable()) {
     return true;
   }
 
@@ -749,11 +763,14 @@ bool NetworkTimeTracker::ShouldIssueTimeQuery() {
   return base::RandDouble() < probability;
 }
 
+bool NetworkTimeTracker::IsNetworkTimeAvailable() const {
+  base::Time unused;
+  return GetNetworkTime(&unused, nullptr) == NETWORK_TIME_AVAILABLE;
+}
+
 void NetworkTimeTracker::NotifyObservers() {
   // Don't notify if the current state is not NETWORK_TIME_AVAILABLE.
-  base::Time unused;
-  auto res = GetNetworkTime(&unused, nullptr);
-  if (res != NETWORK_TIME_AVAILABLE) {
+  if (!IsNetworkTimeAvailable()) {
     return;
   }
   TimeTracker::TimeTrackerState state = tracker_->GetStateAtCreation();

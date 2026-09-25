@@ -20,19 +20,19 @@ class TimeTracker {
     base::Time known_time;
     base::TimeDelta uncertainty;
   };
-  TimeTracker(const base::Time& system_time,
-              const base::TimeTicks& system_ticks,
-              const base::Time& time,
-              const base::TimeDelta& uncertainty);
+  TimeTracker(base::Time system_time,
+              base::TimeTicks system_ticks,
+              base::Time time,
+              base::TimeDelta uncertainty);
   ~TimeTracker() = default;
 
   // Returns true if the time is available, false otherwise (e.g. if sync was
-  // lost). Sets |estimated_ time| to an estimate of the true time. If
+  // lost). Sets |time| to an estimate of the true time. If
   // |uncertainty| is non-NULL, it will be set to an estimate of the error
   // range. |system_time| and |system_ticks| should come from the same clocks
   // used to retrieve the system time on creation.
-  bool GetTime(const base::Time& system_time,
-               const base::TimeTicks& system_ticks,
+  bool GetTime(base::Time system_time,
+               base::TimeTicks system_ticks,
                base::Time* time,
                base::TimeDelta* uncertainty) const;
 
