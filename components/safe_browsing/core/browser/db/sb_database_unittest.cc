@@ -827,6 +827,88 @@ TEST_P(SBDatabaseTest_V4V5, VerifyChecksumCalledAsync) {
   EXPECT_TRUE(verify_checksum_future.Wait());
 }
 
+TEST_P(SBDatabaseTest_V4V5, VerifyChecksumCorruptedStoreAndReset) {
+  scoped_refptr<base::SingleThreadTaskRunner> db_task_runner =
+      CreateTaskRunner();
+  WaitForSBDatabaseReady(db_task_runner,
+                         /*simple_task_runners_to_wait_for=*/{});
+
+  const StoreMap* db_stores = GetStoreMap();
+  ASSERT_FALSE(db_stores->empty());
+  StoreStateMap state_map;
+  for (const auto& [identifier, store] : *db_stores) {
+    state_map[identifier] = "version_1";
+  }
+
+  base::test::TestFuture<void> update_future;
+  sb_database_->ApplyUpdate(
+      CreateUpdateResponseMapWithPrefix(state_map, "abcd"),
+      update_future.GetRepeatingCallback());
+  EXPECT_TRUE(update_future.Wait());
+
+  const ListIdentifier& corrupted_id = expected_identifiers_[0];
+  const ListIdentifier& healthy_id = expected_identifiers_[1];
+
+  auto check_matching_stores = [&](const FullHashStr& full_hash) {
+    base::test::TestFuture<DbLookupResult> results;
+    sb_database_->GetStoresMatchingFullHash(
+        {full_hash}, StoresToCheck({corrupted_id, healthy_id}),
+        results.GetCallback());
+    FullHashToStoreAndHashPrefixesMap map = results.Get().results;
+    std::unordered_set<ListIdentifier> matched;
+    for (const auto& match : map[full_hash]) {
+      matched.insert(match.list_id);
+    }
+    return matched;
+  };
+
+  const FullHashStr full_hash_1 = std::string("abcd") + std::string(28, '\x00');
+  EXPECT_EQ(check_matching_stores(full_hash_1),
+            StoresToCheck({corrupted_id, healthy_id}));
+
+  // Corrupt the active hash file for `corrupted_id` on disk. Destroy the
+  // existing database first so its memory-mapped file handles are closed before
+  // overwriting the file on Windows.
+  std::vector<base::FilePath> paths =
+      db_stores->at(corrupted_id)->GetPathsInUse();
+  ASSERT_EQ(paths.size(), 2u);
+  sb_database_.reset();
+  base::test::TestFuture<void> destroy_future;
+  db_task_runner->PostTask(FROM_HERE,
+                           destroy_future.GetSequenceBoundCallback());
+  EXPECT_TRUE(destroy_future.Wait());
+  ASSERT_TRUE(base::WriteFile(paths[1], "xxxx"));
+
+  // Simulate startup by recreating SBDatabase from disk.
+  WaitForSBDatabaseReady(db_task_runner,
+                         /*simple_task_runners_to_wait_for=*/{});
+
+  base::test::TestFuture<const std::vector<ListIdentifier>&>
+      verify_checksum_future;
+  sb_database_->VerifyChecksum(verify_checksum_future.GetCallback());
+  std::vector<ListIdentifier> stores_to_reset = verify_checksum_future.Get();
+  EXPECT_EQ(stores_to_reset, std::vector<ListIdentifier>{corrupted_id});
+
+  sb_database_->ResetStores(stores_to_reset);
+  EXPECT_TRUE(GetStoreMap()->at(corrupted_id)->GetStoreState().empty());
+  EXPECT_EQ(check_matching_stores(full_hash_1), StoresToCheck({healthy_id}));
+
+  // Verify that applying a valid update with a new version recovers the reset
+  // store.
+  for (auto& [identifier, state] : state_map) {
+    state = "version_2";
+  }
+  base::test::TestFuture<void> recover_future;
+  const FullHashStr full_hash_2 = std::string("efgh") + std::string(28, '\x00');
+  sb_database_->ApplyUpdate(
+      CreateUpdateResponseMapWithPrefix(state_map, "efgh"),
+      recover_future.GetRepeatingCallback());
+  EXPECT_TRUE(recover_future.Wait());
+  EXPECT_TRUE(GetStoreMap()->at(corrupted_id)->HasValidData());
+  EXPECT_EQ(check_matching_stores(full_hash_2),
+            StoresToCheck({corrupted_id, healthy_id}));
+}
+
 TEST_P(SBDatabaseTest_V4V5, DeleteUnusedStoreFilesOnStartup) {
   RunStartupInactiveStoreFilesCleanupTest(
       /*create_unused_files=*/true,
