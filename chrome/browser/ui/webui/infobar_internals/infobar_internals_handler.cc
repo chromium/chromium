@@ -30,13 +30,13 @@
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
+#include "chrome/browser/omnibox/chrome_omnibox_navigation_observer_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
-#include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/startup/automation_infobar_delegate.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
@@ -385,7 +385,7 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
       AutocompleteMatch match;
       match.destination_url = GURL("https://google.com/");
 
-      ChromeOmniboxNavigationObserver::ShowAlternativeNavInfoBar(
+      ChromeOmniboxNavigationObserverBase::ShowAlternativeNavInfoBar(
           web_contents, u"test", match, GURL("https://youtube.com/"));
       return true;
     }

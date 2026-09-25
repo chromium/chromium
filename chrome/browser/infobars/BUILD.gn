@@ -106,6 +106,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/devtools",
       "//chrome/browser/infobars:test_support",
+      "//chrome/browser/omnibox",
       "//chrome/browser/ui",
       "//chrome/browser/ui:collected_cookies_infobar_delegate",
       "//chrome/browser/ui:ui_features",

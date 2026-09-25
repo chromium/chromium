@@ -34,6 +34,36 @@ source_set("omnibox") {
     "//components/omnibox/common",
     "//content/public/browser",
   ]
+
+  # ChromeOmniboxNavigationObserverBase still carries the desktop-only infobar
+  # code at this point, so it cannot build on Android yet and has to depend back
+  # on //chrome/browser/ui/omnibox. Both go away when the desktop subclass is
+  # split out.
+  # TODO(crbug.com/467693484): Remove once the desktop subclass is extracted.
+  if (!is_android) {
+    sources += [
+      "chrome_omnibox_navigation_observer_base.cc",
+      "chrome_omnibox_navigation_observer_base.h",
+    ]
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser:intranet_redirect_detector",
+      "//chrome/browser/autocomplete",
+      "//chrome/browser/history",
+      "//chrome/browser/infobars",
+      "//chrome/browser/ui/omnibox",
+      "//components/history/core/browser",
+      "//components/infobars/content",
+      "//components/infobars/core",
+      "//components/search_engines",
+      "//components/tabs:public",
+      "//net",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom:url_loader_base",
+      "//ui/base",
+      "//url",
+    ]
+  }
 }
 
 source_set("unit_tests") {

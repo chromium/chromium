@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
-
 #include <array>
 #include <unordered_map>
 #include <vector>
@@ -13,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/omnibox/chrome_omnibox_navigation_observer_base.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -186,7 +185,7 @@ TEST_F(ChromeOmniboxNavigationObserverTest, DeleteBrokenCustomSearchEngines) {
     WriteMojoMessage(producer_handle, "data");
 
     navigation->Start();
-    ChromeOmniboxNavigationObserver::CreateForTesting(
+    ChromeOmniboxNavigationObserverBase::CreateForTesting(
         navigation->GetNavigationHandle(), profile(), cases[i].keyword + query,
         match, AutocompleteMatch(), nullptr, base::DoNothing());
 
@@ -303,11 +302,11 @@ TEST_F(ChromeOmniboxNavigationObserverTest, AlternateNavInfoBar) {
     bool displayed_infobar = false;
 
     navigation->Start();
-    ChromeOmniboxNavigationObserver::CreateForTesting(
+    ChromeOmniboxNavigationObserverBase::CreateForTesting(
         navigation->GetNavigationHandle(), profile(), u"example",
         AutocompleteMatch(), alternate_nav_match, shared_factory.get(),
         base::BindLambdaForTesting(
-            [&](ChromeOmniboxNavigationObserver* observer) {
+            [&](ChromeOmniboxNavigationObserverBase* observer) {
               displayed_infobar = true;
             }));
 

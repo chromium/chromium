@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
+#include "chrome/browser/omnibox/chrome_omnibox_navigation_observer_base.h"
 
 #include <optional>
 #include <string>
@@ -55,7 +55,7 @@
 
 // Helpers --------------------------------------------------------------------
 
-class ChromeOmniboxNavigationObserver;
+class ChromeOmniboxNavigationObserverBase;
 
 namespace {
 
@@ -106,16 +106,17 @@ network::mojom::URLLoaderFactory* GetURLLoaderFactory(
       .get();
 }
 
-// Helper to keep ChromeOmniboxNavigationObserver alive while the initiated
+// Helper to keep ChromeOmniboxNavigationObserverBase alive while the initiated
 // navigation is pending.
 struct NavigationUserData
     : public content::NavigationHandleUserData<NavigationUserData> {
-  NavigationUserData(content::NavigationHandle& navigation,
-                     scoped_refptr<ChromeOmniboxNavigationObserver> observer)
+  NavigationUserData(
+      content::NavigationHandle& navigation,
+      scoped_refptr<ChromeOmniboxNavigationObserverBase> observer)
       : observer(std::move(observer)) {}
   ~NavigationUserData() override = default;
 
-  scoped_refptr<ChromeOmniboxNavigationObserver> observer;
+  scoped_refptr<ChromeOmniboxNavigationObserverBase> observer;
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
@@ -124,11 +125,11 @@ NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationUserData);
 
 }  // namespace
 
-class ChromeOmniboxNavigationObserver::AlternativeNavigationURLLoader {
+class ChromeOmniboxNavigationObserverBase::AlternativeNavigationURLLoader {
  public:
   AlternativeNavigationURLLoader(
       const GURL& destination_url,
-      scoped_refptr<ChromeOmniboxNavigationObserver> navigation_observer,
+      scoped_refptr<ChromeOmniboxNavigationObserverBase> navigation_observer,
       base::OnceCallback<void(bool)> on_complete,
       network::mojom::URLLoaderFactory* loader_factory)
       : destination_url_(destination_url),
@@ -148,11 +149,21 @@ class ChromeOmniboxNavigationObserver::AlternativeNavigationURLLoader {
           trigger:
             "User attempts to search for a string that is plausibly a "
             "navigable hostname but is not in the local history."
+          internal {
+            contacts {
+              owners: "//components/omnibox/OWNERS"
+            }
+          }
+          user_data {
+            type: USER_CONTENT
+            type: SENSITIVE_URL
+          }
           data:
             "None. However, the hostname itself is a string the user "
             "searched for, and thus can expose data about the user's "
             "searches."
           destination: WEBSITE
+          last_reviewed: "2026-09-22"
         }
         policy {
           cookies_allowed: YES
@@ -249,13 +260,13 @@ class ChromeOmniboxNavigationObserver::AlternativeNavigationURLLoader {
   const GURL destination_url_;
 
   // URLLoader should keep NavigationObserver alive until it's done.
-  scoped_refptr<ChromeOmniboxNavigationObserver> navigation_observer_;
+  scoped_refptr<ChromeOmniboxNavigationObserverBase> navigation_observer_;
   // Callback to invoke when we're done.
   base::OnceCallback<void(bool)> on_complete_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
 };
 
-ChromeOmniboxNavigationObserver::ChromeOmniboxNavigationObserver(
+ChromeOmniboxNavigationObserverBase::ChromeOmniboxNavigationObserverBase(
     content::NavigationHandle& navigation,
     Profile* profile,
     const std::u16string& text,
@@ -275,12 +286,13 @@ ChromeOmniboxNavigationObserver::ChromeOmniboxNavigationObserver(
     loader_ = std::make_unique<AlternativeNavigationURLLoader>(
         alternative_nav_match.destination_url, this,
         base::BindOnce(
-            &ChromeOmniboxNavigationObserver::OnAlternativeLoaderDone, this),
+            &ChromeOmniboxNavigationObserverBase::OnAlternativeLoaderDone,
+            this),
         GetURLLoaderFactory(loader_factory, profile));
   }
 }
 
-ChromeOmniboxNavigationObserver::~ChromeOmniboxNavigationObserver() {
+ChromeOmniboxNavigationObserverBase::~ChromeOmniboxNavigationObserverBase() {
   if (!web_contents()) {
     return;
   }
@@ -289,7 +301,7 @@ ChromeOmniboxNavigationObserver::~ChromeOmniboxNavigationObserver() {
   }
 }
 
-void ChromeOmniboxNavigationObserver::DidFinishNavigation(
+void ChromeOmniboxNavigationObserverBase::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->GetNavigationId() != navigation_id_) {
     return;
@@ -322,7 +334,7 @@ void ChromeOmniboxNavigationObserver::DidFinishNavigation(
   }
 }
 
-void ChromeOmniboxNavigationObserver::On404() {
+void ChromeOmniboxNavigationObserverBase::On404() {
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   const TemplateURL* template_url = match_.GetTemplateURL(template_url_service);
@@ -344,9 +356,10 @@ void ChromeOmniboxNavigationObserver::On404() {
   template_url_service->Remove(template_url);
 }
 
-void ChromeOmniboxNavigationObserver::OnAlternativeLoaderDone(bool success) {
+void ChromeOmniboxNavigationObserverBase::OnAlternativeLoaderDone(
+    bool success) {
   TRACE_EVENT("omnibox",
-              "ChromeOmniboxNavigationObserver::OnAlternativeLoaderDone",
+              "ChromeOmniboxNavigationObserverBase::OnAlternativeLoaderDone",
               "success", success);
   if (success) {
     fetch_state_ = AlternativeFetchState::kFetchSucceeded;
@@ -358,7 +371,7 @@ void ChromeOmniboxNavigationObserver::OnAlternativeLoaderDone(bool success) {
 }
 
 // static
-void ChromeOmniboxNavigationObserver::ShowAlternativeNavInfoBar(
+void ChromeOmniboxNavigationObserverBase::ShowAlternativeNavInfoBar(
     content::WebContents* web_contents,
     const std::u16string& text,
     const AutocompleteMatch& match,
@@ -419,19 +432,19 @@ void ChromeOmniboxNavigationObserver::ShowAlternativeNavInfoBar(
                                                           match, search_url);
 }
 
-void ChromeOmniboxNavigationObserver::ShowAlternativeNavInfoBar() {
+void ChromeOmniboxNavigationObserverBase::ShowAlternativeNavInfoBar() {
   ShowAlternativeNavInfoBar(web_contents(), text_, alternative_nav_match_,
                             match_.destination_url);
 }
 
 // static
-void ChromeOmniboxNavigationObserver::Create(
+void ChromeOmniboxNavigationObserverBase::Create(
     content::NavigationHandle* navigation,
     Profile* profile,
     const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match) {
-  TRACE_EVENT("omnibox", "ChromeOmniboxNavigationObserver::Create",
+  TRACE_EVENT("omnibox", "ChromeOmniboxNavigationObserverBase::Create",
               "navigation", navigation, "match", match, "alternative_nav_match",
               alternative_nav_match);
 
@@ -441,14 +454,14 @@ void ChromeOmniboxNavigationObserver::Create(
 
   // The observer will be kept alive until both navigation and the loading
   // fetcher finish.
-  new ChromeOmniboxNavigationObserver(
+  new ChromeOmniboxNavigationObserverBase(
       *navigation, profile, text, match, alternative_nav_match, nullptr,
-      base::BindOnce([](ChromeOmniboxNavigationObserver* observer) {
+      base::BindOnce([](ChromeOmniboxNavigationObserverBase* observer) {
         observer->ShowAlternativeNavInfoBar();
       }));
 }
 
-void ChromeOmniboxNavigationObserver::CreateForTesting(
+void ChromeOmniboxNavigationObserverBase::CreateForTesting(
     content::NavigationHandle* navigation,
     Profile* profile,
     const std::u16string& text,
@@ -462,7 +475,7 @@ void ChromeOmniboxNavigationObserver::CreateForTesting(
 
   // The observer will be kept alive until both navigation and the loading
   // fetcher finish.
-  new ChromeOmniboxNavigationObserver(*navigation, profile, text, match,
-                                      alternative_nav_match, loader_factory,
-                                      std::move(show_infobar));
+  new ChromeOmniboxNavigationObserverBase(*navigation, profile, text, match,
+                                          alternative_nav_match, loader_factory,
+                                          std::move(show_infobar));
 }

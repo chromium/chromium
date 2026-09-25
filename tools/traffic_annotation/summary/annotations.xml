@@ -122,7 +122,7 @@ Refer to README.md for content description and update process.
  <item id="oauth2_mint_token_flow" added_in_milestone="62" type="partial" second_id="oauth2_api_call_flow" content_hash_code="068b83ae" os_list="linux,windows,chromeos,android" semantics_fields="1,2,3,4,5" policy_fields="3,4" file_path="google_apis/gaia/oauth2_mint_token_flow.cc" />
  <item id="omaha_client_android_uc" added_in_milestone="99" content_hash_code="078c36df" os_list="android" file_path="chrome/browser/omaha/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java" />
  <item id="omnibox_documentsuggest" added_in_milestone="69" content_hash_code="02ef43b3" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/document_suggestions_service.cc" />
- <item id="omnibox_navigation_observer" added_in_milestone="62" content_hash_code="043a7a2f" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc" />
+ <item id="omnibox_navigation_observer" added_in_milestone="62" content_hash_code="077dc065" os_list="linux,windows,chromeos" file_path="chrome/browser/omnibox/chrome_omnibox_navigation_observer_base.cc" />
  <item id="omnibox_result_change" added_in_milestone="62" content_hash_code="00bbc4fe" os_list="linux,windows,chromeos,android" file_path="chrome/browser/bitmap_fetcher/bitmap_fetcher_service.cc" />
  <item id="omnibox_suggest" added_in_milestone="62" content_hash_code="0524cc7e" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/remote_suggestions_service.cc" />
  <item id="omnibox_suggest_deletion" added_in_milestone="62" content_hash_code="017d302e" os_list="linux,windows,chromeos,android" file_path="components/omnibox/browser/remote_suggestions_service.cc" />

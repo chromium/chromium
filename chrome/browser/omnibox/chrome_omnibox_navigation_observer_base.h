@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_H_
-#define CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_H_
+#ifndef CHROME_BROWSER_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_BASE_H_
+#define CHROME_BROWSER_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_BASE_H_
 
 #include <memory>
 #include <string>
@@ -33,10 +33,10 @@ class Profile;
 // (3) Omnibox searches that result in a 404 for an auto-generated custom
 //     search engine cause the custom search engine to be deleted.
 //
-// Please see the class comment on the base class for important information
-// about the memory management of this object.
-class ChromeOmniboxNavigationObserver
-    : public base::RefCounted<ChromeOmniboxNavigationObserver>,
+// Lifetime: this object is ref-counted. The observed NavigationHandle and the
+// alternative navigation loader (if any) each hold a reference to it.
+class ChromeOmniboxNavigationObserverBase
+    : public base::RefCounted<ChromeOmniboxNavigationObserverBase>,
       public content::WebContentsObserver {
  public:
   enum class AlternativeFetchState {
@@ -46,7 +46,7 @@ class ChromeOmniboxNavigationObserver
   };
 
   using ShowInfobarCallback =
-      base::OnceCallback<void(ChromeOmniboxNavigationObserver*)>;
+      base::OnceCallback<void(ChromeOmniboxNavigationObserverBase*)>;
 
   static void Create(content::NavigationHandle* navigation,
                      Profile* profile,
@@ -78,7 +78,7 @@ class ChromeOmniboxNavigationObserver
                                         const GURL& search_url);
 
  private:
-  ChromeOmniboxNavigationObserver(
+  ChromeOmniboxNavigationObserverBase(
       content::NavigationHandle& navigation,
       Profile* profile,
       const std::u16string& text,
@@ -87,9 +87,9 @@ class ChromeOmniboxNavigationObserver
       network::mojom::URLLoaderFactory* loader_factory,
       ShowInfobarCallback show_infobar);
 
-  ~ChromeOmniboxNavigationObserver() override;
+  ~ChromeOmniboxNavigationObserverBase() override;
 
-  friend class base::RefCounted<ChromeOmniboxNavigationObserver>;
+  friend class base::RefCounted<ChromeOmniboxNavigationObserverBase>;
 
   class AlternativeNavigationURLLoader;
 
@@ -110,4 +110,4 @@ class ChromeOmniboxNavigationObserver
   AlternativeFetchState fetch_state_ = AlternativeFetchState::kFetchNotComplete;
 };
 
-#endif  // CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_H_
+#endif  // CHROME_BROWSER_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_BASE_H_

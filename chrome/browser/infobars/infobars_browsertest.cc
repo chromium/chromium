@@ -28,13 +28,13 @@
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/test_support/infobar_observer.h"
+#include "chrome/browser/omnibox/chrome_omnibox_navigation_observer_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/extensions/installation_error_infobar_delegate.h"
-#include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/startup/automation_infobar_delegate.h"
@@ -263,7 +263,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     case IBD::ALTERNATE_NAV_INFOBAR_DELEGATE: {
       AutocompleteMatch match;
       match.destination_url = GURL("http://intranetsite/");
-      ChromeOmniboxNavigationObserver::ShowAlternativeNavInfoBar(
+      ChromeOmniboxNavigationObserverBase::ShowAlternativeNavInfoBar(
           GetWebContents(), std::u16string(), match,
           GURL("http://example.test/"));
       break;
