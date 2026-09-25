@@ -164,15 +164,10 @@ TEST_F(OrganizerPanelControllerTest, IncognitoRejectsUnauthorizedExtension) {
 class OrganizerPanelControllerMovePanelTest
     : public organizer_panel::test::OrganizerPanelTestBase {
  public:
-  explicit OrganizerPanelControllerMovePanelTest(bool enable = true)
-      : flag_enabled_(enable) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        organizer_panel::kOrganizerPanel,
-        {{"OrganizerPanelInVerticalTabStrip", enable ? "true" : "false"}});
+  OrganizerPanelControllerMovePanelTest() {
+    feature_list_.InitAndEnableFeature(organizer_panel::kOrganizerPanel);
   }
   ~OrganizerPanelControllerMovePanelTest() override = default;
-
-  bool flag_enabled() const { return flag_enabled_; }
 
   virtual bool StartInVerticalTabStrip() const { return true; }
 
@@ -211,7 +206,7 @@ class OrganizerPanelControllerMovePanelTest
   }
 
   views::View* GetExpectedParent(bool expect_tab_strip) {
-    if (flag_enabled() && expect_tab_strip) {
+    if (expect_tab_strip) {
       return tab_strip();
     }
     return tray_view();
@@ -232,7 +227,6 @@ class OrganizerPanelControllerMovePanelTest
         .WillRepeatedly(testing::Return(uncollapsed_width));
   }
 
-  const bool flag_enabled_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -275,35 +269,30 @@ TEST_F(OrganizerPanelControllerMovePanelTest,
 
 class OrganizerPanelControllerConfigurationTest
     : public OrganizerPanelControllerMovePanelTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
-  OrganizerPanelControllerConfigurationTest()
-      : OrganizerPanelControllerMovePanelTest(std::get<1>(GetParam())) {}
+  OrganizerPanelControllerConfigurationTest() = default;
   ~OrganizerPanelControllerConfigurationTest() override = default;
 
-  bool StartInVerticalTabStrip() const override {
-    return std::get<0>(GetParam());
-  }
+  bool StartInVerticalTabStrip() const override { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          OrganizerPanelControllerConfigurationTest,
-                         testing::Combine(testing::Bool(), testing::Bool()),
-                         [](testing::TestParamInfo<std::tuple<bool, bool>> v) {
-                           return base::StringPrintf("tab_strip_%d_flag_%d",
-                                                     std::get<0>(v.param),
-                                                     std::get<1>(v.param));
+                         testing::Bool(),
+                         [](testing::TestParamInfo<bool> v) {
+                           return v.param ? "Vertical" : "Horizontal";
                          });
 
 TEST_P(OrganizerPanelControllerConfigurationTest, PanelStartsInCorrectPlace) {
   RunTestSequence(EnsureNotPresent(kOrganizerPanelElementId), TogglePanel(),
                   SetAnimationValue(1.0),
-                  ExpectPanel(flag_enabled() && StartInVerticalTabStrip()));
+                  ExpectPanel(StartInVerticalTabStrip()));
 }
 
 TEST_P(OrganizerPanelControllerConfigurationTest, PanelMoved) {
   RunTestSequence(EnsureNotPresent(kOrganizerPanelElementId),
                   ConfigureVerticalTabStrip(!StartInVerticalTabStrip()),
                   TogglePanel(), SetAnimationValue(1.0),
-                  ExpectPanel(flag_enabled() && !StartInVerticalTabStrip()));
+                  ExpectPanel(!StartInVerticalTabStrip()));
 }

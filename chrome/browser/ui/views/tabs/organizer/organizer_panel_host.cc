@@ -21,9 +21,6 @@ namespace {
 
 bool DoesVerticalTabStripSupportEmbeddedOrganizerPanel(
     BrowserWindowInterface& browser) {
-  if (!organizer_panel::ShouldShowOrganizerPanelInVerticalTabStrip()) {
-    return false;
-  }
   const auto* controller =
       tabs::VerticalTabStripStateController::From(&browser);
   if (!controller) {

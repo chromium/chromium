@@ -99,8 +99,7 @@ views::ProposedLayout FakeBrowserView::CalculateProposedLayout(
 }
 
 OrganizerPanelTestBase::OrganizerPanelTestBase() {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      kOrganizerPanel, {{kOrganizerPanelInVerticalTabStrip.name, "true"}});
+  feature_list_.InitAndEnableFeature(kOrganizerPanel);
 }
 OrganizerPanelTestBase::~OrganizerPanelTestBase() = default;
 

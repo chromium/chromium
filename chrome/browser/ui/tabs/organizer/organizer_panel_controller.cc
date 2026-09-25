@@ -66,26 +66,21 @@ class OrganizerPanelController::PanelViewManager {
   PanelViewManager(OrganizerPanelController& controller,
                    BrowserWindowInterface& browser)
       : controller_(controller), browser_(browser) {
-    // If embedding the panel in the vertical tab strip is enabled, listen for
-    // mode changes.
-    if (organizer_panel::ShouldShowOrganizerPanelInVerticalTabStrip()) {
-      if (auto* const state_controller =
-              tabs::VerticalTabStripStateController::From(&*browser_)) {
-        auto callback = base::BindRepeating(
-            &PanelViewManager::OnVerticalTabStripModeChanged,
-            base::Unretained(this));
-        tab_strip_subscriptions_.emplace_back(
-            state_controller->RegisterOnModeChanged(
-                base::IgnoreArgs<tabs::VerticalTabStripStateController*>(
-                    callback)));
-        tab_strip_subscriptions_.emplace_back(
-            state_controller->RegisterOnCollapseChanged(
-                base::IgnoreArgs<tabs::VerticalTabStripCollapseState>(
-                    callback)));
-        tab_strip_subscriptions_.emplace_back(
-            state_controller->RegisterOnExpandOnHoverEnabledChanged(
-                base::IgnoreArgs<bool>(callback)));
-      }
+    if (auto* const state_controller =
+            tabs::VerticalTabStripStateController::From(&*browser_)) {
+      auto callback =
+          base::BindRepeating(&PanelViewManager::OnVerticalTabStripModeChanged,
+                              base::Unretained(this));
+      tab_strip_subscriptions_.emplace_back(
+          state_controller->RegisterOnModeChanged(
+              base::IgnoreArgs<tabs::VerticalTabStripStateController*>(
+                  callback)));
+      tab_strip_subscriptions_.emplace_back(
+          state_controller->RegisterOnCollapseChanged(
+              base::IgnoreArgs<tabs::VerticalTabStripCollapseState>(callback)));
+      tab_strip_subscriptions_.emplace_back(
+          state_controller->RegisterOnExpandOnHoverEnabledChanged(
+              base::IgnoreArgs<bool>(callback)));
     }
   }
 
@@ -190,13 +185,11 @@ OrganizerPanelController::OrganizerPanelController(
                                 *this) {
   UpdateOrganizerActionItem();
 
-  if (organizer_panel::ShouldShowOrganizerPanelInVerticalTabStrip()) {
-    vertical_tab_strip_animation_subscription_ =
-        BrowserAnimationController::From(&browser_window)
-            ->Subscribe(TabStripAnimations::kVerticalTabStrip,
-                        base::BindRepeating(&OnVerticalTabStripAnimation,
-                                            base::Unretained(this)));
-  }
+  vertical_tab_strip_animation_subscription_ =
+      BrowserAnimationController::From(&browser_window)
+          ->Subscribe(TabStripAnimations::kVerticalTabStrip,
+                      base::BindRepeating(&OnVerticalTabStripAnimation,
+                                          base::Unretained(this)));
 }
 
 OrganizerPanelController::~OrganizerPanelController() = default;
