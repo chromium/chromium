@@ -65,15 +65,8 @@ source_set("mime_handler_page") {
     "//content/public/browser",
     "//content/public/common",
     "//content/public/common:buildflags",
-    "//pdf:buildflags",
     "//skia",
   ]
-  if (enable_pdf) {
-    deps += [
-      "//components/resources:components_resources_grit",
-      "//ui/base",
-    ]
-  }
 }
 
 source_set("unit_tests") {

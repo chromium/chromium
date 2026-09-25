@@ -14,7 +14,6 @@ build_webui("build") {
     "index.css",
     "index.html",
     "index_print.html",
-    "pdf_embedder.css",
   ]
 
   # TODO(crbug.com/362783117): Check in the .html.ts files for these two

@@ -53,8 +53,9 @@ void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
   response_head->headers->RemoveHeader("Content-Security-Policy");
   response_head->headers->RemoveHeader("Content-Security-Policy-Report-Only");
 
-  if (!response_head->parsed_headers)
+  if (!response_head->parsed_headers) {
     return;
+  }
 
   std::vector<network::mojom::ContentSecurityPolicyPtr>& csp =
       response_head->parsed_headers->content_security_policy;
@@ -63,8 +64,9 @@ void ClearAllButFrameAncestors(network::mojom::URLResponseHead* response_head) {
   for (auto& policy : csp) {
     auto frame_ancestors = policy->directives.find(
         network::mojom::CSPDirectiveName::FrameAncestors);
-    if (frame_ancestors == policy->directives.end())
+    if (frame_ancestors == policy->directives.end()) {
       continue;
+    }
 
     auto cleared_policy = network::mojom::ContentSecurityPolicy::New();
     cleared_policy->self_origin = std::move(policy->self_origin);
@@ -288,7 +290,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
     // Set the payload without creating a MimeHandlerView.
     payload = extensions::CreateTemplateMimeHandlerPage(
         response_url, response_head->mime_type, internal_id,
-        /*use_oopif=*/true, /*is_oopif_pdf=*/is_for_oopif_pdf);
+        /*use_oopif=*/true);
   } else {
     // The resource is handled by frame-based MimeHandlerView, so let the
     // MimeHandlerView code set the payload.

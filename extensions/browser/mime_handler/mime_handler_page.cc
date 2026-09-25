@@ -10,15 +10,8 @@
 #include "base/strings/stringprintf.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/common/webplugininfo.h"
-#include "pdf/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_PDF)
-#include "base/strings/string_util.h"
-#include "components/grit/components_resources.h"  // nogncheck
-#include "ui/base/resource/resource_bundle.h"
-#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -37,10 +30,11 @@ constexpr char kFullPageMimeHandlerViewHTML[] =
     " src='about:blank' type='%s' "
     "internalid='%s'></body></html>";
 
-// Generic iframe-based template for Generic MIME handlers (non-OOPIF PDF).
+// Generic iframe-based template for Generic MIME handlers
 constexpr char kOopifMimeHandlerViewHTML[] =
     "<!doctype html><html style='height:100%%;width:100%%'><body "
-    "style='height:100%%;width:100%%;overflow:hidden;margin:0;padding:0'>"
+    "style='height:100%%;width:100%%;overflow:hidden;margin:0;padding:0;"
+    "%s'>"
     "<template shadowrootmode='closed'>"
     "<iframe name='%s' src='about:blank' type='%s' internalid='%s' "
     "style='border:0;position:absolute;top:0;left:0;width:100%%;height:100%%' "
@@ -66,23 +60,22 @@ SkColor GetBackgroundColorStringForMimeType(const GURL& url,
 std::string CreateTemplateMimeHandlerPage(const GURL& resource_url,
                                           const std::string& mime_type,
                                           const std::string& internal_id,
-                                          bool use_oopif,
-                                          bool is_oopif_pdf) {
-#if BUILDFLAG(ENABLE_PDF)
-  if (is_oopif_pdf) {
-    std::string pdf_embedder_html =
-        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-            IDR_PDF_EMBEDDER_HTML);
-    return base::ReplaceStringPlaceholders(
-        pdf_embedder_html, {internal_id, mime_type, internal_id},
-        /*offsets=*/nullptr);
-  }
-#endif
+                                          bool use_oopif) {
+  SkColor color = GetBackgroundColorStringForMimeType(resource_url, mime_type);
   if (use_oopif) {
-    return base::StringPrintf(kOopifMimeHandlerViewHTML, internal_id.c_str(),
-                              mime_type.c_str(), internal_id.c_str());
+    std::string maybe_color;
+    // This background color comes from a hard-coded list of plugins in
+    // MimeTypesHandler::GetBackgroundColor(), so third-party plugins cannot set
+    // the color. For those third-party plugins, don't set the background color.
+    if (color != content::WebPluginInfo::kDefaultBackgroundColor) {
+      maybe_color = base::StringPrintf("background-color:rgb(%d,%d,%d);",
+                                       SkColorGetR(color), SkColorGetG(color),
+                                       SkColorGetB(color));
+    }
+    return base::StringPrintf(kOopifMimeHandlerViewHTML, maybe_color,
+                              internal_id.c_str(), mime_type.c_str(),
+                              internal_id.c_str());
   }
-  auto color = GetBackgroundColorStringForMimeType(resource_url, mime_type);
   return base::StringPrintf(kFullPageMimeHandlerViewHTML, SkColorGetR(color),
                             SkColorGetG(color), SkColorGetB(color),
                             internal_id.c_str(), mime_type.c_str(),
