@@ -3090,7 +3090,7 @@ deps = {
   },
 
   'src/third_party/sframe/src':
-    Var('chromium_git') + '/external/github.com/cisco/sframe' + '@' + 'db604c8f1960dc2047f1d708d521b28dba058dc9',
+    Var('chromium_git') + '/external/github.com/cisco/sframe' + '@' + '6a37f061f4eda0c6594c91ecf99b5ff498c8c124',
 
   'src/third_party/skia':
     Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),

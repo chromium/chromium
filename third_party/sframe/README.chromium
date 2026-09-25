@@ -2,8 +2,8 @@ Name: Sframe
 Short Name: sframe
 URL: https://github.com/cisco/sframe
 Version: N/A
-Revision: db604c8f1960dc2047f1d708d521b28dba058dc9
-Update Mechanism: Manual
+Revision: 6a37f061f4eda0c6594c91ecf99b5ff498c8c124
+Update Mechanism: Autoroll
 License: BSD-2-Clause, MIT
 License File: src/LICENSE
 Security Critical: yes
