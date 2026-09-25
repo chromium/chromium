@@ -33,9 +33,8 @@ constexpr char kUrl2[] = "https://localhost2/path2";
 
 }  // namespace
 
-class RequestSenderTest
-    : public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class RequestSenderTest : public testing::Test,
+                          public testing::WithParamInterface<bool> {
  public:
   RequestSenderTest();
 
@@ -53,8 +52,7 @@ class RequestSenderTest
   void RequestSenderComplete(int error,
                              const std::string& response,
                              int retry_after_sec);
-  bool IsForeground() const { return std::get<0>(GetParam()); }
-  bool IsPqcCupSigningEnabled() const { return std::get<1>(GetParam()); }
+  bool IsForeground() const { return GetParam(); }
 
  protected:
   void Quit();
@@ -77,18 +75,12 @@ class RequestSenderTest
   base::OnceClosure quit_closure_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    RequestSenderTest,
-    ::testing::Combine(::testing::Bool(),  // is_foreground
-                       ::testing::Bool()   // is_pqc_cup_signing_enabled
-                       ),
-    [](const auto& info) {
-      return base::StrCat(
-          {std::get<0>(info.param) ? "Foreground" : "Background", "_",
-           std::get<1>(info.param) ? "PqcCupSigningEnabled"
-                                   : "PqcCupSigningDisabled"});
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         RequestSenderTest,
+                         ::testing::Bool(),  // is_foreground
+                         [](const auto& info) {
+                           return info.param ? "Foreground" : "Background";
+                         });
 
 RequestSenderTest::RequestSenderTest()
     : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
@@ -96,10 +88,6 @@ RequestSenderTest::RequestSenderTest()
 RequestSenderTest::~RequestSenderTest() = default;
 
 void RequestSenderTest::SetUp() {
-  if (IsPqcCupSigningEnabled()) {
-    feature_list_.InitAndEnableFeature(
-        client_update_protocol::features::kPqcCupSigning);
-  }
   RegisterPersistedDataPrefs(pref_->registry());
   config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
   request_sender_ =
@@ -342,9 +330,7 @@ TEST_P(RequestSenderTest, CupKeySelection) {
   RunThreads();
 
   std::string query(std::get<2>(post_interceptor_->GetRequests()[0]).query());
-  EXPECT_TRUE(IsPqcCupSigningEnabled()
-                  ? query.starts_with("cup2key=ML-DSA-44-16:")
-                  : query.starts_with("cup2key=16:"));
+  EXPECT_TRUE(query.starts_with("cup2key=ML-DSA-44-16:"));
 }
 
 }  // namespace update_client
