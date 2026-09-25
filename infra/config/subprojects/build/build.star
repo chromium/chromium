@@ -696,6 +696,7 @@ cq_rbe_test_builder(
         "no_clang_modules": gn_args.config(configs = ["try/linux-rel", "no_clang_modules"]),
     },
     os = os.LINUX_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "rbe test|cq",
         short_name = "lin",
@@ -765,6 +766,7 @@ ci_rbe_test_builder(
         "no_clang_modules": gn_args.config(configs = ["ci/Linux Builder", "no_clang_modules"]),
     },
     os = os.LINUX_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "rbe test|ci",
         short_name = "lin",
