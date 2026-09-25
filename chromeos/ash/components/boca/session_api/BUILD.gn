@@ -8,6 +8,7 @@ source_set("session_api") {
   sources = [
     "add_students_request.cc",
     "add_students_request.h",
+    "constants.cc",
     "constants.h",
     "create_session_request.cc",
     "create_session_request.h",

@@ -348,11 +348,4 @@ missing_new_fields,chrome/browser/ash/app_list/search/essential_search/socs_cook
 # Header files with traffic annotations that existed before the new check was introduced.
 all,chrome/browser/ash/app_list/search/omnibox/omnibox_util.h
 all,chrome/browser/predictors/predictors_traffic_annotations.h
-all,chromeos/ash/components/boca/gemini/get_gemini_status_request.h
-all,chromeos/ash/components/boca/receiver/get_kiosk_receiver_request.h
-all,chromeos/ash/components/boca/receiver/get_receiver_connection_info_request.h
-all,chromeos/ash/components/boca/receiver/register_receiver_request.h
-all,chromeos/ash/components/boca/receiver/start_kiosk_receiver_request.h
-all,chromeos/ash/components/boca/receiver/update_kiosk_receiver_state_request.h
-all,chromeos/ash/components/boca/session_api/constants.h
 all,components/data_sharing/public/data_sharing_network_utils.h

@@ -25,33 +25,7 @@ class UpdateKioskReceiverStateRequest : public boca::BocaRequest::Delegate {
   using ResponseCallback =
       base::OnceCallback<void(std::optional<::boca::ReceiverConnectionState>)>;
 
-  static constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-      net::DefineNetworkTrafficAnnotation(
-          "ash_boca_receiver_get_receiver_connection_info_request",
-          R"(
-        semantics {
-          sender: "School Tools"
-          description: "Update the connection state of a kiosk receiver."
-          trigger: "Connection state changes at kiosk receiver side or teacher"
-                  " requests stopping the connection"
-          data: "Device OAuth token for verification, receiver id, "
-                "connection id and the new state."
-          destination: GOOGLE_OWNED_SERVICE
-          internal {
-            contacts {
-              email: "cros-edu-eng@google.com"
-            }
-          }
-          last_reviewed: "2025-09-15"
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This request cannot be stopped in settings, but will only "
-                    "be sent if the device set to kiosk mode with the School "
-                    "Tools receiver URL set or if the teacher requests to "
-                    "stop the connection."
-          policy_exception_justification: "Not implemented."
-        })");
+  static const net::NetworkTrafficAnnotationTag kTrafficAnnotation;
 
   static constexpr std::string_view kRelativeUrlTemplate =
       "/v1/receivers/$1/connections/$2:updateState";

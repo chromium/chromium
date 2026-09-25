@@ -417,6 +417,13 @@ after discussions on the right group.
       <annotation id="browser_actuator_transport"/>
       <annotation id="iwa_dev_ui_web_bundle"/>
       <annotation id="ttc_model_execution"/>
+      <annotation id="ash_boca_gemini_get_gemini_status_request"/>
+      <annotation id="ash_boca_receiver_get_kiosk_receiver_request"/>
+      <annotation id="ash_boca_receiver_get_receiver_connection_info_request"/>
+      <annotation id="ash_boca_receiver_register_receiver_request"/>
+      <annotation id="ash_boca_receiver_start_kiosk_receiver_request"/>
+      <annotation id="ash_boca_receiver_update_kiosk_receiver_state_request"/>
+      <annotation id="boca_server_integration"/>
     </sender>
   </group>
   <group name="Admin Features">

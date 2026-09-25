@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"

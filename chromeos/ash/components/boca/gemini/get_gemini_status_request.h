@@ -23,28 +23,7 @@ class GetGeminiStatusRequest : public BocaRequest::Delegate {
  public:
   using ResponseCallback = base::OnceCallback<void(std::optional<bool>)>;
 
-  static constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-      net::DefineNetworkTrafficAnnotation(
-          "ash_boca_gemini_get_gemini_status_request",
-          R"(
-        semantics {
-          sender: "School Tools"
-          description: "Get the Gemini status for the given user."
-          trigger: "User opens School Tools app."
-          data: "Gaia ID to fetch status for."
-          destination: GOOGLE_OWNED_SERVICE
-          internal {
-            contacts {
-              email: "cros-edu-eng@google.com"
-            }
-          }
-          last_reviewed: "2026-05-06"
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "This request cannot be stopped in settings."
-          policy_exception_justification: "Not implemented."
-        })");
+  static const net::NetworkTrafficAnnotationTag kTrafficAnnotation;
 
   GetGeminiStatusRequest(std::string gaia_id, ResponseCallback callback);
 

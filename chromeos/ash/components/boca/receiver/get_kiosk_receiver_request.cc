@@ -20,8 +20,41 @@
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash::boca_receiver {
+
+// static
+const net::NetworkTrafficAnnotationTag
+    GetKioskReceiverRequest::kTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation(
+            "ash_boca_receiver_get_kiosk_receiver_request",
+            R"(
+        semantics {
+          sender: "School Tools"
+          description: "Get the kiosk receiver information."
+          trigger: "Connection state changes at kiosk receiver side or teacher"
+                  " requests starting the connection"
+          data: "Kiosk receiver information and connection state."
+          destination: GOOGLE_OWNED_SERVICE
+          user_data {
+            type: ACCESS_TOKEN
+            type: DEVICE_ID
+          }
+          internal {
+            contacts {
+              email: "cros-edu-eng@google.com"
+            }
+          }
+          last_reviewed: "2025-09-09"
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This request cannot be stopped in settings, but will only "
+                    "be sent if the device set to kiosk mode with the School "
+                    "Tools receiver URL set."
+          policy_exception_justification: "Not implemented."
+        })");
 
 GetKioskReceiverRequest::GetKioskReceiverRequest(
     std::string receiver_id,
