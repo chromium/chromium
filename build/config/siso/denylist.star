@@ -30,6 +30,8 @@ def __step_config(ctx, step_config):
         # Reads .gclient_entries which is outside of the source tree.
         "build/private_code_test/list_gclient_deps.py",
         "build/private_code_test/ninja_parser.py",
+        # TODO(https://crrev.com/c/8376442): Remove once fixed.
+        "chrome/browser/resources/omnibox/aim_eligibility_extension/unpack_component_extension.py",
         "chrome/installer/linux/debian/build.py",
         "chrome/installer/linux/debian/calculate_package_deps.py",
         "chrome/installer/linux/debian/merge_package_versions.py",
