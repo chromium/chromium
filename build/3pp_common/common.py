@@ -163,7 +163,9 @@ def extract_tar(path, dest):
 
 
 def run_cmd(cmd, check=True, *args, **kwargs):
-    logging.info('Running: %s', shlex.join(cmd))
+    # Python 3.6 inside the 3pp docker container lacks shlex.join (3.8+).
+    cmd = [str(x) for x in cmd]
+    logging.info('Running: %s', ' '.join(shlex.quote(x) for x in cmd))
     return subprocess.run(cmd, check=check, *args, **kwargs)
 
 
@@ -173,13 +175,16 @@ def apply_patches(patches_dir, checkout_dir):
         run_cmd(cmd, cwd=checkout_dir)
 
 
-def main(*, do_latest, do_install, runtime_deps, include_deps_hash=True):
+def main(*, do_latest, do_install, runtime_deps=(), include_deps_hash=True):
+    # Prevent subprocess output from being out-of-order when stdout is piped.
+    # Python 3.6 inside the 3pp docker container lacks sys.stdout.reconfigure.
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', buffering=1)
     logging.basicConfig(
         level=logging.DEBUG,
         format='%(levelname).1s %(relativeCreated)6d %(message)s',
     )
     args = parse_args()
-    runtime_deps = [str(_THIS_DIR)] + runtime_deps
+    runtime_deps = [str(_THIS_DIR)] + list(runtime_deps)
 
     if args.action == 'local-test':
         logging.warning('Will use work dir: %s', args.checkout_dir)

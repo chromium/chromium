@@ -105,6 +105,9 @@ def _install(
     # Set up JAVA_HOME for the mvn command to find the JDK.
     env = os.environ.copy()
     env['JAVA_HOME'] = common.path_within_checkout('third_party/jdk/current')
+    # Prevent mvn from sourcing /etc/mavenrc on Goobuntu workstations, which
+    # forces Corp Airlock proxy settings and breaks local-test.
+    env['MAVEN_SKIP_RC'] = '1'
 
     # Ensure that mvn works and the environment is set up correctly.
     subprocess.run(['mvn', '-v'], check=True, env=env)

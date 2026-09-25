@@ -18,12 +18,15 @@ Local Modifications:
 To see changes: diff -ur originals local_modifications
 
 Update instructions:
+- Note: 3pp/3pp.py now compiles the Chromium overrides directly into
+  google-java-format.jar (and the native google-java-format binary). Once the
+  updated CIPD package rolls in, delete chromium-overrides.jar, originals/,
+  local_modifications/, and recreate_*.sh, and update the google-java-format
+  wrapper script.
 - Find latest version available via https://chrome-infra-packages.appspot.com/p/chromium/third_party/google-java-format
 - Update DEPS Instance ID
 - Update the Version in this file
 - Run gclient sync
-- Run recreate_local_overrides.sh
-- Run recreate_chromium_overrides_jar.sh
 - Test the formatter works (file chosen because it has switch expression in it):
 third_party/google-java-format/google-java-format -i --aosp chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java
 - Commit with mention of any notables by scanning release notes at: https://github.com/google/google-java-format/releases

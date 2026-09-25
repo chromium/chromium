@@ -1,13 +1,18 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 create {
   source {
-    script { name: "fetch.py" }
-    unpack_archive: true
-    patch_version: "cr1"
+    script {
+      name: "3pp.py"
+      use_fetch_checkout_workflow: true
+    }
   }
 
   build {
+    install: ["3pp.py", "install"]
     tool: "chromium/third_party/maven"
-    dep: "chromium/third_party/jdk"
   }
 }
 
