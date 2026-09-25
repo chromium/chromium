@@ -7,14 +7,13 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
+#include "content/public/browser/web_contents.h"
 
 namespace web_app {
 
 WindowManagementContentSettingObserver::WindowManagementContentSettingObserver(
     content::WebContents* contents)
-    : content::WebContentsObserver(contents),
-      content::WebContentsUserData<WindowManagementContentSettingObserver>(
-          *contents) {
+    : content::WebContentsObserver(contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   observation_.Observe(HostContentSettingsMapFactory::GetForProfile(profile));
@@ -35,5 +34,4 @@ void WindowManagementContentSettingObserver::OnContentSettingChanged(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WindowManagementContentSettingObserver);
 }  // namespace web_app

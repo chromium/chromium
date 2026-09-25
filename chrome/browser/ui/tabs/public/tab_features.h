@@ -178,6 +178,10 @@ namespace webapps {
 class AppBannerManagerDesktop;
 }  // namespace webapps
 
+namespace web_app {
+class WindowManagementContentSettingObserver;
+}  // namespace web_app
+
 #if !BUILDFLAG(IS_ANDROID)
 namespace skills {
 class SkillsUpdateObserver;
@@ -770,6 +774,9 @@ class TabFeatures {
 
   std::unique_ptr<UMABrowsingActivityTabHelper>
       uma_browsing_activity_tab_helper_;
+
+  std::unique_ptr<web_app::WindowManagementContentSettingObserver>
+      window_management_content_setting_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

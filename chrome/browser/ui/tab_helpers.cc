@@ -223,7 +223,6 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "extensions/browser/view_type_utils.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/isolated_web_apps/window_management/window_management_content_setting_observer.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -772,11 +771,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#if !BUILDFLAG(IS_ANDROID)
-  web_app::WindowManagementContentSettingObserver::CreateForWebContents(
-      web_contents);
-#endif
-
   // These helpers are used on Win/Mac/Linux and also desktop Android.
   extensions::NavigationExtensionEnabler::CreateForWebContents(web_contents);
   extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);

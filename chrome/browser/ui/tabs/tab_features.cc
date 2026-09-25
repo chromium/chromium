@@ -161,6 +161,7 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_attachment_tracker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/window_management_content_setting_observer.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -783,6 +784,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   uma_browsing_activity_tab_helper_ =
       std::make_unique<UMABrowsingActivityTabHelper>(tab.GetContents());
+
+  window_management_content_setting_observer_ =
+      std::make_unique<web_app::WindowManagementContentSettingObserver>(
+          tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -988,6 +993,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   uma_browsing_activity_tab_helper_ =
       std::make_unique<UMABrowsingActivityTabHelper>(new_contents);
+
+  window_management_content_setting_observer_ =
+      std::make_unique<web_app::WindowManagementContentSettingObserver>(
+          new_contents);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)

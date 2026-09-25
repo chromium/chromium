@@ -9,7 +9,6 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace web_app {
 
@@ -19,10 +18,10 @@ namespace web_app {
 // for IsolatedWebApps.
 class WindowManagementContentSettingObserver
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<
-          WindowManagementContentSettingObserver>,
       public content_settings::Observer {
  public:
+  explicit WindowManagementContentSettingObserver(
+      content::WebContents* web_contents);
   WindowManagementContentSettingObserver(
       WindowManagementContentSettingObserver& observer) = delete;
   WindowManagementContentSettingObserver& operator=(
@@ -36,15 +35,8 @@ class WindowManagementContentSettingObserver
       ContentSettingsTypeSet content_type_set) override;
 
  private:
-  explicit WindowManagementContentSettingObserver(
-      content::WebContents* web_contents);
-  friend class content::WebContentsUserData<
-      WindowManagementContentSettingObserver>;
-
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       observation_{this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace web_app

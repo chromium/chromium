@@ -1126,10 +1126,7 @@ source_set("tab_helpers_impl") {
       "//extensions/common:mojom",
     ]
     if (!is_android) {
-      deps += [
-        "//chrome/browser/web_applications",
-        "//chrome/browser/web_applications/isolated_web_apps:isolated_web_apps_no_pwa_core_deps",
-      ]
+      deps += [ "//chrome/browser/web_applications" ]
     }
   }
 

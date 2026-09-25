@@ -622,6 +622,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui_browser:headers",
       "//chrome/browser/vr",
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/isolated_web_apps:isolated_web_apps_no_pwa_core_deps",
       "//components/content_settings/core/browser",
       "//components/contextual_tasks/public",
       "//components/enterprise",
