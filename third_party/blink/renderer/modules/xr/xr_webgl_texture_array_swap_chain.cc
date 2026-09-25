@@ -227,6 +227,11 @@ XRWebGLTextureArraySwapChain::TransferToSharedImageHolder() {
   return wrapped_swap_chain_->TransferToSharedImageHolder();
 }
 
+std::unique_ptr<SharedImageHolder>
+XRWebGLTextureArraySwapChain::DoneWithSharedBuffer() {
+  return wrapped_swap_chain_->DoneWithSharedBuffer();
+}
+
 void XRWebGLTextureArraySwapChain::Trace(Visitor* visitor) const {
   visitor->Trace(wrapped_swap_chain_);
   XRWebGLSwapChain::Trace(visitor);

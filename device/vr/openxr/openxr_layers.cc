@@ -21,7 +21,7 @@ void FillSubImage(XrLayerDataType& xr_layer,
   const gfx::Rect info = layer.GetSubImageViewport(eye);
 
   xr_layer.subImage.swapchain = layer.color_swapchain();
-  xr_layer.subImage.imageArrayIndex = 0;
+  xr_layer.subImage.imageArrayIndex = layer.GetSubImageArrayIndex(eye);
   xr_layer.subImage.imageRect.offset = {
       .x = info.x(),
       .y = info.y(),

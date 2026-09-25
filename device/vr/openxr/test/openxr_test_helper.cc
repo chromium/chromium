@@ -266,8 +266,7 @@ void OpenXrTestHelper::OnPresentedFrame(const XrFrameEndInfo* frame_end_info) {
             data.viewport = gfx::Rect(current_x, 0, properties.Width(),
                                       properties.Height());
             data.eye = GetEyeForIndex(j, view_properties.size());
-            CopyTextureDataIntoFrameData(views[j].subImage.swapchain, current_x,
-                                         data);
+            CopyTextureDataIntoFrameData(views[j].subImage, data);
             current_x += properties.Width();
           }
         }
@@ -354,29 +353,40 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
   context->Unmap(texture_destination.Get(), 0);
 }
 #elif BUILDFLAG(IS_ANDROID)
-void OpenXrTestHelper::CopyTextureDataIntoFrameData(XrSwapchain swapchain,
-                                                    uint32_t x_start,
-                                                    device::ViewData& data) {
+void OpenXrTestHelper::CopyTextureDataIntoFrameData(
+    const XrSwapchainSubImage& sub_image,
+    device::ViewData& data) {
   DCHECK_NE(opengl_es_textures_arrays_.size(), 0u);
   // In some build environment, XR_NULL_HANDLE is a signed integer
   // while XrSwapchain is unsigned.
-  DCHECK_NE(swapchain, static_cast<XrSwapchain>(XR_NULL_HANDLE));
-  auto texture_index = acquired_swapchain_textures_[swapchain];
-  DCHECK_LT(texture_index, opengl_es_textures_arrays_[swapchain].size());
+  DCHECK_NE(sub_image.swapchain, static_cast<XrSwapchain>(XR_NULL_HANDLE));
+  auto texture_index = acquired_swapchain_textures_[sub_image.swapchain];
+  DCHECK_LT(texture_index,
+            opengl_es_textures_arrays_[sub_image.swapchain].size());
   uint8_t pixel[4];
 
   // Generate a framebuffer to read from and attach the current texture to it.
   GLuint fbo = 0;
   glGenFramebuffers(1, &fbo);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                         opengl_es_textures_arrays_[swapchain][texture_index],
-                         0);
+
+  const auto& swapchain_info = swapchains_[sub_image.swapchain];
+  if (swapchain_info.arraySize > 1) {
+    glFramebufferTextureLayer(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+        opengl_es_textures_arrays_[sub_image.swapchain][texture_index], 0,
+        sub_image.imageArrayIndex);
+  } else {
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+        opengl_es_textures_arrays_[sub_image.swapchain][texture_index], 0);
+  }
 
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   if (status == GL_FRAMEBUFFER_COMPLETE) {
-    // Read the single pixel at (x_start, 0) into our 4-byte RGBA buffer.
-    glReadPixels(x_start, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+    // Read the single pixel into our 4-byte RGBA buffer.
+    glReadPixels(sub_image.imageRect.offset.x, sub_image.imageRect.offset.y, 1,
+                 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
     data.color = GetFirstColor(pixel);
   } else {
     DLOG(ERROR) << "Framebuffer not complete: " << std::hex << status;
@@ -399,8 +409,14 @@ SkColor OpenXrTestHelper::ReadTextureColor(
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
   auto texture = opengl_es_textures_arrays_[sub_image.swapchain][texture_index];
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                         texture, 0);
+  const auto& swapchain_info = swapchains_[sub_image.swapchain];
+  if (swapchain_info.arraySize > 1) {
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0,
+                              sub_image.imageArrayIndex);
+  } else {
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                           texture, 0);
+  }
 
   GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   if (status == GL_FRAMEBUFFER_COMPLETE) {
@@ -942,6 +958,7 @@ void OpenXrTestHelper::CreateTextures(XrSwapchain swapchain) {
 
   const auto& swapchain_info = swapchains_[swapchain];
   const bool is_cube = swapchain_info.faceCount == 6;
+  const bool is_array = swapchain_info.arraySize > 1;
   for (GLuint texture_id : textures) {
     // Allocate storage for the texture.
     if (is_cube) {
@@ -951,6 +968,12 @@ void OpenXrTestHelper::CreateTextures(XrSwapchain swapchain) {
                      swapchain_info.width, swapchain_info.height, 0, GL_RGBA,
                      GL_UNSIGNED_BYTE, nullptr);
       }
+    } else if (is_array) {
+      glBindTexture(GL_TEXTURE_2D_ARRAY, texture_id);
+      glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, kSwapchainFormat,
+                   swapchain_info.width, swapchain_info.height,
+                   swapchain_info.arraySize, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                   nullptr);
     } else {
       glBindTexture(GL_TEXTURE_2D, texture_id);
       glTexImage2D(GL_TEXTURE_2D, 0, kSwapchainFormat, swapchain_info.width,
@@ -961,6 +984,8 @@ void OpenXrTestHelper::CreateTextures(XrSwapchain swapchain) {
   // Unbind the last texture.
   if (is_cube) {
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+  } else if (is_array) {
+    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   } else {
     glBindTexture(GL_TEXTURE_2D, 0);
   }

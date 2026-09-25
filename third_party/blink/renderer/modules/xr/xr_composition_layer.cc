@@ -125,14 +125,13 @@ XRCompositionLayer::CreateLayerData() const {
       drawing_context_->NeedsRasterAccess();
   layer_data->read_only_data->texture_type =
       V8ToMojomTextureType(texture_type_);
-  if (layout_ == V8XRLayerLayout::Enum::kStereo) {
+  if (layout_ == V8XRLayerLayout::Enum::kStereo &&
+      texture_type_ != V8XRTextureType::Enum::kTextureArray) {
     // We put the layers into a single texture. So the other side should treat
     // it as left-right. See XRWebGLTextureArraySwapChain.
     layer_data->read_only_data->layout =
         device::mojom::blink::XRLayerLayout::kStereoLeftRight;
     layer_data->read_only_data->texture_width = textureWidth() * 2;
-    layer_data->read_only_data->texture_type =
-        device::mojom::blink::XRTextureType::kTexture;
   } else {
     layer_data->read_only_data->layout = V8ToMojomLayerLayout(layout_);
   }

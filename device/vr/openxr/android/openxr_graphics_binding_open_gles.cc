@@ -269,14 +269,18 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
 
   static constexpr viz::SharedImageFormat format =
       viz::SinglePlaneFormat::kRGBA_8888;
-  static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
-
-  // The SharedImages created here will eventually be transferred to other
-  // processes to have their contents written by WebGL and read via GL by
-  // OpenXR.
+  gfx::BufferUsage buffer_usage = gfx::BufferUsage::SCANOUT;
   gpu::SharedImageUsageSet shared_image_usage =
-      gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+
+  if (layer.SharedImageUsesTextureArray()) {
+    // Multi-layer AHBs cannot use SCANOUT / DISPLAY_READ usage flags on
+    // Android.
+    buffer_usage = gfx::BufferUsage::GPU_READ;
+  } else {
+    shared_image_usage |=
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
 
   if (layer.read_only_data().needs_raster_access) {
     shared_image_usage |= gpu::SHARED_IMAGE_USAGE_RASTER_READ |
@@ -290,8 +294,26 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
                           gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
   }
 
-  swap_chain_info.scoped_ahb_handle =
-      gpu::CreateScopedHardwareBufferHandle(transfer_size, format, usage);
+  uint32_t layers = 1;
+  GLenum texture_target = GL_TEXTURE_2D;
+
+  if (layer.SharedImageUsesTextureArray()) {
+    // This should never happen because cube layers don't use texture array.
+    CHECK(layer.type() != OpenXrCompositionLayer::Type::kCube);
+    if (layer.SwapchainUsesTextureArray()) {
+      static_assert(kNumPrimaryViews > 1);
+      layers = kNumPrimaryViews;
+    } else {
+      // This can only happen when a layer uses "texture-array", but doesn't
+      // use "stereo" layout. To create an AHardwareBuffer and use it as a
+      // GL_TEXTURE_2D_ARRAY, we must set layers to be greater than 1.
+      layers = 2;
+    }
+    texture_target = GL_TEXTURE_2D_ARRAY;
+  }
+
+  swap_chain_info.scoped_ahb_handle = gpu::CreateScopedHardwareBufferHandle(
+      transfer_size, format, buffer_usage, layers);
   swap_chain_info.shared_buffer_size = transfer_size;
 
   // Create a GMB Handle from scoped_ahb_handle.
@@ -308,14 +330,14 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
       {viz::SinglePlaneFormat::kRGBA_8888, transfer_size,
        gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
                        gfx::ColorSpace::TransferID::LINEAR),
-       shared_image_usage, "OpenXrGraphicsBinding"},
+       shared_image_usage, "OpenXrGraphicsBinding", layers},
       std::move(gmb_handle));
   CHECK(swap_chain_info.shared_image);
   swap_chain_info.sync_token =
       swap_chain_info.shared_image->creation_sync_token();
   sii->VerifySyncToken(swap_chain_info.sync_token);
   DCHECK_EQ(swap_chain_info.shared_image->GetTextureTarget(),
-            static_cast<uint32_t>(GL_TEXTURE_2D));
+            static_cast<uint32_t>(texture_target));
 
   DVLOG(2) << ": CreateSharedImage, mailbox="
            << swap_chain_info.shared_image->mailbox().ToDebugString()
@@ -329,12 +351,17 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
     return;
   }
 
-  swap_chain_info.shared_buffer_texture.target = GL_TEXTURE_2D;
+  swap_chain_info.shared_buffer_texture.target = texture_target;
   glGenTextures(1, &swap_chain_info.shared_buffer_texture.id);
   glBindTexture(swap_chain_info.shared_buffer_texture.target,
                 swap_chain_info.shared_buffer_texture.id);
-  glEGLImageTargetTexture2DOES(swap_chain_info.shared_buffer_texture.target,
-                               egl_image.get());
+  glEGLImageTargetTexture2DOES(texture_target, egl_image.get());
+  glTexParameteri(texture_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(texture_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(texture_target, GL_TEXTURE_BASE_LEVEL, 0);
+  glTexParameteri(texture_target, GL_TEXTURE_MAX_LEVEL, 0);
+  glTexParameteri(texture_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(texture_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   swap_chain_info.local_eglimage = std::move(egl_image);
 }
 
@@ -379,18 +406,31 @@ bool OpenXrGraphicsBindingOpenGLES::RenderLayer(
   float transform_floats[16];
   transform.GetColMajorF(transform_floats);
 
-  if (layer.type() == OpenXrCompositionLayer::Type::kCube) {
-    if (webxr_visible_) {
+  if (webxr_visible_) {
+    if (layer.type() == OpenXrCompositionLayer::Type::kCube) {
       // We call glFramebufferTexture2DEXT inside DrawCubemap for 6 faces.
       renderer_->DrawCubemap(swap_chain_info->shared_buffer_texture,
                              swap_chain_info->openxr_texture, transform_floats,
                              layer.mutable_data().opacity);
-    }
-  } else {
-    glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                              GL_TEXTURE_2D, swap_chain_info->openxr_texture,
-                              0);
-    if (webxr_visible_) {
+    } else if (layer.SharedImageUsesTextureArray()) {
+      if (layer.SwapchainUsesTextureArray()) {
+        renderer_->DrawArray(swap_chain_info->shared_buffer_texture,
+                             swap_chain_info->openxr_texture, kNumPrimaryViews,
+                             transform_floats, layer.mutable_data().opacity);
+      } else {
+        // The shared image uses a texture array, but we only need the first
+        // layer.
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                  GL_TEXTURE_2D,
+                                  swap_chain_info->openxr_texture, 0);
+        renderer_->DrawArrayLayer(swap_chain_info->shared_buffer_texture, 0,
+                                  transform_floats,
+                                  layer.mutable_data().opacity);
+      }
+    } else {
+      glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                GL_TEXTURE_2D, swap_chain_info->openxr_texture,
+                                0);
       renderer_->Draw(swap_chain_info->shared_buffer_texture, transform_floats,
                       layer.mutable_data().opacity);
     }
@@ -425,7 +465,19 @@ bool OpenXrGraphicsBindingOpenGLES::RenderLayer(
 
     glBindTexture(overlay_texture_.target, overlay_texture_.id);
     glEGLImageTargetTexture2DOES(overlay_texture_.target, egl_image.get());
-    renderer_->Draw(overlay_texture_, transform_floats);
+
+    if (layer.SwapchainUsesTextureArray()) {
+      for (uint32_t i = 0; i < kNumPrimaryViews; ++i) {
+        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                  swap_chain_info->openxr_texture, 0, i);
+        renderer_->Draw(overlay_texture_, transform_floats);
+      }
+    } else {
+      glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                GL_TEXTURE_2D, swap_chain_info->openxr_texture,
+                                0);
+      renderer_->Draw(overlay_texture_, transform_floats);
+    }
   }
 
   return true;

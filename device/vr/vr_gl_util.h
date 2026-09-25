@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 #define SHADER(Src) "#version 100\n" #Src
+#define SHADER_ES3(Src) "#version 300 es\n" #Src
 #define OEIE_SHADER(Src) \
   "#version 100\n#extension GL_OES_EGL_image_external : require\n" #Src
 #define VOID_OFFSET(x) reinterpret_cast<void*>(x)

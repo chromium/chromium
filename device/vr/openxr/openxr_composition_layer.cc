@@ -8,6 +8,7 @@
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/openxr/openxr_view_configuration.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 
 namespace device {
@@ -95,11 +96,15 @@ OpenXrCompositionLayer::GetSwapchainImages() const {
 
 XrResult OpenXrCompositionLayer::CreateSwapchain(XrSession session,
                                                  uint32_t sample_count) {
+  // If kNumPrimaryViews is not 2, we need to be given the number of views here.
+  static_assert(kNumPrimaryViews == 2);
+
   DCHECK(!HasColorSwapchain());
   DCHECK(GetSwapchainImages().empty());
 
   XrSwapchainCreateInfo swapchain_create_info = {XR_TYPE_SWAPCHAIN_CREATE_INFO};
-  swapchain_create_info.arraySize = 1;
+  swapchain_create_info.arraySize =
+      SwapchainUsesTextureArray() ? kNumPrimaryViews : 1;
   swapchain_create_info.format = graphics_binding_->GetSwapchainFormat(session);
 
   swapchain_create_info.createFlags = creation_data_->read_only_data->is_static
@@ -224,6 +229,17 @@ bool OpenXrCompositionLayer::IsUsingSharedImages() const {
   return ((swapchain_info.size() > 1) && swapchain_info[0].shared_image);
 }
 
+bool OpenXrCompositionLayer::SharedImageUsesTextureArray() const {
+  return read_only_data().texture_type == mojom::XRTextureType::kTextureArray;
+}
+
+bool OpenXrCompositionLayer::SwapchainUsesTextureArray() const {
+  // We will let arraySize be kNumPrimaryViews. Open XR only uses
+  // GL_TEXTURE_2D_ARRAY when arraySize > 1.
+  return read_only_data().layout == mojom::XRLayerLayout::kStereo &&
+         kNumPrimaryViews > 1;
+}
+
 LayerId OpenXrCompositionLayer::GetLayerId() const {
   return creation_data_->read_only_data->layer_id;
 }
@@ -242,7 +258,7 @@ void OpenXrCompositionLayer::UpdateActiveSwapchainImageSize(
   }
 }
 
-const gfx::Rect OpenXrCompositionLayer::GetSubImageViewport(
+gfx::Rect OpenXrCompositionLayer::GetSubImageViewport(
     XrEyeVisibility eye) const {
   gfx::Rect info{0, 0, static_cast<int>(read_only_data().texture_width),
                  static_cast<int>(read_only_data().texture_height)};
@@ -264,6 +280,11 @@ const gfx::Rect OpenXrCompositionLayer::GetSubImageViewport(
     }
   }
   return info;
+}
+
+uint32_t OpenXrCompositionLayer::GetSubImageArrayIndex(
+    XrEyeVisibility eye) const {
+  return SwapchainUsesTextureArray() && eye == XR_EYE_VISIBILITY_RIGHT ? 1 : 0;
 }
 
 std::vector<XrEyeVisibility> OpenXrCompositionLayer::GetXrEyesForComposition()

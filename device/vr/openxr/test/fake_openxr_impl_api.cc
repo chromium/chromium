@@ -371,7 +371,9 @@ XrResult XRAPI_PTR xrCreateSwapchain(XrSession session,
   RETURN_IF(create_info->faceCount != 1 && create_info->faceCount != 6,
             XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainCreateInfo faceCount is not 1 or 6");
-  RETURN_IF(create_info->arraySize != 1, XR_ERROR_VALIDATION_FAILURE,
+  RETURN_IF(create_info->arraySize != 1 &&
+                create_info->arraySize != device::kNumPrimaryViews,
+            XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainCreateInfo arraySize invalid");
   RETURN_IF(create_info->mipCount != 1, XR_ERROR_VALIDATION_FAILURE,
             "XrSwapchainCreateInfo mipCount is not 1");

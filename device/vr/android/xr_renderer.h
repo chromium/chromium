@@ -22,17 +22,32 @@ class XrRenderer {
   ~XrRenderer();
 
   // Blits the provided texture handle onto the currently bound framebuffer,
-  // applying the provided uv_transform.
+  // applying the provided uv_transform and opacity.
   void Draw(const LocalTexture& texture,
             const float (&uv_transform)[16],
             float opacity = 1.f);
 
-  // Blits the provided cubemap texture handle onto the currently bound
-  // framebuffer, applying the provided uv_transform.
+  // Blits the 6 faces (3x2) from the provided texture onto the target
+  // cubemap texture, applying the provided uv_transform and opacity.
   void DrawCubemap(const LocalTexture& texture,
                    uint32_t target_texture,
                    const float (&uv_transform)[16],
                    float opacity = 1.f);
+
+  // Blits the layers of the source texture array onto the layers of
+  // the target array, applying the provided uv_transform and opacity.
+  void DrawArray(const LocalTexture& texture,
+                 uint32_t target_texture,
+                 uint16_t layers,
+                 const float (&uv_transform)[16],
+                 float opacity = 1.f);
+
+  // Blits the specified layer of the source texture array onto the currently
+  // bound framebuffer, applying the provided uv_transform and opacity.
+  void DrawArrayLayer(const LocalTexture& texture,
+                      uint16_t layer_index,
+                      const float (&uv_transform)[16],
+                      float opacity = 1.f);
 
  private:
   struct Program {
@@ -43,6 +58,7 @@ class XrRenderer {
     GLuint opacity_ = 0;
     GLuint column_index_ = 0;
     GLuint row_index_ = 0;
+    GLuint layer_index_ = 0;
   };
 
   Program CreateProgram(const std::string& vertex, const std::string& fragment);
@@ -51,11 +67,13 @@ class XrRenderer {
             const LocalTexture& texture,
             const float (&uv_transform)[16],
             float opacity,
-            int face_index = -1);
+            int face_index = -1,
+            int layer_index = -1);
 
   Program program_external_;
   Program program_2d_;
   Program program_cubemap_;
+  Program program_array_;
 
   GLuint vertex_buffer_ = 0;
   GLuint index_buffer_ = 0;

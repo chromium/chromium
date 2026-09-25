@@ -35,6 +35,25 @@ static constexpr char const* kVertexShader = SHADER(
   }
 );
 
+// Same as kVertexShader, but we need ES 3.0 for the fragment shader.
+static constexpr char const* kVertexShaderES3 = SHADER_ES3(
+  precision mediump float;
+  in vec4 a_Position;
+  out vec2 v_TexCoordinate;
+  uniform mat4 u_UvTransform;
+
+  void main() {
+    // The quad vertex coordinate range is [-0.5, 0.5]. Transform to [0, 1],
+    // then apply the supplied affine transform matrix to get the final UV.
+    float xposition = a_Position[0] + 0.5;
+    float yposition = a_Position[1] + 0.5;
+    vec4 uv_in = vec4(xposition, yposition, 0.0, 1.0);
+    vec4 uv_out = u_UvTransform * uv_in;
+    v_TexCoordinate = vec2(uv_out.x, uv_out.y);
+    gl_Position = vec4(a_Position.xyz * 2.0, 1.0);
+  }
+);
+
 static constexpr char const* kFragmentShaderExternal = OEIE_SHADER(
   precision highp float;
   uniform samplerExternalOES u_Texture;
@@ -77,6 +96,24 @@ static constexpr char const* kFragmentShaderCubemap = OEIE_SHADER(
     gl_FragColor = texture2D(u_Texture, vec2(x, y)) * u_Opacity;
   }
 );
+
+// We need ES 3.0 for 2D arrays.
+static constexpr char const* kFragmentShaderArray = SHADER_ES3(
+  precision highp float;
+  in vec2 v_TexCoordinate;
+  out vec4 outColor;
+  // "highp" is needed because some compilers require the texture
+  // precision to be explicitly defined.
+  uniform highp sampler2DArray u_Texture;
+  uniform float u_Opacity;
+  uniform int u_LayerIndex;
+
+  void main() {
+    vec3 coord = vec3(v_TexCoordinate, u_LayerIndex);
+    // Keep the pixels premultiplied.
+    outColor = texture(u_Texture, coord) * u_Opacity;
+  }
+);
 // clang-format on
 
 }  // namespace
@@ -113,6 +150,8 @@ XrRenderer::Program XrRenderer::CreateProgram(const std::string& vertex,
       glGetUniformLocation(result.program_handle_, "u_ColumnIndex");
   result.row_index_ =
       glGetUniformLocation(result.program_handle_, "u_RowIndex");
+  result.layer_index_ =
+      glGetUniformLocation(result.program_handle_, "u_LayerIndex");
 
   return result;
 }
@@ -121,6 +160,7 @@ XrRenderer::XrRenderer() {
   program_external_ = CreateProgram(kVertexShader, kFragmentShaderExternal);
   program_2d_ = CreateProgram(kVertexShader, kFragmentShader2D);
   program_cubemap_ = CreateProgram(kVertexShader, kFragmentShaderCubemap);
+  program_array_ = CreateProgram(kVertexShaderES3, kFragmentShaderArray);
 }
 
 void XrRenderer::EnsureVertexBuffers() {
@@ -145,11 +185,13 @@ void XrRenderer::Draw(const Program& program,
                       const LocalTexture& texture,
                       const float (&uv_transform)[16],
                       float opacity,
-                      int face_index) {
+                      int face_index,
+                      int layer_index) {
   EnsureVertexBuffers();
 
   CHECK(texture.target == GL_TEXTURE_EXTERNAL_OES ||
-        texture.target == GL_TEXTURE_2D);
+        texture.target == GL_TEXTURE_2D ||
+        (texture.target == GL_TEXTURE_2D_ARRAY && layer_index >= 0));
 
   glUseProgram(program.program_handle_);
 
@@ -170,6 +212,10 @@ void XrRenderer::Draw(const Program& program,
   glTexParameteri(texture.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(texture.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(texture.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  if (texture.target != GL_TEXTURE_EXTERNAL_OES) {
+    glTexParameteri(texture.target, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(texture.target, GL_TEXTURE_MAX_LEVEL, 0);
+  }
   glUniform1i(program.texture_handle_, 0);
 
   glUniformMatrix4fv(program.uv_transform_, 1, GL_FALSE, &uv_transform[0]);
@@ -180,6 +226,8 @@ void XrRenderer::Draw(const Program& program,
     // 6 faces are placed as 3 tiles per row.
     glUniform1f(program.column_index_, static_cast<float>(face_index % 3));
     glUniform1f(program.row_index_, static_cast<float>(face_index / 3));
+  } else if (layer_index >= 0) {
+    glUniform1i(program.layer_index_, layer_index);
   }
 
   // Blit texture to buffer
@@ -209,6 +257,25 @@ void XrRenderer::DrawCubemap(const LocalTexture& texture,
                               target_texture, 0);
     Draw(program_cubemap_, texture, uv_transform, opacity, i);
   }
+}
+
+void XrRenderer::DrawArray(const LocalTexture& texture,
+                           uint32_t target_texture,
+                           uint16_t layers,
+                           const float (&uv_transform)[16],
+                           float opacity) {
+  for (uint16_t i = 0; i < layers; ++i) {
+    glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                              target_texture, 0, i /*layer index*/);
+    DrawArrayLayer(texture, i, uv_transform, opacity);
+  }
+}
+
+void XrRenderer::DrawArrayLayer(const LocalTexture& texture,
+                                uint16_t layer_index,
+                                const float (&uv_transform)[16],
+                                float opacity) {
+  Draw(program_array_, texture, uv_transform, opacity, -1, layer_index);
 }
 
 // Note that we don't explicitly delete gl objects here, they're deleted

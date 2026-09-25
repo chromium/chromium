@@ -231,8 +231,7 @@ class OpenXrTestHelper {
   void CopyTextureDataIntoFrameData(uint32_t x_start, device::ViewData& data);
 #elif BUILDFLAG(IS_ANDROID)
   void CreateTextures(XrSwapchain swapchain);
-  void CopyTextureDataIntoFrameData(XrSwapchain swapchain,
-                                    uint32_t x_start,
+  void CopyTextureDataIntoFrameData(const XrSwapchainSubImage& sub_image,
                                     device::ViewData& data);
   SkColor ReadTextureColor(const XrSwapchainSubImage&);
   std::vector<SkColor> ReadCubeMapFirstPixelColor(XrSwapchain swapchain);

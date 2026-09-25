@@ -113,6 +113,13 @@ class OpenXrCompositionLayer {
   // or not.
   bool IsUsingSharedImages() const;
 
+  // Tell if the layer's swapchain uses texture array. It returns true only
+  // when the "textureType" is "texture-array".
+  bool SharedImageUsesTextureArray() const;
+
+  // True if swapchain images are texture arrays.
+  bool SwapchainUsesTextureArray() const;
+
   // Update the layer's size and transform.
   void UpdateMutableLayerData(mojom::XRLayerMutableDataPtr);
 
@@ -128,7 +135,9 @@ class OpenXrCompositionLayer {
   // which should be used for the OpenXR composition.
   std::vector<XrEyeVisibility> GetXrEyesForComposition() const;
   // Returns a viewport for the specified eye.
-  const gfx::Rect GetSubImageViewport(XrEyeVisibility eye) const;
+  gfx::Rect GetSubImageViewport(XrEyeVisibility eye) const;
+  // Returns the image array index for the specified eye.
+  uint32_t GetSubImageArrayIndex(XrEyeVisibility eye) const;
 
   // A group of simple getters.
   XrSwapchain color_swapchain() const { return color_swapchain_; }

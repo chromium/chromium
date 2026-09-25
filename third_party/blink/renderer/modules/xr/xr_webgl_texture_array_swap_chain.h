@@ -36,6 +36,7 @@ class XRWebGLTextureArraySwapChain final : public XRWebGLSwapChain {
   void SetLayer(XRCompositionLayer* layer) override;
 
   std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() override;
+  std::unique_ptr<SharedImageHolder> DoneWithSharedBuffer() override;
 
   void Trace(Visitor* visitor) const override;
 

@@ -138,21 +138,25 @@ XRWebGLSwapChain* XRWebGLBinding::CreateColorSwapchain(
           ? session()->array_texture_layers()
           : 1;
 
+  bool drawing_into_shared_buffer =
+      session()->xr()->frameProvider()->DrawingIntoSharedBuffer();
+
+  if (drawing_into_shared_buffer) {
+    // The shared image swapchain supports texture array directly.
+    color_desc.clear_on_access = clear_on_access;
+    color_desc.is_texture_array = is_texture_array;
+    color_desc.layers = layers;
+    return MakeGarbageCollected<XRWebGLSharedImageSwapChain>(
+        webgl_context_, color_desc, webgl2_);
+  }
+
   color_desc.clear_on_access = clear_on_access && !is_texture_array;
   color_desc.is_texture_array = false;
   color_desc.layers = 1;
 
-  bool drawing_into_shared_buffer =
-      session()->xr()->frameProvider()->DrawingIntoSharedBuffer();
-
-  XRWebGLSwapChain* color_swap_chain;
-  if (drawing_into_shared_buffer) {
-    color_swap_chain = MakeGarbageCollected<XRWebGLSharedImageSwapChain>(
-        webgl_context_, color_desc, webgl2_);
-  } else {
-    color_swap_chain = MakeGarbageCollected<XRWebGLDrawingBufferSwapChain>(
-        webgl_context_, color_desc, webgl2_);
-  }
+  XRWebGLSwapChain* color_swap_chain =
+      MakeGarbageCollected<XRWebGLDrawingBufferSwapChain>(webgl_context_,
+                                                          color_desc, webgl2_);
 
   if (is_texture_array) {
     color_swap_chain = MakeGarbageCollected<XRWebGLTextureArraySwapChain>(
@@ -209,10 +213,6 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
   scaled_size.set_height(scaled_size.height() *
                          GetVerticalViewCount(final_layout));
 
-  if (is_texture_array) {
-    scaled_size.set_width(scaled_size.width() * layers);
-  }
-
   // If the scaled texture dimensions are larger than the max texture dimension
   // for the context scale it down till it fits.
   GLint max_texture_size = 0;
@@ -245,7 +245,6 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
     depth_stencil_desc.clear_on_access = init->clearOnAccess();
 
     if (is_texture_array) {
-      texture_size.set_width(texture_size.width() / layers);
       depth_stencil_desc.layers = layers;
     } else {
       depth_stencil_desc.layers = 1;
