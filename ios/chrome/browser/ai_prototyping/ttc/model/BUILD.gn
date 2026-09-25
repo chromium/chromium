@@ -4,6 +4,7 @@
 
 source_set("model") {
   sources = [
+    "ttc_audio_controller.h",
     "ttc_audio_engine.h",
     "ttc_audio_engine.mm",
     "ttc_audio_engine_delegate.h",
