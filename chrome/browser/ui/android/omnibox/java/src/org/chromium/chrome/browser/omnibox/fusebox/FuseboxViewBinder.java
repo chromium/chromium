@@ -198,28 +198,22 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST) {
             updateRecentTabsButtons(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE) {
-            if (view.popup.mRecentTabsDivider != null) {
-                view.popup.mRecentTabsDivider.setVisibility(
-                        model.get(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE)
-                                ? View.VISIBLE
-                                : View.GONE);
-            }
+            view.popup.mRecentTabsDivider.setVisibility(
+                    model.get(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         } else if (propertyKey == FuseboxProperties.POPUP_RECENT_TABS_ENABLED) {
             ViewGroup container = view.popup.mRecentTabsContainer;
-            if (container != null) {
-                for (int i = 0; i < container.getChildCount(); i++) {
-                    View child = container.getChildAt(i);
-                    setIsEnabledAndReapplyColorFilter(
-                            model, FuseboxProperties.POPUP_RECENT_TABS_ENABLED, child);
-                }
+            for (int i = 0; i < container.getChildCount(); i++) {
+                View child = container.getChildAt(i);
+                setIsEnabledAndReapplyColorFilter(
+                        model, FuseboxProperties.POPUP_RECENT_TABS_ENABLED, child);
             }
         } else if (propertyKey == FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE) {
-            if (view.popup.mRecentTabsHeader != null) {
-                view.popup.mRecentTabsHeader.setVisibility(
-                        model.get(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE)
-                                ? View.VISIBLE
-                                : View.GONE);
-            }
+            view.popup.mRecentTabsHeader.setVisibility(
+                    model.get(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         } else if (propertyKey == FuseboxProperties.POPUP_STATE) {
             view.popup.setPopupState(model.get(FuseboxProperties.POPUP_STATE));
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST) {
@@ -357,8 +351,6 @@ class FuseboxViewBinder {
 
     private static void updateRecentTabsButtons(PropertyModel model, FuseboxViewHolder view) {
         ViewGroup container = view.popup.mRecentTabsContainer;
-        if (container == null) return;
-
         List<PopupButtonData> buttonDataList =
                 model.get(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST);
         int targetCount = buttonDataList == null ? 0 : buttonDataList.size();

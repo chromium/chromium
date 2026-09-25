@@ -28,6 +28,26 @@ found in the LICENSE file.
             android:text="@string/fusebox_add_to_your_search_header"
             android:visibility="gone" />
 
+        <TextView
+            style="@style/Fusebox.PopupMenu.Header"
+            android:id="@+id/fusebox_recent_tabs_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/fusebox_recent_tabs_header"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:id="@+id/fusebox_recent_tabs_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"/>
+
+        <View
+            style="@style/Fusebox.PopupMenu.Divider"
+            android:id="@+id/fusebox_recent_tabs_divider"
+            android:visibility="gone"/>
+
         <ViewStub
             android:id="@+id/fusebox_attachments_stub"
             android:layout_width="match_parent"
