@@ -11608,7 +11608,8 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
       return false;
     }
   }
-  if (pseudo_id == kPseudoIdInterestButton && !InterestForElement()) {
+  if (pseudo_id == kPseudoIdInterestButton &&
+      !InterestForElement(InterestForType::kExplicitOnly)) {
     return false;
   }
   if (const ComputedStyle* style = GetComputedStyle()) {
@@ -13069,14 +13070,14 @@ void Element::ScheduleInterestLostTask() {
       base::Seconds(hide_delay_seconds)));
 }
 
-Element* Element::InterestForElement() const {
+Element* Element::InterestForElement(InterestForType interest_for_type) const {
   Element* target =
       GetElementAttributeResolvingReferenceTarget(html_names::kInterestforAttr);
 
   // A `<menuitem>` can be an implicit interest invoker, if it has a command
   // invoker pointing to a `<menulist>`. If the element has an explicit
   // `interestfor` attribute, that overrides the implicit one provided by menus.
-  if (!target) {
+  if (!target && interest_for_type == InterestForType::kAny) {
     if (auto* menu_item = DynamicTo<HTMLMenuItemElement>(this)) {
       if (HTMLMenuListElement* sub_menu = menu_item->GetInvokedSubmenu()) {
         target = sub_menu;

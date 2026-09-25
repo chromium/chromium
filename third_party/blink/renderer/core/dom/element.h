@@ -1466,10 +1466,15 @@ class CORE_EXPORT Element : public ContainerNode {
       InterestLostPopoverBehavior =
           InterestLostPopoverBehavior::kClosePopovers);
 
+  enum class InterestForType {
+    kAny,
+    kExplicitOnly,
+  };
+
   // Returns the target of the `interestfor` attribute, if any, and only if
   // the element supports this attribute. For example, `interestfor` is not
   // allowed on a `<div>`.
-  Element* InterestForElement() const;
+  Element* InterestForElement(InterestForType = InterestForType::kAny) const;
   // Checks that the provided interest invoker relationship is valid. For this
   // call, `this` is the interest invoker (with the `interestfor` attribute),
   // and the provided `target` is the proposed target element.

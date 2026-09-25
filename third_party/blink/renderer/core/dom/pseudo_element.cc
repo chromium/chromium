@@ -122,7 +122,7 @@ PseudoElement* PseudoElement::Create(Element* parent,
   if (pseudo_id == kPseudoIdInterestButton) {
     CHECK(RuntimeEnabledFeatures::HTMLInterestForInterestButtonPseudoEnabled(
         parent->GetDocument().GetExecutionContext()));
-    if (!parent->InterestForElement()) {
+    if (!parent->InterestForElement(Element::InterestForType::kExplicitOnly)) {
       // The `::interest-button` pseudo-element should only be created for
       // elements with the `interestfor` attribute.
       return nullptr;
