@@ -155,6 +155,8 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kComposeboxDriveContextMenuOptionBubble:
     case AccessPoint::kSkills:
     case AccessPoint::kAccountMenuSignedOutState:
+    case AccessPoint::kAppSwitcherAISummarization:
+    case AccessPoint::kGeminiExternalAppStoreEvent:
       return access_point;
   }
 
@@ -597,6 +599,8 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kDeepLinkDefault:
     case AccessPoint::kAgeMismatchSignout:
     case AccessPoint::kAccountMenuSignedOutState:
+    case AccessPoint::kAppSwitcherAISummarization:
+    case AccessPoint::kGeminiExternalAppStoreEvent:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
     case AccessPoint::kCollaborationShareTabGroup:
@@ -982,6 +986,8 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kSignoutUndoSnackbar:
     case AccessPoint::kSkills:
     case AccessPoint::kAccountMenuSignedOutState:
+    case AccessPoint::kAppSwitcherAISummarization:
+    case AccessPoint::kGeminiExternalAppStoreEvent:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

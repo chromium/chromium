@@ -376,10 +376,16 @@ enum class AccessPoint : int {
   // Triggered from the signed-out state of the account menu opened by tapping
   // the toolbar avatar button. Android desktop only.
   kAccountMenuSignedOutState = 111,
+  // Triggered when entering the Gemini flow from the iOS App Switcher AI
+  // Summarization entry point. iOS only.
+  kAppSwitcherAISummarization = 112,
+  // Triggered when entering the Gemini flow from an App Store In-App Event
+  // external action. iOS only.
+  kGeminiExternalAppStoreEvent = 113,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kAccountMenuSignedOutState,  // This must be last.
+  kMaxValue = kGeminiExternalAppStoreEvent,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

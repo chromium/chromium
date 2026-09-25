@@ -272,6 +272,10 @@ class SigninMetricsTest : public ::testing::Test {
         return "Skills";
       case AccessPoint::kAccountMenuSignedOutState:
         return "AccountMenuSignedOutState";
+      case AccessPoint::kAppSwitcherAISummarization:
+        return "AppSwitcherAISummarization";
+      case AccessPoint::kGeminiExternalAppStoreEvent:
+        return "GeminiExternalAppStoreEvent";
     }
   }
 };

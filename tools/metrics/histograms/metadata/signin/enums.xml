@@ -1226,6 +1226,8 @@ chromium-metrics-reviews@google.com.
   <int value="110" label="Skills (Desktop only)"/>
   <int value="111"
       label="Account menu signed out state (Android desktop only)"/>
+  <int value="112" label="App Switcher AI Summarization (iOS only)"/>
+  <int value="113" label="Gemini External App Store Event (iOS only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

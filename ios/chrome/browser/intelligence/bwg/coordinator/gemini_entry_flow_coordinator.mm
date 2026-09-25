@@ -56,8 +56,9 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
     case gemini::EntryPoint::DirectOmniboxBadge:
       return signin_metrics::AccessPoint::kIosPageActionMenu;
     case gemini::EntryPoint::ExternalAppStoreEvent:
+      return signin_metrics::AccessPoint::kGeminiExternalAppStoreEvent;
     case gemini::EntryPoint::AppSwitcherAISummarization:
-      return signin_metrics::AccessPoint::kDeepLinkDefault;
+      return signin_metrics::AccessPoint::kAppSwitcherAISummarization;
     default:
       NOTREACHED();
   }
