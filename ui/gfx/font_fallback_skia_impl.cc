@@ -4,14 +4,18 @@
 
 #include "ui/gfx/font_fallback_skia_impl.h"
 
+#include <stdint.h>
+
 #include <set>
 #include <string>
 #include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/normalizer.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "skia/ext/font_utils.h"
-#include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -21,39 +25,46 @@ namespace gfx {
 
 namespace {
 
-// Returns true when the codepoint has an unicode decomposition and store
-// the decomposed string into |output|.
-bool UnicodeDecomposeCodepoint(UChar32 codepoint, icu::UnicodeString* output) {
-  static const icu::Normalizer2* normalizer = nullptr;
-
-  UErrorCode error = U_ZERO_ERROR;
-  if (!normalizer) {
-    normalizer = icu::Normalizer2::getNFDInstance(error);
-    if (U_FAILURE(error))
-      return false;
-    DCHECK(normalizer);
+// Returns the unicode decomposition of |codepoint|, or an empty string when the
+// codepoint has no decomposition.
+std::u16string UnicodeDecomposeCodepoint(char32_t codepoint) {
+  // Only Unicode scalar values have a decomposition. Unpaired surrogates, which
+  // U16_NEXT() hands to this function for malformed input, are excluded here
+  // because they cannot survive the UTF-8 round trip that the normalizer may
+  // perform internally.
+  if (!base::IsValidCodepoint(static_cast<int32_t>(codepoint))) {
+    return std::u16string();
   }
 
-  return normalizer->getDecomposition(codepoint, *output);
+  std::u16string codepoint_text;
+  base::WriteUnicodeCharacter(static_cast<int32_t>(codepoint), &codepoint_text);
+  std::u16string decomposed_text =
+      base::i18n::IcuBridge::GetInstance().normalizer().Normalize(
+          base::i18n::IcuBridge::Normalizer::NormalizationForm::NFD,
+          codepoint_text);
+  // NFD leaves a codepoint without a decomposition mapping unchanged, which is
+  // the case where icu::Normalizer2::getDecomposition() reported failure.
+  if (decomposed_text == codepoint_text) {
+    return std::u16string();
+  }
+
+  return decomposed_text;
 }
 
 // Extracts every codepoint and its decomposed codepoints from unicode
 // decomposition. Inserts in |codepoints| the set of codepoints in |text|.
 void RetrieveCodepointsAndDecomposedCodepoints(std::u16string_view text,
-                                               std::set<UChar32>* codepoints) {
-  base::span<const UChar> text_span(text);
+                                               std::set<char32_t>* codepoints) {
+  base::span<const char16_t> text_span(text);
   size_t offset = 0;
   while (offset < text.length()) {
-    UChar32 codepoint;
+    char32_t codepoint;
     U16_NEXT(text_span, offset, text_span.size(), codepoint);
 
     if (codepoints->insert(codepoint).second) {
       // For each codepoint, add the decomposed codepoints.
-      icu::UnicodeString decomposed_text;
-      if (UnicodeDecomposeCodepoint(codepoint, &decomposed_text)) {
-        for (int i = 0; i < decomposed_text.length(); ++i) {
-          codepoints->insert(decomposed_text[i]);
-        }
+      for (char16_t code_unit : UnicodeDecomposeCodepoint(codepoint)) {
+        codepoints->insert(code_unit);
       }
     }
   }
@@ -65,31 +76,33 @@ void RetrieveCodepointsAndDecomposedCodepoints(std::u16string_view text,
 size_t ComputeMissingGlyphsForGivenTypeface(std::u16string_view text,
                                             sk_sp<SkTypeface> typeface) {
   // Validate that every character has a known glyph in the font.
-  base::span<const UChar> text_span(text);
+  base::span<const char16_t> text_span(text);
   size_t missing_glyphs = 0;
   size_t i = 0;
   while (i < text.length()) {
-    UChar32 codepoint;
+    char32_t codepoint;
     U16_NEXT(text_span, i, text_span.size(), codepoint);
 
     // The glyph is present in the font.
-    if (typeface->unicharToGlyph(codepoint) != 0)
+    if (typeface->unicharToGlyph(static_cast<SkUnichar>(codepoint)) != 0) {
       continue;
+    }
 
     // Do not count missing codepoints when they are ignorable as they will be
     // ignored by the shaping engine.
-    if (u_hasBinaryProperty(codepoint, UCHAR_DEFAULT_IGNORABLE_CODE_POINT))
+    if (u_hasBinaryProperty(static_cast<int32_t>(codepoint),
+                            UCHAR_DEFAULT_IGNORABLE_CODE_POINT)) {
       continue;
+    }
 
     // No glyph is present in the font for the codepoint. Try the decomposed
     // codepoints instead.
-    icu::UnicodeString decomposed_text;
-    if (UnicodeDecomposeCodepoint(codepoint, &decomposed_text) &&
-        !decomposed_text.isEmpty()) {
+    const std::u16string decomposed_text = UnicodeDecomposeCodepoint(codepoint);
+    if (!decomposed_text.empty()) {
       // Check that every decomposed codepoint is in the font.
       bool every_codepoint_found = true;
-      for (int offset = 0; offset < decomposed_text.length(); ++offset) {
-        if (typeface->unicharToGlyph(decomposed_text[offset]) == 0) {
+      for (char16_t code_unit : decomposed_text) {
+        if (typeface->unicharToGlyph(static_cast<SkUnichar>(code_unit)) == 0) {
           every_codepoint_found = false;
           break;
         }
@@ -135,14 +148,14 @@ sk_sp<SkTypeface> GetSkiaFallbackTypeface(const Font& template_font,
 
   // Retrieve the set of codepoints (or unicode decomposed codepoints) from
   // the input text.
-  std::set<UChar32> codepoints;
+  std::set<char32_t> codepoints;
   RetrieveCodepointsAndDecomposedCodepoints(text, &codepoints);
 
   // Determine which fallback font is given the fewer missing glyphs.
-  for (UChar32 codepoint : codepoints) {
+  for (char32_t codepoint : codepoints) {
     sk_sp<SkTypeface> typeface(font_mgr->matchFamilyStyleCharacter(
         template_font.GetFontName().c_str(), skia_style, locales, num_locales,
-        codepoint));
+        static_cast<SkUnichar>(codepoint)));
     // If the typeface is not found or was already tested, skip it.
     if (!typeface || !tested_typeface.insert(typeface->uniqueID()).second)
       continue;
