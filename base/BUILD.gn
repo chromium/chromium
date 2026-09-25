@@ -1330,6 +1330,8 @@ component("base") {
       "files/scoped_file_android.cc",
       "memory/platform_shared_memory_mapper_android.cc",
       "memory/platform_shared_memory_region_android.cc",
+      "memory_coordinator/memory_consumer_android.cc",
+      "memory_coordinator/memory_consumer_android.h",
       "message_loop/message_pump_android.cc",
       "message_loop/message_pump_android.h",
       "os_compat_android.cc",
@@ -1368,6 +1370,7 @@ component("base") {
       ":content_uri_utils_jni",
       ":features_jni",
       ":file_utils_jni",
+      ":memory_coordinator_jni",
       ":memory_jni",
       ":path_utils_jni",
       ":process_launcher_jni",
@@ -5270,6 +5273,7 @@ if (is_android) {
       ":library_loader_java",
       ":lifetime_java",
       ":log_java",
+      ":memory_coordinator_java",
       ":memory_java",
       ":metrics_java",
       ":path_utils_java",
@@ -5452,8 +5456,39 @@ if (is_android) {
     ]
   }
 
+  java_cpp_enum("memory_consumer_traits_enum_srcjar") {
+    sources = [ "memory_coordinator/traits.h" ]
+  }
+
   java_cpp_enum("memory_pressure_level_enum_srcjar") {
     sources = [ "memory/memory_pressure_level.h" ]
+  }
+
+  generate_jni("memory_coordinator_jni") {
+    sources = [
+      "android/java/src/org/chromium/base/memory_coordinator/MemoryConsumerRegistration.java",
+      "android/java/src/org/chromium/base/memory_coordinator/MemoryConsumerTraits.java",
+    ]
+  }
+
+  android_library("memory_coordinator_java") {
+    srcjar_deps = [
+      ":memory_consumer_traits_enum_srcjar",
+      ":memory_coordinator_jni",
+    ]
+    sources = [
+      "android/java/src/org/chromium/base/memory_coordinator/MemoryConsumer.java",
+      "android/java/src/org/chromium/base/memory_coordinator/MemoryConsumerRegistration.java",
+      "android/java/src/org/chromium/base/memory_coordinator/MemoryConsumerTraits.java",
+      "android/java/src/org/chromium/base/memory_coordinator/MemoryLimit.java",
+      "android/java/src/org/chromium/base/memory_coordinator/PassiveMemoryConsumer.java",
+    ]
+    deps = [
+      ":lifetime_java",
+      ":tasks_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
   }
 
   generate_jni("memory_jni") {
@@ -6342,6 +6377,9 @@ if (is_android) {
       "android/junit/src/org/chromium/base/lifetime/LifetimeAssertUnitTest.java",
       "android/junit/src/org/chromium/base/memory/MemoryPressureMonitorTest.java",
       "android/junit/src/org/chromium/base/memory/MemoryPurgeManagerTest.java",
+      "android/junit/src/org/chromium/base/memory_coordinator/MemoryConsumerRegistrationTest.java",
+      "android/junit/src/org/chromium/base/memory_coordinator/MemoryConsumerTraitsTest.java",
+      "android/junit/src/org/chromium/base/memory_coordinator/MemoryLimitTest.java",
       "android/junit/src/org/chromium/base/metrics/CachingUmaRecorderTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildConnectionAllocatorTest.java",
       "android/junit/src/org/chromium/base/process_launcher/ChildProcessConnectionTest.java",
@@ -6393,6 +6431,7 @@ if (is_android) {
       ":flagged_apis_java",
       ":jni_callbacks_junit_tests_java",
       ":location_junit_tests",
+      ":memory_coordinator_java",
       ":task_executor_java",
       ":tristate_java",
       "//base/test:leak_canary_java",

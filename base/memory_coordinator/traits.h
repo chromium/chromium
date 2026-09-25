@@ -52,6 +52,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   // Passive consumers (kPassive) do not react to memory pressure. They only
   // query the memory limit on-demand to gate their activities. They do not
   // require active traits as they are mostly non-applicable.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class ConsumerType : uint8_t {
     kActive,
     kPassive,
@@ -72,6 +74,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   // physical memory reclamation until the next GC cycle. This estimation
   // should still include the V8 memory that is expected to be reclaimed
   // once GC runs.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class EstimatedMemoryUsage : uint8_t {
     // Under 10 MBs.
     kSmall,
@@ -89,6 +93,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   // callback. This should be evaluated based on the work done in the callback
   // itself (e.g. traversing a data structure to drop references), independent
   // of whether physical memory reclamation is deferred to garbage collection.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class ReleaseMemoryCost : uint8_t {
     // Most of the savings are from allocations larger than the page size that
     // are freed without being accessed.
@@ -102,6 +108,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
     kMaxValue = kNA,
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class InformationRetention : uint8_t {
     // Freeing memory will result in loss of user state. I.e. discarding a tab.
     kLossy,
@@ -124,6 +132,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   //
   // Note: If `AsyncMemoryConsumerRegistration` is used to register the
   // consumer, the execution should be considered asynchronous.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class ExecutionType : uint8_t {
     kSynchronous,
     kAsynchronous,
@@ -136,6 +146,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   // `kDefaultValue` defined in each enum.
 
   // Indicates if this MemoryConsumer supports the concept of a memory limit.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class SupportsMemoryLimit : uint8_t {
     kYes,
     kNo,
@@ -147,6 +159,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   // Indicates if the memory freed happens inside the process where the consumer
   // lives. If yes, then the consumer can be notified to help in the case of
   // address space exhaustion in the current process.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class InProcess : uint8_t {
     kYes,
     kNo,
@@ -159,6 +173,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
 
   // Indicates if recreating the memory is possible, and if so, if is it
   // expensive to do so.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class RecreateMemoryCost : uint8_t {
     // Freed memory can't be recreated.
     kNA,
@@ -173,6 +189,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
 
   // Indicates if this consumer manages references to the v8 heap. In this case,
   // no memory is actually released until a garbage collection is done.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class ReleaseGCReferences : uint8_t {
     kYes,
     kNo,
@@ -182,6 +200,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   };
 
   // Trait for the v8 garbage collector.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class GarbageCollectsV8Heap : uint8_t {
     kYes,
     kNo,
@@ -207,6 +227,8 @@ struct BASE_EXPORT MemoryConsumerTraits {
   // "remember" a restricted state, the memory coordinator will call its
   // `OnReleaseMemory()` method repeatedly if the system remains under pressure,
   // until the pressure is relieved.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.memory_coordinator
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class IsStateful : uint8_t {
     kYes,
     kNo,
