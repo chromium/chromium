@@ -1131,7 +1131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.DisabledReason.AndroidDesktop"
-    enum="SiteIsolationDisabledReason" expires_after="2026-09-26">
+    enum="SiteIsolationDisabledReason" expires_after="2027-09-26">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wenz@chromium.org</owner>
