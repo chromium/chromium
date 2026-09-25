@@ -89,7 +89,7 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
     case INSETS_PAGE_INFO_FOOTER_BUTTON:
       return gfx::Insets::VH(12, 20);
     case INSETS_ACTION_APP_MENU_ITEM:
-      return gfx::Insets::TLBR(0, 32, 0, 28);
+      return gfx::Insets::VH(0, 28);
     case INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN:
       return gfx::Insets::TLBR(4, 16, 16, 16);
     case INSETS_ACTION_APP_MENU_SEARCH_BAR_WITH_NOTIFICATION_MARGIN:

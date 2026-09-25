@@ -1632,12 +1632,8 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   ASSERT_TRUE(root->GetBorder());
   EXPECT_EQ(root->GetInsets(),
             provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM));
-  EXPECT_EQ(root->GetInsets(), gfx::Insets::TLBR(0, 32, 0, 28));
-  EXPECT_EQ(root->GetContentStart(), 32);
-  EXPECT_EQ(root->GetItemHorizontalBorder(), 20);
-  EXPECT_EQ(submenu->content_start(), 32);
-  EXPECT_EQ(submenu->item_horizontal_border(), 20);
-  EXPECT_EQ(submenu->trailing_padding(), 28);
+  EXPECT_EQ(submenu->content_start(), root->GetInsets().left());
+  EXPECT_EQ(submenu->trailing_padding(), root->GetInsets().right());
 
   // 2. Regular card menu items do not set an individual border, avoiding
   // leaking a custom content start to child submenus. Instead, trailing
