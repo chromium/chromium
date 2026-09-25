@@ -966,6 +966,82 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   EXPECT_EQ(pictureInPictureWindow->document()->GetCompatibilityMode(),
             Document::kNoQuirksMode);
 }
+
+TEST_F(PictureInPictureControllerTestWithChromeClient,
+       DocumentPiPAllowedWithPictureInPictureRequestToken) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState::Scope entered_context_scope(script_state);
+
+  PictureInPictureController& controller =
+      PictureInPictureController::From(GetDocument());
+
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  EXPECT_FALSE(controller.IsPictureInPictureRequestTokenActive());
+
+  controller.ActivatePictureInPictureRequestToken();
+  EXPECT_TRUE(controller.IsPictureInPictureRequestTokenActive());
+
+  // Opening the window should succeed and consume the token.
+  LocalDOMWindow* pip_window =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument());
+  EXPECT_NE(nullptr, pip_window);
+  EXPECT_FALSE(controller.IsPictureInPictureRequestTokenActive());
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+}
+
+TEST_F(PictureInPictureControllerTestWithChromeClient,
+       PictureInPictureRequestTokenConsumedEvenWithUserActivation) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState::Scope entered_context_scope(script_state);
+
+  PictureInPictureController& controller =
+      PictureInPictureController::From(GetDocument());
+
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  controller.ActivatePictureInPictureRequestToken();
+
+  EXPECT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  EXPECT_TRUE(controller.IsPictureInPictureRequestTokenActive());
+
+  // Opening the window should consume the Picture-in-Picture request token
+  // even when user activation is present.
+  LocalDOMWindow* pip_window =
+      OpenDocumentPictureInPictureWindow(v8_scope, GetDocument());
+  EXPECT_NE(nullptr, pip_window);
+  EXPECT_FALSE(controller.IsPictureInPictureRequestTokenActive());
+}
+
+TEST_F(PictureInPictureControllerTestWithChromeClient,
+       PictureInPictureRequestTokenActivationAndConsumption) {
+  PictureInPictureControllerImpl::RequestToken token;
+
+  // The token is initially inactive, so `ConsumeIfActive` returns false.
+  EXPECT_FALSE(token.IsActive());
+  EXPECT_FALSE(token.ConsumeIfActive());
+
+  // Activating the token sets it to active.
+  token.Activate();
+  EXPECT_TRUE(token.IsActive());
+
+  // `ConsumeIfActive` returns true and immediately deactivates the token.
+  EXPECT_TRUE(token.ConsumeIfActive());
+  EXPECT_FALSE(token.IsActive());
+
+  // Subsequent calls to `ConsumeIfActive` return false because the token was
+  // already consumed.
+  EXPECT_FALSE(token.ConsumeIfActive());
+
+  // Calling `Deactivate` resets an active token to inactive.
+  token.Activate();
+  EXPECT_TRUE(token.IsActive());
+  token.Deactivate();
+  EXPECT_FALSE(token.IsActive());
+}
 #endif  // !BUILDFLAG(TARGET_OS_IS_ANDROID)
 
 }  // namespace blink

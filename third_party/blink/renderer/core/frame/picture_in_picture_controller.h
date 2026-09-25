@@ -113,6 +113,14 @@ class CORE_EXPORT PictureInPictureController
   // the associated document.
   virtual bool PictureInPictureEnabled() const = 0;
 
+  // Manages a transient request token that authorizes entering
+  // Picture-in-Picture when triggered by a browser action (such as
+  // the `MediaSession` `enterpictureinpicture` action) without granting broad
+  // user activation to the frame.
+  virtual bool IsPictureInPictureRequestTokenActive() const = 0;
+  virtual void ActivatePictureInPictureRequestToken() = 0;
+  virtual bool ConsumePictureInPictureRequestToken() = 0;
+
   void Trace(Visitor*) const override;
 
  protected:

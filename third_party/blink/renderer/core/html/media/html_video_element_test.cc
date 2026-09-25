@@ -76,6 +76,9 @@ class StubPictureInPictureController : public PictureInPictureController {
     return nullptr;
   }
   bool PictureInPictureEnabled() const override { return true; }
+  bool IsPictureInPictureRequestTokenActive() const override { return false; }
+  void ActivatePictureInPictureRequestToken() override {}
+  bool ConsumePictureInPictureRequestToken() override { return false; }
 
   bool enter_immersive_called() const { return enter_immersive_called_; }
   void reset_enter_immersive_called() { enter_immersive_called_ = false; }

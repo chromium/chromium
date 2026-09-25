@@ -117,8 +117,20 @@ void HTMLVideoElementPictureInPicture::CheckIfPictureInPictureIsAllowed(
   // `kFrameDetached`.
   LocalFrame* frame = document.GetFrame();
   DCHECK(frame);
-  if (!controller.PictureInPictureElement() &&
-      !LocalFrame::ConsumeTransientUserActivation(frame)) {
+
+  // Picture-in-Picture can also be authorized by the Picture-in-Picture request
+  // token (for example, during `MediaSession` `enterpictureinpicture`), which
+  // is consumed immediately here. If either is present, both are consumed to
+  // avoid leaving dangling activation or Picture-in-Picture request tokens.
+  if (controller.PictureInPictureElement()) {
+    return;
+  }
+
+  const bool consumed_pip_request_token =
+      controller.ConsumePictureInPictureRequestToken();
+  const bool consumed_user_activation =
+      LocalFrame::ConsumeTransientUserActivation(frame);
+  if (!consumed_pip_request_token && !consumed_user_activation) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       kUserGestureRequired);
   }

@@ -4540,6 +4540,20 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   DCHECK(!prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
       web_contents));
 
+#if !BUILDFLAG(IS_ANDROID)
+  // For Automatic Document Picture-in-Picture, the window creation is
+  // authorized by the browser rather than a user gesture. If AutoPip
+  // preconditions are met, permit the window creation.
+  if (disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    auto* auto_pip_tab_helper =
+        AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+    if (auto_pip_tab_helper &&
+        auto_pip_tab_helper->AreAutoPictureInPicturePreconditionsMet()) {
+      return true;
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   BlockedWindowParams blocked_params(
       target_url, source_origin, opener->GetSiteInstance(), referrer,
       frame_name, disposition, features, user_gesture, opener_suppressed);

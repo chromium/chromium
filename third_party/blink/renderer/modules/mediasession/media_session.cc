@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/mediasession/media_metadata.h"
 #include "third_party/blink/renderer/modules/mediasession/media_metadata_sanitizer.h"
@@ -427,12 +428,31 @@ void MediaSession::DidReceiveAction(
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
   if (!window)
     return;
-  // Do not grant user activation for pause or stop actions. Pausing or stopping
-  // media never requires user activation and should not allow websites to
-  // trigger restricted APIs (e.g. popups or clipboard access) via pause events
-  // or system/accessory actions like removing headphones.
-  if (action != media_session::mojom::blink::MediaSessionAction::kPause &&
-      action != media_session::mojom::blink::MediaSessionAction::kStop) {
+
+  using ::media_session::mojom::blink::MediaSessionAction;
+  using mojom::blink::MediaSessionEnterPictureInPictureReason;
+
+  const bool is_user_action =
+      details && details->is_enter_picture_in_picture() &&
+      details->get_enter_picture_in_picture()->reason ==
+          MediaSessionEnterPictureInPictureReason::kUserAction;
+
+  if (action == MediaSessionAction::kEnterPictureInPicture && !is_user_action) {
+    // Automatic Picture-in-Picture activates a scoped request token instead of
+    // granting universal user activation. This restricts authorization to
+    // Picture-in-Picture, preventing background tabs from executing other
+    // privileged actions (such as opening popups, writing to the clipboard, or
+    // entering fullscreen).
+    if (Document* document = window->document()) {
+      PictureInPictureController::From(*document)
+          .ActivatePictureInPictureRequestToken();
+    }
+  } else if (action != MediaSessionAction::kPause &&
+             action != MediaSessionAction::kStop) {
+    // Do not grant user activation for pause or stop actions. Pausing or
+    // stopping media never requires user activation and should not allow
+    // websites to trigger restricted APIs (e.g. popups or clipboard access)
+    // via pause events or system/accessory actions like removing headphones.
     LocalFrame::NotifyUserActivation(
         window->GetFrame(),
         mojom::blink::UserActivationNotificationType::kInteraction);

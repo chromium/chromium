@@ -51,6 +51,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/zoom/zoom_controller.h"
@@ -530,6 +531,26 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
                       .Append(kCameraPage)
                       .MaybeAsASCII());
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
+  }
+
+  void GetUserMediaAndAcceptWithoutUserGesture(
+      content::WebContents* web_contents) {
+    permissions::PermissionRequestManager::FromWebContents(web_contents)
+        ->set_auto_response_for_test(
+            permissions::PermissionRequestManager::ACCEPT_ALL);
+    EXPECT_EQ("request-callback-granted",
+              content::EvalJs(web_contents,
+                              "doGetUserMedia({audio: true, video: true});",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    EXPECT_EQ(kOkGotStream,
+              content::EvalJs(web_contents->GetPrimaryMainFrame(),
+                              "obtainGetUserMediaResult();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    EXPECT_FALSE(
+        web_contents->GetPrimaryMainFrame()->HasTransientUserActivation());
+    EXPECT_EQ(false,
+              content::EvalJs(web_contents, "navigator.userActivation.isActive",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   }
 
   void LoadNotRegisteredPage(BrowserWindowInterface* browser) {
@@ -1502,6 +1523,154 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
                                         /*should_document_pip=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       AutoPipDoesNotGrantUserActivation) {
+  LoadCameraMicrophonePage(browser(), "a.com");
+  auto* opener_contents = browser()->GetTabStripModel()->GetActiveWebContents();
+  GetUserMediaAndAcceptWithoutUserGesture(opener_contents);
+
+  // Set up an enterpictureinpicture handler that attempts to open a popup
+  // window.
+  ASSERT_TRUE(content::ExecJs(opener_contents, R"(
+    navigator.mediaSession.setActionHandler('enterpictureinpicture', () => {
+      window.open('about:blank', '_blank');
+      document.title = 'ACTION_HANDLED';
+    });
+  )",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(opener_contents);
+  tab_helper->set_clock_for_testing(&test_clock());
+
+  content::TitleWatcher title_watcher(opener_contents, u"ACTION_HANDLED");
+  OpenNewTab(browser());
+  EXPECT_EQ(u"ACTION_HANDLED", title_watcher.WaitAndGetTitle());
+
+  // Entering Auto Picture-in-Picture does not grant user activation, so the
+  // popup attempt is blocked by the popup blocker (tab count remains 2).
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_FALSE(
+      opener_contents->GetPrimaryMainFrame()->HasTransientUserActivation());
+  EXPECT_EQ(false, content::EvalJs(opener_contents,
+                                   "navigator.userActivation.isActive",
+                                   content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       PopupAttemptDoesNotConsumePipToken_DocumentPip) {
+  LoadCameraMicrophonePage(browser(), "a.com");
+  auto* opener_contents = browser()->GetTabStripModel()->GetActiveWebContents();
+  GetUserMediaAndAcceptWithoutUserGesture(opener_contents);
+
+  // Set up an enterpictureinpicture handler that first attempts to open a popup
+  // window, then opens Picture-in-Picture.
+  ASSERT_TRUE(content::ExecJs(opener_contents, R"(
+    navigator.mediaSession.setActionHandler('enterpictureinpicture', () => {
+      window.open('about:blank', '_blank');
+      openPip();
+    });
+  )",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  SwitchToNewTabAndWaitForAutoPip();
+
+  // Entering Auto Picture-in-Picture does not grant user activation, so the
+  // popup attempt is blocked by the popup blocker (tab count remains 2).
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_FALSE(
+      opener_contents->GetPrimaryMainFrame()->HasTransientUserActivation());
+  EXPECT_EQ(false, content::EvalJs(opener_contents,
+                                   "navigator.userActivation.isActive",
+                                   content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // The blocked popup attempt does not consume the Picture-in-Picture token,
+  // allowing subsequent Picture-in-Picture window creation to complete.
+  EXPECT_TRUE(opener_contents->HasPictureInPictureDocument());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       PopupAttemptDoesNotConsumePipToken_VideoPip) {
+  LoadCameraMicrophonePage(browser(), "a.com");
+  auto* opener_contents = browser()->GetTabStripModel()->GetActiveWebContents();
+  GetUserMediaAndAcceptWithoutUserGesture(opener_contents);
+
+  // Select the "video" PiP type without injecting a synthetic user gesture.
+  ASSERT_TRUE(content::ExecJs(
+      opener_contents, "document.getElementById('select-video-pip').click();",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Wait for the "VIDEO_PIP_READY" signal from the page indicating that the
+  // video element has loaded metadata.
+  const std::u16string pip_ready_title = u"VIDEO_PIP_READY";
+  content::TitleWatcher title_watcher(opener_contents, pip_ready_title);
+  EXPECT_EQ(title_watcher.WaitAndGetTitle(), pip_ready_title);
+
+  // Set up an enterpictureinpicture handler that first attempts to open a popup
+  // window, then opens Picture-in-Picture.
+  ASSERT_TRUE(content::ExecJs(opener_contents, R"(
+    navigator.mediaSession.setActionHandler('enterpictureinpicture', () => {
+      window.open('about:blank', '_blank');
+      openPip();
+    });
+  )",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  SwitchToNewTabAndWaitForAutoPip();
+
+  // Entering Auto Picture-in-Picture does not grant user activation, so the
+  // popup attempt is blocked by the popup blocker (tab count remains 2).
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_FALSE(
+      opener_contents->GetPrimaryMainFrame()->HasTransientUserActivation());
+  EXPECT_EQ(false, content::EvalJs(opener_contents,
+                                   "navigator.userActivation.isActive",
+                                   content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // The blocked popup attempt does not consume the Picture-in-Picture token,
+  // allowing subsequent video Picture-in-Picture creation to complete.
+  EXPECT_TRUE(opener_contents->HasPictureInPictureVideo());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutoPictureInPictureTabHelperBrowserTest,
+    ManualPipViaMediaSessionGrantsUserActivationAndOpensDocumentPip) {
+  LoadCameraMicrophonePage(browser(), "a.com");
+  auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
+  GetUserMediaAndAcceptWithoutUserGesture(web_contents);
+
+  // Set up an enterpictureinpicture handler that opens Document PiP.
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    navigator.mediaSession.setActionHandler('enterpictureinpicture', () => {
+      document.title = 'ACTION_HANDLED';
+      openPip();
+    });
+  )",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  content::TitleWatcher title_watcher(web_contents, u"ACTION_HANDLED");
+  content::MediaStartStopObserver enter_pip_observer(
+      web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+
+  // Trigger manual PiP via MediaSession.
+  content::MediaSession::Get(web_contents)->EnterPictureInPicture();
+  EXPECT_EQ(u"ACTION_HANDLED", title_watcher.WaitAndGetTitle());
+  enter_pip_observer.Wait();
+
+  // Opening the window consumed transient user activation.
+  EXPECT_FALSE(
+      web_contents->GetPrimaryMainFrame()->HasTransientUserActivation());
+
+  // Confirm that user activation was granted prior to being consumed by opening
+  // the Picture-in-Picture window.
+  EXPECT_EQ(true, content::EvalJs(web_contents,
+                                  "navigator.userActivation.hasBeenActive",
+                                  content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  EXPECT_TRUE(web_contents->HasPictureInPictureDocument());
 }
 
 #if BUILDFLAG(IS_LINUX)

@@ -416,11 +416,20 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     LocalDOMWindow& opener,
     DocumentPictureInPictureOptions* options,
     ScriptPromiseResolver<DOMWindow>* resolver) {
-  // Note that PiP should _consume_ activation, not just check for it. The
-  // consumption is done in RenderFrameImpl::CreateNewWindow prior to creating
-  // the actual PiP window. This makes it easier for PiP to be gated by generic
-  // popup blocking protections.
-  if (!LocalFrame::HasTransientUserActivation(opener.GetFrame())) {
+  // Note that user activation should be _consumed_, not just checked. The
+  // consumption of user activation is done in RenderFrameImpl::CreateNewWindow
+  // prior to creating the actual PiP window. This makes it easier for PiP to be
+  // gated by generic popup blocking protections.
+  //
+  // Entering Picture-in-Picture requires transient user activation (from a
+  // user gesture) or a scoped Picture-in-Picture request token (activated
+  // during `MediaSession` `enterpictureinpicture`), which is consumed
+  // immediately here. The Picture-in-Picture request token is consumed even if
+  // user activation is present to avoid leaving a dangling token.
+  const bool consumed_pip_request_token = ConsumePictureInPictureRequestToken();
+  const bool has_user_activation =
+      LocalFrame::HasTransientUserActivation(opener.GetFrame());
+  if (!consumed_pip_request_token && !has_user_activation) {
     resolver->RejectWithDOMException(DOMExceptionCode::kNotAllowedError,
                                      "Document PiP requires user activation");
     return;
@@ -636,6 +645,42 @@ bool PictureInPictureControllerImpl::EnsureService() {
   GetSupplementable()->GetFrame()->GetBrowserInterfaceBroker().GetInterface(
       picture_in_picture_service_.BindNewPipeAndPassReceiver(task_runner));
   return true;
+}
+
+PictureInPictureControllerImpl::RequestToken::RequestToken() = default;
+
+void PictureInPictureControllerImpl::RequestToken::Activate() {
+  transient_state_expiry_time_ = base::TimeTicks::Now() + kActivationLifespan;
+}
+
+void PictureInPictureControllerImpl::RequestToken::Deactivate() {
+  transient_state_expiry_time_ = base::TimeTicks();
+}
+
+bool PictureInPictureControllerImpl::RequestToken::IsActive() const {
+  return !transient_state_expiry_time_.is_null() &&
+         base::TimeTicks::Now() <= transient_state_expiry_time_;
+}
+
+bool PictureInPictureControllerImpl::RequestToken::ConsumeIfActive() {
+  if (!IsActive()) {
+    return false;
+  }
+  Deactivate();
+  return true;
+}
+
+bool PictureInPictureControllerImpl::IsPictureInPictureRequestTokenActive()
+    const {
+  return picture_in_picture_request_token_.IsActive();
+}
+
+void PictureInPictureControllerImpl::ActivatePictureInPictureRequestToken() {
+  picture_in_picture_request_token_.Activate();
+}
+
+bool PictureInPictureControllerImpl::ConsumePictureInPictureRequestToken() {
+  return picture_in_picture_request_token_.ConsumeIfActive();
 }
 
 }  // namespace blink

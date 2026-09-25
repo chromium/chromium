@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_playback_state.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -77,6 +78,12 @@ class MediaSessionTest : public PageTestBase {
     media_session_->clock_ = &test_clock_;
   }
 
+  void TearDown() override {
+    media_session_ = nullptr;
+    mock_service_.reset();
+    PageTestBase::TearDown();
+  }
+
   void SetPositionState(double duration,
                         double position,
                         double playback_rate) {
@@ -118,8 +125,9 @@ class MediaSessionTest : public PageTestBase {
   base::SimpleTestTickClock& clock() { return test_clock_; }
 
   void DidReceiveAction(
-      media_session::mojom::blink::MediaSessionAction action) {
-    media_session_->DidReceiveAction(action, nullptr);
+      media_session::mojom::blink::MediaSessionAction action,
+      mojom::blink::MediaSessionActionDetailsPtr details = nullptr) {
+    media_session_->DidReceiveAction(action, std::move(details));
   }
 
  private:
@@ -410,6 +418,51 @@ TEST_F(MediaSessionTest, DidReceiveAction_StopDoesNotGrantUserActivation) {
   EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
   DidReceiveAction(media_session::mojom::blink::MediaSessionAction::kStop);
   EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+}
+
+TEST_F(MediaSessionTest,
+       DidReceiveAction_EnterPictureInPictureDoesNotGrantUserActivation) {
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  EXPECT_FALSE(PictureInPictureController::From(GetDocument())
+                   .IsPictureInPictureRequestTokenActive());
+  DidReceiveAction(
+      media_session::mojom::blink::MediaSessionAction::kEnterPictureInPicture);
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  EXPECT_TRUE(PictureInPictureController::From(GetDocument())
+                  .IsPictureInPictureRequestTokenActive());
+}
+
+TEST_F(MediaSessionTest,
+       DidReceiveAction_EnterPictureInPicture_UserActionGrantsUserActivation) {
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  EXPECT_FALSE(PictureInPictureController::From(GetDocument())
+                   .IsPictureInPictureRequestTokenActive());
+  DidReceiveAction(
+      media_session::mojom::blink::MediaSessionAction::kEnterPictureInPicture,
+      mojom::blink::MediaSessionActionDetails::NewEnterPictureInPicture(
+          mojom::blink::MediaSessionEnterPictureInPictureDetails::New(
+              mojom::blink::MediaSessionEnterPictureInPictureReason::
+                  kUserAction)));
+  EXPECT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  EXPECT_FALSE(PictureInPictureController::From(GetDocument())
+                   .IsPictureInPictureRequestTokenActive());
+}
+
+TEST_F(
+    MediaSessionTest,
+    DidReceiveAction_EnterPictureInPicture_ContentOccludedDoesNotGrantUserActivation) {
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  EXPECT_FALSE(PictureInPictureController::From(GetDocument())
+                   .IsPictureInPictureRequestTokenActive());
+  DidReceiveAction(
+      media_session::mojom::blink::MediaSessionAction::kEnterPictureInPicture,
+      mojom::blink::MediaSessionActionDetails::NewEnterPictureInPicture(
+          mojom::blink::MediaSessionEnterPictureInPictureDetails::New(
+              mojom::blink::MediaSessionEnterPictureInPictureReason::
+                  kContentOccluded)));
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+  EXPECT_TRUE(PictureInPictureController::From(GetDocument())
+                  .IsPictureInPictureRequestTokenActive());
 }
 
 }  // namespace blink
