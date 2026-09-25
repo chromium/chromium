@@ -50,12 +50,11 @@ void PointerLockController::RequestToLockPointer(WebContents* web_contents,
   DCHECK(!IsPointerLocked());
 
   // To prevent misbehaving sites from constantly re-locking the pointer, the
-  // lock-requesting page must have transient user activation and it must not
+  // lock-requesting frame must have transient user activation and it must not
   // request for a lock within |kEffectiveUserEscapeDuration| time since the
-  // user successfully escaped from a previous lock.  Exceptions are when the
-  // page has unlocked (i.e. not the user), or if we're in tab fullscreen (which
-  // requires its own transient user activation).
-  if (!last_unlocked_by_target && !web_contents->IsFullscreen()) {
+  // user successfully escaped from a previous lock. The only exception is when
+  // the target frame previously unlocked itself (i.e. not the user).
+  if (!last_unlocked_by_target) {
     if (!user_gesture) {
       web_contents->GotResponseToPointerLockRequest(
           blink::mojom::PointerLockResult::kRequiresUserGesture);
