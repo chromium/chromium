@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
@@ -1252,6 +1253,42 @@ public class CompositorViewHolderUnitTest {
     public void testSetBackgroundRunnable_Timeout() {
         // Run delayed tasks (timing out the background runnable), then verify the background has
         // been removed.
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verifyBackgroundRemoved();
+    }
+
+    @Test
+    public void testPrepareForTabReparenting_AfterTimeout_RemovesBackgroundOnFirstSwap() {
+        // The activity is stopped before its first draw, so the initial removal times out.
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mCompositorView, times(1)).setBackgroundResource(0);
+        clearInvocations(mCompositorView);
+
+        // Restarting with a tab to reparent sets the white background again, which must be
+        // removed on the first swap.
+        mCompositorViewHolder.prepareForTabReparenting();
+        verify(mCompositorView).setBackgroundColor(Color.WHITE);
+        verifyBackgroundNotRemoved();
+
+        mCompositorViewHolder.onCompositorLayout();
+        mCompositorViewHolder.didSwapFrame(/* pendingFrameCount= */ 0);
+        verifyBackgroundNotRemoved();
+
+        mCompositorViewHolder.didSwapBuffers(
+                /* swappedCurrentSize= */ true, /* framesUntilHideBackground= */ 0);
+        verifyBackgroundRemoved();
+    }
+
+    @Test
+    public void testPrepareForTabReparenting_AfterTimeout_RemovesBackgroundOnTimeout() {
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mCompositorView, times(1)).setBackgroundResource(0);
+        clearInvocations(mCompositorView);
+
+        mCompositorViewHolder.prepareForTabReparenting();
+        verify(mCompositorView).setBackgroundColor(Color.WHITE);
+
+        // With no frame swapped, the fallback timeout must still remove the background.
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyBackgroundRemoved();
     }

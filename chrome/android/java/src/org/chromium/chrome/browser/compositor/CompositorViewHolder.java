@@ -665,6 +665,16 @@ public class CompositorViewHolder extends FrameLayout
                     R.id.control_container, mControlContainer.getToolbarResourceAdapter());
         }
 
+        scheduleTempBackgroundRemoval();
+    }
+
+    /**
+     * Schedules removal of the temporary compositor background, unless a removal is already
+     * pending.
+     */
+    private void scheduleTempBackgroundRemoval() {
+        if (mSetBackgroundRunnable != null) return;
+
         mSetBackgroundRunnable = this::removeTempBackground;
         // Request a render. The temporary background will be removed once we are confident that the
         // composited frame has been drawn. We'll also post a runnable to remove the background
@@ -688,7 +698,7 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     private void runSetBackgroundRunnable() {
-        // This runnable should only be run once.
+        // Whichever of the render callback and the timeout fires first consumes the runnable.
         if (mSetBackgroundRunnable == null) return;
 
         new Handler().post(mSetBackgroundRunnable);
@@ -865,9 +875,11 @@ public class CompositorViewHolder extends FrameLayout
     public void prepareForTabReparenting() {
         if (mHasDrawnOnce) return;
 
-        // Set the background to white while we wait for the first swap of buffers. This gets
-        // corrected inside the view.
+        // Set the background to white while we wait for the first swap of buffers.
         mCompositorView.setBackgroundColor(Color.WHITE);
+        // The removal scheduled by setControlContainer() may have already timed out if the
+        // activity was stopped before its first draw, so make sure one is pending.
+        scheduleTempBackgroundRemoval();
     }
 
     @Override
