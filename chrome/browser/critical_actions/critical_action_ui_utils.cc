@@ -60,6 +60,10 @@ std::string GetCriticalActionLinkoutUrl(ActionType action_type,
       return chrome::kChromeUIDownloadsURL;
     case ActionType::kSettingChange:
       return GetSiteDetailsLinkoutUrl(page_url);
+    case ActionType::kWebMcpTool:
+      // WebMCP tool calls have no management surface to link to. The visit
+      // row itself already links to the page.
+      return std::string();
     case ActionType::kUnknown:
       return chrome::kChromeUISettingsURL;
   }

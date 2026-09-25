@@ -366,6 +366,12 @@
   <message name="IDS_HISTORY_CRITICAL_ACTION_CREDENTIALS_OTP_TOOLTIP" desc="Tooltip for credentials OTP verification code critical action in history item." translateable="false">
     Verification codes
   </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL" desc="Fallback label for WebMCP tool execution critical action in history item." translateable="false">
+    Used website tool
+  </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL_TOOLTIP" desc="Tooltip for WebMCP tool execution critical action in history item." translateable="false">
+    Website actions
+  </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_APP_MENU_IPH_BODY" desc="Text shown in the IPH bubble attached to the Chrome app menu teaching users where to view Gemini's auto browse actions." translateable="false">
     In Chrome history, you can see the key actions that Gemini completed while browsing for you
   </message>

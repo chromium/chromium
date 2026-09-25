@@ -70,6 +70,10 @@ TEST(CriticalActionUiUtilsTest, LinkoutsForActionTypes) {
                                   GURL("https://www.example.com/otp")),
       base::StrCat({GetGooglePasswordManagerSubPageURLStr(), "/example.com"}));
 
+  EXPECT_EQ(GetCriticalActionLinkoutUrl(ActionType::kWebMcpTool,
+                                        GURL("https://www.example.com/tool")),
+            "");
+
   EXPECT_EQ(GetCriticalActionLinkoutUrl(ActionType::kUnknown,
                                         GURL("https://www.example.com/")),
             chrome::kChromeUISettingsURL);

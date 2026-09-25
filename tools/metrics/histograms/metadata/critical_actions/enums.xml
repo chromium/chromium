@@ -54,6 +54,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="GooglePasswordManager"/>
   <int value="6" label="FederatedLogin"/>
   <int value="7" label="CredentialsOtp"/>
+  <int value="8" label="WebMcpTool"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_types.h:CriticalActionType, //ui/webui/resources/cr_components/history/history.mojom:CriticalActionType) -->

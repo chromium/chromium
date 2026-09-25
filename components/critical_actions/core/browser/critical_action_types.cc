@@ -44,6 +44,8 @@ std::string CriticalActionEntry::GetLabel() const {
     case ActionType::kSettingChange:
       return l10n_util::GetStringUTF8(
           IDS_HISTORY_CRITICAL_ACTION_SETTING_CHANGE);
+    case ActionType::kWebMcpTool:
+      return l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL);
     case ActionType::kUnknown:
       return "";
   }
@@ -69,6 +71,9 @@ std::string CriticalActionEntry::GetTooltip() const {
     case ActionType::kSettingChange:
       return l10n_util::GetStringUTF8(
           IDS_HISTORY_CRITICAL_ACTION_SETTING_TOOLTIP);
+    case ActionType::kWebMcpTool:
+      return l10n_util::GetStringUTF8(
+          IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL_TOOLTIP);
     case ActionType::kUnknown:
       return "";
   }

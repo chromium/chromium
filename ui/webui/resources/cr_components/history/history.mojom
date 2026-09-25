@@ -146,6 +146,7 @@ enum CriticalActionType {
   kGooglePasswordManager = 5,
   kFederatedLogin = 6,
   kCredentialsOtp = 7,
+  kWebMcpTool = 8,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionType)
 
@@ -160,7 +161,8 @@ struct CriticalAction {
   // Tooltip describing the action category.
   string tooltip;
 
-  // Destination management URL for the action.
+  // Destination management URL for the action. Empty if the action has no
+  // linkout, in which case the UI renders the action as a plain label.
   string linkout_url;
 
   // Category type of the critical action.

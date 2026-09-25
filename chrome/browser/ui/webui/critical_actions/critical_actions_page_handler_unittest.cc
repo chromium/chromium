@@ -166,6 +166,10 @@ TEST_F(CriticalActionsPageHandlerTest, FilterByActionTypeAndSearchQuery) {
       CreateAction("id-dl", now + base::Seconds(1), 102, ActionType::kDownload,
                    ActionSource::kActor, "conv-2", "task-2",
                    "{\"filename\":\"file.zip\"}"));
+  service()->AddCriticalAction(
+      CreateAction("id-tool", now + base::Seconds(2), 103,
+                   ActionType::kWebMcpTool, ActionSource::kActor, "conv-3",
+                   "task-3", "{\"tool_title\":\"Search Flights\"}"));
 
   // Filter by Download action type (kDownload = 2)
   {
@@ -180,6 +184,21 @@ TEST_F(CriticalActionsPageHandlerTest, FilterByActionTypeAndSearchQuery) {
     ASSERT_EQ(list->entries.size(), 1u);
     EXPECT_EQ(list->entries[0]->critical_action_id, "id-dl");
     EXPECT_EQ(list->entries[0]->action_type_str, "Download");
+  }
+
+  // Filter by WebMcpTool action type
+  {
+    base::test::TestFuture<mojom::CriticalActionsQueryResultPtr> future;
+    handler()->GetCriticalActions(0, 10, std::nullopt,
+                                  static_cast<int32_t>(ActionType::kWebMcpTool),
+                                  future.GetCallback());
+    auto result = future.Take();
+    ASSERT_TRUE(result->is_list());
+    const auto& list = result->get_list();
+    EXPECT_EQ(list->total_entries, 1u);
+    ASSERT_EQ(list->entries.size(), 1u);
+    EXPECT_EQ(list->entries[0]->critical_action_id, "id-tool");
+    EXPECT_EQ(list->entries[0]->action_type_str, "WebMcpTool");
   }
 
   // Search by keyword "file.zip"

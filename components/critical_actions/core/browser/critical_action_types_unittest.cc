@@ -72,6 +72,14 @@ TEST(CriticalActionTypesTest, LabelsAndTooltipsForActionTypes) {
             l10n_util::GetStringUTF8(
                 IDS_HISTORY_CRITICAL_ACTION_CREDENTIALS_OTP_TOOLTIP));
 
+  CriticalActionEntry webmcp_action;
+  webmcp_action.action_type = ActionType::kWebMcpTool;
+  EXPECT_EQ(webmcp_action.GetLabel(),
+            l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL));
+  EXPECT_EQ(webmcp_action.GetTooltip(),
+            l10n_util::GetStringUTF8(
+                IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL_TOOLTIP));
+
   CriticalActionEntry unknown_action;
   unknown_action.action_type = ActionType::kUnknown;
   EXPECT_EQ(unknown_action.GetLabel(), "");

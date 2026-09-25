@@ -26,7 +26,8 @@ enum class ActionType {
   kGooglePasswordManager = 5,
   kFederatedLogin = 6,
   kCredentialsOtp = 7,
-  kMaxValue = kCredentialsOtp,
+  kWebMcpTool = 8,
+  kMaxValue = kWebMcpTool,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:CriticalActionType)
 
