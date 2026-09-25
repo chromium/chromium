@@ -222,6 +222,11 @@ BASE_DECLARE_FEATURE(kGlicAndroidTablet);
 // toggle in Glic settings.
 BASE_DECLARE_FEATURE(kGlicVoice);
 
+// When enabled, the Android experimental opt-in dialog uses a taller 380x710dp
+// max size, so its content fits without scrolling, instead of the default
+// 380x567dp.
+BASE_DECLARE_FEATURE(kGlicExperimentalOptInDialogNonScrollable);
+
 BASE_DECLARE_FEATURE(kGlicActionFirstFRE);
 
 BASE_DECLARE_FEATURE(kGlicWarmOnNudge);

@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -30,6 +31,9 @@ import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.WebContents;
@@ -46,6 +50,7 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link GlicExperimentalOptInUiCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures(ChromeFeatureList.GLIC_EXPERIMENTAL_OPT_IN_DIALOG_NON_SCROLLABLE)
 public class GlicExperimentalOptInUiCoordinatorUnitTest {
     private static final long NATIVE_PTR = 12345L;
 
@@ -221,5 +226,52 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
         controller.onDismiss(model, DialogDismissalCause.DISMISSED_BY_NATIVE);
 
         verify(mThinWebView).destroy();
+    }
+
+    @Test
+    @Config(qualifiers = "w1000dp-h1000dp")
+    public void testShow_FlagDisabled_UsesDefaultSize() {
+        GlicExperimentalOptInUiCoordinator coordinator =
+                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+        assertNotNull(coordinator);
+
+        ViewGroup.LayoutParams params = getCardLayoutParams(coordinator);
+        assertEquals(
+                getDimensionPixelSize(R.dimen.glic_experimental_opt_in_dialog_max_width),
+                params.width);
+        assertEquals(
+                getDimensionPixelSize(R.dimen.glic_experimental_opt_in_dialog_max_height),
+                params.height);
+    }
+
+    @Test
+    @Config(qualifiers = "w1000dp-h1000dp")
+    @EnableFeatures(ChromeFeatureList.GLIC_EXPERIMENTAL_OPT_IN_DIALOG_NON_SCROLLABLE)
+    public void testShow_FlagEnabled_UsesNonScrollableHeight() {
+        GlicExperimentalOptInUiCoordinator coordinator =
+                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+        assertNotNull(coordinator);
+
+        ViewGroup.LayoutParams params = getCardLayoutParams(coordinator);
+        assertEquals(
+                getDimensionPixelSize(R.dimen.glic_experimental_opt_in_dialog_max_width),
+                params.width);
+        assertEquals(
+                getDimensionPixelSize(
+                        R.dimen.glic_experimental_opt_in_dialog_non_scrollable_max_height),
+                params.height);
+    }
+
+    private ViewGroup.LayoutParams getCardLayoutParams(
+            GlicExperimentalOptInUiCoordinator coordinator) {
+        PropertyModel model = coordinator.getPropertyModelForTesting();
+        assertNotNull(model);
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+        assertNotNull(customView);
+        return customView.getLayoutParams();
+    }
+
+    private int getDimensionPixelSize(int dimenRes) {
+        return mActivity.getResources().getDimensionPixelSize(dimenRes);
     }
 }

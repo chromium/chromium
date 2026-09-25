@@ -20,6 +20,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
@@ -119,7 +120,13 @@ public class GlicExperimentalOptInUiCoordinator {
         int maxHeightPx =
                 mActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.glic_experimental_opt_in_dialog_max_height);
+                        .getDimensionPixelSize(
+                                ChromeFeatureList.isEnabled(
+                                                ChromeFeatureList
+                                                        .GLIC_EXPERIMENTAL_OPT_IN_DIALOG_NON_SCROLLABLE)
+                                        ? R.dimen
+                                                .glic_experimental_opt_in_dialog_non_scrollable_max_height
+                                        : R.dimen.glic_experimental_opt_in_dialog_max_height);
         mTargetWidthPx =
                 Math.min(maxWidthPx, Math.max(0, displayMetrics.widthPixels - 2 * marginPx));
         mTargetHeightPx =
