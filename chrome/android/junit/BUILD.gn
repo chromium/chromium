@@ -1064,10 +1064,14 @@ if (is_android) {
       "src/org/chromium/chrome/browser/omaha/ResponseParserTest.java",
       "src/org/chromium/chrome/browser/omaha/StringSanitizerTest.java",
       "src/org/chromium/chrome/browser/omaha/VersionNumberTest.java",
+      "src/org/chromium/chrome/browser/omaha/inline/InAppUpdatePolicyTest.java",
       "src/org/chromium/chrome/browser/omaha/metrics/UpdateSuccessMetricsTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//third_party/android_deps:chromium_play_services_availability_java",
+    ]
   }
 
   robolectric_library(

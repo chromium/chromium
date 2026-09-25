@@ -495,6 +495,18 @@ public final class ChromePreferenceKeys {
     public static final String INCOGNITO_REAUTH_PROMO_CARD_ENABLED =
             "Chrome.IncognitoReauth.PromoCardEnabled";
 
+    /** Timestamp when the user last declined an in-app update download. */
+    public static final String IN_APP_UPDATE_DISCOVERY_BACKOFF_TIMESTAMP =
+            "Chrome.InAppUpdate.DiscoveryBackoffTimestamp";
+
+    /** Timestamp when an in-app update download last failed. */
+    public static final String IN_APP_UPDATE_FAILURE_BACKOFF_TIMESTAMP =
+            "Chrome.InAppUpdate.FailureBackoffTimestamp";
+
+    /** Timestamp when the user last declined an in-app update restart prompt. */
+    public static final String IN_APP_UPDATE_RESTART_BACKOFF_TIMESTAMP =
+            "Chrome.InAppUpdate.RestartBackoffTimestamp";
+
     /** Whether Google is set as Chrome's default search engine. Default value is false. */
     public static final String IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE =
             "Chrome.GoogleBottomBar.IsDefaultSearchEngineGoogle";
@@ -1252,6 +1264,9 @@ public final class ChromePreferenceKeys {
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
                 INCOGNITO_REAUTH_PROMO_CARD_ENABLED,
                 INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
+                IN_APP_UPDATE_DISCOVERY_BACKOFF_TIMESTAMP,
+                IN_APP_UPDATE_FAILURE_BACKOFF_TIMESTAMP,
+                IN_APP_UPDATE_RESTART_BACKOFF_TIMESTAMP,
                 IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE,
                 IS_EEA_CHOICE_COUNTRY,
                 IS_LAST_VISITED_TAB_SRP,

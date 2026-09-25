@@ -23,6 +23,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omaha/VersionNumber.java",
     "java/src/org/chromium/chrome/browser/omaha/VersionNumberGetter.java",
     "java/src/org/chromium/chrome/browser/omaha/XMLParser.java",
+    "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdatePolicy.java",
     "java/src/org/chromium/chrome/browser/omaha/metrics/TrackingProvider.java",
     "java/src/org/chromium/chrome/browser/omaha/metrics/UpdateSuccessMetrics.java",
   ]
@@ -45,6 +46,7 @@ android_library("java") {
     "//components/variations/android:variations_java",
     "//content/public/android:content_java",
     "//net/android:net_java",
+    "//third_party/android_deps:chromium_play_services_availability_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
