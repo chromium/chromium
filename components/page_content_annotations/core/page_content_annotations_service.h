@@ -241,6 +241,10 @@ class PageContentAnnotationsService
                               const std::vector<Category>& categories) override;
 
  private:
+  // Updates whether the category classifier bridge should be observing based on
+  // whether there are any registered kCategoryClassifier observers.
+  void UpdateCategoryClassifierBridgeDemand();
+
   // Callback invoked when a single |visit| has been annotated.
   void OnPageContentAnnotated(
       HistoryVisit visit,
@@ -279,9 +283,8 @@ class PageContentAnnotationsService
   std::unique_ptr<OnDeviceCategoryClassifier> on_device_category_classifier_;
 
   // A bridge that allows page category classification. The functionality of the
-  // bridge is type-erased at the 'core' level, but it's stored on this object
-  // because it shares the same lifetime -- hence it has an interface that only
-  // exposes a virtual destructor.
+  // bridge is implemented at the 'content' level, while exposing demand
+  // activation control to this service.
   std::unique_ptr<PageCategoryClassifierBridge>
       page_category_classifier_bridge_;
 

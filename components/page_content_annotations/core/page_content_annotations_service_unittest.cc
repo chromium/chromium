@@ -153,6 +153,11 @@ class MockPageContentAnnotationsObserver
               (override));
 };
 
+class MockPageCategoryClassifierBridge : public PageCategoryClassifierBridge {
+ public:
+  MOCK_METHOD(void, SetDemandActive, (bool), (override));
+};
+
 }  // namespace
 
 class PageContentAnnotationsServiceTest : public testing::Test {
@@ -513,6 +518,32 @@ TEST_F(PageContentAnnotationsServiceTest, CategoryClassifierObserver) {
   service()->OnCategoriesClassified(url, /*source_id=*/0, categories);
 
   service_->RemoveObserver(AnnotationType::kCategoryClassifier, &observer);
+}
+
+TEST_F(PageContentAnnotationsServiceTest, CategoryClassifierBridgeDemand) {
+  auto bridge = std::make_unique<MockPageCategoryClassifierBridge>();
+  MockPageCategoryClassifierBridge* bridge_ptr = bridge.get();
+
+  EXPECT_CALL(*bridge_ptr, SetDemandActive(false));
+  service_->SetPageCategoryClassifierBridge(std::move(bridge));
+
+  MockPageContentAnnotationsObserver observer1;
+  MockPageContentAnnotationsObserver observer2;
+
+  EXPECT_CALL(*bridge_ptr, SetDemandActive(true));
+  service_->AddObserver(AnnotationType::kCategoryClassifier, &observer1);
+
+  // Adding a second observer updates demand (idempotent).
+  EXPECT_CALL(*bridge_ptr, SetDemandActive(true));
+  service_->AddObserver(AnnotationType::kCategoryClassifier, &observer2);
+
+  // Removing one observer keeps demand active as another observer exists.
+  EXPECT_CALL(*bridge_ptr, SetDemandActive(true));
+  service_->RemoveObserver(AnnotationType::kCategoryClassifier, &observer1);
+
+  // Removing the last observer deactivates demand.
+  EXPECT_CALL(*bridge_ptr, SetDemandActive(false));
+  service_->RemoveObserver(AnnotationType::kCategoryClassifier, &observer2);
 }
 
 }  // namespace page_content_annotations

@@ -14,7 +14,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/google/core/common/google_util.h"
@@ -291,6 +293,47 @@ void PageContentAnnotationsService::OnCategoriesClassified(
     const GURL& url,
     ukm::SourceId source_id,
     const std::vector<Category>& categories) {
+  ukm::builders::PageContentAnnotations2 builder(source_id);
+  bool has_ukm = false;
+
+  for (const Category& category : categories) {
+    int64_t score = base::ClampRound(category.score * 100);
+    int64_t noisy_score = GenerateRapporNoisedScore(category.score);
+    if (optimization_guide_logger_ &&
+        optimization_guide_logger_->ShouldEnableDebugLogs()) {
+      OPTIMIZATION_GUIDE_LOGGER(
+          optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
+          optimization_guide_logger_)
+          << base::StringPrintf(
+                 "URL: %s, Category classifier result (CategoryType, score): "
+                 "(%d, %f)",
+                 url.spec(), static_cast<int>(category.category_type),
+                 category.score);
+    }
+    switch (category.category_type) {
+      case CategoryType::kEducation:
+        base::UmaHistogramPercentage(
+            "OptimizationGuide.PageContentAnnotations.CategoryClassifier."
+            "EducationScore",
+            score);
+        builder.SetCategoryClassifier_EducationScore(noisy_score);
+        has_ukm = true;
+        break;
+      case CategoryType::kShopping:
+        base::UmaHistogramPercentage(
+            "OptimizationGuide.PageContentAnnotations.CategoryClassifier."
+            "ShoppingScore",
+            score);
+        builder.SetCategoryClassifier_ShoppingScore(noisy_score);
+        has_ukm = true;
+        break;
+    }
+  }
+
+  if (has_ukm) {
+    builder.Record(ukm::UkmRecorder::Get());
+  }
+
   auto it = last_visit_for_url_.Peek(url);
   if (it == last_visit_for_url_.end()) {
     return;
@@ -794,6 +837,9 @@ void PageContentAnnotationsService::AddObserver(
   DCHECK(annotation_type == AnnotationType::kContentVisibility ||
          annotation_type == AnnotationType::kCategoryClassifier);
   page_content_annotations_observers_[annotation_type].AddObserver(observer);
+  if (annotation_type == AnnotationType::kCategoryClassifier) {
+    UpdateCategoryClassifierBridgeDemand();
+  }
 }
 
 void PageContentAnnotationsService::RemoveObserver(
@@ -802,6 +848,9 @@ void PageContentAnnotationsService::RemoveObserver(
   DCHECK(annotation_type == AnnotationType::kContentVisibility ||
          annotation_type == AnnotationType::kCategoryClassifier);
   page_content_annotations_observers_[annotation_type].RemoveObserver(observer);
+  if (annotation_type == AnnotationType::kCategoryClassifier) {
+    UpdateCategoryClassifierBridgeDemand();
+  }
 }
 
 void PageContentAnnotationsService::PersistRemotePageMetadata(
@@ -916,6 +965,18 @@ void PageContentAnnotationsService::SetPageCategoryClassifierBridge(
     std::unique_ptr<PageCategoryClassifierBridge>
         page_category_classifier_bridge) {
   page_category_classifier_bridge_ = std::move(page_category_classifier_bridge);
+  UpdateCategoryClassifierBridgeDemand();
+}
+
+void PageContentAnnotationsService::UpdateCategoryClassifierBridgeDemand() {
+  if (!page_category_classifier_bridge_) {
+    return;
+  }
+  auto it = page_content_annotations_observers_.find(
+      AnnotationType::kCategoryClassifier);
+  bool has_demand =
+      it != page_content_annotations_observers_.end() && !it->second.empty();
+  page_category_classifier_bridge_->SetDemandActive(has_demand);
 }
 
 HistoryVisit::HistoryVisit() = default;

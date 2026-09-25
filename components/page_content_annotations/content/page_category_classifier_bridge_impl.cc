@@ -4,34 +4,34 @@
 
 #include "components/page_content_annotations/content/page_category_classifier_bridge_impl.h"
 
+#include <optional>
+#include <utility>
 #include <vector>
 
-#include "base/metrics/histogram_functions.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/on_device_category_classifier.h"
-#include "components/page_content_annotations/core/page_content_annotation_type.h"
-#include "components/page_content_annotations/core/page_content_annotations_common.h"
+#include "components/page_content_annotations/core/page_embeddings_common.h"
 #include "content/public/browser/page.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace page_content_annotations {
 
 PageCategoryClassifierBridgeImpl::PageCategoryClassifierBridgeImpl(
     PageEmbeddingsService& page_embeddings_service,
-    OnDeviceCategoryClassifier& category_classifier,
-    OptimizationGuideLogger* optimization_guide_logger)
+    OnDeviceCategoryClassifier& category_classifier)
     : page_embeddings_service_(page_embeddings_service),
-      category_classifier_(category_classifier),
-      optimization_guide_logger_(optimization_guide_logger) {
-  scoped_observation_.Observe(&*page_embeddings_service_);
-  category_classifier_observation_.Observe(&*category_classifier_);
-}
+      category_classifier_(category_classifier) {}
 
 PageCategoryClassifierBridgeImpl::~PageCategoryClassifierBridgeImpl() = default;
+
+void PageCategoryClassifierBridgeImpl::SetDemandActive(bool active) {
+  if (active) {
+    if (!scoped_observation_.IsObserving()) {
+      scoped_observation_.Observe(&*page_embeddings_service_);
+    }
+  } else {
+    scoped_observation_.Reset();
+  }
+}
 
 PageEmbeddingsService::UsageMode
 PageCategoryClassifierBridgeImpl::GetUsageMode() const {
@@ -57,52 +57,6 @@ void PageCategoryClassifierBridgeImpl::OnPageEmbeddingsAvailable(
       page.GetMainDocument().GetLastCommittedURL(),
       page.GetMainDocument().GetPageUkmSourceId(),
       std::move(title_url_embedding), std::move(passage_embeddings));
-}
-
-void PageCategoryClassifierBridgeImpl::OnCategoriesClassified(
-    const GURL& url,
-    ukm::SourceId source_id,
-    const std::vector<Category>& categories) {
-  ukm::builders::PageContentAnnotations2 builder(source_id);
-  bool has_ukm = false;
-
-  for (const Category& category : categories) {
-    int64_t score = base::ClampRound(category.score * 100);
-    int64_t noisy_score = GenerateRapporNoisedScore(category.score);
-    if (optimization_guide_logger_ &&
-        optimization_guide_logger_->ShouldEnableDebugLogs()) {
-      OPTIMIZATION_GUIDE_LOGGER(
-          optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
-          optimization_guide_logger_)
-          << base::StringPrintf(
-                 "URL: %s, Category classifier result (CategoryType, score): "
-                 "(%d, %f)",
-                 url.spec(), static_cast<int>(category.category_type),
-                 category.score);
-    }
-    switch (category.category_type) {
-      case CategoryType::kEducation:
-        base::UmaHistogramPercentage(
-            "OptimizationGuide.PageContentAnnotations.CategoryClassifier."
-            "EducationScore",
-            score);
-        builder.SetCategoryClassifier_EducationScore(noisy_score);
-        has_ukm = true;
-        break;
-      case CategoryType::kShopping:
-        base::UmaHistogramPercentage(
-            "OptimizationGuide.PageContentAnnotations.CategoryClassifier."
-            "ShoppingScore",
-            score);
-        builder.SetCategoryClassifier_ShoppingScore(noisy_score);
-        has_ukm = true;
-        break;
-    }
-  }
-
-  if (has_ukm) {
-    builder.Record(ukm::UkmRecorder::Get());
-  }
 }
 
 }  // namespace page_content_annotations

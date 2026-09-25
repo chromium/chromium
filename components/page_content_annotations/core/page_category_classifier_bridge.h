@@ -12,6 +12,10 @@ namespace page_content_annotations {
 class PageCategoryClassifierBridge {
  public:
   virtual ~PageCategoryClassifierBridge() = default;
+
+  // Sets whether there is active demand for category classification from
+  // observers.
+  virtual void SetDemandActive(bool active) = 0;
 };
 
 }  // namespace page_content_annotations
