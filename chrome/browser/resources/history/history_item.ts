@@ -291,6 +291,10 @@ export class HistoryItemElement extends HistoryItemElementBase {
     return this.item?.criticalActions || [];
   }
 
+  protected hasLinkout_(action: CriticalAction): boolean {
+    return !!action.linkoutUrl;
+  }
+
   protected getCriticalActionAriaLabel_(action: CriticalAction): string {
     return loadTimeData.getStringF(
         'criticalActionLinkoutA11yLabel', action.tooltip);

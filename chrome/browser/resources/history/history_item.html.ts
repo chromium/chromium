@@ -94,19 +94,23 @@ export function getHtml(this: HistoryItemElement) {
               <div class="critical-actions-list" role="list"
                   aria-label="$i18n{geminiKeyBrowsingActionsTitle}">
                 ${this.getCriticalActions_().map((action, index) => html`
-                  <div class="critical-action-row" role="listitem"
-                      data-index="${index}" focus-row-control
+                  <div class="critical-action-row ${
+                      this.hasLinkout_(action) ? 'with-linkout' : ''}"
+                      role="listitem" data-index="${index}" focus-row-control
                       focus-type="critical-action" tabindex="0"
                       aria-label="${action.label}"
-                      aria-describedby="critical-action-icon-${index}"
+                      aria-describedby="${this.hasLinkout_(action) ?
+                          `critical-action-icon-${index}` : ''}"
                       @click="${this.onCriticalActionClick_}"
                       @keydown="${this.onCriticalActionKeydown_}">
                     <span class="critical-action-label">${action.label}</span>
-                    <cr-icon id="critical-action-icon-${index}"
-                        class="critical-action-button" icon="cr:open-in-new"
-                        role="img" title="${action.tooltip}" aria-label="${
-                            this.getCriticalActionAriaLabel_(action)}">
-                    </cr-icon>
+                    ${this.hasLinkout_(action) ? html`
+                      <cr-icon id="critical-action-icon-${index}"
+                          class="critical-action-button" icon="cr:open-in-new"
+                          role="img" title="${action.tooltip}" aria-label="${
+                              this.getCriticalActionAriaLabel_(action)}">
+                      </cr-icon>
+                    ` : ''}
                   </div>
                 `)}
               </div>

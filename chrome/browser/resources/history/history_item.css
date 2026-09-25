@@ -230,7 +230,6 @@
   align-items: center;
   border-radius: 8px;
   box-sizing: border-box;
-  cursor: pointer;
   display: flex;
   height: 32px;
   justify-content: space-between;
@@ -241,13 +240,17 @@
   user-select: none;
 }
 
-.critical-action-row:hover {
+.critical-action-row.with-linkout {
+  cursor: pointer;
+}
+
+.critical-action-row.with-linkout:hover {
   background-color: var(
       --color-sys-state-hover-on-subtle,
       var(--cr-hover-background-color));
 }
 
-.critical-action-row:active {
+.critical-action-row.with-linkout:active {
   background-color: var(
       --color-sys-state-pressed,
       var(--cr-active-background-color));

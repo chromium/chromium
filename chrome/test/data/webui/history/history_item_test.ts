@@ -360,6 +360,97 @@ suite('<history-item> integration test', function() {
   });
 
   test(
+      'actor visit with WebMCP critical action renders row without linkout',
+      async function() {
+        loadTimeData.overrideValues({
+          enableBrowsingHistoryActorIntegrationM1: true,
+          isCriticalActionsEnabled: true,
+        });
+
+        const expectedCriticalActions: CriticalAction[] = [
+          {
+            id: 'phone',
+            label: 'Phone number filled',
+            tooltip: 'Contact info',
+            linkoutUrl: 'chrome://settings/addresses',
+            actionType: CriticalActionType.kFormFill,
+          },
+          {
+            id: 'webmcp',
+            label: 'Used a WebMCP tool',
+            tooltip: 'Website actions',
+            linkoutUrl: '',
+            actionType: CriticalActionType.kWebMcpTool,
+          },
+        ];
+
+        const newResults = [...TEST_HISTORY_RESULTS];
+        newResults[1]!.isActorVisit = true;
+        newResults[1]!.criticalActions = expectedCriticalActions;
+        element.addNewResults(newResults, false, true);
+        await microtasksFinished();
+
+        const items = element.shadowRoot.querySelectorAll('history-item');
+        const actorExpandBtn =
+            items[1]!.shadowRoot.querySelector<HTMLElement>('#expand-button');
+        assertTrue(isVisible(actorExpandBtn));
+        actorExpandBtn!.click();
+        await microtasksFinished();
+
+        const actionRows = items[1]!.shadowRoot.querySelectorAll<HTMLElement>(
+            '.critical-action-row');
+        assertEquals(2, actionRows.length);
+
+        // First row (FormFill) has linkout button and interactive attributes.
+        const formFillRow = actionRows[0]!;
+        assertTrue(formFillRow.classList.contains('with-linkout'));
+        assertTrue(formFillRow.hasAttribute('focus-row-control'));
+        assertTrue(formFillRow.hasAttribute('tabindex'));
+        assertEquals('critical-action', formFillRow.getAttribute('focus-type'));
+        assertEquals(
+            'Phone number filled', formFillRow.getAttribute('aria-label'));
+        assertEquals(
+            'critical-action-icon-0',
+            formFillRow.getAttribute('aria-describedby'));
+        assertEquals(null, formFillRow.getAttribute('title'));
+        assertTrue(!!formFillRow.querySelector('.critical-action-button'));
+
+        // Second row (WebMcpTool) is keyboard-focusable and accessible, but
+        // has no linkout button.
+        const webMcpRow = actionRows[1]!;
+        assertFalse(webMcpRow.classList.contains('with-linkout'));
+        assertTrue(webMcpRow.hasAttribute('focus-row-control'));
+        assertTrue(webMcpRow.hasAttribute('tabindex'));
+        assertEquals('critical-action', webMcpRow.getAttribute('focus-type'));
+        assertEquals(
+            'Used a WebMCP tool', webMcpRow.getAttribute('aria-label'));
+        assertEquals('', webMcpRow.getAttribute('aria-describedby'));
+        assertEquals(null, webMcpRow.getAttribute('title'));
+        assertEquals(
+            'Used a WebMCP tool',
+            webMcpRow.querySelector('.critical-action-label')!
+                .textContent.trim());
+        assertEquals(null, webMcpRow.querySelector('.critical-action-button'));
+
+        let openedUrl = '';
+        const originalOpen = window.open;
+        try {
+          window.open = (url) => {
+            openedUrl = url as string;
+            return null;
+          };
+          webMcpRow.click();
+          assertEquals('', openedUrl);
+          assertEquals(
+              undefined,
+              testProxy.histogramMap['HistoryPage.CriticalAction.Click']
+                  ?.[CriticalActionType.kWebMcpTool]);
+        } finally {
+          window.open = originalOpen;
+        }
+      });
+
+  test(
       'actor visit without critical actions has no expand button',
       async function() {
         loadTimeData.overrideValues({
