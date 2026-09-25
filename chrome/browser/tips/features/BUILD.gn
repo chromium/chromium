@@ -8,6 +8,8 @@ source_set("features") {
   sources = [
     "enhanced_safe_browsing_tip.cc",
     "enhanced_safe_browsing_tip.h",
+    "google_lens_tip.cc",
+    "google_lens_tip.h",
     "quick_delete_tip.cc",
     "quick_delete_tip.h",
   ]
@@ -30,6 +32,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "enhanced_safe_browsing_tip_unittest.cc",
+    "google_lens_tip_unittest.cc",
     "quick_delete_tip_unittest.cc",
   ]
 

@@ -11,6 +11,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/tips/features/enhanced_safe_browsing_tip.h"
+#include "chrome/browser/tips/features/google_lens_tip.h"
 #include "chrome/browser/tips/features/quick_delete_tip.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -53,6 +54,7 @@ TipsServiceFactory::BuildServiceInstanceForBrowserContext(
 #if BUILDFLAG(IS_ANDROID)
   service->RegisterFeature(std::make_unique<EnhancedSafeBrowsingTip>());
   service->RegisterFeature(std::make_unique<QuickDeleteTip>());
+  service->RegisterFeature(std::make_unique<GoogleLensTip>());
 #endif  // BUILDFLAG(IS_ANDROID)
   return service;
 }
