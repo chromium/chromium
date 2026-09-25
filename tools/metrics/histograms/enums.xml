@@ -13456,6 +13456,7 @@ from previous Chrome versions.
       label="MigrateEnhancedSbUserToEnhancedBundle:enabled"/>
   <int value="-442384327" label="RubyShortHeuristics:enabled"/>
   <int value="-442352394" label="IframeOneGoogleBar:disabled"/>
+  <int value="-442280652" label="AndroidAutoProjected:enabled"/>
   <int value="-441972413" label="OobeJellyModal:disabled"/>
   <int value="-441840790" label="TailoredSecurityUpdatedMessages:disabled"/>
   <int value="-441139232" label="ExcludeDisplayInMirrorMode:enabled"/>
@@ -18752,6 +18753,7 @@ from previous Chrome versions.
   <int value="1194896796" label="PdfHonorJsContentSettings:disabled"/>
   <int value="1194964049" label="AutofillFixOfferInIncognito:enabled"/>
   <int value="1195087468" label="ProminentDarkModeActiveTabTitle:enabled"/>
+  <int value="1195608413" label="AndroidAutoProjected:disabled"/>
   <int value="1196407590" label="SmdsDbusMigration:disabled"/>
   <int value="1196560551" label="AutofillEnableWalletBrandingV2:disabled"/>
   <int value="1196644408" label="performance-monitor-gathering"/>

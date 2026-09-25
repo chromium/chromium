@@ -39,6 +39,7 @@ BASE_DECLARE_FEATURE(kAndroidAnimatedProgressBarInViz);
 BASE_DECLARE_FEATURE(kAndroidAppIntegrationMultiDataSource);
 BASE_DECLARE_FEATURE(kAndroidAppRatingPrompt);
 BASE_DECLARE_FEATURE(kAndroidAtomsLogging);
+BASE_DECLARE_FEATURE(kAndroidAutoProjected);
 BASE_DECLARE_FEATURE(kAndroidAutofillPrefObserver);
 BASE_DECLARE_FEATURE(kAndroidBeforeUnloadSupport);
 BASE_DECLARE_FEATURE(kAndroidBottomBar);

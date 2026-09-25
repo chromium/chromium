@@ -14082,6 +14082,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(switches::kSearchSettingsWithMoreEngines)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-auto-projected", flag_descriptions::kAndroidAutoProjectedName,
+     flag_descriptions::kAndroidAutoProjectedDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidAutoProjected)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

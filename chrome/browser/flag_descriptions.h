@@ -210,6 +210,10 @@ inline constexpr char kNewTabPageCustomizationV2Name[] =
 inline constexpr char kNewTabPageCustomizationV2Description[] =
     "Allows users to customize the new tab page, like appearance.";
 
+inline constexpr char kAndroidAutoProjectedName[] = "Android Auto Projected";
+inline constexpr char kAndroidAutoProjectedDescription[] =
+    "Enables Android Auto Projected support.";
+
 inline constexpr char kAndroidBeforeUnloadSupportName[] =
     "Android beforeunload support";
 inline constexpr char kAndroidBeforeUnloadSupportDescription[] =

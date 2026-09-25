@@ -265,6 +265,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_APP_RATING_PROMPT = "AndroidAppRatingPrompt";
     public static final String ANDROID_AUTOFILL_PREF_OBSERVER = "AndroidAutofillPrefObserver";
     public static final String ANDROID_AUTO_MINTED_TWA = "AndroidAutoMintedTWA";
+    public static final String ANDROID_AUTO_PROJECTED = "AndroidAutoProjected";
     public static final String ANDROID_BEFORE_UNLOAD_SUPPORT = "AndroidBeforeUnloadSupport";
     public static final String ANDROID_BOTTOM_BAR = "AndroidBottomBar";
     public static final String ANDROID_BOTTOM_BAR_AIM = "AndroidBottomBarAim";
@@ -969,6 +970,8 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidAutoMintedTwa =
             newCachedFlag(ANDROID_AUTO_MINTED_TWA, false);
+    public static final CachedFlag sAndroidAutoProjected =
+            newCachedFlag(ANDROID_AUTO_PROJECTED, false);
     public static final CachedFlag sAndroidBottomBar =
             newCachedFlag(ANDROID_BOTTOM_BAR, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidBottomBarAim =
@@ -1528,6 +1531,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationMultiDataSource,
                     sAndroidAppRatingPrompt,
                     sAndroidAutoMintedTwa,
+                    sAndroidAutoProjected,
                     sAndroidBottomBar,
                     sAndroidBottomBarAim,
                     sAndroidElegantTextHeight,
