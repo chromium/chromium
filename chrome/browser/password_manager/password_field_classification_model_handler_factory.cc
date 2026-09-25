@@ -82,6 +82,10 @@ content::BrowserContext*
 PasswordFieldClassificationModelHandlerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+  // Password and OTP filling is not supported in guest sessions.
+  if (profile->IsGuestSession()) {
+    return nullptr;
+  }
 
   // `FieldClassificationModelHandler` is not supported without an
   // `OptimizationGuideKeyedService`.
