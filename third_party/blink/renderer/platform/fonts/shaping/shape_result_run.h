@@ -499,9 +499,70 @@ struct PLATFORM_EXPORT ShapeResultRun final
       visitor->Trace(compact_);
     }
 
+    struct CompactableGlyph {
+      uint16_t glyph;
+      TextRunLayoutUnit advance;
+      unsigned character_index;
+      bool has_offset;
+      bool is_safe_to_break_before;
+    };
+
+    template <typename GlyphAt>
+    bool TryMakeCompactFrom(unsigned num_glyphs, const GlyphAt& at) {
+      if (num_glyphs < kMinGlyphsToCompact ||
+          num_glyphs > HarfBuzzRunGlyphData::kMaxGlyphs) {
+        return false;
+      }
+      const TextRunLayoutUnit advance = at(0).advance;
+      for (unsigned i = 0; i < num_glyphs; ++i) {
+        const CompactableGlyph glyph = at(i);
+        if (glyph.character_index != i || glyph.advance != advance ||
+            glyph.has_offset || !glyph.is_safe_to_break_before) {
+          return false;
+        }
+      }
+      auto* compact =
+          MakeGarbageCollected<CompactGlyphData>(advance, num_glyphs);
+      const base::span<uint16_t> ids = compact->glyphs;
+      for (unsigned i = 0; i < num_glyphs; ++i) {
+        ids[i] = at(i).glyph;
+      }
+      SetCompact(compact);
+      return true;
+    }
+
+    bool TryMakeCompact() {
+      if (IsCompact()) {
+        return true;
+      }
+      if (HasNonZeroOffsets()) {
+        return false;
+      }
+      return TryMakeCompactFrom(data_.size(), [this](unsigned i) {
+        const HarfBuzzRunGlyphData& glyph = data_[i];
+        return CompactableGlyph{
+            .glyph = glyph.glyph,
+            .advance = glyph.advance,
+            .character_index = glyph.character_index,
+            .has_offset = false,
+            .is_safe_to_break_before = glyph.IsSafeToBreakBefore()};
+      });
+    }
+
    private:
     FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                              CompactCopyMaterializesIndependently);
+
+    static constexpr unsigned kMinGlyphsToCompact = 8;
+
+    void SetCompact(CompactGlyphData* compact) {
+      CHECK(compact);
+      CHECK(!compact->glyphs.empty());
+      CHECK_LE(compact->glyphs.size(), HarfBuzzRunGlyphData::kMaxGlyphs);
+      compact_ = compact;
+      data_.clear();
+      ClearOffsets();
+    }
 
     NOINLINE HarfBuzzRunGlyphData GetCompact(unsigned index) const {
       CHECK(IsCompact());
