@@ -473,8 +473,8 @@ ntp-lens-upload-dialog {
 #voiceSearchDialog:has(#voiceSearch[has-multiline-transcript]) {
   --voice-search-wave-top: min(
       198px, calc(30px + var(--transcript-lines, 2) * 24px));
-  height: min(302px, calc(134px + var(--transcript-lines, 2) * 24px));
-  min-height: min(302px, calc(134px + var(--transcript-lines, 2) * 24px));
+  height: min(310px, calc(142px + var(--transcript-lines, 2) * 24px));
+  min-height: min(310px, calc(142px + var(--transcript-lines, 2) * 24px));
 }
 
 /* Disable default scrim and use custom scrim instead. */
@@ -527,10 +527,6 @@ ntp-lens-upload-dialog {
   height: 100%;
   inset: 0;
   position: absolute;
-}
-
-#voiceSearch[audio-wave-enabled][has-multiline-transcript] {
-  --voice-bottom-actions-bottom: 8px;
 }
 
 #voiceSearch::part(voice-stop-button) {
