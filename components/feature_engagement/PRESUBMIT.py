@@ -20,6 +20,7 @@ def _CommonChecks(input_api, output_api):
   results.extend(_CheckFeatureListSorting(input_api, output_api))
   results.extend(_CheckNoComparatorAny(input_api, output_api))
   results.extend(_CheckNoRedundantNamespaceQualifier(input_api, output_api))
+  results.extend(_CheckAlwaysTrueInUsedOrTrigger(input_api, output_api))
   return results
 
 def _CheckFeatureListSorting(input_api, output_api):
@@ -262,3 +263,39 @@ def _CheckNoRedundantNamespaceQualifier(input_api, output_api):
         results.append(output_api.PresubmitPromptWarning(message))
 
   return results
+
+
+def _CheckAlwaysTrueInUsedOrTrigger(input_api, output_api):
+  """Warns when used or trigger EventConfig uses kAlwaysTrue or equivalent."""
+  results = []
+  any_comparator_pattern = input_api.re.compile(_ANY_COMPARATOR_PATTERN)
+  assign_pattern = input_api.re.compile(r'(\w*(?:used|trigger)\w*)\s*=')
+
+  for f in _IterAffectedCppFiles(input_api):
+    local_path = f.LocalPath()
+    for start_line, stmt in _IterChangedStatements(input_api, f):
+      for prefix, args in _ExtractEventConfigs(input_api, stmt):
+        if len(args) < 2:
+          continue
+        field_match = assign_pattern.search(prefix)
+        if not field_match:
+          continue
+        field_name = field_match.group(1)
+        comparator = args[1]
+        if any_comparator_pattern.fullmatch(comparator):
+          results.append(
+              output_api.PresubmitPromptWarning(
+                  f'{local_path}:{start_line}: `{field_name}` is configured '
+                  f'with `{comparator}` (an unconstrained comparator). Setting '
+                  f'used or trigger events to always evaluate to true is '
+                  f'typically used for passive data recording only and '
+                  f'prevents standard IPH frequency capping. This may be '
+                  f'valid, but please double-check that this configuration is '
+                  f'intentional. See '
+                  f'https://chromium.googlesource.com/chromium/src/+/main/'
+                  f'components/feature_engagement/README.md#comparator'
+              )
+          )
+
+  return results
+

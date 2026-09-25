@@ -205,47 +205,60 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
     input_api.files = [MockFile(
       'components/feature_engagement/public/feature_configurations.cc',
       [],
-      [(45, 'config.trigger = EventConfig("iph_feature_trigger", Comparator(ANY, 0), 90, 90);')])]
+      [(45, 'config.trigger = EventConfig('
+            '"iph_feature_trigger", Comparator(ANY, 0), 90, 90);')])]
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
-    self.assertEqual(1, len(results))
-    self.assertEqual('Error', results[0].type)
-    self.assertIn('Do not use Comparator(ANY, ...). Use kAlwaysTrue (or kAlwaysAvailable / kNoRestrictions) instead.',
-                  results[0].message)
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(1, len(errors))
+    self.assertIn(
+        'Do not use Comparator(ANY, ...). Use kAlwaysTrue '
+        '(or kAlwaysAvailable / kNoRestrictions) instead.',
+        errors[0].message)
 
   def testNoComparatorAny_ViolationInEventUsed(self):
     input_api = MockInputApi()
     input_api.files = [MockFile(
       'components/feature_engagement/public/feature_configurations.cc',
       [],
-      [(48, 'config.used = EventConfig("iph_feature_used", Comparator(ANY, 0), 90, 90);')])]
+      [(48, 'config.used = EventConfig('
+            '"iph_feature_used", Comparator(ANY, 0), 90, 90);')])]
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
-    self.assertEqual(1, len(results))
-    self.assertEqual('Error', results[0].type)
-    self.assertIn('Do not use Comparator(ANY, ...). Use kAlwaysTrue (or kAlwaysAvailable / kNoRestrictions) instead.',
-                  results[0].message)
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(1, len(errors))
+    self.assertIn(
+        'Do not use Comparator(ANY, ...). Use kAlwaysTrue '
+        '(or kAlwaysAvailable / kNoRestrictions) instead.',
+        errors[0].message)
 
   def testNoComparatorAny_ViolationInEventConfigList(self):
     input_api = MockInputApi()
     input_api.files = [MockFile(
       'components/feature_engagement/public/feature_configurations.cc',
       [],
-      [(52, 'config.event_configs.insert(EventConfig("other_event", Comparator(ANY, 0), 30, 30));')])]
+      [(52, 'config.event_configs.insert('
+            'EventConfig("other_event", Comparator(ANY, 0), 30, 30));')])]
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
     self.assertEqual(1, len(results))
     self.assertEqual('Error', results[0].type)
-    self.assertIn('Do not use Comparator(ANY, ...). Use kAlwaysTrue (or kAlwaysAvailable / kNoRestrictions) instead.',
-                  results[0].message)
+    self.assertIn(
+        'Do not use Comparator(ANY, ...). Use kAlwaysTrue '
+        '(or kAlwaysAvailable / kNoRestrictions) instead.',
+        results[0].message)
 
   def testNoComparatorAny_ValidEventConfigWithAlwaysTrue(self):
     input_api = MockInputApi()
     input_api.files = [MockFile(
       'components/feature_engagement/public/feature_configurations.cc',
       [],
-      [(45, 'config.trigger = EventConfig("iph_feature_trigger", kAlwaysTrue, 90, 90);'),
-       (48, 'config.used = EventConfig("iph_feature_used", kAlwaysTrue, 90, 90);'),
-       (52, 'config.event_configs.insert(EventConfig("other_event", kAlwaysTrue, 30, 30));')])]
+      [(45, 'config.trigger = EventConfig('
+            '"iph_feature_trigger", kAlwaysTrue, 90, 90);'),
+       (48, 'config.used = EventConfig('
+            '"iph_feature_used", kAlwaysTrue, 90, 90);'),
+       (52, 'config.event_configs.insert('
+            'EventConfig("other_event", kAlwaysTrue, 30, 30));')])]
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
-    self.assertEqual(0, len(results))
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(0, len(errors))
 
   def testNoComparatorAny_NonCppFile(self):
     input_api = MockInputApi()
@@ -311,7 +324,61 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
     results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
     self.assertEqual(0, len(results))
 
+  def testAlwaysTrueInUsedOrTrigger_ValidRestricted(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_configurations.cc',
+            [],
+            [
+                (10, 'config->used = EventConfig("u", Comparator(EQUAL, 0), '
+                     '360, 360);'),
+                (11, 'config->trigger = EventConfig("t", '
+                     'Comparator(LESS_THAN, 3), 360, 360);'),
+            ],
+        )
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
+  def testAlwaysTrueInUsedOrTrigger_ValidInPreconditions(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_configurations.cc',
+            [],
+            [
+                (10, 'config->event_configs.insert('
+                     'EventConfig("other", kAlwaysTrue, 0, 360));'),
+            ],
+        )
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
+  def testAlwaysTrueInUsedOrTrigger_WarnsOnUsedAndTrigger(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_configurations.cc',
+            [],
+            [
+                (10, 'config->used = EventConfig("u", kAlwaysTrue, 0, 360);'),
+                (11, 'config->trigger = EventConfig("t", kNoRestrictions, '
+                     '0, 360);'),
+                (12, 'EventConfig event_used = EventConfig("u2", '
+                     'kAlwaysAvailable, 0, 360);'),
+                (13, 'EventConfig event_trigger = EventConfig("t2", '
+                     'kAlwaysTrue, 0, 360);'),
+            ],
+        )
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    self.assertEqual(4, len(results))
+    for res in results:
+      self.assertEqual('Warning', res.type)
+      self.assertIn('passive data recording only', res.message)
+
+
 if __name__ == '__main__':
   unittest.main()
-
-
