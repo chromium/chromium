@@ -1045,12 +1045,13 @@ public class VerticalTabListCoordinator {
     void setInTransition(boolean inTransition) {
         if (mIsInTransition == inTransition) return;
         mIsInTransition = inTransition;
-        // Request layout after transition ends to immediately recycle extra items back
-        // to viewport bounds (transition start is already laid out by the container width change).
-        if (!mIsInTransition) {
-            ViewUtils.requestLayout(
-                    mPinnedTabsRecyclerView, "VerticalTabListCoordinator.setInTransition");
-        }
+        // Transition start: SideUiCoordinator captures the transition start values before it
+        // changes the container width, so request a layout here. The synchronous measure/layout
+        // it runs before TransitionManager#beginDelayedTransition then attaches the offscreen
+        // pinned tabs, giving ChangeBounds start values for them.
+        // Transition end: request a layout to recycle extra items back to viewport bounds.
+        ViewUtils.requestLayout(
+                mPinnedTabsRecyclerView, "VerticalTabListCoordinator.setInTransition");
     }
 
     /**

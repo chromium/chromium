@@ -22,7 +22,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
@@ -37,6 +36,10 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
 import org.chromium.ui.base.ViewUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Coordinator that acts as a container for the Vertical Tab List within the Side UI framework. This
@@ -289,13 +292,22 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
 
         if (oldRenderedWidth > 0 && newRenderedWidth > 0 && oldRenderedWidth != newRenderedWidth) {
             mTabListCoordinator.setInTransition(true);
+            // setInTransition() requests a layout with extra layout space for the pinned tabs. Run
+            // it now so the offscreen pinned tabs are attached before the rail's views are
+            // collected as targets below.
+            ViewUtils.triggerSynchronousMeasureAndLayout(mRootView);
             TransitionSet transitionSet =
                     new TransitionSet()
                             .setOrdering(TransitionSet.ORDERING_TOGETHER)
                             .addTransition(new ChangeBounds())
                             .addTransition(new Fade());
-            transitionSet.excludeTarget(R.id.compositor_view_holder, /* exclude= */ true);
-            transitionSet.excludeChildren(R.id.compositor_view_holder, /* exclude= */ true);
+            // Only animate the rail's views, leaving everything outside it untouched.
+            transitionSet.addTarget(mRootView);
+            List<View> railViews = new ArrayList<>();
+            ViewUtils.getAllDescendants(mRootView, railViews, Set.of());
+            for (View view : railViews) {
+                transitionSet.addTarget(view);
+            }
             return transitionSet;
         }
         return null;

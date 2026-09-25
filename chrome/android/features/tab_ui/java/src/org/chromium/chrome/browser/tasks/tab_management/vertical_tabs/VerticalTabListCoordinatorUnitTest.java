@@ -4712,12 +4712,17 @@ public class VerticalTabListCoordinatorUnitTest {
 
         clearInvocations(spyPinnedRecyclerView);
 
-        // Transition start does not request layout (handled by container width change).
+        // Transition start requests layout so offscreen pinned tabs are attached before
+        // ChangeBounds captures start values.
+        mCoordinator.setInTransition(true);
+        ReflectionHelpers.callInstanceMethod(verify(spyPinnedRecyclerView), "requestLayout");
+
+        clearInvocations(spyPinnedRecyclerView);
+
+        // Redundant update does not request layout.
         mCoordinator.setInTransition(true);
         ReflectionHelpers.callInstanceMethod(
                 verify(spyPinnedRecyclerView, never()), "requestLayout");
-
-        clearInvocations(spyPinnedRecyclerView);
 
         // Transition end triggers layout to recycle extra items back to viewport bounds.
         mCoordinator.setInTransition(false);

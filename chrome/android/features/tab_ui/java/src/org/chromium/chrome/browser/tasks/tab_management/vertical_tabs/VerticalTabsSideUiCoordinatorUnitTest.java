@@ -25,6 +25,7 @@ import android.transition.ChangeBounds;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.transition.TransitionSet;
+import android.transition.TransitionValues;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -412,6 +413,39 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertTrue(transitionSet.getTransitionAt(0) instanceof ChangeBounds);
         assertTrue(transitionSet.getTransitionAt(1) instanceof Fade);
         verify(mMockTabListCoordinator).setInTransition(true);
+    }
+
+    @Test
+    public void testOnPreSideUiSpecsChange_OnlyTargetsRailViews() {
+        // Place the rail next to views outside of it (e.g. the toolbar and the bookmark bar).
+        FrameLayout windowRoot = new FrameLayout(mActivity);
+        FrameLayout outsideContainer = new FrameLayout(mActivity);
+        View outsideChild = new View(mActivity);
+        outsideContainer.addView(outsideChild);
+        windowRoot.addView(outsideContainer);
+        windowRoot.addView(mCoordinator.getView());
+
+        when(mMockSideUiCoordinator.getCurrentSideUiSpecs())
+                .thenReturn(new SideUiSpecs(mExpandedRailWidth, 0));
+        Transition transition =
+                mCoordinator.onPreSideUiSpecsChange(
+                        new SideUiSpecs(mCollapsedRailWidth, 0),
+                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+        assertNotNull(transition);
+
+        // Rail views are captured.
+        for (View view : new View[] {mCoordinator.getView(), mTabListView}) {
+            TransitionValues values = new TransitionValues(view);
+            transition.captureStartValues(values);
+            assertFalse(values.values.isEmpty());
+        }
+
+        // Views outside the rail are not captured.
+        for (View view : new View[] {windowRoot, outsideContainer, outsideChild}) {
+            TransitionValues values = new TransitionValues(view);
+            transition.captureStartValues(values);
+            assertTrue(values.values.isEmpty());
+        }
     }
 
     @Test
