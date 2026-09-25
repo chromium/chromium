@@ -231,6 +231,9 @@ class ChromeWalletablePassClient;
 #if BUILDFLAG(IS_CHROMEOS)
 class CampaignsManagerSessionTabHelper;
 class GoogleOneOfferIphTabHelper;
+namespace ash {
+class CrosIsolatedWebAppEnabler;
+}  // namespace ash
 namespace web_app {
 class ProtocolHandlerPickerCoordinator;
 }  // namespace web_app
@@ -736,6 +739,8 @@ class TabFeatures {
   std::unique_ptr<GoogleOneOfferIphTabHelper> google_one_offer_iph_tab_helper_;
   std::unique_ptr<CampaignsManagerSessionTabHelper>
       campaigns_manager_session_tab_helper_;
+  std::unique_ptr<ash::CrosIsolatedWebAppEnabler>
+      cros_isolated_web_app_enabler_;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

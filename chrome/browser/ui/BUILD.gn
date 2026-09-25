@@ -1105,7 +1105,6 @@ source_set("tab_helpers_impl") {
       "//chrome/browser/chromeos/gemini_app",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/ui/ash/google_one",
-      "//chromeos/ash/experiences/isolated_web_app",
     ]
   }
 

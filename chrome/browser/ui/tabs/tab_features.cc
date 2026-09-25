@@ -183,6 +183,7 @@
 #include "chrome/browser/ash/growth/campaigns_manager_session_tab_helper.h"
 #include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.h"
+#include "chromeos/ash/experiences/isolated_web_app/cros_isolated_web_app_enabler.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -718,6 +719,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     campaigns_manager_session_tab_helper_ =
         std::make_unique<CampaignsManagerSessionTabHelper>(tab.GetContents());
   }
+  cros_isolated_web_app_enabler_ =
+      std::make_unique<ash::CrosIsolatedWebAppEnabler>(tab.GetContents());
 #endif
 
   // The controller is created for all tabs but only affects back button
@@ -1012,6 +1015,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     campaigns_manager_session_tab_helper_ =
         std::make_unique<CampaignsManagerSessionTabHelper>(new_contents);
   }
+  cros_isolated_web_app_enabler_ =
+      std::make_unique<ash::CrosIsolatedWebAppEnabler>(new_contents);
 #endif
 }
 

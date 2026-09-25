@@ -202,7 +202,6 @@
 #include "chrome/browser/ash/mahi/web_contents/mahi_tab_helper.h"
 #include "chrome/browser/chromeos/gemini_app/gemini_app_tab_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
-#include "chromeos/ash/experiences/isolated_web_app/cros_isolated_web_app_enabler.h"
 #endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
@@ -732,7 +731,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 #if BUILDFLAG(IS_CHROMEOS)
   ash::BootTimesRecorderTabHelper::MaybeCreateForWebContents(web_contents);
 
-  ash::CrosIsolatedWebAppEnabler::CreateForWebContents(web_contents);
   GeminiAppTabHelper::MaybeCreateForWebContents(web_contents);
   mahi::MahiTabHelper::MaybeCreateForWebContents(web_contents);
   policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);

@@ -7,17 +7,15 @@
 
 #include "base/component_export.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace ash {
 
 // This class enables Blink extensions for IWAs on ChromeOS when the
 // `blink::features::kSetShape` feature flag is enabled.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ISOLATED_WEB_APP)
-    CrosIsolatedWebAppEnabler
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<CrosIsolatedWebAppEnabler> {
+    CrosIsolatedWebAppEnabler : public content::WebContentsObserver {
  public:
+  explicit CrosIsolatedWebAppEnabler(content::WebContents* web_contents);
   CrosIsolatedWebAppEnabler(const CrosIsolatedWebAppEnabler&) = delete;
   CrosIsolatedWebAppEnabler& operator=(const CrosIsolatedWebAppEnabler&) =
       delete;
@@ -27,13 +25,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ISOLATED_WEB_APP)
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
-
- private:
-  friend class content::WebContentsUserData<CrosIsolatedWebAppEnabler>;
-
-  explicit CrosIsolatedWebAppEnabler(content::WebContents* web_contents);
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace ash
