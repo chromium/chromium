@@ -2900,8 +2900,7 @@ void RenderWidgetHostViewAndroid::SendMouseEvent(
   }
 
   if (ShouldRouteEvents()) {
-    host()->delegate()->GetInputEventRouter()->RouteMouseEvent(this, &event,
-                                                               info);
+    host()->GetInputEventRouter()->RouteMouseEvent(this, &event, info);
   } else {
     host()->ForwardMouseEventWithLatencyInfo(event, info);
   }
@@ -2945,8 +2944,8 @@ void RenderWidgetHostViewAndroid::SendMouseWheelEvent(
       wheel_event, should_route_events, /*is_fling_capable=*/true);
 
   if (should_route_events) {
-    host()->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
-        this, &wheel_event, latency_info);
+    host()->GetInputEventRouter()->RouteMouseWheelEvent(this, &wheel_event,
+                                                        latency_info);
   } else {
     host()->ForwardWheelEventWithLatencyInfo(wheel_event, latency_info);
   }

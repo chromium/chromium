@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
   auto* widget = GetWidgetHost();
   MainThreadFrameObserver(widget).Wait();
   auto* view = widget->GetView();
-  auto* router = widget->delegate()->GetInputEventRouter();
+  auto* router = widget->GetInputEventRouter();
   blink::SyntheticWebTouchEvent touch_event;
 
   touch_event.PressPoint(50, 50);

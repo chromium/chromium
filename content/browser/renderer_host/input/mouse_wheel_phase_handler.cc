@@ -178,11 +178,11 @@ void MouseWheelPhaseHandler::SendSyntheticWheelEventWithPhaseEnded(
 
   if (should_route_event) {
     RenderWidgetHostImpl* widget_host = host_view_->host();
-    if (!widget_host || !widget_host->delegate() ||
-        !widget_host->delegate()->GetInputEventRouter())
+    if (!widget_host || !widget_host->GetInputEventRouter()) {
       return;
+    }
 
-    widget_host->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
+    widget_host->GetInputEventRouter()->RouteMouseWheelEvent(
         host_view_, &last_mouse_wheel_event_, ui::LatencyInfo());
   } else {
     host_view_->ProcessMouseWheelEvent(last_mouse_wheel_event_,

@@ -152,7 +152,7 @@ class AutoscrollBrowserTest : public ContentBrowserTest {
     down_event.SetTimeStamp(ui::EventTimeForNow());
     down_event.SetPositionInScreen(x, y);
 
-    auto* router = GetWidgetHost()->delegate()->GetInputEventRouter();
+    auto* router = GetWidgetHost()->GetInputEventRouter();
     if (router) {
       router->RouteMouseEvent(GetWidgetHost()->GetView(), &down_event,
                               ui::LatencyInfo());

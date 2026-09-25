@@ -97,8 +97,7 @@ class TouchInputBrowserTest : public ContentBrowserTest {
  protected:
   void SendTouchEvent(blink::SyntheticWebTouchEvent* event) {
     auto* root_view = GetWidgetHost()->GetView();
-    auto* input_event_router =
-        GetWidgetHost()->delegate()->GetInputEventRouter();
+    auto* input_event_router = GetWidgetHost()->GetInputEventRouter();
     input_event_router->RouteTouchEvent(root_view, event, ui::LatencyInfo());
 
     event->ResetPoints();

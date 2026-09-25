@@ -899,8 +899,8 @@ void RenderWidgetHostViewMac::OnGestureEvent(
 
   if (ShouldRouteEvents()) {
     blink::WebGestureEvent gesture_event(web_gesture);
-    host()->delegate()->GetInputEventRouter()->RouteGestureEvent(
-        this, &gesture_event, latency_info);
+    host()->GetInputEventRouter()->RouteGestureEvent(this, &gesture_event,
+                                                     latency_info);
   } else {
     host()->GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
         web_gesture, latency_info);
@@ -1681,13 +1681,11 @@ void RenderWidgetHostViewMac::ProcessAckedTouchEvent(
   if (destroy_pending()) {
     return;
   }
-  if (touch.event.touch_start_or_first_touch_move && event_consumed && host() &&
-      host()->delegate() && host()->delegate()->GetInputEventRouter()) {
-    host()
-        ->delegate()
-        ->GetInputEventRouter()
-        ->OnHandledTouchStartOrFirstTouchMove(
-            touch.event.unique_touch_event_id);
+  if (touch.event.touch_start_or_first_touch_move && event_consumed && host()) {
+    if (auto* router = host()->GetInputEventRouter()) {
+      router->OnHandledTouchStartOrFirstTouchMove(
+          touch.event.unique_touch_event_id);
+    }
   }
 }
 
@@ -1740,7 +1738,7 @@ bool RenderWidgetHostViewMac::ShouldRouteEvents() const {
     return false;
   }
 
-  return host()->delegate() && host()->delegate()->GetInputEventRouter();
+  return !!host()->GetInputEventRouter();
 }
 
 void RenderWidgetHostViewMac::SendTouchpadZoomEvent(
@@ -1750,8 +1748,8 @@ void RenderWidgetHostViewMac::SendTouchpadZoomEvent(
   }
   CHECK(event->IsTouchpadZoomEvent(), base::NotFatalUntil::M152);
   if (ShouldRouteEvents()) {
-    host()->delegate()->GetInputEventRouter()->RouteGestureEvent(
-        this, event, ui::LatencyInfo());
+    host()->GetInputEventRouter()->RouteGestureEvent(this, event,
+                                                     ui::LatencyInfo());
     return;
   }
   host()->ForwardGestureEvent(*event);
@@ -1770,8 +1768,8 @@ void RenderWidgetHostViewMac::InjectTouchEvent(
 
   if (ShouldRouteEvents()) {
     WebTouchEvent touch_event(event);
-    host()->delegate()->GetInputEventRouter()->RouteTouchEvent(
-        this, &touch_event, latency_info);
+    host()->GetInputEventRouter()->RouteTouchEvent(this, &touch_event,
+                                                   latency_info);
   } else {
     host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
         event, latency_info);
@@ -2155,8 +2153,8 @@ void RenderWidgetHostViewMac::RouteOrProcessMouseEvent(
   ui::LatencyInfo latency_info;
   latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
   if (ShouldRouteEvents()) {
-    host()->delegate()->GetInputEventRouter()->RouteMouseEvent(this, &web_event,
-                                                               latency_info);
+    host()->GetInputEventRouter()->RouteMouseEvent(this, &web_event,
+                                                   latency_info);
   } else {
     ProcessMouseEvent(web_event, latency_info);
   }
@@ -2186,8 +2184,8 @@ void RenderWidgetHostViewMac::RouteOrProcessTouchEvent(
   ui::LatencyInfo latency_info;
   latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
   if (ShouldRouteEvents()) {
-    host()->delegate()->GetInputEventRouter()->RouteTouchEvent(this, &web_event,
-                                                               latency_info);
+    host()->GetInputEventRouter()->RouteTouchEvent(this, &web_event,
+                                                   latency_info);
   } else {
     ProcessTouchEvent(web_event, latency_info);
   }
@@ -2210,8 +2208,8 @@ void RenderWidgetHostViewMac::RouteOrProcessWheelEvent(
     return;
   }
   if (ShouldRouteEvents()) {
-    host()->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
-        this, &web_event, latency_info);
+    host()->GetInputEventRouter()->RouteMouseWheelEvent(this, &web_event,
+                                                        latency_info);
   } else {
     ProcessMouseWheelEvent(web_event, latency_info);
   }
@@ -2327,9 +2325,9 @@ void RenderWidgetHostViewMac::LookUpDictionaryOverlayFromRange(
 
 void RenderWidgetHostViewMac::LookUpDictionaryOverlayAtPoint(
     const gfx::PointF& root_point_in_dips) {
-  if (!host() || !host()->delegate() ||
-      !host()->delegate()->GetInputEventRouter())
+  if (!host() || !host()->GetInputEventRouter()) {
     return;
+  }
 
   // With zoom-for-dsf, RenderWidgetHost coordinate system is physical points,
   // which means we have to scale the point by device scale factor.
@@ -2337,11 +2335,9 @@ void RenderWidgetHostViewMac::LookUpDictionaryOverlayAtPoint(
   root_point.Scale(GetDeviceScaleFactor());
 
   gfx::PointF transformed_point;
-  auto* view = host()
-                   ->delegate()
-                   ->GetInputEventRouter()
-                   ->GetRenderWidgetHostViewInputAtPoint(this, root_point,
-                                                         &transformed_point);
+  auto* view =
+      host()->GetInputEventRouter()->GetRenderWidgetHostViewInputAtPoint(
+          this, root_point, &transformed_point);
   if (!view) {
     return;
   }
@@ -2370,16 +2366,14 @@ bool RenderWidgetHostViewMac::SyncGetCharacterIndexAtPoint(
     uint32_t* index) {
   *index = UINT32_MAX;
 
-  if (!host() || !host()->delegate() ||
-      !host()->delegate()->GetInputEventRouter())
+  if (!host() || !host()->GetInputEventRouter()) {
     return true;
+  }
 
   gfx::PointF transformed_point;
-  auto* view = host()
-                   ->delegate()
-                   ->GetInputEventRouter()
-                   ->GetRenderWidgetHostViewInputAtPoint(this, root_point,
-                                                         &transformed_point);
+  auto* view =
+      host()->GetInputEventRouter()->GetRenderWidgetHostViewInputAtPoint(
+          this, root_point, &transformed_point);
   if (!view) {
     return true;
   }

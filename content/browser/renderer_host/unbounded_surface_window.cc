@@ -28,8 +28,7 @@ template <typename EventType>
 void RouteWebPointerEvent(RenderWidgetHostViewBase* parent_view,
                           const EventType& event) {
   if (!parent_view || !parent_view->host() ||
-      !parent_view->host()->delegate() ||
-      !parent_view->host()->delegate()->GetInputEventRouter()) {
+      !parent_view->host()->GetInputEventRouter()) {
     return;
   }
   RenderWidgetHostViewBase* root_view =
@@ -51,13 +50,11 @@ void RouteWebPointerEvent(RenderWidgetHostViewBase* parent_view,
   web_event.SetPositionInWidget(parent_local_point.x(), parent_local_point.y());
 
   if constexpr (std::is_same_v<EventType, blink::WebMouseEvent>) {
-    parent_view->host()->delegate()->GetInputEventRouter()->RouteMouseEvent(
+    parent_view->host()->GetInputEventRouter()->RouteMouseEvent(
         parent_view, &web_event, ui::LatencyInfo());
   } else if constexpr (std::is_same_v<EventType, blink::WebMouseWheelEvent>) {
-    parent_view->host()
-        ->delegate()
-        ->GetInputEventRouter()
-        ->RouteMouseWheelEvent(parent_view, &web_event, ui::LatencyInfo());
+    parent_view->host()->GetInputEventRouter()->RouteMouseWheelEvent(
+        parent_view, &web_event, ui::LatencyInfo());
   }
 }
 

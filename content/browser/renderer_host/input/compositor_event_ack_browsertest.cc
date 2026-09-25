@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest,
   // Send the touch events via routing since they need to be registered by the
   // TouchEventAckQueue.
   auto* root_view = GetWidgetHost()->GetView();
-  auto* input_event_router = GetWidgetHost()->delegate()->GetInputEventRouter();
+  auto* input_event_router = GetWidgetHost()->GetInputEventRouter();
 
   // Send a TouchStart so that we can set allowed touch action to Auto.
   blink::SyntheticWebTouchEvent touch_event;

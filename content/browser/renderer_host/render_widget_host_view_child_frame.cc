@@ -724,9 +724,8 @@ void RenderWidgetHostViewChildFrame::RegisterFrameSinkId() {
 
 void RenderWidgetHostViewChildFrame::UnregisterFrameSinkId() {
   if (host()) {
-    if (host()->delegate() && host()->delegate()->GetInputEventRouter()) {
-      host()->delegate()->GetInputEventRouter()->RemoveFrameSinkIdOwner(
-          frame_sink_id_);
+    if (auto* router = host()->GetInputEventRouter()) {
+      router->RemoveFrameSinkIdOwner(frame_sink_id_);
     }
   }
   DetachFromTouchSelectionClientManagerIfNecessary();

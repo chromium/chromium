@@ -1401,8 +1401,7 @@ void InputHandler::HandleMouseEvent(
   RenderWidgetHostImpl* widget_host =
       host_ ? host_->GetRenderWidgetHost() : nullptr;
   if (!widget_host || !widget_host->delegate() ||
-      !widget_host->delegate()->GetInputEventRouter() ||
-      !widget_host->GetView()) {
+      !widget_host->GetInputEventRouter() || !widget_host->GetView()) {
     callback->sendFailure(Response::InternalError());
     return;
   }
@@ -1449,8 +1448,7 @@ void InputHandler::DispatchDragEvent(
   RenderWidgetHostImpl* widget_host =
       host_ ? host_->GetRenderWidgetHost() : nullptr;
   if (!widget_host || !widget_host->delegate() ||
-      !widget_host->delegate()->GetInputEventRouter() ||
-      !widget_host->GetView()) {
+      !widget_host->GetInputEventRouter() || !widget_host->GetView()) {
     callback->sendFailure(Response::InternalError());
     return;
   }
@@ -1705,8 +1703,7 @@ void InputHandler::DispatchWebTouchEvent(
   RenderWidgetHostImpl* widget_host =
       host_ ? host_->GetRenderWidgetHost() : nullptr;
   if (!widget_host || !widget_host->delegate() ||
-      !widget_host->delegate()->GetInputEventRouter() ||
-      !widget_host->GetView()) {
+      !widget_host->GetInputEventRouter() || !widget_host->GetView()) {
     callback->sendFailure(Response::InternalError());
     return;
   }

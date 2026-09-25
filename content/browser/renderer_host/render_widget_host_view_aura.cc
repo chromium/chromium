@@ -1471,13 +1471,11 @@ void RenderWidgetHostViewAura::ProcessAckedTouchEvent(
         return;
       }
       if (touch.event.touch_start_or_first_touch_move &&
-          result == ui::ER_HANDLED && host()->delegate() &&
-          host()->delegate()->GetInputEventRouter()) {
-        host()
-            ->delegate()
-            ->GetInputEventRouter()
-            ->OnHandledTouchStartOrFirstTouchMove(
-                touch.event.unique_touch_event_id);
+          result == ui::ER_HANDLED && host()) {
+        if (auto* router = host()->GetInputEventRouter()) {
+          router->OnHandledTouchStartOrFirstTouchMove(
+              touch.event.unique_touch_event_id);
+        }
       }
       sent_ack = true;
     }

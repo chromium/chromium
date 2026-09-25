@@ -3381,9 +3381,11 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
 }
 
 void RenderWidgetHostImpl::AutoscrollStart(const gfx::PointF& position) {
+  if (!GetInputEventRouter()) {
+    return;
+  }
   input::RenderWidgetTargeter::AutoscrollStatus status =
-      delegate()->GetInputEventRouter()->SetAutoScrollInProgress(GetView(),
-                                                                 true);
+      GetInputEventRouter()->SetAutoScrollInProgress(GetView(), true);
   if (status == input::RenderWidgetTargeter::AutoscrollStatus::kFailed) {
     return;
   }
@@ -3436,8 +3438,9 @@ void RenderWidgetHostImpl::AutoscrollFling(const gfx::Vector2dF& velocity) {
 void RenderWidgetHostImpl::AutoscrollEnd() {
   autoscroll_in_progress_ = false;
 
-  delegate()->GetInputEventRouter()->SetAutoScrollInProgress(
-      GetView(), autoscroll_in_progress_);
+  if (auto* router = GetInputEventRouter()) {
+    router->SetAutoScrollInProgress(GetView(), autoscroll_in_progress_);
+  }
   // Don't send a GFC if no GSB is sent.
   if (!sent_autoscroll_scroll_begin_) {
     return;
@@ -3481,12 +3484,11 @@ bool RenderWidgetHostImpl::IsAutoscrollInProgress() {
 
 TouchEmulatorImpl* RenderWidgetHostImpl::GetTouchEmulator(
     bool create_if_necessary) {
-  if (!delegate_ || !delegate_->GetInputEventRouter()) {
-    return nullptr;
+  if (auto* router = GetInputEventRouter()) {
+    return static_cast<TouchEmulatorImpl*>(
+        router->GetTouchEmulator(create_if_necessary));
   }
-
-  return static_cast<TouchEmulatorImpl*>(
-      delegate_->GetInputEventRouter()->GetTouchEmulator(create_if_necessary));
+  return nullptr;
 }
 
 void RenderWidgetHostImpl::TextInputStateChanged(
@@ -3611,11 +3613,9 @@ void RenderWidgetHostImpl::PassImeRenderWidgetHost(
 }
 
 void RenderWidgetHostImpl::SetMouseCapture(bool capture) {
-  if (!delegate_ || !delegate_->GetInputEventRouter()) {
-    return;
+  if (auto* router = GetInputEventRouter()) {
+    router->SetMouseCaptureTarget(GetView(), capture);
   }
-
-  delegate_->GetInputEventRouter()->SetMouseCaptureTarget(GetView(), capture);
 }
 
 void RenderWidgetHostImpl::SetAutoscrollSelectionActiveInMainFrame(
@@ -3636,12 +3636,9 @@ void RenderWidgetHostImpl::SetAutoscrollSelectionActiveInMainFrame(
     return;
   }
 
-  if (!delegate_ || !delegate_->GetInputEventRouter()) {
-    return;
+  if (auto* router = GetInputEventRouter()) {
+    router->RootViewReceivesMouseUpIfNecessary(autoscroll_selection);
   }
-
-  delegate_->GetInputEventRouter()->RootViewReceivesMouseUpIfNecessary(
-      autoscroll_selection);
 }
 
 void RenderWidgetHostImpl::RequestMouseLock(
@@ -4150,8 +4147,8 @@ void RenderWidgetHostImpl::RegisterRenderFrameMetadataObserver(
 }
 
 bool RenderWidgetHostImpl::HasGestureStopped() {
-  if (delegate_ && delegate_->GetInputEventRouter() &&
-      delegate_->GetInputEventRouter()->HasEventsPendingDispatch()) {
+  if (auto* router = GetInputEventRouter();
+      router && router->HasEventsPendingDispatch()) {
     return false;
   }
 

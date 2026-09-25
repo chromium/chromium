@@ -448,12 +448,11 @@ void UnboundedSurfaceWindowAura::OnTouchEvent(ui::TouchEvent* event) {
   }
 
   if (!parent_view_ || !parent_view_->host() ||
-      !parent_view_->host()->delegate() ||
-      !parent_view_->host()->delegate()->GetInputEventRouter()) {
+      !parent_view_->host()->GetInputEventRouter()) {
     return;
   }
   input::RenderWidgetHostInputEventRouter* router =
-      parent_view_->host()->delegate()->GetInputEventRouter();
+      parent_view_->host()->GetInputEventRouter();
 
   if (!pointer_state_.OnTouch(*event)) {
     event->StopPropagation();

@@ -625,7 +625,7 @@ bool RenderWidgetHostViewIOS::ShouldRouteEvents() const {
   if (!host()) {
     return false;
   }
-  return host()->delegate() && host()->delegate()->GetInputEventRouter();
+  return !!host()->GetInputEventRouter();
 }
 
 void RenderWidgetHostViewIOS::OnTouchEvent(blink::WebTouchEvent web_event) {
@@ -641,8 +641,8 @@ void RenderWidgetHostViewIOS::OnTouchEvent(blink::WebTouchEvent web_event) {
   ui::LatencyInfo latency_info;
   latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
   if (ShouldRouteEvents()) {
-    host()->delegate()->GetInputEventRouter()->RouteTouchEvent(this, &web_event,
-                                                               latency_info);
+    host()->GetInputEventRouter()->RouteTouchEvent(this, &web_event,
+                                                   latency_info);
   } else {
     host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
         web_event, latency_info);
@@ -664,11 +664,8 @@ void RenderWidgetHostViewIOS::ProcessAckedTouchEvent(
   }
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
       ShouldRouteEvents()) {
-    host()
-        ->delegate()
-        ->GetInputEventRouter()
-        ->OnHandledTouchStartOrFirstTouchMove(
-            touch.event.unique_touch_event_id);
+    host()->GetInputEventRouter()->OnHandledTouchStartOrFirstTouchMove(
+        touch.event.unique_touch_event_id);
   }
 }
 
@@ -711,8 +708,8 @@ void RenderWidgetHostViewIOS::InjectTouchEvent(
 
   if (ShouldRouteEvents()) {
     blink::WebTouchEvent touch_event(event);
-    host()->delegate()->GetInputEventRouter()->RouteTouchEvent(
-        this, &touch_event, latency_info);
+    host()->GetInputEventRouter()->RouteTouchEvent(this, &touch_event,
+                                                   latency_info);
   } else if (host()) {
     host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
         event, latency_info);
@@ -728,8 +725,8 @@ void RenderWidgetHostViewIOS::InjectGestureEvent(
   ScopedInputDispatchPin pin(this);
   if (ShouldRouteEvents()) {
     blink::WebGestureEvent gesture_event(event);
-    host()->delegate()->GetInputEventRouter()->RouteGestureEvent(
-        this, &gesture_event, latency_info);
+    host()->GetInputEventRouter()->RouteGestureEvent(this, &gesture_event,
+                                                     latency_info);
   } else {
     host()->GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
         event, latency_info);
@@ -744,8 +741,8 @@ void RenderWidgetHostViewIOS::InjectMouseEvent(
   }
   if (ShouldRouteEvents()) {
     blink::WebMouseEvent mouse_event(web_mouse);
-    host()->delegate()->GetInputEventRouter()->RouteMouseEvent(
-        this, &mouse_event, latency_info);
+    host()->GetInputEventRouter()->RouteMouseEvent(this, &mouse_event,
+                                                   latency_info);
   } else {
     host()->ForwardMouseEventWithLatencyInfo(web_mouse, latency_info);
   }
@@ -759,7 +756,7 @@ void RenderWidgetHostViewIOS::InjectMouseWheelEvent(
   }
   if (ShouldRouteEvents()) {
     blink::WebMouseWheelEvent mouse_wheel_event(web_wheel);
-    host()->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
+    host()->GetInputEventRouter()->RouteMouseWheelEvent(
         this, &mouse_wheel_event, latency_info);
   } else {
     host()->ForwardWheelEventWithLatencyInfo(web_wheel, latency_info);

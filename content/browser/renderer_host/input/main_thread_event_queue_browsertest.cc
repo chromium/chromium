@@ -163,8 +163,7 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
         GetWidgetHost(), blink::WebInputEvent::Type::kTouchMove);
 
     auto* root_view = GetWidgetHost()->GetView();
-    auto* input_event_router =
-        GetWidgetHost()->delegate()->GetInputEventRouter();
+    auto* input_event_router = GetWidgetHost()->GetInputEventRouter();
     for (auto& event : events)
       input_event_router->RouteTouchEvent(root_view, &event, ui::LatencyInfo());
 

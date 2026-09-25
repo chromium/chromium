@@ -106,7 +106,7 @@ void RenderViewHostTester::SendTouchEvent(
     blink::SyntheticWebTouchEvent* touch_event) {
   RenderWidgetHostImpl* host_impl =
       RenderWidgetHostImpl::From(rvh->GetWidget());
-  auto* input_event_router = host_impl->delegate()->GetInputEventRouter();
+  auto* input_event_router = host_impl->GetInputEventRouter();
   input_event_router->RouteTouchEvent(host_impl->GetView(), touch_event,
                                       ui::LatencyInfo());
 }
