@@ -3461,6 +3461,7 @@ void WebViewImpl::ResetScaleStateImmediately() {
 void WebViewImpl::ResetScrollAndScaleState() {
   // Skip scroll restoration when restoring from back-forward cache.
   if (last_page_lifecycle_state_update_restored_from_bfcache_) {
+    last_page_lifecycle_state_update_restored_from_bfcache_ = false;
     return;
   }
   GetPage()->GetVisualViewport().Reset();
@@ -4009,7 +4010,6 @@ void WebViewImpl::DidCommitLoad(bool is_new_navigation,
     }
   }
 
-  last_page_lifecycle_state_update_restored_from_bfcache_ = false;
   // Give the visual viewport's scroll layer its initial size.
   GetPage()->GetVisualViewport().MainFrameDidChangeSize();
 }
