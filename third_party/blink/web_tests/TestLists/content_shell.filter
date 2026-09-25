@@ -59,12 +59,7 @@ external/wpt/css/cssom-view/range-bounding-client-rect-with-display-contents.htm
 external/wpt/css/cssom-view/scrollLeft-of-scroller-with-wider-scrollbar.html
 external/wpt/css/cssom-view/scrollIntoView-stuck.tentative.html
 external/wpt/css/cssom-view/scrollTop-display-change.html
-external/wpt/css/css-overflow/line-clamp/*
-external/wpt/css/css-overflow/overflow-recalc-001.html
-external/wpt/css/css-overflow/scrollable-overflow-input-001.html
-external/wpt/css/css-overflow/scrollable-overflow-input-002.html
-external/wpt/css/css-overflow/scrollbar-gutter-*
-external/wpt/css/css-overscroll-behavior/overscroll-behavior-root.html
+external/wpt/css/css-overflow/line-clamp/block-ellipsis-bidi-002.html
 external/wpt/css/css-pseudo/active-selection-014.html
 external/wpt/css/css-pseudo/first-letter-001.html
 external/wpt/css/css-pseudo/highlight-cascade/highlight-cascade-008.html
