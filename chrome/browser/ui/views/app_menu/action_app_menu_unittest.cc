@@ -10,6 +10,8 @@
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -2301,5 +2303,98 @@ TEST_F(ActionAppMenuTest, MultipleNotificationsSeparatedBySpacingSeparator) {
   menu.CloseMenu();
 }
 #endif
+
+TEST_F(ActionAppMenuTest, MenuOpenAndCommandExecutionMetrics) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  EXPECT_EQ(user_action_tester.GetActionCount("ShowAppMenu"), 1);
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_MENU_OPENED, 1);
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* tab_groups_item =
+      root->GetMenuItemByID(kActionSavedTabGroupsSubmenu);
+  ASSERT_TRUE(tab_groups_item);
+  menu.WillShowMenu(tab_groups_item);
+
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_SHOW_SAVED_TAB_GROUPS, 1);
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.ShowSavedTabGroups", 1);
+
+  EXPECT_CALL(mock_action_invoked_, Call(kActionPrint, testing::_, testing::_))
+      .Times(1);
+  menu.ExecuteCommand(kActionPrint, /*mouse_event_flags=*/0);
+
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction", MENU_ACTION_PRINT,
+                                     1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction.Print", 1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, ZoomAndBlockButtonMetrics) {
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+  auto* zoom_view =
+      views::AsViewClass<AppMenuZoomView>(zoom_item->children()[0]);
+  ASSERT_TRUE(zoom_view);
+
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionZoomPlus, testing::_, testing::_))
+      .Times(2);
+  views::test::ButtonTestApi(zoom_view->zoom_plus_button_for_testing())
+      .NotifyDefaultMouseClick();
+  // Second click while menu stays open should not record a duplicate
+  // TimeToAction or ZoomPlus action.
+  views::test::ButtonTestApi(zoom_view->zoom_plus_button_for_testing())
+      .NotifyDefaultMouseClick();
+
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_ZOOM_PLUS, 1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction.ZoomPlus", 1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
+
+  // Clicking a block button closes the menu and records its MenuAction,
+  // without recording a second TimeToAction.
+  views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(0);
+  ASSERT_NE(block_item, nullptr);
+  auto* block_section_view =
+      views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
+  ASSERT_TRUE(block_section_view);
+  auto* new_tab_button =
+      views::AsViewClass<AppMenuBlockButton>(block_section_view->children()[0]);
+  ASSERT_TRUE(new_tab_button);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  EXPECT_CALL(mock_action_invoked_, Call(kActionNewTab, testing::_, testing::_))
+      .Times(1);
+  views::test::ButtonTestApi(new_tab_button).NotifyDefaultMouseClick();
+
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_NEW_TAB, 1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction.NewTab", 0);
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
+}
 
 }  // namespace

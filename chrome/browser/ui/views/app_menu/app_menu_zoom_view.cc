@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_metrics.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/zoom/page_zoom.h"
@@ -57,8 +58,9 @@ AppMenuZoomView::AppMenuZoomView(
     BrowserWindowInterface* browser_window_interface,
     views::ActionViewController* action_view_controller,
     base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map,
-    actions::BaseAction* zoom_row_action_item)
-    : browser_window_interface_(browser_window_interface) {
+    actions::BaseAction* zoom_row_action_item,
+    ActionAppMenuMetrics& metrics)
+    : browser_window_interface_(browser_window_interface), metrics_(&metrics) {
   CHECK(browser_window_interface_);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
@@ -139,6 +141,12 @@ void AppMenuZoomView::BuildZoomChildControls(
 
       action_view_controller->CreateActionViewRelationship(
           zoom_child_button, zoom_child->GetAsWeakPtr());
+      zoom_child_button->SetCallback(base::BindRepeating(
+          [](AppMenuZoomView* zoom_view, actions::BaseAction* base_action) {
+            zoom_view->metrics_->LogMenuAction(base_action);
+            base_action->GetActionItem()->InvokeAction();
+          },
+          base::Unretained(this), zoom_child_holder.get()));
 
       if (zoom_action_id == kActionZoomPlus) {
         auto separator = std::make_unique<views::Separator>();

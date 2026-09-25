@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_metrics.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/command_id_constants.h"
 #include "ui/views/actions/action_view_controller.h"
@@ -119,6 +120,9 @@ class ActionAppMenu : public views::MenuDelegate {
 
   // Manages the ActionItem hierarchy and dynamic submenus.
   std::unique_ptr<ActionAppMenuManager> menu_manager_;
+
+  // Records UMA histograms and user actions for menu interactions.
+  ActionAppMenuMetrics metrics_;
 
   int next_id_ = COMMAND_ID_FIRST_UNBOUNDED;
 };

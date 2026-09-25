@@ -16,6 +16,7 @@
 #include "ui/color/color_id.h"
 #include "ui/views/layout/box_layout_view.h"
 
+class ActionAppMenuMetrics;
 class BrowserWindowInterface;
 
 namespace content {
@@ -37,7 +38,8 @@ class AppMenuZoomView : public views::BoxLayoutView {
       BrowserWindowInterface* browser_window_interface,
       views::ActionViewController* action_view_controller,
       base::flat_map<int, raw_ptr<actions::BaseAction>>& command_to_action_map,
-      actions::BaseAction* zoom_row_action_item);
+      actions::BaseAction* zoom_row_action_item,
+      ActionAppMenuMetrics& metrics);
 
   AppMenuZoomView(const AppMenuZoomView&) = delete;
   AppMenuZoomView& operator=(const AppMenuZoomView&) = delete;
@@ -72,6 +74,7 @@ class AppMenuZoomView : public views::BoxLayoutView {
   content::WebContents* GetActiveWebContents() const;
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
+  raw_ptr<ActionAppMenuMetrics> metrics_;
   raw_ptr<views::Label> zoom_label_ = nullptr;
   raw_ptr<views::ImageButton> zoom_minus_button_ = nullptr;
   raw_ptr<views::ImageButton> zoom_plus_button_ = nullptr;

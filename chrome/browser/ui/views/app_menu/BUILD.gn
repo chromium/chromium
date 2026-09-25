@@ -11,6 +11,7 @@ source_set("app_menu") {
   public = [
     "action_app_menu.h",
     "action_app_menu_manager.h",
+    "action_app_menu_metrics.h",
     "app_menu_action_item.h",
     "app_menu_block_button.h",
     "app_menu_block_view.h",
@@ -55,6 +56,7 @@ source_set("impl") {
   sources = [
     "action_app_menu.cc",
     "action_app_menu_manager.cc",
+    "action_app_menu_metrics.cc",
     "app_menu_action_item.cc",
     "app_menu_block_button.cc",
     "app_menu_block_view.cc",

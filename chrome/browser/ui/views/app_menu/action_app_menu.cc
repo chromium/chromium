@@ -31,6 +31,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -41,6 +42,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -145,12 +147,15 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host) {
   int32_t types = views::MenuRunner::HAS_MNEMONICS;
   menu_runner_ = std::make_unique<views::MenuRunner>(std::move(root), types);
 
-  // TODO(crbug.com/526712325): Create duplicate app menu histograms specific to
-  // the Block Style ChroMenu.
+  metrics_.OnMenuOpened();
+
   menu_runner_->RunMenuAt(host->button()->GetWidget(), host,
                           host->button()->GetAnchorBoundsInScreen(),
                           views::MenuAnchorPosition::kTopRight,
-                          ui::mojom::MenuSourceType::kNone);
+                          ui::mojom::MenuSourceType::kNone,
+                          /*native_view_for_gestures=*/gfx::NativeView(),
+                          /*corners=*/std::nullopt,
+                          "Chrome.AppMenu.MenuHostInitToNextFramePresented");
 }
 
 void ActionAppMenu::CloseMenu() {
@@ -167,8 +172,11 @@ void ActionAppMenu::ExecuteCommand(int id, int mouse_event_flags) {
   auto action_iterator = command_to_action_map_.find(id);
   CHECK(action_iterator != command_to_action_map_.end());
 
-  actions::ActionItem* action_ptr = action_iterator->second->GetActionItem();
+  actions::BaseAction* base_action = action_iterator->second;
+  actions::ActionItem* action_ptr = base_action->GetActionItem();
   CHECK(action_ptr);
+
+  metrics_.LogMenuAction(base_action);
 
   action_ptr->InvokeAction(
       actions::ActionInvocationContext::Builder()
@@ -205,6 +213,8 @@ void ActionAppMenu::WillShowMenu(views::MenuItemView* menu) {
   if (!menu->HasSubmenu() || !menu->GetSubmenu()->GetMenuItems().empty()) {
     return;
   }
+
+  metrics_.OnWillShowSubMenu(menu->GetCommand());
 
   auto action_iterator = command_to_action_map_.find(menu->GetCommand());
   if (action_iterator != command_to_action_map_.end() &&
@@ -262,6 +272,9 @@ std::optional<SkColor> ActionAppMenu::GetLabelColor(int id) const {
 
 void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id) {
   if (!action_to_execute_on_close_.has_value()) {
+    auto action_iterator = command_to_action_map_.find(action_id);
+    CHECK(action_iterator != command_to_action_map_.end());
+    metrics_.LogMenuAction(action_iterator->second);
     action_to_execute_on_close_ = action_id;
     CloseMenu();
   }
@@ -557,7 +570,7 @@ void ActionAppMenu::PopulateCustomRow(views::MenuItemView* view_parent,
     case kActionZoomSubmenu:
       view_parent->AddChildView(std::make_unique<AppMenuZoomView>(
           browser_window_interface_, &action_view_controller_,
-          command_to_action_map_, custom_action_item));
+          command_to_action_map_, custom_action_item, metrics_));
       break;
 
     default:
