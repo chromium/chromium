@@ -26,12 +26,12 @@ class ReadAloudPrefsTest : public testing::Test {
 
 TEST_F(ReadAloudPrefsTest, GetReliabilityLoggingId_NotAllowed) {
   // Return 0 if metrics_id is empty.
-  EXPECT_EQ(0ULL, GetReliabilityLoggingId(*pref_service_, ""));
+  EXPECT_EQ(GetReliabilityLoggingId(*pref_service_, ""), 0ULL);
 }
 
 TEST_F(ReadAloudPrefsTest, GetReliabilityLoggingId_SameMetricsID) {
   uint64_t id = GetReliabilityLoggingId(*pref_service_, "abcd");
-  EXPECT_NE(0ULL, id);
+  EXPECT_NE(id, 0ULL);
 
   // Second call with same metrics_id should return the same value.
   EXPECT_EQ(id, GetReliabilityLoggingId(*pref_service_, "abcd"));
@@ -39,7 +39,7 @@ TEST_F(ReadAloudPrefsTest, GetReliabilityLoggingId_SameMetricsID) {
 
 TEST_F(ReadAloudPrefsTest, GetReliabilityLoggingId_DifferentMetricsID) {
   uint64_t id = GetReliabilityLoggingId(*pref_service_, "abcd");
-  EXPECT_NE(0ULL, id);
+  EXPECT_NE(id, 0ULL);
 
   // Second call with different metrics_id should return a different value.
   EXPECT_NE(id, GetReliabilityLoggingId(*pref_service_, "efgh"));
