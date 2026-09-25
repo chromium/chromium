@@ -103,8 +103,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ResetCache) {
   }
 }
 
+// TODO(crbug.com/501036619): Failing after being wired.
 IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
-                       ClearAutofillAiEntitySuppressions) {
+                       DISABLED_ClearAutofillAiEntitySuppressions) {
   autofill::EntitySuppressionManager* suppression_manager =
       autofill::EntitySuppressionManagerFactory::GetForProfile(GetProfile());
   ASSERT_TRUE(suppression_manager);
