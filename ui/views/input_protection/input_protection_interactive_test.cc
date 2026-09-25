@@ -135,6 +135,14 @@ void DispatchKeyPressAndRelease(View* view, ui::KeyboardCode key, int flags) {
   DispatchKeyReleaseOnly(view, key, flags);
 }
 
+void DispatchTouchTap(View* view, const std::optional<gfx::Point>& tap_point) {
+  gfx::Point root_point = GetPointInRootView(view, tap_point);
+  ui::GestureEventDetails tap_details(ui::EventType::kGestureTap);
+  ui::GestureEvent tap(root_point.x(), root_point.y(), 0, ui::EventTimeForNow(),
+                       tap_details);
+  view->GetWidget()->OnGestureEvent(&tap);
+}
+
 }  // namespace
 
 InputProtectionTestApi::InputProtectionTestApi() = default;
@@ -294,6 +302,44 @@ InputProtectionTestApi::KeyPressAndReleaseExpectingAllowed(
     EXPECT_EQ(action_counter, initial_count + 1);
   });
   step.SetDescription("KeyPressAndReleaseExpectingAllowed()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder InputProtectionTestApi::TouchTap(
+    ui::ElementIdentifier element_id,
+    std::optional<gfx::Point> tap_point) {
+  auto step = WithView(element_id, [tap_point](View* view) {
+    DispatchTouchTap(view, tap_point);
+  });
+  step.SetDescription("TouchTap()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::TouchTapExpectingBlocked(
+    ui::ElementIdentifier element_id,
+    const int& action_counter,
+    std::optional<gfx::Point> tap_point) {
+  auto step = WithView(element_id, [&action_counter, tap_point](View* view) {
+    const int initial_count = action_counter;
+    DispatchTouchTap(view, tap_point);
+    EXPECT_EQ(action_counter, initial_count);
+  });
+  step.SetDescription("TouchTapExpectingBlocked()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::TouchTapExpectingAllowed(
+    ui::ElementIdentifier element_id,
+    const int& action_counter,
+    std::optional<gfx::Point> tap_point) {
+  auto step = WithView(element_id, [&action_counter, tap_point](View* view) {
+    const int initial_count = action_counter;
+    DispatchTouchTap(view, tap_point);
+    EXPECT_EQ(action_counter, initial_count + 1);
+  });
+  step.SetDescription("TouchTapExpectingAllowed()");
   return step;
 }
 

@@ -110,6 +110,25 @@ class InputProtectionTestApi
                                      const int& action_counter,
                                      int flags = ui::EF_NONE);
 
+  // Dispatches a simulated gesture tap to `element_id` at `tap_point` (or the
+  // center point if `tap_point` is omitted).
+  [[nodiscard]] ui::InteractionSequence::StepBuilder TouchTap(
+      ui::ElementIdentifier element_id,
+      std::optional<gfx::Point> tap_point = std::nullopt);
+
+  // Dispatches a gesture tap and verifies the tap was blocked by input
+  // protection.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder TouchTapExpectingBlocked(
+      ui::ElementIdentifier element_id,
+      const int& action_counter,
+      std::optional<gfx::Point> tap_point = std::nullopt);
+
+  // Dispatches a gesture tap and verifies the tap was processed.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder TouchTapExpectingAllowed(
+      ui::ElementIdentifier element_id,
+      const int& action_counter,
+      std::optional<gfx::Point> tap_point = std::nullopt);
+
   // Creates and shows an Always-On-Top floating window completely occluding the
   // element with `element_id`.
   [[nodiscard]] ui::InteractionSequence::StepBuilder

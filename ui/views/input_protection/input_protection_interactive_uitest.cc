@@ -395,4 +395,18 @@ TEST_F(InputProtectionInteractiveUiTest, TabKeyTraversalAllowedWhileOccluded) {
       CheckViewProperty(kSecondaryButtonId, &View::HasFocus, true));
 }
 
+// Verifies that gesture taps targeting a protected view during cooldown
+// are intercepted and blocked by input protection, and that taps succeed after
+// cooldown expires.
+TEST_F(InputProtectionInteractiveUiTest, TouchTapBlockedDuringInputProtection) {
+  RunTestSequence(
+      EnableInputEventActivationProtection(),
+      TriggerShowCooldown(kPrimaryButtonId),
+      // Touch tap is blocked during show cooldown.
+      TouchTapExpectingBlocked(kPrimaryButtonId, primary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      // Touch tap succeeds after cooldown expires.
+      TouchTapExpectingAllowed(kPrimaryButtonId, primary_click_count()));
+}
+
 }  // namespace views::test
