@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_focus_client.h"
+#include "ui/aura/test/test_window_builder.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
@@ -1459,6 +1460,75 @@ TEST_F(NativeViewHostAuraTest, AttachFromAnotherWindowTreeHostWithObserver) {
 
   host2->Attach(winA.get());
   host2->Detach();
+}
+
+TEST_F(NativeViewHostAuraTest,
+       ReparentingToDifferentWidgetSetupsWindowHierarchy) {
+  if (!base::FeatureList::IsEnabled(
+          views::features::kNativeViewHostManagesLayers)) {
+    GTEST_SKIP();
+  }
+
+  gfx::NativeWindow context = GetContext();
+
+  auto initial_widget_delegate = std::make_unique<WidgetDelegate>();
+  View* initial_widget_contents =
+      initial_widget_delegate->SetContentsView(std::make_unique<View>());
+
+  std::unique_ptr<Widget> initial_widget = std::make_unique<Widget>();
+  Widget::InitParams initial_widget_params = CreateParamsForTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  initial_widget_params.context = context;
+  initial_widget_params.bounds = gfx::Rect(0, 0, 500, 400);
+  initial_widget_params.delegate = initial_widget_delegate.get();
+  initial_widget->Init(std::move(initial_widget_params));
+  initial_widget->Show();
+
+  CreateTopLevel();
+  toplevel()->SetBounds(gfx::Rect(0, 0, 500, 400));
+  toplevel()->Show();
+  View* final_widget_contents = toplevel()->GetContentsView();
+
+  const gfx::Size client_size = final_widget_contents->size();
+  // Create native windows for the hosts.
+  std::unique_ptr<aura::Window> cover_window =
+      aura::test::TestWindowBuilder()
+          .SetWindowType(aura::client::WINDOW_TYPE_CONTROL)
+          .SetBounds(gfx::Rect(client_size))
+          .SetShow(true)
+          .Build();
+  std::unique_ptr<aura::Window> reparented_nvh_window =
+      aura::test::TestWindowBuilder()
+          .SetWindowType(aura::client::WINDOW_TYPE_CONTROL)
+          .SetBounds(gfx::Rect(client_size))
+          .SetShow(true)
+          .Build();
+  reparented_nvh_window->TrackOcclusionState();
+
+  // Attach native windows to the widgets.
+  NativeViewHost* cover_host =
+      final_widget_contents->AddChildView(std::make_unique<NativeViewHost>());
+  cover_host->Attach(cover_window.get());
+
+  NativeViewHost* reparented_nvh_raw =
+      initial_widget_contents->AddChildView(std::make_unique<NativeViewHost>());
+  reparented_nvh_raw->Attach(reparented_nvh_window.get());
+
+  // Reparent the host to the final widget.
+  std::unique_ptr<NativeViewHost> reparented_nvh =
+      initial_widget_contents->RemoveChildViewT(reparented_nvh_raw);
+  final_widget_contents->AddChildView(std::move(reparented_nvh));
+
+  // Verify window hierarchy aligns with views hierarchy.
+  aura::Window* final_widget_content_window = toplevel()->GetNativeView();
+  ASSERT_TRUE(final_widget_content_window);
+  ASSERT_FALSE(final_widget_content_window->children().empty());
+
+  EXPECT_EQ(final_widget_contents->children().back(), reparented_nvh_raw);
+  EXPECT_EQ(final_widget_content_window->children().back(),
+            reparented_nvh_window.get());
+  EXPECT_EQ(reparented_nvh_window->GetOcclusionState(),
+            aura::Window::OcclusionState::VISIBLE);
 }
 
 }  // namespace views

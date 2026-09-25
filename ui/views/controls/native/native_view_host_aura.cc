@@ -154,6 +154,7 @@ void NativeViewHostAura::AddedToWidget() {
       // should be above views.
       host_->GetWidget()->GetNativeView()->StackChildAtBottom(
           host_->native_view());
+      host_->GetWidget()->ReorderNativeViews();
     }
   }
   if (host_->IsDrawn()) {
