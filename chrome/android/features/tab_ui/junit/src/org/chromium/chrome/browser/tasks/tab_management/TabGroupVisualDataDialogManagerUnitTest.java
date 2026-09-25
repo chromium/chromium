@@ -18,10 +18,12 @@ import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_
 import android.app.Activity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver.OnWindowFocusChangeListener;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
+import androidx.activity.ComponentDialog;
 import androidx.appcompat.widget.DialogTitle;
 
 import org.junit.Assert;
@@ -51,7 +53,9 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -77,7 +81,9 @@ public class TabGroupVisualDataDialogManagerUnitTest {
     @Mock private Profile mProfile;
     @Mock private TabModel mTabModel;
     @Mock private ModalDialogProperties.Controller mDialogController;
+    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
+    @Captor private ArgumentCaptor<ModalDialogManagerObserver> mObserverCaptor;
 
     private Activity mActivity;
     private TabGroupVisualDataDialogManager mTabGroupVisualDataDialogManager;
@@ -96,6 +102,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                         R.string.tab_group_creation_dialog_title);
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        KeyboardVisibilityDelegate.setInstanceForTesting(mKeyboardVisibilityDelegate);
 
         doReturn(true).when(mTabModel).tabGroupExists(TAB_GROUP_ID);
         doReturn(UNSET_TAB_GROUP_TITLE).when(mTabModel).getTabGroupTitle(TAB_GROUP_ID);
@@ -269,5 +276,57 @@ public class TabGroupVisualDataDialogManagerUnitTest {
 
         editTextView.onEditorAction(EditorInfo.IME_ACTION_NEXT);
         verify(mDialogController, never()).onClick(any(), anyInt());
+    }
+
+    @Test
+    public void testVisualDataDialogDelegate_focusAndShowKeyboard() {
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
+        verify(mModalDialogManager).addObserver(mObserverCaptor.capture());
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
+
+        PropertyModel model = mModelCaptor.getValue();
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView editTextView = customView.findViewById(R.id.title_input_text);
+        ModalDialogManagerObserver observer = mObserverCaptor.getValue();
+
+        ComponentDialog dialog = new ComponentDialog(mActivity);
+        dialog.setContentView(customView);
+        observer.onDialogCreated(model, dialog);
+        dialog.show();
+
+        OnWindowFocusChangeListener listener =
+                mTabGroupVisualDataDialogManager.getWindowFocusChangeListenerForTesting();
+        Assert.assertNotNull(listener);
+        listener.onWindowFocusChanged(true);
+
+        Assert.assertTrue(editTextView.isFocused());
+        verify(mKeyboardVisibilityDelegate).showKeyboard(editTextView);
+        Assert.assertNull(
+                mTabGroupVisualDataDialogManager.getWindowFocusChangeListenerForTesting());
+    }
+
+    @Test
+    public void testVisualDataDialogDelegate_hideDialogRemovesFocusListener() {
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
+        verify(mModalDialogManager).addObserver(mObserverCaptor.capture());
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
+
+        PropertyModel model = mModelCaptor.getValue();
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView editTextView = customView.findViewById(R.id.title_input_text);
+        ModalDialogManagerObserver observer = mObserverCaptor.getValue();
+
+        ComponentDialog dialog = new ComponentDialog(mActivity);
+        dialog.setContentView(customView);
+        observer.onDialogCreated(model, dialog);
+        dialog.show();
+
+        Assert.assertNotNull(
+                mTabGroupVisualDataDialogManager.getWindowFocusChangeListenerForTesting());
+        mTabGroupVisualDataDialogManager.onHideDialog();
+
+        Assert.assertNull(
+                mTabGroupVisualDataDialogManager.getWindowFocusChangeListenerForTesting());
+        verify(mKeyboardVisibilityDelegate, never()).showKeyboard(editTextView);
     }
 }

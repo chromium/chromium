@@ -4,21 +4,23 @@
 
 package org.chromium.chrome.test.transit.tabmodel;
 
-import static org.junit.Assert.assertEquals;
-
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
 /** Checks that one new tab group was created. */
+@NullMarked
 public class TabGroupCreatedCondition extends ConditionWithResult<Token> {
     private final Supplier<TabModel> mTabModelSupplier;
-    private Set<Token> mOriginalTabGroupIds;
+    private @Nullable Set<Token> mOriginalTabGroupIds;
 
     public TabGroupCreatedCondition(Supplier<TabModel> tabModelSupplier) {
         super(/* isRunOnUiThread= */ true);
@@ -35,16 +37,19 @@ public class TabGroupCreatedCondition extends ConditionWithResult<Token> {
 
     @Override
     protected ConditionStatusWithResult<Token> resolveWithSuppliers() throws Exception {
-        Set<Token> newTabGroupIds = mTabModelSupplier.get().getAllTabGroupIds();
+        if (mOriginalTabGroupIds == null) {
+            return notFulfilled().withoutResult();
+        }
+
+        Set<Token> newTabGroupIds = new HashSet<>(mTabModelSupplier.get().getAllTabGroupIds());
         newTabGroupIds.removeAll(mOriginalTabGroupIds);
 
         int changeInTabGroupCount = newTabGroupIds.size();
-        assertEquals(1, changeInTabGroupCount);
         if (changeInTabGroupCount != 1) {
             return notFulfilled(
                             "Incorrect change in number of tab groups: Expected 1, Actual %d.",
                             changeInTabGroupCount)
-                    .withResult(null);
+                    .withoutResult();
         }
         Token newGroupId = newTabGroupIds.iterator().next();
         return fulfilled().withResult(newGroupId);
