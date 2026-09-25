@@ -37,6 +37,36 @@
             {"type": "array", "items": {"$ref": "ChoiceType"}}
           ]}
         ]
+      },
+      {
+        "id": "ObjectChoiceA",
+        "type": "object",
+        "properties": {
+          "a": {"type": "integer"}
+        }
+      },
+      {
+        "id": "ObjectChoiceB",
+        "type": "object",
+        "properties": {
+          "b": {"type": "string"}
+        }
+      },
+      {
+        "id": "ObjectChoiceC",
+        "type": "object",
+        "properties": {
+          "c": {"type": "boolean"}
+        }
+      },
+      {
+        "id": "ObjectChoices",
+        "description": "Tests choices between multiple object types.",
+        "choices": [
+          {"$ref": "ObjectChoiceA"},
+          {"$ref": "ObjectChoiceB"},
+          {"$ref": "ObjectChoiceC"}
+        ]
       }
     ],
     "functions": [

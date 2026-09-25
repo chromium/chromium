@@ -418,23 +418,38 @@ class _Generator(object):
     )
 
     if type_.property_type is PropertyType.CHOICES:
-      for choice in type_.choices:
+      guards = [
+        self._GenerateValueIsTypeExpression('value', choice)
+        for choice in type_.choices
+      ]
+      for choice, guard in zip(type_.choices, guards):
+        # Multiple choices can share the same `base::Value` type (e.g., several
+        # object choices). Such choices can't be distinguished by the type
+        # guard alone, so a failed parse must fall through to the next
+        # matching choice instead of returning false immediately. Currently,
+        # this is only supported for object choices.
+        # TODO(http://crbug.com/565508308): Support fall-through for other
+        # types of choices.
+        fall_through_to_next_choice = (
+          guards.count(guard) > 1
+          and self._type_helper.FollowRef(choice).property_type
+          is PropertyType.OBJECT
+        )
         (
-          c.Sblock(
-            'if (%s) {' % self._GenerateValueIsTypeExpression('value', choice)
-          )
-          .Concat(
+          c.Sblock('if (%s) {' % guard).Concat(
             self._GeneratePopulateVariableFromValue(
               choice,
               'value',
               'out.as_%s' % choice.unix_name,
               'false',
               is_ptr=True,
+              fall_through_to_next_choice=fall_through_to_next_choice,
             )
           )
-          .Append('return true;')
-          .Eblock('}')
         )
+        if not fall_through_to_next_choice:
+          c.Append('return true;')
+        c.Eblock('}')
       (
         c.Concat(
           self._AppendError16(
@@ -1257,15 +1272,34 @@ class _Generator(object):
     )
 
   def _GeneratePopulateVariableFromValue(
-    self, type_, src_var, dst_var, failure_value, is_ptr=False
+    self,
+    type_,
+    src_var,
+    dst_var,
+    failure_value,
+    is_ptr=False,
+    fall_through_to_next_choice=False,
   ):
     """Generates code to populate a variable |dst_var| of type |type_| from a
     Value |src_var|. In the generated code, if |dst_var| fails to be populated
     then Populate will return |failure_value|.
+
+    If |fall_through_to_next_choice| is true, the code is generated for one of
+    several choices whose `base::Value` type is shared with another choice (e.g.
+    several object choices), where the type guard alone can't distinguish
+    between them. A failed parse then falls through to the next matching
+    choice instead of returning |failure_value|. If multiple choices match,
+    the first one that successfully parses is used.
     """
     c = Code()
 
     underlying_type = self._type_helper.FollowRef(type_)
+
+    if fall_through_to_next_choice:
+      assert underlying_type.property_type == PropertyType.OBJECT, (
+        f'Fallthrough for choice "{type_.name}" is currently only supported '
+        f'for OBJECT types, but got {underlying_type.property_type}.'
+      )
 
     if (
       underlying_type.property_type.is_fundamental
@@ -1330,7 +1364,26 @@ class _Generator(object):
       else:
         c.Append('%(dst_var)s = *temp;')
     elif underlying_type.property_type == PropertyType.OBJECT:
-      if is_ptr:
+      if fall_through_to_next_choice:
+        # The type guard already verified the value is a dictionary, and a
+        # failed parse must fall through to the next matching choice. Use a
+        # local error variable so each population attempt is performed with
+        # an empty error message.
+        if self._generate_error_messages:
+          c.Append('std::u16string choice_error;')
+        (
+          c.Append('%(cpp_type)s temp;')
+          .Sblock(
+            'if (%%(cpp_type)s::Populate(%s)) {'
+            % self._GenerateArgs(
+              ('%(src_var)s.GetDict()', 'temp'), error_var='choice_error'
+            )
+          )
+          .Append('%(dst_var)s = std::move(temp);')
+          .Append('return true;')
+          .Eblock('}')
+        )
+      elif is_ptr:
         (
           c.Sblock('if (!%(src_var)s.is_dict()) {')
           .Concat(
@@ -1794,13 +1847,16 @@ class _Generator(object):
       params = list(params) + ['std::u16string& error']
     return ', '.join(str(p) for p in params)
 
-  def _GenerateArgs(self, args, generate_error_messages=None):
+  def _GenerateArgs(
+    self, args, generate_error_messages=None, error_var='error'
+  ):
     """Builds the argument list for a function, given an array of arguments.
     If |generate_error_messages| is specified, it overrides
-    |self._generate_error_messages|.
+    |self._generate_error_messages|. |error_var| is the name of the variable
+    to use for error messages.
     """
     if generate_error_messages is None:
       generate_error_messages = self._generate_error_messages
     if generate_error_messages:
-      args = list(args) + ['error']
+      args = list(args) + [error_var]
     return ', '.join(str(a) for a in args)

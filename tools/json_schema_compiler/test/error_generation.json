@@ -106,6 +106,28 @@
             "description": "Expecting a list?"
           }
         }
+      },
+      {
+        "id": "ObjectChoiceA",
+        "type": "object",
+        "properties": {
+          "a": {"type": "integer"}
+        }
+      },
+      {
+        "id": "ObjectChoiceB",
+        "type": "object",
+        "properties": {
+          "b": {"type": "string"}
+        }
+      },
+      {
+        "id": "ObjectChoices",
+        "description": "Tests choices between multiple object types.",
+        "choices": [
+          {"$ref": "ObjectChoiceA"},
+          {"$ref": "ObjectChoiceB"}
+        ]
       }
     ],
     "functions": [

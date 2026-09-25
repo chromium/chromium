@@ -20,6 +20,7 @@ namespace {
 namespace choices = test::api::choices;
 namespace TakesIntegers = choices::TakesIntegers;
 using choices::NestedChoice;
+using choices::ObjectChoices;
 using json_schema_compiler::test_util::Dictionary;
 using json_schema_compiler::test_util::List;
 using json_schema_compiler::test_util::ReadJson;
@@ -304,6 +305,75 @@ TEST(JsonSchemaCompilerChoicesTest, NestedChoices) {
     ASSERT_EQ(2u, obj->as_choice2->as_choice_types->size());
 
     EXPECT_EQ(value, obj->ToValue());
+  }
+}
+
+TEST(JsonSchemaCompilerChoicesTest, PopulateObjectChoices) {
+  // A value matching the second object choice should be populated as that
+  // choice, even though the first object choice fails to parse.
+  {
+    base::Value value = ReadJson("{\"a\": 1}");
+    std::optional<ObjectChoices> obj = ObjectChoices::FromValue(value);
+
+    ASSERT_TRUE(obj);
+    ASSERT_TRUE(obj->as_object_choice_a);
+    EXPECT_FALSE(obj->as_object_choice_b);
+    EXPECT_FALSE(obj->as_object_choice_c);
+    EXPECT_EQ(1, obj->as_object_choice_a->a);
+
+    EXPECT_EQ(value, obj->ToValue());
+  }
+  {
+    base::Value value = ReadJson("{\"b\": \"foo\"}");
+    std::optional<ObjectChoices> obj = ObjectChoices::FromValue(value);
+
+    ASSERT_TRUE(obj);
+    EXPECT_FALSE(obj->as_object_choice_a);
+    ASSERT_TRUE(obj->as_object_choice_b);
+    EXPECT_FALSE(obj->as_object_choice_c);
+    EXPECT_EQ("foo", obj->as_object_choice_b->b);
+
+    EXPECT_EQ(value, obj->ToValue());
+  }
+  {
+    base::Value value = ReadJson("{\"c\": true}");
+    std::optional<ObjectChoices> obj = ObjectChoices::FromValue(value);
+
+    ASSERT_TRUE(obj);
+    EXPECT_FALSE(obj->as_object_choice_a);
+    EXPECT_FALSE(obj->as_object_choice_b);
+    ASSERT_TRUE(obj->as_object_choice_c);
+    EXPECT_TRUE(obj->as_object_choice_c->c);
+
+    EXPECT_EQ(value, obj->ToValue());
+  }
+  {
+    // If multiple object choices match, the first one should be chosen.
+    base::Value value = ReadJson("{\"a\": 1, \"b\": \"foo\", \"c\": true}");
+    std::optional<ObjectChoices> obj = ObjectChoices::FromValue(value);
+
+    ASSERT_TRUE(obj);
+    ASSERT_TRUE(obj->as_object_choice_a);
+    EXPECT_EQ(1, obj->as_object_choice_a->a);
+    EXPECT_FALSE(obj->as_object_choice_b);
+    EXPECT_FALSE(obj->as_object_choice_c);
+
+    base::Value a_value = ReadJson("{\"a\": 1}");
+    EXPECT_EQ(a_value, obj->ToValue());
+  }
+  {
+    // An empty dictionary.
+    base::Value value = ReadJson("{}");
+    std::optional<ObjectChoices> obj = ObjectChoices::FromValue(value);
+
+    ASSERT_FALSE(obj);
+  }
+  {
+    // A non-dictionary value fails the type guard for every object choice.
+    base::Value value(42);
+    std::optional<ObjectChoices> obj = ObjectChoices::FromValue(value);
+
+    ASSERT_FALSE(obj);
   }
 }
 
