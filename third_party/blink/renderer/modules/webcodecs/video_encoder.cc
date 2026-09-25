@@ -1924,6 +1924,12 @@ ScriptPromise<VideoEncoderSupport> VideoEncoder::isConfigSupported(
 HeapVector<Member<VideoEncoderBuffer>> VideoEncoder::getAllFrameBuffers(
     ScriptState*,
     ExceptionState& exception_state) {
+  if (!active_config_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot call 'getAllFrameBuffers' on an unconfigured codec.");
+    return {};
+  }
   if (!active_config_->options.manual_reference_buffer_control) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,

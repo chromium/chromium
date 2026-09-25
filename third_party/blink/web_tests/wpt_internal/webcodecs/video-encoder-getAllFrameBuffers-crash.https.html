@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<title>Test VideoEncoder.getAllFrameBuffers() on unconfigured encoder doesn't crash</title>
+<script>
+const encoder = new VideoEncoder({
+  output() {},
+  error() {},
+});
+try {
+  encoder.getAllFrameBuffers();
+} catch (e) {}
+</script>
