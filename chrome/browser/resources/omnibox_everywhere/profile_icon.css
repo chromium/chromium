@@ -9,9 +9,9 @@
 
 :host {
   display: inline-block;
+  inset-inline-end: 16px;
   pointer-events: auto;
   position: absolute;
-  right: 16px;
   top: var(--omnibox-everywhere-top-actions-top, 16px);
   z-index: 100;
 }
@@ -168,7 +168,7 @@
   cursor: pointer;
   display: flex;
   padding: 10px 14px;
-  text-align: left;
+  text-align: start;
   transition: background-color 150ms ease;
   width: 100%;
 }
