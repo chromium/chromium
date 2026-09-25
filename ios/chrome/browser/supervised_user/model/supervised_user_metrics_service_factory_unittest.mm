@@ -4,11 +4,10 @@
 
 #import "ios/chrome/browser/supervised_user/model/supervised_user_metrics_service_factory.h"
 
+#import "base/memory/raw_ptr.h"
 #import "components/supervised_user/core/browser/supervised_user_metrics_service.h"
-#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -17,16 +16,15 @@
 class SupervisedUserMetricsServiceFactoryTest : public PlatformTest {
  protected:
   SupervisedUserMetricsServiceFactoryTest() {
-    TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
   }
 
   // ProfileIOS needs thread.
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_;
 };
 
 // Tests that SupervisedUserMetricsServiceFactory creates
