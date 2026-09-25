@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.MIN_WEB_C
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +35,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 
 import org.junit.Before;
@@ -72,6 +74,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiShowabilit
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewUtils;
 
@@ -195,6 +198,7 @@ public class SideUiCoordinatorImplTest {
 
         verify(mActivityLifecycleDispatcher).register(mCoordinator);
         verify(mFullscreenManager).addObserver(mCoordinator);
+        verify(mIncognitoStateProvider).addIncognitoStateObserverAndTrigger(mCoordinator);
     }
 
     @Test
@@ -206,6 +210,26 @@ public class SideUiCoordinatorImplTest {
         verify(mActivityLifecycleDispatcher).unregister(mCoordinator);
         verify(mFullscreenManager).removeObserver(mCoordinator);
         verify(mLayoutStateProvider).removeObserver(any());
+        verify(mIncognitoStateProvider).removeObserver(mCoordinator);
+    }
+
+    @Test
+    public void testOnIncognitoStateChanged_UpdatesAnchorContainersBackgroundColor() {
+        mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
+        @ColorInt int incognitoBgColor = ChromeColors.getDefaultBgColor(mTestActivity, true);
+        assertEquals(
+                incognitoBgColor,
+                ((ColorDrawable) mLeftAnchorContainer.getBackground()).getColor());
+        assertEquals(
+                incognitoBgColor,
+                ((ColorDrawable) mRightAnchorContainer.getBackground()).getColor());
+
+        mCoordinator.onIncognitoStateChanged(/* isIncognito= */ false);
+        @ColorInt int regularBgColor = ChromeColors.getDefaultBgColor(mTestActivity, false);
+        assertEquals(
+                regularBgColor, ((ColorDrawable) mLeftAnchorContainer.getBackground()).getColor());
+        assertEquals(
+                regularBgColor, ((ColorDrawable) mRightAnchorContainer.getBackground()).getColor());
     }
 
     @Test

@@ -19,6 +19,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewParent;
 import android.view.ViewStub;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.animation.PathInterpolatorCompat;
@@ -46,9 +47,11 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest.UpdateReason;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -63,7 +66,8 @@ final class SideUiCoordinatorImpl
         implements SideUiCoordinator,
                 ConfigurationChangedObserver,
                 BrowserControlsStateProvider.Observer,
-                FullscreenManager.Observer {
+                FullscreenManager.Observer,
+                IncognitoStateObserver {
 
     private static final long TRANSITION_DURATION_MS = 350L;
 
@@ -73,6 +77,7 @@ final class SideUiCoordinatorImpl
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private final FullscreenManager mFullscreenManager;
+    private final IncognitoStateProvider mIncognitoStateProvider;
 
     private final ViewGroup mAnchorContainerParent;
 
@@ -169,6 +174,7 @@ final class SideUiCoordinatorImpl
         mFullscreenManager = fullscreenManager;
         mTopControlsStacker = topControlsStacker;
         mAnchorContainerParent = anchorContainerParent;
+        mIncognitoStateProvider = incognitoStateProvider;
         mTabModelSelector = tabModelSelector;
 
         mBrowserControlsVisibilityDelegate =
@@ -200,13 +206,11 @@ final class SideUiCoordinatorImpl
                         incognitoStateProvider,
                         topControlsStacker);
 
-        // TODO(crbug.com/540566058): Investigate if we need to recolor the anchor containers when
-        //  toggling Incognito state.
-
         layoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::onLayoutStateProviderAvailable));
         browserControlVisibilityManager.addObserver(this);
         mFullscreenManager.addObserver(this);
+        mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(this);
         mActivityLifecycleDispatcher.register(this);
     }
 
@@ -294,6 +298,7 @@ final class SideUiCoordinatorImpl
         mCurrentSideUiSpecs = new SideUiSpecs(Map.of());
         mBrowserControlsVisibilityManager.removeObserver(this);
         mFullscreenManager.removeObserver(this);
+        mIncognitoStateProvider.removeObserver(this);
         mWebContentsHairlineManager.destroy();
         mActivityLifecycleDispatcher.unregister(this);
     }
@@ -436,6 +441,18 @@ final class SideUiCoordinatorImpl
                         /* sideUiId= */ null,
                         /* suppressAnimations= */ true,
                         UpdateReason.FULL_SCREEN_MODE_EXITED));
+    }
+
+    // IncognitoStateObserver implementation:
+    @Override
+    public void onIncognitoStateChanged(boolean isIncognito) {
+        ThreadUtils.assertOnUiThread();
+
+        @ColorInt
+        int backgroundColor = ChromeColors.getDefaultBgColor(mParentActivity, isIncognito);
+        for (ViewGroup anchorContainer : mAnchorContainers.values()) {
+            anchorContainer.setBackgroundColor(backgroundColor);
+        }
     }
 
     @VisibleForTesting
