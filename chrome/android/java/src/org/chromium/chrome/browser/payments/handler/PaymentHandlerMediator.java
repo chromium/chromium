@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.payments.handler;
 
 import android.app.Activity;
 import android.os.Handler;
-import android.view.View;
 
 import androidx.annotation.IntDef;
 
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator.PaymentHandlerToolbarObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.payments.SslValidityChecker;
@@ -42,7 +42,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 /* package */ class PaymentHandlerMediator extends WebContentsObserver
-        implements BottomSheetObserver, PaymentHandlerToolbarObserver, View.OnLayoutChangeListener {
+        implements BottomSheetObserver, PaymentHandlerToolbarObserver {
     // The value is picked in order to allow users to see the tab behind this UI.
     /* package */ static final float FULL_HEIGHT_RATIO = 0.9f;
     /* package */ static final float HALF_HEIGHT_RATIO = 0.5f;
@@ -56,7 +56,7 @@ import java.lang.annotation.RetentionPolicy;
     // Used to postpone execution of a callback to avoid destroy objects (e.g., WebContents) in
     // their own methods.
     private final Handler mHandler = new Handler();
-    private final View mTabView;
+    private final BottomSheetController mBottomSheetController;
     private final int mToolbarViewHeightPx;
     private @CloseReason int mCloseReason = CloseReason.OTHERS;
     private final ActivityStateListener mActivityStateListener;
@@ -82,14 +82,15 @@ import java.lang.annotation.RetentionPolicy;
 
     /**
      * Build a new mediator that handle events from outside the payment handler component.
+     *
      * @param model The {@link PaymentHandlerProperties} that holds all the view state for the
-     *         payment handler component.
+     *     payment handler component.
      * @param hider The callback to clean up {@link PaymentHandlerCoordinator} when the sheet is
-     *         hidden.
+     *     hidden.
      * @param paymentRequestWebContents The WebContents of the merchant's frame.
      * @param paymentHandlerWebContents The WebContents of the payment handler.
      * @param observer The {@link PaymentHandlerUiObserver} that observes this Payment Handler UI.
-     * @param tabView The view of the main tab.
+     * @param bottomSheetController The controller of the bottom sheet that shows this UI.
      * @param toolbarViewHeightPx The height of the toolbar view in px.
      * @param activity The current android {@link Activity}.
      */
@@ -99,13 +100,13 @@ import java.lang.annotation.RetentionPolicy;
             WebContents paymentRequestWebContents,
             WebContents paymentHandlerWebContents,
             PaymentHandlerUiObserver observer,
-            View tabView,
+            BottomSheetController bottomSheetController,
             int toolbarViewHeightPx,
             Activity activity,
             InputProtector inputProtector) {
         super(paymentHandlerWebContents);
         assert paymentHandlerWebContents != null;
-        mTabView = tabView;
+        mBottomSheetController = bottomSheetController;
         mPaymentRequestWebContents = paymentRequestWebContents;
         mPaymentHandlerWebContents = paymentHandlerWebContents;
         mToolbarViewHeightPx = toolbarViewHeightPx;
@@ -113,7 +114,8 @@ import java.lang.annotation.RetentionPolicy;
         mModel.set(PaymentHandlerProperties.BACK_PRESS_CALLBACK, this::onSystemBackButtonClicked);
         mHider = hider;
         mPaymentHandlerUiObserver = observer;
-        mModel.set(PaymentHandlerProperties.CONTENT_VISIBLE_HEIGHT_PX, contentVisibleHeight());
+        // The height is not set here on purpose. The sheet has not been laid out yet, so any value
+        // read now would be wrong. It is set once the sheet settles into a state.
         mInputProtector = inputProtector;
 
         mActivityStateListener =
@@ -167,24 +169,6 @@ import java.lang.annotation.RetentionPolicy;
         mHandler.removeCallbacksAndMessages(null);
     }
 
-    // Implement View.OnLayoutChangeListener:
-    // This is the Tab View's layout change listener, invoked in response to phone rotation.
-    // TODO(crbug.com/40120866): It should listen to the BottomSheet container's layout change
-    // instead of the Tab View layout change for better encapsulation.
-    @Override
-    public void onLayoutChange(
-            View v,
-            int left,
-            int top,
-            int right,
-            int bottom,
-            int oldLeft,
-            int oldTop,
-            int oldRight,
-            int oldBottom) {
-        mModel.set(PaymentHandlerProperties.CONTENT_VISIBLE_HEIGHT_PX, contentVisibleHeight());
-    }
-
     // Implement BottomSheetObserver:
     @Override
     public void onSheetStateChanged(@SheetState int newState, int reason) {
@@ -193,12 +177,30 @@ import java.lang.annotation.RetentionPolicy;
                 mCloseReason = CloseReason.USER;
                 mHandler.post(mHider);
                 break;
+            default:
+                // The sheet's own measurements are only trustworthy once it has settled into a
+                // state.
+                updateContentVisibleHeight();
+                break;
         }
     }
 
-    /** @return The height of visible area of the bottom sheet's content part. */
+    /**
+     * Pushes the height the payment app's web view should have to the view. This is the height of
+     * the sheet's content area when the sheet is fully expanded. It does not change when the user
+     * drags the sheet between half and full, because the sheet moves rather than resizes.
+     */
+    private void updateContentVisibleHeight() {
+        int visibleHeightPx = contentVisibleHeight();
+        if (visibleHeightPx <= 0) return;
+        mModel.set(PaymentHandlerProperties.CONTENT_VISIBLE_HEIGHT_PX, visibleHeightPx);
+    }
+
+    /**
+     * @return The height of visible area of the bottom sheet's content part.
+     */
     private int contentVisibleHeight() {
-        return (int) (mTabView.getHeight() * FULL_HEIGHT_RATIO) - mToolbarViewHeightPx;
+        return mBottomSheetController.getMaxOffset() - mToolbarViewHeightPx;
     }
 
     // Implement BottomSheetObserver:

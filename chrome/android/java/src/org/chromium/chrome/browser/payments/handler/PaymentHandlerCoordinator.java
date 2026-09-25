@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.payments.handler;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.view.View;
 
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
@@ -124,8 +123,6 @@ public class PaymentHandlerCoordinator {
         }
 
         PropertyModel model = new PropertyModel.Builder(PaymentHandlerProperties.ALL_KEYS).build();
-        View tabView = currentTab.getView();
-        assert tabView != null;
 
         PaymentHandlerMediator mediator =
                 new PaymentHandlerMediator(
@@ -134,11 +131,10 @@ public class PaymentHandlerCoordinator {
                         /* paymentRequestWebContents= */ paymentRequestWebContents,
                         /* paymentHandlerWebContents= */ mPaymentHandlerWebContents,
                         uiObserver,
-                        tabView,
+                        bottomSheetController,
                         mToolbarCoordinator.getToolbarHeightPx(),
                         activity,
                         mInputProtector);
-        activity.getWindow().getDecorView().addOnLayoutChangeListener(mediator);
 
         bottomSheetController.addObserver(mediator);
         mediator.observe(mPaymentHandlerWebContents);
@@ -173,9 +169,6 @@ public class PaymentHandlerCoordinator {
                     bottomSheetController.removeObserver(mediator);
                     bottomSheetController.hideContent(/* content= */ view, /* animate= */ true);
                     uiObserver.onPaymentHandlerUiClosed();
-                    assert activity.getWindow() != null;
-                    assert activity.getWindow().getDecorView() != null;
-                    activity.getWindow().getDecorView().removeOnLayoutChangeListener(mediator);
                     mediator.destroy();
                     assumeNonNull(mToolbarCoordinator);
                     mToolbarCoordinator.destroy();
