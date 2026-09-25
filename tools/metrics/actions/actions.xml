@@ -93,6 +93,8 @@ should be able to be added at any place in this file.
 
 <variants name="ContextMenu_Type">
   <variant name="" summary="aggregated"/>
+  <variant name=".CopyLinkAddress"
+      summary="Selected 'Copy link address' in the context menu."/>
   <variant name=".DownloadItem" summary="Download a suggested item."/>
   <variant name=".EditItem"
       summary="Open a modal dialog to edit a custom item."/>
@@ -15002,6 +15004,16 @@ should be able to be added at any place in this file.
     An Incognito session is started, for a supervised user not fitting into the
     definition of the two metrics above. This is an unexpected error.
   </description>
+</action>
+
+<action name="IncognitoNewTabPage.ContextMenu{ContextMenu_Type}">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <description>
+    Android: User used the context menu on a link on the Incognito new tab page.
+    {ContextMenu_Type}
+  </description>
+  <token key="ContextMenu_Type" variants="ContextMenu_Type"/>
 </action>
 
 <action name="IncognitoWebSQL_Created">

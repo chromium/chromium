@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuHost;
@@ -65,6 +66,7 @@ public class ContextMenuManager {
         ContextMenuItemId.MOVE_UP,
         ContextMenuItemId.MOVE_DOWN,
         ContextMenuItemId.HIDE_ALL,
+        ContextMenuItemId.COPY_LINK_ADDRESS,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ContextMenuItemId {
@@ -89,8 +91,9 @@ public class ContextMenuManager {
         int MOVE_UP = 15;
         int MOVE_DOWN = 16;
         int HIDE_ALL = 17;
+        int COPY_LINK_ADDRESS = 18;
 
-        int NUM_ENTRIES = 18;
+        int NUM_ENTRIES = 19;
     }
 
     private final NativePageNavigationDelegate mNavigationDelegate;
@@ -135,8 +138,8 @@ public class ContextMenuManager {
         void moveItemDown();
 
         /**
-         * @return the URL of the current item for saving offline, or null if the item can't be
-         *     saved offline.
+         * @return the URL of the current item for saving offline or copying the link address, or
+         *     null if the item has no URL or can't be saved offline.
          */
         @Nullable GURL getUrl();
 
@@ -403,6 +406,8 @@ public class ContextMenuManager {
                 return false;
             case ContextMenuItemId.HIDE_ALL:
                 return true;
+            case ContextMenuItemId.COPY_LINK_ADDRESS:
+                return !GURL.isEmptyOrInvalid(delegate.getUrl());
             default:
                 assert false;
                 return false;
@@ -446,6 +451,8 @@ public class ContextMenuManager {
                 return R.string.menu_item_move_down;
             case ContextMenuItemId.HIDE_ALL:
                 return R.string.recent_tabs_hide_menu_option;
+            case ContextMenuItemId.COPY_LINK_ADDRESS:
+                return R.string.contextmenu_copy_link_address;
         }
         assert false;
         return 0;
@@ -536,6 +543,13 @@ public class ContextMenuManager {
             case ContextMenuItemId.HIDE_ALL:
                 delegate.hideAllItems();
                 RecordUserAction.record(mUserActionPrefix + ".ContextMenu.HideAllItems");
+                return true;
+            case ContextMenuItemId.COPY_LINK_ADDRESS:
+                GURL url = delegate.getUrl();
+                if (!GURL.isEmptyOrInvalid(url)) {
+                    Clipboard.getInstance().copyUrlToClipboard(url);
+                }
+                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.CopyLinkAddress");
                 return true;
             default:
                 return false;

@@ -289,7 +289,12 @@ public class NativePageFactory {
                             mEdgeToEdgeControllerSupplier);
             if (tab.isIncognito()) {
                 return new IncognitoNewTabPage(
-                        mActivity, nativePageHost, tab.getProfile(), mEdgeToEdgeControllerSupplier);
+                        mActivity,
+                        nativePageHost,
+                        tab.getProfile(),
+                        mTabModelSelector,
+                        tab,
+                        mEdgeToEdgeControllerSupplier);
             }
 
             return new NewTabPage(

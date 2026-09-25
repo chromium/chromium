@@ -31,9 +31,19 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit test for {@link ContextMenuManager} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -53,6 +63,11 @@ public class ContextMenuManagerUnitTest {
     @Mock NativePageNavigationDelegate mNavigationDelegate;
     @Mock TouchEnabledDelegate mTouchEnabledDelegate;
     @Mock ContextMenuManager.Delegate mDelegate;
+    @Mock Clipboard mClipboard;
+    @Mock Profile mProfile;
+    @Mock NativePageHost mHost;
+    @Mock TabModelSelector mTabModelSelector;
+    @Mock Tab mTab;
 
     @Before
     public void setup() {
@@ -116,6 +131,59 @@ public class ContextMenuManagerUnitTest {
         assertTrue(mManager.shouldShowItem(ContextMenuItemId.MOVE_DOWN, mDelegate));
         AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(false);
         assertFalse(mManager.shouldShowItem(ContextMenuItemId.MOVE_DOWN, mDelegate));
+    }
+
+    @Test
+    public void testShouldShowItem_CopyLinkAddress() {
+        doReturn(true).when(mDelegate).isItemSupported(ContextMenuItemId.COPY_LINK_ADDRESS);
+        doReturn(JUnitTestGURLs.URL_1).when(mDelegate).getUrl();
+        assertTrue(mManager.shouldShowItem(ContextMenuItemId.COPY_LINK_ADDRESS, mDelegate));
+
+        doReturn(GURL.emptyGURL()).when(mDelegate).getUrl();
+        assertFalse(mManager.shouldShowItem(ContextMenuItemId.COPY_LINK_ADDRESS, mDelegate));
+
+        doReturn(null).when(mDelegate).getUrl();
+        assertFalse(mManager.shouldShowItem(ContextMenuItemId.COPY_LINK_ADDRESS, mDelegate));
+    }
+
+    @Test
+    public void testHandleMenuItemClick_CopyLinkAddress() {
+        Clipboard.setInstanceForTesting(mClipboard);
+        GURL url = JUnitTestGURLs.URL_1;
+        doReturn(url).when(mDelegate).getUrl();
+
+        assertTrue(mManager.handleMenuItemClick(ContextMenuItemId.COPY_LINK_ADDRESS, mDelegate));
+        verify(mClipboard).copyUrlToClipboard(url);
+    }
+
+    @Test
+    public void testIncognitoNavigationDelegate() {
+        doReturn(true).when(mProfile).isOffTheRecord();
+        NativePageNavigationDelegateImpl delegate =
+                new NativePageNavigationDelegateImpl(
+                        mActivity, mProfile, mHost, mTabModelSelector, mTab);
+
+        assertFalse(delegate.isOpenInIncognitoEnabled());
+
+        LoadUrlParams params = new LoadUrlParams(JUnitTestGURLs.URL_1.getSpec());
+        delegate.openUrl(WindowOpenDisposition.CURRENT_TAB, params);
+        verify(mHost).loadUrl(params, /* incognito= */ true);
+
+        delegate.openUrl(WindowOpenDisposition.NEW_BACKGROUND_TAB, params);
+        verify(mTabModelSelector)
+                .openNewTab(
+                        params,
+                        TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                        mTab,
+                        /* incognito= */ true);
+
+        delegate.openUrlInGroup(WindowOpenDisposition.NEW_BACKGROUND_TAB, params);
+        verify(mTabModelSelector)
+                .openNewTab(
+                        params,
+                        TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                        mTab,
+                        /* incognito= */ true);
     }
 
     @Test
