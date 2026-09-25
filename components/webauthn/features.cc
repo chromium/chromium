@@ -22,6 +22,9 @@ const base::FeatureParam<std::string> kWebAuthnAndroidCredManForDevMode{
 BASE_FEATURE(kWebAuthnFilterSmartCardTransport,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebAuthnAndroidDisallowIncognitoConditionalCreate,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

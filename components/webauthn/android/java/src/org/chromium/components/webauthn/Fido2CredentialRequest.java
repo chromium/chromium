@@ -6,6 +6,7 @@ package org.chromium.components.webauthn;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.webauthn.WebauthnFeatures.WEBAUTHN_ANDROID_DISALLOW_INCOGNITO_CONDITIONAL_CREATE;
 import static org.chromium.components.webauthn.WebauthnLogger.log;
 import static org.chromium.components.webauthn.WebauthnLogger.logError;
 import static org.chromium.components.webauthn.WebauthnModeProvider.is;
@@ -344,6 +345,10 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
         }
 
         if (options.isConditional) {
+            assert !GpmBrowserOptionsHelper.isIncognito(
+                            mAuthenticationContextProvider.getRenderFrameHost())
+                    || !WebauthnFeatureMap.getInstance()
+                            .isEnabled(WEBAUTHN_ANDROID_DISALLOW_INCOGNITO_CONDITIONAL_CREATE);
             mIdentityCredentialsHelper.handleConditionalCreateRequest(
                     options, convertOriginToString(origin), mClientDataJson, clientDataHash);
             return;

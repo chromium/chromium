@@ -82,7 +82,7 @@ public class GpmBrowserOptionsHelper {
         return null;
     }
 
-    private static boolean isIncognito(@Nullable RenderFrameHost frameHost) {
+    public static boolean isIncognito(@Nullable RenderFrameHost frameHost) {
         if (sIsIncognitoForTesting != TriState.NOT_SET) {
             return sIsIncognitoForTesting == TriState.TRUE;
         }

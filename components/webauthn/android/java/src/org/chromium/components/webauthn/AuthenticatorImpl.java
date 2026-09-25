@@ -178,6 +178,22 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         mRequestCallback = requestCallback;
         mRequestCallback.setCompletionCallback(this::cleanupRequest);
 
+        if (options.isConditional
+                && GpmBrowserOptionsHelper.isIncognito(mRenderFrameHost)
+                && WebauthnFeatureMap.getInstance()
+                        .isEnabled(
+                                WebauthnFeatures
+                                        .WEBAUTHN_ANDROID_DISALLOW_INCOGNITO_CONDITIONAL_CREATE)) {
+            mRequestCallback.onComplete(
+                    WebauthnRequestResponse.forFailedMakeCredential(
+                            AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                            new RequestMetrics.Builder()
+                                    .setMakeCredentialOutcome(
+                                            MakeCredentialOutcome.CONDITIONAL_CREATE_FAILURE)
+                                    .build()));
+            return;
+        }
+
         if (isChrome(mWebContents)
                 && WebauthnBrowserBridge.shouldDisallowCredentialRequest(mRenderFrameHost)) {
             mRequestCallback.onComplete(

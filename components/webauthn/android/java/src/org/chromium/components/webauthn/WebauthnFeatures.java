@@ -15,6 +15,8 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public abstract class WebauthnFeatures {
     public static final String WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV = "WebAuthnAndroidCredManForDev";
+    public static final String WEBAUTHN_ANDROID_DISALLOW_INCOGNITO_CONDITIONAL_CREATE =
+            "WebAuthnAndroidDisallowIncognitoConditionalCreate";
     // This is a temporary workaround for crbug.com/555599813.
     public static final String WEBAUTHN_FILTER_SMART_CARD_TRANSPORT =
             "WebAuthnFilterSmartCardTransport";

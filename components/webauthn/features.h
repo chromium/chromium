@@ -26,6 +26,12 @@ extern const base::FeatureParam<std::string> kWebAuthnAndroidCredManForDevMode;
 COMPONENT_EXPORT(WEBAUTHN)
 BASE_DECLARE_FEATURE(kWebAuthnFilterSmartCardTransport);
 
+// Controls whether conditional create (automatic passkey upgrades) is
+// disallowed in Incognito mode on Android.
+// Enabled by default in M156. Can be cleaned up in or after M159.
+COMPONENT_EXPORT(WEBAUTHN)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidDisallowIncognitoConditionalCreate);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
