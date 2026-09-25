@@ -12,25 +12,24 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
-import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import '../../settings_shared.css.js';
 import '../../site_favicon.js';
 import '../../i18n_setup.js';
 import './security_keys_pin_field.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Credential, SecurityKeysCredentialBrowserProxy, StartCredentialManagementResponse} from './security_keys_browser_proxy.js';
 import {SecurityKeysCredentialBrowserProxyImpl} from './security_keys_browser_proxy.js';
-import {getTemplate} from './security_keys_credential_management_dialog.html.js';
+import {getCss} from './security_keys_credential_management_dialog.css.js';
+import {getHtml} from './security_keys_credential_management_dialog.html.js';
 import type {SettingsSecurityKeysPinFieldElement} from './security_keys_pin_field.js';
 
 export enum CredentialManagementDialogPage {
@@ -60,7 +59,7 @@ export interface SettingsSecurityKeysCredentialManagementDialogElement {
 }
 
 const SettingsSecurityKeysCredentialManagementDialogElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
 const MAX_INPUT_LENGTH: number = 62;
 
@@ -70,74 +69,70 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
     return 'settings-security-keys-credential-management-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The ID of the element currently shown in the dialog.
        */
-      dialogPage_: {
-        type: String,
-        value: CredentialManagementDialogPage.INITIAL,
-        observer: 'dialogPageChanged_',
-      },
+      dialogPage_: {type: String},
 
-      dialogTitle_: String,
+      dialogTitle_: {type: String},
 
       /**
        * The list of credentials displayed in the dialog.
        */
-      credentials_: {
-        type: Array,
-        notify: true,
-      },
+      credentials_: {type: Array},
 
       /**
        * The message displayed on the "error" dialog page.
        */
-      errorMsg_: String,
+      errorMsg_: {type: String},
 
-      cancelButtonVisible_: Boolean,
-      closeButtonVisible_: Boolean,
-      confirmButtonDisabled_: Boolean,
-      confirmButtonLabel_: String,
-      confirmButtonVisible_: Boolean,
-      confirmMsg_: String,
-      credentialIdToDelete_: String,
-      displayNameInputError_: String,
-      editingCredential_: Object,
-      editButtonVisible_: Boolean,
-      minPinLength_: Number,
-      newDisplayName_: String,
-      newUsername_: String,
-      userNameInputError_: String,
+      cancelButtonVisible_: {type: Boolean},
+      closeButtonVisible_: {type: Boolean},
+      confirmButtonDisabled_: {type: Boolean},
+      confirmButtonLabel_: {type: String},
+      confirmButtonVisible_: {type: Boolean},
+      confirmMsg_: {type: String},
+      displayNameInputError_: {type: String},
+      editButtonVisible_: {type: Boolean},
+      minPinLength_: {type: Number},
+      newDisplayName_: {type: String},
+      newUsername_: {type: String},
+      userNameInputError_: {type: String},
     };
   }
 
-  declare private cancelButtonVisible_: boolean;
-  declare private closeButtonVisible_: boolean;
-  declare private confirmButtonDisabled_: boolean;
-  declare private confirmButtonLabel_: string;
-  declare private confirmButtonVisible_: boolean;
-  declare private confirmMsg_: string;
-  declare private credentialIdToDelete_: string;
-  declare private credentials_: Credential[];
-  declare private dialogPage_: CredentialManagementDialogPage;
-  declare private dialogTitle_: string;
-  declare private displayNameInputError_: string;
-  declare private editingCredential_: Credential;
-  declare private editButtonVisible_: boolean;
-  declare private errorMsg_: string;
-  declare private minPinLength_: number;
-  declare private newDisplayName_: string;
-  declare private newUsername_: string;
-  declare private userNameInputError_: string;
+  protected accessor dialogPage_: CredentialManagementDialogPage =
+      CredentialManagementDialogPage.INITIAL;
+  protected accessor dialogTitle_: string = '';
+  protected accessor credentials_: Credential[] = [];
+  protected accessor errorMsg_: string = '';
+  protected accessor cancelButtonVisible_: boolean = true;
+  protected accessor closeButtonVisible_: boolean = false;
+  protected accessor confirmButtonDisabled_: boolean = false;
+  protected accessor confirmButtonLabel_: string = '';
+  protected accessor confirmButtonVisible_: boolean = false;
+  protected accessor confirmMsg_: string = '';
+  protected accessor displayNameInputError_: string = '';
+  protected accessor editButtonVisible_: boolean = false;
+  protected accessor minPinLength_: number = 0;
+  protected accessor newDisplayName_: string = '';
+  protected accessor newUsername_: string = '';
+  protected accessor userNameInputError_: string = '';
 
   private browserProxy_: SecurityKeysCredentialBrowserProxy =
       SecurityKeysCredentialBrowserProxyImpl.getInstance();
+  private credentialIdToDelete_: string = '';
+  private editingCredential_: Credential|null = null;
   private showSetPINButton_: boolean = false;
 
   override connectedCallback() {
@@ -154,6 +149,33 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
           this.editButtonVisible_ = response.supportsUpdateUserInformation;
           this.dialogPage_ = CredentialManagementDialogPage.PIN_PROMPT;
         });
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('dialogPage_')) {
+      this.updateDialogPageState_();
+    }
+    if (changedPrivateProperties.has('newDisplayName_') ||
+        changedPrivateProperties.has('newUsername_')) {
+      this.validateInput_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('dialogPage_')) {
+      if (this.dialogPage_ === CredentialManagementDialogPage.PIN_PROMPT) {
+        this.$.pin.focus();
+      }
+      this.fire('credential-management-dialog-ready-for-testing');
+    }
   }
 
   private onPinError_(error: string, requiresPINChange = false) {
@@ -190,7 +212,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
     this.dialogPage_ = CredentialManagementDialogPage.CREDENTIALS;
   }
 
-  private dialogPageChanged_() {
+  private updateDialogPageState_() {
     switch (this.dialogPage_) {
       case CredentialManagementDialogPage.INITIAL:
         this.cancelButtonVisible_ = true;
@@ -207,7 +229,6 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
         this.closeButtonVisible_ = false;
         this.dialogTitle_ =
             this.i18n('securityKeysCredentialManagementDialogTitle');
-        this.$.pin.focus();
         break;
       case CredentialManagementDialogPage.PIN_ERROR:
         this.cancelButtonVisible_ = true;
@@ -256,20 +277,16 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
       default:
         assertNotReached();
     }
-    this.dispatchEvent(new CustomEvent(
-        'credential-management-dialog-ready-for-testing',
-        {bubbles: true, composed: true}));
   }
 
-  private onConfirmButtonClick_() {
+  protected onConfirmButtonClick_() {
     switch (this.dialogPage_) {
       case CredentialManagementDialogPage.PIN_PROMPT:
         this.submitPin_();
         break;
       case CredentialManagementDialogPage.PIN_ERROR:
         this.$.dialog.close();
-        this.dispatchEvent(new CustomEvent(
-            'credential-management-set-pin', {bubbles: true, composed: true}));
+        this.fire('credential-management-set-pin');
         break;
       case CredentialManagementDialogPage.CREDENTIALS:
         this.$.dialog.close();
@@ -288,7 +305,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
     }
   }
 
-  private onCancelButtonClick_() {
+  protected onCancelButtonClick_() {
     switch (this.dialogPage_) {
       case CredentialManagementDialogPage.INITIAL:
       case CredentialManagementDialogPage.PIN_PROMPT:
@@ -306,26 +323,26 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
     }
   }
 
-  private onDialogClosed_() {
+  protected onDialogClose_() {
     this.browserProxy_.close();
   }
 
-  private close_() {
+  protected onCloseButtonClick_() {
     this.$.dialog.close();
   }
 
-  private isEmpty_(str: string|null): boolean {
+  protected isEmpty_(str: string|null): boolean {
     return !str || str.length === 0;
   }
 
-  private onIronSelect_(e: Event) {
+  protected onIronSelect_(e: Event) {
     // Prevent this event from bubbling since it is unnecessarily triggering
     // the listener within settings-animated-pages.
     e.stopPropagation();
   }
 
-  private onDeleteButtonClick_(e: Event) {
-    const target = e.target as CrIconButtonElement;
+  protected onDeleteButtonClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
     this.credentialIdToDelete_ = target.dataset['credentialid']!;
     assert(!this.isEmpty_(this.credentialIdToDelete_));
 
@@ -341,13 +358,8 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
             this.onError_(response.message);
             return;
           }
-          for (let i = 0; i < this.credentials_.length; i++) {
-            if (this.credentials_[i].credentialId ===
-                this.credentialIdToDelete_) {
-              this.splice('credentials_', i, 1);
-              break;
-            }
-          }
+          this.credentials_ = this.credentials_.filter(
+              c => c.credentialId !== this.credentialIdToDelete_);
           this.dialogPage_ = CredentialManagementDialogPage.CREDENTIALS;
         });
   }
@@ -365,24 +377,35 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
         !this.isEmpty_(this.displayNameInputError_ + this.userNameInputError_);
   }
 
-  private onUpdateButtonClick_(e: Event) {
-    const target = e.target as CrIconButtonElement;
+  protected onUpdateButtonClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const credentialId = target.dataset['credentialid']!;
 
     for (const credential of this.credentials_) {
-      if (credential.credentialId === target.dataset['credentialid']!) {
+      if (credential.credentialId === credentialId) {
         this.editingCredential_ = credential;
         break;
       }
     }
 
+    assert(this.editingCredential_);
     this.newDisplayName_ = this.editingCredential_.userDisplayName;
     this.newUsername_ = this.editingCredential_.userName;
 
     this.dialogPage_ = CredentialManagementDialogPage.EDIT;
   }
 
+  protected onNewDisplayNameValueChanged_(e: CustomEvent<{value: string}>) {
+    this.newDisplayName_ = e.detail.value;
+  }
+
+  protected onNewUsernameValueChanged_(e: CustomEvent<{value: string}>) {
+    this.newUsername_ = e.detail.value;
+  }
+
   private updateUserInformation_() {
     assert(this.dialogPage_ === CredentialManagementDialogPage.EDIT);
+    assert(this.editingCredential_);
 
     if (this.isEmpty_(this.newUsername_)) {
       this.newUsername_ = this.editingCredential_.userName;
@@ -402,19 +425,16 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
             return;
           }
 
-          for (let i = 0; i < this.credentials_.length; i++) {
-            if (this.credentials_[i].credentialId ===
-                this.editingCredential_.credentialId) {
-              const newCred: Credential =
-                  Object.assign({}, this.credentials_[i]);
-
-              newCred.userName = this.newUsername_;
-              newCred.userDisplayName = this.newDisplayName_;
-
-              this.splice('credentials_', i, 1, newCred);
-              break;
+          this.credentials_ = this.credentials_.map(c => {
+            if (c.credentialId === this.editingCredential_!.credentialId) {
+              return {
+                ...c,
+                userName: this.newUsername_,
+                userDisplayName: this.newDisplayName_,
+              };
             }
-          }
+            return c;
+          });
         });
     this.dialogPage_ = CredentialManagementDialogPage.CREDENTIALS;
   }
@@ -426,6 +446,9 @@ declare global {
         SettingsSecurityKeysCredentialManagementDialogElement;
   }
 }
+
+export type SecurityKeysCredentialManagementDialogElement =
+    SettingsSecurityKeysCredentialManagementDialogElement;
 
 customElements.define(
     SettingsSecurityKeysCredentialManagementDialogElement.is,

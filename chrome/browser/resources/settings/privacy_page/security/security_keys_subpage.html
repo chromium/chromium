@@ -1,54 +1,54 @@
-<style include="settings-shared"></style>
 <settings-subpage page-title="$i18n{securityKeysTitle}"
-    route-path$="[[routePath]]">
+    route-path="${this.routePath}">
   <cr-link-row
       id="setPINButton"
       class="hr"
       label="$i18n{securityKeysSetPIN}"
       sub-label="$i18n{securityKeysSetPINDesc}"
-      on-click="onSetPin_"></cr-link-row>
+      @click="${this.onSetPinClick_}"></cr-link-row>
   <cr-link-row
       id="credentialManagementButton"
       class="hr"
       label="$i18n{securityKeysCredentialManagementLabel}"
       sub-label="$i18n{securityKeysCredentialManagementDesc}"
-      on-click="onCredentialManagement_"></cr-link-row>
-  <template is="dom-if" if="[[enableBioEnrollment_]]">
+      @click="${this.onCredentialManagementClick_}"></cr-link-row>
+  ${this.enableBioEnrollment_ ? html`
     <cr-link-row
         id="bioEnrollButton"
         class="hr"
         label="$i18n{securityKeysBioEnrollmentSubpageLabel}"
         sub-label="$i18n{securityKeysBioEnrollmentSubpageDescription}"
-        on-click="onBioEnroll_"></cr-link-row>
-  </template>
+        @click="${this.onBioEnrollClick_}">
+    </cr-link-row>
+  ` : ''}
   <cr-link-row
       id="resetButton"
       class="hr"
       label="$i18n{securityKeysReset}"
       sub-label="$i18n{securityKeysResetDesc}"
-      on-click="onReset_"></cr-link-row>
+      @click="${this.onResetClick_}"></cr-link-row>
 
-  <template is="dom-if" if="[[showSetPINDialog_]]" restamp>
-    <settings-security-keys-set-pin-dialog on-close="onSetPinDialogClosed_">
+  ${this.showSetPINDialog_ ? html`
+    <settings-security-keys-set-pin-dialog @close="${this.onSetPinDialogClose_}">
     </settings-security-keys-set-pin-dialog>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showCredentialManagementDialog_]]" restamp>
+  ${this.showCredentialManagementDialog_ ? html`
     <settings-security-keys-credential-management-dialog
-        on-credential-management-set-pin="onSetPin_"
-        on-close="onCredentialManagementDialogClosed_">
+        @credential-management-set-pin="${this.onCredentialManagementSetPin_}"
+        @close="${this.onCredentialManagementDialogClose_}">
     </settings-security-keys-credential-management-dialog>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showResetDialog_]]" restamp>
-    <settings-security-keys-reset-dialog on-close="onResetDialogClosed_">
+  ${this.showResetDialog_ ? html`
+    <settings-security-keys-reset-dialog @close="${this.onResetDialogClose_}">
     </settings-security-keys-reset-dialog>
-  </template>
+  ` : ''}
 
-  <template is="dom-if" if="[[showBioEnrollDialog_]]" restamp>
+  ${this.showBioEnrollDialog_ ? html`
     <settings-security-keys-bio-enroll-dialog
-        on-bio-enroll-set-pin="onSetPin_"
-        on-close="onBioEnrollDialogClosed_">
+        @bio-enroll-set-pin="${this.onBioEnrollSetPin_}"
+        @close="${this.onBioEnrollDialogClose_}">
     </settings-security-keys-bio-enroll-dialog>
-  </template>
+  ` : ''}
 </settings-subpage>

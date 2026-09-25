@@ -8,7 +8,6 @@
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_shared.css.js';
 import './security_keys_credential_management_dialog.js';
 import './security_keys_bio_enroll_dialog.js';
 import './security_keys_set_pin_dialog.js';
@@ -16,12 +15,13 @@ import './security_keys_reset_dialog.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../../settings_page/settings_view_mixin_lit.js';
+import {getCss as getSettingsSharedCss} from '../../settings_shared_lit.css.js';
 
-import {getTemplate} from './security_keys_subpage.html.js';
+import {getHtml} from './security_keys_subpage.html.js';
 
 export interface SecurityKeysSubpageElement {
   $: {
@@ -30,100 +30,93 @@ export interface SecurityKeysSubpageElement {
   };
 }
 
-const SecurityKeysSubpageElementBase = SettingsViewMixin(PolymerElement);
+const SecurityKeysSubpageElementBase = SettingsViewMixinLit(CrLitElement);
 
 export class SecurityKeysSubpageElement extends SecurityKeysSubpageElementBase {
   static get is() {
     return 'security-keys-subpage';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [
+      getSettingsSharedCss(),
+    ];
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      enableBioEnrollment_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.getBoolean('enableSecurityKeysBioEnrollment');
-        },
-      },
-
-      showSetPINDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showCredentialManagementDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showResetDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showBioEnrollDialog_: {
-        type: Boolean,
-        value: false,
-      },
+      enableBioEnrollment_: {type: Boolean},
+      showSetPINDialog_: {type: Boolean},
+      showCredentialManagementDialog_: {type: Boolean},
+      showResetDialog_: {type: Boolean},
+      showBioEnrollDialog_: {type: Boolean},
     };
   }
 
-  declare private enableBioEnrollment_: boolean;
-  declare private showSetPINDialog_: boolean;
-  declare private showCredentialManagementDialog_: boolean;
-  declare private showResetDialog_: boolean;
-  declare private showBioEnrollDialog_: boolean;
+  protected accessor enableBioEnrollment_: boolean =
+      loadTimeData.getBoolean('enableSecurityKeysBioEnrollment');
+  protected accessor showSetPINDialog_: boolean = false;
+  protected accessor showCredentialManagementDialog_: boolean = false;
+  protected accessor showResetDialog_: boolean = false;
+  protected accessor showBioEnrollDialog_: boolean = false;
 
-  private onSetPin_() {
+  protected onSetPinClick_() {
     this.showSetPINDialog_ = true;
   }
 
-  private onSetPinDialogClosed_() {
+  protected onSetPinDialogClose_() {
     this.showSetPINDialog_ = false;
     focusWithoutInk(this.$.setPINButton);
   }
 
-  private onCredentialManagement_() {
+  protected onCredentialManagementClick_() {
     this.showCredentialManagementDialog_ = true;
   }
 
-  private onCredentialManagementDialogClosed_() {
+  protected onCredentialManagementSetPin_() {
+    this.onSetPinClick_();
+  }
+
+  protected onCredentialManagementDialogClose_() {
     this.showCredentialManagementDialog_ = false;
-    const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
+    const toFocus = this.shadowRoot.querySelector<HTMLElement>(
         '#credentialManagementButton');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
 
-  private onReset_() {
+  protected onResetClick_() {
     this.showResetDialog_ = true;
   }
 
-  private onResetDialogClosed_() {
+  protected onResetDialogClose_() {
     this.showResetDialog_ = false;
     focusWithoutInk(this.$.resetButton);
   }
 
-  private onBioEnroll_() {
+  protected onBioEnrollClick_() {
     this.showBioEnrollDialog_ = true;
   }
 
-  private onBioEnrollDialogClosed_() {
+  protected onBioEnrollSetPin_() {
+    this.onSetPinClick_();
+  }
+
+  protected onBioEnrollDialogClose_() {
     this.showBioEnrollDialog_ = false;
     const toFocus =
-        this.shadowRoot!.querySelector<HTMLElement>('#bioEnrollButton');
+        this.shadowRoot.querySelector<HTMLElement>('#bioEnrollButton');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

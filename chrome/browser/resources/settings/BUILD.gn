@@ -627,6 +627,7 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_welcome_fragment.css",
     "privacy_page/privacy_guide/step_indicator.css",
     "privacy_page/security/security_keys_bio_enroll_dialog.css",
+    "privacy_page/security/security_keys_credential_management_dialog.css",
     "privacy_page/security/security_keys_pin_field.css",
     "privacy_page/security/security_keys_reset_dialog.css",
     "privacy_page/security/security_keys_set_pin_dialog.css",

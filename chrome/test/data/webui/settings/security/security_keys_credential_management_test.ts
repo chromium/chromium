@@ -4,7 +4,6 @@
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {Credential, CredentialManagementResponse, CrIconButtonElement, SecurityKeysCredentialBrowserProxy, SettingsSecurityKeysCredentialManagementDialogElement, StartCredentialManagementResponse} from 'chrome://settings/lazy_load.js';
 import {CredentialManagementDialogPage, SecurityKeysCredentialBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -90,7 +89,6 @@ suite('SecurityKeysCredentialManagement', function() {
     dialog.$.confirmButton.click();
     await browserProxy.whenCalled('enumerateCredentials');
     await microtasksFinished();
-    flush();
     assertShown(allDivs, dialog, 'credentials');
   }
 
@@ -112,11 +110,10 @@ suite('SecurityKeysCredentialManagement', function() {
 
   function assertCredentialsVisible(visible: boolean) {
     assertEquals(
-        visible, isVisible(dialog.shadowRoot!.querySelector('#header')));
+        visible, isVisible(dialog.shadowRoot.querySelector('#header')));
     assertEquals(visible, isVisible(dialog.$.container));
     assertEquals(
-        !visible,
-        isVisible(dialog.shadowRoot!.querySelector('#noCredentials')));
+        !visible, isVisible(dialog.shadowRoot.querySelector('#noCredentials')));
   }
 
   const credential: Credential = {
@@ -131,7 +128,7 @@ suite('SecurityKeysCredentialManagement', function() {
     await showCredentials([]);
 
     assertCredentialsVisible(false);
-    const emptyMessage = dialog.shadowRoot!.querySelector('#noCredentials');
+    const emptyMessage = dialog.shadowRoot.querySelector('#noCredentials');
     assertEquals(
         dialog.i18n('securityKeysCredentialManagementNoCredentials'),
         emptyMessage!.textContent.trim());
@@ -163,7 +160,6 @@ suite('SecurityKeysCredentialManagement', function() {
           [credentialId], await browserProxy.whenCalled('deleteCredentials'));
       browserProxy.resetResolver('deleteCredentials');
       await microtasksFinished();
-      flush();
       assertShown(allDivs, dialog, 'credentials');
     }
 
@@ -314,7 +310,6 @@ suite('SecurityKeysCredentialManagement', function() {
     assertEntries(credentials);
 
     // Check that the edit button is disabled.
-    flush();
     const editButtons: CrIconButtonElement[] =
         Array.from(dialog.$.container.querySelectorAll('.edit-button'));
     assertEquals(editButtons.length, 1);
@@ -390,7 +385,6 @@ suite('SecurityKeysCredentialManagement', function() {
     assertEntries(credentials);
 
     // Update a credential
-    flush();
     const editButtons: CrIconButtonElement[] =
         Array.from(dialog.$.container.querySelectorAll('.edit-button'));
     assertEquals(editButtons.length, 3);
@@ -410,7 +404,6 @@ suite('SecurityKeysCredentialManagement', function() {
     assertEntries(credentials);
 
     // Delete a credential.
-    flush();
     const deleteButtons: CrIconButtonElement[] =
         Array.from(dialog.$.container.querySelectorAll('.delete-button'));
     assertEquals(deleteButtons.length, 3);
