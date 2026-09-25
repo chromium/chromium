@@ -49,11 +49,11 @@ class MockChildMemoryCoordinator : public mojom::ChildMemoryCoordinator {
               (override));
   MOCK_METHOD(void,
               SetOverrideLimit,
-              (uint32_t consumer_id, int32_t percentage),
+              (uint32_t consumer_id, base::MemoryLimit memory_limit),
               (override));
   MOCK_METHOD(void,
               ClearOverrideLimit,
-              (uint32_t consumer_id, int32_t policy_limit),
+              (uint32_t consumer_id, base::MemoryLimit policy_limit),
               (override));
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   MOCK_METHOD(

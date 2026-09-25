@@ -72,14 +72,16 @@ void BrowserMemoryCoordinatorBridge::UpdateConsumers(
   manager().UpdateConsumers(this, std::move(updates));
 }
 
-void BrowserMemoryCoordinatorBridge::SetOverrideLimit(uint32_t consumer_id,
-                                                      int32_t percentage) {
+void BrowserMemoryCoordinatorBridge::SetOverrideLimit(
+    uint32_t consumer_id,
+    base::MemoryLimit memory_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  manager().SetMemoryLimitOverride(consumer_id, percentage);
+  manager().SetMemoryLimitOverride(consumer_id, memory_limit.percent());
 }
 
-void BrowserMemoryCoordinatorBridge::ClearOverrideLimit(uint32_t consumer_id,
-                                                        int32_t policy_limit) {
+void BrowserMemoryCoordinatorBridge::ClearOverrideLimit(
+    uint32_t consumer_id,
+    base::MemoryLimit policy_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Update this bridge's policy limit in the child policy manager with the
   // current browser policy limit before clearing the override. This ensures

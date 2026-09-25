@@ -72,8 +72,10 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
 
   // MemoryConsumerGroupHost:
   void UpdateConsumers(std::vector<MemoryConsumerUpdate> updates) override;
-  void SetOverrideLimit(uint32_t consumer_id, int percentage) override;
-  void ClearOverrideLimit(uint32_t consumer_id, int policy_limit) override;
+  void SetOverrideLimit(uint32_t consumer_id,
+                        base::MemoryLimit memory_limit) override;
+  void ClearOverrideLimit(uint32_t consumer_id,
+                          base::MemoryLimit policy_limit) override;
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   // mojom::MemoryCoordinatorDiagnosticsHost:

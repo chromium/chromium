@@ -207,13 +207,15 @@ void ChildMemoryConsumerRegistryHost::UpdateConsumers(
   coordinator_remote_->UpdateConsumers(std::move(updates));
 }
 
-void ChildMemoryConsumerRegistryHost::SetOverrideLimit(uint32_t consumer_id,
-                                                       int percentage) {
-  coordinator_remote_->SetOverrideLimit(consumer_id, percentage);
+void ChildMemoryConsumerRegistryHost::SetOverrideLimit(
+    uint32_t consumer_id,
+    base::MemoryLimit memory_limit) {
+  coordinator_remote_->SetOverrideLimit(consumer_id, memory_limit);
 }
 
-void ChildMemoryConsumerRegistryHost::ClearOverrideLimit(uint32_t consumer_id,
-                                                         int policy_limit) {
+void ChildMemoryConsumerRegistryHost::ClearOverrideLimit(
+    uint32_t consumer_id,
+    base::MemoryLimit policy_limit) {
   coordinator_remote_->ClearOverrideLimit(consumer_id, policy_limit);
 }
 

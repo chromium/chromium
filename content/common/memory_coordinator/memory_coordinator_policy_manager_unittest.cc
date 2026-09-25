@@ -63,11 +63,11 @@ class MockMemoryConsumerGroupHost : public MemoryConsumerGroupHost {
               (override));
   MOCK_METHOD(void,
               SetOverrideLimit,
-              (uint32_t consumer_id, int percentage),
+              (uint32_t consumer_id, base::MemoryLimit memory_limit),
               (override));
   MOCK_METHOD(void,
               ClearOverrideLimit,
-              (uint32_t consumer_id, int policy_limit),
+              (uint32_t consumer_id, base::MemoryLimit policy_limit),
               (override));
 };
 
@@ -255,17 +255,20 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, SetMemoryLimitOverride) {
                                         kTestTraits1, kChildId);
 
   // Set override.
-  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 42));
+  EXPECT_CALL(
+      host, SetOverrideLimit(kConsumerId, base::MemoryLimit::FromPercent(42)));
   policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
   Mock::VerifyAndClearExpectations(&host);
 
   // Update override.
-  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 24));
+  EXPECT_CALL(
+      host, SetOverrideLimit(kConsumerId, base::MemoryLimit::FromPercent(24)));
   policy_manager().SetMemoryLimitOverride(kConsumerId, 24);
   Mock::VerifyAndClearExpectations(&host);
 
   // Clear override. Reverts to default (100%).
-  EXPECT_CALL(host, ClearOverrideLimit(kConsumerId, 100));
+  EXPECT_CALL(host,
+              ClearOverrideLimit(kConsumerId, base::MemoryLimit::Default()));
   policy_manager().ClearMemoryLimitOverride(kConsumerId);
   Mock::VerifyAndClearExpectations(&host);
 
@@ -285,7 +288,8 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, SetMemoryLimitOverride_Persistence) {
 
   // Set override BEFORE adding consumer.
   // Since host is already added, it should receive the IPC immediately.
-  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 42));
+  EXPECT_CALL(
+      host, SetOverrideLimit(kConsumerId, base::MemoryLimit::FromPercent(42)));
   policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
   Mock::VerifyAndClearExpectations(&host);
 
@@ -297,7 +301,8 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, SetMemoryLimitOverride_Persistence) {
   Mock::VerifyAndClearExpectations(&host);
 
   // Clean up.
-  EXPECT_CALL(host, ClearOverrideLimit(kConsumerId, 100));
+  EXPECT_CALL(host,
+              ClearOverrideLimit(kConsumerId, base::MemoryLimit::Default()));
   policy_manager().ClearMemoryLimitOverride(kConsumerId);
   policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
   policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
@@ -315,7 +320,8 @@ TEST_F(MemoryCoordinatorPolicyManagerTest,
   policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
 
   // Adding host should immediately send the override.
-  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 42));
+  EXPECT_CALL(
+      host, SetOverrideLimit(kConsumerId, base::MemoryLimit::FromPercent(42)));
   policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_RENDERER, kChildId,
                                               &host);
   Mock::VerifyAndClearExpectations(&host);
@@ -328,7 +334,8 @@ TEST_F(MemoryCoordinatorPolicyManagerTest,
   Mock::VerifyAndClearExpectations(&host);
 
   // Clean up.
-  EXPECT_CALL(host, ClearOverrideLimit(kConsumerId, 100));
+  EXPECT_CALL(host,
+              ClearOverrideLimit(kConsumerId, base::MemoryLimit::Default()));
   policy_manager().ClearMemoryLimitOverride(kConsumerId);
   policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
   policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
@@ -346,20 +353,23 @@ TEST_F(MemoryCoordinatorPolicyManagerTest,
   policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
 
   // Adding in-process host.
-  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 42));
+  EXPECT_CALL(
+      host, SetOverrideLimit(kConsumerId, base::MemoryLimit::FromPercent(42)));
   policy_manager().AddMemoryConsumerGroupHost(PROCESS_TYPE_BROWSER,
                                               kInProcessChildId, &host);
   Mock::VerifyAndClearExpectations(&host);
 
   // Adding consumer to an in-process host SHOULD notify the host so that
   // in-process registries (which do not buffer overrides) apply the limit.
-  EXPECT_CALL(host, SetOverrideLimit(kConsumerId, 42));
+  EXPECT_CALL(
+      host, SetOverrideLimit(kConsumerId, base::MemoryLimit::FromPercent(42)));
   policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
                                         kTestTraits1, kInProcessChildId);
   Mock::VerifyAndClearExpectations(&host);
 
   // Clean up.
-  EXPECT_CALL(host, ClearOverrideLimit(kConsumerId, 100));
+  EXPECT_CALL(host,
+              ClearOverrideLimit(kConsumerId, base::MemoryLimit::Default()));
   policy_manager().ClearMemoryLimitOverride(kConsumerId);
   policy_manager().OnConsumerGroupRemoved(kConsumerId, kInProcessChildId);
   policy_manager().RemoveMemoryConsumerGroupHost(kInProcessChildId);

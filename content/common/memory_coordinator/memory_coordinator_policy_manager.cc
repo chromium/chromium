@@ -191,7 +191,8 @@ void MemoryCoordinatorPolicyManager::AddMemoryConsumerGroupHost(
   CHECK(inserted);
 
   for (auto const& [consumer_id, percentage] : memory_limit_overrides_) {
-    host->SetOverrideLimit(consumer_id, percentage);
+    host->SetOverrideLimit(consumer_id,
+                           base::MemoryLimit::FromPercent(percentage));
   }
 }
 
@@ -222,7 +223,8 @@ void MemoryCoordinatorPolicyManager::OnConsumerGroupAdded(
     // AddMemoryConsumerGroupHost. Only in-process hosts need direct
     // notification when a new consumer group is created.
     if (child_process_id.is_null()) {
-      host_state.host->SetOverrideLimit(consumer_id, it->second);
+      host_state.host->SetOverrideLimit(
+          consumer_id, base::MemoryLimit::FromPercent(it->second));
     }
   }
 
@@ -351,7 +353,8 @@ void MemoryCoordinatorPolicyManager::ApplyMemoryLimitOverride(
     if (it != host_state->groups.end()) {
       it->second->SetOverrideLimit(percentage);
     }
-    host_state->host->SetOverrideLimit(consumer_id, percentage);
+    host_state->host->SetOverrideLimit(
+        consumer_id, base::MemoryLimit::FromPercent(percentage));
   }
 }
 
@@ -375,7 +378,8 @@ void MemoryCoordinatorPolicyManager::ClearMemoryLimitOverride(
       it->second->SetOverrideLimit(std::nullopt);
       policy_limit = it->second->current_limit();
     }
-    host_state->host->ClearOverrideLimit(consumer_id, policy_limit);
+    host_state->host->ClearOverrideLimit(
+        consumer_id, base::MemoryLimit::FromPercent(policy_limit));
   }
 }
 

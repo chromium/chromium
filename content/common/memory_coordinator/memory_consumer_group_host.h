@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory_coordinator/memory_limit.h"
 #include "content/common/content_export.h"
 #include "content/public/common/memory_consumer_update.h"
 
@@ -23,8 +24,10 @@ class CONTENT_EXPORT MemoryConsumerGroupHost {
   virtual void UpdateConsumers(std::vector<MemoryConsumerUpdate> updates) = 0;
 
   // Sets or clears an override limit on consumers in this host.
-  virtual void SetOverrideLimit(uint32_t consumer_id, int percentage) = 0;
-  virtual void ClearOverrideLimit(uint32_t consumer_id, int policy_limit) = 0;
+  virtual void SetOverrideLimit(uint32_t consumer_id,
+                                base::MemoryLimit memory_limit) = 0;
+  virtual void ClearOverrideLimit(uint32_t consumer_id,
+                                  base::MemoryLimit policy_limit) = 0;
 };
 
 }  // namespace content

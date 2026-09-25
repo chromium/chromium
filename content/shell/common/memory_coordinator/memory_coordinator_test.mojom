@@ -5,6 +5,7 @@
 module content.mojom;
 
 import "content/common/memory_coordinator/mojom/memory_coordinator.mojom";
+import "mojo/public/mojom/base/memory_limit.mojom";
 
 // An interface for driving memory coordinator tests in the renderer process.
 interface MemoryCoordinatorTest {
@@ -18,7 +19,7 @@ interface MemoryCoordinatorTest {
 // Receives echoes of memory coordinator signals from the renderer process.
 interface MemoryCoordinatorTestClient {
   // Called when the renderer's MemoryConsumer receives OnUpdateMemoryLimit.
-  OnUpdateMemoryLimit(int32 percentage);
+  OnUpdateMemoryLimit(mojo_base.mojom.MemoryLimit memory_limit);
 
   // Called when the renderer's MemoryConsumer receives OnReleaseMemory.
   OnReleaseMemory();

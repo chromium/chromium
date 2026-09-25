@@ -91,7 +91,7 @@ class MemoryCoordinatorBrowserTest : public ContentBrowserTest {
     ~ChildConsumerClient() override = default;
 
     // mojom::MemoryCoordinatorTestClient:
-    MOCK_METHOD(void, OnUpdateMemoryLimit, (int32_t), (override));
+    MOCK_METHOD(void, OnUpdateMemoryLimit, (base::MemoryLimit), (override));
     MOCK_METHOD(void, OnReleaseMemory, (), (override));
 
    private:
@@ -162,11 +162,14 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest, ChildProcessRegistration) {
     base::RepeatingClosure barrier =
         base::BarrierClosure(2, run_loop.QuitClosure());
 
-    EXPECT_CALL(*consumer_a, OnUpdateMemoryLimit(50))
+    EXPECT_CALL(*consumer_a,
+                OnUpdateMemoryLimit(base::MemoryLimit::FromPercent(50)))
         .WillOnce(base::test::RunOnceClosure(barrier));
     EXPECT_CALL(*consumer_a, OnReleaseMemory())
         .WillOnce(base::test::RunOnceClosure(barrier));
-    EXPECT_CALL(*consumer_b, OnUpdateMemoryLimit(50)).Times(0);
+    EXPECT_CALL(*consumer_b,
+                OnUpdateMemoryLimit(base::MemoryLimit::FromPercent(50)))
+        .Times(0);
     EXPECT_CALL(*consumer_b, OnReleaseMemory()).Times(0);
 
     policy.UpdateConsumersWithFilter(
@@ -186,9 +189,11 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest, ChildProcessRegistration) {
     base::RepeatingClosure barrier =
         base::BarrierClosure(2, run_loop.QuitClosure());
 
-    EXPECT_CALL(*consumer_a, OnUpdateMemoryLimit(25))
+    EXPECT_CALL(*consumer_a,
+                OnUpdateMemoryLimit(base::MemoryLimit::FromPercent(25)))
         .WillOnce(base::test::RunOnceClosure(barrier));
-    EXPECT_CALL(*consumer_b, OnUpdateMemoryLimit(25))
+    EXPECT_CALL(*consumer_b,
+                OnUpdateMemoryLimit(base::MemoryLimit::FromPercent(25)))
         .WillOnce(base::test::RunOnceClosure(barrier));
 
     policy.UpdateConsumersWithFilter(

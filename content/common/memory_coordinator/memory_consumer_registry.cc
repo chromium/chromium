@@ -105,14 +105,15 @@ void MemoryConsumerRegistry::UpdateConsumers(
 }
 
 void MemoryConsumerRegistry::SetOverrideLimit(uint32_t consumer_id,
-                                              int percentage) {
+                                              base::MemoryLimit memory_limit) {
   if (consumer_groups_.contains(consumer_id)) {
-    UpdateConsumers({{consumer_id, percentage, false}});
+    UpdateConsumers({{consumer_id, memory_limit, false}});
   }
 }
 
-void MemoryConsumerRegistry::ClearOverrideLimit(uint32_t consumer_id,
-                                                int policy_limit) {
+void MemoryConsumerRegistry::ClearOverrideLimit(
+    uint32_t consumer_id,
+    base::MemoryLimit policy_limit) {
   if (consumer_groups_.contains(consumer_id)) {
     UpdateConsumers({{consumer_id, policy_limit, false}});
   }
