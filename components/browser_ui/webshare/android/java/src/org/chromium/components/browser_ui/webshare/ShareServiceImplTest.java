@@ -118,6 +118,11 @@ public class ShareServiceImplTest {
                     }
 
                     @Override
+                    public boolean consumeTransientUserActivation() {
+                        return true;
+                    }
+
+                    @Override
                     public void share(ShareParams params) {}
 
                     @Override
@@ -164,6 +169,11 @@ public class ShareServiceImplTest {
                     new ShareServiceImpl.WebShareDelegate() {
                         @Override
                         public boolean canShare() {
+                            return true;
+                        }
+
+                        @Override
+                        public boolean consumeTransientUserActivation() {
                             return true;
                         }
 
@@ -267,6 +277,11 @@ public class ShareServiceImplTest {
                     }
 
                     @Override
+                    public boolean consumeTransientUserActivation() {
+                        return true;
+                    }
+
+                    @Override
                     public void share(ShareParams params) {
                         Assert.fail("share() should not be called when canShare() is false.");
                     }
@@ -299,5 +314,52 @@ public class ShareServiceImplTest {
                 });
 
         Assert.assertEquals(ShareError.INTERNAL_ERROR, shareError[0]);
+    }
+
+    @Test
+    public void testNoTransientUserActivation() {
+        int[] shareError = new int[1];
+
+        ShareServiceImpl.WebShareDelegate mockDelegate =
+                new ShareServiceImpl.WebShareDelegate() {
+                    @Override
+                    public boolean canShare() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean consumeTransientUserActivation() {
+                        return false;
+                    }
+
+                    @Override
+                    public void share(ShareParams params) {
+                        Assert.fail(
+                                "share() should not be called without transient user activation.");
+                    }
+
+                    @Override
+                    public WindowAndroid getWindowAndroid() {
+                        return null;
+                    }
+
+                    @Override
+                    public void terminateRendererDueToBadMessage(int reason) {}
+                };
+
+        ShareServiceImpl shareService = new ShareServiceImpl(mockDelegate);
+        Url url = new Url();
+        url.url = "https://example.com";
+
+        shareService.share(
+                "title",
+                "text",
+                url,
+                null,
+                error -> {
+                    shareError[0] = error;
+                });
+
+        Assert.assertEquals(ShareError.PERMISSION_DENIED, shareError[0]);
     }
 }

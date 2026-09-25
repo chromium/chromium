@@ -157,6 +157,13 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
+    public boolean consumeTransientUserActivation() {
+        if (mNativeRenderFrameHostAndroid == 0) return false;
+        return RenderFrameHostImplJni.get()
+                .consumeTransientUserActivation(mNativeRenderFrameHostAndroid);
+    }
+
+    @Override
     public void notifyWebAuthnAssertionRequestSucceeded() {
         if (mNativeRenderFrameHostAndroid == 0) return;
         RenderFrameHostImplJni.get()
@@ -366,6 +373,8 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         UnguessableToken getAndroidOverlayRoutingToken(long nativeRenderFrameHostAndroid);
 
         void notifyUserActivation(long nativeRenderFrameHostAndroid);
+
+        boolean consumeTransientUserActivation(long nativeRenderFrameHostAndroid);
 
         void notifyWebAuthnAssertionRequestSucceeded(long nativeRenderFrameHostAndroid);
 

@@ -542,6 +542,7 @@ public class ShareDelegateImplUnitTest {
                 ObservableSuppliers.createMonotonic(mockShareDelegate));
 
         doReturn(true).when(mRenderFrameHost).isFeatureEnabled(PermissionsPolicyFeature.WEB_SHARE);
+        doReturn(true).when(mRenderFrameHost).consumeTransientUserActivation();
 
         ShareServiceImplementationFactory factory =
                 new ShareServiceImplementationFactory(mRenderFrameHost);
@@ -574,6 +575,36 @@ public class ShareDelegateImplUnitTest {
         ChromeShareExtras capturedExtras = extrasCaptor.getValue();
         Assert.assertEquals(mRenderFrameHost, capturedExtras.getRenderFrameHost());
         Assert.assertEquals(DetailedContentType.WEB_SHARE, capturedExtras.getDetailedContentType());
+    }
+
+    @Test
+    public void testShareServiceImplementationFactory_noTransientUserActivation() {
+        WebContents webContents = mock(WebContents.class);
+        doReturn(mWindowAndroid).when(webContents).getTopLevelNativeWindow();
+        WebContentsStatics.setWebContentsForTesting(webContents);
+
+        ShareDelegate mockShareDelegate = mock(ShareDelegate.class);
+        ShareDelegateSupplier.setInstanceForTesting(
+                ObservableSuppliers.createMonotonic(mockShareDelegate));
+
+        doReturn(true).when(mRenderFrameHost).isFeatureEnabled(PermissionsPolicyFeature.WEB_SHARE);
+        doReturn(false).when(mRenderFrameHost).consumeTransientUserActivation();
+
+        ShareServiceImplementationFactory factory =
+                new ShareServiceImplementationFactory(mRenderFrameHost);
+        ShareService shareService = factory.createImpl();
+        Assert.assertNotNull(shareService);
+
+        org.chromium.url.mojom.Url validUrl = new org.chromium.url.mojom.Url();
+        validUrl.url = "https://example.com";
+
+        int[] shareError = new int[1];
+        shareService.share(
+                "sample_title", "sample_text", validUrl, null, error -> shareError[0] = error);
+
+        Assert.assertEquals(ShareError.PERMISSION_DENIED, shareError[0]);
+        verify(mRenderFrameHost).consumeTransientUserActivation();
+        verify(mockShareDelegate, never()).share(any(), any(), anyInt());
     }
 
     @Test

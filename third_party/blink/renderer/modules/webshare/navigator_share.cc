@@ -11,6 +11,8 @@
 #include "base/files/safe_base_name.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/blink/public/common/frame/user_activation_update_source.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -255,13 +257,27 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
   }
 #endif
 
-  if (!LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
+  if (!LocalFrame::HasTransientUserActivation(window->GetFrame())) {
     VLOG(1) << "Share without transient activation (user gesture)";
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Must be handling a user gesture to perform a share request.");
     return EmptyPromise();
   }
+
+  // Consume the transient activation, as required by
+  // https://w3c.github.io/web-share/#share-method.
+  // - If we return early before service_remote_->Share(), consume with
+  //   kRenderer so the browser is also notified via LocalFrameHost.
+  // - Once we reach service_remote_->Share(), switch to kBrowser to suppress
+  //   the LocalFrameHost IPC, leaving the browser's copy intact for the
+  //   authoritative check and consumption in ShareServiceImpl::Share().
+  UserActivationUpdateSource activation_update_source =
+      UserActivationUpdateSource::kRenderer;
+  absl::Cleanup consume_activation = [&] {
+    LocalFrame::ConsumeTransientUserActivation(window->GetFrame(),
+                                               activation_update_source);
+  };
 
   if (window->GetFrame()->IsInFencedFrameTree()) {
     exception_state.ThrowDOMException(
@@ -347,6 +363,7 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
   clients_.insert(client);
   auto promise = resolver->Promise();
 
+  activation_update_source = UserActivationUpdateSource::kBrowser;
   service_remote_->Share(
       data->hasTitle() ? data->title() : g_empty_string,
       data->hasText() ? data->text() : g_empty_string, url, std::move(files),

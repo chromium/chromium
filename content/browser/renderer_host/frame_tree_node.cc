@@ -855,8 +855,11 @@ bool FrameTreeNode::AreAncestorsSecure() {
 
 bool FrameTreeNode::ConsumeTransientUserActivation() {
   bool was_active = current_frame_host()->IsActiveUserActivation();
+  if (!was_active) {
+    return false;
+  }
   for (FrameTreeNode* node : frame_tree().Nodes()) {
-    node->current_frame_host()->ConsumeTransientUserActivation();
+    node->current_frame_host()->ConsumeTransientUserActivationLocal();
   }
 
   if (base::FeatureList::IsEnabled(
@@ -867,7 +870,7 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
         frame_tree().delegate()->GetDocumentPictureInPictureOpenerFrameTree();
     if (pip_opener) {
       for (FrameTreeNode* node : pip_opener->Nodes()) {
-        node->current_frame_host()->ConsumeTransientUserActivation();
+        node->current_frame_host()->ConsumeTransientUserActivationLocal();
       }
     }
 
@@ -877,7 +880,7 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
         frame_tree().delegate()->GetOwnedDocumentPictureInPictureFrameTree();
     if (picture_in_picture_frame_tree) {
       for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
-        node->current_frame_host()->ConsumeTransientUserActivation();
+        node->current_frame_host()->ConsumeTransientUserActivationLocal();
       }
     }
   }
@@ -916,7 +919,9 @@ bool FrameTreeNode::UpdateUserActivationState(
       update_result = ClearUserActivation();
       break;
   }
-  render_manager_.UpdateUserActivationState(update_type, notification_type);
+  if (update_result) {
+    render_manager_.UpdateUserActivationState(update_type, notification_type);
+  }
   return update_result;
 }
 

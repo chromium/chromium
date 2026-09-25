@@ -160,6 +160,10 @@ void RenderFrameHostAndroid::NotifyUserActivation(JNIEnv* env) {
       blink::mojom::UserActivationNotificationType::kVoiceSearch);
 }
 
+bool RenderFrameHostAndroid::ConsumeTransientUserActivation(JNIEnv* env) {
+  return render_frame_host_->ConsumeTransientUserActivation();
+}
+
 void RenderFrameHostAndroid::NotifyWebAuthnAssertionRequestSucceeded(
     JNIEnv* env) {
   render_frame_host_->WebAuthnAssertionRequestSucceeded();
@@ -310,8 +314,8 @@ void RenderFrameHostAndroid::ExecuteJavaScriptInIsolatedWorld(
         ConvertJavaStringToUTF16(env, jscript), base::DoNothing(), jworldId);
     return;
   }
-  // Secure the Java callback in a scoped object and give ownership of it to the
-  // base::OnceCallback below.
+  // Secure the Java callback in a scoped object and give ownership of it to
+  // the base::OnceCallback below.
   base::android::ScopedJavaGlobalRef<jobject> java_callback;
   java_callback.Reset(env, jcallback);
 

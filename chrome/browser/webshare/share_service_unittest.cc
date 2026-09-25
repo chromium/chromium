@@ -81,6 +81,12 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
           content_type, file_length));
     }
 
+    // Web Share requires transient user activation, which
+    // ShareServiceImpl::Share() consumes on each call. Re-activate before
+    // every share so that repeated calls in a single test still represent
+    // legitimate, separately-gestured shares.
+    content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+
     ShareError result;
     base::RunLoop run_loop;
     share_service_remote_->Share(
@@ -259,6 +265,23 @@ TEST_F(ShareServiceUnitTest, OccludedWebContentsBlocked) {
 
   web_contents()->WasShown();
   EXPECT_EQ(ShareError::OK, ShareGeneratedFileData(".txt", "text/plain"));
+}
+
+TEST_F(ShareServiceUnitTest, WithoutUserActivation) {
+  const std::string kTitle = "Title";
+  const std::string kText = "Text";
+  const GURL kUrl("https://example.com");
+  std::vector<blink::mojom::SharedFilePtr> files;
+  ShareError result;
+  base::RunLoop run_loop;
+  share_service_remote_->Share(
+      kTitle, kText, kUrl, std::move(files),
+      base::BindLambdaForTesting([&result, &run_loop](ShareError error) {
+        result = error;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_EQ(result, ShareError::PERMISSION_DENIED);
 }
 
 #if BUILDFLAG(IS_WIN)

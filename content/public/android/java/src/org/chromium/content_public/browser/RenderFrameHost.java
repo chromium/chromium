@@ -122,6 +122,14 @@ public interface RenderFrameHost {
     /** Notifies the native RenderFrameHost about a user activation from the browser side. */
     void notifyUserActivation();
 
+    /**
+     * Consumes the transient bit of the User Activation v2 state across the frame tree of this
+     * RenderFrameHost.
+     *
+     * @return {@code true} if there was an active transient user activation to consume.
+     */
+    boolean consumeTransientUserActivation();
+
     /** Notifies the native RenderFrameHost about a successful WebAuthn assertion request. */
     void notifyWebAuthnAssertionRequestSucceeded();
 

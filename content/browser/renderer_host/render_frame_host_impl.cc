@@ -7715,7 +7715,19 @@ void RenderFrameHostImpl::ClearUserActivation() {
   last_user_activation_consumed_time_ = base::TimeTicks();
 }
 
-void RenderFrameHostImpl::ConsumeTransientUserActivation() {
+bool RenderFrameHostImpl::ConsumeTransientUserActivation() {
+  // Only an active frame that currently holds transient user activation may
+  // consume it
+  if (!IsActive() || !HasTransientUserActivation()) {
+    return false;
+  }
+  CHECK(owner_);
+  return owner_->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
+      blink::mojom::UserActivationNotificationType::kNone);
+}
+
+void RenderFrameHostImpl::ConsumeTransientUserActivationLocal() {
   if (user_activation_state_.ConsumeIfActive()) {
     last_user_activation_consumed_time_ = base::TimeTicks::Now();
   }

@@ -1049,6 +1049,17 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // FrameTreeNode associated with this RenderFrameHost.
   virtual bool HasTransientUserActivation() = 0;
 
+  // Consumes the transient bit of the User Activation v2 state across the
+  // frame tree of the FrameTreeNode associated with this RenderFrameHost.
+  // Returns true if there was an active transient activation to consume.
+  //
+  // Prefer this over HasTransientUserActivation() when gating a privileged
+  // operation on a user gesture, so that a single gesture cannot be replayed
+  // into several such operations. Renderer code that also consumes the
+  // activation locally must pass UserActivationUpdateSource::kBrowser,
+  // otherwise the browser-side state is cleared before this is called.
+  [[nodiscard]] virtual bool ConsumeTransientUserActivation() = 0;
+
   // Notifies the renderer of a user activation event for the associated frame.
   // The |notification_type| parameter is used for histograms only.
   virtual void NotifyUserActivation(

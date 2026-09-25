@@ -120,6 +120,12 @@ public class ShareServiceImpl implements ShareService {
         boolean canShare();
 
         /**
+         * Consumes transient user activation in the frame tree, returning true if an active
+         * transient user activation was consumed.
+         */
+        boolean consumeTransientUserActivation();
+
+        /**
          * Overridden by the embedder to execute the share.
          *
          * @param params the share data.
@@ -178,6 +184,11 @@ public class ShareServiceImpl implements ShareService {
                 mDelegate.terminateRendererDueToBadMessage(11); // RFH_INVALID_WEB_FRAME_URL
                 return;
             }
+        }
+
+        if (!mDelegate.consumeTransientUserActivation()) {
+            callback.call(ShareError.PERMISSION_DENIED);
+            return;
         }
 
         ShareParams.TargetChosenCallback innerCallback =

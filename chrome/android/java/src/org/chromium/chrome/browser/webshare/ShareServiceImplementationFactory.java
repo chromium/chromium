@@ -62,6 +62,11 @@ public class ShareServiceImplementationFactory implements InterfaceFactory<@Null
                     }
 
                     @Override
+                    public boolean consumeTransientUserActivation() {
+                        return mRenderFrameHost.consumeTransientUserActivation();
+                    }
+
+                    @Override
                     public void share(ShareParams params) {
                         ShareDelegate shareDelegate = getShareDelegate();
                         if (shareDelegate == null) return;

@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
@@ -133,6 +134,31 @@ IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, InactiveWebContents) {
       content::EvalJs(contents_0, "share_text('hello')").ExtractString();
   EXPECT_THAT(result, testing::HasSubstr("share failed"));
   EXPECT_THAT(result, testing::HasSubstr("NotAllowedError"));
+}
+
+// Verifies that the browser rejects a Share() made without transient user
+// activation, as a compromised renderer could do by binding
+// blink.mojom.ShareService directly and skipping NavigatorShare::share().
+IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest,
+                       CompromisedRendererWithoutUserActivation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/webshare/index.html")));
+  content::WebContents* const contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Bind the service the same way the browser's interface binder does, but
+  // without any user gesture having been delivered to the frame.
+  mojo::Remote<blink::mojom::ShareService> share_service;
+  ShareServiceImpl::Create(contents->GetPrimaryMainFrame(),
+                           share_service.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<blink::mojom::ShareError> future;
+  share_service->Share("Attacker Title", "Attacker Text",
+                       GURL("https://example.com"), /*files=*/{},
+                       future.GetCallback());
+
+  EXPECT_EQ(future.Get(), blink::mojom::ShareError::PERMISSION_DENIED);
 }
 
 #if BUILDFLAG(IS_WIN)

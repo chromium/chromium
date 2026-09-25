@@ -220,6 +220,18 @@ void ShareServiceImpl::Share(const std::string& title,
     return;
   }
 
+  // A compromised renderer can call Share() directly, bypassing the check in
+  // NavigatorShare::share(), so the browser enforces user activation itself.
+  // Consume rather than test, so that a single gesture cannot be replayed into
+  // repeated share sheets. NavigatorShare::share() consumes its own copy with
+  // UserActivationUpdateSource::kBrowser, which leaves the browser-side state
+  // intact for this check.
+  if (!render_frame_host().ConsumeTransientUserActivation()) {
+    VLOG(1) << "Share without transient user activation";
+    std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
+    return;
+  }
+
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents || !IsWebContentsForegroundAndVisible(web_contents)) {

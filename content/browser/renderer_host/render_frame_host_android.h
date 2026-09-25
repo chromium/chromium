@@ -60,6 +60,8 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
 
   void NotifyUserActivation(JNIEnv* env);
 
+  bool ConsumeTransientUserActivation(JNIEnv* env);
+
   void NotifyWebAuthnAssertionRequestSucceeded(JNIEnv* env);
 
   bool IsCloseWatcherActive(JNIEnv* env) const;
