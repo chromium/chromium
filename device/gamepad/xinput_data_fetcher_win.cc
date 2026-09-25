@@ -250,17 +250,16 @@ void XInputDataFetcherWin::PlayEffect(
     return;
   }
 
-  if (!xinput_available_ || !UNSAFE_TODO(xinput_connected_[pad_id]) ||
-      UNSAFE_TODO(haptics_[pad_id]) == nullptr) {
+  if (!xinput_available_ || !xinput_connected_[pad_id] ||
+      haptics_[pad_id] == nullptr) {
     RunVibrationCallback(
         std::move(callback), std::move(callback_runner),
         mojom::GamepadHapticsResult::GamepadHapticsResultNotSupported);
     return;
   }
 
-  UNSAFE_TODO(haptics_[pad_id]->PlayEffect(type, std::move(params),
-                                           std::move(callback),
-                                           std::move(callback_runner)));
+  haptics_[pad_id]->PlayEffect(type, std::move(params), std::move(callback),
+                               std::move(callback_runner));
 }
 
 void XInputDataFetcherWin::ResetVibration(

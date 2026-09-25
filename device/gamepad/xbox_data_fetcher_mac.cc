@@ -11,6 +11,7 @@
 #include <IOKit/usb/USB.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <limits>
 #include <string>
@@ -383,8 +384,8 @@ void XboxDataFetcher::XboxControllerGotData(
 
   for (size_t i = 0; i < 6; i++) {
     pad.buttons[i].used = true;
-    pad.buttons[i].pressed = UNSAFE_TODO(data.buttons[i]);
-    pad.buttons[i].value = UNSAFE_TODO(data.buttons[i]) ? 1.0f : 0.0f;
+    pad.buttons[i].pressed = data.buttons[i];
+    pad.buttons[i].value = data.buttons[i] ? 1.0f : 0.0f;
   }
   pad.buttons[6].used = true;
   pad.buttons[6].pressed =
@@ -396,24 +397,24 @@ void XboxDataFetcher::XboxControllerGotData(
   pad.buttons[7].value = data.triggers[1];
   for (size_t i = 8; i < 16; i++) {
     pad.buttons[i].used = true;
-    pad.buttons[i].pressed = UNSAFE_TODO(data.buttons[i - 2]);
-    pad.buttons[i].value = UNSAFE_TODO(data.buttons[i - 2]) ? 1.0f : 0.0f;
+    pad.buttons[i].pressed = data.buttons[i - 2];
+    pad.buttons[i].value = data.buttons[i - 2] ? 1.0f : 0.0f;
   }
   if (controller->xinput_type() == kXInputTypeXbox360) {
-    // Map the Xbox button on Xbox 360 to buttons[16].
+    // Map the Xbox button on Xbox 360 to pad.buttons[16].
     pad.buttons[16].used = true;
     pad.buttons[16].pressed = data.buttons[14];
     pad.buttons[16].value = data.buttons[14] ? 1.0f : 0.0f;
   }
   if (controller->gamepad_id() == GamepadId::kMicrosoftProduct0b12) {
-    // Map the Share button on Xbox Series X to buttons[17].
+    // Map the Share button on Xbox Series X to pad.buttons[17].
     pad.buttons[17].used = true;
     pad.buttons[17].pressed = data.buttons[14];
     pad.buttons[17].value = data.buttons[14] ? 1.0f : 0.0f;
     pad.buttons_length = 18;
   }
-  for (size_t i = 0; i < std::size(data.axes); i++) {
-    pad.axes[i] = UNSAFE_TODO(data.axes[i]);
+  for (size_t i = 0; i < data.axes.size(); i++) {
+    pad.axes[i] = data.axes[i];
   }
 
   pad.timestamp = CurrentTimeInMicroseconds();

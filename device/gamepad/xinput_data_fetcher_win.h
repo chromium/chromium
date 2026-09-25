@@ -5,6 +5,7 @@
 #ifndef DEVICE_GAMEPAD_XINPUT_DATA_FETCHER_WIN_H_
 #define DEVICE_GAMEPAD_XINPUT_DATA_FETCHER_WIN_H_
 
+#include <array>
 #include <memory>
 
 #include "build/build_config.h"
@@ -131,8 +132,9 @@ class DEVICE_GAMEPAD_EXPORT XInputDataFetcherWin : public GamepadDataFetcher {
   XInputGetStateExFunc xinput_get_state_ex_;
   XInputHapticGamepadWin::XInputSetStateFunc xinput_set_state_;
 
-  bool xinput_connected_[XUSER_MAX_COUNT];
-  std::unique_ptr<XInputHapticGamepadWin> haptics_[XUSER_MAX_COUNT];
+  std::array<bool, XUSER_MAX_COUNT> xinput_connected_ = {};
+  std::array<std::unique_ptr<XInputHapticGamepadWin>, XUSER_MAX_COUNT>
+      haptics_ = {};
 };
 
 }  // namespace device

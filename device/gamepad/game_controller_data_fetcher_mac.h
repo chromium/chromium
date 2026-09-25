@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
 #include "base/containers/flat_map.h"
@@ -49,7 +50,7 @@ class GameControllerDataFetcherMac : public GamepadDataFetcher {
   std::unique_ptr<GameControllerDataFetcherMacImpl> impl_;
 
   int next_source_id_ = 0;
-  bool connected_[Gamepads::kItemsLengthCap] = {};
+  std::array<bool, Gamepads::kItemsLengthCap> connected_ = {};
 
   scoped_refptr<base::SingleThreadTaskRunner> polling_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;

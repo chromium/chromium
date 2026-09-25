@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/apple/scoped_cftyperef.h"
@@ -78,9 +79,9 @@ class XboxControllerMac final : public AbstractHapticGamepad {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:GamepadUsbDeviceOpenMacResult)
 
   struct Data {
-    bool buttons[15];
-    float triggers[2];
-    float axes[4];
+    std::array<bool, 15> buttons = {};
+    std::array<float, 2> triggers = {};
+    std::array<float, 4> axes = {};
   };
 
   class Delegate {

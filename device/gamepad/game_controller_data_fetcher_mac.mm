@@ -354,9 +354,7 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
 
   // In the first pass, record which player indices are still in use so unused
   // indices can be assigned to newly connected gamepads.
-  bool player_indices[Gamepads::kItemsLengthCap];
-  std::fill(player_indices,
-            UNSAFE_TODO(player_indices + Gamepads::kItemsLengthCap), false);
+  std::array<bool, Gamepads::kItemsLengthCap> player_indices = {};
   for (GCController* controller in controllers) {
     if (GetSupportOutcome(controller) != GameControllerMacOutcome::kSuccess) {
       continue;
@@ -364,12 +362,12 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
 
     int player_index = controller.playerIndex;
     if (player_index != GCControllerPlayerIndexUnset)
-      UNSAFE_TODO(player_indices[player_index]) = true;
+      player_indices[player_index] = true;
   }
 
   for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
-    if (UNSAFE_TODO(connected_[i]) && !UNSAFE_TODO(player_indices[i])) {
-      UNSAFE_TODO(connected_[i]) = false;
+    if (connected_[i] && !player_indices[i]) {
+      connected_[i] = false;
     }
   }
 
@@ -408,7 +406,7 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
       pad.axes_length = AXIS_INDEX_COUNT;
       pad.buttons_length = BUTTON_INDEX_COUNT - 1;
       pad.connected = true;
-      UNSAFE_TODO(connected_[player_index]) = true;
+      connected_[player_index] = true;
 
       controller.playerIndex =
           static_cast<GCControllerPlayerIndex>(player_index);
@@ -451,7 +449,7 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
 
 int GameControllerDataFetcherMac::NextUnusedPlayerIndex() {
   for (int i = 0; i < kGCControllerPlayerIndexCount; ++i) {
-    if (!UNSAFE_TODO(connected_[i])) {
+    if (!connected_[i]) {
       return i;
     }
   }
