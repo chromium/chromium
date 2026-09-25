@@ -157,7 +157,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
             ->GetURL(GetModelExecutionServiceBaseURL().GetHost(), "/")
             .spec());
     cmd->AppendSwitchASCII(
-        switches::kModelQualityServiceURL,
+        kModelQualityServiceURLSwitch,
         model_quality_logs_server_
             ->GetURL(GetModelQualityLogsUploaderServiceURL().GetHost(), "/")
             .spec());

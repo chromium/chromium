@@ -230,6 +230,7 @@ source_set("model_execution") {
     "//components/prefs",
     "//components/update_client",
     "//components/variations/net",
+    "//google_apis",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/on_device_model/public/mojom",
@@ -261,7 +262,6 @@ source_set("model_execution") {
       "//components/streaming_client",
       "//components/variations/net",
       "//components/version_info",
-      "//google_apis",
       "//services/network/public/cpp",
     ]
     sources += [

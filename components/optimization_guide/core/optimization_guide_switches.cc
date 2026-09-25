@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/command_line.h"
-#include "google_apis/google_api_keys.h"
 
 namespace optimization_guide {
 namespace switches {
@@ -18,13 +17,6 @@ const char kDebugLoggingEnabled[] = "enable-optimization-guide-debug-logs";
 const char kOnDeviceModelExecutionOverride[] =
     "optimization-guide-ondevice-model-execution-override";
 
-
-// Overrides the model quality service URL.
-const char kModelQualityServiceURL[] = "model-quality-service-url";
-
-// Overrides the ModelQuality Service API Key for remote requests to be made.
-const char kModelQualityServiceAPIKey[] = "model-quality-service-api-key";
-
 // Enables model quality logs regardless of other client-side settings, as long
 // as the client is a dogfood client.
 const char kEnableModelQualityDogfoodLogging[] =
@@ -32,17 +24,6 @@ const char kEnableModelQualityDogfoodLogging[] =
 
 const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[] =
     "optimization-guide-get-free-disk-space-with-user-visible-priority-task";
-
-std::string GetModelQualityServiceAPIKey() {
-  // Command line override takes priority.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kModelQualityServiceAPIKey)) {
-    return command_line->GetSwitchValueASCII(
-        switches::kModelQualityServiceAPIKey);
-  }
-
-  return google_apis::GetAPIKey();
-}
 
 bool IsDebugLogsEnabled() {
   static bool enabled =

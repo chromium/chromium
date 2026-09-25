@@ -28,6 +28,10 @@ namespace optimization_guide {
 class MqlsFeatureMetadata;
 class ModelQualityLogEntry;
 
+// Overrides the model quality service URL.
+inline constexpr char kModelQualityServiceURLSwitch[] =
+    "model-quality-service-url";
+
 // Returns the URL endpoint for the model quality service.
 GURL GetModelQualityLogsUploaderServiceURL();
 

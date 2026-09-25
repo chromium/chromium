@@ -20,7 +20,6 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom.h"
@@ -28,6 +27,7 @@
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
@@ -43,6 +43,21 @@ namespace {
 
 const char kOptimizationGuideServiceModelQualityDefaultURL[] =
     "https://chromemodelquality-pa.googleapis.com/v1:LogAiData";
+
+// Overrides the ModelQuality Service API Key for remote requests to be made.
+constexpr char kModelQualityServiceAPIKeySwitch[] =
+    "model-quality-service-api-key";
+
+// Returns the API key for the ModelQualityLoggingService.
+std::string GetModelQualityServiceAPIKey() {
+  // Command line override takes priority.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kModelQualityServiceAPIKeySwitch)) {
+    return command_line->GetSwitchValueASCII(kModelQualityServiceAPIKeySwitch);
+  }
+
+  return google_apis::GetAPIKey();
+}
 
 void RecordUploadStatusHistogram(proto::LogAiDataRequest::FeatureCase feature,
                                  ModelQualityLogsUploadStatus status) {
@@ -105,9 +120,9 @@ void OnURLLoadComplete(
 
 GURL GetModelQualityLogsUploaderServiceURL() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kModelQualityServiceURL)) {
+  if (command_line->HasSwitch(kModelQualityServiceURLSwitch)) {
     return GURL(
-        command_line->GetSwitchValueASCII(switches::kModelQualityServiceURL));
+        command_line->GetSwitchValueASCII(kModelQualityServiceURLSwitch));
   }
   return GURL(kOptimizationGuideServiceModelQualityDefaultURL);
 }
@@ -119,7 +134,7 @@ ModelQualityLogsUploaderService::ModelQualityLogsUploaderService(
           net::AppendOrReplaceQueryParameter(
               GetModelQualityLogsUploaderServiceURL(),
               "key",
-              switches::GetModelQualityServiceAPIKey())),
+              GetModelQualityServiceAPIKey())),
       pref_service_(pref_service),
       url_loader_factory_(url_loader_factory) {
   CHECK(model_quality_logs_uploader_service_url_.SchemeIs(url::kHttpsScheme));
