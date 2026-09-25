@@ -66,10 +66,9 @@ class MapEntriesTableTest : public testing::Test {
 };
 
 MapEntriesTableTest::MapEntriesTableTest()
-    : database_(sql::DatabaseOptions()
-                    .set_wal_mode(true)
-                    .set_mmap_enabled(false),
-                sql::test::kTestTag) {}
+    : database_(
+          sql::DatabaseOptions().set_wal_mode(true).set_mmap_enabled(false),
+          sql::test::kTestTag) {}
 
 void MapEntriesTableTest::SetUp() {
   ASSERT_TRUE(database_.OpenInMemory());
@@ -419,9 +418,17 @@ TEST_F(MapEntriesTableTest, LargeIncompressibleValueStoredUncompressed) {
   base::HistogramTester histogram_tester;
 
   // Create a value that doesn't compress well (sequential byte values).
-  std::vector<uint8_t> incompressible_value(256);
-  for (size_t i = 0; i < incompressible_value.size(); ++i) {
-    incompressible_value[i] = static_cast<uint8_t>(i);
+  std::vector<uint8_t> incompressible_value(
+      storage::kMinimumCompressionSize.InBytes());
+  for (size_t i = 0u; i < incompressible_value.size(); ++i) {
+    if (i <= std::numeric_limits<uint8_t>::max()) {
+      // Count up: 0, 1, 2, 3, ...
+      incompressible_value[i] = i;
+    } else {
+      // Then count down: 254, 253, 252, ...
+      incompressible_value[i] = std::numeric_limits<uint8_t>::max() -
+                                (i % std::numeric_limits<uint8_t>::max());
+    }
   }
   std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> expected_entries{
       {ToBytes("key"), incompressible_value},
@@ -441,7 +448,7 @@ TEST_F(MapEntriesTableTest, LargeIncompressibleValueStoredUncompressed) {
   histogram_tester.ExpectTotalCount("Storage.DomStorage.Compression.Ratio", 1);
   histogram_tester.ExpectUniqueSample(
       "Storage.DomStorage.Compression.PrecompressionValueSize.Uncompressed",
-      256, 1);
+      kMinimumCompressionSize.InBytes(), 1);
   histogram_tester.ExpectTotalCount(
       "Storage.DomStorage.Compression.PrecompressionValueSize.Compressed", 0);
 

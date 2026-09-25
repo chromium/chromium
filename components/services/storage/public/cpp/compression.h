@@ -15,7 +15,7 @@
 namespace storage {
 
 // Values smaller than this threshold are not compressed.
-inline constexpr base::ByteSize kMinimumCompressionSize(64);
+inline constexpr base::ByteSize kMinimumCompressionSize(350);
 
 // Persisted to disk; do not reuse or change values.
 enum class CompressionType : uint8_t {
