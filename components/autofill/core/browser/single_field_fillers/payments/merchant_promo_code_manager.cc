@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/metrics/payments/promo_code_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
@@ -107,6 +108,20 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
       form_structure.ToFormData(), field, &form_structure, &autofill_field,
       client, std::move(on_suggestions_generated));
   return suggestions_generated;
+}
+
+void MerchantPromoCodeManager::DidShowSuggestions() {
+  if (has_logged_suggestions_shown_) {
+    return;
+  }
+
+  has_logged_suggestions_shown_ = true;
+  autofill_metrics::LogPromoCodeFormEvent(
+      autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionsShown);
+}
+
+void MerchantPromoCodeManager::Reset() {
+  has_logged_suggestions_shown_ = false;
 }
 
 }  // namespace autofill

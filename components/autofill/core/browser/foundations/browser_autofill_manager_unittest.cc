@@ -4751,6 +4751,27 @@ TEST_F(BrowserAutofillManagerTest,
       autofill_metrics::IbanFormEvent::kSuggestionShown, 1);
 }
 
+TEST_F(BrowserAutofillManagerTest,
+       DidShowSuggestions_CallsMerchantPromoCodeManager) {
+  FormData form =
+      test::GetFormData({.fields = {{.role = MERCHANT_PROMO_CODE}}});
+  FormsSeen({form});
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kMerchantPromoCodeEntry)};
+
+  EXPECT_CALL(merchant_promo_code_manager(), DidShowSuggestions);
+
+  autofill_manager().DidShowSuggestions(suggestions, /*metadata=*/{},
+                                        form.global_id(),
+                                        form.fields().back().global_id(), {});
+}
+
+TEST_F(BrowserAutofillManagerTest, Reset_ResetsMerchantPromoCodeManager) {
+  EXPECT_CALL(merchant_promo_code_manager(), Reset);
+  test_api(autofill_manager()).Reset();
+}
+
 TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_AddressOnly) {
   // Create a form with name and address fields.
   FormData form = test::GetFormData({.fields = {{.role = NAME_FIRST},

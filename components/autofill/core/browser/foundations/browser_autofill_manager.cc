@@ -2282,6 +2282,15 @@ void BrowserAutofillManager::DidShowSuggestions(
                                                update_suggestions_callback);
   }
 
+  if (shown_suggestion_types.contains(
+          SuggestionType::kMerchantPromoCodeEntry)) {
+    if (auto* promo_code_manager = client()
+                                       .GetPaymentsAutofillClient()
+                                       ->GetMerchantPromoCodeManager()) {
+      promo_code_manager->DidShowSuggestions();
+    }
+  }
+
   if (shown_suggestion_types.contains(SuggestionType::kDevtoolsTestAddresses)) {
     autofill_metrics::OnDevtoolsTestAddressesShown();
   }
@@ -2737,6 +2746,10 @@ void BrowserAutofillManager::Reset() {
 
   credit_card_access_manager_.reset();
   autofill_ai_access_manager_->Reset();
+  if (auto* promo_code_manager =
+          client().GetPaymentsAutofillClient()->GetMerchantPromoCodeManager()) {
+    promo_code_manager->Reset();
+  }
   // Forget stored data (e.g. active subscriptions and pending callbacks) after
   // a navigation.
   otp_manager_ = std::make_unique<OtpManagerImpl>(

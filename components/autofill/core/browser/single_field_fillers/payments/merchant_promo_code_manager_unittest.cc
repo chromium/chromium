@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/metrics/payments/promo_code_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
@@ -334,6 +335,40 @@ TEST_F(MerchantPromoCodeManagerTest,
                                  AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(client().IsShowingWalletDirectOffersIph());
+}
+
+TEST_F(MerchantPromoCodeManagerTest, DidShowSuggestions_LogsOncePerPageLoad) {
+  base::HistogramTester histogram_tester;
+
+  // Calling DidShowSuggestions logs the funnel event.
+  promo_manager().DidShowSuggestions();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionsShown, 1);
+
+  // Calling DidShowSuggestions again on the same page does not log again.
+  promo_manager().DidShowSuggestions();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionsShown, 1);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       DidShowSuggestions_Reset_AllowsSubsequentLogging) {
+  base::HistogramTester histogram_tester;
+
+  promo_manager().DidShowSuggestions();
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionsShown, 1);
+
+  // Resetting page load metrics allows the event to be logged again on the next
+  // show.
+  promo_manager().Reset();
+  promo_manager().DidShowSuggestions();
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionsShown, 2);
 }
 
 }  // namespace autofill

@@ -51,8 +51,20 @@ class MerchantPromoCodeManager : public AutofillManager::Observer {
 
   virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) {}
 
+  // Logs promo code suggestions shown funnel event (at most once per page
+  // load).
+  virtual void DidShowSuggestions();
+
+  // Resets page-scoped metrics state. Called on navigation since
+  // `MerchantPromoCodeManager` is per-tab.
+  virtual void Reset();
+
  private:
   ScopedAutofillManagersObservation autofill_managers_observation_{this};
+
+  // Indicates whether promo code suggestions shown metric has already been
+  // logged for the current page load.
+  bool has_logged_suggestions_shown_ = false;
 };
 
 }  // namespace autofill

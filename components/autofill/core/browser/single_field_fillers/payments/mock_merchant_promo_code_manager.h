@@ -29,6 +29,8 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
               OnSingleFieldSuggestionSelected,
               (const Suggestion& suggestion),
               (override));
+  MOCK_METHOD(void, DidShowSuggestions, (), (override));
+  MOCK_METHOD(void, Reset, (), (override));
 };
 
 }  // namespace autofill

@@ -5127,6 +5127,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormEvents.PromoCode"
+    enum="AutofillPromoCodeFormEvent" expires_after="2027-04-30">
+  <owner>vinnypersky@google.com</owner>
+  <owner>wilsonlow@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    This histogram records events related to merchant promo code fields on pages
+    with direct offers. It tracks when a promo code field is detected (with or
+    without a promo code present), when suggestions are shown, filled, and when
+    the form is submitted. Each event is recorded at most once per page load.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.FormEvents.StandaloneCvc.{CreditCardDataAvailability}"
     enum="AutofillFormEvent" expires_after="2027-02-14">

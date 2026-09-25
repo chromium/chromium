@@ -4128,6 +4128,20 @@ Called by update_autofill_enums.py.-->
   <int value="8" label="EditedFallback"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillPromoCodeFormEvent) -->
+
+<enum name="AutofillPromoCodeFormEvent">
+<!-- Enum value 0 is reserved for navigated to a page with a promo code field
+     and promo code present (once) -->
+
+<!-- Enum value 1 is reserved for navigated to a page with a promo code field
+     and no promo code present (once) -->
+
+  <int value="2" label="Promo code suggestions shown (once)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/promo_code_metrics.h:AutofillPromoCodeFormEvent) -->
+
 <enum name="AutofillPromptStatus">
   <int value="0" label="Address and credit card"/>
   <int value="1" label="Address only"/>
