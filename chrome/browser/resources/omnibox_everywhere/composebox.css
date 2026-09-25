@@ -70,8 +70,8 @@
   border-radius: inherit;
   display: flex;
   flex-direction: column;
-  height: calc-size(auto, size);
-  max-height: var(--cr-composebox-max-height, 422px);
+  height: auto;
+  min-height: var(--cr-searchbox-height, 48px);
   pointer-events: auto;
   position: relative;
   /* Elements like the IPH must overflow. */
@@ -81,10 +81,6 @@
     visibility var(--fade-duration) ease-in-out;
   padding-bottom: 10px;
   z-index: 2;
-}
-
-:host([is-collapsible][expanding_]:not([show-dropdown])) #composebox {
-  min-height: unset;
 }
 
 :host([is-dragging-file]) #composebox * {
