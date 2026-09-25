@@ -1948,6 +1948,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.Experimental.ScudoPurge.Duration.{Process}.{State}"
+    units="microseconds" expires_after="2027-04-01">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    Records the duration of Scudo memory purging on Android via mallopt in
+    {Process} while the application was in the {State}. Collected each time a
+    Scudo purge pass completes in the {Process} process. This metric is only
+    recorded on Android, where high-resolution clocks are always supported.
+  </summary>
+  <token key="Process">
+    <variant name="Browser" summary="the Browser process"/>
+    <variant name="GPU" summary="the GPU process"/>
+  </token>
+  <token key="State">
+    <variant name="Background" summary="background"/>
+    <variant name="Foreground" summary="foreground"/>
+  </token>
+</histogram>
+
 <histogram
     name="Memory.Experimental.UserLevelMemoryPressureSignal.RendererPrivateMemoryFootprintBefore"
     units="MB" expires_after="2022-05-01">

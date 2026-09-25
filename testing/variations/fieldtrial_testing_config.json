@@ -14615,6 +14615,39 @@
             ]
         }
     ],
+    "PeriodicScudoPurge": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_PeriodicAndBackground",
+                    "params": {
+                        "ScudoBackgroundPurgeDelay": "10s",
+                        "ScudoEnableBackgroundPurge": "true",
+                        "ScudoEnableForegroundPeriodic": "true",
+                        "ScudoInitialPurgeDelay": "60s",
+                        "ScudoPeriodicPurgeInterval": "60s"
+                    },
+                    "enable_features": [
+                        "PeriodicScudoPurge"
+                    ]
+                },
+                {
+                    "name": "Enabled_BackgroundOnly",
+                    "params": {
+                        "ScudoBackgroundPurgeDelay": "10s",
+                        "ScudoEnableBackgroundPurge": "true",
+                        "ScudoEnableForegroundPeriodic": "false"
+                    },
+                    "enable_features": [
+                        "PeriodicScudoPurge"
+                    ]
+                }
+            ]
+        }
+    ],
     "PermissionPredictionsGeolocationAccuracy": [
         {
             "platforms": [

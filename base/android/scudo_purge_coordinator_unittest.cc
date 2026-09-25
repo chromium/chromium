@@ -4,12 +4,15 @@
 
 #include "base/android/scudo_purge_coordinator.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "base/android/scudo_features.h"
 #include "base/functional/bind.h"
 #include "base/synchronization/lock.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -252,6 +255,88 @@ TEST_F(ScudoPurgeCoordinatorTest, ConfigurationFromFeatures) {
   EXPECT_EQ(config.background_delay, base::Seconds(15));
   EXPECT_TRUE(config.enable_foreground_periodic);
   EXPECT_FALSE(config.enable_background_purge);
+}
+
+// EmitsDurationHistograms: Verifies that duration metrics are recorded for
+// both foreground and background purges in the browser process.
+TEST_F(ScudoPurgeCoordinatorTest, EmitsDurationHistograms) {
+  base::HistogramTester histogram_tester;
+  ScudoPurgeCoordinator coordinator(CreateDefaultTestConfig());
+  coordinator.Start();
+
+  // Trigger foreground purge after initial delay in browser process.
+  task_environment_.FastForwardBy(base::Seconds(60));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.Browser.Foreground", 1);
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.Browser.Background", 0);
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.GPU.Foreground", 0);
+
+  // Transition to background and wait for background purge.
+  coordinator.OnBackgrounded();
+  task_environment_.FastForwardBy(base::Seconds(10));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.Browser.Foreground", 1);
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.Browser.Background", 1);
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.GPU.Background", 0);
+}
+
+// EmitsDurationHistogramsGpu: Verifies that duration metrics are recorded for
+// both foreground and background purges in the GPU process.
+TEST_F(ScudoPurgeCoordinatorTest, EmitsDurationHistogramsGpu) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII("type",
+                                                                 "gpu-process");
+
+  base::HistogramTester histogram_tester;
+  ScudoPurgeCoordinator coordinator(CreateDefaultTestConfig());
+  coordinator.Start();
+
+  task_environment_.FastForwardBy(base::Seconds(60));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.GPU.Foreground", 1);
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.GPU.Background", 0);
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.Browser.Foreground", 0);
+
+  coordinator.OnBackgrounded();
+  task_environment_.FastForwardBy(base::Seconds(10));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.GPU.Foreground", 1);
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.GPU.Background", 1);
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.Browser.Background", 0);
+}
+
+// MalloptFailureDoesNotEmitHistograms: Verifies that when mallopt fails,
+// duration histograms are not emitted.
+TEST_F(ScudoPurgeCoordinatorTest, MalloptFailureDoesNotEmitHistograms) {
+  ScudoPurgeCoordinator::Configuration config;
+  config.mallopt_fn_for_testing =
+      base::BindRepeating([](int, int) { return false; });
+  base::HistogramTester histogram_tester;
+  ScudoPurgeCoordinator coordinator(std::move(config));
+  coordinator.Start();
+
+  task_environment_.FastForwardBy(base::Seconds(60));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.Browser.Foreground", 0);
+
+  coordinator.OnBackgrounded();
+  task_environment_.FastForwardBy(base::Seconds(10));
+  task_environment_.RunUntilIdle();
+  histogram_tester.ExpectTotalCount(
+      "Memory.Experimental.ScudoPurge.Duration.Browser.Background", 0);
 }
 
 }  // namespace base::android

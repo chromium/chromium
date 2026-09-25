@@ -6,16 +6,20 @@
 #define BASE_ANDROID_SCUDO_PURGE_COORDINATOR_H_
 
 #include <memory>
-#include <string_view>
 
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+
+namespace base {
+class HistogramBase;
+}  // namespace base
 
 namespace base::android {
 
@@ -78,8 +82,11 @@ class BASE_EXPORT ScudoPurgeCoordinator {
   void RunPeriodicForegroundPurge();
   void RunBackgroundPurge();
 
-  void DispatchPurgeTask(int purge_param);
-  static void PerformPurgeInternal(MalloptFn fn, int param);
+  void DispatchPurgeTask(int purge_param,
+                         base::HistogramBase* duration_histogram);
+  static void PerformPurgeInternal(MalloptFn fn,
+                                   int param,
+                                   base::HistogramBase* duration_histogram);
 
   void OnInitialDelayExpired();
 
@@ -87,6 +94,8 @@ class BASE_EXPORT ScudoPurgeCoordinator {
 
   Configuration config_;
   MalloptFn mallopt_fn_;
+  raw_ptr<base::HistogramBase> foreground_duration_histogram_ = nullptr;
+  raw_ptr<base::HistogramBase> background_duration_histogram_ = nullptr;
   bool is_started_ = false;
   bool in_foreground_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
 

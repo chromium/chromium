@@ -6,19 +6,62 @@
 
 #include <malloc.h>
 
+#include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/android/scudo_features.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_base.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 
 namespace base::android {
+
+namespace {
+
+namespace switches {
+constexpr char kProcessType[] = "type";
+constexpr char kGpuProcess[] = "gpu-process";
+}  // namespace switches
+
+enum class ProcessType {
+  kBrowser,
+  kGpu,
+};
+
+ProcessType GetCurrentProcessType() {
+  if (!base::CommandLine::InitializedForCurrentProcess()) {
+    return ProcessType::kBrowser;
+  }
+  const std::string process_type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kProcessType);
+  if (process_type == switches::kGpuProcess) {
+    return ProcessType::kGpu;
+  }
+  DCHECK(process_type.empty()) << "Unexpected process type: " << process_type;
+  return ProcessType::kBrowser;
+}
+
+std::string_view ProcessTypeToString(ProcessType process_type) {
+  switch (process_type) {
+    case ProcessType::kBrowser:
+      return "Browser";
+    case ProcessType::kGpu:
+      return "GPU";
+  }
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<ScudoPurgeCoordinator>
@@ -55,7 +98,20 @@ ScudoPurgeCoordinator::ScudoPurgeCoordinator(Configuration config)
     : config_(std::move(config)),
       mallopt_fn_(config_.mallopt_fn_for_testing
                       ? config_.mallopt_fn_for_testing
-                      : base::BindRepeating(&DefaultMallopt)) {}
+                      : base::BindRepeating(&DefaultMallopt)) {
+  const std::string_view process_type_str =
+      ProcessTypeToString(GetCurrentProcessType());
+  foreground_duration_histogram_ = base::Histogram::FactoryMicrosecondsTimeGet(
+      base::StrCat({"Memory.Experimental.ScudoPurge.Duration.",
+                    process_type_str, ".Foreground"}),
+      base::Microseconds(1), base::Seconds(10), 50,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  background_duration_histogram_ = base::Histogram::FactoryMicrosecondsTimeGet(
+      base::StrCat({"Memory.Experimental.ScudoPurge.Duration.",
+                    process_type_str, ".Background"}),
+      base::Microseconds(1), base::Seconds(10), 50,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+}
 
 ScudoPurgeCoordinator::~ScudoPurgeCoordinator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -110,7 +166,7 @@ void ScudoPurgeCoordinator::OnBackgrounded() {
 
 void ScudoPurgeCoordinator::RunPeriodicForegroundPurge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DispatchPurgeTask(kScudoPurge);
+  DispatchPurgeTask(kScudoPurge, foreground_duration_histogram_);
 }
 
 void ScudoPurgeCoordinator::RunBackgroundPurge() {
@@ -118,24 +174,37 @@ void ScudoPurgeCoordinator::RunBackgroundPurge() {
   if (in_foreground_) {
     return;
   }
-  DispatchPurgeTask(kScudoPurgeAll);
+  DispatchPurgeTask(kScudoPurgeAll, background_duration_histogram_);
 }
 
-void ScudoPurgeCoordinator::DispatchPurgeTask(int purge_param) {
+void ScudoPurgeCoordinator::DispatchPurgeTask(
+    int purge_param,
+    base::HistogramBase* duration_histogram) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ScudoPurgeCoordinator::PerformPurgeInternal, mallopt_fn_,
-                     purge_param));
+                     purge_param, duration_histogram));
 }
 
 // static
-void ScudoPurgeCoordinator::PerformPurgeInternal(MalloptFn fn, int param) {
+void ScudoPurgeCoordinator::PerformPurgeInternal(
+    MalloptFn fn,
+    int param,
+    base::HistogramBase* duration_histogram) {
+  base::ElapsedTimer timer;
   bool res = fn.Run(param, /*value=*/0);
   if (!res && param == kScudoPurgeAll) {
-    fn.Run(kScudoPurge, /*value=*/0);
+    res = fn.Run(kScudoPurge, /*value=*/0);
+  }
+  if (!res) {
+    return;
+  }
+  base::TimeDelta elapsed = timer.Elapsed();
+  if (duration_histogram) {
+    duration_histogram->AddTimeMicrosecondsGranularity(elapsed);
   }
 }
 
