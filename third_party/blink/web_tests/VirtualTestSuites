@@ -5116,6 +5116,22 @@
     "expires": "Jul 1, 2027"
   },
   {
+    "prefix": "css-flow-start-and-end-serialization",
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "external/wpt/css/css-align/flow-start-and-end-serialization.html"
+    ],
+    "args": [
+      "--enable-blink-features=CSSFlowStartAndEndSerialization"
+    ],
+    "owners": [
+      "celestepan@microsoft.com"
+    ],
+    "expires": "Sep 1, 2027"
+  },
+  {
     "prefix": "clean-up-activation-behavior-disabled",
     "platforms": [
       "Linux",
