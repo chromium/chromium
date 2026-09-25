@@ -302,3 +302,10 @@ $ cat out/rel/gen/build/rust/tests/test_cpp_api_from_rust/rust_lib.h
 ```
 
 Then you want to read the "Specifying binding dependencies" section above.
+
+### Build performance
+
+Most Crubit users do not need to worry about this.  But if the bindings are used
+by a widely used C++ target (for example by a `component` that thousands of C++
+files depend on, directly or transitively), then see
+[Crubit and build performance](crubit/build_performance.md).
