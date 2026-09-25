@@ -243,7 +243,7 @@ void DevToolsEmulator::SetViewportMetaEnabled(bool enabled) {
 
 void DevToolsEmulator::SetTextSizeAdjustEnabled(bool enabled) {
   embedder_text_size_adjust_enabled_ = enabled;
-  if (!emulate_mobile_enabled()) {
+  if (!force_text_size_adjust_) {
     web_view_->GetPage()->GetSettings().SetTextSizeAdjustEnabled(enabled);
   }
 }
@@ -299,7 +299,9 @@ gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
       emulation_params_.force_android_overlay_scrollbar ==
           params.force_android_overlay_scrollbar &&
       emulation_params_.force_viewport_meta ==
-          params.force_viewport_meta) {
+          params.force_viewport_meta &&
+      emulation_params_.force_text_size_adjust ==
+          params.force_text_size_adjust) {
     return ComputeRootLayerTransform();
   }
   if ((emulation_params_.device_scale_factor != params.device_scale_factor ||
@@ -332,6 +334,7 @@ gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
   }
 
   SetForceViewportMeta(params.force_viewport_meta);
+  SetForceTextSizeAdjust(params.force_text_size_adjust);
   SetForceAndroidOverlayScrollbar(params.force_android_overlay_scrollbar);
 
   web_view_->SetCompositorDeviceScaleFactorOverride(params.device_scale_factor);
@@ -370,6 +373,7 @@ void DevToolsEmulator::DisableDeviceEmulation() {
   }
   SetForceAndroidOverlayScrollbar(false);
   SetForceViewportMeta(false);
+  SetForceTextSizeAdjust(false);
   web_view_->SetCompositorDeviceScaleFactorOverride(0.f);
 
   if (web_view_->MainFrameImpl()) {
@@ -674,6 +678,25 @@ void DevToolsEmulator::SetForceViewportMeta(bool force_viewport_meta) {
   web_view_->GetPage()->GetSettings().SetViewportEnabled(
       force_viewport_meta_ || emulate_mobile_enabled() ||
       embedder_viewport_enabled_);
+
+  if (web_view_->MainFrameImpl()) {
+    web_view_->MainFrameImpl()->GetFrameView()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kInspector);
+  }
+}
+
+void DevToolsEmulator::SetForceTextSizeAdjust(bool force_text_size_adjust) {
+  force_text_size_adjust_ = force_text_size_adjust;
+  const bool enabled =
+      force_text_size_adjust_ || embedder_text_size_adjust_enabled_;
+  if (web_view_->GetPage()->GetSettings().GetTextSizeAdjustEnabled() ==
+      enabled) {
+    return;
+  }
+  // TODO(https://crbug.com/564804235): `SetTextSizeAdjustEnabled` does not
+  // clear `MatchedPropertiesCache`, so already-rendered elements only update
+  // after navigation or cache invalidation.
+  web_view_->GetPage()->GetSettings().SetTextSizeAdjustEnabled(enabled);
 
   if (web_view_->MainFrameImpl()) {
     web_view_->MainFrameImpl()->GetFrameView()->UpdateLifecycleToLayoutClean(

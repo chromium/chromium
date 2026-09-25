@@ -330,6 +330,14 @@ domain Emulation
         # Restores the default viewport meta behavior (disabled on desktop,
         # enabled on mobile).
         default
+      # Text layout mode. Default: `default`. Note: if `mobile` is `true`,
+      # mobile text layout mode (text autosizing) is always enabled.
+      experimental optional enum textLayoutMode
+        # Enables mobile text layout mode (text autosizing / CSS text-size-adjust).
+        mobile
+        # Restores the default text layout mode behavior (disabled on desktop,
+        # enabled on mobile).
+        default
 
   # Start reporting the given posture value to the Device Posture API.
   # This override can also be set in setDeviceMetricsOverride().

@@ -1,0 +1,15 @@
+Tests Emulation.setDeviceMetricsOverride(textLayoutMode) affects CSS text-size-adjust.
+1. Mobile: false, textLayoutMode: "mobile"
+PASSED: text-size-adjust is applied after navigation
+2. Mobile: false, textLayoutMode: "default"
+PASSED: text-size-adjust is restored to initial default after navigation
+3. Mobile: true, textLayoutMode: "default"
+PASSED: text-size-adjust is applied after navigation
+4. Mobile: true, textLayoutMode: "mobile"
+PASSED: text-size-adjust is applied after navigation
+5. Defaulting when textLayoutMode is omitted
+PASSED: mobile: false restores initial default after navigation
+PASSED: mobile: true applies text-size-adjust after navigation
+6. Clear device metrics override
+PASSED: text-size-adjust is restored to initial default after navigation
+

@@ -115,6 +115,7 @@ class CORE_EXPORT DevToolsEmulator final
   void UpdateLifecycleAfterEmulationProfileChange();
   void SetForceAndroidOverlayScrollbar(bool);
   void SetForceViewportMeta(bool);
+  void SetForceTextSizeAdjust(bool);
 
   // Enables viewport override and returns the emulation transform to be used.
   // The |position| is in CSS pixels, and |scale| is relative to a page scale of
@@ -177,6 +178,7 @@ class CORE_EXPORT DevToolsEmulator final
   bool scrollbars_hidden_;
   bool force_android_overlay_scrollbar_;
   bool force_viewport_meta_=false;
+  bool force_text_size_adjust_ = false;
 
   bool embedder_cookie_enabled_;
   bool document_cookie_disabled_;

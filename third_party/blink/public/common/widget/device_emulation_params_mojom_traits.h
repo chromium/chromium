@@ -79,6 +79,10 @@ struct BLINK_COMMON_EXPORT
     return r.force_viewport_meta;
   }
 
+  static bool force_text_size_adjust(const blink::DeviceEmulationParams& r) {
+    return r.force_text_size_adjust;
+  }
+
   static bool Read(blink::mojom::DeviceEmulationParamsDataView r,
                    blink::DeviceEmulationParams* out);
 };

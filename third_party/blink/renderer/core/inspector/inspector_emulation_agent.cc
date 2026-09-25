@@ -876,7 +876,8 @@ protocol::Response InspectorEmulationAgent::setDeviceMetricsOverride(
     std::unique_ptr<protocol::Emulation::DevicePosture>,
     std::optional<String> scrollbar_type,
     std::optional<bool> screen_orientation_lock_emulation,
-    std::optional<String> viewport_meta) {
+    std::optional<String> viewport_meta,
+    std::optional<String> text_layout_mode) {
   // We don't have to do anything other than reply to the client, as the
   // emulation parameters should have already been updated by the handling of
   // blink::mojom::FrameWidget::EnableDeviceEmulation.

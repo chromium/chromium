@@ -28,6 +28,7 @@ bool StructTraits<blink::mojom::DeviceEmulationParamsDataView,
   out->screen_orientation_angle = data.screen_orientation_angle();
   out->force_android_overlay_scrollbar = data.force_android_overlay_scrollbar();
   out->force_viewport_meta = data.force_viewport_meta();
+  out->force_text_size_adjust = data.force_text_size_adjust();
   return true;
 }
 

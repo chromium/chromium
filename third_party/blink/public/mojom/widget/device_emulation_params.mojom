@@ -59,4 +59,7 @@ struct DeviceEmulationParams {
 
   // Forces viewport meta tag to be enabled.
   bool force_viewport_meta;
+
+  // Forces text size adjust (text autosizing) to be enabled.
+  bool force_text_size_adjust;
 };

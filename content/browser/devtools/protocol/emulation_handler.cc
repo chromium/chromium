@@ -687,7 +687,8 @@ Response EmulationHandler::SetDeviceMetricsOverride(
     std::unique_ptr<protocol::Emulation::DevicePosture> device_posture,
     std::optional<std::string> scrollbar_type,
     std::optional<bool> screen_orientation_lock_emulation,
-    std::optional<std::string> viewport_meta) {
+    std::optional<std::string> viewport_meta,
+    std::optional<std::string> text_layout_mode) {
   const static int max_size = 10000000;
   const static double max_scale = 10;
   const static int max_orientation_angle = 360;
@@ -819,6 +820,12 @@ Response EmulationHandler::SetDeviceMetricsOverride(
       (viewport_meta &&
        *viewport_meta ==
            Emulation::SetDeviceMetricsOverride::ViewportMetaEnum::Enable);
+
+  params.force_text_size_adjust =
+      mobile ||
+      (text_layout_mode &&
+       *text_layout_mode ==
+           Emulation::SetDeviceMetricsOverride::TextLayoutModeEnum::Mobile);
 
   if (viewport) {
     params.viewport_offset.SetPoint(viewport->GetX(), viewport->GetY());
