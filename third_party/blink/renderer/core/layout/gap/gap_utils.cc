@@ -12,13 +12,10 @@ namespace blink {
 // GapSegmentStateAggregator implementations
 void GapSegmentStateAggregator::ProcessItem(const GridSpan& primary_span,
                                             const GridSpan& secondary_span) {
-  if (primary_span.SpanSize() >= 2) {
-    for (wtf_size_t track_index = primary_span.StartLine();
-         track_index < primary_span.EndLine(); ++track_index) {
-      UpdateGapStateFor(track_index, secondary_span, kSpanner);
-    }
-  } else {
-    UpdateGapStateFor(primary_span.StartLine(), secondary_span, kOccupied);
+  const wtf_size_t end_line = primary_span.EndLine();
+  for (wtf_size_t track_index = primary_span.StartLine();
+       track_index < end_line; ++track_index) {
+    UpdateCellEndLinesFor(track_index, secondary_span, end_line);
   }
 }
 
@@ -28,26 +25,28 @@ std::enable_if_t<std::is_same_v<T, MainGap> || std::is_same_v<T, CrossGap>,
 GapSegmentStateAggregator::FinalizeGapSegmentStateRangesFor(
     T& gap,
     wtf_size_t track_index) const {
-  // If no cell states exist for a given track, all cells are empty.
-  auto current_it = track_to_cell_states_.find(track_index);
-  auto next_it = track_to_cell_states_.find(track_index + 1);
-  CellStates current_cells = current_it != track_to_cell_states_.end()
-                                 ? current_it->value
-                                 : CellStates(cell_count_, kEmpty);
-  CellStates next_cells = next_it != track_to_cell_states_.end()
-                              ? next_it->value
-                              : CellStates(cell_count_, kEmpty);
+  // If no item covers a track, all of its cells have an end line of zero.
+  auto current_it = track_to_cell_end_lines_.find(track_index);
+  auto next_it = track_to_cell_end_lines_.find(track_index + 1);
+  CellEndLines current_cells = current_it != track_to_cell_end_lines_.end()
+                                   ? current_it->value
+                                   : CellEndLines(cell_count_, 0);
+  CellEndLines next_cells = next_it != track_to_cell_end_lines_.end()
+                                ? next_it->value
+                                : CellEndLines(cell_count_, 0);
 
-  constexpr auto ComputeGapMask = [](CellState current, CellState next) {
-    if (current == kSpanner && next == kSpanner) {
+  const wtf_size_t gap_line = track_index + 1;
+  const auto ComputeGapMask = [gap_line](wtf_size_t current_end_line,
+                                         wtf_size_t next_end_line) {
+    if (current_end_line > gap_line) {
       return GapSegmentState(GapSegmentState::kBlocked);
     }
 
     GapSegmentState mask(GapSegmentState::kNone);
-    if (current == kEmpty) {
+    if (current_end_line == 0) {
       mask |= GapSegmentState::kEmptyBefore;
     }
-    if (next == kEmpty) {
+    if (next_end_line == 0) {
       mask |= GapSegmentState::kEmptyAfter;
     }
     return mask;
@@ -82,22 +81,25 @@ GapSegmentStateAggregator::FinalizeGapSegmentStateRangesFor(
   }
 }
 
-void GapSegmentStateAggregator::UpdateGapStateFor(
+void GapSegmentStateAggregator::UpdateCellEndLinesFor(
     wtf_size_t track_index,
     const GridSpan& secondary_span,
-    CellState cell_state) {
-  // Look up the track's cell states with a single hash lookup, initializing
+    wtf_size_t end_line) {
+  // Look up the track's cell end lines with a single hash lookup, initializing
   // them to empty only when this is a newly inserted entry. Reusing the
   // returned reference also avoids re-looking-up the key on every iteration.
-  auto add_result = track_to_cell_states_.insert(track_index, CellStates());
-  CellStates& cell_states = add_result.stored_value->value;
+  auto add_result =
+      track_to_cell_end_lines_.insert(track_index, CellEndLines());
+  CellEndLines& cell_end_lines = add_result.stored_value->value;
   if (add_result.is_new_entry) {
-    cell_states = CellStates(cell_count_, kEmpty);
+    cell_end_lines = CellEndLines(cell_count_, 0);
   }
 
   for (wtf_size_t i = secondary_span.StartLine(); i < secondary_span.EndLine();
        ++i) {
-    cell_states[i] = cell_state;
+    if (cell_end_lines[i] < end_line) {
+      cell_end_lines[i] = end_line;
+    }
   }
 }
 

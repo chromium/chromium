@@ -18,50 +18,22 @@ namespace blink {
 class MainGap;
 class CrossGap;
 
-// Describes the occupancy of each cell adjacent to a gap
-// along the primary axis. Each cell is:
-//   kEmpty    – no item is in this cell.
-//   kOccupied – covered by a non‑spanning item in the primary axis.
-//   kSpanner  – covered by an item spanning 2 or more tracks in the primary
-//   axis.
+// Each cell stores the furthest end line of any item covering it along the
+// primary axis. Zero means the cell is empty. A gap after track N is blocked
+// if the cell's end line is greater than N + 1.
 //
-// We aggregate these cell states to derive gap segment ranges (blocked or
-// empty).
+// Two items spanning tracks [0, 2) and [2, 4) give cell values [2, 2, 4, 4].
+// The gaps after tracks 0 and 2 are blocked; the gap between the items is not.
 //
-// Example grid (rows x columns):
-//   +---+---+---+
-//   |       |   |
-//   +---+---+   +
-//   |   |   |   |
-//   +---+---+---+
-//   |   |       |
-//   +---+---+---+
-//
-// Row-wise cell state matrix:
-// [
-//   [Occupied, Occupied, Spanner],
-//   [Occupied, Occupied, Spanner],
-//   [Occupied, Occupied, Occupied]
-// ]
-//
-// TODO(samomekarajr): This enum could be extended to include direction-based
-// spanner information to distinguish between column spanners and row spanners.
-// This will avoid us having to maintain two separate aggregators for rows and
-// columns. The plan is to update this after the implementation of empty areas.
-
-enum CellState {
-  kEmpty = 0,
-  kOccupied = 1,
-  kSpanner = 2,
-};
-
-using CellStates = Vector<CellState>;
+// TODO(javiercon): Investigate combining row and column gap aggregation
+// without increasing per-cell storage. Each axis needs distinct end lines.
+using CellEndLines = Vector<wtf_size_t>;
 
 // Represents the state of a gap segment, which can be:
 //   kNone       – the gap segment is adjacent to occupied cells on both sides.
 //   kEmptyBefore – the gap segment is adjacent to an empty cell before it.
 //   kEmptyAfter  – the gap segment is adjacent to an empty cell after it.
-//   kBlocked    – the gap segment is blocked by spanning items on both sides.
+//   kBlocked    – the gap segment is crossed by a spanning item.
 class CORE_EXPORT GapSegmentState {
  public:
   enum GapSegmentStateId : unsigned {
@@ -150,7 +122,7 @@ class GapSegmentStateCursor {
   wtf_size_t current_gap_index_ = 0;
 };
 
-// Aggregates cell states along the primary axis to compute
+// Aggregates item coverage along the primary axis to compute
 // `GapSegmentStateRanges` for each gap along that axis. This is only applicable
 // for layout types with 2D constraints and create cells, like grid.
 class CORE_EXPORT GapSegmentStateAggregator {
@@ -161,17 +133,13 @@ class CORE_EXPORT GapSegmentStateAggregator {
   explicit GapSegmentStateAggregator(wtf_size_t cell_count)
       : cell_count_(cell_count) {}
 
-  // Processes an item occupying a grid area defined by `primary_span` and
-  // `secondary_span`. Updates the cell states for all tracks along the primary
-  // axis covered by `primary_span`.
+  // Records the item's end line for all cells in its grid area.
   void ProcessItem(const GridSpan& primary_span,
                    const GridSpan& secondary_span);
 
   // Finalizes and adds each `GapSegmentStateRange` for `gap` along the primary
   // axis. Creates continuous ranges of gap segments that share the same state
-  // by comparing the cell states of the tracks adjacent to `gap`: the track
-  // at `track_index` (immediately before `gap`) and the track at
-  // `track_index + 1` (immediately after `gap`).
+  // by comparing the cell end lines of the tracks adjacent to `gap`.
   template <typename T>
   std::enable_if_t<std::is_same_v<T, MainGap> || std::is_same_v<T, CrossGap>,
                    void>
@@ -180,17 +148,13 @@ class CORE_EXPORT GapSegmentStateAggregator {
   wtf_size_t GetCellCount() const { return cell_count_; }
 
  private:
-  // Updates the cell states for the track at `track_index` along the primary
-  // axis, for all cells covered by `secondary_span`.
-  void UpdateGapStateFor(wtf_size_t track_index,
-                         const GridSpan& secondary_span,
-                         CellState cell_state);
+  void UpdateCellEndLinesFor(wtf_size_t track_index,
+                             const GridSpan& secondary_span,
+                             wtf_size_t end_line);
 
   wtf_size_t cell_count_;
-  // Maps each track index along the primary axis to its corresponding cell
-  // states.
-  HashMap<wtf_size_t, CellStates, blink::IntWithZeroKeyHashTraits<int>>
-      track_to_cell_states_;
+  HashMap<wtf_size_t, CellEndLines, blink::IntWithZeroKeyHashTraits<int>>
+      track_to_cell_end_lines_;
 };
 }  // namespace blink
 
