@@ -64,6 +64,9 @@ public final class ProductionSupportedFlagList {
      * updating the "LoginCustomFlags" field in tools/metrics/histograms/enums.xml.
      */
     public static final Flag[] sFlagList = {
+        Flag.baseFeature(
+                "useicu4xnormalizer",
+                "Auto-generated flag for useicu4xnormalizer."),
         Flag.baseFeature("AwMetricsLogTrimming", "Auto-generated flag for AwMetricsLogTrimming."),
         Flag.commandLine(
                 AwSwitches.HIGHLIGHT_ALL_WEBVIEWS,
