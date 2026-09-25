@@ -1,18 +1,4 @@
 {
-  "android-buildspeed-dbg": {
-    "gn_args": {
-      "android_static_analysis": "off",
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_reclient": false,
-      "use_remoteexec": true
-    }
-  },
   "android-emulator-finch-smoke-chrome": {
     "gn_args": {
       "android_static_analysis": "off",
@@ -46,10 +32,10 @@
       "debuggable_apks": false,
       "enable_chrome_android_internal": false,
       "ffmpeg_branding": "Chrome",
-      "is_component_build": true,
+      "is_component_build": false,
       "is_debug": true,
       "proprietary_codecs": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_os": "android",
       "use_reclient": false,
       "use_remoteexec": true

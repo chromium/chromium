@@ -161,10 +161,9 @@
     },
 
     'internal.chrome.fyi': {
-      'android-buildspeed-dbg': 'android_debug_bot_remoteexec_fastbuild',
       'android-emulator-finch-smoke-chrome': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_remoteexec',
       'linux-finch-smoke-chrome': 'official_remoteexec',
-      'lorenz-graph-dbg': 'android_debug_bot_remoteexec_external_fastbuild',
+      'lorenz-graph-dbg': 'android_debug_static_no_symbols_remoteexec_external_fastbuild',
       'mac-arm64-finch-smoke-chrome': 'official_remoteexec_mac_arm',
       'win-celab-rel': 'official_celab_release_bot',
       'win-finch-smoke-chrome': 'official_remoteexec',
@@ -295,12 +294,9 @@
   # we must support. A given config *may* be platform-specific but
   # is not necessarily so.
   'configs': {
-    'android_debug_bot_remoteexec_external_fastbuild': [
-      'android', 'debug_bot_remoteexec', 'android_external', 'android_fastbuild',
-    ],
-
-    'android_debug_bot_remoteexec_fastbuild': [
-      'android', 'debug_bot_remoteexec', 'android_fastbuild',
+    'android_debug_static_no_symbols_remoteexec_external_fastbuild': [
+      'android', 'debug', 'static', 'remoteexec', 'no_symbols',
+      'android_external', 'android_fastbuild',
     ],
 
     'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome_remoteexec': [
