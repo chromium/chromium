@@ -10,12 +10,14 @@
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
+#include "components/version_info/channel.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/switches.h"
 
 namespace {
@@ -55,6 +57,10 @@ class ProtocolHandlersManagerServiceTest : public ExtensionServiceTestBase {
   }
 
  private:
+  // TODO(https://crbug.com/563435066): Document that this can be removed if
+  // the feature goes to stable - see
+  // extensions/common/api/_manifest_features.json.
+  ScopedCurrentChannel current_channel_{version_info::Channel::DEV};
   base::test::ScopedFeatureList feature_list_;
 };
 
