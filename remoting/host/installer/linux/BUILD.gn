@@ -74,7 +74,7 @@ if (enable_me2me_host && target_cpu == "x64") {
       "//remoting/host/installer/linux/is-remoting-session",
       "//remoting/host/installer/linux/setup-session-environment",
       "//remoting/host/linux/configure_url_forwarder.py",
-      "//remoting/host/linux/linux_me2me_host.py",
+      "//remoting/host/linux/shared_lib.py",
       "//remoting/host/linux/pipewire.conf.template",
       "//remoting/host/linux/pipewire-media-session.conf.template",
       "//remoting/host/linux/pipewire-pulse.conf.template",

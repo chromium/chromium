@@ -39,7 +39,7 @@ bool PulseAudioCapturer::InitializePipeReader(
     // LINT.IfChange(audio_pipe_env_var)
     std::optional<std::string> env_pipe =
         env->GetVar("CHROME_REMOTE_DESKTOP_AUDIO_PIPE");
-    // LINT.ThenChange(//remoting/host/linux/linux_me2me_host.py:audio_pipe_env_var)
+    // LINT.ThenChange(//remoting/host/linux/shared_lib.py:audio_pipe_env_var)
     if (env_pipe.has_value() && !env_pipe->empty()) {
       pipe_reader =
           AudioPipeReader::Create(task_runner, base::FilePath(*env_pipe));

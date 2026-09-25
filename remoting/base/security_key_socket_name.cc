@@ -31,7 +31,7 @@ base::FilePath GetDefaultSecurityKeySocketName() {
   if (xdg_runtime_dir) {
     return base::FilePath(xdg_runtime_dir).Append("crd_ssh_auth_sock");
   }
-  // LINT.ThenChange(//remoting/host/linux/linux_me2me_host.py:ssh_auth_sock_name)
+  // LINT.ThenChange(//remoting/host/linux/shared_lib.py:ssh_auth_sock_name)
   LOG(WARNING) << "Cannot find the XDG_RUNTIME_DIR environment variable.";
 #else
   NOTIMPLEMENTED();

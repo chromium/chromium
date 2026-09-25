@@ -60,7 +60,7 @@ install:
 	install -d "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)"
 	install -d "$(WIREPLUMBER_CONFIG_DIR)"
 
-	install "$(SRC_DIR)/remoting/host/linux/linux_me2me_host.py" \
+	install "$(SRC_DIR)/remoting/host/linux/shared_lib.py" \
 	  "$(INSTALL_DIR)/chrome-remote-desktop"
 	install "$(SRC_DIR)/remoting/host/installer/linux/is-remoting-session" \
 	  "$(INSTALL_DIR)"

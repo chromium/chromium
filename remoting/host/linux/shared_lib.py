@@ -96,7 +96,7 @@ DEFAULT_WAYLAND_DESKTOP_SIZES = "1280x720"
 SCRIPT_PATH = os.path.abspath(sys.argv[0])
 SCRIPT_DIR = os.path.dirname(SCRIPT_PATH)
 
-if (os.path.basename(sys.argv[0]) == 'linux_me2me_host.py'):
+if (os.path.basename(sys.argv[0]) == 'shared_lib.py'):
   # Needed for swarming/isolate tests.
   HOST_BINARY_PATH = os.path.join(SCRIPT_DIR,
                                   "../../../out/Release/remoting_me2me_host")
@@ -716,7 +716,7 @@ class Desktop(abc.ABC):
     self.ssh_auth_sockname = os.path.join(
         xdg.BaseDirectory.get_runtime_dir(strict=False),
         "crd_ssh_auth_sock")
-    # LINT.ThenChange(//remoting/host/security_key/security_key_auth_handler_posix.cc:ssh_auth_sock_name)
+    # LINT.ThenChange(//remoting/base/security_key_socket_name.cc:ssh_auth_sock_name)
     self.child_env["SSH_AUTH_SOCK"] = self.ssh_auth_sockname
 
   def _launch_pipewire(self, instance_name, runtime_path, sink_name):
