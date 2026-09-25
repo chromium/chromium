@@ -417,8 +417,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   // mid-session, avoiding a jarring user experience.
   is_contextual_tasks_eligible_on_init_ =
       contextual_tasks::EntryPointEligibilityManager::IsEligible(profile);
-  is_signed_in_on_page_load_ =
-      ui_service_ && ui_service_->IsSignedInToBrowserWithValidCredentials();
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   auto bindings = web_ui->GetBindings();
@@ -2151,8 +2149,6 @@ void ContextualTasksUI::UpdateZoom() {
 
 void ContextualTasksUI::WebUIPrimaryPageChanged(content::Page& page) {
   ui::MojoWebUIController::WebUIPrimaryPageChanged(page);
-  is_signed_in_on_page_load_ =
-      ui_service_ && ui_service_->IsSignedInToBrowserWithValidCredentials();
   // Update zoom when WebUI is loaded.
   UpdateZoom();
 }

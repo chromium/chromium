@@ -169,8 +169,6 @@ TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_NotSignedIn) {
   real_service_->GetAccessToken(token_future.GetCallback(), nullptr);
   EXPECT_EQ(token_future.Get(), "");
 
-  // The token fetch itself is skipped, but the attempt is still recorded as an
-  // OAuth failure so the dashboards keep reporting signed-out demand.
   histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.Start.All", true,
                                       1);
   histogram_tester.ExpectTotalCount("ContextualTasks.OAuth.Start.AimNavigation",
@@ -179,12 +177,6 @@ TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_NotSignedIn) {
                                       false, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.OAuth.Success.AimNavigation", 0);
-  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.TriesCount.All", 1,
-                                      1);
-  histogram_tester.ExpectUniqueSample(
-      "ContextualTasks.OAuth.TriesCountBeforeFailure.All", 1, 1);
-  histogram_tester.ExpectTotalCount(
-      "ContextualTasks.OAuth.TriesCountBeforeSuccess.All", 0);
 }
 
 // TODO(crbug.com/477018818): Flaky on Linux ASan.
@@ -335,117 +327,6 @@ TEST_F(ContextualTasksUiServiceTest,
                                                  /*is_to_new_tab=*/false);
 
   EXPECT_TRUE(identity_test_env_->IsAccessTokenRequestPending());
-}
-
-TEST_F(ContextualTasksUiServiceTest,
-       OnNavigationToAiPageIntercepted_SkipsTokenFetchWhenSignedOut) {
-  // Do not make primary account available (signed out).
-  GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
-
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-  sessions::SessionTabHelper::CreateForWebContents(
-      web_contents.get(),
-      base::BindRepeating([](content::WebContents* contents) {
-        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
-      }));
-
-  tabs::MockTabInterface tab;
-  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
-  base::WeakPtrFactory weak_factory(&tab);
-
-  ContextualTask task(base::Uuid::GenerateRandomV4());
-  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
-      .WillOnce(Return(task));
-  EXPECT_CALL(*contextual_tasks_service_,
-              AssociateTabWithTask(
-                  task.GetTaskId(),
-                  sessions::SessionTabHelper::IdForTab(web_contents.get())))
-      .Times(1);
-
-  base::HistogramTester histogram_tester;
-  real_service_->OnNavigationToAiPageIntercepted(intercepted_url,
-                                                 weak_factory.GetWeakPtr(),
-                                                 /*is_to_new_tab=*/false);
-
-  // No token fetcher is created for a signed-out user, but the attempt is
-  // still recorded as an OAuth failure so the dashboards keep reporting
-  // signed-out demand.
-  EXPECT_FALSE(identity_test_env_->IsAccessTokenRequestPending());
-  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.Start.All", true,
-                                      1);
-  histogram_tester.ExpectUniqueSample(
-      "ContextualTasks.OAuth.Start.AimNavigation", true, 1);
-  histogram_tester.ExpectUniqueSample("ContextualTasks.OAuth.Success.All",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample(
-      "ContextualTasks.OAuth.Success.AimNavigation", false, 1);
-}
-
-TEST_F(ContextualTasksUiServiceTest, ShouldShowOauthErrorDialog) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      lens::features::kLensSidePanelUnification,
-      {{"allow-signed-out", "true"}});
-
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-
-  // Suppressed for a consistently signed-out side panel that admits signed-out
-  // users, and for a null WebContents.
-  EXPECT_FALSE(
-      real_service_->ShouldShowOauthErrorDialogForTesting(web_contents.get()));
-  EXPECT_FALSE(real_service_->ShouldShowOauthErrorDialogForTesting(nullptr));
-
-  // Shown when signed in with valid credentials.
-  identity_test_env_->MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSignin);
-  EXPECT_TRUE(
-      real_service_->ShouldShowOauthErrorDialogForTesting(web_contents.get()));
-
-  // Shown if the WebContents was initialized while signed out and the user
-  // subsequently signed in (or vice versa), prompting a reload.
-  ON_CALL(*service_for_nav_, IsSignedInForWebContentsOnInit(web_contents.get()))
-      .WillByDefault(Return(false));
-  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
-      .WillByDefault(Return(true));
-  EXPECT_TRUE(service_for_nav_->ShouldShowOauthErrorDialogForTesting(
-      web_contents.get()));
-
-  ON_CALL(*service_for_nav_, IsSignedInForWebContentsOnInit(web_contents.get()))
-      .WillByDefault(Return(true));
-  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
-      .WillByDefault(Return(false));
-  EXPECT_TRUE(service_for_nav_->ShouldShowOauthErrorDialogForTesting(
-      web_contents.get()));
-
-  ON_CALL(*service_for_nav_, IsSignedInForWebContentsOnInit(web_contents.get()))
-      .WillByDefault(Return(false));
-  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
-      .WillByDefault(Return(false));
-  EXPECT_FALSE(service_for_nav_->ShouldShowOauthErrorDialogForTesting(
-      web_contents.get()));
-}
-
-TEST_F(ContextualTasksUiServiceTest,
-       ShouldShowOauthErrorDialog_SignedOutNotAllowed) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      lens::features::kLensSidePanelUnification,
-      {{"allow-signed-out", "false"}});
-
-  auto web_contents = content::WebContentsTester::CreateTestWebContents(
-      profile_.get(), content::SiteInstance::Create(profile_.get()));
-
-  // Unification is on, but it is configured to reject signed-out users, so no
-  // surface admits them on this platform. The suppression must not apply and
-  // the OAuth error dialog is surfaced as it was before.
-  ON_CALL(*service_for_nav_, IsSignedInForWebContentsOnInit(web_contents.get()))
-      .WillByDefault(Return(false));
-  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
-      .WillByDefault(Return(false));
-  EXPECT_TRUE(service_for_nav_->ShouldShowOauthErrorDialogForTesting(
-      web_contents.get()));
 }
 
 TEST_F(ContextualTasksUiServiceTestWithMockTime, OAuthMetrics_AimNavigation) {

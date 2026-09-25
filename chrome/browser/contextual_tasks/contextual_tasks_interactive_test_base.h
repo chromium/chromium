@@ -90,12 +90,9 @@ class TestContextualTasksUiService : public ContextualTasksUiService {
   void GetAccessToken(
       GetAccessTokenCallback callback,
       base::WeakPtr<content::WebContents> web_contents) override;
-  int access_token_request_count() const { return access_token_request_count_; }
-  void ResetAccessTokenRequestCount() { access_token_request_count_ = 0; }
 
  private:
   bool is_signed_in_ = true;
-  int access_token_request_count_ = 0;
 };
 
 // Base class for Contextual Tasks interactive UI tests, inheriting from
@@ -138,14 +135,10 @@ class ContextualTasksInteractiveTestBase
                : nullptr;
   }
 
-  const std::string& last_auth_header() const { return last_auth_header_; }
-  void ClearLastAuthHeader() { last_auth_header_.clear(); }
-
  protected:
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  std::string last_auth_header_;
 
  private:
   void InitTabContextOverride();

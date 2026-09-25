@@ -380,8 +380,7 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   CHECK(contextual_tasks_service_);
 
   // Starts the access token fetch now so it happens in parallel to the WebUI
-  // initializing. `StartAccessTokenFetch()` is responsible for skipping the
-  // fetch if the user is signed out.
+  // initializing.
   StartAccessTokenFetch(OAuthFetchTrigger::kAimNavigationInterception);
 
   // Get the session handle from the source web contents, if provided, to
@@ -640,47 +639,6 @@ void ContextualTasksUiService::RecordOAuthMetrics(
   fetch_start_time_ = base::TimeTicks();
 }
 
-bool ContextualTasksUiService::IsSignedInForWebContentsOnInit(
-    content::WebContents* web_contents) {
-  if (web_contents) {
-    content::WebUI* webui = web_contents->GetWebUI();
-    if (webui && webui->GetController() && webui->GetController()->GetType()) {
-      if (auto* ui_controller =
-              webui->GetController()->GetAs<ContextualTasksUI>()) {
-        return ui_controller->IsSignedInOnPageLoad();
-      }
-    }
-  }
-  return IsSignedInToBrowserWithValidCredentials();
-}
-
-bool ContextualTasksUiService::ShouldShowOauthErrorDialog(
-    content::WebContents* web_contents) {
-  if (!web_contents) {
-    return false;
-  }
-  const bool is_signed_in = IsSignedInToBrowserWithValidCredentials();
-  // Always show the error dialog if the user's sign-in state changed after the
-  // WebUI was initialized (e.g. signed in after opening signed-out, or vice
-  // versa), prompting them to reload.
-  if (IsSignedInForWebContentsOnInit(web_contents) != is_signed_in) {
-    return true;
-  }
-  // Bypass the OAuth error dialog for users who are consistently signed out on
-  // a surface that admits them: the unified Lens side panel when it is
-  // configured to allow signed-out users, or side panel cobrowse on Desktop
-  // Android. Browsing signed out is expected there, so an error dialog would
-  // be noise.
-  const bool is_tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
-  const bool allows_signed_out_browsing =
-      lens::features::IsLensSidePanelUnificationAllowSignedOut() ||
-      IsAllowSignedOutUserInDesktopAndroidEnabled();
-  if (!is_signed_in && !is_tab && allows_signed_out_browsing) {
-    return false;
-  }
-  return true;
-}
-
 void ContextualTasksUiService::ShowOauthErrorDialogForWebContents(
     base::WeakPtr<content::WebContents> web_contents) {
   if (!web_contents) {
@@ -709,7 +667,15 @@ void ContextualTasksUiService::RunPendingAccessTokenCallbacks(
 
   if (token.empty()) {
     for (const auto& callback_pair : callbacks) {
-      if (ShouldShowOauthErrorDialog(callback_pair.second.get())) {
+      if (callback_pair.second) {
+        content::WebContents* const wc = callback_pair.second.get();
+        const bool is_tab = wc && tabs::TabInterface::MaybeGetFromContents(wc);
+        if (lens::features::IsLensSidePanelUnificationEnabled() && !is_tab &&
+            !IsSignedInToBrowserWithValidCredentials()) {
+          // Bypass the OAuth error dialog for signed-out users under
+          // unification in side panel mode.
+          continue;
+        }
         OMNIBOX_LOG("nav_trace")
             << "ContextualTasks navigation trace: "
                "RunPendingAccessTokenCallbacks showing oauth error dialog";
@@ -1740,13 +1706,11 @@ void ContextualTasksUiService::StartAccessTokenFetch(
 
   token_refresh_timer_.Stop();
 
-  // Skip the OAuth token fetch if the user is signed out or lacks valid
-  // credentials. The failure is still recorded so the OAuth dashboards keep
-  // reporting how often a token was wanted but unobtainable.
-  if (!IsSignedInToBrowserWithValidCredentials()) {
+  if (!identity_manager_ ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: StartAccessTokenFetch "
-           "returning early due to no signed-in user with valid credentials";
+           "returning early due to no primary account";
     if (current_oauth_fetch_trigger_.has_value()) {
       RecordOAuthMetrics(GoogleServiceAuthError::CreateAccountNotFound(),
                          signin::AccessTokenInfo());

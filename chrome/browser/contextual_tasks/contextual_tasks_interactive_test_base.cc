@@ -131,7 +131,6 @@ void TestContextualTasksUiService::SetSignedIn(bool is_signed_in) {
 void TestContextualTasksUiService::GetAccessToken(
     GetAccessTokenCallback callback,
     base::WeakPtr<content::WebContents> web_contents) {
-  ++access_token_request_count_;
   if (is_signed_in_) {
     std::move(callback).Run("fake_access_token");
   } else {
@@ -246,12 +245,6 @@ void ContextualTasksInteractiveTestBase::SetUpOnMainThread() {
       base::BindLambdaForTesting(
           [&](content::URLLoaderInterceptor::RequestParams* params) {
             const GURL& url = params->url_request.url;
-            if (url.host() == kMockAimPageHost) {
-              last_auth_header_ =
-                  params->url_request.headers
-                      .GetHeader(net::HttpRequestHeaders::kAuthorization)
-                      .value_or("");
-            }
             if (url.host() == kMockAimPageHost &&
                 (url.path() == "/complete/s" ||
                  url.path() == "/complete/search")) {
