@@ -229,6 +229,44 @@ TEST_F(MdTextButtonWithSpinnerTest,
   EXPECT_EQ(spinner_button_->bounds().width(), kConstrainedButtonTotalWidth);
 }
 
+// Tests that no spinner-label spacing is reserved when the text is empty.
+TEST_F(MdTextButtonWithSpinnerTest,
+       CalculatePreferredSizeWhenSpinnerVisibleAndTextEmpty) {
+  spinner_button_->SetText(std::u16string());
+  spinner_button_->SetSpinnerVisible(true);
+  MdTextButton standard_button{Button::PressedCallback(), std::u16string()};
+  gfx::Size standard_size =
+      standard_button.CalculatePreferredSize(SizeBounds());
+
+  // Expect width to increase by kSpinnerDiameter only.
+  gfx::Size expected_size = standard_size;
+  expected_size.set_width(standard_size.width() + kSpinnerDiameter);
+
+  EXPECT_EQ(expected_size,
+            spinner_button_->CalculatePreferredSize(SizeBounds()));
+}
+
+// Tests that a spinner shown without text is centered in the button, e.g. when
+// the text is cleared to show a spinner-only loading state.
+TEST_F(MdTextButtonWithSpinnerTest, CentersSpinnerWhenTextIsEmpty) {
+  // Pin the size first, as a spinner-only loading state would.
+  const gfx::Size button_size = spinner_button_->GetPreferredSize(SizeBounds());
+  spinner_button_->SetPreferredSize(button_size);
+  spinner_button_->SetSize(button_size);
+  widget_->SetSize(button_size);
+
+  spinner_button_->SetText(std::u16string());
+  spinner_button_->SetSpinnerVisible(true);
+  views::test::RunScheduledLayout(spinner_button_.get());
+
+  const gfx::Rect contents_bounds = spinner_button_->GetContentsBounds();
+  const gfx::Rect spinner_bounds = peer_->spinner()->bounds();
+  EXPECT_TRUE(peer_->spinner()->GetVisible());
+  EXPECT_EQ(spinner_bounds.size(),
+            gfx::Size(kSpinnerDiameter, kSpinnerDiameter));
+  EXPECT_EQ(spinner_bounds.CenterPoint(), contents_bounds.CenterPoint());
+}
+
 TEST_F(MdTextButtonWithSpinnerTest,
        UpdatesSpinnerColorForDifferentButtonStyles) {
   // Default style.
