@@ -1934,7 +1934,7 @@ class AutocompleteMediator
 
     @Override
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
-        int leftMarginPx = sideUiSpecs.getWidth(AnchorSide.LEFT);
+        int leftMarginPx = sideUiSpecs.getReservedWidth(AnchorSide.LEFT);
         if (mLeftSideUiMarginPx != leftMarginPx) {
             mLeftSideUiMarginPx = leftMarginPx;
             mListPropertyModel.set(SuggestionListProperties.LEFT_SIDE_BAR_MARGIN_PX, leftMarginPx);

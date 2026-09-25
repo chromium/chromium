@@ -376,8 +376,8 @@ public class ContextualSearchPanel extends OverlayPanel implements SideUiObserve
 
     @Override
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
-        int leftWidth = sideUiSpecs.getWidth(AnchorSide.LEFT);
-        int rightWidth = sideUiSpecs.getWidth(AnchorSide.RIGHT);
+        int leftWidth = sideUiSpecs.getReservedWidth(AnchorSide.LEFT);
+        int rightWidth = sideUiSpecs.getReservedWidth(AnchorSide.RIGHT);
         int startMargin = LocalizationUtils.isLayoutRtl() ? rightWidth : leftWidth;
         int endMargin = LocalizationUtils.isLayoutRtl() ? leftWidth : rightWidth;
 

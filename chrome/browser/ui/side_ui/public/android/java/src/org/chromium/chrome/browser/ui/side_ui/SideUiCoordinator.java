@@ -304,35 +304,33 @@ public interface SideUiCoordinator extends SideUiStateProvider {
              * The width reserved by the {@link SideUiContainer}, i.e. the width that the rest of
              * the browser UI (web contents, toolbar, etc.) lays itself out around.
              */
-            public final @Px int mWidth;
+            public final @Px int mReservedWidth;
 
             /**
              * The width the {@link SideUiContainer}'s {@link android.view.View} is rendered at.
              *
-             * <p>This is the same as {@link #mWidth} unless the container overlays other browser
-             * UI.
+             * <p>This is the same as {@link #mReservedWidth} unless the container overlays other
+             * browser UI.
              */
             public final @Px int mRenderedWidth;
 
             public final @HeightType int mHeightType;
 
-            // TODO(crbug.com/542280452): Rename mWidth to mReservedWidth and SideUiSpecs#getWidth()
-            // to
-            // getReservedWidth(), so the pair with mRenderedWidth reads consistently. Done
-            // separately because it touches every Side UI observer.
-            public SideUiSize(@Px int width, @HeightType int heightType) {
-                this(width, /* renderedWidth= */ width, heightType);
+            public SideUiSize(@Px int reservedWidth, @HeightType int heightType) {
+                this(reservedWidth, /* renderedWidth= */ reservedWidth, heightType);
             }
 
-            public SideUiSize(@Px int width, @Px int renderedWidth, @HeightType int heightType) {
-                assert width > 0 || (width == 0 && heightType == HeightType.NOT_APPLICABLE)
+            public SideUiSize(
+                    @Px int reservedWidth, @Px int renderedWidth, @HeightType int heightType) {
+                assert reservedWidth > 0
+                                || (reservedWidth == 0 && heightType == HeightType.NOT_APPLICABLE)
                         : "inconsistent width and heightType";
-                assert renderedWidth >= width
+                assert renderedWidth >= reservedWidth
                         : "a container cannot render narrower than the width it reserves";
-                assert width > 0 || renderedWidth == 0
+                assert reservedWidth > 0 || renderedWidth == 0
                         : "a container that reserves no width cannot render an overlay";
 
-                mWidth = width;
+                mReservedWidth = reservedWidth;
                 mRenderedWidth = renderedWidth;
                 mHeightType = heightType;
             }
@@ -340,22 +338,22 @@ public interface SideUiCoordinator extends SideUiStateProvider {
             @Override
             public boolean equals(@Nullable Object obj) {
                 if (!(obj instanceof SideUiSize that)) return false;
-                return this.mWidth == that.mWidth
+                return this.mReservedWidth == that.mReservedWidth
                         && this.mRenderedWidth == that.mRenderedWidth
                         && this.mHeightType == that.mHeightType;
             }
 
             @Override
             public int hashCode() {
-                return Objects.hash(mWidth, mRenderedWidth, mHeightType);
+                return Objects.hash(mReservedWidth, mRenderedWidth, mHeightType);
             }
 
             @Override
             public String toString() {
                 return String.format(
                         Locale.ENGLISH,
-                        "[width: %d, renderedWidth: %d, heightType: %d]",
-                        mWidth,
+                        "[reservedWidth: %d, renderedWidth: %d, heightType: %d]",
+                        mReservedWidth,
                         mRenderedWidth,
                         mHeightType);
             }
@@ -391,14 +389,18 @@ public interface SideUiCoordinator extends SideUiStateProvider {
             mSideUiSpecs.putAll(specs);
         }
 
-        public int getWidth(@AnchorSide int side) {
+        /**
+         * Returns the width the container on {@code side} reserves, i.e. the width that the rest of
+         * the browser UI lays itself out around.
+         */
+        public int getReservedWidth(@AnchorSide int side) {
             SideUiSize spec = mSideUiSpecs.get(side);
-            return spec != null ? spec.mWidth : 0;
+            return spec != null ? spec.mReservedWidth : 0;
         }
 
         /**
          * Returns the width the container on {@code side} is rendered at, which is larger than
-         * {@link #getWidth} when that container overlays the web contents.
+         * {@link #getReservedWidth} when that container overlays the web contents.
          */
         public int getRenderedWidth(@AnchorSide int side) {
             SideUiSize spec = mSideUiSpecs.get(side);

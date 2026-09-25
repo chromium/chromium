@@ -1163,8 +1163,9 @@ public class CompositorViewHolder extends FrameLayout
                         || VerticalTabUtils.isVerticalTabsEligible(mActivity))
                 && mSideUiStateProvider != null) {
             SideUiSpecs sideUiSpecs = mSideUiStateProvider.getExpectedSideUiSpecsForTab(tab);
-            sideUiLeftMargin = sideUiSpecs.getWidth(AnchorSide.LEFT);
-            horizontalViewportInsets = sideUiLeftMargin + sideUiSpecs.getWidth(AnchorSide.RIGHT);
+            sideUiLeftMargin = sideUiSpecs.getReservedWidth(AnchorSide.LEFT);
+            horizontalViewportInsets =
+                    sideUiLeftMargin + sideUiSpecs.getReservedWidth(AnchorSide.RIGHT);
         }
         ContentView cv = getContentView();
         if (cv != null) cv.setContentOffsetXPix(sideUiLeftMargin);
@@ -1620,8 +1621,8 @@ public class CompositorViewHolder extends FrameLayout
         // TODO(b/496307238): verify if need to explicitly trigger repositionTabViewForSideUi again
         // after layout params are set.
         if (layoutParams == null) return;
-        layoutParams.leftMargin = sideUiSpecs.getWidth(AnchorSide.LEFT);
-        layoutParams.rightMargin = sideUiSpecs.getWidth(AnchorSide.RIGHT);
+        layoutParams.leftMargin = sideUiSpecs.getReservedWidth(AnchorSide.LEFT);
+        layoutParams.rightMargin = sideUiSpecs.getReservedWidth(AnchorSide.RIGHT);
         mView.setLayoutParams(layoutParams);
     }
 
@@ -1666,7 +1667,7 @@ public class CompositorViewHolder extends FrameLayout
      * on the left, without resizing the web contents.
      */
     private void applySideUiContentOffsetX(SideUiSpecs sideUiSpecs) {
-        @Px int leftSideUiWidth = sideUiSpecs.getWidth(AnchorSide.LEFT);
+        @Px int leftSideUiWidth = sideUiSpecs.getReservedWidth(AnchorSide.LEFT);
         mLayoutManager.setContentOffsetX(leftSideUiWidth);
         ContentView contentView = getContentView();
         if (contentView != null) contentView.setContentOffsetXPix(leftSideUiWidth);
@@ -1788,8 +1789,8 @@ public class CompositorViewHolder extends FrameLayout
     private void adjustRectForSideUi(RectF outRect) {
         if (mSideUiStateProvider != null) {
             SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
-            outRect.left += sideUiSpecs.getWidth(AnchorSide.LEFT);
-            outRect.right -= sideUiSpecs.getWidth(AnchorSide.RIGHT);
+            outRect.left += sideUiSpecs.getReservedWidth(AnchorSide.LEFT);
+            outRect.right -= sideUiSpecs.getReservedWidth(AnchorSide.RIGHT);
         }
     }
 

@@ -50,8 +50,8 @@ public class HistoryNavigationCoordinator
     private final SideUiObserver mSideUiObserver =
             (SideUiSpecs sideUiSpecs, UiUpdateRequest request) ->
                     updateSideUiWidths(
-                            sideUiSpecs.getWidth(AnchorSide.LEFT),
-                            sideUiSpecs.getWidth(AnchorSide.RIGHT));
+                            sideUiSpecs.getReservedWidth(AnchorSide.LEFT),
+                            sideUiSpecs.getReservedWidth(AnchorSide.RIGHT));
 
     private WindowAndroid mWindow;
     private ViewGroup mParentView;
@@ -289,8 +289,8 @@ public class HistoryNavigationCoordinator
         SideUiSpecs currentSpecs = provider.getCurrentSideUiSpecs();
         if (currentSpecs != null) {
             updateSideUiWidths(
-                    currentSpecs.getWidth(AnchorSide.LEFT),
-                    currentSpecs.getWidth(AnchorSide.RIGHT));
+                    currentSpecs.getReservedWidth(AnchorSide.LEFT),
+                    currentSpecs.getReservedWidth(AnchorSide.RIGHT));
         }
     }
 

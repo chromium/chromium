@@ -1582,7 +1582,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     private int getSideUiWidthDp(SideUiSpecs sideUiSpecs) {
         int sideUiWidthPx =
-                sideUiSpecs.getWidth(AnchorSide.LEFT) + sideUiSpecs.getWidth(AnchorSide.RIGHT);
+                sideUiSpecs.getReservedWidth(AnchorSide.LEFT)
+                        + sideUiSpecs.getReservedWidth(AnchorSide.RIGHT);
         float density = mActivity.getResources().getDisplayMetrics().density;
         return Math.round(sideUiWidthPx / density);
     }

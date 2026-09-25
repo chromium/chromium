@@ -111,7 +111,8 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         // Fallback: If hiding VT when spec diff is empty (no hide animation scheduled),
         // update active state immediately to avoid dropping the state update.
         SideUiSpecs currentSpecs = mSideUiCoordinator.getCurrentSideUiSpecs();
-        if (!show && (currentSpecs == null || currentSpecs.getWidth(getAnchorSide()) == 0)) {
+        if (!show
+                && (currentSpecs == null || currentSpecs.getReservedWidth(getAnchorSide()) == 0)) {
             mIsVerticalTabsActiveSupplier.set(false);
         }
     }
@@ -188,7 +189,8 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
 
         @RailCollapseState int effectiveState = mCollapseController.getEffectiveRailCollapseState();
         @Px
-        int renderedWidth = calculateWidthPx(boundary, effectiveState, windowWidth, availableWidth);
+        int renderedWidth =
+                calculateRenderedWidthPx(boundary, effectiveState, windowWidth, availableWidth);
         // Expanding on hover is a transient preview, so it must not resize or reposition anything
         // outside the rail: the rail keeps reserving its collapsed width and renders the expanded
         // width over the web contents and the toolbar.
@@ -221,10 +223,10 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
     }
 
     @Override
-    public void setWidth(int width) {
+    public void setRenderedWidth(int renderedWidth) {
         ViewGroup.LayoutParams layoutParams = mRootView.getLayoutParams();
         if (layoutParams != null) {
-            layoutParams.width = width;
+            layoutParams.width = renderedWidth;
             mRootView.setLayoutParams(layoutParams);
         }
     }
@@ -236,8 +238,8 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
 
     @Override
     public void onUiUpdateCompleted(
-            @Px int oldWidth,
-            @Px int newWidth,
+            @Px int oldReservedWidth,
+            @Px int newReservedWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
         mIsVerticalTabsActiveSupplier.set(mManualVisible);
@@ -282,10 +284,10 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         int side = getAnchorSide();
         // The rail's contents follow the width the rail is rendered at, which is wider than the
         // width it reserves while it is expanded on hover.
-        int newWidth = sideUiSpecs.getRenderedWidth(side);
-        int oldWidth = mSideUiCoordinator.getCurrentSideUiSpecs().getRenderedWidth(side);
+        int newRenderedWidth = sideUiSpecs.getRenderedWidth(side);
+        int oldRenderedWidth = mSideUiCoordinator.getCurrentSideUiSpecs().getRenderedWidth(side);
 
-        if (oldWidth > 0 && newWidth > 0 && oldWidth != newWidth) {
+        if (oldRenderedWidth > 0 && newRenderedWidth > 0 && oldRenderedWidth != newRenderedWidth) {
             mTabListCoordinator.setInTransition(true);
             TransitionSet transitionSet =
                     new TransitionSet()
@@ -309,7 +311,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         mCollapseController.applyEffectiveState();
     }
 
-    private @Px int calculateWidthPx(
+    private @Px int calculateRenderedWidthPx(
             @WindowWidthBoundary int boundary,
             @RailCollapseState int effectiveState,
             @Px int windowWidthPx,

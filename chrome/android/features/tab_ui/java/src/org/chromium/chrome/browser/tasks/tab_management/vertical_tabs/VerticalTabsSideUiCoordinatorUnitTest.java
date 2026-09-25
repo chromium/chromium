@@ -149,8 +149,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     public void testDestroy() {
         mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         mCoordinator.onUiUpdateCompleted(
-                /* oldWidth= */ 0,
-                /* newWidth= */ 100,
+                /* oldReservedWidth= */ 0,
+                /* newReservedWidth= */ 100,
                 HeightType.NOT_APPLICABLE,
                 HeightType.TOOLBAR);
         assertTrue(mIsVerticalTabsActiveSupplier.get());
@@ -224,8 +224,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     }
 
     @Test
-    public void testSetWidth() {
-        mCoordinator.setWidth(150);
+    public void testSetRenderedWidth() {
+        mCoordinator.setRenderedWidth(150);
         ViewGroup.LayoutParams layoutParams = mCoordinator.getView().getLayoutParams();
         assertNotNull(layoutParams);
         assertEquals(150, layoutParams.width);
@@ -235,8 +235,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     public void testOnUiUpdateCompleted() {
         mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         mCoordinator.onUiUpdateCompleted(
-                /* oldWidth= */ 0,
-                /* newWidth= */ 100,
+                /* oldReservedWidth= */ 0,
+                /* newReservedWidth= */ 100,
                 HeightType.NOT_APPLICABLE,
                 HeightType.TOOLBAR);
         assertTrue(mIsVerticalTabsActiveSupplier.get());
@@ -248,8 +248,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertTrue(mIsVerticalTabsActiveSupplier.get());
 
         mCoordinator.onUiUpdateCompleted(
-                /* oldWidth= */ 100,
-                /* newWidth= */ 0,
+                /* oldReservedWidth= */ 100,
+                /* newReservedWidth= */ 0,
                 HeightType.TOOLBAR,
                 HeightType.NOT_APPLICABLE);
         assertFalse(mIsVerticalTabsActiveSupplier.get());
@@ -259,8 +259,8 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     public void testOnUiUpdateCompleted_SideUiAlreadyHiddenFallback() {
         mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         mCoordinator.onUiUpdateCompleted(
-                /* oldWidth= */ 0,
-                /* newWidth= */ 100,
+                /* oldReservedWidth= */ 0,
+                /* newReservedWidth= */ 100,
                 HeightType.NOT_APPLICABLE,
                 HeightType.TOOLBAR);
         assertTrue(mIsVerticalTabsActiveSupplier.get());
@@ -277,16 +277,16 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         // Enable Vertical Tabs.
         mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
         mCoordinator.onUiUpdateCompleted(
-                /* oldWidth= */ 0,
-                /* newWidth= */ 100,
+                /* oldReservedWidth= */ 0,
+                /* newReservedWidth= */ 100,
                 HeightType.NOT_APPLICABLE,
                 HeightType.TOOLBAR);
         assertTrue(mIsVerticalTabsActiveSupplier.get());
 
         // Simulate auto-hide during narrow window resize (newWidth = 0).
         mCoordinator.onUiUpdateCompleted(
-                /* oldWidth= */ 100,
-                /* newWidth= */ 0,
+                /* oldReservedWidth= */ 100,
+                /* newReservedWidth= */ 0,
                 HeightType.TOOLBAR,
                 HeightType.NOT_APPLICABLE);
 
@@ -738,7 +738,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     }
 
     private void assertShowableWidth(@Px int expectedWidth, @Px int windowWidth) {
-        assertEquals(expectedWidth, determineShowableSize(windowWidth).mWidth);
+        assertEquals(expectedWidth, determineShowableSize(windowWidth).mReservedWidth);
     }
 
     private void assertShowableSize(

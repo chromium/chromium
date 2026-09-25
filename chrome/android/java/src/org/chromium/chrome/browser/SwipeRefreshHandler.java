@@ -120,8 +120,8 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
                 @Override
                 public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
                     updateSideUiWidths(
-                            sideUiSpecs.getWidth(AnchorSide.LEFT),
-                            sideUiSpecs.getWidth(AnchorSide.RIGHT));
+                            sideUiSpecs.getReservedWidth(AnchorSide.LEFT),
+                            sideUiSpecs.getReservedWidth(AnchorSide.RIGHT));
                 }
             };
 
@@ -340,8 +340,8 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
             SideUiSpecs currentSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
             if (currentSpecs != null) {
                 updateSideUiWidths(
-                        currentSpecs.getWidth(AnchorSide.LEFT),
-                        currentSpecs.getWidth(AnchorSide.RIGHT));
+                        currentSpecs.getReservedWidth(AnchorSide.LEFT),
+                        currentSpecs.getReservedWidth(AnchorSide.RIGHT));
             } else {
                 updateSideUiWidths(0, 0);
             }

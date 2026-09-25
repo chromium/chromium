@@ -407,7 +407,7 @@ public class SideUiCoordinatorImplTest {
         // stay where they are while the container paints over them.
         ArgumentCaptor<SideUiSpecs> specsCaptor = ArgumentCaptor.forClass(SideUiSpecs.class);
         verify(mSideUiObserver).onSideUiSpecsChanged(specsCaptor.capture(), any());
-        assertEquals(reservedWidth, specsCaptor.getValue().getWidth(AnchorSide.LEFT));
+        assertEquals(reservedWidth, specsCaptor.getValue().getReservedWidth(AnchorSide.LEFT));
         assertEquals(
                 reservedWidth + overlayWidth,
                 specsCaptor.getValue().getRenderedWidth(AnchorSide.LEFT));
@@ -417,7 +417,9 @@ public class SideUiCoordinatorImplTest {
 
         // The overlay must not leak into the current specs, otherwise the next update would diff
         // against it and move the web contents.
-        assertEquals(reservedWidth, mCoordinator.getCurrentSideUiSpecs().getWidth(AnchorSide.LEFT));
+        assertEquals(
+                reservedWidth,
+                mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.LEFT));
         assertEquals(
                 reservedWidth + overlayWidth,
                 mCoordinator.getCurrentSideUiSpecs().getRenderedWidth(AnchorSide.LEFT));
@@ -432,7 +434,7 @@ public class SideUiCoordinatorImplTest {
                         UpdateReason.SIDE_UI_REQUEST));
 
         verify(mSideUiObserver).onSideUiSpecsChanged(specsCaptor.capture(), any());
-        assertEquals(reservedWidth, specsCaptor.getValue().getWidth(AnchorSide.LEFT));
+        assertEquals(reservedWidth, specsCaptor.getValue().getReservedWidth(AnchorSide.LEFT));
         assertEquals(reservedWidth, specsCaptor.getValue().getRenderedWidth(AnchorSide.LEFT));
         assertEquals(reservedWidth, mSideUiContainerView.getWidth());
     }
@@ -470,7 +472,7 @@ public class SideUiCoordinatorImplTest {
         @Px int pinnedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
         ArgumentCaptor<SideUiSpecs> specsCaptor = ArgumentCaptor.forClass(SideUiSpecs.class);
         verify(mSideUiObserver).onSideUiSpecsChanged(specsCaptor.capture(), any());
-        assertEquals(pinnedWidth, specsCaptor.getValue().getWidth(AnchorSide.LEFT));
+        assertEquals(pinnedWidth, specsCaptor.getValue().getReservedWidth(AnchorSide.LEFT));
         assertEquals(pinnedWidth, specsCaptor.getValue().getRenderedWidth(AnchorSide.LEFT));
         assertEquals(pinnedWidth, mSideUiContainerView.getWidth());
     }
@@ -539,10 +541,10 @@ public class SideUiCoordinatorImplTest {
 
         // Assert: Only the right container should receive onUiUpdateCompleted notification.
         assertEquals(1, rightUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(0), rightUiContainer.mLastOldWidthOnUpdateCompleted);
+        assertEquals(Integer.valueOf(0), rightUiContainer.mLastOldReservedWidthOnUpdateCompleted);
         assertEquals(
                 Integer.valueOf(expectedRightSideUiWidth),
-                rightUiContainer.mLastNewWidthOnUpdateCompleted);
+                rightUiContainer.mLastNewReservedWidthOnUpdateCompleted);
         assertEquals(0, leftUiContainer.mNumOnUiUpdateCompletedReceived);
 
         // Assert: The observer is notified with both containers being showable.
@@ -588,13 +590,13 @@ public class SideUiCoordinatorImplTest {
         assertEquals(2, rightUiContainer.mNumOnUiUpdateCompletedReceived);
         assertEquals(
                 Integer.valueOf(expectedRightSideUiWidth),
-                rightUiContainer.mLastOldWidthOnUpdateCompleted);
-        assertEquals(Integer.valueOf(0), rightUiContainer.mLastNewWidthOnUpdateCompleted);
+                rightUiContainer.mLastOldReservedWidthOnUpdateCompleted);
+        assertEquals(Integer.valueOf(0), rightUiContainer.mLastNewReservedWidthOnUpdateCompleted);
         assertEquals(1, leftUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(0), leftUiContainer.mLastOldWidthOnUpdateCompleted);
+        assertEquals(Integer.valueOf(0), leftUiContainer.mLastOldReservedWidthOnUpdateCompleted);
         assertEquals(
                 Integer.valueOf(expectedLeftSideUiWidth),
-                leftUiContainer.mLastNewWidthOnUpdateCompleted);
+                leftUiContainer.mLastNewReservedWidthOnUpdateCompleted);
 
         // Assert: The observer is notified that the right (low-priority) container is no longer
         // showable.
@@ -630,15 +632,15 @@ public class SideUiCoordinatorImplTest {
 
         // Assert: Both containers should receive onUiUpdateCompleted notification.
         assertEquals(3, rightUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(0), rightUiContainer.mLastOldWidthOnUpdateCompleted);
+        assertEquals(Integer.valueOf(0), rightUiContainer.mLastOldReservedWidthOnUpdateCompleted);
         assertEquals(
                 Integer.valueOf(expectedRightSideUiWidth),
-                rightUiContainer.mLastNewWidthOnUpdateCompleted);
+                rightUiContainer.mLastNewReservedWidthOnUpdateCompleted);
         assertEquals(2, leftUiContainer.mNumOnUiUpdateCompletedReceived);
         assertEquals(
                 Integer.valueOf(expectedLeftSideUiWidth),
-                leftUiContainer.mLastOldWidthOnUpdateCompleted);
-        assertEquals(Integer.valueOf(0), leftUiContainer.mLastNewWidthOnUpdateCompleted);
+                leftUiContainer.mLastOldReservedWidthOnUpdateCompleted);
+        assertEquals(Integer.valueOf(0), leftUiContainer.mLastNewReservedWidthOnUpdateCompleted);
 
         // Assert: The observer is notified that both containers are showable.
         verify(mSideUiObserver).onShowableSideUisUpdated(showabilityCaptor.capture());
@@ -779,11 +781,15 @@ public class SideUiCoordinatorImplTest {
         // Assert:
         @Px int sideUiWidth = mSideUiContainerView.getWidth();
         assertEquals(1, sideUiContainer.mNumOnUiUpdateStartingReceived);
-        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldWidthOnUpdateStarting);
-        assertEquals(Integer.valueOf(sideUiWidth), sideUiContainer.mLastNewWidthOnUpdateStarting);
+        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldReservedWidthOnUpdateStarting);
+        assertEquals(
+                Integer.valueOf(sideUiWidth),
+                sideUiContainer.mLastNewReservedWidthOnUpdateStarting);
         assertEquals(1, sideUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldWidthOnUpdateCompleted);
-        assertEquals(Integer.valueOf(sideUiWidth), sideUiContainer.mLastNewWidthOnUpdateCompleted);
+        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldReservedWidthOnUpdateCompleted);
+        assertEquals(
+                Integer.valueOf(sideUiWidth),
+                sideUiContainer.mLastNewReservedWidthOnUpdateCompleted);
 
         // Act: Trigger another UI update. This update should be a no-op.
         mCoordinator.updateUi(
@@ -810,10 +816,10 @@ public class SideUiCoordinatorImplTest {
                         UpdateReason.SIDE_UI_REQUEST));
 
         assertEquals(1, sideUiContainer.mNumOnUiUpdateStartingReceived);
-        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldWidthOnUpdateStarting);
+        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldReservedWidthOnUpdateStarting);
         assertEquals(
                 Integer.valueOf(mSideUiContainerView.getWidth()),
-                sideUiContainer.mLastNewWidthOnUpdateStarting);
+                sideUiContainer.mLastNewReservedWidthOnUpdateStarting);
         assertEquals(HeightType.NOT_APPLICABLE, sideUiContainer.mLastOldHeightTypeOnUpdateStarting);
         assertEquals(
                 sideUiContainer.mHeightType, sideUiContainer.mLastNewHeightTypeOnUpdateStarting);
@@ -1100,9 +1106,10 @@ public class SideUiCoordinatorImplTest {
         @Px int expectedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
         assertEquals(expectedWidth, mSideUiContainerView.getWidth());
         assertEquals(1, sideUiContainer.mNumOnUiUpdateCompletedReceived);
-        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldWidthOnUpdateCompleted);
+        assertEquals(Integer.valueOf(0), sideUiContainer.mLastOldReservedWidthOnUpdateCompleted);
         assertEquals(
-                Integer.valueOf(expectedWidth), sideUiContainer.mLastNewWidthOnUpdateCompleted);
+                Integer.valueOf(expectedWidth),
+                sideUiContainer.mLastNewReservedWidthOnUpdateCompleted);
 
         // Assert: SideUiObserver received onTransitionBegun() and onTransitionEnded().
         SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(0, expectedWidth);
@@ -1125,14 +1132,14 @@ public class SideUiCoordinatorImplTest {
 
         // The new specs are not current yet: anything queried during the transition, e.g. a
         // freshly created NewTabPage, must inset itself by the width that is still in effect.
-        assertEquals(0, mCoordinator.getCurrentSideUiSpecs().getWidth(AnchorSide.RIGHT));
+        assertEquals(0, mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.RIGHT));
         assertEquals(0, mCoordinator.getCurrentSideUiSpecs().getRenderedWidth(AnchorSide.RIGHT));
 
         mCoordinator.endAnimations();
 
         @Px int expectedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
         SideUiSpecs currentSpecs = mCoordinator.getCurrentSideUiSpecs();
-        assertEquals(expectedWidth, currentSpecs.getWidth(AnchorSide.RIGHT));
+        assertEquals(expectedWidth, currentSpecs.getReservedWidth(AnchorSide.RIGHT));
         assertEquals(expectedWidth, currentSpecs.getRenderedWidth(AnchorSide.RIGHT));
     }
 
@@ -1147,11 +1154,11 @@ public class SideUiCoordinatorImplTest {
                         sideUiContainer.getSideUiId(),
                         /* suppressAnimations= */ true,
                         UpdateReason.SIDE_UI_REQUEST));
-        assertNotEquals(0, mCoordinator.getCurrentSideUiSpecs().getWidth(AnchorSide.RIGHT));
+        assertNotEquals(0, mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.RIGHT));
 
         mCoordinator.destroy();
 
-        assertEquals(0, mCoordinator.getCurrentSideUiSpecs().getWidth(AnchorSide.RIGHT));
+        assertEquals(0, mCoordinator.getCurrentSideUiSpecs().getReservedWidth(AnchorSide.RIGHT));
         assertEquals(0, mCoordinator.getCurrentSideUiSpecs().getRenderedWidth(AnchorSide.RIGHT));
     }
 
@@ -1670,13 +1677,13 @@ public class SideUiCoordinatorImplTest {
         // For tabWithSideUi, side panel has content to show -> expected width is 300px (at mdpi).
         SideUiSpecs specsForTabWithSideUi =
                 mCoordinator.getExpectedSideUiSpecsForTab(tabWithSideUi);
-        assertEquals(300, specsForTabWithSideUi.getWidth(AnchorSide.RIGHT));
+        assertEquals(300, specsForTabWithSideUi.getReservedWidth(AnchorSide.RIGHT));
         assertEquals(HeightType.TOOLBAR, specsForTabWithSideUi.getHeightType(AnchorSide.RIGHT));
 
         // For tabWithoutSideUi, side panel has no content to show -> expected width is 0.
         SideUiSpecs specsForTabWithoutSideUi =
                 mCoordinator.getExpectedSideUiSpecsForTab(tabWithoutSideUi);
-        assertEquals(0, specsForTabWithoutSideUi.getWidth(AnchorSide.RIGHT));
+        assertEquals(0, specsForTabWithoutSideUi.getReservedWidth(AnchorSide.RIGHT));
         assertEquals(
                 HeightType.NOT_APPLICABLE,
                 specsForTabWithoutSideUi.getHeightType(AnchorSide.RIGHT));

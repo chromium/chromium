@@ -83,11 +83,11 @@ public final class TestSideUiContainer implements SideUiContainer {
     /** Number of times {@link #onUiUpdateStarting} is called. */
     public int mNumOnUiUpdateStartingReceived;
 
-    /** The last {@code oldWidth} received by {@link #onUiUpdateStarting}. */
-    public @Nullable @Px Integer mLastOldWidthOnUpdateStarting;
+    /** The last {@code oldReservedWidth} received by {@link #onUiUpdateStarting}. */
+    public @Nullable @Px Integer mLastOldReservedWidthOnUpdateStarting;
 
-    /** The last {@code newWidth} received by {@link #onUiUpdateStarting}. */
-    public @Nullable @Px Integer mLastNewWidthOnUpdateStarting;
+    /** The last {@code newReservedWidth} received by {@link #onUiUpdateStarting}. */
+    public @Nullable @Px Integer mLastNewReservedWidthOnUpdateStarting;
 
     /** The last {@code oldHeightType} received by {@link #onUiUpdateStarting}. */
     public @HeightType int mLastOldHeightTypeOnUpdateStarting;
@@ -98,11 +98,11 @@ public final class TestSideUiContainer implements SideUiContainer {
     /** Number of times {@link #onUiUpdateCompleted} is called. */
     public int mNumOnUiUpdateCompletedReceived;
 
-    /** The last {@code oldWidth} received by {@link #onUiUpdateCompleted}. */
-    public @Nullable @Px Integer mLastOldWidthOnUpdateCompleted;
+    /** The last {@code oldReservedWidth} received by {@link #onUiUpdateCompleted}. */
+    public @Nullable @Px Integer mLastOldReservedWidthOnUpdateCompleted;
 
-    /** The last {@code newWidth} received by {@link #onUiUpdateCompleted}. */
-    public @Nullable @Px Integer mLastNewWidthOnUpdateCompleted;
+    /** The last {@code newReservedWidth} received by {@link #onUiUpdateCompleted}. */
+    public @Nullable @Px Integer mLastNewReservedWidthOnUpdateCompleted;
 
     /** The last {@code oldHeightType} received by {@link #onUiUpdateCompleted}. */
     public @HeightType int mLastOldHeightTypeOnUpdateCompleted;
@@ -182,9 +182,9 @@ public final class TestSideUiContainer implements SideUiContainer {
     }
 
     @Override
-    public void setWidth(int width) {
+    public void setRenderedWidth(int renderedWidth) {
         LayoutParams layoutParams = mSideUiContainerView.getLayoutParams();
-        layoutParams.width = width;
+        layoutParams.width = renderedWidth;
         mSideUiContainerView.setLayoutParams(layoutParams);
     }
 
@@ -195,26 +195,26 @@ public final class TestSideUiContainer implements SideUiContainer {
 
     @Override
     public void onUiUpdateStarting(
-            @Px int oldWidth,
-            @Px int newWidth,
+            @Px int oldReservedWidth,
+            @Px int newReservedWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
         mNumOnUiUpdateStartingReceived++;
-        mLastOldWidthOnUpdateStarting = oldWidth;
-        mLastNewWidthOnUpdateStarting = newWidth;
+        mLastOldReservedWidthOnUpdateStarting = oldReservedWidth;
+        mLastNewReservedWidthOnUpdateStarting = newReservedWidth;
         mLastOldHeightTypeOnUpdateStarting = oldHeightType;
         mLastNewHeightTypeOnUpdateStarting = newHeightType;
     }
 
     @Override
     public void onUiUpdateCompleted(
-            @Px int oldWidth,
-            @Px int newWidth,
+            @Px int oldReservedWidth,
+            @Px int newReservedWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
         mNumOnUiUpdateCompletedReceived++;
-        mLastOldWidthOnUpdateCompleted = oldWidth;
-        mLastNewWidthOnUpdateCompleted = newWidth;
+        mLastOldReservedWidthOnUpdateCompleted = oldReservedWidth;
+        mLastNewReservedWidthOnUpdateCompleted = newReservedWidth;
         mLastOldHeightTypeOnUpdateCompleted = oldHeightType;
         mLastNewHeightTypeOnUpdateCompleted = newHeightType;
     }

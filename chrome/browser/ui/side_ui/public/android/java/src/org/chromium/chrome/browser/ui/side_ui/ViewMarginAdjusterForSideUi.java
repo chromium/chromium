@@ -99,11 +99,11 @@ public class ViewMarginAdjusterForSideUi implements SideUiObserver {
         int rightMargin = 0;
         if (!mForToolbarElement
                 || sideUiSpecs.getHeightType(AnchorSide.LEFT) == HeightType.TOOLBAR) {
-            leftMargin = sideUiSpecs.getWidth(AnchorSide.LEFT);
+            leftMargin = sideUiSpecs.getReservedWidth(AnchorSide.LEFT);
         }
         if (!mForToolbarElement
                 || sideUiSpecs.getHeightType(AnchorSide.RIGHT) == HeightType.TOOLBAR) {
-            rightMargin = sideUiSpecs.getWidth(AnchorSide.RIGHT);
+            rightMargin = sideUiSpecs.getReservedWidth(AnchorSide.RIGHT);
         }
 
         params.leftMargin = mBaseLeftMargin + leftMargin;

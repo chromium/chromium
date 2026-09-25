@@ -225,7 +225,7 @@ public class FindToolbarTablet extends FindToolbar implements SideUiObserver {
         int anchorSide = LocalizationUtils.isLayoutRtl() ? AnchorSide.LEFT : AnchorSide.RIGHT;
         mCurrentSideUiMarginEnd =
                 sideUiSpecs.getHeightType(anchorSide) == HeightType.WEB_CONTENTS
-                        ? sideUiSpecs.getWidth(anchorSide)
+                        ? sideUiSpecs.getReservedWidth(anchorSide)
                         : 0;
         if (getLayoutParams() instanceof MarginLayoutParams lp) {
             lp.setMarginEnd(mBaseMarginEnd + mCurrentSideUiMarginEnd);

@@ -206,8 +206,12 @@ public class ActorOverlayCoordinator {
         public void onSideUiSpecsChanged(
                 SideUiCoordinator.SideUiSpecs sideUiSpecs,
                 SideUiCoordinator.UiUpdateRequest request) {
-            mModel.set(ActorOverlayProperties.LEFT_MARGIN, sideUiSpecs.getWidth(AnchorSide.LEFT));
-            mModel.set(ActorOverlayProperties.RIGHT_MARGIN, sideUiSpecs.getWidth(AnchorSide.RIGHT));
+            mModel.set(
+                    ActorOverlayProperties.LEFT_MARGIN,
+                    sideUiSpecs.getReservedWidth(AnchorSide.LEFT));
+            mModel.set(
+                    ActorOverlayProperties.RIGHT_MARGIN,
+                    sideUiSpecs.getReservedWidth(AnchorSide.RIGHT));
         }
     }
 

@@ -448,23 +448,23 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     @Override
-    public void setWidth(@Px int width) {
-        log(TAG, "setWidth", width);
+    public void setRenderedWidth(@Px int renderedWidth) {
+        log(TAG, "setRenderedWidth", renderedWidth);
         ThreadUtils.assertOnUiThread();
 
         LayoutParams layoutParams = mContainerView.getLayoutParams();
         assert layoutParams != null
-                : "setWidth() should be called after the container View is attached";
+                : "setRenderedWidth() should be called after the container View is attached";
         assert layoutParams.height == LayoutParams.MATCH_PARENT
                 : "the container View's height should match its parent";
 
-        if (layoutParams.width != width) {
-            layoutParams.width = width;
+        if (layoutParams.width != renderedWidth) {
+            layoutParams.width = renderedWidth;
             mContainerView.setLayoutParams(layoutParams);
         }
 
         // Remove the content if setting the width the 0 (i.e. hiding the panel).
-        if (width == 0) {
+        if (renderedWidth == 0) {
             getContentContainer().removeAllViews();
             mCurrentContent = null;
         }
@@ -479,8 +479,8 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public void onUiUpdateStarting(
-            @Px int oldWidth,
-            @Px int newWidth,
+            @Px int oldReservedWidth,
+            @Px int newReservedWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
         updateContainerBackground(newHeightType);
@@ -488,21 +488,21 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public void onUiUpdateCompleted(
-            @Px int oldWidth,
-            @Px int newWidth,
+            @Px int oldReservedWidth,
+            @Px int newReservedWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
         assertNonNull(mNativeBridgeSelector.getCurrentCoordinatorBridge())
-                .onPanelContainerUpdated(oldWidth, newWidth);
+                .onPanelContainerUpdated(oldReservedWidth, newReservedWidth);
 
         // Accessibility support for opening/closing the panel.
-        if (oldWidth == 0 && newWidth > 0) {
+        if (oldReservedWidth == 0 && newReservedWidth > 0) {
             CharSequence paneTitle = mCurrentContent != null ? mCurrentContent.mTitle : null;
             notifyAccessibilityStateChanged(
                     AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED,
                     paneTitle,
                     /* requestFocus= */ true);
-        } else if (oldWidth > 0 && newWidth == 0) {
+        } else if (oldReservedWidth > 0 && newReservedWidth == 0) {
             notifyAccessibilityStateChanged(
                     AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED,
                     /* title= */ null,

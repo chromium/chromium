@@ -194,7 +194,7 @@ import java.util.Set;
         public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
             // TODO(crbug.com/525353575): Determine the innermost side UI to figure out which
             //  corner to show when supporting VT and SP on the same side.
-            boolean isLeftShowing = sideUiSpecs.getWidth(AnchorSide.LEFT) != 0;
+            boolean isLeftShowing = sideUiSpecs.getReservedWidth(AnchorSide.LEFT) != 0;
             boolean isVtShowing = mSideUiStateProvider.isSideUiShowing(SideUiId.VERTICAL_TABS);
 
             int leftHairlineVisibility =
@@ -213,7 +213,9 @@ import java.util.Set;
                     .setVisibility(leftBottomCornerVisibility);
 
             int rightHairlineVisibility =
-                    sideUiSpecs.getWidth(AnchorSide.RIGHT) == 0 ? View.INVISIBLE : View.VISIBLE;
+                    sideUiSpecs.getReservedWidth(AnchorSide.RIGHT) == 0
+                            ? View.INVISIBLE
+                            : View.VISIBLE;
             mSideUiWebContentHairlineContainer
                     .getRightHairline()
                     .setVisibility(rightHairlineVisibility);

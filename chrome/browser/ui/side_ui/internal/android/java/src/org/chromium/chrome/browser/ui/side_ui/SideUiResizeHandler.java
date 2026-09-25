@@ -111,7 +111,8 @@ import java.lang.annotation.RetentionPolicy;
     private @Nullable Float mDragStartRawX;
 
     /**
-     * The container's width in px when the in-progress drag started, or null if there isn't one.
+     * The container's rendered width in px when the in-progress drag started, i.e. what its {@link
+     * View} was laid out at, or null if there isn't one.
      */
     private @Nullable @Px Integer mDragStartWidthPx;
 

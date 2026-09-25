@@ -1992,7 +1992,7 @@ public class ToolbarManager
             super.onSideUiSpecsChanged(sideUiSpecs, request);
             int xOffset = 0;
             if (sideUiSpecs.getHeightType(AnchorSide.LEFT) == HeightType.TOOLBAR) {
-                xOffset = sideUiSpecs.getWidth(AnchorSide.LEFT);
+                xOffset = sideUiSpecs.getReservedWidth(AnchorSide.LEFT);
             }
             mToolbar.setXOffset(xOffset);
         }
