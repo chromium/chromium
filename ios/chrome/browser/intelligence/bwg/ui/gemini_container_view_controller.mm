@@ -115,6 +115,13 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 - (void)setActuationActive:(BOOL)active {
   _geminiContentView.hidden = active;
   _worklogViewController.view.hidden = !active;
+  if (!active) {
+    return;
+  }
+  // The worklog may have reported its height before the mutator entered the
+  // actuating state (`ActorService` observer order is not guaranteed), in which
+  // case that report was ignored. Re-send it now that it will be applied.
+  [_worklogViewController notifyHeightDidChange];
 }
 
 #pragma mark - Private

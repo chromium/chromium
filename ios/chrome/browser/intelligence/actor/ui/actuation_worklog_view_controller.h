@@ -34,6 +34,10 @@
 // Whether the worklog is presented in compact mode or full timeline mode.
 @property(nonatomic, assign, getter=isCompact) BOOL compact;
 
+// Calculates the current fitting height and reports it to `delegate`. Use this
+// when `delegate` may have ignored a previous report.
+- (void)notifyHeightDidChange;
+
 // Designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
