@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 import argparse
+import datetime
 import json
 import os
 import requests
@@ -19,14 +20,22 @@ def get_versions():
     response.raise_for_status()
     data = response.json()
 
-    versions = []
-    # Items are grouped into 'pages' in the NuGet API
+    entries = []
+    # Items are grouped into 'pages' in the NuGet API and ordered by SemVer,
+    # so we sort by the 'published' timestamp to get chronological order.
+    # This is important because Agility SDK versions are not always uploaded in
+    # SemVer-increasing order, e.g. 1.721.3-preview was followed by 1.619.6.
     for page in data.get('items', []):
         for item in page.get('items', []):
-            versions.append(item['catalogEntry']['version'])
+            entry = item['catalogEntry']
+            if entry.get('listed', True):
+                entries.append(entry)
 
-    # NuGet versions usually come in order, but we ensure they are readable
-    return versions[::-1]  # Reverse to show newest first
+    entries.sort(
+        key=lambda e: datetime.datetime.fromisoformat(e['published']),
+        reverse=True,
+    )
+    return [e['version'] for e in entries]
 
 def do_latest():
     print(get_versions()[0])
