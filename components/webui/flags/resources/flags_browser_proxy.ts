@@ -41,20 +41,18 @@ export interface ExperimentalFeaturesData {
   // </if>
 }
 
-// <if expr="not is_ios">
 export interface FlagsExportData {
   enabled_flags: string[];
   customized_flags: Record<string, string>;
 }
-// </if>
 
 export interface FlagsBrowserProxy {
   // <if expr="not is_ios">
   restartBrowser(): void;
   requestDeprecatedFeatures(): Promise<ExperimentalFeaturesData>;
+  // </if>
   exportFlags(): Promise<FlagsExportData>;
   importFlags(data: FlagsExportData): Promise<boolean>;
-  // </if>
   resetAllFlags(): void;
   requestExperimentalFeatures(): Promise<ExperimentalFeaturesData>;
   enableExperimentalFeature(internalName: string, enable: boolean): void;
@@ -73,6 +71,7 @@ export class FlagsBrowserProxyImpl implements FlagsBrowserProxy {
     return sendWithPromise<ExperimentalFeaturesData>(
         'requestDeprecatedFeatures');
   }
+  // </if>
 
   exportFlags() {
     return sendWithPromise<FlagsExportData>('exportFlags');
@@ -81,7 +80,6 @@ export class FlagsBrowserProxyImpl implements FlagsBrowserProxy {
   importFlags(data: FlagsExportData) {
     return sendWithPromise<boolean>('importFlags', data);
   }
-  // </if>
 
   resetAllFlags() {
     chrome.send('resetAllFlags');

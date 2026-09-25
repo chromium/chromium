@@ -22,6 +22,7 @@ extern const char kRestartBrowser[];
 // Must match the constants used in the resource files.
 extern const char kFlagsRestartButton[];
 extern const char kFlagsRestartNotice[];
+extern const char kImportExportEnabled[];
 extern const char kNeedsRestart[];
 extern const char kShowBetaChannelPromotion[];
 extern const char kShowDevChannelPromotion[];

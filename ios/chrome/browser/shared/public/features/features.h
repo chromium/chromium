@@ -961,4 +961,7 @@ BASE_DECLARE_FEATURE(kTTCEnabled);
 // Returns true if the TTCEnabled feature is enabled.
 bool IsTTCEnabled();
 
+// Feature to enable importing and exporting flags in chrome://flags.
+BASE_DECLARE_FEATURE(kImportExportFlags);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

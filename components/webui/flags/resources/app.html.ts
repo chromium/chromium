@@ -27,7 +27,6 @@ export function getHtml(this: AppElement) {
           @keydown="${this.onResetAllKeydown_}" @blur="${this.onResetAllBlur_}">
         $i18n{reset}
       </cr-button>
-<if expr="not is_ios">
       <label for="import-file-input">
         <cr-icon-button id="experiment-import"
             iron-icon="${this.webuiRoundedIconsEnabled_
@@ -53,16 +52,13 @@ export function getHtml(this: AppElement) {
       </cr-tooltip>
       <input type="file" id="import-file-input" accept=".json"
           @change="${this.onImportFileChange_}" hidden>
-</if>
     </div>
   </div>
   <div class="screen-reader-only" id="screen-reader-status-message"
       role="status"></div>
-<if expr="not is_ios">
   <cr-toast id="errorToast" duration="3000">
     <div>${this.importError}</div>
   </cr-toast>
-</if>
 </div>
 <div id="body-container">
   <div id="flagsTemplate">

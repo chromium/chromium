@@ -1146,3 +1146,5 @@ BASE_FEATURE(kTTCEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsTTCEnabled() {
   return base::FeatureList::IsEnabled(kTTCEnabled);
 }
+
+BASE_FEATURE(kImportExportFlags, base::FEATURE_DISABLED_BY_DEFAULT);

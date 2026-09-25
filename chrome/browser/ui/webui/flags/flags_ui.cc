@@ -67,8 +67,9 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIFlagsHost);
   source->AddString(flags_ui::kVersion, version_info::GetVersionNumber());
-  source->AddBoolean("importExportEnabled", base::FeatureList::IsEnabled(
-                                                features::kImportExportFlags));
+  source->AddBoolean(
+      flags_ui::kImportExportEnabled,
+      base::FeatureList::IsEnabled(features::kImportExportFlags));
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!user_manager::UserManager::Get()->IsCurrentUserOwner() &&

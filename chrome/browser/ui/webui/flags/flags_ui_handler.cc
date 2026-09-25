@@ -148,7 +148,7 @@ void FlagsUIHandler::SendExperimentalFeatures(bool deprecated_features_only) {
               about_flags::IsRestartNeededToCommitChanges());
   results.Set(flags_ui::kShowOwnerWarning,
               access_ == flags_ui::kGeneralAccessFlagsOnly);
-  results.Set("importExportEnabled",
+  results.Set(flags_ui::kImportExportEnabled,
               base::FeatureList::IsEnabled(features::kImportExportFlags));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)

@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"
@@ -42,6 +43,8 @@ web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
       web::WebUIIOSDataSource::Create(kChromeUIFlagsHost);
   source->AddString(flags_ui::kVersion,
                     std::string(version_info::GetVersionNumber()));
+  source->AddBoolean(flags_ui::kImportExportEnabled,
+                     base::FeatureList::IsEnabled(kImportExportFlags));
 
   source->UseStringsJs();
   FlagsUI::AddFlagsIOSStrings(source);
@@ -89,6 +92,12 @@ class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
   // Callback for the "resetAllFlags" message.
   void HandleResetAllFlags(const base::ListValue& args);
 
+  // Callback for the "exportFlags" message.
+  void HandleExportFlags(const base::ListValue& args);
+
+  // Callback for the "importFlags" message.
+  void HandleImportFlags(const base::ListValue& args);
+
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   flags_ui::FlagAccess access_;
@@ -112,6 +121,14 @@ void FlagsDOMHandler::RegisterMessages() {
       flags_ui::kResetAllFlags,
       base::BindRepeating(&FlagsDOMHandler::HandleResetAllFlags,
                           base::Unretained(this)));
+  if (base::FeatureList::IsEnabled(kImportExportFlags)) {
+    web_ui()->RegisterMessageCallback(
+        "exportFlags", base::BindRepeating(&FlagsDOMHandler::HandleExportFlags,
+                                           base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        "importFlags", base::BindRepeating(&FlagsDOMHandler::HandleImportFlags,
+                                           base::Unretained(this)));
+  }
 }
 
 void FlagsDOMHandler::Init(
@@ -139,6 +156,8 @@ void FlagsDOMHandler::HandleRequestExperimentalFeatures(
   results.Set(flags_ui::kNeedsRestart, IsRestartNeededToCommitChanges());
   results.Set(flags_ui::kShowOwnerWarning,
               access_ == flags_ui::kGeneralAccessFlagsOnly);
+  results.Set(flags_ui::kImportExportEnabled,
+              base::FeatureList::IsEnabled(kImportExportFlags));
 
   results.Set(flags_ui::kShowBetaChannelPromotion, false);
   results.Set(flags_ui::kShowDevChannelPromotion, false);
@@ -175,6 +194,54 @@ void FlagsDOMHandler::HandleResetAllFlags(const base::ListValue& args) {
   DCHECK(flags_storage_);
   ResetAllFlags(flags_storage_.get());
   flags_storage_->CommitPendingWrites();
+}
+
+void FlagsDOMHandler::HandleExportFlags(const base::ListValue& args) {
+  DCHECK(flags_storage_);
+  CHECK(base::FeatureList::IsEnabled(kImportExportFlags));
+  const base::Value& callback_id = args[0];
+
+  base::DictValue results;
+  base::ListValue enabled_flags;
+  for (const std::string& flag : flags_storage_->GetFlags()) {
+    enabled_flags.Append(flag);
+  }
+  results.Set("enabled_flags", std::move(enabled_flags));
+  results.Set("customized_flags", flags_storage_->GetCustomizedFlags());
+
+  web_ui()->ResolveJavascriptCallback(callback_id, results);
+}
+
+void FlagsDOMHandler::HandleImportFlags(const base::ListValue& args) {
+  DCHECK(flags_storage_);
+  CHECK(base::FeatureList::IsEnabled(kImportExportFlags));
+  CHECK_EQ(2u, args.size());
+  const base::Value& callback_id = args[0];
+  const base::DictValue& data = args[1].GetDict();
+
+  // Apply imported data.
+  if (const base::ListValue* enabled_flags_list =
+          data.FindList("enabled_flags")) {
+    std::set<std::string> enabled_flags = flags_storage_->GetFlags();
+    for (const auto& flag : *enabled_flags_list) {
+      if (flag.is_string()) {
+        enabled_flags.insert(flag.GetString());
+      }
+    }
+    flags_storage_->SetFlags(enabled_flags);
+  }
+
+  if (const base::DictValue* customized_flags =
+          data.FindDict("customized_flags")) {
+    base::DictValue merged_customized_flags =
+        flags_storage_->GetCustomizedFlags();
+    merged_customized_flags.Merge(customized_flags->Clone());
+    flags_storage_->SetCustomizedFlags(merged_customized_flags);
+  }
+
+  flags_storage_->CommitPendingWrites();
+
+  web_ui()->ResolveJavascriptCallback(callback_id, base::Value(true));
 }
 
 }  // namespace

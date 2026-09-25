@@ -5,20 +5,17 @@
 // <if expr="is_ios">
 import 'chrome://resources/js/ios/web_ui.js';
 // </if>
-// clang-format off
-// <if expr="not is_ios">
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
-// </if>
-// clang-format on
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import '/strings.m.js';
 import './experiment.js';
 
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
@@ -27,23 +24,13 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-// clang-format off
-// <if expr="not is_ios">
-import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-// </if>
-// clang-format on
-
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {ExperimentElement as FlagsExperimentElement} from './experiment.js';
 import type {ExperimentalFeaturesData, Feature} from './flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
-// clang-format off
-// <if expr="not is_ios">
 import {ImportExportFileProxyImpl} from './import_export_file_proxy.js';
-// </if>
-// clang-format on
 
 
 
@@ -163,9 +150,7 @@ export class FlagsAppElement extends CrLitElement {
 
       tabNames_: {type: Array},
       selectedTabIndex_: {type: Number},
-      // <if expr="not is_ios">
       isImportExportEnabled_: {type: Boolean},
-      // </if>,
       webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
@@ -186,9 +171,7 @@ export class FlagsAppElement extends CrLitElement {
     needsRestart: false,
     showBetaChannelPromotion: false,
     showDevChannelPromotion: false,
-    // <if expr="not is_ios">
     importExportEnabled: false,
-    // </if>
     // <if expr="is_chromeos">
     showOwnerWarning: false,
     // </if>
@@ -543,7 +526,6 @@ export class FlagsAppElement extends CrLitElement {
     this.clearSearch();
   }
 
-  // <if expr="not is_ios">
   protected async onExportClick_() {
     const data = await FlagsBrowserProxyImpl.getInstance().exportFlags();
     const content = JSON.stringify(data, null, 2);
@@ -610,7 +592,6 @@ export class FlagsAppElement extends CrLitElement {
     console.error(msg);
     this.getRequiredElement<CrToastElement>('#errorToast').show();
   }
-  // </if>
 
   protected onSearchInput_() {
     assert(this.flagSearch);
@@ -676,10 +657,8 @@ export class FlagsAppElement extends CrLitElement {
         this.data.showDevChannelPromotion;
   }
 
-  // <if expr="not is_ios">
   protected accessor isImportExportEnabled_: boolean =
       loadTimeData.getBoolean('importExportEnabled');
-  // </if>
 
   protected onTabsSelectedChanged_(e: CustomEvent<{value: number}>) {
     this.selectedTabIndex_ = e.detail.value;

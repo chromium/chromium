@@ -2813,6 +2813,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kUniversalOptOutExtensionName,
      flag_descriptions::kUniversalOptOutExtensionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(universal_optout::features::kUniversalOptOutExtension)},
+    {"import-export-flags", flag_descriptions::kImportExportFlagsName,
+     flag_descriptions::kImportExportFlagsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kImportExportFlags)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
