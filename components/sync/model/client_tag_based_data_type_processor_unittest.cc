@@ -199,6 +199,11 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
   void ApplyDisableSyncChanges(std::unique_ptr<MetadataChangeList>
                                    delete_metadata_change_list) override {
     sync_started_ = false;
+    if (apply_disable_sync_changes_error_.has_value()) {
+      delete_metadata_change_list->DropAllChanges();
+      change_processor()->ReportError(*apply_disable_sync_changes_error_);
+      return;
+    }
     FakeDataTypeSyncBridge::ApplyDisableSyncChanges(
         std::move(delete_metadata_change_list));
   }
@@ -233,6 +238,10 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
 
   void SetMergeFullSyncDataError(const ModelError& error) {
     merge_full_sync_data_error_ = error;
+  }
+
+  void SetApplyDisableSyncChangesError(const ModelError& error) {
+    apply_disable_sync_changes_error_ = error;
   }
 
   int merge_call_count() const { return merge_call_count_; }
@@ -312,6 +321,7 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
   base::OnceCallback<void(const FailedCommitResponseDataList&)>
       on_commit_attempt_errors_callback_;
   std::optional<ModelError> merge_full_sync_data_error_;
+  std::optional<ModelError> apply_disable_sync_changes_error_;
 };
 
 }  // namespace
@@ -3134,6 +3144,30 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldResetOnInvalidCacheGuid) {
 
   ModelReadyToSync();
   OnSyncStarting();
+  EXPECT_EQ(0U, ProcessorEntityCount());
+}
+
+// Regression test for crbug.com/450738520#comment7.
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldHandleErrorWhenResettingMetadataOnInvalidCacheGuid) {
+  ResetStateWriteItem(kKey1, kValue1);
+  InitializeToMetadataLoaded();
+  OnSyncStarting();
+  ASSERT_EQ(1U, ProcessorEntityCount());
+
+  ResetStateWriteItem(kKey1, kValue1);
+  sync_pb::DataTypeState data_type_state = db()->data_type_state();
+  data_type_state.set_cache_guid("OtherCacheGuid");
+  db()->set_data_type_state(data_type_state);
+
+  ModelReadyToSync();
+  bridge()->SetApplyDisableSyncChangesError(
+      ModelError(FROM_HERE, ModelError::Type::kGenericTestError));
+  ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
+  OnSyncStarting();
+  EXPECT_TRUE(error_reported());
+  EXPECT_TRUE(type_processor()->GetError().has_value());
+  EXPECT_FALSE(bridge()->sync_started());
   EXPECT_EQ(0U, ProcessorEntityCount());
 }
 

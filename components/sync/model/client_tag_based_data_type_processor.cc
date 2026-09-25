@@ -266,6 +266,12 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
   CHECK(!pending_clear_metadata_);
 
   ClearPersistedMetadataIfInconsistentWithActivationRequest();
+  if (model_error_) {
+    // Clearing metadata may have reported a model error, which already invoked
+    // `error_handler` and reset `start_callback_`.
+    CHECK(!start_callback_);
+    return;
+  }
 
   auto activation_response = std::make_unique<DataTypeActivationResponse>();
   if (!entity_tracker_) {
@@ -414,7 +420,8 @@ void ClientTagBasedDataTypeProcessor::ClearAllMetadataAndResetStateImpl(
   // Reset all the internal state of the processor.
   ResetState(CLEAR_METADATA);
 
-  if (activation_request_.IsValid()) {
+  // Do not notify the bridge if a model error occurred while clearing metadata.
+  if (activation_request_.IsValid() && !model_error_) {
     // If OnSyncStarting() already was called, notify the bridge again.
     bridge_->OnSyncStarting(activation_request_);
   }
