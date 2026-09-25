@@ -106,7 +106,6 @@ import org.chromium.chrome.browser.tab.InterceptNavigationDelegateClientImpl;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
@@ -561,8 +560,7 @@ public class UrlOverridingTest {
                     TabModelSelectorObserver selectorObserver =
                             new TabModelSelectorObserver() {
                                 @Override
-                                public void onNewTabCreated(
-                                        Tab newTab, @TabCreationState int creationState) {
+                                public void onNewTabCreated(Tab newTab) {
                                     Assert.assertTrue(params.createsNewTab);
                                     latestTabHolder.value = newTab;
                                     newTabCallback.notifyCalled();

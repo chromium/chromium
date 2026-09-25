@@ -3614,17 +3614,10 @@ public class TabCollectionTabModelImplTest {
 
     private void verifyPinOrUnpin(Tab changedTab, boolean isPinned, boolean willMove)
             throws Exception {
-        CallbackHelper willChangePinStateHelper = new CallbackHelper();
         CallbackHelper didChangePinStateHelper = new CallbackHelper();
         CallbackHelper didMoveTabHelper = new CallbackHelper();
         TabModelObserver observer =
                 new TabModelObserver() {
-                    @Override
-                    public void willChangePinState(Tab tab) {
-                        assertEquals(changedTab, tab);
-                        willChangePinStateHelper.notifyCalled();
-                    }
-
                     @Override
                     public void didChangePinState(Tab tab) {
                         assertEquals(changedTab, tab);
@@ -3654,7 +3647,6 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(isPinned, changedTab.getIsPinned());
                 });
 
-        willChangePinStateHelper.waitForOnly();
         didChangePinStateHelper.waitForOnly();
         if (willMove) {
             didMoveTabHelper.waitForOnly();

@@ -6,24 +6,16 @@ package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
 
 /** Observes changes to the tab model selector. */
 @NullMarked
 public interface TabModelSelectorObserver {
     /**
      * Called when a new tab is created.
-     * @param tab A new tab being created.
-     * @param creationState How the tab was created.
-     */
-    default void onNewTabCreated(Tab tab, @TabCreationState int creationState) {}
-
-    /**
-     * Called when a tab is hidden to switch to another tab.
      *
-     * @param tab The tab that was hidden.
+     * @param tab A new tab being created.
      */
-    default void onTabHidden(Tab tab) {}
+    default void onNewTabCreated(Tab tab) {}
 
     /**
      * Called when the tab state has been initialized and the current tab count and tab model states

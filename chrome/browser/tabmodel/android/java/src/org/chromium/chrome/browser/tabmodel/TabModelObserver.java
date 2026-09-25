@@ -96,13 +96,6 @@ public interface TabModelObserver {
     default void didMoveTab(Tab tab, int newIndex, int curIndex) {}
 
     /**
-     * Called when a tab's pin state is about to change.
-     *
-     * @param tab The tab whose pin state is about to change.
-     */
-    default void willChangePinState(Tab tab) {}
-
-    /**
      * Called when a tab's pin state has changed.
      *
      * @param tab The tab whose pin state has changed.

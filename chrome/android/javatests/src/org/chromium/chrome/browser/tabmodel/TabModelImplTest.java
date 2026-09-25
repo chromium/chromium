@@ -1261,24 +1261,20 @@ public class TabModelImplTest {
                     tabModel.pinTab(tab2.getId(), /* showUngroupDialog= */ false);
 
                     verify(mTabModelObserver).didMoveTab(tab2, 0, 2);
-                    verify(mTabModelObserver).willChangePinState(tab2);
                     verify(mTabModelObserver).didChangePinState(tab2);
 
                     tabModel.pinTab(tab1.getId(), /* showUngroupDialog= */ false);
 
                     verify(mTabModelObserver).didMoveTab(tab1, 1, 2);
-                    verify(mTabModelObserver).willChangePinState(tab1);
                     verify(mTabModelObserver).didChangePinState(tab1);
 
                     tabModel.unpinTab(tab2.getId());
 
                     verify(mTabModelObserver).didMoveTab(tab2, 1, 0);
-                    verify(mTabModelObserver, times(2)).willChangePinState(tab2);
                     verify(mTabModelObserver, times(2)).didChangePinState(tab2);
 
                     tabModel.unpinTab(tab1.getId());
 
-                    verify(mTabModelObserver, times(2)).willChangePinState(tab1);
                     verify(mTabModelObserver, times(2)).didChangePinState(tab1);
 
                     // Cleanup.

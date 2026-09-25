@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -90,7 +89,7 @@ public class CustomTabDeferredStartupTest {
         }
 
         @Override
-        public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+        public void onNewTabCreated(Tab tab) {
             tab.addObserver(mObserver);
         }
 

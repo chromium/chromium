@@ -118,7 +118,7 @@ public abstract class TabModelSelectorBase
                             @TabLaunchType int type,
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
-                        notifyNewTabCreated(tab, creationState);
+                        notifyNewTabCreated(tab);
                     }
                 };
 
@@ -414,23 +414,12 @@ public abstract class TabModelSelectorBase
 
     /**
      * Notifies all the listeners that a new tab has been created.
-     * @param tab The tab that has been created.
-     * @param creationState How the tab was created.
-     */
-    private void notifyNewTabCreated(Tab tab, @TabCreationState int creationState) {
-        for (TabModelSelectorObserver listener : mObservers) {
-            listener.onNewTabCreated(tab, creationState);
-        }
-    }
-
-    /**
-     * Notifies all the listeners that a tab has been hidden to switch to another.
      *
-     * @param tab The tab that has been hidden.
+     * @param tab The tab that has been created.
      */
-    protected void notifyTabHidden(Tab tab) {
+    private void notifyNewTabCreated(Tab tab) {
         for (TabModelSelectorObserver listener : mObservers) {
-            listener.onTabHidden(tab);
+            listener.onNewTabCreated(tab);
         }
     }
 

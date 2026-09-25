@@ -2539,18 +2539,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         boolean isMergingIntoGroup = !isMovingWithinGroup && newTabGroupId != null;
         boolean isChangingPinState = tab.getIsPinned() != isPinned;
 
-        ObserverList.RewindableIterator<TabModelObserver> modelObservers = null;
         boolean notifyGroupObservers =
                 isMovingOutOfGroup || isMergingIntoGroup || isMovingWithinGroup;
         ObserverList.RewindableIterator<TabGroupObserver> groupObservers =
                 notifyGroupObservers ? mTabGroupObservers.rewindableIterator() : null;
-
-        if (isChangingPinState) {
-            modelObservers = mTabModelObservers.rewindableIterator();
-            while (modelObservers.hasNext()) {
-                modelObservers.next().willChangePinState(tab);
-            }
-        }
 
         if (isMovingOutOfGroup) {
             assumeNonNull(oldTabGroupId);
@@ -2596,13 +2588,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
 
         if (index != finalIndex) {
-            if (modelObservers == null) {
-                modelObservers = mTabModelObservers.rewindableIterator();
-            } else {
-                modelObservers.rewind();
-            }
-            while (modelObservers.hasNext()) {
-                modelObservers.next().didMoveTab(tab, finalIndex, index);
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.didMoveTab(tab, finalIndex, index);
             }
         }
 
@@ -2639,10 +2626,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
 
         if (isChangingPinState) {
-            assumeNonNull(modelObservers);
-            modelObservers.rewind();
-            while (modelObservers.hasNext()) {
-                modelObservers.next().didChangePinState(tab);
+            for (TabModelObserver obs : mTabModelObservers) {
+                obs.didChangePinState(tab);
             }
         }
     }

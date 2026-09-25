@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -232,7 +231,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         addObserver(
                 new TabModelSelectorObserver() {
                     @Override
-                    public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+                    public void onNewTabCreated(Tab tab) {
                         // Only invalidate if the tab exists in the currently selected model.
                         if (getCurrentModel().getTabById(tab.getId()) != null) {
                             mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrl());
@@ -428,7 +427,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                     cacheTabBitmap(mVisibleTab);
                 }
                 mVisibleTab.hide(TabHidingType.CHANGED_TABS);
-                notifyTabHidden(mVisibleTab);
             }
             mVisibleTab = null;
         }

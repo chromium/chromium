@@ -8,7 +8,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -41,7 +40,7 @@ public class NewTabPageCreationTracker {
      */
     private static class TabCreationRecorder implements TabModelSelectorObserver {
         @Override
-        public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+        public void onNewTabCreated(Tab tab) {
             if (tab.isOffTheRecord() || !UrlUtilities.isNtpUrl(tab.getUrl())) {
                 return;
             }
