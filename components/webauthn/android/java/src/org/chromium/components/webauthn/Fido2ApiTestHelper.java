@@ -748,6 +748,22 @@ public class Fido2ApiTestHelper {
      * @param mockResult The mock value for {@link ClientDataJson#buildClientDataJson} to return.
      */
     public static void mockClientDataJson(String mockResult) {
+        mockClientDataJsonWithCallback(
+                (clientDataRequestType,
+                        callerOrigin,
+                        challenge,
+                        isCrossOrigin,
+                        optionsByteBuffer,
+                        relyingPartyId,
+                        topOrigin) -> mockResult);
+    }
+
+    /**
+     * Installs a mock callback for ClientDataJson.
+     *
+     * <p>This keeps callers from depending on ClientDataJsonImpl's JNI interface.
+     */
+    public static void mockClientDataJsonWithCallback(ClientDataJsonMock mock) {
         ClientDataJsonImpl.Natives clientDataJsonJni =
                 new ClientDataJsonImpl.Natives() {
                     @Override
@@ -756,13 +772,33 @@ public class Fido2ApiTestHelper {
                             String callerOrigin,
                             byte[] challenge,
                             boolean isCrossOrigin,
-                            ByteBuffer optionsByteBuffer,
-                            String relyingPartyId,
-                            org.chromium.url.Origin topOrigin) {
-                        return mockResult;
+                            @Nullable ByteBuffer optionsByteBuffer,
+                            @Nullable String relyingPartyId,
+                            @Nullable org.chromium.url.Origin topOrigin) {
+                        return mock.buildClientDataJson(
+                                clientDataRequestType,
+                                callerOrigin,
+                                challenge,
+                                isCrossOrigin,
+                                optionsByteBuffer,
+                                relyingPartyId,
+                                topOrigin);
                     }
                 };
         ClientDataJsonImplJni.setInstanceForTesting(clientDataJsonJni);
+    }
+
+    /** A mockable callback for ClientDataJson requests. */
+    @FunctionalInterface
+    public interface ClientDataJsonMock {
+        String buildClientDataJson(
+                int clientDataRequestType,
+                String callerOrigin,
+                byte[] challenge,
+                boolean isCrossOrigin,
+                @Nullable ByteBuffer optionsByteBuffer,
+                @Nullable String relyingPartyId,
+                @Nullable org.chromium.url.Origin topOrigin);
     }
 
     /** Mocks ClientDataJson with the default test value. */
