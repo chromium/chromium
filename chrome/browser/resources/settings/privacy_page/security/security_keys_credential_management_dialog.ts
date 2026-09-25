@@ -14,7 +14,6 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../../settings_shared.css.js';
 import '../../site_favicon.js';
 import '../../i18n_setup.js';
@@ -27,7 +26,6 @@ import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_in
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Credential, SecurityKeysCredentialBrowserProxy, StartCredentialManagementResponse} from './security_keys_browser_proxy.js';
@@ -50,7 +48,7 @@ export interface SettingsSecurityKeysCredentialManagementDialogElement {
     cancelButton: CrButtonElement,
     confirm: HTMLElement,
     confirmButton: CrButtonElement,
-    credentialList: IronListElement,
+    container: HTMLElement,
     dialog: CrDialogElement,
     displayNameInput: CrInputElement,
     edit: HTMLElement,
@@ -189,7 +187,6 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
 
   private onCredentials_(credentials: Credential[]) {
     this.credentials_ = credentials;
-    this.$.credentialList.fire('iron-resize');
     this.dialogPage_ = CredentialManagementDialogPage.CREDENTIALS;
   }
 
@@ -325,9 +322,6 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
     // Prevent this event from bubbling since it is unnecessarily triggering
     // the listener within settings-animated-pages.
     e.stopPropagation();
-
-    // Asynchronously notify the iron-list of the possible resize.
-    setTimeout(() => this.$.credentialList.notifyResize(), 0);
   }
 
   private onDeleteButtonClick_(e: Event) {
@@ -417,8 +411,7 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
               newCred.userName = this.newUsername_;
               newCred.userDisplayName = this.newDisplayName_;
 
-              this.credentials_.splice(i, 1, newCred);
-              this.$.credentialList.fire('iron-resize');
+              this.splice('credentials_', i, 1, newCred);
               break;
             }
           }

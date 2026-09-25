@@ -20,7 +20,7 @@
   border-top: var(--cr-separator-line);
 }
 
-iron-list.cr-separators > *:not([first]) {
+.cr-separators > *:not([first]) {
   border-top: var(--cr-separator-line);
 }
 
