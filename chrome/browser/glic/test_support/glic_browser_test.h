@@ -14,6 +14,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 #include "chrome/browser/glic/host/glic_overlay.mojom.h"
+#include "chrome/browser/glic/host/glic_overlay_ui.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -1013,6 +1015,65 @@ class GlicBrowserTestMixin : public T {
         type_to_string(expected_type), "Timeout waiting for error panel type");
   }
 
+  [[nodiscard]] TestResult<> WaitForOverlayErrorPanel(
+      mojom::ErrorPanelType error_panel_type,
+      GlicInstance* instance = nullptr) {
+    if (!features::IsGlicNoWebviewEnabled()) {
+      return base::unexpected(
+          "kGlicNoWebview must be enabled to use WaitForOverlayErrorPanel()");
+    }
+    RETURN_IF_ERROR(WaitForErrorPanelType(error_panel_type, instance));
+    GlicInstanceImpl* target = GetInstanceImpl(instance);
+    if (target) {
+      auto* manager = static_cast<GlicNoWebviewContentsManager*>(
+          target->host().contents_manager());
+      if (manager && manager->overlay_contents()) {
+        if (!content::WaitForLoadStop(manager->overlay_contents())) {
+          return base::unexpected("WaitForLoadStop failed on overlay_contents");
+        }
+      }
+    }
+    return base::ok();
+  }
+
+  [[nodiscard]] TestResult<> WaitForDisplayState(
+      GlicNoWebviewContentsManager::DisplayState display_state,
+      GlicInstance* instance = nullptr) {
+    if (!features::IsGlicNoWebviewEnabled()) {
+      return WaitForWebUiState(mojom::WebUiState::kReady);
+    }
+    auto to_string =
+        [](GlicNoWebviewContentsManager::DisplayState state) -> std::string {
+      std::stringstream ss;
+      ss << state;
+      return ss.str();
+    };
+    return RunUntilEqual(
+        [&, instance, to_string]() -> std::string {
+          GlicInstanceImpl* target = GetInstanceImpl(instance);
+          if (!target) {
+            return "no instance";
+          }
+          auto* manager = static_cast<GlicNoWebviewContentsManager*>(
+              target->host().contents_manager());
+          if (!manager) {
+            return "no contents manager";
+          }
+          return to_string(manager->state());
+        },
+        to_string(display_state));
+  }
+
+  // Waits until the glic guest is visible in the glic view. This does not
+  // guarantee the glic view is itself visible.
+  [[nodiscard]] TestResult<> WaitUntilGuestIsShowing(
+      GlicInstance* instance = nullptr) {
+    if (!features::IsGlicNoWebviewEnabled()) {
+      return WaitForWebUiState(mojom::WebUiState::kReady);
+    }
+    return WaitForDisplayState(
+        GlicNoWebviewContentsManager::DisplayState::kShowingGuest, instance);
+  }
   GlicKeyedService* service() {
     GlicKeyedService* service = GlicKeyedService::Get(weak_profile_.get());
     CHECK(service);

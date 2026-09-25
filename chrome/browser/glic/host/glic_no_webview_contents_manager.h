@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <ostream>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
@@ -217,6 +218,10 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     return mojom::LoadingStyle::kSidePanel;
   }
 
+  OverlayContentsManager& GetOverlayManagerForTesting() {
+    return overlay_manager_;
+  }
+
   const base::OneShotTimer& overlay_deletion_timer_for_testing() const {
     return overlay_deletion_timer_;
   }
@@ -328,6 +333,21 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
 
   base::WeakPtrFactory<GlicNoWebviewContentsManager> weak_ptr_factory_{this};
 };
+
+inline std::ostream& operator<<(
+    std::ostream& os,
+    GlicNoWebviewContentsManager::DisplayState state) {
+  switch (state) {
+    case GlicNoWebviewContentsManager::DisplayState::kWarming:
+      return os << "kWarming";
+    case GlicNoWebviewContentsManager::DisplayState::kAttachedHidden:
+      return os << "kAttachedHidden";
+    case GlicNoWebviewContentsManager::DisplayState::kShowingOverlay:
+      return os << "kShowingOverlay";
+    case GlicNoWebviewContentsManager::DisplayState::kShowingGuest:
+      return os << "kShowingGuest";
+  }
+}
 
 }  // namespace glic
 

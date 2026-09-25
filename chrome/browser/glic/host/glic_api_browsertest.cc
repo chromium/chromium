@@ -1640,22 +1640,23 @@ class GlicApiTestRuntimeFeatureOff : public GlicApiTest {
 // method.
 IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
                        testErrorShownOnMojoPipeError) {
-  if (GetParam().no_webview) {
-    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
-  }
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ExecuteJsTest();
+
+  if (!features::IsGlicNoWebviewEnabled()) {
+    ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
+  } else {
+    ASSERT_OK(WaitForOverlayErrorPanel(mojom::ErrorPanelType::kError));
+  }
 
   auto* web_contents = instance->host().webui_contents();
   ASSERT_TRUE(web_contents);
 
-  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
-
   // Verify the reload button works.
-  ASSERT_TRUE(content::ExecJs(web_contents,
-                              "document.querySelector('#reload').click();"));
+  content::ExecuteScriptAsync(web_contents,
+                              "document.querySelector('#reload').click();");
 
-  ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kReady));
+  ASSERT_OK(WaitUntilGuestIsShowing());
   ExecuteJsTest();
 }
 
