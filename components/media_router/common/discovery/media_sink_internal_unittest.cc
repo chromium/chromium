@@ -141,4 +141,28 @@ TEST(MediaSinkInternalTest, TestProcessDeviceUUID) {
   EXPECT_EQ("", MediaSinkInternal::ProcessDeviceUUID(""));
 }
 
+TEST(MediaSinkInternalTest, TestSinkType) {
+  MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
+  DialSinkExtraData dial_extra_data = CreateDialSinkExtraData();
+  CastSinkExtraData cast_extra_data = CreateCastSinkExtraData();
+
+  MediaSinkInternal generic_sink;
+  generic_sink.set_sink(sink);
+  MediaSinkInternal dial_sink(sink, dial_extra_data);
+  MediaSinkInternal cast_sink(sink, cast_extra_data);
+
+  EXPECT_FALSE(generic_sink.is_dial_sink());
+  EXPECT_FALSE(generic_sink.is_cast_sink());
+
+  EXPECT_TRUE(dial_sink.is_dial_sink());
+  EXPECT_FALSE(dial_sink.is_cast_sink());
+
+  EXPECT_FALSE(cast_sink.is_dial_sink());
+  EXPECT_TRUE(cast_sink.is_cast_sink());
+
+  EXPECT_NE(dial_sink, cast_sink);
+  EXPECT_NE(dial_sink, generic_sink);
+  EXPECT_NE(cast_sink, generic_sink);
+}
+
 }  // namespace media_router

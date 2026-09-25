@@ -4,73 +4,37 @@
 
 #include "components/media_router/common/discovery/media_sink_internal.h"
 
-#include <new>
+#include <variant>
 
+#include "base/check.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/strings/string_util.h"
 
 namespace media_router {
 
+MediaSinkInternal::MediaSinkInternal() = default;
+
 MediaSinkInternal::MediaSinkInternal(const MediaSink& sink,
                                      const DialSinkExtraData& dial_data)
-    : sink_(sink), sink_type_(SinkType::DIAL), dial_data_(dial_data) {}
+    : sink_(sink), extra_data_(dial_data) {}
 
 MediaSinkInternal::MediaSinkInternal(const MediaSink& sink,
                                      const CastSinkExtraData& cast_data)
-    : sink_(sink), sink_type_(SinkType::CAST), cast_data_(cast_data) {}
+    : sink_(sink), extra_data_(cast_data) {}
 
-MediaSinkInternal::MediaSinkInternal() : sink_type_(SinkType::GENERIC) {}
+MediaSinkInternal::MediaSinkInternal(const MediaSinkInternal&) = default;
 
-MediaSinkInternal::MediaSinkInternal(const MediaSinkInternal& other) {
-  InternalCopyConstructFrom(other);
-}
+MediaSinkInternal::MediaSinkInternal(MediaSinkInternal&&) noexcept = default;
 
-MediaSinkInternal::MediaSinkInternal(MediaSinkInternal&& other) noexcept {
-  InternalMoveConstructFrom(std::move(other));
-}
+MediaSinkInternal::~MediaSinkInternal() = default;
 
-MediaSinkInternal::~MediaSinkInternal() {
-  InternalCleanup();
-}
+MediaSinkInternal& MediaSinkInternal::operator=(const MediaSinkInternal&) =
+    default;
 
-MediaSinkInternal& MediaSinkInternal::operator=(
-    const MediaSinkInternal& other) {
-  if (this != &other) {
-    InternalCleanup();
-    InternalCopyConstructFrom(other);
-  }
-  return *this;
-}
+MediaSinkInternal& MediaSinkInternal::operator=(MediaSinkInternal&&) noexcept =
+    default;
 
-MediaSinkInternal& MediaSinkInternal::operator=(
-    MediaSinkInternal&& other) noexcept {
-  if (this != &other) {
-    InternalCleanup();
-    InternalMoveConstructFrom(std::move(other));
-  }
-  return *this;
-}
-
-bool MediaSinkInternal::operator==(const MediaSinkInternal& other) const {
-  if (sink_type_ != other.sink_type_) {
-    return false;
-  }
-
-  if (sink_ != other.sink_) {
-    return false;
-  }
-
-  switch (sink_type_) {
-    case SinkType::DIAL:
-      return dial_data_ == other.dial_data_;
-    case SinkType::CAST:
-      return cast_data_ == other.cast_data_;
-    case SinkType::GENERIC:
-      return true;
-  }
-  NOTREACHED();
-}
+bool MediaSinkInternal::operator==(const MediaSinkInternal&) const = default;
 
 bool MediaSinkInternal::operator<(const MediaSinkInternal& other) const {
   return sink_.id() < other.sink().id();
@@ -81,34 +45,25 @@ void MediaSinkInternal::set_sink(const MediaSink& sink) {
 }
 
 void MediaSinkInternal::set_dial_data(const DialSinkExtraData& dial_data) {
-  DCHECK(sink_type_ != SinkType::CAST);
-  InternalCleanup();
-
-  sink_type_ = SinkType::DIAL;
-  new (&dial_data_) DialSinkExtraData(dial_data);
+  DCHECK(!is_cast_sink());
+  extra_data_ = dial_data;
 }
 
 const DialSinkExtraData& MediaSinkInternal::dial_data() const {
-  DCHECK(is_dial_sink());
-  return dial_data_;
+  return std::get<DialSinkExtraData>(extra_data_);
 }
 
 void MediaSinkInternal::set_cast_data(const CastSinkExtraData& cast_data) {
-  DCHECK(sink_type_ != SinkType::DIAL);
-  InternalCleanup();
-
-  sink_type_ = SinkType::CAST;
-  new (&cast_data_) CastSinkExtraData(cast_data);
+  DCHECK(!is_dial_sink());
+  extra_data_ = cast_data;
 }
 
 const CastSinkExtraData& MediaSinkInternal::cast_data() const {
-  DCHECK(is_cast_sink());
-  return cast_data_;
+  return std::get<CastSinkExtraData>(extra_data_);
 }
 
 CastSinkExtraData& MediaSinkInternal::cast_data() {
-  DCHECK(is_cast_sink());
-  return cast_data_;
+  return std::get<CastSinkExtraData>(extra_data_);
 }
 
 // static
@@ -137,59 +92,13 @@ std::string MediaSinkInternal::ProcessDeviceUUID(
   return base::ToLowerASCII(result);
 }
 
-void MediaSinkInternal::InternalCopyConstructFrom(
-    const MediaSinkInternal& other) {
-  sink_ = other.sink_;
-  sink_type_ = other.sink_type_;
-
-  switch (sink_type_) {
-    case SinkType::DIAL:
-      new (&dial_data_) DialSinkExtraData(other.dial_data_);
-      return;
-    case SinkType::CAST:
-      new (&cast_data_) CastSinkExtraData(other.cast_data_);
-      return;
-    case SinkType::GENERIC:
-      return;
-  }
-  NOTREACHED();
-}
-
-void MediaSinkInternal::InternalMoveConstructFrom(MediaSinkInternal&& other) {
-  sink_ = std::move(other.sink_);
-  sink_type_ = other.sink_type_;
-
-  switch (sink_type_) {
-    case SinkType::DIAL:
-      new (&dial_data_) DialSinkExtraData(std::move(other.dial_data_));
-      return;
-    case SinkType::CAST:
-      new (&cast_data_) CastSinkExtraData(std::move(other.cast_data_));
-      return;
-    case SinkType::GENERIC:
-      return;
-  }
-  NOTREACHED();
-}
-
-void MediaSinkInternal::InternalCleanup() {
-  switch (sink_type_) {
-    case SinkType::DIAL:
-      dial_data_.~DialSinkExtraData();
-      return;
-    case SinkType::CAST:
-      cast_data_.~CastSinkExtraData();
-      return;
-    case SinkType::GENERIC:
-      return;
-  }
-  NOTREACHED();
-}
-
 DialSinkExtraData::DialSinkExtraData() = default;
-DialSinkExtraData::DialSinkExtraData(const DialSinkExtraData& other) = default;
-DialSinkExtraData::DialSinkExtraData(DialSinkExtraData&& other) = default;
+DialSinkExtraData::DialSinkExtraData(const DialSinkExtraData&) = default;
+DialSinkExtraData::DialSinkExtraData(DialSinkExtraData&&) = default;
 DialSinkExtraData::~DialSinkExtraData() = default;
+DialSinkExtraData& DialSinkExtraData::operator=(const DialSinkExtraData&) =
+    default;
+DialSinkExtraData& DialSinkExtraData::operator=(DialSinkExtraData&&) = default;
 
 bool DialSinkExtraData::operator==(const DialSinkExtraData& other) const {
   return ip_address == other.ip_address && model_name == other.model_name &&
@@ -197,9 +106,12 @@ bool DialSinkExtraData::operator==(const DialSinkExtraData& other) const {
 }
 
 CastSinkExtraData::CastSinkExtraData() = default;
-CastSinkExtraData::CastSinkExtraData(const CastSinkExtraData& other) = default;
-CastSinkExtraData::CastSinkExtraData(CastSinkExtraData&& other) = default;
+CastSinkExtraData::CastSinkExtraData(const CastSinkExtraData&) = default;
+CastSinkExtraData::CastSinkExtraData(CastSinkExtraData&&) = default;
 CastSinkExtraData::~CastSinkExtraData() = default;
+CastSinkExtraData& CastSinkExtraData::operator=(const CastSinkExtraData&) =
+    default;
+CastSinkExtraData& CastSinkExtraData::operator=(CastSinkExtraData&&) = default;
 
 bool CastSinkExtraData::operator==(const CastSinkExtraData& other) const {
   return ip_endpoint == other.ip_endpoint && model_name == other.model_name &&
