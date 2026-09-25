@@ -8,3 +8,11 @@
 
 -MappableSharedImageVideoFramePoolTest.CreateOne10BppHardwareFrameWithOddSize
 -MappableSharedImageVideoFramePoolTest.CreateOneHardwareP010FrameWithOddSize
+
+# TODO(crbug.com/565684014): The tests below have been failing since
+# https://crrev.com/c/8348887. An unexpected encoder error occurred.
+-VTVideoEncodeAcceleratorTest.EncodeCameraCaptureNv12Frame
+-VTVideoEncodeAcceleratorTest.EncodeOpaqueSharedImageRgbFrames
+-VTVideoEncodeAcceleratorTest.RejectsOpaqueSharedImageArgbFrameWhenFeatureDisabled
+-VTVideoEncodeAcceleratorTest.RejectsOpaqueSharedImagesInI420Session
+-VTVideoEncodeAcceleratorTest.RejectsUnsupportedOpaqueSharedImageFormats
