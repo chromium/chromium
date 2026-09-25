@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/contextual_cueing/contextual_cueing_enums.h"
+#include "components/metrics/version_utils.h"
 #include "components/private_insights/contextual_cue_log_event_helpers.h"
 #include "components/private_insights/events/contextual_cue_log_event.pb.h"
 #include "components/private_insights/private_insights_features.h"
@@ -53,6 +54,7 @@ void PopulateSystemProfile(
   profile->set_milestone(version_info::GetMajorVersionNumber());
   profile->set_chrome_channel(
       std::string(version_info::GetChannelString(chrome::GetChannel())));
+  profile->set_platform(metrics::GetOperatingSystemName());
   if (g_browser_process) {
     profile->set_language(g_browser_process->GetApplicationLocale());
     if (auto* variations_service = g_browser_process->variations_service()) {

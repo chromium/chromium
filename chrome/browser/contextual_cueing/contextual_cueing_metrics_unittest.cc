@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "components/contextual_cueing/contextual_cueing_enums.h"
+#include "components/metrics/version_utils.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -143,6 +144,9 @@ TEST(ContextualCueingMetricsTest, CreateEvent) {
   EXPECT_EQ("[{\"title\":\"Other Title\",\"url\":\"https://other.com/\"}]",
             event.cue_context().tabs_shown());
   EXPECT_EQ("custom_cuj", event.cue_details().cuj_type());
+  EXPECT_EQ(metrics::GetOperatingSystemName(),
+            event.system_profile().platform());
+  EXPECT_FALSE(event.system_profile().platform().empty());
 }
 
 TEST(ContextualCueingMetricsTest, RecordCueShownMetrics_Pdf) {

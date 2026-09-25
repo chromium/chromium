@@ -43,6 +43,10 @@ message ContextualCueLogEvent {
     string chrome_version = 3;
     string milestone = 4;
     string chrome_channel = 5;
+
+    // Operating system platform, matching UMA's SystemProfileProto::OS::name
+    // (e.g. "Windows NT", "Mac OS X", "Linux", "CrOS", "Android", "iOS").
+    string platform = 6;
   }
 
   enum EventType {
