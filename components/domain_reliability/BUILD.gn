@@ -29,7 +29,7 @@ action("bake_in_configs") {
     "baked_in_configs/www_google_com.json",
   ]
 
-  output_file = "$target_gen_dir/baked_in_configs.cc"
+  output_file = "$target_gen_dir/baked_in_configs.h"
   outputs = [ output_file ]
 
   # The JSON file list is too long for the command line on Windows, so put
@@ -45,7 +45,6 @@ action("bake_in_configs") {
 
 component("domain_reliability") {
   sources = [
-    "baked_in_configs.h",
     "beacon.cc",
     "beacon.h",
     "clear_mode.h",
@@ -100,6 +99,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":bake_in_configs",
     ":domain_reliability",
     "//base",
     "//base/test:test_support",

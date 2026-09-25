@@ -352,14 +352,8 @@ TEST_F(DomainReliabilityMonitorTest, BakedInAndGoogleConfigs) {
   // to the source tree.
   monitor_.AddBakedInConfigs();
 
-  // Count the number of baked-in configs.
-  size_t num_baked_in_configs = 0u;
-  for (const char* const* p = kBakedInJsonConfigs; *p; UNSAFE_TODO(++p)) {
-    ++num_baked_in_configs;
-  }
-  EXPECT_GT(num_baked_in_configs, 0u);
-
-  EXPECT_EQ(num_baked_in_configs, monitor_.contexts_size_for_testing());
+  EXPECT_FALSE(kBakedInJsonConfigs.empty());
+  EXPECT_EQ(kBakedInJsonConfigs.size(), monitor_.contexts_size_for_testing());
 
   // Also count the Google configs stored in abbreviated form.
   std::vector<std::unique_ptr<const DomainReliabilityConfig>> google_configs =
@@ -374,7 +368,7 @@ TEST_F(DomainReliabilityMonitorTest, BakedInAndGoogleConfigs) {
   // The monitor should have contexts for all of the baked-in configs and Google
   // configs. This also ensures that the configs have unique hostnames, i.e.
   // none of them have overwritten each other.
-  EXPECT_EQ(num_baked_in_configs + num_google_configs,
+  EXPECT_EQ(kBakedInJsonConfigs.size() + num_google_configs,
             monitor_.contexts_size_for_testing());
 }
 
