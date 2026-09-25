@@ -1040,6 +1040,24 @@ inline constexpr char kHatsBorealisGamesLastInteractionTimestamp[] =
     "hats_borealis_games_last_interaction_timestamp";
 inline constexpr char kUserPairedWithFastPair[] =
     "ash.user.paired_with_fast_pair";
+inline constexpr char kNearbyPresenceFirstTimeRegistrationComplete[] =
+    "nearby_presence.registration_complete";
+inline constexpr char kNearbyPresenceDeviceIdPrefName[] =
+    "nearby_presence.local_device_id";
+inline constexpr char kNearbyPresenceUserNamePrefName[] =
+    "nearby_presence.user_name";
+inline constexpr char kNearbyPresenceProfileUrlPrefName[] =
+    "nearby_presence.profile_url";
+inline constexpr char kNearbyPresenceSharedCredentialIdListPrefName[] =
+    "nearby_presence.shared_credential_id_list";
+inline constexpr char kNearbyPresenceSchedulingFirstTimeRegistrationPrefName[] =
+    "nearby_presence.scheduling.first_time_registration";
+inline constexpr char kNearbyPresenceSchedulingUploadPrefName[] =
+    "nearby_presence.scheduling.upload";
+inline constexpr char kNearbyPresenceSchedulingDownloadPrefName[] =
+    "nearby_presence.scheduling.download";
+inline constexpr char kNearbyPresenceSchedulingCredentialDailySyncPrefName[] =
+    "nearby_presence.scheduling.daily_sync";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deprecated 09/2026.
@@ -1458,6 +1476,19 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterTimePref(kHatsBorealisGamesLastInteractionTimestamp,
                              base::Time());
   registry->RegisterBooleanPref(kUserPairedWithFastPair, false);
+  registry->RegisterBooleanPref(kNearbyPresenceFirstTimeRegistrationComplete,
+                                false);
+  registry->RegisterStringPref(kNearbyPresenceDeviceIdPrefName, std::string());
+  registry->RegisterStringPref(kNearbyPresenceUserNamePrefName, std::string());
+  registry->RegisterStringPref(kNearbyPresenceProfileUrlPrefName,
+                               std::string());
+  registry->RegisterListPref(kNearbyPresenceSharedCredentialIdListPrefName);
+  registry->RegisterDictionaryPref(
+      kNearbyPresenceSchedulingFirstTimeRegistrationPrefName);
+  registry->RegisterDictionaryPref(kNearbyPresenceSchedulingUploadPrefName);
+  registry->RegisterDictionaryPref(kNearbyPresenceSchedulingDownloadPrefName);
+  registry->RegisterDictionaryPref(
+      kNearbyPresenceSchedulingCredentialDailySyncPrefName);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Deprecated 09/2026.
@@ -2823,6 +2854,17 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHatsBorealisGamesSurveyIsSelected);
   profile_prefs->ClearPref(kHatsBorealisGamesLastInteractionTimestamp);
   profile_prefs->ClearPref(kUserPairedWithFastPair);
+  profile_prefs->ClearPref(kNearbyPresenceFirstTimeRegistrationComplete);
+  profile_prefs->ClearPref(kNearbyPresenceDeviceIdPrefName);
+  profile_prefs->ClearPref(kNearbyPresenceUserNamePrefName);
+  profile_prefs->ClearPref(kNearbyPresenceProfileUrlPrefName);
+  profile_prefs->ClearPref(kNearbyPresenceSharedCredentialIdListPrefName);
+  profile_prefs->ClearPref(
+      kNearbyPresenceSchedulingFirstTimeRegistrationPrefName);
+  profile_prefs->ClearPref(kNearbyPresenceSchedulingUploadPrefName);
+  profile_prefs->ClearPref(kNearbyPresenceSchedulingDownloadPrefName);
+  profile_prefs->ClearPref(
+      kNearbyPresenceSchedulingCredentialDailySyncPrefName);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Added 09/2026.

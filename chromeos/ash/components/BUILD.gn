@@ -48,7 +48,10 @@ group("unit_tests") {
     "//chromeos/ash/components/memory:unit_tests",
     "//chromeos/ash/components/multidevice:unit_tests",
     "//chromeos/ash/components/nearby/common:unit_tests",
-    "//chromeos/ash/components/nearby/presence:unit_tests",
+
+    # TODO(b/562195319): Remove once chrome/services/sharing/nearby/ is cleaned
+    # up.
+    "//chromeos/ash/components/nearby/presence/conversions:unit_tests",
     "//chromeos/ash/components/network:unit_tests",
     "//chromeos/ash/components/osauth/impl:unit_tests",
     "//chromeos/ash/components/osauth/public:unit_tests",

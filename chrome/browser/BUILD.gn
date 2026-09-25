@@ -3488,7 +3488,6 @@ group("browser_public_dependencies") {
       "//chromeos/ash/components/dbus/seneschal:seneschal_proto",
       "//chromeos/ash/components/dbus/spaced:spaced_proto",
       "//chromeos/ash/components/nearby/common/connections_manager",
-      "//chromeos/ash/components/nearby/presence",
       "//chromeos/ash/components/trash_service/public/mojom",
       "//chromeos/ash/experiences/arc/mojom",
       "//chromeos/ash/services/auth_factor_config/public/mojom",

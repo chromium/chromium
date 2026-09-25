@@ -259,44 +259,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chromeos/ash/components/nearby/common/client/nearby_http_result.h:NearbyHttpResult) -->
 
-<!-- LINT.IfChange(NearbyPresenceFirstTimeRegistrationResult) -->
-
-<enum name="NearbyPresenceFirstTimeRegistrationResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Registration With Server Failure"/>
-  <int value="2" label="Credential Generation Failure"/>
-  <int value="3" label="Upload Local Credentials Failure"/>
-  <int value="4" label="Download Remote Credentials Failure"/>
-  <int value="5" label="Save Remote Credentials Failure"/>
-</enum>
-
-<!-- LINT.ThenChange(//chromeos/ash/components/nearby/presence/metrics/nearby_presence_metrics.h:NearbyPresenceFirstTimeRegistrationResult) -->
-
-<!-- LINT.IfChange(NearbyPresenceScanRequestResult) -->
-
-<enum name="NearbyPresenceScanRequestResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Cancelled"/>
-  <int value="2" label="Unknown Error"/>
-  <int value="3" label="Invalid Argument"/>
-  <int value="4" label="Deadline Exceeded"/>
-  <int value="5" label="Not Found"/>
-  <int value="6" label="Already Exists"/>
-  <int value="7" label="Permission Denied"/>
-  <int value="8" label="Resource Exhausted"/>
-  <int value="9" label="Failed Precondition"/>
-  <int value="10" label="Aborted"/>
-  <int value="11" label="Out of Range"/>
-  <int value="12" label="Operation not Implemented"/>
-  <int value="13" label="Internal Error"/>
-  <int value="14" label="Service Unavailable"/>
-  <int value="15" label="Unrecoverable Data Loss"/>
-  <int value="16" label="Unauthenticated"/>
-  <int value="17" label="Failed to Start Process"/>
-</enum>
-
-<!-- LINT.ThenChange(//chromeos/ash/components/nearby/presence/enums/nearby_presence_enums.h:NearbyPresenceScanRequestResult) -->
-
 <!-- LINT.IfChange(NearbyShareAttachmentType) -->
 
 <enum name="NearbyShareAttachmentType">

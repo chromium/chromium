@@ -49,7 +49,6 @@
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_file_handler.h"
-#include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
