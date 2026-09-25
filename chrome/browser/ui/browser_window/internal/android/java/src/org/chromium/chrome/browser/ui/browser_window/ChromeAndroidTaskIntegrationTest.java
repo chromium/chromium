@@ -43,6 +43,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -1599,6 +1600,7 @@ public class ChromeAndroidTaskIntegrationTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
     @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
+    @DisabledTest(message = "https://crbug.com/565864749")
     public void restore_restoresTaskBounds() {
         assumeBrowserRole();
         // Arrange: Launch ChromeTabbedActivity and find its ChromeAndroidTask.

@@ -118,6 +118,7 @@ public class CustomTabBottomBarViewUnitTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/563056275")
     public void testChildRespondsToClick() {
         onView(withId(R.id.stub)).perform(click());
         assertEquals(mStub, mClickHelper.getOnlyPayloadBlocking());

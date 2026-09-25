@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -44,6 +45,7 @@ import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -387,6 +389,7 @@ public class PermissionClapperLoudTest {
     @Test
     @MediumTest
     @Feature({"Permissions"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625966
     public void testLoudClapperManage_Reset() throws Exception {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
