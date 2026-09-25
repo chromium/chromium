@@ -40,6 +40,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/animation/inherited_animations/inherited_animation_tracker.h"
 #include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
@@ -3476,6 +3477,8 @@ void LayoutObject::StyleDidChange(
     // UsedPointerEvents affects hit test opacity.
     SetShouldInvalidatePaintForHitTest();
   }
+
+  InheritedAnimationTracker::StyleDidChange(*this, old_style);
 
   // Draggable regions are in absolute coordinates, so a transform change
   // moves them without layout or a scroll update.

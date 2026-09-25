@@ -297,8 +297,19 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
       !layout_object ||
       target_element.GetStyleChangeType() != StyleChangeType::kNoStyleChange;
 
-  // Limit to one native property and one CSS custom property per animation.
+  // Limit to one native property and one CSS custom property per animation,
+  // and reject properties with unsupported inheritance.
+  const ElementAnimations* element_animations =
+      target_element.GetElementAnimations();
+  DCHECK(element_animations);
   for (const auto& property : properties) {
+    const std::optional<AnimatedSourceProperty> tracked =
+        GetAnimatedSourceProperty(property.GetCSSProperty().PropertyID());
+    if (tracked &&
+        element_animations->UnsupportedInheritedProperties().Has(*tracked)) {
+      state.disposition |= kUnsupportedInheritance;
+    }
+
     if (IsTransformRelatedCSSProperty(property)) {
       // We use this later in computing element IDs too.
       if (layout_object && !layout_object->IsTransformApplicable()) {

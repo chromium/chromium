@@ -160,6 +160,9 @@ chromium-metrics-reviews@google.com.
       label="Target SVG element uses an individual transform property"/>
   <int value="21"
       label="Effect has an iteration composite mode other than 'replace'"/>
+  <int value="22"
+      label="Unsupported inheritance: a descendant inherits the animated
+             value"/>
 </enum>
 
 <enum name="CompressionStreamsFormat">

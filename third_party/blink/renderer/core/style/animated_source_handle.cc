@@ -20,4 +20,11 @@ bool AnimatedSourceHandle::IsOwnedBy(const Element& element) const {
   return IsValid() && DOMNodeIds::ExistingIdForNode(&element) == animator_;
 }
 
+Element* AnimatedSourceHandle::GetElement() const {
+  if (!IsValid()) {
+    return nullptr;
+  }
+  return DynamicTo<Element>(DOMNodeIds::NodeForId(animator_));
+}
+
 }  // namespace blink

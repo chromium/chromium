@@ -34,6 +34,10 @@ class CORE_EXPORT AnimatedSourceHandle {
   // Note: Guaranteed not to allocate.
   bool IsOwnedBy(const Element& element) const;
 
+  // Returns the referenced element, or null if it no longer exists.
+  // Note: Guaranteed not to allocate.
+  Element* GetElement() const;
+
   constexpr auto operator<=>(const AnimatedSourceHandle& other) const = default;
 
  private:

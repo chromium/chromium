@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data_field.h"
+#include "third_party/blink/renderer/core/style/animated_source_properties_bitset.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
@@ -138,6 +139,15 @@ class CORE_EXPORT ElementAnimations final
   NativePaintWorkletData* EnsureClipPathNpwData(Element* element);
   NativePaintWorkletData* GetClipPathNpwData() { return clip_path_npw_data_; }
 
+  // Properties whose animated value a descendant inherits, which the
+  // compositor cannot keep in sync.
+  const AnimatedSourceBitset& UnsupportedInheritedProperties() const {
+    return unsupported_inherited_properties_;
+  }
+  AnimatedSourceBitset& UnsupportedInheritedProperties() {
+    return unsupported_inherited_properties_;
+  }
+
   // Animations affecting properties marked as important cannot be composited.
   // An animation running on the compositor must be cancelled once the affected
   // property is added to the important set. Note that a animation affecting
@@ -145,6 +155,11 @@ class CORE_EXPORT ElementAnimations final
   // property value will not applied by the style cascade.
   void CancelCompositedAnimationsAffectingProperties(
       const CSSBitset& property_bitset);
+
+  // Downgrades composited animations affecting any of `properties` to run on
+  // the main thread, at the next PreCommit.
+  void DowngradeCompositedAnimationsAffectingProperties(
+      const AnimatedSourceBitset& properties);
 
   void Trace(Visitor*) const override;
 
@@ -160,6 +175,7 @@ class CORE_EXPORT ElementAnimations final
   WorkletAnimationSet worklet_animations_;
   Member<NativePaintWorkletData> background_color_npw_data_;
   Member<NativePaintWorkletData> clip_path_npw_data_;
+  AnimatedSourceBitset unsupported_inherited_properties_;
 
   // When an Element is being animated, its entire style will be dirtied every
   // frame by the running animation - even if the animation is only changing a

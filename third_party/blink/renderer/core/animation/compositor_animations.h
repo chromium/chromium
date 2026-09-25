@@ -128,6 +128,11 @@ class CORE_EXPORT CompositorAnimations {
     // other than 'replace'.
     kEffectHasNonReplaceIterationCompositeMode = 1 << 20,
 
+    // A descendant inherits the target's animated value, which the compositor
+    // cannot keep in sync with the animation. See
+    // `ElementAnimations::UnsupportedInheritedProperties()`.
+    kUnsupportedInheritance = 1 << 21,
+
     // When adding new values, update the count below *and* add a description
     // of the value to CompositorAnimationsFailureReason in
     // tools/metrics/histograms/enums.xml .
@@ -136,7 +141,7 @@ class CORE_EXPORT CompositorAnimations {
     // should increment this number but it should never be decremented because
     // the values are used in UMA histograms. It should also be noted that it
     // excludes the kNoFailure value.
-    kFailureReasonCount = 21,
+    kFailureReasonCount = 22,
 
     // Sentinel value not affecting histograms. This is used to differentiate
     // the case where the state is not checked.

@@ -47,9 +47,60 @@ class CORE_EXPORT StyleAnimatedSources {
   DISALLOW_NEW();
 
  public:
+  struct Entry {
+    AnimatedSourceProperty key;
+    AnimatedSource value;
+  };
+
+  class ConstIterator {
+    STACK_ALLOCATED();
+
+   public:
+    using iterator_concept = std::forward_iterator_tag;
+    using value_type = Entry;
+    using difference_type = std::ptrdiff_t;
+    using SourceIterator = SparseVector<AnimatedSourceProperty,
+                                        AnimatedSourceHandle,
+                                        2>::const_iterator;
+
+    ConstIterator() = default;
+    ConstIterator(const StyleAnimatedSources* sources, SourceIterator current)
+        : sources_(sources), current_(current) {}
+
+    Entry operator*() const {
+      const auto entry = *current_;
+      return {entry.key,
+              {.animated_source = entry.value,
+               .has_untracked_dependencies =
+                   sources_->has_untracked_dependencies_.Has(entry.key)}};
+    }
+    ConstIterator& operator++() {
+      ++current_;
+      return *this;
+    }
+    ConstIterator operator++(int) {
+      ConstIterator copy = *this;
+      ++*this;
+      return copy;
+    }
+    bool operator==(const ConstIterator& other) const {
+      return current_ == other.current_;
+    }
+
+   private:
+    const StyleAnimatedSources* sources_ = nullptr;
+    SourceIterator current_;
+  };
+  using const_iterator = ConstIterator;
+
   StyleAnimatedSources() = default;
   StyleAnimatedSources(const StyleAnimatedSources&) = default;
   StyleAnimatedSources& operator=(const StyleAnimatedSources&) = default;
+
+  const_iterator begin() const {
+    return const_iterator(this, sources_.begin());
+  }
+  const_iterator end() const { return const_iterator(this, sources_.end()); }
 
   // Returns the source the given property's computed value is from or derived
   // from.
@@ -78,6 +129,8 @@ class CORE_EXPORT StyleAnimatedSources {
   // Which properties have `has_untracked_dependencies` set in `AnimatedSource`.
   AnimatedSourceBitset has_untracked_dependencies_;
 };
+
+static_assert(std::forward_iterator<StyleAnimatedSources::const_iterator>);
 
 }  // namespace blink
 

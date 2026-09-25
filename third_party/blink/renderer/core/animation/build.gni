@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 blink_core_tests_animation = [
+  "inherited_animations/inherited_animation_tracker_test.cc",
   "animation_effect_test.cc",
   "animation_input_helpers_test.cc",
   "animation_sim_test.cc",

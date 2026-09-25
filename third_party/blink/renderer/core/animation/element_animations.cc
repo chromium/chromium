@@ -265,4 +265,29 @@ void ElementAnimations::CancelCompositedAnimationsAffectingProperties(
   }
 }
 
+void ElementAnimations::DowngradeCompositedAnimationsAffectingProperties(
+    const AnimatedSourceBitset& properties) {
+  for (auto& entry : animations_) {
+    if (!entry.key->HasActiveAnimationsOnCompositor()) {
+      continue;
+    }
+    KeyframeEffect* effect = DynamicTo<KeyframeEffect>(entry.key->effect());
+    if (!effect) {
+      continue;
+    }
+
+    for (const auto& property : effect->Model()->DynamicProperties()) {
+      const std::optional<AnimatedSourceProperty> tracked =
+          GetAnimatedSourceProperty(property.GetCSSProperty().PropertyID());
+      if (tracked && properties.Has(*tracked)) {
+        // `kPendingDowngrade` skips the composited paint status update, which
+        // must not run in pre-paint.
+        entry.key->SetCompositorPending(
+            Animation::CompositorPendingReason::kPendingDowngrade);
+        break;
+      }
+    }
+  }
+}
+
 }  // namespace blink

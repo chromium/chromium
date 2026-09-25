@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/sparse_vector.h"
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
@@ -184,6 +186,25 @@ TYPED_TEST(SparseVectorTest, MutateValue) {
   EXPECT_EQ(101, this->GetField(FieldId::kFoo));
   this->SetField(FieldId::kFoo, 202);
   EXPECT_EQ(202, this->GetField(FieldId::kFoo));
+}
+
+TEST(SparseVectorIntTest, Iteration) {
+  SparseVector<FieldId, int> sparse_vector;
+  EXPECT_EQ(sparse_vector.begin(), sparse_vector.end());
+
+  // Insertion order does not matter; entries come out in increasing id order.
+  sparse_vector.SetField(FieldId::kBang, 303);
+  sparse_vector.SetField(FieldId::kFoo, 101);
+  sparse_vector.SetField(FieldId::kFive, 202);
+  Vector<std::pair<FieldId, int>> entries;
+  for (auto [key, value] : sparse_vector) {
+    entries.emplace_back(key, value);
+  }
+  EXPECT_EQ(entries, (Vector<std::pair<FieldId, int>>{{FieldId::kFoo, 101},
+                                                      {FieldId::kFive, 202},
+                                                      {FieldId::kBang, 303}}));
+  EXPECT_TRUE(std::ranges::any_of(
+      sparse_vector, [](auto entry) { return entry.value == 202; }));
 }
 
 TYPED_TEST(SparseVectorTest, EraseField) {

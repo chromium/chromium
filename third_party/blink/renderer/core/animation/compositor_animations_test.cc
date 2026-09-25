@@ -256,9 +256,11 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
   }
   CompositorAnimations::FailureReasons CheckCanStartEffectOnCompositor(
       const Timing& timing,
-      const Element& element,
+      Element& element,
       Animation* animation,
       const EffectModel& effect_model) {
+    // Stands in for attaching an animation to `element`.
+    element.EnsureElementAnimations();
     const PaintArtifactCompositor* paint_artifact_compositor =
         GetDocument().View()->GetPaintArtifactCompositor();
     AnimationCompositingDecisionState empty_state;
@@ -6302,6 +6304,47 @@ TEST_F(CompositorTimelineTriggerBehaviorTest, PlayReset) {
   TestKeyframeModel(impl_keyframe_model, gfx::KeyframeModel::PAUSED_EXCLUSIVE,
                     /* hold_time=*/base::TimeDelta(),
                     /* start_time=*/std::nullopt);
+}
+
+TEST_F(CompositorAnimationTriggerTest,
+       TriggeredSourceKeepsInheritanceWhileFinished) {
+  ScopedTrackAnimatedSourcesForTest track_animated_sources(true);
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      div {
+        width: 100px;
+        height: 100px;
+        will-change: opacity;
+      }
+      @keyframes fade {
+        from { opacity: 0.2; }
+        to { opacity: 0.8; }
+      }
+      #source {
+        animation: fade 1s;
+        timeline-trigger: --trigger view();
+        animation-trigger: --trigger replay;
+      }
+      #target {
+        opacity: inherit;
+      }
+    </style>
+    <div id=source><div id=target></div></div>
+  )HTML");
+  Compositor().BeginFrame();
+  Animation* source = GetElement("source")->getAnimations()[0];
+  EXPECT_FALSE(source->HasActiveAnimationsOnCompositor());
+
+  // Once finished, target no longer inherits from source, but the recorded
+  // inheritance still keeps the replayed animation off the compositor.
+  source->finish(ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  EXPECT_FALSE(source->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(source->GetCompositingDecisionState().disposition,
+            CompositorAnimations::kUnsupportedInheritance);
 }
 
 TEST_F(CompositorAnimationTriggerTest, InactiveTimeline) {

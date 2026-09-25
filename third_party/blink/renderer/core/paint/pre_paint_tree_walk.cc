@@ -6,6 +6,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/types/optional_util.h"
+#include "third_party/blink/renderer/core/animation/inherited_animations/inherited_animation_tracker.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -683,6 +684,7 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     property_tree_builder.emplace(object, pre_paint_info,
                                   *context.tree_builder_context);
     property_tree_builder->UpdateForSelf();
+    InheritedAnimationTracker::DowngradeForUnsupportedInheritance(object);
   }
   if (object.StyleRef().IsUnboundedElementActive()) {
     DCHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());

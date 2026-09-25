@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SPARSE_VECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SPARSE_VECTOR_H_
 
+#include <bit>
+#include <iterator>
 #include <limits>
 #include <type_traits>
 
@@ -101,9 +103,66 @@ class SparseVector :
   static_assert(inline_capacity <= kMaxSize);
 
  public:
+  struct Entry {
+    STACK_ALLOCATED();
+
+   public:
+    FieldId key;
+    const FieldType& value;
+  };
+
+  // Tracks the bits of the fields not yet visited, so the current id is the
+  // lowest set bit. Time complexity is O(1) per step.
+  class ConstIterator {
+    STACK_ALLOCATED();
+
+   public:
+    using iterator_concept = std::forward_iterator_tag;
+    using value_type = Entry;
+    using difference_type = std::ptrdiff_t;
+
+    ConstIterator() = default;
+    ConstIterator(const VectorType* fields,
+                  BitfieldType remaining_bits,
+                  wtf_size_t index)
+        : fields_(fields), remaining_bits_(remaining_bits), index_(index) {}
+
+    Entry operator*() const {
+      return {static_cast<FieldId>(std::countr_zero(remaining_bits_)),
+              (*fields_)[index_]};
+    }
+    ConstIterator& operator++() {
+      // Clear the lowest set bit, which is the current field's.
+      remaining_bits_ &= remaining_bits_ - 1;
+      ++index_;
+      return *this;
+    }
+    ConstIterator operator++(int) {
+      ConstIterator copy = *this;
+      ++*this;
+      return copy;
+    }
+    bool operator==(const ConstIterator& other) const {
+      return index_ == other.index_;
+    }
+
+   private:
+    const VectorType* fields_ = nullptr;
+    BitfieldType remaining_bits_ = 0;
+    wtf_size_t index_ = 0;
+  };
+  using const_iterator = ConstIterator;
+  static_assert(std::forward_iterator<const_iterator>);
+
   wtf_size_t capacity() const { return this->fields_.capacity(); }
   wtf_size_t size() const { return this->fields_.size(); }
   bool empty() const { return this->fields_.empty(); }
+  const_iterator begin() const {
+    return const_iterator(&this->fields_, fields_bitfield_, 0);
+  }
+  const_iterator end() const {
+    return const_iterator(&this->fields_, 0, this->fields_.size());
+  }
 
   void reserve(wtf_size_t capacity) {
     CHECK_LE(capacity, kMaxSize);
