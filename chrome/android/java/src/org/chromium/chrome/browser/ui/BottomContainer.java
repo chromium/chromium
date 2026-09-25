@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
@@ -20,6 +21,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.ViewportInsets;
@@ -47,7 +49,7 @@ public class BottomContainer extends FrameLayout
             mEdgeToEdgeControllerSupplier;
 
     /** Constructor for XML inflation. */
-    public BottomContainer(Context context, AttributeSet attrs) {
+    public BottomContainer(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mInsetObserver = _ -> setTranslationY(mBaseYOffset);
     }
@@ -81,9 +83,21 @@ public class BottomContainer extends FrameLayout
     }
 
     @Override
-    public void setTranslationY(float y) {
+    public void onViewAdded(View child) {
+        super.onViewAdded(child);
+        if (ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()
+                && getChildCount() == 1
+                && mBrowserControlsStateProvider != null) {
+            setTranslationY(mBaseYOffset);
+        }
+    }
 
+    @Override
+    public void setTranslationY(float y) {
         mBaseYOffset = y;
+        if (getChildCount() == 0 && ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+            return;
+        }
 
         float offsetFromControls =
                 mBrowserControlsStateProvider.getBottomControlOffset()

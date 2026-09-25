@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /**
@@ -92,11 +93,16 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
         if (mEnableClipToPadding) {
             maybeSetViewClipToPadding(inset == 0);
         }
+        int newBottomPadding = mDefaultBottomPadding + inset;
+        if (mViewToPad.getPaddingBottom() == newBottomPadding
+                && ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+            return;
+        }
         mViewToPad.setPadding(
                 mViewToPad.getPaddingLeft(),
                 mViewToPad.getPaddingTop(),
                 mViewToPad.getPaddingRight(),
-                mDefaultBottomPadding + inset);
+                newBottomPadding);
     }
 
     // Set the view clip to padding if the view is supported.

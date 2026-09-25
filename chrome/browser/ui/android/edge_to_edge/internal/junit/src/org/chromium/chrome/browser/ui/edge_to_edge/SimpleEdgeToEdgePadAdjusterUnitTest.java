@@ -8,6 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.view.View;
@@ -29,6 +33,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit test for {@link SimpleEdgeToEdgePadAdjuster}. */
@@ -173,5 +179,20 @@ public class SimpleEdgeToEdgePadAdjusterUnitTest {
         assertEquals(right, view.getPaddingRight());
         assertEquals(bottom, view.getPaddingBottom());
         assertTrue("clipToPadding should be reset to true.", view.getClipToPadding());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    public void testOverrideBottomInset_NoOpWhenUnchanged() {
+        View view = spy(new View(mActivity));
+        var padAdjuster = new SimpleEdgeToEdgePadAdjuster(view, /* enableClipToPadding= */ true);
+
+        int bottomInsets = 100;
+        padAdjuster.overrideBottomInset(bottomInsets);
+        assertEquals(bottomInsets, view.getPaddingBottom());
+        clearInvocations(view);
+
+        padAdjuster.overrideBottomInset(bottomInsets);
+        verify(view, never()).setPadding(anyInt(), anyInt(), anyInt(), anyInt());
     }
 }

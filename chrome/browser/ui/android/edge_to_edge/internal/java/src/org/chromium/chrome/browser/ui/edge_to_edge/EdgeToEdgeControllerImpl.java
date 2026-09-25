@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBa
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
 import org.chromium.content_public.browser.WebContents;
@@ -197,6 +198,8 @@ public class EdgeToEdgeControllerImpl
     private @Nullable Insets mKeyboardInsets;
     private final @Nullable WindowInsetsConsumer mWindowInsetsConsumer;
     private boolean mBottomControlsAreVisible;
+    private boolean mContentViewScrolling;
+    private boolean mPadAdjustersUpdatePending;
     private int mBottomControlsHeight;
 
     // TODO(crbug.com/498302496): Consolidate TopInsetProvider.Observer with
@@ -263,12 +266,31 @@ public class EdgeToEdgeControllerImpl
                         drawToEdge(
                                 EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
                                 /* changedWindowState= */ false);
+                        EdgeToEdgeControllerImpl.this.onContentViewScrollingStateChanged(
+                                /* scrolling= */ false);
                         updateWebContentsObserver(tab);
                         // Only retrigger when we draw to the top edge, to reduce the number of
                         // calls to retriggerOnApplyWindowInsets.
                         if (wasDrawingToTopEdge != isDrawingToTopEdge() && mInsetObserver != null) {
                             mInsetObserver.retriggerOnApplyWindowInsets();
                         }
+                    }
+
+                    @Override
+                    public void onCrash(Tab tab) {
+                        EdgeToEdgeControllerImpl.this.onContentViewScrollingStateChanged(
+                                /* scrolling= */ false);
+                    }
+
+                    @Override
+                    public void onHidden(Tab tab, @TabHidingType int type) {
+                        EdgeToEdgeControllerImpl.this.onContentViewScrollingStateChanged(
+                                /* scrolling= */ false);
+                    }
+
+                    @Override
+                    public void onContentViewScrollingStateChanged(boolean scrolling) {
+                        EdgeToEdgeControllerImpl.this.onContentViewScrollingStateChanged(scrolling);
                     }
                 };
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -372,6 +394,7 @@ public class EdgeToEdgeControllerImpl
         drawToEdge(
                 EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
                 /* changedWindowState= */ false);
+        onContentViewScrollingStateChanged(/* scrolling= */ false);
 
         if (!mIsTabSwitcherShowing) {
             boolean isDrawingToTopEdge = isDrawingToTopEdge();
@@ -531,6 +554,17 @@ public class EdgeToEdgeControllerImpl
         pushSafeAreaInsetUpdate();
     }
 
+    @VisibleForTesting
+    void onContentViewScrollingStateChanged(boolean scrolling) {
+        if (mContentViewScrolling == scrolling) return;
+        mContentViewScrolling = scrolling;
+        if (!scrolling && ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+            if (mPadAdjustersUpdatePending) {
+                updatePadAdjusters();
+            }
+        }
+    }
+
     // LayoutStateProvider.LayoutStateObserver
 
     @Override
@@ -576,6 +610,10 @@ public class EdgeToEdgeControllerImpl
             return;
         }
         mBottomControlsAreVisible = visible;
+        if (mContentViewScrolling && ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+            mPadAdjustersUpdatePending = true;
+            return;
+        }
         updatePadAdjusters();
     }
 
@@ -904,6 +942,7 @@ public class EdgeToEdgeControllerImpl
     }
 
     private void updatePadAdjusters() {
+        mPadAdjustersUpdatePending = false;
         boolean shouldPad = shouldPadAdjusters();
         // TODO(crbug.com/498302496): Update top pad adjusters with mSystemInsets.top when unified
         // pad adjusters are added.

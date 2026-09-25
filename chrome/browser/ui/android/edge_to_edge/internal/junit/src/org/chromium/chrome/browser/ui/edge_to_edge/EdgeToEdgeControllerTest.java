@@ -2184,6 +2184,45 @@ public class EdgeToEdgeControllerTest {
         return tab;
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    public void testPadAdjusterUpdateDeferredWhileScrolling() {
+        final int unused = 0;
+        final int browserControlsHeight = BOTTOM_INSET * 2;
+
+        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(null);
+
+        MockPadAdjuster mockPadAdjuster = new MockPadAdjuster();
+        mEdgeToEdgeControllerImpl.registerAdjuster(mockPadAdjuster);
+        mockPadAdjuster.checkInsets(BOTTOM_INSET);
+
+        // Show browser controls -> inset becomes 0.
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(browserControlsHeight, unused);
+        mockPadAdjuster.checkInsets(0);
+
+        // Start scrolling and hide bottom controls completely.
+        mEdgeToEdgeControllerImpl.onContentViewScrollingStateChanged(true);
+        mEdgeToEdgeControllerImpl.onControlsOffsetChanged(
+                unused,
+                unused,
+                /* topControlsMinHeightChanged= */ false,
+                /* bottomOffset= */ browserControlsHeight,
+                unused,
+                /* bottomControlsMinHeightChanged= */ false,
+                /* requestNewFrame= */ false,
+                /* isVisibilityForced= */ false);
+
+        // Pad adjuster update should be deferred while scrolling.
+        mockPadAdjuster.checkInsets(0);
+
+        // When scrolling stops, pad adjusters should be updated to BOTTOM_INSET.
+        mEdgeToEdgeControllerImpl.onContentViewScrollingStateChanged(false);
+        mockPadAdjuster.checkInsets(BOTTOM_INSET);
+    }
+
     // TODO: Verify that the value of the updated insets returned from the
     //  OnApplyWindowInsetsListener is correct.
 
