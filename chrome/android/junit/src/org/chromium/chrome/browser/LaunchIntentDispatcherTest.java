@@ -188,6 +188,132 @@ public class LaunchIntentDispatcherTest {
         verifyNoInteractions(mSessionHandler);
     }
 
+    @Test
+    public void testDispatchToCustomTabActivity_CrossTaskTwaRouting_DelegatesToExistingHandler() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
+        intent.putExtra(IntentHandler.EXTRA_CCT_EARLY_NAV, true);
+        intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "com.spoofed.app");
+
+        doReturn(null).when(mSessionDataHolder).getActiveHandlerClassInCurrentTask(any(), any());
+        doReturn(mSessionHandler).when(mSessionDataHolder).getHandlerForIntent(any());
+        doReturn(true).when(mSessionHandler).handleIntent(any());
+        int taskId = 456;
+        doReturn(taskId).when(mSessionHandler).getTaskId();
+
+        Activity spyActivity = spy(mActivity);
+        doReturn(mActivityManager).when(spyActivity).getSystemService(Context.ACTIVITY_SERVICE);
+        Uri referrer = Uri.parse("android-app://com.example.referrer");
+        doReturn(referrer).when(spyActivity).getReferrer();
+        doReturn("com.example.caller").when(spyActivity).getCallingPackage();
+
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(mActivityManager).moveTaskToFront(eq(taskId), anyInt());
+        verify(spyActivity, never()).startActivity(any(), any());
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mSessionHandler).handleIntent(intentCaptor.capture());
+        Intent forwardedIntent = intentCaptor.getValue();
+        assertFalse(forwardedIntent.hasExtra(IntentHandler.EXTRA_CCT_EARLY_NAV));
+        assertEquals(
+                referrer.toString(),
+                forwardedIntent.getStringExtra(IntentHandler.EXTRA_ACTIVITY_REFERRER));
+        assertEquals(
+                "com.example.caller",
+                forwardedIntent.getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
+        assertTrue(
+                forwardedIntent.getBooleanExtra(
+                        TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false));
+    }
+
+    @Test
+    public void testDispatchToCustomTabActivity_CrossTaskTwaRouting_StartsNewActivityIfNoHandler() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
+
+        doReturn(null).when(mSessionDataHolder).getActiveHandlerClassInCurrentTask(any(), any());
+        doReturn(null).when(mSessionDataHolder).getHandlerForIntent(any());
+
+        Activity spyActivity = spy(mActivity);
+
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).startActivity(any(), any());
+        verifyNoInteractions(mSessionHandler);
+    }
+
+    @Test
+    public void
+            testDispatchToCustomTabActivity_CrossTaskTwaRouting_StartsNewActivityIfHandlerReturnsFalse() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
+
+        doReturn(null).when(mSessionDataHolder).getActiveHandlerClassInCurrentTask(any(), any());
+        doReturn(mSessionHandler).when(mSessionDataHolder).getHandlerForIntent(any());
+        doReturn(false).when(mSessionHandler).handleIntent(any());
+
+        Activity spyActivity = spy(mActivity);
+        doReturn(mActivityManager).when(spyActivity).getSystemService(Context.ACTIVITY_SERVICE);
+
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(mSessionHandler).handleIntent(any());
+        verify(mActivityManager, never()).moveTaskToFront(anyInt(), anyInt());
+        verify(spyActivity).startActivity(any(), any());
+    }
+
+    @Test
+    public void testDispatchToCustomTabActivity_NonTwa_BypassesCrossTaskRouting() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+
+        doReturn(null).when(mSessionDataHolder).getActiveHandlerForIntent(any());
+
+        Activity spyActivity = spy(mActivity);
+
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(mSessionDataHolder, never()).getActiveHandlerClassInCurrentTask(any(), any());
+        verify(mSessionDataHolder, never()).getHandlerForIntent(any());
+        verify(spyActivity).startActivity(any(), any());
+        verifyNoInteractions(mSessionHandler);
+    }
+
+    @Test
+    public void testDispatchToCustomTabActivity_TwaHandlerInCurrentTask_UsesClearTopLaunch() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
+
+        doReturn(CustomTabActivity.class)
+                .when(mSessionDataHolder)
+                .getActiveHandlerClassInCurrentTask(any(), any());
+
+        Activity spyActivity = spy(mActivity);
+
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(mSessionDataHolder, never()).getHandlerForIntent(any());
+        verifyNoInteractions(mSessionHandler);
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(intentCaptor.capture(), any());
+        Intent launchedIntent = intentCaptor.getValue();
+        assertEquals(
+                CustomTabActivity.class.getName(), launchedIntent.getComponent().getClassName());
+        assertTrue((launchedIntent.getFlags() & Intent.FLAG_ACTIVITY_CLEAR_TOP) != 0);
+        assertTrue((launchedIntent.getFlags() & Intent.FLAG_ACTIVITY_SINGLE_TOP) != 0);
+    }
+
     private static final int TEST_UID = 12345;
     private static final int TEST_PID = 6789;
 

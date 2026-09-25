@@ -433,6 +433,32 @@ public class LaunchIntentDispatcher {
                 ApiCompatibilityUtils.moveTaskToFront(mActivity, handler.getTaskId(), 0);
                 return true;
             }
+        } else if (SessionDataHolder.getInstance()
+                        .getActiveHandlerClassInCurrentTask(mIntent, mActivity)
+                == null) {
+            // For TWAs, if the handler is not in the current task (e.g. launched from a trampoline
+            // activity with different task affinity), route the intent directly to the existing
+            // handler and bring its task to the foreground instead of spawning a new document task.
+            // Note: The handler is matched by session token, so this relies on the client giving
+            // each TWA task its own deterministic session ID. Otherwise multiple TWA tasks of the
+            // same app would share a session and this could resolve to the wrong task.
+            SessionHandler handler = SessionDataHolder.getInstance().getHandlerForIntent(mIntent);
+            if (handler != null) {
+                Intent forwardedIntent = new Intent(mIntent);
+                forwardedIntent.removeExtra(IntentHandler.EXTRA_CCT_EARLY_NAV);
+                maybePutCallingAppPackage(forwardedIntent);
+                WebAppLaunchHandler.copyFilePermissions(mActivity, mIntent, forwardedIntent);
+                WebAppLaunchHandler.copyShareDataPermissions(mActivity, mIntent, forwardedIntent);
+                Uri extraReferrer = mActivity.getReferrer();
+                if (extraReferrer != null) {
+                    forwardedIntent.putExtra(
+                            IntentHandler.EXTRA_ACTIVITY_REFERRER, extraReferrer.toString());
+                }
+                if (handler.handleIntent(forwardedIntent)) {
+                    ApiCompatibilityUtils.moveTaskToFront(mActivity, handler.getTaskId(), 0);
+                    return true;
+                }
+            }
         }
 
         // Should not be set by external apps, remove if present.
