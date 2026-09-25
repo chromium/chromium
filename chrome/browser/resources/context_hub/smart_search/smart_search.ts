@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 import './smart_search_card.js';
 
@@ -116,6 +117,33 @@ export class SmartSearchElement extends CrLitElement {
       this.results_ = [];
     } finally {
       this.isSearching_ = false;
+    }
+  }
+
+  protected isAllSelected_(): boolean {
+    const filtered = this.getFilteredResults_();
+    return filtered.length > 0 &&
+        filtered.every(item => this.selectedIds_.has(item.id));
+  }
+
+  protected isSomeSelected_(): boolean {
+    if (this.selectedIds_.size === 0) {
+      return false;
+    }
+    const filtered = this.getFilteredResults_();
+    const filteredSelected =
+        filtered.filter(item => this.selectedIds_.has(item.id));
+    return filteredSelected.length > 0 &&
+        filteredSelected.length < filtered.length;
+  }
+
+  protected onSelectAllChange_(e: Event) {
+    const checkbox = e.target as HTMLElement & {checked: boolean};
+    if (checkbox.checked) {
+      this.selectedIds_ =
+          new Set(this.getFilteredResults_().map(item => item.id));
+    } else {
+      this.selectedIds_ = new Set();
     }
   }
 

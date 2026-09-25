@@ -39,25 +39,6 @@ export function getHtml(this: SmartSearchElement) {
         ${
       this.hasSearched_ ?
       html`
-          <!-- Multi-select Action Bar -->
-          ${
-          this.selectedIds_.size > 0 ?
-          html`
-            <div class="action-bar">
-              <span class="selection-count">
-                ${this.selectedIds_.size} items selected
-              </span>
-              <div class="action-buttons">
-                <cr-button class="action-button"
-                    ?disabled="${
-  !this.smartSearchEnabled_ || this.selectedIds_.size === 0}"
-                    @click="${this.onOpenSelectedClick_}">
-                  Open All
-                </cr-button>
-              </div>
-            </div>
-          `: ''}
-
           <!-- Results List -->
           ${
       this.isSearching_ ?
@@ -79,6 +60,38 @@ export function getHtml(this: SmartSearchElement) {
               </div>
             ` :
               html`
+              <!-- Multi-select Action Bar -->
+              <div class="action-bar">
+                <div class="selection-controls">
+                  <cr-checkbox
+                      ?checked="${this.isAllSelected_()}"
+                      ?indeterminate="${this.isSomeSelected_()}"
+                      @change="${this.onSelectAllChange_}">
+                    ${this.isAllSelected_() ? 'Deselect all' : 'Select all'}
+                  </cr-checkbox>
+                  ${
+                  this.selectedIds_.size > 0 ? html`
+                    <span class="selection-count">
+                      (${this.selectedIds_.size} ${
+                      this.selectedIds_.size === 1 ? 'item' :
+                                                     'items'} selected)
+                    </span>
+                  ` :
+                                               ''}
+                </div>
+                <div class="action-buttons">
+                  <cr-button class="action-button"
+                      ?disabled="${
+                  !this.smartSearchEnabled_ || this.selectedIds_.size === 0}"
+                      @click="${this.onOpenSelectedClick_}">
+                    ${
+                  this.selectedIds_.size > 0 && !this.isAllSelected_() ?
+                      'Open Selected' :
+                      'Open All'}
+                  </cr-button>
+                </div>
+              </div>
+
               <div class="results-grid">
                 ${
                   this.getFilteredResults_()

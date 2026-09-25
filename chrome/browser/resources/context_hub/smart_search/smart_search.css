@@ -97,6 +97,17 @@ h2 {
   border: 1px solid var(--cr-separator-color);
 }
 
+.selection-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.selection-count {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+}
+
 .action-buttons {
   display: flex;
   gap: 8px;
