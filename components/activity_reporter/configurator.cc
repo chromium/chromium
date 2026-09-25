@@ -223,7 +223,9 @@ std::optional<bool> ActivityReporterConfigurator::IsMachineExternallyManaged()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   policy::PlatformManagementService* service =
       policy::PlatformManagementService::GetInstance();
-  return service && service->IsManaged();
+  return service &&
+        service->GetManagementAuthorityTrustworthiness() >=
+             policy::ManagementAuthorityTrustworthiness::TRUSTED;
 }
 
 update_client::UpdaterStateProvider
