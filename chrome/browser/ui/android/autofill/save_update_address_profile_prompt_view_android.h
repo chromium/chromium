@@ -50,7 +50,7 @@ class SaveUpdateAddressProfilePromptViewAndroid
                   SaveUpdateAddressProfilePromptMode prompt_mode);
 
   // The corresponding Java SaveUpdateAddressProfilePrompt owned by this class.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_;
   raw_ptr<content::WebContents> web_contents_;
 };
 

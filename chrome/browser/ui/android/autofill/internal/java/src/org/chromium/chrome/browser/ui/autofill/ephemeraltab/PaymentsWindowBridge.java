@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.autofill.ephemeraltab;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -26,7 +27,10 @@ class PaymentsWindowBridge {
     }
 
     @CalledByNative
-    public void openEphemeralTab(GURL url, String title, WebContents merchantWebContents) {
+    public void openEphemeralTab(
+            @JniType("GURL") GURL url,
+            @JniType("std::u16string") String title,
+            @JniType("content::WebContents*") WebContents merchantWebContents) {
         mPaymentsWindowCoordinator.openEphemeralTab(url, title, merchantWebContents);
     }
 
@@ -88,10 +92,12 @@ class PaymentsWindowBridge {
 
     @NativeMethods
     interface Natives {
-        void onNavigationFinished(long nativePaymentsWindowBridge, GURL clickedUrl);
+        void onNavigationFinished(
+                long nativePaymentsWindowBridge, @JniType("GURL") GURL clickedUrl);
 
         void onWebContentsObservationStarted(
-                long nativePaymentsWindowBridge, WebContents webContents);
+                long nativePaymentsWindowBridge,
+                @JniType("content::WebContents*") WebContents webContents);
 
         void onWebContentsDestroyed(long nativePaymentsWindowBridge);
 

@@ -43,8 +43,8 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
   void Init(LoginHandler* observer);
 
   // Show the dialog prompting for login credentials.
-  void ShowDialog(const base::android::JavaRef<jobject>& tab_android,
-                  const base::android::JavaRef<jobject>& window_android);
+  void ShowDialog(const jni_zero::JavaRef<jobject>& tab_android,
+                  const jni_zero::JavaRef<jobject>& window_android);
 
   // Close the dialog if showing.
   void CloseDialog();
@@ -59,15 +59,13 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
   // --------------------------------------------------------------
 
   // Submits the username and password to the observer.
-  void SetAuth(JNIEnv* env,
-               const std::u16string& username,
-               const std::u16string& password);
+  void SetAuth(std::u16string&& username, std::u16string&& password);
 
   // Cancels the authentication attempt of the observer.
-  void CancelAuth(JNIEnv* env);
+  void CancelAuth();
 
   // These functions return the strings needed to display a login form.
-  std::u16string GetMessageBody(JNIEnv* env);
+  std::u16string GetMessageBody();
 
  private:
   void SetAuthSync(const std::u16string& username,
@@ -77,7 +75,7 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
   // Owns this class and is guaranteed to outlive it.
   raw_ptr<LoginHandler> observer_;
 
-  base::android::ScopedJavaGlobalRef<jobject> java_chrome_http_auth_handler_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_chrome_http_auth_handler_;
   std::u16string authority_;
   std::u16string explanation_;
   GURL challenger_url_;

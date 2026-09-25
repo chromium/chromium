@@ -12,14 +12,16 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "components/autofill/android/payments/legal_message_line_android.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "ui/android/window_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/AutofillSaveCardBottomSheetBridge_jni.h"
 #include "components/autofill/android/payments_jni_headers/AutofillSaveCardUiInfo_jni.h"
 
@@ -27,26 +29,20 @@ namespace autofill {
 
 namespace {
 
-static base::android::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
+jni_zero::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
     JNIEnv* env,
     const AutofillSaveCardUiInfo& ui_info) {
   // LINT.IfChange
   return Java_AutofillSaveCardUiInfo_Constructor(
       env, ui_info.is_for_upload,
       ResourceMapper::MapToJavaDrawableId(ui_info.logo_icon_id),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              ui_info.logo_icon_description),
+      ui_info.logo_icon_description,
       ResourceMapper::MapToJavaDrawableId(ui_info.issuer_icon_id),
       LegalMessageLineAndroid::ConvertToJavaLinkedList(
           ui_info.legal_message_lines),
-      base::android::ConvertUTF16ToJavaString(env, ui_info.card_label),
-      base::android::ConvertUTF16ToJavaString(env, ui_info.card_sub_label),
-      base::android::ConvertUTF16ToJavaString(env, ui_info.card_description),
-      base::android::ConvertUTF16ToJavaString(env, ui_info.title_text),
-      base::android::ConvertUTF16ToJavaString(env, ui_info.confirm_text),
-      base::android::ConvertUTF16ToJavaString(env, ui_info.cancel_text),
-      base::android::ConvertUTF16ToJavaString(env, ui_info.description_text),
-      base::android::ConvertUTF16ToJavaString(env, ui_info.loading_description),
+      ui_info.card_label, ui_info.card_sub_label, ui_info.card_description,
+      ui_info.title_text, ui_info.confirm_text, ui_info.cancel_text,
+      ui_info.description_text, ui_info.loading_description,
       ui_info.is_chrome_branding_enabled,
       ResourceMapper::MapToJavaDrawableId(ui_info.google_pay_pill_logo_id));
   // LINT.ThenChange(//components/autofill/android/java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java)
@@ -62,7 +58,7 @@ AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
   java_autofill_save_card_bottom_sheet_bridge_ =
       Java_AutofillSaveCardBottomSheetBridge_Constructor(
           base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this),
-          window_android->GetJavaObject(), tab_model->GetJavaObject());
+          window_android, tab_model);
 }
 
 AutofillSaveCardBottomSheetBridge::~AutofillSaveCardBottomSheetBridge() {
@@ -93,12 +89,12 @@ void AutofillSaveCardBottomSheetBridge::Hide() {
 }
 
 AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
-    base::android::ScopedJavaGlobalRef<jobject>
+    jni_zero::ScopedJavaGlobalRef<jobject>
         java_autofill_save_card_bottom_sheet_bridge)
     : java_autofill_save_card_bottom_sheet_bridge_(
           java_autofill_save_card_bottom_sheet_bridge) {}
 
-void AutofillSaveCardBottomSheetBridge::OnUiShown(JNIEnv* env) {
+void AutofillSaveCardBottomSheetBridge::OnUiShown() {
   if (save_card_delegate_) {
     autofill_metrics::LogSaveCreditCardPromptOfferMetricAndroid(
         autofill_metrics::SaveCardPromptOffer::kShown,
@@ -108,7 +104,7 @@ void AutofillSaveCardBottomSheetBridge::OnUiShown(JNIEnv* env) {
   }
 }
 
-void AutofillSaveCardBottomSheetBridge::OnUiAccepted(JNIEnv* env) {
+void AutofillSaveCardBottomSheetBridge::OnUiAccepted() {
   if (save_card_delegate_) {
     save_card_delegate_->OnUiAccepted(base::BindOnce(
         &AutofillSaveCardBottomSheetBridge::ResetSaveCardDelegate,
@@ -116,14 +112,14 @@ void AutofillSaveCardBottomSheetBridge::OnUiAccepted(JNIEnv* env) {
   }
 }
 
-void AutofillSaveCardBottomSheetBridge::OnUiCanceled(JNIEnv* env) {
+void AutofillSaveCardBottomSheetBridge::OnUiCanceled() {
   if (save_card_delegate_) {
     save_card_delegate_->OnUiCanceled();
   }
   ResetSaveCardDelegate();
 }
 
-void AutofillSaveCardBottomSheetBridge::OnUiIgnored(JNIEnv* env) {
+void AutofillSaveCardBottomSheetBridge::OnUiIgnored() {
   if (save_card_delegate_) {
     save_card_delegate_->OnUiIgnored();
   }

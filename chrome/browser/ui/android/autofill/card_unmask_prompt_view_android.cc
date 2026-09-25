@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/autofill/card_unmask_prompt_view_android.h"
 
+#include "base/android/jni_string.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
@@ -15,11 +16,8 @@
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/CardUnmaskBridge_jni.h"
-
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
 
@@ -52,7 +50,7 @@ void CardUnmaskPromptViewAndroid::Show() {
   }
 
   Java_CardUnmaskBridge_show(env, java_object,
-                             view_android->GetWindowAndroid()->GetJavaObject());
+                             view_android->GetWindowAndroid());
 }
 
 void CardUnmaskPromptViewAndroid::Dismiss() {
@@ -64,13 +62,11 @@ void CardUnmaskPromptViewAndroid::Dismiss() {
 }
 
 bool CardUnmaskPromptViewAndroid::CheckUserInputValidity(
-    JNIEnv* env,
     const std::u16string& response) {
   return controller_->InputCvcIsValid(response);
 }
 
-void CardUnmaskPromptViewAndroid::OnUserInput(JNIEnv* env,
-                                              const std::u16string& cvc,
+void CardUnmaskPromptViewAndroid::OnUserInput(const std::u16string& cvc,
                                               const std::u16string& month,
                                               const std::u16string& year,
                                               bool enable_fido_auth,
@@ -79,25 +75,23 @@ void CardUnmaskPromptViewAndroid::OnUserInput(JNIEnv* env,
                                       was_checkbox_visible);
 }
 
-void CardUnmaskPromptViewAndroid::OnNewCardLinkClicked(JNIEnv* env) {
+void CardUnmaskPromptViewAndroid::OnNewCardLinkClicked() {
   auto java_object = GetOrCreateJavaObject();
   if (!java_object) {
     return;
   }
   controller_->NewCardLinkClicked();
-  Java_CardUnmaskBridge_update(env, java_object,
-                               base::android::ConvertUTF16ToJavaString(
-                                   env, controller_->GetWindowTitle()),
-                               base::android::ConvertUTF16ToJavaString(
-                                   env, controller_->GetInstructionsMessage()),
+  Java_CardUnmaskBridge_update(base::android::AttachCurrentThread(),
+                               java_object, controller_->GetWindowTitle(),
+                               controller_->GetInstructionsMessage(),
                                controller_->ShouldRequestExpirationDate());
 }
 
-int CardUnmaskPromptViewAndroid::GetExpectedCvcLength(JNIEnv* env) {
+int CardUnmaskPromptViewAndroid::GetExpectedCvcLength() {
   return controller_->GetExpectedCvcLength();
 }
 
-void CardUnmaskPromptViewAndroid::PromptDismissed(JNIEnv* env) {
+void CardUnmaskPromptViewAndroid::PromptDismissed() {
   delete this;
 }
 
@@ -122,17 +116,12 @@ void CardUnmaskPromptViewAndroid::GotVerificationResult(
   if (!java_object) {
     return;
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> message;
-  if (!error_message.empty()) {
-    message = base::android::ConvertUTF16ToJavaString(env, error_message);
-  }
-
-  Java_CardUnmaskBridge_verificationFinished(env, java_object, message,
-                                             allow_retry);
+  Java_CardUnmaskBridge_verificationFinished(
+      base::android::AttachCurrentThread(), java_object, error_message,
+      allow_retry);
 }
 
-base::android::ScopedJavaGlobalRef<jobject>
+jni_zero::ScopedJavaGlobalRef<jobject>
 CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
   if (java_object_internal_) {
     return java_object_internal_;
@@ -144,39 +133,19 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
 
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents_->GetNativeView();
-  ScopedJavaLocalRef<jstring> dialog_title =
-      base::android::ConvertUTF16ToJavaString(env,
-                                              controller_->GetWindowTitle());
-  ScopedJavaLocalRef<jstring> instructions =
-      base::android::ConvertUTF16ToJavaString(
-          env, controller_->GetInstructionsMessage());
-  ScopedJavaLocalRef<jstring> card_name =
-      base::android::ConvertUTF16ToJavaString(env, controller_->GetCardName());
-  ScopedJavaLocalRef<jstring> card_last_four_digits =
-      base::android::ConvertUTF16ToJavaString(
-          env, controller_->GetCardLastFourDigits());
-  ScopedJavaLocalRef<jstring> card_expiration =
-      base::android::ConvertUTF16ToJavaString(env,
-                                              controller_->GetCardExpiration());
-  ScopedJavaLocalRef<jobject> card_art_url =
-      url::GURLAndroid::FromNativeGURL(env, controller_->GetCardArtUrl());
-  ScopedJavaLocalRef<jstring> confirm = base::android::ConvertUTF16ToJavaString(
-      env, controller_->GetOkButtonLabel());
-  ScopedJavaLocalRef<jstring> cvc_image_announcement =
-      base::android::ConvertUTF16ToJavaString(
-          env, controller_->GetCvcImageAnnouncement());
 
   return java_object_internal_ = Java_CardUnmaskBridge_create(
              env, reinterpret_cast<intptr_t>(this),
-             Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-                 ->GetJavaObject(),
-             dialog_title, instructions,
+             Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+             controller_->GetWindowTitle(),
+             controller_->GetInstructionsMessage(),
              ResourceMapper::MapToJavaDrawableId(
                  GetIconResourceID(controller_->GetCardIcon())),
-             card_name, card_last_four_digits, card_expiration, card_art_url,
-             confirm,
+             controller_->GetCardName(), controller_->GetCardLastFourDigits(),
+             controller_->GetCardExpiration(), controller_->GetCardArtUrl(),
+             controller_->GetOkButtonLabel(),
              ResourceMapper::MapToJavaDrawableId(controller_->GetCvcImageRid()),
-             cvc_image_announcement,
+             controller_->GetCvcImageAnnouncement(),
              ResourceMapper::MapToJavaDrawableId(
                  controller_->GetGooglePayImageRid()),
              controller_->IsVirtualCard(),
@@ -184,7 +153,7 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
              controller_->ShouldOfferWebauthn(),
              controller_->GetWebauthnOfferStartState(),
              controller_->GetSuccessMessageDuration().InMilliseconds(),
-             view_android->GetWindowAndroid()->GetJavaObject());
+             view_android->GetWindowAndroid());
 }
 
 }  // namespace autofill

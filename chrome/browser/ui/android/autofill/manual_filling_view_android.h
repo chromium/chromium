@@ -52,20 +52,18 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   void SetSelectedSuggestion(std::optional<int> suggestion_index) override;
   bool NavigateSuggestions(autofill::NavigationDirection direction) override;
   // Called from Java via JNI:
-  void OnFillingTriggered(
-      JNIEnv* env,
-      int32_t tab_type,
-      const base::android::JavaRef<jobject>& j_user_info_field);
-  void OnPasskeySelected(JNIEnv* env,
-                         int32_t tab_type,
+  void OnFillingTriggered(JNIEnv* env,
+                          autofill::AccessoryTabType tab_type,
+                          const jni_zero::JavaRef<jobject>& j_user_info_field);
+  void OnPasskeySelected(autofill::AccessoryTabType tab_type,
                          const std::vector<uint8_t>& passkey);
-  void OnOptionSelected(JNIEnv* env, int32_t selected_action);
-  void OnToggleChanged(JNIEnv* env, int32_t selected_action, bool enabled);
-  void RequestAccessorySheet(JNIEnv* env, int32_t tab_type);
-  void OnViewDestroyed(JNIEnv* env);
+  void OnOptionSelected(autofill::AccessoryAction selected_action);
+  void OnToggleChanged(autofill::AccessoryAction selected_action, bool enabled);
+  void RequestAccessorySheet(autofill::AccessoryTabType tab_type);
+  void OnViewDestroyed();
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
+  jni_zero::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -78,7 +76,7 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   raw_ptr<content::WebContents> web_contents_;
 
   // The corresponding java object. Use `GetOrCreateJavaObject()` to access.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_internal_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_MANUAL_FILLING_VIEW_ANDROID_H_

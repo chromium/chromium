@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -43,7 +44,8 @@ class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.De
      */
     @CalledByNative
     static @Nullable OtpVerificationDialogBridge create(
-            long nativeOtpVerificationDialogView, WindowAndroid windowAndroid) {
+            long nativeOtpVerificationDialogView,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         Context context = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (context == null || modalDialogManager == null) {
@@ -89,7 +91,7 @@ class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.De
      * @param errorMessage The error message to be displayed below the OTP input field.
      */
     @CalledByNative
-    void showOtpErrorMessage(String errorMessage) {
+    void showOtpErrorMessage(@JniType("std::u16string") String errorMessage) {
         mDialogCoordinator.showOtpErrorMessage(errorMessage);
     }
 
@@ -100,13 +102,14 @@ class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.De
     }
 
     @CalledByNative
-    void showConfirmationAndDismissDialog(String confirmationMessage) {
+    void showConfirmationAndDismissDialog(@JniType("std::u16string") String confirmationMessage) {
         mDialogCoordinator.showConfirmationAndDismissDialog(confirmationMessage);
     }
 
     @NativeMethods
     interface Natives {
-        void onConfirm(long nativeOtpVerificationDialogViewAndroid, String otp);
+        void onConfirm(
+                long nativeOtpVerificationDialogViewAndroid, @JniType("std::u16string") String otp);
 
         void onNewOtpRequested(long nativeOtpVerificationDialogViewAndroid);
 

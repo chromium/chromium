@@ -64,7 +64,8 @@ public class AutofillDialogController {
 
     @CalledByNative
     static @Nullable AutofillDialogController create(
-            long nativeAutofillDialogView, WindowAndroid windowAndroid) {
+            long nativeAutofillDialogView,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         Context context = windowAndroid.getContext().get();
         if (context == null) {
             return null;
@@ -164,7 +165,7 @@ public class AutofillDialogController {
     }
 
     @NativeMethods
-    public interface Natives {
+    interface Natives {
         void onPositiveButtonClicked(long nativeAutofillDialogViewAndroid);
 
         void onDismissed(long nativeAutofillDialogViewAndroid);

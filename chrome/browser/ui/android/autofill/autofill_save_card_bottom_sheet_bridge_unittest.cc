@@ -95,7 +95,7 @@ TEST_P(AutofillSaveCardBottomSheetBridgeTest, LogsPromptShown) {
       GetDelegate(
           SaveCreditCardOptions().with_show_prompt(true).with_card_save_type(
               CardSaveType::kCardSaveOnly)));
-  autofill_save_card_bottom_sheet_bridge_->OnUiShown(/*env=*/nullptr);
+  autofill_save_card_bottom_sheet_bridge_->OnUiShown();
   histogram_tester.ExpectUniqueSample(
       GetBaseHistogramName(), autofill_metrics::SaveCardPromptOffer::kShown, 1);
 }
@@ -108,7 +108,7 @@ TEST_P(AutofillSaveCardBottomSheetBridgeTest,
                       .with_should_request_name_from_user(true)
                       .with_show_prompt(true)
                       .with_card_save_type(CardSaveType::kCardSaveOnly)));
-  autofill_save_card_bottom_sheet_bridge_->OnUiShown(/*env=*/nullptr);
+  autofill_save_card_bottom_sheet_bridge_->OnUiShown();
   histogram_tester.ExpectUniqueSample(
       GetBaseHistogramName(), autofill_metrics::SaveCardPromptOffer::kShown, 1);
   histogram_tester.ExpectUniqueSample(
@@ -124,7 +124,7 @@ TEST_P(AutofillSaveCardBottomSheetBridgeTest,
                       .with_should_request_expiration_date_from_user(true)
                       .with_show_prompt(true)
                       .with_card_save_type(CardSaveType::kCardSaveOnly)));
-  autofill_save_card_bottom_sheet_bridge_->OnUiShown(/*env=*/nullptr);
+  autofill_save_card_bottom_sheet_bridge_->OnUiShown();
   histogram_tester.ExpectUniqueSample(
       GetBaseHistogramName(), autofill_metrics::SaveCardPromptOffer::kShown, 1);
   histogram_tester.ExpectUniqueSample(
@@ -139,7 +139,7 @@ TEST_P(AutofillSaveCardBottomSheetBridgeTest,
       GetDelegate(
           SaveCreditCardOptions().with_show_prompt(true).with_card_save_type(
               CardSaveType::kCardSaveWithCvc)));
-  autofill_save_card_bottom_sheet_bridge_->OnUiShown(/*env=*/nullptr);
+  autofill_save_card_bottom_sheet_bridge_->OnUiShown();
   histogram_tester.ExpectUniqueSample(
       GetBaseHistogramName(), autofill_metrics::SaveCardPromptOffer::kShown, 1);
   histogram_tester.ExpectUniqueSample(
@@ -160,7 +160,7 @@ TEST_P(AutofillSaveCardBottomSheetBridgeTest,
                       .with_has_multiple_legal_lines(true)
                       .with_show_prompt(true)
                       .with_card_save_type(CardSaveType::kCardSaveOnly)));
-  autofill_save_card_bottom_sheet_bridge_->OnUiShown(/*env=*/nullptr);
+  autofill_save_card_bottom_sheet_bridge_->OnUiShown();
   histogram_tester.ExpectUniqueSample(
       GetBaseHistogramName(), autofill_metrics::SaveCardPromptOffer::kShown, 1);
   histogram_tester.ExpectUniqueSample(
@@ -183,7 +183,7 @@ TEST_P(AutofillSaveCardBottomSheetBridgeTest,
                       .with_legal_lines_mention_personalization(true)
                       .with_show_prompt(true)
                       .with_card_save_type(CardSaveType::kCardSaveOnly)));
-  autofill_save_card_bottom_sheet_bridge_->OnUiShown(/*env=*/nullptr);
+  autofill_save_card_bottom_sheet_bridge_->OnUiShown();
   histogram_tester.ExpectUniqueSample(
       GetBaseHistogramName(), autofill_metrics::SaveCardPromptOffer::kShown, 1);
   histogram_tester.ExpectUniqueSample(
@@ -208,7 +208,7 @@ TEST_P(AutofillSaveCardBottomSheetBridgeTest,
                   true)
               .with_show_prompt(true)
               .with_card_save_type(CardSaveType::kCardSaveOnly)));
-  autofill_save_card_bottom_sheet_bridge_->OnUiShown(/*env=*/nullptr);
+  autofill_save_card_bottom_sheet_bridge_->OnUiShown();
   histogram_tester.ExpectUniqueSample(
       GetBaseHistogramName(), autofill_metrics::SaveCardPromptOffer::kShown, 1);
   histogram_tester.ExpectUniqueSample(
@@ -231,7 +231,7 @@ TEST_P(AutofillSaveCardBottomSheetBridgeTest,
                       .with_has_multiple_legal_lines(true)
                       .with_show_prompt(true)
                       .with_card_save_type(CardSaveType::kCardSaveOnly)));
-  autofill_save_card_bottom_sheet_bridge_->OnUiShown(/*env=*/nullptr);
+  autofill_save_card_bottom_sheet_bridge_->OnUiShown();
   histogram_tester.ExpectUniqueSample(
       GetBaseHistogramName(), autofill_metrics::SaveCardPromptOffer::kShown, 1);
   histogram_tester.ExpectUniqueSample(

@@ -13,8 +13,6 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_view.h"
 #include "ui/android/window_android.h"
 
-using base::android::JavaRef;
-
 namespace autofill {
 
 class CardUnmaskOtpInputDialogController;
@@ -40,11 +38,11 @@ class OtpVerificationDialogViewAndroid : public CardUnmaskOtpInputDialogView {
   base::WeakPtr<CardUnmaskOtpInputDialogView> GetWeakPtr() override;
 
   // Called by the Java code when the error dialog is dismissed.
-  void OnDialogDismissed(JNIEnv* env);
+  void OnDialogDismissed();
   // Called by the Java code when the user submits an OTP.
-  void OnConfirm(JNIEnv* env, const JavaRef<jstring>& otp);
+  void OnConfirm(const std::u16string& otp);
   // Called by the Java code when the user requests for a new OTP.
-  void OnNewOtpRequested(JNIEnv* env);
+  void OnNewOtpRequested();
 
   bool ShowDialog(ui::WindowAndroid* windowAndroid);
 
@@ -52,7 +50,7 @@ class OtpVerificationDialogViewAndroid : public CardUnmaskOtpInputDialogView {
   void ShowConfirmationAndDismissDialog(std::u16string confirmation_message);
   base::WeakPtr<CardUnmaskOtpInputDialogController> controller_;
   // The corresponding java object.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_;
   base::WeakPtrFactory<OtpVerificationDialogViewAndroid> weak_ptr_factory_{
       this};
 };

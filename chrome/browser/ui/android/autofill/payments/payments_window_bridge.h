@@ -42,23 +42,19 @@ class PaymentsWindowBridge {
   virtual void CloseEphemeralTab();
 
   // Called when the ephemeral tab has finished a navigation.
-  void OnNavigationFinished(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& clicked_url_object);
+  void OnNavigationFinished(const GURL& clicked_url);
 
   // Called when observation has started for the WebContents.
-  void OnWebContentsObservationStarted(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& j_web_contents);
+  void OnWebContentsObservationStarted(content::WebContents* web_contents);
 
   // Called when WebContents is being destroyed.
-  void OnWebContentsDestroyed(JNIEnv* env);
+  void OnWebContentsDestroyed();
 
   // Called when the user denied tab opening.
-  void OnUserDeniedTabOpening(JNIEnv* env);
+  void OnUserDeniedTabOpening();
 
  private:
-  base::android::ScopedJavaGlobalRef<jobject> java_payments_window_bridge_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_payments_window_bridge_;
   const raw_ref<PaymentsWindowDelegate> payments_window_delegate_;
 };
 

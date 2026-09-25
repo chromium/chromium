@@ -9,16 +9,15 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/check_deref.h"
-#include "chrome/browser/ui/android/autofill/internal/jni_headers/PaymentsWindowBridge_jni.h"
 #include "chrome/browser/ui/android/autofill/payments/payments_window_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
-namespace autofill::payments {
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/browser/ui/android/autofill/internal/jni_headers/PaymentsWindowBridge_jni.h"
 
-using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaRef;
+namespace autofill::payments {
 
 PaymentsWindowBridge::PaymentsWindowBridge(
     PaymentsWindowDelegate* payments_window_delegate)
@@ -40,10 +39,7 @@ void PaymentsWindowBridge::OpenEphemeralTab(
     content::WebContents& merchant_web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PaymentsWindowBridge_openEphemeralTab(
-      env, java_payments_window_bridge_,
-      url::GURLAndroid::FromNativeGURL(env, url),
-      ConvertUTF16ToJavaString(env, title),
-      merchant_web_contents.GetJavaWebContents());
+      env, java_payments_window_bridge_, url, title, &merchant_web_contents);
 }
 
 void PaymentsWindowBridge::CloseEphemeralTab() {
@@ -51,28 +47,22 @@ void PaymentsWindowBridge::CloseEphemeralTab() {
       base::android::AttachCurrentThread(), java_payments_window_bridge_);
 }
 
-void PaymentsWindowBridge::OnNavigationFinished(
-    JNIEnv* env,
-    const JavaRef<jobject>& clicked_url_object) {
-  payments_window_delegate_->OnDidFinishNavigationForBnpl(
-      url::GURLAndroid::ToNativeGURL(env, clicked_url_object));
+void PaymentsWindowBridge::OnNavigationFinished(const GURL& clicked_url) {
+  payments_window_delegate_->OnDidFinishNavigationForBnpl(clicked_url);
 }
 
 void PaymentsWindowBridge::OnWebContentsObservationStarted(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_web_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
+    content::WebContents* web_contents) {
   if (web_contents) {
     payments_window_delegate_->OnWebContentsObservationStarted(*web_contents);
   }
 }
 
-void PaymentsWindowBridge::OnWebContentsDestroyed(JNIEnv* env) {
+void PaymentsWindowBridge::OnWebContentsDestroyed() {
   payments_window_delegate_->WebContentsDestroyed();
 }
 
-void PaymentsWindowBridge::OnUserDeniedTabOpening(JNIEnv* env) {
+void PaymentsWindowBridge::OnUserDeniedTabOpening() {
   payments_window_delegate_->OnUserDeniedTabOpening();
 }
 

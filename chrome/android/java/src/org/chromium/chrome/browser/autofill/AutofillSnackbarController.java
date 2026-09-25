@@ -64,7 +64,8 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
 
     @CalledByNative
     static AutofillSnackbarController create(
-            long nativeAutofillSnackbarView, WindowAndroid windowAndroid) {
+            long nativeAutofillSnackbarView,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
         assumeNonNull(snackbarManager);
         return new AutofillSnackbarController(nativeAutofillSnackbarView, snackbarManager);
@@ -83,7 +84,7 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
             @JniType("std::u16string") String message,
             @JniType("std::u16string") String action,
             int duration,
-            @AutofillSnackbarType int snackbarType) {
+            @JniType("autofill::AutofillSnackbarType") @AutofillSnackbarType int snackbarType) {
         int identifier = getSnackbarIdentifier(snackbarType);
         Snackbar snackBar =
                 Snackbar.make(message, this, Snackbar.TYPE_ACTION, identifier)
@@ -117,7 +118,7 @@ public class AutofillSnackbarController implements SnackbarManager.SnackbarContr
     }
 
     @NativeMethods
-    public interface Natives {
+    interface Natives {
         void onActionClicked(long nativeAutofillSnackbarViewAndroid);
 
         void onDismissed(long nativeAutofillSnackbarViewAndroid);

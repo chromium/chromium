@@ -7,12 +7,14 @@
 #include "base/android/device_info.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
-#include "chrome/android/chrome_jni_headers/ExclusiveAccessBubble_jni.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/fullscreen_control/fullscreen_features.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
+
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/android/chrome_jni_headers/ExclusiveAccessBubble_jni.h"
 
 namespace {
 std::optional<std::u16string> GetOriginString(const url::Origin& origin) {
@@ -53,8 +55,7 @@ class BridgeImpl : public ExclusiveAccessBubbleAndroid::Bridge {
   void Update(const std::u16string& text) override {
     if (j_bubble_) {
       JNIEnv* env = jni_zero::AttachCurrentThread();
-      Java_ExclusiveAccessBubble_update(
-          env, j_bubble_, base::android::ConvertUTF16ToJavaString(env, text));
+      Java_ExclusiveAccessBubble_update(env, j_bubble_, text);
     }
   }
 

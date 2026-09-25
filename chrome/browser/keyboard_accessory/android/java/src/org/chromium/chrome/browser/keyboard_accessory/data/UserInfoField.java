@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
@@ -61,31 +62,32 @@ public final class UserInfoField {
 
     /** Returns the type of this suggestion. */
     @CalledByNative
-    public @AccessorySuggestionType int getSuggestionType() {
+    public @JniType("autofill::AccessorySuggestionType") @AccessorySuggestionType int
+            getSuggestionType() {
         return mSuggestionType;
     }
 
     /** Returns the text to be displayed on the UI. */
     @CalledByNative
-    public String getDisplayText() {
+    public @JniType("std::u16string") String getDisplayText() {
         return mDisplayText;
     }
 
     /** Returns the text to be filled in the form field. */
     @CalledByNative
-    public String getTextToFill() {
+    public @JniType("std::u16string") String getTextToFill() {
         return mTextToFill;
     }
 
     /** Returns a translated description that can be used for accessibility. */
     @CalledByNative
-    public String getA11yDescription() {
+    public @JniType("std::u16string") String getA11yDescription() {
         return mA11yDescription;
     }
 
     /** Returns an ID representing this object for filling purposes. May be empty. */
     @CalledByNative
-    public String getId() {
+    public @JniType("std::string") String getId() {
         return mId;
     }
 

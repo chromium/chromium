@@ -18,10 +18,8 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/ui/android/autofill/internal/jni_headers/AutofillProgressDialogBridge_jni.h"
-
-using base::android::ConvertUTF16ToJavaString;
 
 namespace autofill {
 
@@ -52,7 +50,7 @@ void AutofillProgressDialogViewAndroid::Dismiss(
 
   // Keep a local referenze to `java_object_` since calling OnDismissed()
   // below will destroy `this`.
-  base::android::ScopedJavaGlobalRef<jobject> java_object = java_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object = java_object_;
 
   if (controller_) {
     // Call to OnDismissed will destroy `this`.
@@ -75,7 +73,7 @@ AutofillProgressDialogViewAndroid::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void AutofillProgressDialogViewAndroid::OnDismissed(JNIEnv* env) {
+void AutofillProgressDialogViewAndroid::OnDismissed() {
   if (controller_) {
     // Call to OnDismissed will destroy `this`.
     controller_->OnDismissed(/*is_canceled_by_user=*/true);
@@ -93,14 +91,12 @@ bool AutofillProgressDialogViewAndroid::ShowDialog(
   }
 
   java_object_.Reset(Java_AutofillProgressDialogBridge_create(
-      env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));
+      env, reinterpret_cast<intptr_t>(this), window_android));
 
   if (controller_) {
     Java_AutofillProgressDialogBridge_showDialog(
-        env, java_object_,
-        ConvertUTF16ToJavaString(env, controller_->GetLoadingTitle()),
-        ConvertUTF16ToJavaString(env, controller_->GetLoadingMessage()),
-        ConvertUTF16ToJavaString(env, controller_->GetCancelButtonLabel()));
+        env, java_object_, controller_->GetLoadingTitle(),
+        controller_->GetLoadingMessage(), controller_->GetCancelButtonLabel());
     return true;
   }
   return false;
@@ -110,8 +106,8 @@ void AutofillProgressDialogViewAndroid::ShowConfirmation(
     std::u16string confirmation_message) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!java_object_.is_null()) {
-    Java_AutofillProgressDialogBridge_showConfirmation(
-        env, java_object_, ConvertUTF16ToJavaString(env, confirmation_message));
+    Java_AutofillProgressDialogBridge_showConfirmation(env, java_object_,
+                                                       confirmation_message);
   }
 }
 

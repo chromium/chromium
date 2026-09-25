@@ -153,8 +153,8 @@ public class ChromeHttpAuthHandler implements TabObserver, LoginPrompt.Observer 
 
     @CalledByNative
     private void onAutofillDataAvailable(
-            @JniType("std::u16string") String username,
-            @JniType("std::u16string") String password) {
+            @JniType("std::u16string_view") String username,
+            @JniType("std::u16string_view") String password) {
         mAutofillUsername = username;
         mAutofillPassword = password;
         if (mLoginPrompt != null) {

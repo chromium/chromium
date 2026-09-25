@@ -366,7 +366,7 @@ public class CardUnmaskPrompt
     }
 
     public void verificationFinished(String errorMessage, boolean allowRetry) {
-        if (errorMessage != null) {
+        if (!errorMessage.isEmpty()) {
             setOverlayVisibility(View.GONE);
             if (allowRetry) {
                 AutofillUiUtils.showErrorMessage(errorMessage, mErrorMessage);

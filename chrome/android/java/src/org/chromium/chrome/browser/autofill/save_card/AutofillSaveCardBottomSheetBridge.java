@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -44,7 +45,9 @@ public class AutofillSaveCardBottomSheetBridge
     @CalledByNative
     @VisibleForTesting
     /*package*/ AutofillSaveCardBottomSheetBridge(
-            long nativeAutofillSaveCardBottomSheetBridge, WindowAndroid window, TabModel tabModel) {
+            long nativeAutofillSaveCardBottomSheetBridge,
+            @JniType("ui::WindowAndroid*") WindowAndroid window,
+            @JniType("TabModel*") TabModel tabModel) {
         mNativeAutofillSaveCardBottomSheetBridge = nativeAutofillSaveCardBottomSheetBridge;
         mTabModel = tabModel;
         mContext = window.getContext().get();
@@ -139,7 +142,7 @@ public class AutofillSaveCardBottomSheetBridge
     }
 
     @NativeMethods
-    public interface Natives {
+    interface Natives {
         void onUiShown(long nativeAutofillSaveCardBottomSheetBridge);
 
         void onUiAccepted(long nativeAutofillSaveCardBottomSheetBridge);

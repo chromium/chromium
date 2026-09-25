@@ -33,7 +33,7 @@ class AutofillProgressDialogViewAndroid : public AutofillProgressDialogView {
   base::WeakPtr<AutofillProgressDialogView> GetWeakPtr() override;
 
   // Called by the Java code when the progress dialog is dismissed.
-  void OnDismissed(JNIEnv* env);
+  void OnDismissed();
 
   // Show the dialog view. Return value indicates whether the dialog is
   // successfully shown.
@@ -45,7 +45,7 @@ class AutofillProgressDialogViewAndroid : public AutofillProgressDialogView {
  private:
   base::WeakPtr<AutofillProgressDialogController> controller_;
   // The corresponding java object.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_;
 
   base::WeakPtrFactory<AutofillProgressDialogViewAndroid> weak_ptr_factory_{
       this};

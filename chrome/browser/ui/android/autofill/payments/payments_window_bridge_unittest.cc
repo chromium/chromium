@@ -6,13 +6,11 @@
 
 #include <memory>
 
-#include "base/android/jni_android.h"
 #include "chrome/browser/ui/android/autofill/payments/payments_window_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "content/public/browser/web_contents.h"
-#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 namespace autofill::payments {
@@ -32,7 +30,7 @@ class MockPaymentsWindowDelegate : public PaymentsWindowDelegate {
 
 class PaymentsWindowBridgeTest : public ChromeRenderViewHostTestHarness {
  public:
-  PaymentsWindowBridgeTest() : env_(base::android::AttachCurrentThread()) {}
+  PaymentsWindowBridgeTest() = default;
 
  protected:
   void SetUp() override {
@@ -47,7 +45,6 @@ class PaymentsWindowBridgeTest : public ChromeRenderViewHostTestHarness {
 
   testing::StrictMock<MockPaymentsWindowDelegate> mock_delegate_;
   std::unique_ptr<PaymentsWindowBridge> payments_window_bridge_;
-  raw_ptr<JNIEnv> env_;
 
  private:
   TestAutofillClientInjector<TestContentAutofillClient>
@@ -58,8 +55,7 @@ TEST_F(PaymentsWindowBridgeTest, OnNavigationFinished_ForwardsCallToDelegate) {
   GURL clicked_url("https://www.bnpltest.com/");
   EXPECT_CALL(mock_delegate_, OnDidFinishNavigationForBnpl(clicked_url));
 
-  payments_window_bridge_->OnNavigationFinished(
-      env_, url::GURLAndroid::FromNativeGURL(env_, clicked_url));
+  payments_window_bridge_->OnNavigationFinished(clicked_url);
 }
 
 TEST_F(PaymentsWindowBridgeTest,
@@ -67,21 +63,20 @@ TEST_F(PaymentsWindowBridgeTest,
   EXPECT_CALL(mock_delegate_,
               OnWebContentsObservationStarted(testing::Ref(*web_contents())));
 
-  payments_window_bridge_->OnWebContentsObservationStarted(
-      env_, web_contents()->GetJavaWebContents());
+  payments_window_bridge_->OnWebContentsObservationStarted(web_contents());
 }
 
 TEST_F(PaymentsWindowBridgeTest,
        OnWebContentsDestroyed_ForwardsCallToDelegate) {
   EXPECT_CALL(mock_delegate_, WebContentsDestroyed());
 
-  payments_window_bridge_->OnWebContentsDestroyed(env_);
+  payments_window_bridge_->OnWebContentsDestroyed();
 }
 
 TEST_F(PaymentsWindowBridgeTest,
        OnUserDeniedTabOpening_ForwardsCallToDelegate) {
   EXPECT_CALL(mock_delegate_, OnUserDeniedTabOpening());
 
-  payments_window_bridge_->OnUserDeniedTabOpening(env_);
+  payments_window_bridge_->OnUserDeniedTabOpening();
 }
 }  // namespace autofill::payments

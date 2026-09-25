@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -72,7 +73,8 @@ public class AutofillProgressDialogBridge {
 
     @CalledByNative
     public static AutofillProgressDialogBridge create(
-            long nativeAutofillProgressDialogView, WindowAndroid windowAndroid) {
+            long nativeAutofillProgressDialogView,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         return new AutofillProgressDialogBridge(
                 nativeAutofillProgressDialogView,
                 assertNonNull(windowAndroid.getModalDialogManager()),
@@ -85,7 +87,10 @@ public class AutofillProgressDialogBridge {
      * @param loadingMessage Message to show below the progress bar.
      */
     @CalledByNative
-    public void showDialog(String title, String loadingMessage, String buttonLabel) {
+    public void showDialog(
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String loadingMessage,
+            @JniType("std::u16string") String buttonLabel) {
         mProgressDialogContentView =
                 LayoutInflater.from(mContext).inflate(R.layout.autofill_progress_dialog, null);
         ((TextView) mProgressDialogContentView.findViewById(R.id.message)).setText(loadingMessage);
@@ -117,7 +122,7 @@ public class AutofillProgressDialogBridge {
      * @param confirmationMessage Message to show below the confirmation icon
      */
     @CalledByNative
-    public void showConfirmation(String confirmationMessage) {
+    public void showConfirmation(@JniType("std::u16string") String confirmationMessage) {
         if (mProgressDialogContentView != null) {
             mProgressDialogContentView.findViewById(R.id.progress_bar).setVisibility(View.GONE);
             mProgressDialogContentView

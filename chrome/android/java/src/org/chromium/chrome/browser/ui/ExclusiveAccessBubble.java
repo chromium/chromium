@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -63,7 +64,7 @@ public class ExclusiveAccessBubble {
     }
 
     @CalledByNative
-    public void update(String text) {
+    public void update(@JniType("std::u16string") String text) {
         if (mText != null && mText.equals(text) && mSnackbar != null) return;
         mText = text;
 

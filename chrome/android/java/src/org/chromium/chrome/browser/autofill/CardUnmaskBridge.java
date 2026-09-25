@@ -91,24 +91,24 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
     @CalledByNative
     private static CardUnmaskBridge create(
             long nativeUnmaskPrompt,
-            Profile profile,
-            String title,
-            String instructions,
+            @JniType("Profile*") Profile profile,
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String instructions,
             int cardIconId,
-            String cardName,
-            String cardLastFourDigits,
-            String cardExpiration,
-            GURL cardArtUrl,
-            String confirmButtonLabel,
+            @JniType("std::u16string") String cardName,
+            @JniType("std::u16string") String cardLastFourDigits,
+            @JniType("std::u16string") String cardExpiration,
+            @JniType("GURL") GURL cardArtUrl,
+            @JniType("std::u16string") String confirmButtonLabel,
             int cvcIconId,
-            String cvcImageAnnouncement,
+            @JniType("std::u16string") String cvcImageAnnouncement,
             int unused_googlePayIconId,
             boolean isVirtualCard,
             boolean shouldRequestExpirationDate,
             boolean shouldOfferWebauthn,
             boolean defaultUseScreenlockChecked,
             long successMessageDurationMilliseconds,
-            WindowAndroid windowAndroid) {
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         return new CardUnmaskBridge(
                 nativeUnmaskPrompt,
                 AutofillImageFetcherFactory.getForProfile(profile),
@@ -181,7 +181,7 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
 
     /** Shows a prompt for unmasking a Wallet credit card. */
     @CalledByNative
-    private void show(WindowAndroid windowAndroid) {
+    private void show(@JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         if (mCardUnmaskPrompt != null) {
             mCardUnmaskPrompt.show(
                     windowAndroid.getActivity().get(), windowAndroid.getModalDialogManager());
@@ -190,13 +190,17 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
 
     /**
      * After a prompt is already showing, update some UI elements.
+     *
      * @param title The dialog title.
      * @param instructions Expository text.
-     * @param shouldRequestExpirationDate Whether to show the Update + Verify UI or just the
-     * Verify UI.
+     * @param shouldRequestExpirationDate Whether to show the Update + Verify UI or just the Verify
+     *     UI.
      */
     @CalledByNative
-    private void update(String title, String instructions, boolean shouldRequestExpirationDate) {
+    private void update(
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String instructions,
+            boolean shouldRequestExpirationDate) {
         if (mCardUnmaskPrompt != null) {
             mCardUnmaskPrompt.update(title, instructions, shouldRequestExpirationDate);
         }
@@ -218,11 +222,13 @@ public class CardUnmaskBridge implements CardUnmaskPromptDelegate {
 
     /**
      * Indicate that verification failed, allow user to retry.
-     * @param errorMessage The error to display, or null to signal success.
+     *
+     * @param errorMessage The error to display, or empty string to signal success.
      * @param allowRetry If there was an error, indicates whether to allow another attempt.
      */
     @CalledByNative
-    private void verificationFinished(String errorMessage, boolean allowRetry) {
+    private void verificationFinished(
+            @JniType("std::u16string") String errorMessage, boolean allowRetry) {
         if (mCardUnmaskPrompt != null) {
             mCardUnmaskPrompt.verificationFinished(errorMessage, allowRetry);
         }

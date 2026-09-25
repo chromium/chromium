@@ -19,11 +19,8 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/autofill/android/jni_headers/SaveUpdateAddressProfilePrompt_jni.h"
-
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
 
@@ -51,7 +48,7 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
     return false;  // No window attached (yet or anymore).
   }
 
-  base::android::ScopedJavaLocalRef<jobject> java_controller =
+  jni_zero::ScopedJavaLocalRef<jobject> java_controller =
       controller->GetJavaObject();
   if (!java_controller) {
     return false;
@@ -61,13 +58,12 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> java_autofill_profile =
+  jni_zero::ScopedJavaLocalRef<jobject> java_autofill_profile =
       autofill_profile.CreateJavaObject(
           g_browser_process->GetApplicationLocale());
   java_object_.Reset(Java_SaveUpdateAddressProfilePrompt_create(
-      env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
-      java_controller, browser_profile->GetJavaObject(), java_autofill_profile,
-      static_cast<int32_t>(prompt_mode)));
+      env, web_contents_->GetTopLevelNativeWindow(), java_controller,
+      browser_profile, java_autofill_profile, prompt_mode));
   if (!java_object_) {
     return false;
   }
@@ -86,40 +82,20 @@ void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
   DCHECK(java_object_);
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> title =
-      base::android::ConvertUTF16ToJavaString(env, controller->GetTitle());
-  ScopedJavaLocalRef<jstring> record_type_notice =
-      base::android::ConvertUTF16ToJavaString(
-          env, controller->GetRecordTypeNotice(identity_manager));
-  ScopedJavaLocalRef<jstring> positive_button_text =
-      base::android::ConvertUTF16ToJavaString(
-          env, controller->GetPositiveButtonText());
-  ScopedJavaLocalRef<jstring> negative_button_text =
-      base::android::ConvertUTF16ToJavaString(
-          env, controller->GetNegativeButtonText());
   Java_SaveUpdateAddressProfilePrompt_setDialogDetails(
-      env, java_object_, title, positive_button_text, negative_button_text);
-  Java_SaveUpdateAddressProfilePrompt_setRecordTypeNotice(env, java_object_,
-                                                          record_type_notice);
+      env, java_object_, controller->GetTitle(),
+      controller->GetPositiveButtonText(), controller->GetNegativeButtonText());
+  Java_SaveUpdateAddressProfilePrompt_setRecordTypeNotice(
+      env, java_object_, controller->GetRecordTypeNotice(identity_manager));
 
   if (prompt_mode == SaveUpdateAddressProfilePromptMode::kUpdateProfile) {
-    ScopedJavaLocalRef<jstring> subtitle =
-        base::android::ConvertUTF16ToJavaString(env, controller->GetSubtitle());
-    ScopedJavaLocalRef<jstring> old_details =
-        base::android::ConvertUTF16ToJavaString(env, controller->GetOldDiff());
-    ScopedJavaLocalRef<jstring> new_details =
-        base::android::ConvertUTF16ToJavaString(env, controller->GetNewDiff());
     Java_SaveUpdateAddressProfilePrompt_setUpdateDetails(
-        env, java_object_, subtitle, old_details, new_details);
+        env, java_object_, controller->GetSubtitle(), controller->GetOldDiff(),
+        controller->GetNewDiff());
   } else {
-    ScopedJavaLocalRef<jstring> address =
-        base::android::ConvertUTF16ToJavaString(env, controller->GetAddress());
-    ScopedJavaLocalRef<jstring> email =
-        base::android::ConvertUTF16ToJavaString(env, controller->GetEmail());
-    ScopedJavaLocalRef<jstring> phone = base::android::ConvertUTF16ToJavaString(
-        env, controller->GetPhoneNumber());
     Java_SaveUpdateAddressProfilePrompt_setSaveOrMigrateDetails(
-        env, java_object_, address, email, phone);
+        env, java_object_, controller->GetAddress(), controller->GetEmail(),
+        controller->GetPhoneNumber());
   }
 }
 

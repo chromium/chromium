@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.payments.LegalMessageLine;
@@ -72,7 +73,10 @@ public class VirtualCardEnrollmentFields {
     @CalledByNative
     @VisibleForTesting
     static VirtualCardEnrollmentFields create(
-            String cardName, String cardNumber, int networkIconId, GURL cardArtUrl) {
+            @JniType("std::u16string") String cardName,
+            @JniType("std::u16string") String cardNumber,
+            int networkIconId,
+            @JniType("GURL") GURL cardArtUrl) {
         return new VirtualCardEnrollmentFields(cardName, cardNumber, networkIconId, cardArtUrl);
     }
 
@@ -82,7 +86,7 @@ public class VirtualCardEnrollmentFields {
      * @param text The legal message plain text.
      */
     @CalledByNative
-    private void addGoogleLegalMessageLine(String text) {
+    private void addGoogleLegalMessageLine(@JniType("std::u16string") String text) {
         mGoogleLegalMessages.add(new LegalMessageLine(text));
     }
 
@@ -94,7 +98,8 @@ public class VirtualCardEnrollmentFields {
      * @param url The URL to open when the link is clicked.
      */
     @CalledByNative
-    private void addLinkToLastGoogleLegalMessageLine(int start, int end, String url) {
+    private void addLinkToLastGoogleLegalMessageLine(
+            int start, int end, @JniType("std::string") String url) {
         mGoogleLegalMessages
                 .get(mGoogleLegalMessages.size() - 1)
                 .links
@@ -107,7 +112,7 @@ public class VirtualCardEnrollmentFields {
      * @param text The legal message plain text.
      */
     @CalledByNative
-    private void addIssuerLegalMessageLine(String text) {
+    private void addIssuerLegalMessageLine(@JniType("std::u16string") String text) {
         mIssuerLegalMessages.add(new LegalMessageLine(text));
     }
 
@@ -119,7 +124,8 @@ public class VirtualCardEnrollmentFields {
      * @param url The URL to open when the link is clicked.
      */
     @CalledByNative
-    private void addLinkToLastIssuerLegalMessageLine(int start, int end, String url) {
+    private void addLinkToLastIssuerLegalMessageLine(
+            int start, int end, @JniType("std::string") String url) {
         mIssuerLegalMessages
                 .get(mIssuerLegalMessages.size() - 1)
                 .links

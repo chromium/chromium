@@ -8,14 +8,9 @@
 #include "base/android/jni_string.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
-#include "ui/base/resource/resource_bundle.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/AutofillSnackbarController_jni.h"
-
-using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
 
@@ -29,7 +24,7 @@ AutofillSnackbarView* AutofillSnackbarView::Create(
 }
 
 void AutofillSnackbarViewAndroid::Show() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   ui::ViewAndroid* view_android =
       controller_->GetWebContents()->GetNativeView();
   DCHECK(view_android);
@@ -39,28 +34,28 @@ void AutofillSnackbarViewAndroid::Show() {
   }
 
   java_object_.Reset(Java_AutofillSnackbarController_create(
-      env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));
+      env, reinterpret_cast<intptr_t>(this), window_android));
   Java_AutofillSnackbarController_show(
       env, java_object_, controller_->GetMessageText(),
       controller_->GetActionButtonText(),
       static_cast<int>(controller_->GetDuration().InMilliseconds()),
-      static_cast<int>(controller_->GetSnackbarType()));
+      controller_->GetSnackbarType());
 }
 
 void AutofillSnackbarViewAndroid::Dismiss() {
-  JNIEnv* env = base::android::AttachCurrentThread();
   if (!java_object_.is_null()) {
+    JNIEnv* env = jni_zero::AttachCurrentThread();
     Java_AutofillSnackbarController_dismiss(env, java_object_);
   }
   delete this;
 }
 
-void AutofillSnackbarViewAndroid::OnActionClicked(JNIEnv* env) {
+void AutofillSnackbarViewAndroid::OnActionClicked() {
   AutofillSnackbarController* const controller = controller_;
   controller->OnActionClicked();
 }
 
-void AutofillSnackbarViewAndroid::OnDismissed(JNIEnv* env) {
+void AutofillSnackbarViewAndroid::OnDismissed() {
   AutofillSnackbarController* const controller = controller_;
   controller->OnDismissed();
 }

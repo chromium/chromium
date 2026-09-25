@@ -49,13 +49,13 @@ class AutofillSaveCardBottomSheetBridge {
 
   // -- JNI calls bridged to AutofillSaveCardDelegate --
   // Called when the UI is shown.
-  void OnUiShown(JNIEnv* env);
+  void OnUiShown();
   // Called when the user has accepted the prompt.
-  void OnUiAccepted(JNIEnv* env);
+  void OnUiAccepted();
   // Called when the user explicitly cancelled the prompt.
-  void OnUiCanceled(JNIEnv* env);
+  void OnUiCanceled();
   // Called if the user has ignored the prompt.
-  void OnUiIgnored(JNIEnv* env);
+  void OnUiIgnored();
 
   void SetSaveCardDelegateForTesting(
       std::unique_ptr<AutofillSaveCardDelegateAndroid> delegate);
@@ -63,13 +63,13 @@ class AutofillSaveCardBottomSheetBridge {
  protected:
   // Used in tests to inject dependencies.
   explicit AutofillSaveCardBottomSheetBridge(
-      base::android::ScopedJavaGlobalRef<jobject>
+      jni_zero::ScopedJavaGlobalRef<jobject>
           java_autofill_save_card_bottom_sheet_bridge);
 
  private:
   void ResetSaveCardDelegate();
 
-  base::android::ScopedJavaGlobalRef<jobject>
+  jni_zero::ScopedJavaGlobalRef<jobject>
       java_autofill_save_card_bottom_sheet_bridge_;
   std::unique_ptr<AutofillSaveCardDelegateAndroid> save_card_delegate_;
 };

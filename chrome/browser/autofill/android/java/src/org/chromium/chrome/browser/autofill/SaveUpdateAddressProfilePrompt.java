@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -128,11 +129,13 @@ public class SaveUpdateAddressProfilePrompt {
      */
     @CalledByNative
     private static @Nullable SaveUpdateAddressProfilePrompt create(
-            WindowAndroid windowAndroid,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
             SaveUpdateAddressProfilePromptController controller,
-            Profile browserProfile,
+            @JniType("Profile*") Profile browserProfile,
             AutofillProfile autofillProfile,
-            @SaveUpdateAddressProfilePromptMode int promptMode) {
+            @JniType("autofill::SaveUpdateAddressProfilePromptMode")
+                    @SaveUpdateAddressProfilePromptMode
+                    int promptMode) {
         Activity activity = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (activity == null || modalDialogManager == null) return null;
@@ -155,7 +158,10 @@ public class SaveUpdateAddressProfilePrompt {
      */
     @CalledByNative
     @VisibleForTesting
-    void setDialogDetails(String title, String positiveButtonText, String negativeButtonText) {
+    void setDialogDetails(
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String positiveButtonText,
+            @JniType("std::u16string") String negativeButtonText) {
         mDialogModel.set(ModalDialogProperties.TITLE, title);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText);
         mDialogModel.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButtonText);
@@ -171,7 +177,7 @@ public class SaveUpdateAddressProfilePrompt {
      */
     @CalledByNative
     @VisibleForTesting
-    void setRecordTypeNotice(String recordTypeNotice) {
+    void setRecordTypeNotice(@JniType("std::u16string") String recordTypeNotice) {
         showTextIfNotEmpty(
                 mDialogView.findViewById(R.id.autofill_address_profile_prompt_record_type_notice),
                 recordTypeNotice);
@@ -186,7 +192,10 @@ public class SaveUpdateAddressProfilePrompt {
      */
     @CalledByNative
     @VisibleForTesting
-    void setSaveOrMigrateDetails(String address, String email, String phone) {
+    void setSaveOrMigrateDetails(
+            @JniType("std::u16string") String address,
+            @JniType("std::u16string") String email,
+            @JniType("std::u16string") String phone) {
         showTextIfNotEmpty(mDialogView.findViewById(R.id.address), address);
         showTextIfNotEmpty(mDialogView.findViewById(R.id.email), email);
         showTextIfNotEmpty(mDialogView.findViewById(R.id.phone), phone);
@@ -202,7 +211,10 @@ public class SaveUpdateAddressProfilePrompt {
      */
     @CalledByNative
     @VisibleForTesting
-    void setUpdateDetails(String subtitle, String oldDetails, String newDetails) {
+    void setUpdateDetails(
+            @JniType("std::u16string") String subtitle,
+            @JniType("std::u16string") String oldDetails,
+            @JniType("std::u16string") String newDetails) {
         showTextIfNotEmpty(mDialogView.findViewById(R.id.subtitle), subtitle);
         showHeaders(!TextUtils.isEmpty(oldDetails));
         showTextIfNotEmpty(mDialogView.findViewById(R.id.details_old), oldDetails);

@@ -32,13 +32,13 @@ class AutofillSnackbarViewAndroid : public AutofillSnackbarView {
   // --------------------------------------------------------------------------
   // Methods called from Java via JNI
   // --------------------------------------------------------------------------
-  void OnActionClicked(JNIEnv* env);
-  void OnDismissed(JNIEnv* env);
+  void OnActionClicked();
+  void OnDismissed();
 
  private:
   raw_ptr<AutofillSnackbarController> controller_;
   // The corresponding java object.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_;
 };
 }  // namespace autofill
 

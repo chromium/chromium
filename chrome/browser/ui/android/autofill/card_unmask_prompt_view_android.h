@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
@@ -31,17 +30,15 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
   CardUnmaskPromptViewAndroid& operator=(const CardUnmaskPromptViewAndroid&) =
       delete;
 
-  bool CheckUserInputValidity(JNIEnv* env,
-                              const std::u16string& response);
-  void OnUserInput(JNIEnv* env,
-                   const std::u16string& cvc,
+  bool CheckUserInputValidity(const std::u16string& response);
+  void OnUserInput(const std::u16string& cvc,
                    const std::u16string& month,
                    const std::u16string& year,
                    bool enable_fido_auth,
                    bool was_checkbox_visible);
-  void OnNewCardLinkClicked(JNIEnv* env);
-  int GetExpectedCvcLength(JNIEnv* env);
-  void PromptDismissed(JNIEnv* env);
+  void OnNewCardLinkClicked();
+  int GetExpectedCvcLength();
+  void PromptDismissed();
 
   // CardUnmaskPromptView implementation.
   void Show() override;
@@ -58,10 +55,10 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
   // a is_null() reference if the creation failed. By using this method, the
   // bridge will try to recreate the java object if it failed previously (e.g.
   // because there was no native window available).
-  base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
+  jni_zero::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
 
   // The corresponding java object.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_internal_;
 
   raw_ptr<CardUnmaskPromptController> controller_;
   raw_ptr<content::WebContents> web_contents_;
