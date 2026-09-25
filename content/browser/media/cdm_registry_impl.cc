@@ -211,8 +211,9 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
 #if BUILDFLAG(IS_WIN)
 bool IsMediaFoundationHardwareSecurityDisabledByGpuFeature() {
   auto* gpu_data_manager = GpuDataManagerImpl::GetInstance();
-  CHECK(gpu_data_manager->IsGpuFeatureInfoAvailable(),
-        base::NotFatalUntil::M160);
+  // TODO(crbug.com/563598182): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(gpu_data_manager->IsGpuFeatureInfoAvailable());
   return gpu_data_manager->GetGpuFeatureInfo().IsWorkaroundEnabled(
       gpu::DISABLE_MEDIA_FOUNDATION_HARDWARE_SECURITY);
 }
