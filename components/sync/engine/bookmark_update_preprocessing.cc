@@ -161,8 +161,7 @@ bool AdaptUniquePositionForBookmark(const sync_pb::SyncEntity& update_entity,
   }
 
   // Permanent folders don't need positioning information.
-  if (update_entity.folder() &&
-      !update_entity.server_defined_unique_tag().empty()) {
+  if (!update_entity.server_defined_unique_tag().empty()) {
     return false;
   }
 
@@ -179,17 +178,8 @@ void AdaptTypeForBookmark(const sync_pb::SyncEntity& update_entity,
     return;
   }
   DCHECK(specifics->has_bookmark());
-  // For legacy data, SyncEntity.folder is always populated.
-  if (update_entity.has_folder()) {
-    specifics->mutable_bookmark()->set_type(
-        update_entity.folder() ? sync_pb::BookmarkSpecifics::FOLDER
-                               : sync_pb::BookmarkSpecifics::URL);
-    return;
-  }
-  // Remaining cases should be unreachable today. In case SyncEntity.folder gets
-  // removed in the future, with legacy data still being around prior to M94,
-  // infer folderness based on the present of field `url` (only populated for
-  // URL bookmarks).
+  // For legacy data prior to M94, infer folderness based on the presence of
+  // field `url` (only populated for URL bookmarks).
   specifics->mutable_bookmark()->set_type(
       specifics->bookmark().has_url() ? sync_pb::BookmarkSpecifics::URL
                                       : sync_pb::BookmarkSpecifics::FOLDER);

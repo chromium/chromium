@@ -59,7 +59,6 @@ class PersistentBookmarkEntity : public LoopbackServerEntity {
                            const std::string& client_tag_hash,
                            const sync_pb::UniquePosition& unique_position,
                            const sync_pb::EntitySpecifics& specifics,
-                           bool is_folder,
                            const std::string& parent_id,
                            int64_t creation_time,
                            int64_t last_modified_time);
@@ -71,7 +70,6 @@ class PersistentBookmarkEntity : public LoopbackServerEntity {
   bool RequiresParentId() const override;
   std::string GetParentId() const override;
   void SerializeAsProto(sync_pb::SyncEntity* proto) const override;
-  bool IsFolder() const override;
   PersistentBookmarkEntity* AsBookmarkEntity() override;
   const PersistentBookmarkEntity* AsBookmarkEntity() const override;
   sync_pb::LoopbackServerEntity_Type GetLoopbackServerEntityType()
@@ -85,7 +83,6 @@ class PersistentBookmarkEntity : public LoopbackServerEntity {
   // otherwise. Takes precedence over the two fields above when exposing the
   // entity in the protocol.
   const std::string client_tag_hash_;
-  const bool is_folder_;
   sync_pb::UniquePosition unique_position_;
   std::string parent_id_;
   int64_t creation_time_;

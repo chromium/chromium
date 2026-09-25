@@ -54,9 +54,8 @@ std::unique_ptr<PersistentBookmarkEntity> PersistentBookmarkEntity::CreateNew(
   return std::make_unique<PersistentBookmarkEntity>(
       id, 0, client_entity.name(), originator_cache_guid,
       originator_client_item_id, client_entity.client_tag_hash(),
-      client_entity.unique_position(), client_entity.specifics(),
-      client_entity.folder(), parent_id, client_entity.ctime(),
-      client_entity.mtime());
+      client_entity.unique_position(), client_entity.specifics(), parent_id,
+      client_entity.ctime(), client_entity.mtime());
 }
 
 // static
@@ -105,9 +104,8 @@ PersistentBookmarkEntity::CreateUpdatedVersion(
   return std::make_unique<PersistentBookmarkEntity>(
       client_entity.id_string(), 0, client_entity.name(), originator_cache_guid,
       originator_client_item_id, client_tag_hash,
-      client_entity.unique_position(), client_entity.specifics(),
-      client_entity.folder(), parent_id, client_entity.ctime(),
-      client_entity.mtime());
+      client_entity.unique_position(), client_entity.specifics(), parent_id,
+      client_entity.ctime(), client_entity.mtime());
 }
 
 // static
@@ -124,9 +122,8 @@ PersistentBookmarkEntity::CreateFromEntity(
       client_entity.originator_cache_guid(),
       client_entity.originator_client_item_id(),
       client_entity.client_tag_hash(), client_entity.unique_position(),
-      client_entity.specifics(), client_entity.folder(),
-      client_entity.parent_id_string(), client_entity.ctime(),
-      client_entity.mtime());
+      client_entity.specifics(), client_entity.parent_id_string(),
+      client_entity.ctime(), client_entity.mtime());
 }
 PersistentBookmarkEntity::PersistentBookmarkEntity(
     const string& id,
@@ -137,7 +134,6 @@ PersistentBookmarkEntity::PersistentBookmarkEntity(
     const string& client_tag_hash,
     const sync_pb::UniquePosition& unique_position,
     const sync_pb::EntitySpecifics& specifics,
-    bool is_folder,
     const string& parent_id,
     int64_t creation_time,
     int64_t last_modified_time)
@@ -145,7 +141,6 @@ PersistentBookmarkEntity::PersistentBookmarkEntity(
       originator_cache_guid_(originator_cache_guid),
       originator_client_item_id_(originator_client_item_id),
       client_tag_hash_(client_tag_hash),
-      is_folder_(is_folder),
       unique_position_(unique_position),
       parent_id_(parent_id),
       creation_time_(creation_time),
@@ -208,10 +203,6 @@ void PersistentBookmarkEntity::SerializeAsProto(
 
   sync_pb::UniquePosition* unique_position = proto->mutable_unique_position();
   unique_position->CopyFrom(unique_position_);
-}
-
-bool PersistentBookmarkEntity::IsFolder() const {
-  return is_folder_;
 }
 
 PersistentBookmarkEntity* PersistentBookmarkEntity::AsBookmarkEntity() {

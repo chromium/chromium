@@ -127,13 +127,12 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildBookmark(
       CreateBaseEntitySpecifics(/*is_folder=*/false);
   entity_specifics.mutable_bookmark()->set_url(url.spec());
   FillWithFaviconIfNeeded(entity_specifics.mutable_bookmark());
-  return Build(entity_specifics, /*is_folder=*/false);
+  return Build(entity_specifics);
 }
 
 std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildFolder()
     const {
-  return Build(CreateBaseEntitySpecifics(/*is_folder=*/true),
-               /*is_folder=*/true);
+  return Build(CreateBaseEntitySpecifics(/*is_folder=*/true));
 }
 
 sync_pb::UniquePosition BookmarkEntityBuilder::GetUniquePosition() const {
@@ -174,8 +173,7 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
 }
 
 std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
-    const sync_pb::EntitySpecifics& entity_specifics,
-    bool is_folder) const {
+    const sync_pb::EntitySpecifics& entity_specifics) const {
   const std::string parent_id =
       parent_id_.value_or(LoopbackServerEntity::CreateId(
           syncer::BOOKMARKS, "bookmark_bar", /*migration_version=*/0));
@@ -190,7 +188,7 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
     return std::make_unique<syncer::PersistentBookmarkEntity>(
         id, kUnusedVersion, title_, /*originator_cache_guid=*/"",
         /*originator_client_item_id=*/"", client_tag_hash, GetUniquePosition(),
-        entity_specifics, is_folder, parent_id, kDefaultTime, kDefaultTime);
+        entity_specifics, parent_id, kDefaultTime, kDefaultTime);
   }
 
   const std::string originator_client_item_id =
@@ -205,7 +203,7 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
   return std::make_unique<syncer::PersistentBookmarkEntity>(
       id, kUnusedVersion, title_, originator_cache_guid_,
       originator_client_item_id, /*client_tag_hash=*/"", GetUniquePosition(),
-      entity_specifics, is_folder, parent_id, kDefaultTime, kDefaultTime);
+      entity_specifics, parent_id, kDefaultTime, kDefaultTime);
 }
 
 void BookmarkEntityBuilder::FillWithFaviconIfNeeded(

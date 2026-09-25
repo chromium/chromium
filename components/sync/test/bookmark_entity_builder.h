@@ -109,8 +109,7 @@ class BookmarkEntityBuilder {
   // Builds the parts of a LoopbackServerEntity common to both normal bookmarks
   // and folders.
   std::unique_ptr<syncer::LoopbackServerEntity> Build(
-      const sync_pb::EntitySpecifics& entity_specifics,
-      bool is_folder) const;
+      const sync_pb::EntitySpecifics& entity_specifics) const;
 
   // Fill in favicon and icon URL in the specifics. `bookmark_specifics` must
   // not be nullptr.

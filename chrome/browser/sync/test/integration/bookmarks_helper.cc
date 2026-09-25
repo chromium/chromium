@@ -1194,8 +1194,7 @@ bool BookmarkModelMatchesFakeServerChecker::IsExitConditionSatisfied(
       return false;
     }
 
-    if (node->is_folder() != server_entity.folder() ||
-        node->is_folder() != (server_entity.specifics().bookmark().type() ==
+    if (node->is_folder() != (server_entity.specifics().bookmark().type() ==
                               sync_pb::BookmarkSpecifics::FOLDER)) {
       *os << " Node type mismatch for node: " << node->GetTitle();
       return false;

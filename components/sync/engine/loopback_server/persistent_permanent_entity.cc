@@ -143,10 +143,6 @@ void PersistentPermanentEntity::SerializeAsProto(
   proto->set_server_defined_unique_tag(server_defined_unique_tag_);
 }
 
-bool PersistentPermanentEntity::IsFolder() const {
-  return true;
-}
-
 bool PersistentPermanentEntity::IsPermanent() const {
   return true;
 }

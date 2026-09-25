@@ -260,25 +260,6 @@ TEST(BookmarkUpdatePreprocessingTest, ShouldUseTypeInSpecifics) {
 }
 
 TEST(BookmarkUpdatePreprocessingTest,
-     ShouldInferTypeFromFolderFieldInSyncEntity) {
-  sync_pb::SyncEntity entity;
-  sync_pb::EntitySpecifics specifics;
-
-  *specifics.mutable_bookmark() =
-      sync_pb::BookmarkSpecifics::default_instance();
-  entity.set_folder(true);
-  AdaptTypeForBookmark(entity, &specifics);
-  EXPECT_THAT(specifics.bookmark().type(),
-              Eq(sync_pb::BookmarkSpecifics::FOLDER));
-
-  *specifics.mutable_bookmark() =
-      sync_pb::BookmarkSpecifics::default_instance();
-  entity.set_folder(false);
-  AdaptTypeForBookmark(entity, &specifics);
-  EXPECT_THAT(specifics.bookmark().type(), Eq(sync_pb::BookmarkSpecifics::URL));
-}
-
-TEST(BookmarkUpdatePreprocessingTest,
      ShouldInferTypeFromPresenceOfUrlInSpecifics) {
   sync_pb::SyncEntity entity;
   sync_pb::EntitySpecifics specifics;

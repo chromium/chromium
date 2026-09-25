@@ -67,7 +67,6 @@ class LoopbackServerEntity {
   virtual sync_pb::LoopbackServerEntity_Type GetLoopbackServerEntityType()
       const;
   virtual bool IsDeleted() const;
-  virtual bool IsFolder() const;
   virtual bool IsPermanent() const;
   virtual PersistentBookmarkEntity* AsBookmarkEntity();
   virtual const PersistentBookmarkEntity* AsBookmarkEntity() const;

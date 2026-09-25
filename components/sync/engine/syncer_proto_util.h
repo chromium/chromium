@@ -54,14 +54,6 @@ class SyncerProtoUtil {
       SyncCycle* cycle,
       DataTypeSet* partial_failure_data_types);
 
-  // Specifies where entity's position should be updated from the data in
-  // GetUpdates message.
-  static bool ShouldMaintainPosition(const sync_pb::SyncEntity& sync_entity);
-
-  // Specifies where entity's parent ID should be updated from the data in
-  // GetUpdates message.
-  static bool ShouldMaintainHierarchy(const sync_pb::SyncEntity& sync_entity);
-
   // Get a debug string representation of the client to server response.
   static std::string ClientToServerResponseDebugString(
       const sync_pb::ClientToServerResponse& response);
