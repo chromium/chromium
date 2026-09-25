@@ -319,13 +319,34 @@ void ImmersiveModeControllerChromeos::OnWindowPropertyChanged(
     ui::mojom::WindowShowState new_state =
         window->GetProperty(aura::client::kShowStateKey);
     auto old_state = static_cast<ui::mojom::WindowShowState>(old);
+    if (old_state == new_state) {
+      return;
+    }
 
     // Make sure the browser stays up to date with the window's state. This is
     // necessary in classic Ash if the user exits fullscreen with the restore
     // button, and it's necessary in OopAsh if the window manager initiates a
-    // fullscreen mode change (e.g. due to a WM shortcut).
+    // fullscreen mode change (e.g. due to a WM shortcut). Minimizing a
+    // fullscreen window does not exit fullscreen. This way it can be properly
+    // restored to fullscreen when unminimized.
+    bool fullscreen_to_minimized =
+        old_state == ui::mojom::WindowShowState::kFullscreen &&
+        new_state == ui::mojom::WindowShowState::kMinimized;
+
+    ExclusiveAccessManager* manager =
+        browser_view_->browser()
+            ? ExclusiveAccessManager::From(browser_view_->browser())
+            : nullptr;
+
+    bool minimized_fullscreen_to_unminimized_non_fullscreen =
+        old_state == ui::mojom::WindowShowState::kMinimized &&
+        new_state != ui::mojom::WindowShowState::kFullscreen && manager &&
+        manager->fullscreen_controller()->IsControllerInitiatedFullscreen();
+
     if (new_state == ui::mojom::WindowShowState::kFullscreen ||
-        old_state == ui::mojom::WindowShowState::kFullscreen) {
+        (old_state == ui::mojom::WindowShowState::kFullscreen &&
+         !fullscreen_to_minimized) ||
+        minimized_fullscreen_to_unminimized_non_fullscreen) {
       // If the browser view initiated this state change,
       // BrowserView::ProcessFullscreen will no-op, so this call is harmless.
       browser_view_->FullscreenStateChanging();
