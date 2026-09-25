@@ -2463,6 +2463,10 @@ source_set("unit_tests") {
     deps += [ "//build:branding_buildflags" ]
   }
 
+  if (is_android) {
+    deps += [ "//components/autofill/android:main_autofill_jni_headers" ]
+  }
+
   if (!is_ios && !is_android) {
     deps += [ "//ui/native_theme" ]
   }

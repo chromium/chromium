@@ -342,7 +342,14 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
     std::u16string value =
         Java_AutofillProfile_getInfo(env, jprofile, field_type);
 
-    if (value != profile.GetInfo(field_type, app_locale) ||
+    // In `CreateJavaObject()`, `GetInfo()` is used only for `NAME_FULL`, while
+    // `GetRawInfo()` is used for all other stored types.
+    // TODO(crbug.com/40278253): Reconcile usage of `GetInfo()` and
+    // `GetRawInfo()` below.
+    const std::u16string current_value =
+        field_type == NAME_FULL ? profile.GetInfo(field_type, app_locale)
+                                : profile.GetRawInfo(field_type);
+    if (value != current_value ||
         status != profile.GetVerificationStatus(field_type)) {
       modified_fields.emplace_back(field_type, value, status);
     }

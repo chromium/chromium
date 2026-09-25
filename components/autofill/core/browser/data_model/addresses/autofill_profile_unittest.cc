@@ -18,10 +18,12 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
@@ -35,6 +37,14 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
+#include "components/autofill/android/main_autofill_jni_headers/AutofillProfile_jni.h"
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
 
@@ -2277,6 +2287,118 @@ TEST_F(AutofillProfileTest, ProfilesMerge_InvalidCountryCode) {
   ASSERT_EQ(existing.MergeDataFrom(incoming, "en-US"),
             ProfileMergeResult::kMergeSucceededWithModification);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+// Tests that the conversion of `AutofillProfile` between C++ and Java preserves
+// a profile when converting it back and forth.
+TEST_F(AutofillProfileTest, JavaObjectConversion_ExistingProfile) {
+  const AutofillProfile profile =
+      test::GetFullProfile(AddressCountryCode("DE"));
+  const base::android::ScopedJavaLocalRef<jobject> jprofile =
+      profile.CreateJavaObject("en-US");
+  ASSERT_TRUE(jprofile);
+
+  // Reconstruct C++ profile using `existing_profile`.
+  AutofillProfile reconstructed = AutofillProfile::CreateFromJavaObject(
+      jprofile, /*existing_profile=*/&profile, "en-US");
+
+  // Using `existing_profile` preserves the usage stats of a profile.
+  EXPECT_TRUE(test_api(reconstructed).EqualsIncludingUsageStats(profile));
+}
+
+// Tests that the conversion of `AutofillProfile` between C++ and Java works
+// while using `AutofillProfile::CreateFromJavaObject()` without
+// `existing_profile`.
+TEST_F(AutofillProfileTest, JavaObjectConversion_WithoutExistingProfile) {
+  const AutofillProfile profile =
+      test::GetFullProfile(AddressCountryCode("DE"));
+  const base::android::ScopedJavaLocalRef<jobject> jprofile =
+      profile.CreateJavaObject("en-US");
+  ASSERT_TRUE(jprofile);
+
+  const AutofillProfile reconstructed = AutofillProfile::CreateFromJavaObject(
+      jprofile, /*existing_profile=*/nullptr, "en-US");
+
+  // Check fields individually since the `VerificationStatus` does not match,
+  // e.g. `NAME_FIRST` is `kParsed` in `reconstructed` since it was deduced from
+  // `NAME_FULL`, while it is `kObserved` in `profile`.
+  EXPECT_EQ(reconstructed.guid(), profile.guid());
+  EXPECT_EQ(reconstructed.GetRawInfo(NAME_FULL), profile.GetRawInfo(NAME_FULL));
+  EXPECT_EQ(reconstructed.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
+            profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  EXPECT_EQ(reconstructed.GetRawInfo(ADDRESS_HOME_CITY),
+            profile.GetRawInfo(ADDRESS_HOME_CITY));
+  EXPECT_EQ(reconstructed.GetRawInfo(ADDRESS_HOME_STATE),
+            profile.GetRawInfo(ADDRESS_HOME_STATE));
+  EXPECT_EQ(reconstructed.GetRawInfo(ADDRESS_HOME_ZIP),
+            profile.GetRawInfo(ADDRESS_HOME_ZIP));
+  EXPECT_EQ(reconstructed.GetRawInfo(ADDRESS_HOME_COUNTRY), u"DE");
+  EXPECT_EQ(reconstructed.GetRawInfo(PHONE_HOME_WHOLE_NUMBER),
+            profile.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(reconstructed.GetRawInfo(EMAIL_ADDRESS),
+            profile.GetRawInfo(EMAIL_ADDRESS));
+}
+
+// Tests that `AutofillProfile.getInfo()` returns `GetRawInfo()` in Java except
+// for the full name.
+// TODO(crbug.com/40278253): Reconsider if this current behavior is the desired
+// behavior.
+TEST_F(AutofillProfileTest, JavaObjectConversion_getInfo) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const AutofillProfile profile =
+      test::GetFullProfile(AddressCountryCode("DE"));
+  const base::android::ScopedJavaLocalRef<jobject> jprofile =
+      profile.CreateJavaObject("en-US");
+  ASSERT_TRUE(jprofile);
+
+  // In Java, `getInfo(NAME_FULL)` returns `GetInfo(NAME_FULL)`.
+  EXPECT_EQ(Java_AutofillProfile_getInfo(env, jprofile, NAME_FULL),
+            profile.GetInfo(NAME_FULL, "en-US"));
+  // In Java, `getInfo(ADDRESS_HOME_COUNTRY)` returns
+  // `GetRawInfo(ADDRESS_HOME_COUNTRY)` (e.g. "DE"), not the localized country
+  // name.
+  EXPECT_EQ(Java_AutofillProfile_getInfo(env, jprofile, ADDRESS_HOME_COUNTRY),
+            u"DE");
+}
+
+TEST_F(AutofillProfileTest,
+       JavaObjectConversion_PropagateModificationsFromJava) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const AutofillProfile profile =
+      test::GetFullProfile(AddressCountryCode("DE"));
+  const base::android::ScopedJavaLocalRef<jobject> jprofile =
+      profile.CreateJavaObject("en-US");
+  ASSERT_TRUE(jprofile);
+
+  // Modify some fields in Java.
+  Java_AutofillProfile_setInfo(
+      env, jprofile, static_cast<int32_t>(ADDRESS_HOME_COUNTRY), u"US",
+      static_cast<int32_t>(VerificationStatus::kUserVerified));
+  Java_AutofillProfile_setInfo(
+      env, jprofile, static_cast<int32_t>(NAME_FULL), u"Something Else",
+      static_cast<int32_t>(VerificationStatus::kUserVerified));
+  Java_AutofillProfile_setInfo(
+      env, jprofile, static_cast<int32_t>(EMAIL_ADDRESS),
+      profile.GetRawInfo(EMAIL_ADDRESS),
+      static_cast<int32_t>(VerificationStatus::kNoStatus));
+
+  AutofillProfile modified_profile =
+      AutofillProfile::CreateFromJavaObject(jprofile, &profile, "en-US");
+
+  EXPECT_EQ(modified_profile.GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
+  EXPECT_EQ(modified_profile.GetVerificationStatus(ADDRESS_HOME_COUNTRY),
+            VerificationStatus::kUserVerified);
+
+  EXPECT_EQ(modified_profile.GetInfo(NAME_FULL, "en-US"), u"Something Else");
+  EXPECT_EQ(modified_profile.GetRawInfo(NAME_FIRST), u"Something");
+  EXPECT_EQ(modified_profile.GetRawInfo(NAME_LAST), u"Else");
+
+  EXPECT_EQ(modified_profile.GetVerificationStatus(EMAIL_ADDRESS),
+            VerificationStatus::kNoStatus);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
