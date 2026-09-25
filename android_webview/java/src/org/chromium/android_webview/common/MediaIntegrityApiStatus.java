@@ -16,11 +16,10 @@ import java.lang.annotation.Target;
 /**
  * Defines permission levels for the Media Integrity API.
  *
- * This enum is logged in Android.WebView.MediaIntegrity.ApiStatus
- * histogram and its values correspond to
- * AndroidWebViewMediaIntegrityApiStatus in enums.xml
+ * <p>This enum is logged in Android.WebView.MediaIntegrity.ApiStatus histogram and its values
+ * correspond to AndroidWebViewMediaIntegrityApiStatus in enums.xml
  *
- * Please do not delete, reorder or reuse these values.
+ * <p>Please do not delete, reorder or reuse these values.
  */
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.SOURCE)

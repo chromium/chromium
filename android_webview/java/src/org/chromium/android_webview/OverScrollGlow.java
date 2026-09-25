@@ -208,7 +208,7 @@ class OverScrollGlow {
         return mEdgeGlowTop.getColor();
     }
 
-    /** @return True if any glow is still animating */
+    /** Returns {@code true} if any glow is still animating. */
     public boolean isAnimating() {
         return (!mEdgeGlowTop.isFinished()
                 || !mEdgeGlowBottom.isFinished()

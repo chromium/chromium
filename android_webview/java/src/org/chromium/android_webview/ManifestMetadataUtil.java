@@ -92,7 +92,8 @@ public class ManifestMetadataUtil {
             mAppMultiProfileProfileNameTagKey =
                     getAppMultiProfileProfileNameTagKey(metadataHolderServiceMetadata);
             mForceSyncBrowserStartup = shouldForceSyncBrowserStartup(metadataHolderServiceMetadata);
-            mEnableContentRestriction = getContentRestrictionAppOptInPreference(metadataHolderServiceMetadata);
+            mEnableContentRestriction =
+                    getContentRestrictionAppOptInPreference(metadataHolderServiceMetadata);
         }
     }
 
@@ -209,7 +210,9 @@ public class ManifestMetadataUtil {
         if (metadataHolderServiceMetadata != null
                 && metadataHolderServiceMetadata.containsKey(
                         ENABLE_CONTENT_RESTRICTION_METADATA_NAME)) {
-            value = metadataHolderServiceMetadata.getBoolean(ENABLE_CONTENT_RESTRICTION_METADATA_NAME);
+            value =
+                    metadataHolderServiceMetadata.getBoolean(
+                            ENABLE_CONTENT_RESTRICTION_METADATA_NAME);
         } else {
             value = null;
         }

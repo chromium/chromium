@@ -21,8 +21,8 @@ public class AwNonembeddedUmaReplayer {
     private static final String TAG = "AwNonembedUmaReplay";
 
     /**
-     * Extract method arguments from the given {@link HistogramRecord} and call
-     * {@link org.chromium.base.metrics.UmaRecorder#recordBooleanHistogram}.
+     * Extract method arguments from the given {@link HistogramRecord} and call {@link
+     * org.chromium.base.metrics.UmaRecorder#recordBooleanHistogram}.
      */
     private static void replayBooleanHistogram(HistogramRecord proto) {
         assert proto.getRecordType() == RecordType.HISTOGRAM_BOOLEAN;
@@ -38,8 +38,8 @@ public class AwNonembeddedUmaReplayer {
     }
 
     /**
-     * Extract method arguments from the given {@link HistogramRecord} and call
-     * {@link org.chromium.base.metrics.UmaRecorder#recordExponentialHistogram}.
+     * Extract method arguments from the given {@link HistogramRecord} and call {@link
+     * org.chromium.base.metrics.UmaRecorder#recordExponentialHistogram}.
      */
     private static void replayExponentialHistogram(HistogramRecord proto) {
         assert proto.getRecordType() == RecordType.HISTOGRAM_EXPONENTIAL;
@@ -54,8 +54,8 @@ public class AwNonembeddedUmaReplayer {
     }
 
     /**
-     * Extract method arguments from the given {@link HistogramRecord} and call
-     * {@link org.chromium.base.metrics.UmaRecorder#recordLinearHistogram}.
+     * Extract method arguments from the given {@link HistogramRecord} and call {@link
+     * org.chromium.base.metrics.UmaRecorder#recordLinearHistogram}.
      */
     private static void replayLinearHistogram(HistogramRecord proto) {
         assert proto.getRecordType() == RecordType.HISTOGRAM_LINEAR;
@@ -70,8 +70,8 @@ public class AwNonembeddedUmaReplayer {
     }
 
     /**
-     * Extract method arguments from the given {@link HistogramRecord} and call
-     * {@link org.chromium.base.metrics.UmaRecorder#recordSparseHistogram}.
+     * Extract method arguments from the given {@link HistogramRecord} and call {@link
+     * org.chromium.base.metrics.UmaRecorder#recordSparseHistogram}.
      */
     private static void replaySparseHistogram(HistogramRecord proto) {
         assert proto.getRecordType() == RecordType.HISTOGRAM_SPARSE;
@@ -80,8 +80,8 @@ public class AwNonembeddedUmaReplayer {
     }
 
     /**
-     * Extract method arguments from the given {@link HistogramRecord} and call
-     * {@link org.chromium.base.metrics.UmaRecorder#recordUserAction}.
+     * Extract method arguments from the given {@link HistogramRecord} and call {@link
+     * org.chromium.base.metrics.UmaRecorder#recordUserAction}.
      */
     private static void replayUserAction(HistogramRecord proto) {
         assert proto.getRecordType() == RecordType.USER_ACTION;

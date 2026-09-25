@@ -26,8 +26,8 @@ public class AwDebug {
     /**
      * Previously requested to dump WebView state as a minidump.
      *
-     * This is no longer supported as it doesn't include renderer state in
-     * multiprocess mode, significantly limiting its usefulness.
+     * <p>This is no longer supported as it doesn't include renderer state in multiprocess mode,
+     * significantly limiting its usefulness.
      */
     @UsedByReflection("")
     public static boolean dumpWithoutCrashing(File dumpFile) {

@@ -42,10 +42,10 @@ public final class AwCookieManager {
     private final long mNativeCookieManager;
 
     /**
-     * The class loader will take care of synchronization as each class
-     * is only loaded once at the time it is needed. Meaning that the first time
-     * {@link AwCookieManager#getDefaultCookieManager()} is called, the static instance
-     * of the default cookie manager will be initialized within the holder class.
+     * The class loader will take care of synchronization as each class is only loaded once at the
+     * time it is needed. Meaning that the first time {@link
+     * AwCookieManager#getDefaultCookieManager()} is called, the static instance of the default
+     * cookie manager will be initialized within the holder class.
      */
     private static final class DefaultCookieManagerHolder {
         private static final AwCookieManager sDefaultCookieManager = new AwCookieManager();
@@ -176,8 +176,9 @@ public final class AwCookieManager {
     }
 
     /**
-     * Remove all session cookies, the cookies without an expiration date.
-     * The value of the callback is true iff at least one cookie was removed.
+     * Remove all session cookies, the cookies without an expiration date. The value of the callback
+     * is true iff at least one cookie was removed.
+     *
      * @param callback A callback called after the cookies (if any) are removed.
      */
     public void removeSessionCookies(Callback<Boolean> callback) {
@@ -192,8 +193,8 @@ public final class AwCookieManager {
     }
 
     /**
-     * Remove all cookies.
-     * The value of the callback is true iff at least one cookie was removed.
+     * Remove all cookies. The value of the callback is true iff at least one cookie was removed.
+     *
      * @param callback A callback called after the cookies (if any) are removed.
      */
     public void removeAllCookies(Callback<Boolean> callback) {
@@ -250,11 +251,12 @@ public final class AwCookieManager {
 
     /**
      * CookieCallback is a bridge that knows how to call a Callback on its original thread.
-     * We need to arrange for the users Callback#onResult to be called on the original
-     * thread after the work is done. When the API is called we construct a CookieCallback which
-     * remembers the handler of the current thread. Later the native code uses
-     * the native method |RunBooleanCallbackAndroid| to call CookieCallback#onResult which posts a
-     * Runnable on the handler of the original thread which in turn calls Callback#onResult.
+     *
+     * <p>We need to arrange for the users Callback#onResult to be called on the original thread
+     * after the work is done. When the API is called we construct a CookieCallback which remembers
+     * the handler of the current thread. Later the native code uses the native method
+     * |RunBooleanCallbackAndroid| to call CookieCallback#onResult which posts a Runnable on the
+     * handler of the original thread which in turn calls Callback#onResult.
      */
     static class CookieCallback implements Callback<Boolean> {
         @Nullable Callback<Boolean> mCallback;

@@ -4,9 +4,10 @@
 
 package org.chromium.android_webview;
 
-import org.chromium.build.annotations.NullMarked;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Settings for toggling back/forward cache behavior. This class is only needed to maintain

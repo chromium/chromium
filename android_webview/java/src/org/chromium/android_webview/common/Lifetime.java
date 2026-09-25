@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Annotations specifying the lifetimes of classes in embedded WebView code.
  *
- * See: //android_webview/docs/lifetime-annotations.md.
+ * <p>See: //android_webview/docs/lifetime-annotations.md.
  */
 @NullMarked
 public class Lifetime {

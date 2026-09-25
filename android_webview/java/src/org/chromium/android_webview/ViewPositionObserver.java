@@ -40,14 +40,18 @@ public class ViewPositionObserver {
                 };
     }
 
-    /** @return The current x position of the observed view. */
+    /**
+     * @return The current x position of the observed view.
+     */
     public int getPositionX() {
         // The stored position may be out-of-date. Get the real current position.
         updatePosition();
         return mPosition[0];
     }
 
-    /** @return The current y position of the observed view. */
+    /**
+     * @return The current y position of the observed view.
+     */
     public int getPositionY() {
         // The stored position may be out-of-date. Get the real current position.
         updatePosition();

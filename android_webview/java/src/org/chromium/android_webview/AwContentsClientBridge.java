@@ -43,11 +43,10 @@ import java.util.Map;
 import javax.security.auth.x500.X500Principal;
 
 /**
- * This class handles the JNI communication logic for the the AwContentsClient class.
- * Both the Java and the native peers of AwContentsClientBridge are owned by the
- * corresponding AwContents instances. This class and its native peer are connected
- * via weak references. The native AwContentsClientBridge sets up and clear these weak
- * references.
+ * This class handles the JNI communication logic for the the AwContentsClient class. Both the Java
+ * and the native peers of AwContentsClientBridge are owned by the corresponding AwContents
+ * instances. This class and its native peer are connected via weak references. The native
+ * AwContentsClientBridge sets up and clear these weak references.
  */
 @JNINamespace("android_webview")
 public class AwContentsClientBridge {

@@ -3655,10 +3655,10 @@ public class AwContents implements SmartClipProvider {
             if (!mainFrame.isCrossOriginIsolated()) {
                 throw new IllegalStateException(
                         "Cannot send SharedArrayBuffer to a frame that is not cross-origin"
-                            + " isolated. If this was"
-                            + " intended, consider allowing your origin with"
-                            + " `Profile#setCrossOriginIsolatedAllowlist()`, and add the"
-                            + " Document-Isolation-Policy header the page's response.");
+                                + " isolated. If this was"
+                                + " intended, consider allowing your origin with"
+                                + " `Profile#setCrossOriginIsolatedAllowlist()`, and add the"
+                                + " Document-Isolation-Policy header the page's response.");
             }
         }
 

@@ -43,7 +43,9 @@ public class AwDisplayCutoutController {
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
-        /** @return The DIP scale. */
+        /**
+         * @return The DIP scale.
+         */
         float getDipScale();
 
         /**
@@ -285,13 +287,17 @@ public class AwDisplayCutoutController {
         mContainerView.requestApplyInsets();
     }
 
-    /** @see View#onSizeChanged(int, int, int, int) */
+    /**
+     * @see View#onSizeChanged(int, int, int, int)
+     */
     public void onSizeChanged() {
         if (DEBUG) Log.i(TAG, "onSizeChanged");
         onUpdateWindowInsets();
     }
 
-    /** @see View#onAttachedToWindow() */
+    /**
+     * @see View#onAttachedToWindow()
+     */
     public void onAttachedToWindow() {
         if (DEBUG) Log.i(TAG, "onAttachedToWindow");
         onUpdateWindowInsets();

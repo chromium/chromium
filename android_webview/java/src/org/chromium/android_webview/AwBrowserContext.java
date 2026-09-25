@@ -385,7 +385,9 @@ public class AwBrowserContext implements BrowserContextHandle {
         ContentViewStatics.setWebKitSharedTimersSuspended(true);
     }
 
-    /** @see android.webkit.WebView#resumeTimers() */
+    /**
+     * @see android.webkit.WebView#resumeTimers()
+     */
     public void resumeTimers() {
         ContentViewStatics.setWebKitSharedTimersSuspended(false);
     }

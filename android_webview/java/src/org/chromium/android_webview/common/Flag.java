@@ -42,8 +42,8 @@ public class Flag {
     }
 
     /**
-     * Calls should use {@link #baseFeature(String, String)} or {@link
-     * #commandLine(String, String)} instead.
+     * Calls should use {@link #baseFeature(String, String)} or {@link #commandLine(String, String)}
+     * instead.
      */
     private Flag(
             String name,
@@ -76,7 +76,7 @@ public class Flag {
      * Indicates whether this is a {@code base::Feature} or a commandline flag.
      *
      * @return {@code true} if this is a {@code base::Feature}, {@code false} if this is a
-     * commandline flag.
+     *     commandline flag.
      */
     public boolean isBaseFeature() {
         return mIsBaseFeature;

@@ -188,7 +188,6 @@ public class AwContentsStatics {
         sDefaultTrafficStatsUid = uid;
     }
 
-
     public static void setSelectionActionMenuClient(
             @Nullable SelectionActionMenuClientWrapper client) {
         sSelectionActionMenuClient = client;

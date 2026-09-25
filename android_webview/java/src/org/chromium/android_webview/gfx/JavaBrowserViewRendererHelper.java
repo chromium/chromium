@@ -43,8 +43,8 @@ public class JavaBrowserViewRendererHelper {
     }
 
     /**
-     * Draws a provided bitmap into a canvas.
-     * Used for convenience from the native side and other static helper methods.
+     * Draws a provided bitmap into a canvas. Used for convenience from the native side and other
+     * static helper methods.
      */
     @CalledByNative
     private static void drawBitmapIntoCanvas(

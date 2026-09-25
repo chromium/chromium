@@ -569,6 +569,7 @@ public class AwSettings {
 
     /**
      * Enable/disable third party cookies for an AwContents
+     *
      * @param accept true if we should accept third party cookies
      */
     public void setAcceptThirdPartyCookies(boolean accept) {
@@ -601,6 +602,7 @@ public class AwSettings {
 
     /**
      * Return whether third party cookies are enabled for an AwContents
+     *
      * @return true if accept third party cookies
      */
     public boolean getAcceptThirdPartyCookies() {
@@ -617,6 +619,7 @@ public class AwSettings {
 
     /**
      * Return whether Safe Browsing has been enabled for the current WebView
+     *
      * @return true if SafeBrowsing is enabled
      */
     public boolean getSafeBrowsingEnabled() {
@@ -876,8 +879,8 @@ public class AwSettings {
     }
 
     /**
-     * See {@link androidx.webkit.WebSettingsCompat#setUserAgentMetadata}.
-     * Map<String, Object> represents the priorities name its value for AwUserAgentMetadata.
+     * See {@link androidx.webkit.WebSettingsCompat#setUserAgentMetadata}. Map<String, Object>
+     * represents the priorities name its value for AwUserAgentMetadata.
      */
     public void setUserAgentMetadataFromMap(Map<String, Object> uaMetadataMap) {
         if (TRACE) Log.i(TAG, "setUserAgentMetadata=" + uaMetadataMap);
@@ -2054,7 +2057,6 @@ public class AwSettings {
         return false;
     }
 
-
     public boolean getOffscreenPreRaster() {
         synchronized (mAwSettingsLock) {
             return getOffscreenPreRasterLocked();
@@ -2068,15 +2070,17 @@ public class AwSettings {
     }
 
     /**
-     * Sets whether this WebView should raster tiles when it is
-     * offscreen but attached to window. Turning this on can avoid
-     * rendering artifacts when animating an offscreen WebView on-screen.
-     * In particular, insertVisualStateCallback requires this mode to function.
-     * Offscreen WebViews in this mode uses more memory. Please follow
-     * these guidelines to limit memory usage:
-     * - Webview size should be not be larger than the device screen size.
-     * - Limit simple mode to a small number of webviews. Use it for
-     *   visible webviews and webviews about to be animated to visible.
+     * Sets whether this WebView should raster tiles when it is offscreen but attached to window.
+     *
+     * <p>Turning this on can avoid rendering artifacts when animating an offscreen WebView
+     * on-screen. In particular, insertVisualStateCallback requires this mode to function. Offscreen
+     * WebViews in this mode uses more memory. Please follow these guidelines to limit memory usage:
+     *
+     * <ul>
+     *   <li>Webview size should be not be larger than the device screen size.
+     *   <li>Limit simple mode to a small number of webviews. Use it for visible webviews and
+     *       webviews about to be animated to visible.
+     * </ul>
      */
     public void setOffscreenPreRaster(boolean enabled) {
         synchronized (mAwSettingsLock) {

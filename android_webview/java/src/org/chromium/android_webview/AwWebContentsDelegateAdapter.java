@@ -33,8 +33,9 @@ import org.chromium.url.GURL;
 
 /**
  * Adapts the AwWebContentsDelegate interface to the AwContentsClient interface.
- * This class also serves a secondary function of routing certain callbacks from the content layer
- * to specific listener interfaces.
+ *
+ * <p>This class also serves a secondary function of routing certain callbacks from the content
+ * layer to specific listener interfaces.
  */
 @Lifetime.WebView
 class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
@@ -93,8 +94,8 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     }
 
     /**
-     * Redispatches unhandled media keys. This allows bluetooth headphones with play/pause or
-     * other buttons to function correctly.
+     * Redispatches unhandled media keys. This allows bluetooth headphones with play/pause or other
+     * buttons to function correctly.
      */
     private void handleMediaKey(KeyEvent e) {
         switch (e.getKeyCode()) {
@@ -345,10 +346,10 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     /**
      * Called to show the web contents in fullscreen mode.
      *
-     * <p>If entering fullscreen on a video element the web contents will contain just
-     * the html5 video controls. {@link #enterFullscreenVideo(View)} will be called later
-     * once the ContentVideoView, which contains the hardware accelerated fullscreen video,
-     * is ready to be shown.
+     * <p>If entering fullscreen on a video element the web contents will contain just the html5
+     * video controls. {@link #enterFullscreenVideo(View)} will be called later once the
+     * ContentVideoView, which contains the hardware accelerated fullscreen video, is ready to be
+     * shown.
      */
     private void enterFullscreen() {
         if (mAwContents.isFullScreen()) {
@@ -421,7 +422,7 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
         }
 
         /**
-         * @return the display name of a path if it is a content URI and is present in the database
+         * Returns the display name of a path if it is a content URI and is present in the database
          * or an empty string otherwise.
          */
         private String resolveFileName(String filePath) {

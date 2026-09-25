@@ -29,10 +29,14 @@ public class AwDisplayModeController {
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
-        /** @return The display width. */
+        /**
+         * @return The display width.
+         */
         int getDisplayWidth();
 
-        /** @return The display height. */
+        /**
+         * @return The display height.
+         */
         int getDisplayHeight();
     }
 

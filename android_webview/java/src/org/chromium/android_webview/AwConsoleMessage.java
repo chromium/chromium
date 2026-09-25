@@ -11,9 +11,7 @@ import org.chromium.android_webview.common.Lifetime;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- *
- * See {@link android.webkit.ConsoleMessage}. */
+/** See {@link android.webkit.ConsoleMessage}. */
 @Lifetime.Temporary
 public class AwConsoleMessage {
     @Retention(RetentionPolicy.SOURCE)

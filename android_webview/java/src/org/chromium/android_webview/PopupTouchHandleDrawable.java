@@ -43,9 +43,8 @@ import java.util.Collections;
 /**
  * View that displays a selection or insertion handle for text editing.
  *
- * While a HandleView is logically a child of some other view, it does not exist in that View's
+ * <p>While a HandleView is logically a child of some other view, it does not exist in that View's
  * hierarchy.
- *
  */
 @Lifetime.Temporary
 @JNINamespace("android_webview")

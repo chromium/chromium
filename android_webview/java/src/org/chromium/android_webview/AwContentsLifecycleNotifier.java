@@ -34,7 +34,9 @@ public class AwContentsLifecycleNotifier {
         static final AwContentsLifecycleNotifier sInstance = new AwContentsLifecycleNotifier();
     }
 
-    /** @return the singleton AwContentsLifecycleNotifier. */
+    /**
+     * @return the singleton AwContentsLifecycleNotifier.
+     */
     @CalledByNative
     public static AwContentsLifecycleNotifier getInstance() {
         ThreadUtils.assertOnUiThread();

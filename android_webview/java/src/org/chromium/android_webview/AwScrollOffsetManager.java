@@ -30,7 +30,7 @@ public class AwScrollOffsetManager {
     /**
      * The interface that all users of AwScrollOffsetManager should implement.
      *
-     * The unit of all the values in this delegate are physical pixels.
+     * <p>The unit of all the values in this delegate are physical pixels.
      */
     public interface Delegate {
         // Call View#overScrollBy on the containerView.
@@ -53,6 +53,7 @@ public class AwScrollOffsetManager {
 
         /**
          * Smooth scrolls the view to targetX, targetY, within durationMs.
+         *
          * @param targetX x-coordinate of target scroll position.
          * @param targetY y-coordinate of target scroll position.
          * @param durationMs the animation duration in milliseconds.

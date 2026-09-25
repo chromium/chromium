@@ -94,13 +94,15 @@ public abstract class PlatformServiceBridge {
      *
      * @param data uncompressed, serialized UMA proto.
      * @return Status code of the logging operation. The status codes are:
-     * - Success cache (went to the devices cache): -1
-     * - Success: 0
-     * - Internal error: 8
-     * - Interrupted: 14
-     * - Timeout: 15
-     * - Cancelled: 16
-     * - API not connected (probably means the API is not available on device): 17
+     *     <ul>
+     *       <li>Success cache (went to the devices cache): -1
+     *       <li>Success: 0
+     *       <li>Internal error: 8
+     *       <li>Interrupted: 14
+     *       <li>Timeout: 15
+     *       <li>Cancelled: 16
+     *       <li>API not connected (probably means the API is not available on device): 17
+     *     </ul>
      */
     public int logMetricsBlocking(byte[] data) {
         // TODO(crbug.com/40790308): remove this once downstream implementation lands.

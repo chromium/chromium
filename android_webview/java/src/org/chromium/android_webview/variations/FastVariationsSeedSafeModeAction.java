@@ -71,8 +71,8 @@ public class FastVariationsSeedSafeModeAction extends SafeModeAction {
     }
 
     /**
-     * Determine whether a Fast Variations mitigation action is enabled.
-     * Determined when the safemode action runs or does not run.
+     * Determine whether a Fast Variations mitigation action is enabled. Determined when the
+     * safemode action runs or does not run.
      */
     public static boolean hasRun() {
         return sHasRun;

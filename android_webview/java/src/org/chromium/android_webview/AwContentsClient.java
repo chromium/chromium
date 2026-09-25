@@ -681,6 +681,7 @@ public abstract class AwContentsClient {
 
     /**
      * Called whenever there is a new content picture available.
+     *
      * @param picture New picture.
      */
     public abstract void onNewPicture(Picture picture);

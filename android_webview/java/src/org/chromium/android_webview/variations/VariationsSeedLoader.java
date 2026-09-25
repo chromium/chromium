@@ -60,26 +60,32 @@ import java.util.concurrent.TimeoutException;
  * block on loading the seed (by using FutureTask.get()) but should not block on the other work done
  * by the Runnable.
  *
- * The Runnable and FutureTask together perform these steps:
- * 1. Pre-load the metrics client ID. This is needed to seed the EntropyProvider. If there is no
- *    client ID, variations can't be used on this run.
- * 2. Load the new seed file, if any.
- * 3. If no new seed file, load the old seed file, if any.
- * 4. Make the loaded seed available via get() (or null if there was no seed).
- * 5. If there was a new seed file, replace the old with the new (but only after making the loaded
- *    seed available, as the replace need not block startup).
- * 6. If there was no seed, or the loaded seed was expired, request a new seed (but don't request
- *    more often than MAX_REQUEST_PERIOD_MILLIS).
+ * <p>The Runnable and FutureTask together perform these steps:
  *
- * VariationsSeedLoader should be used during WebView startup like so:
- * 1. Ensure ContextUtils.getApplicationContext(), AwBrowserProcess.getWebViewPackageName(), and
- *    PathUtils are ready to use.
- * 2. As early as possible, call startVariationsInit() to begin the task.
- * 3. Perform any WebView startup tasks which don't require variations to be initialized.
- * 4. Call finishVariationsInit() with the value returned from startVariationsInit(). This will
- *    block for up to SEED_LOAD_TIMEOUT_MILLIS if the task hasn't fininshed loading the seed. If the
- *    seed is loaded on time, variations will be initialized. finishVariationsInit() must be called
- *    before AwFeatureListCreator::SetUpFieldTrials() runs.
+ * <ol>
+ *   <li>Pre-load the metrics client ID. This is needed to seed the EntropyProvider. If there is no
+ *       client ID, variations can't be used on this run.
+ *   <li>Load the new seed file, if any.
+ *   <li>If no new seed file, load the old seed file, if any.
+ *   <li>Make the loaded seed available via get() (or null if there was no seed).
+ *   <li>If there was a new seed file, replace the old with the new (but only after making the
+ *       loaded seed available, as the replace need not block startup).
+ *   <li>If there was no seed, or the loaded seed was expired, request a new seed (but don't request
+ *       more often than MAX_REQUEST_PERIOD_MILLIS).
+ * </ol>
+ *
+ * <p>VariationsSeedLoader should be used during WebView startup like so:
+ *
+ * <ol>
+ *   <li>Ensure ContextUtils.getApplicationContext(), AwBrowserProcess.getWebViewPackageName(), and
+ *       PathUtils are ready to use.
+ *   <li>As early as possible, call startVariationsInit() to begin the task.
+ *   <li>Perform any WebView startup tasks which don't require variations to be initialized.
+ *   <li>Call finishVariationsInit() with the value returned from startVariationsInit(). This will
+ *       block for up to SEED_LOAD_TIMEOUT_MILLIS if the task hasn't fininshed loading the seed. If
+ *       the seed is loaded on time, variations will be initialized. finishVariationsInit() must be
+ *       called before AwFeatureListCreator::SetUpFieldTrials() runs.
+ * </ol>
  */
 @JNINamespace("android_webview")
 @NullMarked

@@ -9,9 +9,8 @@ import org.chromium.build.annotations.NullMarked;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A utility class for Variations Fast Fetch Mode to provide
- * a common set of utilities for safemode between
- * embedded and non-embedded WebView.
+ * A utility class for Variations Fast Fetch Mode to provide a common set of utilities for safemode
+ * between embedded and non-embedded WebView.
  */
 @NullMarked
 public class VariationsFastFetchModeUtils {

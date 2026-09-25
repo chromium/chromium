@@ -19,7 +19,8 @@ public final class AwMetricsUtils {
 
     /**
      * Replicates the algorithm used to hash histogram names to avoid the complexity of JNI.
-     * The native implementation is present in base/metrics/metrics_hashes.cc
+     *
+     * <p>The native implementation is present in base/metrics/metrics_hashes.cc
      */
     public static long hashHistogramName(String histogramName) {
         try {

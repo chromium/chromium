@@ -20,17 +20,18 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * Handles running cleanup tasks when an object becomes eligible for GC. Cleanup tasks
- * are always executed on the main thread. In general, classes should not have
- * finalizers and likewise should not use this class for the same reasons. The
- * exception is where public APIs exist that require native side resources to be
- * cleaned up in response to java side GC of API objects. (Private/internal
- * interfaces should always favor explicit resource releases / destroy()
- * protocol for this rather than depend on GC to trigger native cleanup).
- * NOTE this uses WeakReference rather than PhantomReference, to avoid delaying the
- * cleanup processing until after finalizers (if any) have run. In general usage of
- * this class indicates the client does NOT use finalizers anyway (Good), so this should
- * not be a visible difference in practice.
+ * Handles running cleanup tasks when an object becomes eligible for GC.
+ *
+ * <p>Cleanup tasks are always executed on the main thread. In general, classes should not have
+ * finalizers and likewise should not use this class for the same reasons. The exception is where
+ * public APIs exist that require native side resources to be cleaned up in response to java side GC
+ * of API objects. (Private/internal interfaces should always favor explicit resource releases /
+ * destroy() protocol for this rather than depend on GC to trigger native cleanup).
+ *
+ * <p>NOTE this uses WeakReference rather than PhantomReference, to avoid delaying the cleanup
+ * processing until after finalizers (if any) have run. In general usage of this class indicates the
+ * client does NOT use finalizers anyway (Good), so this should not be a visible difference in
+ * practice.
  */
 public class CleanupReference extends WeakReference<Object> {
     private static final String TAG = "CleanupReference";
@@ -80,10 +81,9 @@ public class CleanupReference extends WeakReference<Object> {
     private static final int REMOVE_REF = 2;
 
     /**
-     * This {@link Handler} polls {@link #sRefs}, looking for cleanup tasks that
-     * are ready to run.
-     * This is lazily initialized as ThreadUtils.getUiThreadLooper() may not be
-     * set yet early in startup.
+     * This {@link Handler} polls {@link #sRefs}, looking for cleanup tasks that are ready to run.
+     * This is lazily initialized as ThreadUtils.getUiThreadLooper() may not be set yet early in
+     * startup.
      */
     @SuppressLint("HandlerLeak")
     private static class LazyHolder {
@@ -160,8 +160,8 @@ public class CleanupReference extends WeakReference<Object> {
     }
 
     /**
-     * Clear the cleanup task {@link Runnable} so that nothing will be done
-     * after garbage collection.
+     * Clear the cleanup task {@link Runnable} so that nothing will be done after garbage
+     * collection.
      */
     public void cleanupNow() {
         mExplicitCleanup = true;

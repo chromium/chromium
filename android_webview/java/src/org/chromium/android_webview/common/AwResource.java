@@ -13,8 +13,8 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * A class that defines a set of resource IDs and functionality to resolve
- * those IDs to concrete resources.
+ * A class that defines a set of resource IDs and functionality to resolve those IDs to concrete
+ * resources.
  */
 @JNINamespace("android_webview::AwResource")
 @NullMarked

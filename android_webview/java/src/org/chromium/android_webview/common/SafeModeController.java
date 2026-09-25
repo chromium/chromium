@@ -329,7 +329,6 @@ public class SafeModeController {
     }
 
     /**
-     *
      * @return A copy of the list of registered {@link SafeModeAction} actions.
      */
     public SafeModeAction @Nullable [] getRegisteredActions() {

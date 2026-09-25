@@ -160,11 +160,7 @@ public class AwQuotaManagerBridge {
     public void getQuotaForOrigin(String origin, @NonNull Callback<Long> callback) {
         ThreadUtils.assertOnUiThread();
         AwQuotaManagerBridgeJni.get()
-                .getUsageAndQuotaForOrigin(
-                        mNativeAwQuotaManagerBridge,
-                        origin,
-                        callback,
-                        true);
+                .getUsageAndQuotaForOrigin(mNativeAwQuotaManagerBridge, origin, callback, true);
     }
 
     /**
@@ -174,11 +170,7 @@ public class AwQuotaManagerBridge {
     public void getUsageForOrigin(String origin, @NonNull Callback<Long> callback) {
         ThreadUtils.assertOnUiThread();
         AwQuotaManagerBridgeJni.get()
-                .getUsageAndQuotaForOrigin(
-                        mNativeAwQuotaManagerBridge,
-                        origin,
-                        callback,
-                        false);
+                .getUsageAndQuotaForOrigin(mNativeAwQuotaManagerBridge, origin, callback, false);
     }
 
     @CalledByNative

@@ -17,7 +17,7 @@ import org.chromium.components.policy.AppRestrictionsProvider;
  */
 @VisibleForTesting
 public class AwPolicyProvider extends AppRestrictionsProvider {
-    /** Policies targeted to WebView should be prefixed by this string.*/
+    /** Policies targeted to WebView should be prefixed by this string. */
     public static final String POLICY_PREFIX = "com.android.browser:";
 
     public AwPolicyProvider(Context context) {
