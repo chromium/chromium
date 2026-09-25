@@ -1505,6 +1505,53 @@ TEST_F(AXPlatformNodeAuraLinuxTest,
                 .inline_text_boxes_used_in_web_content_count());
 }
 
+// Regression test for crbug.com/503354595.
+TEST_F(AXPlatformNodeAuraLinuxTest, AtkTextLastLineWithTrailingIgnoredContent) {
+  TestAXNodeWrapper::SetGlobalIsWebContent(true);
+
+  // A container has two text lines, separated by a line break and a trailing
+  // ignored line break.
+  TestAXTreeUpdateNode line_break(ax::mojom::Role::kLineBreak, {});
+  line_break.data.SetName("\n");
+  line_break.data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  TestAXTreeUpdateNode ignored_break = line_break;
+  ignored_break.data.AddState(ax::mojom::State::kIgnored);
+  TestAXTreeUpdateNode container(
+      ax::mojom::Role::kGenericContainer,
+      {TestAXTreeUpdateNode("Line one"), line_break,
+       TestAXTreeUpdateNode("Line two"), ignored_break});
+  container.data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  Init(TestAXTreeUpdate(container));
+
+  AtkObject* root_obj = GetRootAtkObject();
+  ASSERT_TRUE(ATK_IS_TEXT(root_obj));
+  AtkText* atk_text = ATK_TEXT(root_obj);
+  ASSERT_EQ(17, atk_text_get_character_count(atk_text));
+
+  // ATK line queries at offset 12 must return "Line two" with offsets 9 and 17.
+  int start_offset = -1;
+  int end_offset = -1;
+  char* content = atk_text_get_string_at_offset(
+      atk_text, 12, ATK_TEXT_GRANULARITY_LINE, &start_offset, &end_offset);
+  EXPECT_STREQ("Line two", content);
+  EXPECT_EQ(9, start_offset);
+  EXPECT_EQ(17, end_offset);
+  g_free(content);
+
+  // A LINE_END query searches backward for a line end rather than a line start
+  // and must return the same range.
+  start_offset = -1;
+  end_offset = -1;
+  content = atk_text_get_text_at_offset(
+      atk_text, 12, ATK_TEXT_BOUNDARY_LINE_END, &start_offset, &end_offset);
+  EXPECT_STREQ("Line two", content);
+  EXPECT_EQ(9, start_offset);
+  EXPECT_EQ(17, end_offset);
+  g_free(content);
+}
+
 TEST_F(AXPlatformNodeAuraLinuxTest, AtkTextGeometryRequestsInlineTextBoxes) {
   TestAXNodeWrapper::SetGlobalIsWebContent(true);
   Init(BuildTextField());

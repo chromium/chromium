@@ -2021,8 +2021,10 @@ class AXPosition {
   // an anchor boundary. This means that if the position is at the start or end
   // of the anchor, it will return a position at the start or end of the anchor,
   // respectively. This is useful when we want to ensure that the resulting
-  // position is still within the same anchor. If no unignored position can be
-  // found, it will return a null position.
+  // position is still within the same anchor. It will return a null position
+  // if the anchor itself is ignored or if no position can be rooted at it. If
+  // the position found on the anchor is still ignored, it will return this
+  // position unchanged.
   AXPositionInstance TryAsUnignoredPositionPreservingAnchor(
       AXPositionAdjustmentBehavior behavior) const {
     if (IsNullPosition()) {
@@ -2034,37 +2036,39 @@ class AXPosition {
       return new_position;
     }
 
-    // As a last resort, AsUnignoredPosition() may return a position that is
-    // anchored at a different node. In such case, we need to create a new
-    // position that is anchored at the same node as this position. To do this,
-    // Try Calling AsUnignoredPosition in the other direction, starting from
-    // one of the ends, as there may not have been any unignored positions in
-    // the original direction.
-    switch (behavior) {
-      case AXPositionAdjustmentBehavior::kMoveBackward:
-        new_position = CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
-            AXPositionAdjustmentBehavior::kMoveForward);
-        break;
-      case AXPositionAdjustmentBehavior::kMoveForward:
-        new_position = CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
-            AXPositionAdjustmentBehavior::kMoveBackward);
-        break;
+    // AsUnignoredPosition() may return a position that is anchored at a
+    // different node: an unignored ancestor, a descendant leaf, or the nearest
+    // unignored leaf in the requested direction, possibly outside this
+    // position's subtree. In such case, we need to create a new position that
+    // is anchored at the same node as this position. To do this, check to see
+    // if it can be expressed in terms of the original anchor.
+    const ax::mojom::MoveDirection move_direction =
+        behavior == AXPositionAdjustmentBehavior::kMoveForward
+            ? ax::mojom::MoveDirection::kForward
+            : ax::mojom::MoveDirection::kBackward;
+    new_position =
+        new_position->CreateAncestorPosition(GetAnchor(), move_direction);
+    if (new_position->IsNullPosition()) {
+      // The position found is outside the original anchor's subtree. Instead,
+      // start from the anchor boundary in the requested direction and call
+      // AsUnignoredPosition() in the opposite direction.
+      switch (behavior) {
+        case AXPositionAdjustmentBehavior::kMoveBackward:
+          new_position = CreatePositionAtStartOfAnchor()->AsUnignoredPosition(
+              AXPositionAdjustmentBehavior::kMoveForward);
+          break;
+        case AXPositionAdjustmentBehavior::kMoveForward:
+          new_position = CreatePositionAtEndOfAnchor()->AsUnignoredPosition(
+              AXPositionAdjustmentBehavior::kMoveBackward);
+          break;
+      }
+      new_position =
+          new_position->CreateAncestorPosition(GetAnchor(), move_direction);
     }
-    if (GetAnchor() != new_position->GetAnchor()) {
-      // Check to see if the new position can be expressed in terms of the
-      // current anchor.
-      new_position = new_position->CreateAncestorPosition(
-          GetAnchor(), behavior == AXPositionAdjustmentBehavior::kMoveForward
-                           ? ax::mojom::MoveDirection::kForward
-                           : ax::mojom::MoveDirection::kBackward);
-    }
-    // It could be that there are no unignored positions that can be rooted
-    // at the current anchor.
+    // `new_position` is now either rooted at the original anchor or null. If it
+    // is still ignored, return the original position, or null if the anchor
+    // itself is ignored. Return null also if `new_position` is null.
     if (new_position->IsIgnored()) {
-      // If the anchor itself is unignored, its end is still a valid boundary
-      // rooted on this node, even when the leaf equivalent is ignored because
-      // the anchor's text is followed by ignored content. Returning null here
-      // would drop the anchor's last line.
       if (!GetAnchor()->IsIgnored()) {
         return Clone();
       }
@@ -3353,43 +3357,52 @@ class AXPosition {
     }
 
     if (text_position->IsFollowedByGeneratedNewline()) {
-      return CreateNextPositionAtAnchorWithText();
-    }
+      // If kStopAtAnchorBoundary is not set, simply return the next character
+      // position, which is the start of the next anchor with text and might
+      // potentially be on another node.
+      if (options.boundary_behavior !=
+          AXBoundaryBehavior::kStopAtAnchorBoundary) {
+        return CreateNextPositionAtAnchorWithText();
+      }
+      // With kStopAtAnchorBoundary, follow the same steps as for any other
+      // character boundary so that the result stays on this position's anchor.
+      text_position = CreateNextPositionAtAnchorWithText();
+    } else {
+      // Calling "AsLeafTextPositionBeforeCharacter" should have created a text
+      // position that is either at a grapheme boundary, or a null position. If
+      // our text offset is pointing to a position that is in the middle of a
+      // grapheme cluster, we should not erroneously assume that we are at a
+      // character boundary and stop because we had been asked to "stop if
+      // already at boundary". However, we should not modify our position if
+      // `AsLeafTextPositionBeforeCharacter` has simply moved us to the start of
+      // the next leaf anchor because we originally happened to be at the end of
+      // our current anchor. We also need to ensure that we are comparing two
+      // positions that have the same affinity, since
+      // `AsLeafTextPositionBeforeCharacter` resets the affinity to downstream,
+      // while the original affinity might have been upstream.
+      if (options.boundary_behavior ==
+              AXBoundaryBehavior::kStopAtAnchorBoundary &&
+          options.boundary_detection ==
+              AXBoundaryDetection::kCheckInitialPosition &&
+          (AtEndOfAnchor() ||
+           (IsTextPosition() &&
+            *text_position == *CloneWithDownstreamAffinity()))) {
+        return Clone();
+      }
 
-    // Calling "AsLeafTextPositionBeforeCharacter" should have created a text
-    // position that is either at a grapheme boundary, or a null position. If
-    // our text offset is pointing to a position that is in the middle of a
-    // grapheme cluster, we should not erroneously assume that we are at a
-    // character boundary and stop because we had been asked to "stop if already
-    // at boundary". However, we should not modify our position if
-    // `AsLeafTextPositionBeforeCharacter` has simply moved us to the start of
-    // the next leaf anchor because we originally happened to be at the end of
-    // our current anchor. We also need to ensure that we are comparing two
-    // positions that have the same affinity, since
-    // `AsLeafTextPositionBeforeCharacter` resets the affinity to downstream,
-    // while the original affinity might have been upstream.
-    if (options.boundary_behavior ==
-            AXBoundaryBehavior::kStopAtAnchorBoundary &&
-        options.boundary_detection ==
-            AXBoundaryDetection::kCheckInitialPosition &&
-        (AtEndOfAnchor() ||
-         (IsTextPosition() &&
-          *text_position == *CloneWithDownstreamAffinity()))) {
-      return Clone();
+      int max_text_offset = text_position->MaxTextOffset();
+      DCHECK_LT(text_position->text_offset_, max_text_offset);
+      std::unique_ptr<base::i18n::BreakIterator> grapheme_iterator =
+          text_position->GetGraphemeIterator();
+      do {
+        ++text_position->text_offset_;
+      } while (text_position->text_offset_ < max_text_offset &&
+               grapheme_iterator &&
+               !grapheme_iterator->IsGraphemeBoundary(
+                   static_cast<size_t>(text_position->text_offset_)));
+      DCHECK_GT(text_position->text_offset_, 0);
+      DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
     }
-
-    int max_text_offset = text_position->MaxTextOffset();
-    DCHECK_LT(text_position->text_offset_, max_text_offset);
-    std::unique_ptr<base::i18n::BreakIterator> grapheme_iterator =
-        text_position->GetGraphemeIterator();
-    do {
-      ++text_position->text_offset_;
-    } while (text_position->text_offset_ < max_text_offset &&
-             grapheme_iterator &&
-             !grapheme_iterator->IsGraphemeBoundary(
-                 static_cast<size_t>(text_position->text_offset_)));
-    DCHECK_GT(text_position->text_offset_, 0);
-    DCHECK_LE(text_position->text_offset_, text_position->MaxTextOffset());
 
     // If the character boundary is in the same subtree, return a position
     // rooted at this position's anchor. This is necessary because we don't want
@@ -4124,8 +4137,19 @@ class AXPosition {
       }
     }
 
-    if (IsTreePosition())
+    if (IsTreePosition()) {
       text_position = text_position->AsTreePosition();
+    }
+
+    if (options.boundary_behavior ==
+        AXBoundaryBehavior::kStopAtAnchorBoundary) {
+      // With kStopAtAnchorBoundary, the result must stay on this same anchor.
+      return text_position->TryAsUnignoredPositionPreservingAnchor(
+          move_direction == ax::mojom::MoveDirection::kBackward
+              ? AXPositionAdjustmentBehavior::kMoveBackward
+              : AXPositionAdjustmentBehavior::kMoveForward);
+    }
+
     AXPositionInstance unignored_position = text_position->AsUnignoredPosition(
         AXPositionAdjustmentBehavior::kMoveBackward);
     // If there are no unignored positions then `text_position` is anchored in

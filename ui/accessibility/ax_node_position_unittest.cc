@@ -27,6 +27,7 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/test_ax_tree_update.h"
 #include "ui/accessibility/test_single_ax_tree_manager.h"
 
 namespace ui {
@@ -4729,6 +4730,94 @@ TEST_F(AXPositionTest, CreateLineStartBoundaryStaysOnAnchorForEmptyObjectLeaf) {
   ASSERT_NE(nullptr, line_position);
   ASSERT_FALSE(line_position->IsNullPosition());
   EXPECT_EQ(container_data.id, line_position->anchor_id());
+  EXPECT_EQ(0, line_position->text_offset());
+}
+
+TEST_F(AXPositionTest, CreateBoundaryEndStaysOnStartingAnchorWithIgnoredEdges) {
+  // A container holds static text node "A" between ignored line breaks.
+  TestAXTreeUpdateNode ignored_break(ax::mojom::Role::kLineBreak,
+                                     ax::mojom::State::kIgnored, {});
+  ignored_break.data.SetName("\n");
+  ignored_break.data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  TestAXTreeUpdateNode container(
+      ax::mojom::Role::kGenericContainer,
+      {ignored_break, TestAXTreeUpdateNode("A"), ignored_break});
+  container.data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  Init(TestAXTreeUpdate({ax::mojom::Role::kRootWebArea, {container}}));
+  const AXNode& anchor = *GetTree()->root()->children()[0];
+
+  // Forward and backward searches for a boundary end (line, paragraph, or word)
+  // all return offset 1.
+  for (auto boundary : {ax::mojom::TextBoundary::kLineEnd,
+                        ax::mojom::TextBoundary::kParagraphEnd,
+                        ax::mojom::TextBoundary::kWordEnd}) {
+    SCOPED_TRACE(static_cast<int>(boundary));
+    for (auto direction : {ax::mojom::MoveDirection::kBackward,
+                           ax::mojom::MoveDirection::kForward}) {
+      SCOPED_TRACE(static_cast<int>(direction));
+      const bool backward = direction == ax::mojom::MoveDirection::kBackward;
+      auto position = CreateTextPosition(anchor, backward ? 1 : 0,
+                                         ax::mojom::TextAffinity::kDownstream);
+      auto result = position->CreatePositionAtTextBoundary(
+          boundary, direction,
+          {AXBoundaryBehavior::kStopAtAnchorBoundary,
+           backward ? AXBoundaryDetection::kCheckInitialPosition
+                    : AXBoundaryDetection::kDontCheckInitialPosition});
+      EXPECT_EQ(&anchor, result->GetAnchor());
+      EXPECT_EQ(1, result->text_offset());
+    }
+  }
+}
+
+TEST_F(AXPositionTest,
+       CreateNextCharacterBoundaryStaysOnStartingAnchorWithGeneratedNewline) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
+
+  // A container holds line-breaking paragraphs "A" and "B" and an empty
+  // iframe; paragraph "D" follows it. The container's hypertext is one
+  // embedded-object character per child, but the empty iframe has no text.
+  TestAXTreeUpdateNode paragraph1(ax::mojom::Role::kParagraph,
+                                  {TestAXTreeUpdateNode("A")});
+  paragraph1.data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  TestAXTreeUpdateNode paragraph2 = paragraph1;
+  paragraph2.children[0].data.SetName("B");
+  TestAXTreeUpdateNode paragraph3 = paragraph1;
+  paragraph3.children[0].data.SetName("D");
+  TestAXTreeUpdateNode iframe(ax::mojom::Role::kIframe, {});
+  Init(TestAXTreeUpdate(
+      {ax::mojom::Role::kRootWebArea,
+       {{ax::mojom::Role::kGenericContainer, {paragraph1, paragraph2, iframe}},
+        paragraph3}}));
+  const AXNode& anchor = *GetTree()->root()->children()[0];
+  const AXMovementOptions options{
+      AXBoundaryBehavior::kStopAtAnchorBoundary,
+      AXBoundaryDetection::kDontCheckInitialPosition};
+
+  // Stepping over the newline after "A" moves from offset 1 upstream to
+  // offset 1 downstream, the start of "B".
+  auto position =
+      CreateTextPosition(anchor, 1, ax::mojom::TextAffinity::kUpstream);
+  auto result = position->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kCharacter, ax::mojom::MoveDirection::kForward,
+      options);
+  EXPECT_EQ(&anchor, result->GetAnchor());
+  EXPECT_EQ(1, result->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result->affinity());
+
+  // From offset 2 upstream, the end of "B", stepping over the newline skips
+  // the empty iframe. The next text is "D", outside the container, so the step
+  // stops at offset 3 downstream, the container's end.
+  position = CreateTextPosition(anchor, 2, ax::mojom::TextAffinity::kUpstream);
+  result = position->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kCharacter, ax::mojom::MoveDirection::kForward,
+      options);
+  EXPECT_EQ(&anchor, result->GetAnchor());
+  EXPECT_EQ(3, result->text_offset());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result->affinity());
 }
 
 TEST_F(AXPositionTest, CreatePositionAtInvalidGraphemeBoundary) {
