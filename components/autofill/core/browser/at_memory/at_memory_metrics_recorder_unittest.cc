@@ -497,6 +497,50 @@ TEST_F(AtMemoryMetricsRecorderTest,
       "Autofill.AtMemory.Latency.Query.Passport", base::Seconds(5), 1);
 }
 
+// Tests that query latency metric correctly records samples exceeding 10
+// seconds without capping at 10s.
+TEST_F(AtMemoryMetricsRecorderTest,
+       QueryLatency_ExceedsTenSecondsWithoutCapping) {
+  {
+    AtMemoryMetricsRecorder metrics(/*uploader_service=*/nullptr,
+                                    &test_ukm_recorder_, kTestSourceId, GURL(),
+                                    std::u16string(), FieldGlobalId(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
+                         /*metadata=*/{});
+    metrics.OnQuerySubmitted(u"query 1");
+    task_environment_.FastForwardBy(base::Seconds(15));
+    metrics.OnQueryResponseReceived(
+        MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
+                            {MemorySearchResult(MemoryDataType::kPassportNumber,
+                                                u"Passport", u"A1234567")}));
+  }
+  {
+    AtMemoryMetricsRecorder metrics(/*uploader_service=*/nullptr,
+                                    &test_ukm_recorder_, kTestSourceId, GURL(),
+                                    std::u16string(), FieldGlobalId(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
+                         /*metadata=*/{});
+    metrics.OnQuerySubmitted(u"query 2");
+    task_environment_.FastForwardBy(base::Seconds(25));
+    metrics.OnQueryResponseReceived(
+        MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess,
+                            {MemorySearchResult(MemoryDataType::kPassportNumber,
+                                                u"Passport", u"A1234567")}));
+  }
+
+  histogram_tester_.ExpectTotalCount("Autofill.AtMemory.Latency.Query", 2);
+  histogram_tester_.ExpectTimeBucketCount("Autofill.AtMemory.Latency.Query",
+                                          base::Seconds(15), 1);
+  histogram_tester_.ExpectTimeBucketCount("Autofill.AtMemory.Latency.Query",
+                                          base::Seconds(25), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Autofill.AtMemory.Latency.Query.Passport", base::Seconds(15), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "Autofill.AtMemory.Latency.Query.Passport", base::Seconds(25), 1);
+}
+
 struct FetchPiiLatencyTestCase {
   AtMemoryMetricsRecorder::FetchPiiSource source;
   std::string_view histogram_name;

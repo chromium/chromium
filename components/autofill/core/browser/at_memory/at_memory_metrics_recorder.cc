@@ -444,11 +444,12 @@ void AtMemoryMetricsRecorder::OnQueryResponseReceived(
 
   base::TimeDelta time_since_query_submitted =
       query_to_suggestions_shown_timer_->Elapsed();
-  base::UmaHistogramTimes("Autofill.AtMemory.Latency.Query",
-                          time_since_query_submitted);
-  base::UmaHistogramTimes(base::StrCat({"Autofill.AtMemory.Latency.Query.",
-                                        GetQueryDatatypeCategory(result)}),
-                          time_since_query_submitted);
+  base::UmaHistogramMediumTimes("Autofill.AtMemory.Latency.Query",
+                                time_since_query_submitted);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Autofill.AtMemory.Latency.Query.",
+                    GetQueryDatatypeCategory(result)}),
+      time_since_query_submitted);
   if (ukm_search_query_builder_) {
     ukm_search_query_builder_->SetQueryLatencyMs(
         time_since_query_submitted.InMilliseconds());
