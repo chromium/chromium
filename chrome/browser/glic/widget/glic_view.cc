@@ -118,6 +118,35 @@ void GlicView::SetWebContents(content::WebContents* new_web_contents) {
   views::WebView::SetWebContents(new_web_contents);
   // Attach this view as the delegate for the new WebContents.
   SetWebContentsDelegate(new_web_contents, /*delegate=*/this);
+
+  UpdateWebContentsSize();
+}
+
+void GlicView::RenderFrameCreated(content::RenderFrameHost* render_frame_host) {
+  views::WebView::RenderFrameCreated(render_frame_host);
+  if (web_contents() &&
+      render_frame_host == web_contents()->GetPrimaryMainFrame()) {
+    UpdateWebContentsSize();
+  }
+}
+
+void GlicView::RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                                      content::RenderFrameHost* new_host) {
+  views::WebView::RenderFrameHostChanged(old_host, new_host);
+  if (web_contents() && new_host == web_contents()->GetPrimaryMainFrame()) {
+    UpdateWebContentsSize();
+  }
+}
+
+void GlicView::UpdateWebContentsSize() {
+  const gfx::Size contents_size = GetContentsBounds().size();
+  if (!web_contents() || contents_size.IsEmpty()) {
+    return;
+  }
+  if (auto* rwhv = web_contents()->GetRenderWidgetHostView()) {
+    rwhv->SetSize(contents_size);
+  }
+  InvalidateLayout();
 }
 
 void GlicView::DraggableRegionsChanged(

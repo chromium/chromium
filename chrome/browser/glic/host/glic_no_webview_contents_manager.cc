@@ -592,11 +592,21 @@ void GlicNoWebviewContentsManager::NotifyWebContentsChanged() {
 }
 
 void GlicNoWebviewContentsManager::ApplySizeToGuest() {
-  if (cached_overlay_size_.IsEmpty() || !guest_contents() ||
+  gfx::Size target_size;
+  if (host_) {
+    target_size = host_->instance().GetPanelSize();
+    if (!target_size.IsEmpty()) {
+      cached_overlay_size_ = target_size;
+    }
+  }
+  if (target_size.IsEmpty()) {
+    target_size = cached_overlay_size_;
+  }
+  if (target_size.IsEmpty() || !guest_contents() ||
       !guest_contents()->GetRenderWidgetHostView()) {
     return;
   }
-  guest_contents()->GetRenderWidgetHostView()->SetSize(cached_overlay_size_);
+  guest_contents()->GetRenderWidgetHostView()->SetSize(target_size);
   guest_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
 }
 

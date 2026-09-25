@@ -17,6 +17,7 @@
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/drop_data.h"
@@ -423,6 +424,75 @@ TEST_F(GlicViewNoWebviewTest, DraggableRegionsChanged_ForwardsFromPwc) {
 
   EXPECT_TRUE(glic_view()->IsPointWithinDraggableRegion(gfx::Point(10, 10)));
   EXPECT_FALSE(glic_view()->IsPointWithinDraggableRegion(gfx::Point(10, 100)));
+}
+
+TEST_F(GlicViewNoWebviewTest, SetWebContents_InformsSize) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 500, 700));
+  auto* view = widget->SetContentsView(
+      std::make_unique<GlicView>(profile(), gfx::Size(500, 700), nullptr));
+  widget->LayoutRootViewIfNecessary();
+
+  auto fresh_pwc = CreatePwc();
+  content::WebContents* wc = fresh_pwc->web_contents();
+  ASSERT_TRUE(wc);
+  ASSERT_TRUE(wc->GetRenderWidgetHostView());
+
+  ASSERT_FALSE(view->GetContentsBounds().size().IsEmpty());
+  view->SetWebContents(wc);
+  EXPECT_EQ(wc->GetRenderWidgetHostView()->GetVisibleViewportSize(),
+            view->GetContentsBounds().size());
+}
+
+TEST_F(GlicViewNoWebviewTest, RenderFrameCreated_InformsSize) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 500, 700));
+  auto* view = widget->SetContentsView(
+      std::make_unique<GlicView>(profile(), gfx::Size(500, 700), nullptr));
+  widget->LayoutRootViewIfNecessary();
+
+  auto fresh_pwc = CreatePwc();
+  content::WebContents* wc = fresh_pwc->web_contents();
+  ASSERT_TRUE(wc);
+  ASSERT_TRUE(wc->GetRenderWidgetHostView());
+
+  content::RenderFrameHostTester::For(wc->GetPrimaryMainFrame())
+      ->InitializeRenderFrameIfNeeded();
+
+  ASSERT_FALSE(view->GetContentsBounds().size().IsEmpty());
+  view->SetWebContents(wc);
+  // Reset the size to simulate a newly created frame before sizing.
+  wc->GetRenderWidgetHostView()->SetSize(gfx::Size(100, 100));
+  ASSERT_EQ(wc->GetRenderWidgetHostView()->GetVisibleViewportSize(),
+            gfx::Size(100, 100));
+
+  view->RenderFrameCreated(wc->GetPrimaryMainFrame());
+  EXPECT_EQ(wc->GetRenderWidgetHostView()->GetVisibleViewportSize(),
+            view->GetContentsBounds().size());
+}
+
+TEST_F(GlicViewNoWebviewTest, RenderFrameHostChanged_InformsSize) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(0, 0, 500, 700));
+  auto* view = widget->SetContentsView(
+      std::make_unique<GlicView>(profile(), gfx::Size(500, 700), nullptr));
+  widget->LayoutRootViewIfNecessary();
+
+  auto fresh_pwc = CreatePwc();
+  content::WebContents* wc = fresh_pwc->web_contents();
+  ASSERT_TRUE(wc);
+  ASSERT_TRUE(wc->GetRenderWidgetHostView());
+
+  ASSERT_FALSE(view->GetContentsBounds().size().IsEmpty());
+  view->SetWebContents(wc);
+  // Reset the size to simulate a newly created frame before sizing.
+  wc->GetRenderWidgetHostView()->SetSize(gfx::Size(100, 100));
+  ASSERT_EQ(wc->GetRenderWidgetHostView()->GetVisibleViewportSize(),
+            gfx::Size(100, 100));
+
+  view->RenderFrameHostChanged(nullptr, wc->GetPrimaryMainFrame());
+  EXPECT_EQ(wc->GetRenderWidgetHostView()->GetVisibleViewportSize(),
+            view->GetContentsBounds().size());
 }
 
 }  // namespace glic

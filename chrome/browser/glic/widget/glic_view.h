@@ -72,6 +72,9 @@ class GlicView : public views::WebView,
 
   // views::WebView:
   void SetWebContents(content::WebContents* web_contents) override;
+  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override;
 
   // views::View:
   void OnThemeChanged() override;
@@ -94,6 +97,9 @@ class GlicView : public views::WebView,
   }
 
  private:
+  // Informs web_contents() of this view's contents size.
+  void UpdateWebContentsSize();
+
   void SetDraggableRegion(const SkRegion& region, bool for_webview);
 
   std::optional<SkColor> GetClientBackgroundColor();
