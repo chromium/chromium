@@ -65,6 +65,10 @@ std::vector<Suggestion> UpdateSuggestionsFromDataList(
     base::span<const SelectOption> options,
     std::vector<Suggestion> suggestions);
 
+// Cleans up redundant, invalid separators in `suggestions` (leading separators,
+// trailing separators, and consecutive duplicate separators).
+void CleanUpRedundantSeparators(std::vector<Suggestion>& suggestions);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SUGGESTION_CONTROLLER_UTILS_H_

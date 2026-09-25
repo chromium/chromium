@@ -718,16 +718,13 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
   }
 
   // Remove the deleted element.
+  auto suggestion_iter = std::ranges::find(non_filtered_suggestions_,
+                                           GetSuggestions()[list_index]);
+  CHECK(suggestion_iter != non_filtered_suggestions_.end());
+  non_filtered_suggestions_.erase(suggestion_iter);
+  CleanUpRedundantSeparators(non_filtered_suggestions_);
   if (filter_) {
-    auto suggestion_iter = std::find(non_filtered_suggestions_.begin(),
-                                     non_filtered_suggestions_.end(),
-                                     GetSuggestions()[list_index]);
-    CHECK(suggestion_iter != non_filtered_suggestions_.end());
-    non_filtered_suggestions_.erase(suggestion_iter);
     UpdateFilteredSuggestions();
-  } else {
-    non_filtered_suggestions_.erase(non_filtered_suggestions_.begin() +
-                                    list_index);
   }
 
   if (HasEmptySuggestionContent()) {
