@@ -1354,10 +1354,10 @@ def libfuzzer_mac_asan_builder(**kwargs):
 libfuzzer_mac_asan_builder(
     name = "Libfuzzer Upload Mac ASan",
     description_html = "Builds libFuzzer targets with AddressSanitizer on Mac x64 and uploads them to ClusterFuzz.",
-    builderless = True,
-    cores = None,
-    os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
+    builderless = False,
+    cores = 12,
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     clusterfuzz_archive_path = "mac-release-asan/libfuzzer-mac-release",
     execution_timeout = 4 * time.hour,
 )

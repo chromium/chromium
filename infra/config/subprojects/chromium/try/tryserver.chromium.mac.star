@@ -313,8 +313,8 @@ try_.builder(
             "skip_generate_fuzzer_owners",
         ],
     ),
-    os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
+    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
+    os = os.MAC_15,
     contact_team_email = "chrome-fuzzing-core@google.com",
 )
 
