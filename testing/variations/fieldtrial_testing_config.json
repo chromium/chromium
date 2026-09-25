@@ -2194,9 +2194,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithFieldDetection",
                     "enable_features": [
-                        "AutofillGmailOtpPreLaunchMetrics"
+                        "AutofillGmailOtpPreLaunchMetrics",
+                        "PasswordFormClientsideClassifier"
                     ]
                 }
             ]
