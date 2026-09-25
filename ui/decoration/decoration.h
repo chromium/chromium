@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -31,15 +33,25 @@ class Decoration final : public ui::ImplicitAnimationObserver,
                          public ui::LayerOwner {
  public:
   // Creates an initialized decoration drawn by `source`.
+  //
+  // `debug_name` describes what the decoration represents (e.g. "Shadow" or
+  // "HighlightBorder") and is used to give the decoration's layers
+  // context-specific debug names such as "Decoration:Shadow". When empty, the
+  // layers are named generically "Decoration".
   static std::unique_ptr<Decoration> Create(
-      std::unique_ptr<DecorationSource> source);
+      std::unique_ptr<DecorationSource> source,
+      std::string_view debug_name = {});
 
-  explicit Decoration(std::unique_ptr<DecorationSource> source);
+  explicit Decoration(std::unique_ptr<DecorationSource> source,
+                      std::string_view debug_name = {});
 
   Decoration(const Decoration&) = delete;
   Decoration& operator=(const Decoration&) = delete;
 
   ~Decoration() override;
+
+  // The debug name given to the decoration layer, e.g. "Decoration:Shadow".
+  const std::string& name() const { return name_; }
 
   DecorationSource* source() { return source_.get(); }
   const DecorationSource* source() const { return source_.get(); }
@@ -112,6 +124,9 @@ class Decoration final : public ui::ImplicitAnimationObserver,
 
   // Draws this decoration. Never null.
   const std::unique_ptr<DecorationSource> source_;
+
+  // Debug name for the decoration layer, e.g. "Decoration:Shadow".
+  const std::string name_;
 
   // Bounds of the content that the decoration encloses, and the radii of that
   // content's corners.

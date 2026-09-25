@@ -8,10 +8,13 @@
 #include <cmath>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_not_drawn.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -38,22 +41,34 @@ gfx::RoundedCornersF ClampRadiiToBounds(
       std::min(rounded_corners.lower_left(), max_radius));
 }
 
+// Returns the layer name for a decoration, e.g. "Decoration:Shadow" for a
+// `debug_name` of "Shadow".
+std::string MakeLayerName(std::string_view debug_name) {
+  constexpr std::string_view kBaseName = "Decoration";
+  return debug_name.empty() ? std::string(kBaseName)
+                            : base::StrCat({kBaseName, ":", debug_name});
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<Decoration> Decoration::Create(
-    std::unique_ptr<DecorationSource> source) {
-  return std::make_unique<Decoration>(std::move(source));
+    std::unique_ptr<DecorationSource> source,
+    std::string_view debug_name) {
+  return std::make_unique<Decoration>(std::move(source), debug_name);
 }
 
-Decoration::Decoration(std::unique_ptr<DecorationSource> source)
-    : source_(std::move(source)), decoration_layer_owner_(this) {
+Decoration::Decoration(std::unique_ptr<DecorationSource> source,
+                       std::string_view debug_name)
+    : source_(std::move(source)),
+      name_(MakeLayerName(debug_name)),
+      decoration_layer_owner_(this) {
   CHECK(source_);
   source_->set_details_changed_callback(base::BindRepeating(
       &Decoration::UpdateAppearance, base::Unretained(this)));
 
   SetLayer(std::make_unique<ui::LayerNotDrawn>());
-  layer()->SetName("Decoration Parent Container");
+  layer()->SetName(base::StrCat({name_, ":Container"}));
   RecreateDecorationLayer();
 }
 
@@ -113,7 +128,7 @@ std::unique_ptr<ui::Layer> Decoration::DecorationLayerOwner::RecreateLayer() {
 
 void Decoration::RecreateDecorationLayer() {
   decoration_layer_owner_.Reset(std::make_unique<ui::LayerNinePatch>());
-  decoration_layer()->SetName("Decoration");
+  decoration_layer()->SetName(name_);
   decoration_layer()->SetVisible(true);
   decoration_layer()->SetFillsBoundsOpaquely(false);
   layer()->Add(decoration_layer());
