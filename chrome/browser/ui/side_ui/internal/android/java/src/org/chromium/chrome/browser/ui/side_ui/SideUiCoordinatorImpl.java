@@ -406,24 +406,6 @@ final class SideUiCoordinatorImpl
                         UpdateReason.TOP_CONTROLS_HEIGHT_CHANGED));
     }
 
-    @Override
-    public void onControlsOffsetChanged(
-            int topOffset,
-            int topControlsMinHeightOffset,
-            boolean topControlsMinHeightChanged,
-            int bottomOffset,
-            int bottomControlsMinHeightOffset,
-            boolean bottomControlsMinHeightChanged,
-            boolean requestNewFrame,
-            boolean isVisibilityForced) {
-        ThreadUtils.assertOnUiThread();
-        updateUiInternal(
-                new UiUpdateRequest(
-                        /* sideUiId= */ null,
-                        /* suppressAnimations= */ true,
-                        UpdateReason.CONTROLS_OFFSET_CHANGED));
-    }
-
     // ConfigurationChangedObserver Implementation
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

@@ -137,7 +137,6 @@ public interface SideUiCoordinator extends SideUiStateProvider {
             UpdateReason.UNSPECIFIED,
             UpdateReason.SIDE_UI_REQUEST,
             UpdateReason.ANDROID_CONFIGURATION_CHANGED,
-            UpdateReason.CONTROLS_OFFSET_CHANGED,
             UpdateReason.TOP_CONTROLS_HEIGHT_CHANGED,
             UpdateReason.FULL_SCREEN_MODE_ENTERED,
             UpdateReason.FULL_SCREEN_MODE_EXITED,
@@ -165,25 +164,22 @@ public interface SideUiCoordinator extends SideUiStateProvider {
              */
             int ANDROID_CONFIGURATION_CHANGED = 2;
 
-            /** The offset of the browser controls changed. */
-            int CONTROLS_OFFSET_CHANGED = 3;
-
             /** The height of the top browser controls changed. */
-            int TOP_CONTROLS_HEIGHT_CHANGED = 4;
+            int TOP_CONTROLS_HEIGHT_CHANGED = 3;
 
             /** The activity entered fullscreen mode. */
-            int FULL_SCREEN_MODE_ENTERED = 5;
+            int FULL_SCREEN_MODE_ENTERED = 4;
 
             /** The activity exited fullscreen mode. */
-            int FULL_SCREEN_MODE_EXITED = 6;
+            int FULL_SCREEN_MODE_EXITED = 5;
 
             /** An intermediate update during a manual resize. */
-            int RESIZE_LIVE = 7;
+            int RESIZE_LIVE = 6;
 
             /** The final update committing a manual resize. */
-            int RESIZE_COMMITTED = 8;
+            int RESIZE_COMMITTED = 7;
 
-            int NUM_ENTRIES = 9;
+            int NUM_ENTRIES = 8;
         }
 
         /**
@@ -280,7 +276,6 @@ public interface SideUiCoordinator extends SideUiStateProvider {
                 case UpdateReason.UNSPECIFIED -> "UNSPECIFIED";
                 case UpdateReason.SIDE_UI_REQUEST -> "SIDE_UI_REQUEST";
                 case UpdateReason.ANDROID_CONFIGURATION_CHANGED -> "ANDROID_CONFIGURATION_CHANGED";
-                case UpdateReason.CONTROLS_OFFSET_CHANGED -> "CONTROLS_OFFSET_CHANGED";
                 case UpdateReason.TOP_CONTROLS_HEIGHT_CHANGED -> "TOP_CONTROLS_HEIGHT_CHANGED";
                 case UpdateReason.FULL_SCREEN_MODE_ENTERED -> "FULL_SCREEN_MODE_ENTERED";
                 case UpdateReason.FULL_SCREEN_MODE_EXITED -> "FULL_SCREEN_MODE_EXITED";
