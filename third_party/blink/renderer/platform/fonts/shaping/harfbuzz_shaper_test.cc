@@ -13,15 +13,19 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/fonts/custom_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
+#include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -29,6 +33,7 @@
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -45,6 +50,7 @@
 #endif
 
 using testing::ElementsAre;
+using testing::IsEmpty;
 
 namespace blink {
 
@@ -2267,6 +2273,260 @@ TEST_F(HarfBuzzShaperTest, UnorderedClusterIndex) {
 #endif
   Vector<ShapeResultRunData> runs = ShapeResultRunData::Get(result);
   EXPECT_GE(runs.size(), 1u);
+}
+
+namespace {
+
+class FakeIftFont final : public CustomFontData {
+ public:
+  explicit FakeIftFont(bool extension_succeeds)
+      : extension_succeeds_(extension_succeeds) {}
+
+  // The text of each subset extension the shaper requested, in request order.
+  const Vector<String>& ExtensionRequests() const {
+    return extension_requests_;
+  }
+
+  // The font data the shaper reports for runs shaped with this font. Set by
+  // `HarfBuzzShaperIftTest::AddFont`.
+  const SimpleFontData* FontData() const { return font_data_.Get(); }
+  void SetFontData(const SimpleFontData* font_data) { font_data_ = font_data; }
+
+  // CustomFontData:
+  bool IftRequireSubset(const StringView& text) const override {
+    extension_requests_.push_back(text.ToString());
+    return extension_succeeds_;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(font_data_);
+    CustomFontData::Trace(visitor);
+  }
+
+ private:
+  const bool extension_succeeds_;
+  // `IftRequireSubset` is const, but recording what it was asked for is the
+  // whole point of this fake.
+  mutable Vector<String> extension_requests_;
+  Member<const SimpleFontData> font_data_;
+};
+
+class IftTestFontSelector final : public FontSelector {
+ public:
+  SimpleFontData* AddFont(const FontDescription& font_description,
+                          const AtomicString& family_name,
+                          const String& font_path,
+                          CustomFontData* custom_font_data) {
+    std::optional<Vector<char>> data = test::ReadFromFile(font_path);
+    CHECK(data);
+    scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(std::move(*data));
+    String ots_parse_message;
+    FontCustomPlatformData* custom_platform_data =
+        FontCustomPlatformData::Create(buffer.get(), ots_parse_message);
+    CHECK(custom_platform_data) << ots_parse_message;
+    FontSelectionCapabilities normal_capabilities(
+        {kNormalWidthValue, kNormalWidthValue},
+        {kNormalSlopeValue, kNormalSlopeValue},
+        {kNormalWeightValue, kNormalWeightValue});
+    const FontPlatformData* platform_data =
+        custom_platform_data->GetFontPlatformData(
+            font_description.EffectiveFontSize(),
+            font_description.AdjustedSpecifiedSize(), false, false,
+            font_description.GetFontSelectionRequest(), normal_capabilities,
+            font_description.FontOpticalSizing(),
+            font_description.TextRendering(), {},
+            font_description.Orientation());
+    auto* font_data =
+        MakeGarbageCollected<SimpleFontData>(platform_data, custom_font_data);
+    fonts_.Set(family_name, font_data);
+    return font_data;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(fonts_);
+    FontSelector::Trace(visitor);
+  }
+
+  FontData* GetFontData(const FontDescription&,
+                        const FontFamily& font_family) override {
+    auto it = fonts_.find(font_family.FamilyName());
+    return it != fonts_.end() ? it->value.Get() : nullptr;
+  }
+
+  void WillUseFontData(const FontDescription&,
+                       const FontFamily&,
+                       const String&) override {}
+  void WillUseRange(const FontDescription&,
+                    const AtomicString&,
+                    const FontDataForRangeSet&) override {}
+  void FontCacheInvalidated() override {}
+  void ReportNotDefGlyph() const override {}
+  ExecutionContext* GetExecutionContext() const override { return nullptr; }
+  FontFaceCache* GetFontFaceCache() override { return nullptr; }
+  void RegisterForInvalidationCallbacks(FontSelectorClient*) override {}
+  void UnregisterForInvalidationCallbacks(FontSelectorClient*) override {}
+  bool IsPlatformFamilyMatchAvailable(const FontDescription&,
+                                      const FontFamily&) override {
+    return false;
+  }
+
+ private:
+  HeapHashMap<AtomicString, Member<SimpleFontData>> fonts_;
+};
+
+HeapVector<Member<const SimpleFontData>> GetRunFonts(
+    const ShapeResult* result) {
+  HeapVector<ShapeResult::RunFontData> run_font_data;
+  result->GetRunFontData(&run_font_data);
+  HeapVector<Member<const SimpleFontData>> fonts;
+  for (const auto& run : run_font_data) {
+    fonts.push_back(run.font_data_);
+  }
+  return fonts;
+}
+
+class HarfBuzzShaperIftTest : public HarfBuzzShaperTest {
+ protected:
+  // Test data fonts, named for the character coverage the tests rely on.
+  static constexpr char kFontCoveringA[] = "roboto-ift.ttf";
+  static constexpr char kFontCoveringAB[] = "Ahem.woff";
+
+  // U+0378 is an unassigned code point, so nothing has a glyph for it: not the
+  // test data fonts, and not the system fallback fonts.
+  const String unmappable_text_{u"\u0378"};
+
+  // Appends a font family backed by `font_path` to the font-family list.
+  // Returns the font, whose subset extension requests succeed or fail
+  // according to `extension_succeeds`.
+  FakeIftFont& AddFont(const char* family_name,
+                       const char* font_path,
+                       bool extension_succeeds) {
+    auto* font = MakeGarbageCollected<FakeIftFont>(extension_succeeds);
+    font->SetFontData(
+        selector_->AddFont(font_description, AtomicString(family_name),
+                           test::PlatformTestDataPath(font_path), font));
+    family_names_.push_back(AtomicString(family_name));
+    return *font;
+  }
+
+  // Creates a font whose fallback chain is the fonts added by `AddFont`, in
+  // the order they were added, followed by the system fallback fonts.
+  Font* CreateFont() {
+    CHECK(!family_names_.empty());
+    scoped_refptr<SharedFontFamily> tail;
+    for (wtf_size_t i = family_names_.size(); i-- > 1u;) {
+      tail = SharedFontFamily::Create(
+          family_names_[i], FontFamily::Type::kFamilyName, std::move(tail));
+    }
+    font_description.SetFamily(FontFamily(
+        family_names_.front(), FontFamily::Type::kFamilyName, std::move(tail)));
+    return MakeGarbageCollected<Font>(font_description, selector_);
+  }
+
+ private:
+  Persistent<IftTestFontSelector> selector_ =
+      MakeGarbageCollected<IftTestFontSelector>();
+  Vector<AtomicString> family_names_;
+};
+
+}  // namespace
+
+TEST_F(HarfBuzzShaperIftTest, ShapesWithPrimaryFontWhenExtensionSucceeds) {
+  ScopedIncrementalFontTransferForTest scoped_ift(true);
+  FakeIftFont& primary =
+      AddFont("PrimaryFont", kFontCoveringA, /*extension_succeeds=*/true);
+  FakeIftFont& fallback =
+      AddFont("FallbackFont", kFontCoveringAB, /*extension_succeeds=*/true);
+
+  Font* font = CreateFont();
+  HarfBuzzShaper shaper("a");
+  const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+
+  // The primary font covers 'a' and extends successfully, so it shapes the
+  // text and the rest of the chain is never reached.
+  EXPECT_THAT(primary.ExtensionRequests(), ElementsAre("a"));
+  EXPECT_THAT(fallback.ExtensionRequests(), IsEmpty());
+  EXPECT_THAT(GetRunFonts(result), ElementsAre(primary.FontData()));
+}
+
+TEST_F(HarfBuzzShaperIftTest, SkipsFontWhoseExtensionFails) {
+  ScopedIncrementalFontTransferForTest scoped_ift(true);
+  FakeIftFont& primary =
+      AddFont("PrimaryFont", kFontCoveringA, /*extension_succeeds=*/false);
+  FakeIftFont& fallback =
+      AddFont("FallbackFont", kFontCoveringAB, /*extension_succeeds=*/true);
+
+  // Without this, shaping could move to the fallback font because the primary
+  // font has no glyph, which is not the behavior under test.
+  ASSERT_TRUE(primary.FontData()->GlyphForCharacter('a'));
+
+  Font* font = CreateFont();
+  HarfBuzzShaper shaper("a");
+  const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+
+  // The primary font covers 'a', but it cannot be extended to serve it yet, so
+  // shaping moves on to the fallback font.
+  EXPECT_THAT(primary.ExtensionRequests(), ElementsAre("a"));
+  EXPECT_THAT(fallback.ExtensionRequests(), ElementsAre("a"));
+  EXPECT_THAT(GetRunFonts(result), ElementsAre(fallback.FontData()));
+}
+
+TEST_F(HarfBuzzShaperIftTest, RequestsExtensionOnlyForTheTextEachFontShapes) {
+  ScopedIncrementalFontTransferForTest scoped_ift(true);
+  FakeIftFont& primary =
+      AddFont("PrimaryFont", kFontCoveringA, /*extension_succeeds=*/true);
+  FakeIftFont& fallback =
+      AddFont("FallbackFont", kFontCoveringAB, /*extension_succeeds=*/true);
+
+  Font* font = CreateFont();
+  HarfBuzzShaper shaper("ab");
+  const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+
+  // The primary font is asked for the whole run before shaping reveals that it
+  // has no glyph for 'b'. The fallback font is then asked only for 'b', the
+  // part it is actually going to shape.
+  EXPECT_THAT(primary.ExtensionRequests(), ElementsAre("ab"));
+  EXPECT_THAT(fallback.ExtensionRequests(), ElementsAre("b"));
+  EXPECT_THAT(GetRunFonts(result),
+              ElementsAre(primary.FontData(), fallback.FontData()));
+}
+
+TEST_F(HarfBuzzShaperIftTest, RequestsNoExtensionWhenFeatureIsDisabled) {
+  ScopedIncrementalFontTransferForTest scoped_ift(false);
+  // Same setup as `SkipsFontWhoseExtensionFails`, which shapes with the
+  // fallback font.
+  FakeIftFont& primary =
+      AddFont("PrimaryFont", kFontCoveringA, /*extension_succeeds=*/false);
+  FakeIftFont& fallback =
+      AddFont("FallbackFont", kFontCoveringAB, /*extension_succeeds=*/true);
+
+  Font* font = CreateFont();
+  HarfBuzzShaper shaper("a");
+  const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+
+  // With the feature disabled the shaper never asks, so the failing extension
+  // does not move shaping off the primary font.
+  EXPECT_THAT(primary.ExtensionRequests(), IsEmpty());
+  EXPECT_THAT(fallback.ExtensionRequests(), IsEmpty());
+  EXPECT_THAT(GetRunFonts(result), ElementsAre(primary.FontData()));
+}
+
+TEST_F(HarfBuzzShaperIftTest, ShapesWithLastFontEvenWhenExtensionFails) {
+  ScopedIncrementalFontTransferForTest scoped_ift(true);
+  FakeIftFont& primary =
+      AddFont("PrimaryFont", kFontCoveringA, /*extension_succeeds=*/false);
+
+  Font* font = CreateFont();
+  HarfBuzzShaper shaper(unmappable_text_);
+  const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+
+  // No font has a glyph for the character, so the shaper exhausts the fallback
+  // chain, including the system fonts, and comes back to the primary font to
+  // render .notdef with. Extension fails there a second time, but as the last
+  // font to shape it is used anyway: dropping the text is not an option.
+  EXPECT_THAT(primary.ExtensionRequests(),
+              ElementsAre(unmappable_text_, unmappable_text_));
+  EXPECT_THAT(GetRunFonts(result), ElementsAre(primary.FontData()));
 }
 
 }  // namespace blink

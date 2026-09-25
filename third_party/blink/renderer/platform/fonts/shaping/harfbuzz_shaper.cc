@@ -875,6 +875,13 @@ inline hb_language_t GetLanguageFromFontDescription(
   return font_description.LocaleOrDefault().HarfbuzzLanguage();
 }
 
+bool IftRequireSubset(const SimpleFontData* font_data, const StringView& text) {
+  if (const auto* custom_font_data = font_data->GetCustomFontData()) {
+    return custom_font_data->IftRequireSubset(text);
+  }
+  return true;
+}
+
 }  // namespace
 
 void HarfBuzzShaper::ShapeSegment(
@@ -918,6 +925,8 @@ void HarfBuzzShaper::ShapeSegment(
   VariationSelectorMode variation_selector_mode =
       GetVariationSelectorModeFromFontVariantEmoji(
           font_description.VariantEmoji());
+  bool incremental_font_transfer_enabled =
+      RuntimeEnabledFeatures::IncrementalFontTransferEnabled();
   while (!range_data->reshape_queue.empty()) {
     ReshapeQueueItem current_queue_item = range_data->reshape_queue.TakeFirst();
 
@@ -993,6 +1002,21 @@ void HarfBuzzShaper::ShapeSegment(
                                       current_queue_item.num_characters_);
     DCHECK_GT(shape_end, shape_start);
     CheckTextEnd(shape_start, shape_end);
+
+    if (incremental_font_transfer_enabled) {
+      // TODO(wmedrano): Filter codepoints against
+      // `current_font_data_for_range_set->Ranges()` so we do not request
+      // patches for codepoints excluded by a @font-face's `unicode-range`.
+      bool is_ready = IftRequireSubset(
+          font_data, text_.subview(shape_start, shape_end - shape_start));
+      // Skip the IFT font if we are going to patch it anyways.
+      if (!is_ready && !IsLastFontToShape(fallback_stage)) {
+        QueueCharacters(range_data, font_data, font_cycle_queued,
+                        BufferSlice{shape_start, shape_end - shape_start, 0, 0},
+                        fallback_stage);
+        continue;
+      }
+    }
 
     CaseMapIntend case_map_intend = CaseMapIntend::kKeepSameCase;
     if (needs_caps_handling) {
