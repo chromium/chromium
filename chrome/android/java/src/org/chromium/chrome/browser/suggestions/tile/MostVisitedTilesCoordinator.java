@@ -90,14 +90,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                     mvTilesContainerLayout.getPaddingEnd(),
                     bottomPadding);
 
-            int topMarginDimen =
-                    (paddingStyle == PaddingStyle.SMALL)
-                            ? R.dimen.mvt_container_top_margin_medium
-                            : R.dimen.mvt_container_top_margin_large;
-            ViewGroup.MarginLayoutParams marginLayoutParams =
-                    (ViewGroup.MarginLayoutParams) mvTilesContainerLayout.getLayoutParams();
-            marginLayoutParams.topMargin = res.getDimensionPixelSize(topMarginDimen);
-            mvTilesContainerLayout.setLayoutParams(marginLayoutParams);
+            updateTopMarginForAurora(paddingStyle);
         }
 
         MostVisitedTilesLayout tilesLayout =
@@ -200,7 +193,33 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
      * @param isLff Whether the device is a large form factor.
      */
     public void updateTilesLayoutMargins(boolean shouldShowLogo, boolean isLff) {
+        @PaddingStyle int paddingStyle = NewTabPageUtils.getPaddingStyleForAurora();
+        if (paddingStyle != PaddingStyle.DEFAULT) {
+            // NTP Aurora's top margin doesn't depend on the logo, so re-apply the one set in the
+            // constructor, e.g. after the default search engine changes.
+            updateTopMarginForAurora(paddingStyle);
+            return;
+        }
+
         mMediator.updateTilesLayoutMargins(shouldShowLogo, isLff);
+    }
+
+    /**
+     * Sets the top margin of the MVT container for NTP Aurora.
+     *
+     * @param paddingStyle The {@link PaddingStyle} for NTP Aurora, which isn't {@link
+     *     PaddingStyle#DEFAULT}.
+     */
+    private void updateTopMarginForAurora(@PaddingStyle int paddingStyle) {
+        int topMarginDimen =
+                (paddingStyle == PaddingStyle.SMALL)
+                        ? R.dimen.mvt_container_top_margin_medium
+                        : R.dimen.mvt_container_top_margin_large;
+        ViewGroup.MarginLayoutParams marginLayoutParams =
+                (ViewGroup.MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
+        marginLayoutParams.topMargin =
+                mActivity.getResources().getDimensionPixelSize(topMarginDimen);
+        mMvTilesContainerLayout.setLayoutParams(marginLayoutParams);
     }
 
     /** Called when the TasksSurface is hidden or NewTabPageLayout is destroyed. */
