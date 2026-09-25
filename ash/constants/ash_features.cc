@@ -1922,12 +1922,6 @@ BASE_FEATURE(kDeviceMoveConfigSave, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDeviceWeeklyScheduledSuspendMgs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-
-// Enables or disables peripherals logging.
-BASE_FEATURE(kEnablePeripheralsLogging,
-             "PeripheralsLogging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable peripheral notification to notify users when a input device is
 // connected to the user's chromebook for the first time.
 BASE_FEATURE(kPeripheralNotification, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2350,11 +2344,6 @@ bool IsDeviceMoveConfigSaveEnabled() {
 
 bool IsDisplayPerformanceModeEnabled() {
   return base::FeatureList::IsEnabled(kDisplayPerformanceMode);
-}
-
-
-bool IsPeripheralsLoggingEnabled() {
-  return base::FeatureList::IsEnabled(kEnablePeripheralsLogging);
 }
 
 bool IsDisplayAlignmentAssistanceEnabled() {
