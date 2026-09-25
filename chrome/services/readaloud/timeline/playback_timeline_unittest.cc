@@ -112,4 +112,195 @@ TEST_F(PlaybackTimelineTest, TimelinePositionStructDefaultsAndHelpers) {
   EXPECT_EQ(pos2.time.duration(), base::Milliseconds(250));
 }
 
+TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetValid) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg0 = read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  seg0->text = u"First sentence. Second sentence.";
+  segments.push_back(std::move(seg0));
+
+  timeline_.SetTextContent(segments);
+
+  std::optional<TimelinePosition> pos0 = timeline_.ResolveSegmentOffset(
+      /*segment_index=*/0, /*character_offset=*/0);
+  ASSERT_TRUE(pos0.has_value());
+  EXPECT_EQ(pos0->chunk.index, 0u);
+  EXPECT_EQ(pos0->chunk.start_char_offset, 0u);
+  EXPECT_EQ(pos0->chunk.end_char_offset, 15u);
+  EXPECT_EQ(pos0->global_char.start_offset, 0u);
+  EXPECT_EQ(pos0->global_char.end_offset, 15u);
+  EXPECT_EQ(pos0->time.start_time, base::Milliseconds(0));
+  EXPECT_EQ(pos0->time.end_time,
+            15 * PlaybackTimeline::kEstimatedDurationPerChar);
+
+  std::optional<TimelinePosition> pos1 = timeline_.ResolveSegmentOffset(
+      /*segment_index=*/1, /*character_offset=*/0);
+  ASSERT_TRUE(pos1.has_value());
+  EXPECT_EQ(pos1->chunk.index, 1u);
+  EXPECT_EQ(pos1->chunk.start_char_offset, 0u);
+  EXPECT_EQ(pos1->chunk.end_char_offset, 16u);
+  EXPECT_EQ(pos1->global_char.start_offset, 16u);
+  EXPECT_EQ(pos1->global_char.end_offset, 32u);
+  EXPECT_EQ(pos1->time.start_time,
+            15 * PlaybackTimeline::kEstimatedDurationPerChar);
+  EXPECT_EQ(pos1->time.end_time,
+            31 * PlaybackTimeline::kEstimatedDurationPerChar);
+}
+
+TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetOutOfBounds) {
+  EXPECT_FALSE(timeline_
+                   .ResolveSegmentOffset(/*segment_index=*/0,
+                                         /*character_offset=*/0)
+                   .has_value());
+
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg0 = read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  seg0->text = u"Short.";
+  segments.push_back(std::move(seg0));
+
+  timeline_.SetTextContent(segments);
+
+  EXPECT_FALSE(timeline_
+                   .ResolveSegmentOffset(/*segment_index=*/1,
+                                         /*character_offset=*/0)
+                   .has_value());
+  EXPECT_FALSE(timeline_
+                   .ResolveSegmentOffset(/*segment_index=*/0,
+                                         /*character_offset=*/7)
+                   .has_value());
+}
+
+TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetMidSentence) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg0 = read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  seg0->text = u"First sentence. Second sentence.";
+  segments.push_back(std::move(seg0));
+
+  timeline_.SetTextContent(segments);
+
+  std::optional<TimelinePosition> pos = timeline_.ResolveSegmentOffset(
+      /*segment_index=*/1, /*character_offset=*/7);
+  ASSERT_TRUE(pos.has_value());
+  EXPECT_EQ(pos->chunk.index, 1u);
+  EXPECT_EQ(pos->chunk.start_char_offset, 7u);
+  EXPECT_EQ(pos->chunk.end_char_offset, 16u);
+  EXPECT_EQ(pos->global_char.start_offset, 23u);
+  EXPECT_EQ(pos->global_char.end_offset, 32u);
+  EXPECT_EQ(pos->time.start_time,
+            15 * PlaybackTimeline::kEstimatedDurationPerChar);
+  EXPECT_EQ(pos->time.end_time,
+            31 * PlaybackTimeline::kEstimatedDurationPerChar);
+}
+
+TEST_F(PlaybackTimelineTest,
+       ResolveSegmentOffsetAcrossConcatenatedSegmentBoundaries) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  {
+    auto seg0 = read_aloud::mojom::TextSegment::New();
+    seg0->segment_index = 0;
+    seg0->text = u"Sentence one. ";
+    segments.push_back(std::move(seg0));
+  }
+  {
+    auto seg1 = read_aloud::mojom::TextSegment::New();
+    seg1->segment_index = 1;
+    seg1->text = u"Sentence two.";
+    segments.push_back(std::move(seg1));
+  }
+
+  timeline_.SetTextContent(segments);
+
+  std::optional<TimelinePosition> pos = timeline_.ResolveSegmentOffset(
+      /*segment_index=*/1, /*character_offset=*/0);
+  ASSERT_TRUE(pos.has_value());
+  EXPECT_EQ(pos->chunk.index, 1u);
+  EXPECT_EQ(pos->chunk.start_char_offset, 0u);
+  EXPECT_EQ(pos->chunk.end_char_offset, 13u);
+  EXPECT_EQ(pos->global_char.start_offset, 14u);
+  EXPECT_EQ(pos->global_char.end_offset, 27u);
+  EXPECT_EQ(pos->time.start_time,
+            13 * PlaybackTimeline::kEstimatedDurationPerChar);
+  EXPECT_EQ(pos->time.end_time,
+            26 * PlaybackTimeline::kEstimatedDurationPerChar);
+}
+
+TEST_F(PlaybackTimelineTest,
+       UpdateSentenceDurationAdjustsSubsequentChunkTimeOffsets) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Sentence one. Sentence two.";
+  segments.push_back(std::move(seg));
+
+  timeline_.SetTextContent(segments);
+
+  // Update chunk 0 actual duration to 1200ms (est was
+  // 13 * kEstimatedDurationPerChar = 845ms, deviation = +355ms).
+  timeline_.UpdateSentenceDuration(/*sentence_index=*/0,
+                                   base::Milliseconds(1200));
+
+  std::optional<TimelinePosition> pos0 = timeline_.ResolveSegmentOffset(
+      /*segment_index=*/0, /*character_offset=*/0);
+  ASSERT_TRUE(pos0.has_value());
+  EXPECT_EQ(pos0->chunk.index, 0u);
+  EXPECT_EQ(pos0->time.start_time, base::Milliseconds(0));
+  EXPECT_EQ(pos0->time.end_time, base::Milliseconds(1200));
+
+  std::optional<TimelinePosition> pos1 = timeline_.ResolveSegmentOffset(
+      /*segment_index=*/1, /*character_offset=*/0);
+  ASSERT_TRUE(pos1.has_value());
+  EXPECT_EQ(pos1->chunk.index, 1u);
+  EXPECT_EQ(pos1->time.start_time, base::Milliseconds(1200));
+  EXPECT_EQ(pos1->time.end_time,
+            base::Milliseconds(1200) +
+                13 * PlaybackTimeline::kEstimatedDurationPerChar);
+}
+
+TEST_F(PlaybackTimelineTest, UpdateSentenceDurationMultipleChunks) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"One. Two. Three.";
+  segments.push_back(std::move(seg));
+
+  timeline_.SetTextContent(segments);
+
+  timeline_.UpdateSentenceDuration(/*sentence_index=*/0,
+                                   base::Milliseconds(400));
+  timeline_.UpdateSentenceDuration(/*sentence_index=*/1,
+                                   base::Milliseconds(700));
+
+  std::optional<TimelinePosition> pos2 = timeline_.ResolveSegmentOffset(
+      /*segment_index=*/2, /*character_offset=*/0);
+  ASSERT_TRUE(pos2.has_value());
+  EXPECT_EQ(pos2->chunk.index, 2u);
+  EXPECT_EQ(pos2->time.start_time, base::Milliseconds(1100));
+  EXPECT_EQ(pos2->time.end_time,
+            base::Milliseconds(1100) +
+                6 * PlaybackTimeline::kEstimatedDurationPerChar);
+}
+
+TEST_F(PlaybackTimelineTest, UpdateSentenceDurationOverwritesPreviousDeviation) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Sentence one. Sentence two.";
+  segments.push_back(std::move(seg));
+
+  timeline_.SetTextContent(segments);
+
+  timeline_.UpdateSentenceDuration(/*sentence_index=*/0,
+                                   base::Milliseconds(500));
+  timeline_.UpdateSentenceDuration(/*sentence_index=*/0,
+                                   base::Milliseconds(1000));
+
+  std::optional<TimelinePosition> pos1 = timeline_.ResolveSegmentOffset(
+      /*segment_index=*/1, /*character_offset=*/0);
+  ASSERT_TRUE(pos1.has_value());
+  EXPECT_EQ(pos1->chunk.index, 1u);
+  EXPECT_EQ(pos1->time.start_time, base::Milliseconds(1000));
+}
+
 }  // namespace readaloud
