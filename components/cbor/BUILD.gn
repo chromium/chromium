@@ -15,24 +15,36 @@ buildflag_header("buildflags") {
   flags = [ "USE_CBOR_RUST=!$is_cronet_build" ]
 }
 
-component("cbor") {
+source_set("cbor_headers") {
+  visibility = [ ":*" ]
   sources = [
     "constants.h",
-    "diagnostic_writer.cc",
     "diagnostic_writer.h",
     "experiment_metrics.h",
-    "reader.cc",
     "reader.h",
-    "values.cc",
     "values.h",
-    "writer.cc",
     "writer.h",
+  ]
+
+  public_deps = [
+    ":buildflags",
+    "//base",
+  ]
+}
+
+source_set("cbor_rust_impl") {
+  visibility = [ ":*" ]
+  public = []
+  sources = [
+    "reader.cc",
+    "writer.cc",
   ]
 
   defines = [ "CBOR_IMPLEMENTATION" ]
 
   deps = [
     ":buildflags",
+    ":cbor_headers",
     "//base",
   ]
 
@@ -42,6 +54,22 @@ component("cbor") {
       "//components/cbor/rust:cbor_rust_bindings",
     ]
   }
+}
+
+component("cbor") {
+  sources = [
+    "diagnostic_writer.cc",
+    "values.cc",
+  ]
+
+  defines = [ "CBOR_IMPLEMENTATION" ]
+
+  public_deps = [
+    ":buildflags",
+    ":cbor_headers",
+    "//base",
+  ]
+  deps = [ ":cbor_rust_impl" ]
 }
 
 source_set("unit_tests") {
