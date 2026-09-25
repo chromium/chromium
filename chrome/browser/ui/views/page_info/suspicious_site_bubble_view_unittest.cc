@@ -16,10 +16,13 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/scoped_views_test_helper.h"
@@ -100,6 +103,15 @@ TEST_F(SuspiciousSiteBubbleViewTest, BubbleTypeAndElements) {
   EXPECT_NE(bubble_->back_to_safety_button_for_testing(), nullptr);
   EXPECT_NE(bubble_->mark_as_safe_button_for_testing(), nullptr);
   EXPECT_NE(bubble_->description_label_for_testing(), nullptr);
+  const std::u16string expected_title =
+      l10n_util::GetStringUTF16(IDS_SUSPICIOUS_SITE_TITLE);
+  EXPECT_EQ(bubble_->GetWindowTitle(), expected_title);
+  EXPECT_EQ(bubble_->GetAccessibleWindowTitle(), expected_title);
+  EXPECT_EQ(bubble_->GetWidget()
+                ->GetRootView()
+                ->GetViewAccessibility()
+                .GetCachedName(),
+            expected_title);
   EXPECT_TRUE(
       web_contents_helper_.web_contents()->ShouldIgnoreInputEventsForTesting());
 }

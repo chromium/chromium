@@ -100,6 +100,7 @@ SuspiciousSiteBubbleView::SuspiciousSiteBubbleView(
   // Keep the bubble open until the user interacts or navigates away.
   set_close_on_deactivate(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetTitle(IDS_SUSPICIOUS_SITE_TITLE);
 
   views::BubbleDialogDelegateView::CreateBubble(this);
 
