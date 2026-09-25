@@ -7166,6 +7166,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "new-tab-page-ephemeral-theme",
+    "owners": [
+      "pabouchard@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "new-tab-page-redesign",
     "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
     "expiry_milestone": 160

@@ -1373,6 +1373,12 @@ inline constexpr char kNewGeolocationPermissionDelegateDescription[] =
     "manage location permission updates when sharing their location with the "
     "browser.";
 
+inline constexpr char kNewTabPageEphemeralThemeName[] =
+    "New Tab Page Ephemeral Theme";
+inline constexpr char kNewTabPageEphemeralThemeDescription[] =
+    "Enables custom ephemeral color palettes on the New Tab Page configured "
+    "via Finch parameters.";
+
 inline constexpr char kNewTabPageFieldTrialName[] =
     "New tab page features that target new users";
 inline constexpr char kNewTabPageFieldTrialDescription[] =

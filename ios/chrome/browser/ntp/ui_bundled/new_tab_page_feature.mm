@@ -6,6 +6,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
@@ -29,6 +30,8 @@ BASE_FEATURE(kNewTabPageRedesign, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMVTInBottomSheet, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageUICleanup, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNewTabPageEphemeralTheme, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters
 
@@ -64,6 +67,22 @@ BASE_FEATURE_PARAM(int,
 
 bool IsMVTInBottomSheetEnabled() {
   return base::FeatureList::IsEnabled(kMVTInBottomSheet);
+}
+
+bool IsNTPEphemeralThemeEnabled() {
+  return base::FeatureList::IsEnabled(kNewTabPageEphemeralTheme);
+}
+
+NSString* GetNTPEphemeralThemeAnimatedBackgroundPath() {
+  if (!IsNTPEphemeralThemeEnabled()) {
+    return nil;
+  }
+  std::string path = base::GetFieldTrialParamValueByFeature(
+      kNewTabPageEphemeralTheme, kNTPEphemeralThemeBackgroundURLParam);
+  if (path.empty()) {
+    return nil;
+  }
+  return base::SysUTF8ToNSString(path);
 }
 
 bool IsDiscoverFeedTopSyncPromoEnabled() {

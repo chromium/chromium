@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_
 
+#import <Foundation/Foundation.h>
+
 #include "base/feature_list.h"
 
 class PrefService;
@@ -56,6 +58,12 @@ BASE_DECLARE_FEATURE(kMVTInBottomSheet);
 // Checks if the Most Visited Tiles should be placed in the bottom sheet.
 bool IsMVTInBottomSheetEnabled();
 
+// Feature flag to enable custom ephemeral themes on the New Tab Page.
+BASE_DECLARE_FEATURE(kNewTabPageEphemeralTheme);
+
+// Checks if the New Tab Page ephemeral theme feature is enabled.
+bool IsNTPEphemeralThemeEnabled();
+
 #pragma mark - Feature parameters
 
 // A parameter value for the feed's refresh threshold when the feed has already
@@ -82,6 +90,18 @@ extern const char kFeedSwipeInProductHelpArmParam[];
 // Parameter to indicate which arm of the feature kNewTabPageUICleanup is
 // enabled.
 extern const char kNewTabPageUICleanupArmParam[];
+
+// Parameters for `kNewTabPageEphemeralTheme` specifying the seed hex color
+// string used to generate the `NewTabPageColorPalette` and the background
+// image URL.
+inline constexpr char kNTPEphemeralThemeSeedColorParam[] =
+    "ntp-ephemeral-theme-seed-color";
+inline constexpr char kNTPEphemeralThemeBackgroundURLParam[] =
+    "ntp-ephemeral-theme-background-url";
+
+// Returns the configured animated background path for the ephemeral theme, or
+// nil if none is configured.
+NSString* GetNTPEphemeralThemeAnimatedBackgroundPath();
 
 #pragma mark - Helpers
 
