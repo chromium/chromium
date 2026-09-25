@@ -1,10 +1,10 @@
 # Feature Engagement
 
 The Feature Engagement component provides a client-side backend for displaying
-feature enlightenment or in-product help (IPH) with a clean and easy to use API
+feature enlightenment or In-Product Help (IPH) with a clean and easy to use API
 to be consumed by the UI frontend. The backend behaves as a black box and takes
 input about user behavior. Whenever the frontend gives a trigger signal that
-in-product help could be displayed, the backend will provide an answer to
+In-Product Help could be displayed, the backend will provide an answer to
 whether it is appropriate to show it or not.
 
 **Important Note for Desktop Developers:** This system is not used directly on
@@ -56,8 +56,8 @@ before. However, that leads to a few issues that this component tries to solve:
 
 Each In-Product Help is called a feature in this documentation. Every feature
 will have a few important things that are tracked, particularly whether the
-in-product help has been displayed, whether the feature the IPH highlights has
-been used and whether any required preconditions have been met. All of these are
+In-Product Help has been displayed, whether the feature the IPH highlights has
+been used, and whether any required preconditions have been met. All of these are
 tracked within **daily buckets**. This tracking is done only **locally on the
 device** itself.
 
@@ -121,7 +121,7 @@ description, and whether you want to export to Java (choose yes if your IPH
 is used on Android).
 
 After it runs, you will still need to:
-1.  Fill in the `TODO`s it left in `feature_configurations.cc` (and
+1.  Address the `TODO`s it left in `feature_configurations.cc` (and
 `EventConstants.java` if you opted for Java export) to define your feature's
 specific rules.
 2.  Start using the tracker in your code to trigger the IPH (see [Using the
@@ -150,8 +150,8 @@ feature, that enables the whole feature to be controlled server side. The name
 of the constant should be of the form:
 
 1.  `kIPH` prefix
-1.  Your unique CamelCased name, for example `GoatTeleportation`.
-1.  `Feature` variant (suffix).
+2.  Your unique CamelCased name, for example `GoatTeleportation`.
+3.  `Feature` variant (suffix).
 
 The example listed above would end up as `kIPHGoatTeleportationFeature`.
 
@@ -159,20 +159,27 @@ The name member of the `base::Feature` struct should match the constant name,
 and be on the form:
 
 1.  `IPH_` prefix
-1.  Your unique CamelCased name, for example `GoatTeleportation`.
+2.  Your unique CamelCased name, for example `GoatTeleportation`.
 
 #### Required Code Changes
 
-> [!NOTE]
+> **NOTE:**
 > The `generate_iph_entry.py` script handles all of these code changes for you.
 
 There are also a few more places where the feature should be added, so overall
-you would have to add it to the following places:
+you would have to add it to the following places (all entries should be added
+alphabetically within the appropriate `BUILDFLAG` block):
 
-1.  `//components/feature_engagement/public/feature_constants.cc`:
+1.  `//components/feature_engagement/public/feature_constants.h`:
+
+    ```c++
+    FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGoatTeleportationFeature);
+    ```
+
+2.  `//components/feature_engagement/public/feature_constants.cc`:
 
     To find the option that fits best for your use case, please read the section
-    [Configuring when to show in-product help](#Configuring-when-to-show-in-product-help)
+    [Configuring when to show In-Product Help](#Configuring-when-to-show-in-product-help)
     below. The section explains when to use client side, server side, or a mix
     of client side and server side configuration, and guidance on whether the
     feature should be enabled or disabled by default.
@@ -191,52 +198,131 @@ you would have to add it to the following places:
                  base::FEATURE_DISABLED_BY_DEFAULT);
     ```
 
-1.  `//components/feature_engagement/public/feature_constants.h`:
+3.  `//components/feature_engagement/public/feature_list.h`:
 
     ```c++
-    FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGoatTeleportationFeature);
+    DEFINE_VARIATION_PARAM(kIPHGoatTeleportationFeature,
+                           "IPH_GoatTeleportation");
     ```
 
-1.  `//components/feature_engagement/public/feature_list.cc`:
+    In the `kIPHDemoModeChoiceVariations` array:
 
-    *   Add to `const base::Feature* kAllFeatures[]`.
+    ```c++
+    VARIATION_ENTRY(kIPHGoatTeleportationFeature)
+    ```
 
-1.  `//components/feature_engagement/public/feature_list.h`:
+4.  `//components/feature_engagement/public/feature_list.cc`:
 
-    *   `DEFINE_VARIATION_PARAM(kIPHGoatTeleportationFeature,
-        "IPH_GoatTeleportation");`
-    *   `VARIATION_ENTRY(kIPHGoatTeleportationFeature)`
+    In the `kAllFeatures` array:
 
-If the feature will also be used from Java, also add it to:
-`org.chromium.components.feature_engagement.FeatureConstants` as a `String`
-constant.
+    ```c++
+    &kIPHGoatTeleportationFeature,
+    ```
+
+#### (Java-Only) Additional code changes
+
+If the feature will also be used from Java, also add it (alphabetically) to:
+[FeatureConstants.java](https://source.chromium.org/chromium/chromium/src/+/main:components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/FeatureConstants.java)
+as a `String` constant:
+
+1. `//components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/FeatureConstants.java`:
+
+    Add a `StringDef` entry:
+
+    ```Java
+    @StringDef({
+        // ...
+        FeatureConstants.IPH_GOAT_TELEPORTATION_FEATURE
+        // ...
+    })
+    ```
+
+    Add the definition within the interface:
+    ```Java
+
+    public @interface FeatureConstants {
+        // ...
+        String IPH_GOAT_TELEPORTATION_FEATURE = "IPH_GoatTeleportation";
+        // ...
+    }
+    ```
+
+In most cases, your feature will also have a concept of `used`, which signals
+that the user has used the feature you are trying to educate them on and
+therefore no longer needs to see the IPH (see
+[Using the tracker](#Using-the-feature_engagement_Tracker) below). If that
+action is triggered within the Java code, the `Event` also needs to be exported
+to Java.
+
+2. `//components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement/EventConstants.java`:
+
+    Add an entry (alphabetically) to the `EventConstants` class:
+    ```Java
+    public final class EventConstants {
+        // ...
+        /** The user interacted with the Goat Teleportation feature. */
+        public static final String GOAT_TELEPORTATION_USED = "goat_teleportation_used";
+        // ...
+    }
+    ```
+
 
 #### Required UMA Changes
 
-> [!NOTE]
+> **NOTE:**
 > The `generate_iph_entry.py` script handles these UMA changes for you.
 
 To enable UMA tracking, you need to make the following changes to the metrics
-configuration:
+configuration (entries should be added alphabetically):
 
-1.  Add feature to the histogram variant `IPHFeature` in:
-    `//tools/metrics/histograms/metadata/feature_engagement/histograms.xml`.
-    *   The variant name must match the `base::Feature` `name` member of your
-        feature.
-2.  Add feature to the actions file at: `//tools/metrics/actions/actions.xml`.
-    *   In the `<variants name="InProductHelp_Type">` element, add a new
-        `<variant>`. These variants are used by the following actions:
-        *   `InProductHelp.NotifyEvent.IPH`
-        *   `InProductHelp.NotifyUsedEvent.IPH`
-        *   `InProductHelp.ShouldTriggerHelpUI.IPH`
-        *   `InProductHelp.ShouldTriggerHelpUIResult.NotTriggered.IPH`
-        *   `InProductHelp.ShouldTriggerHelpUIResult.Triggered.IPH`
-        *   `InProductHelp.ShouldTriggerHelpUIResult.WouldHaveTriggered.IPH`
-    *   The `name` attribute must be the `base::Feature` `name` member of
-        your feature, with `IPH` stripped and an `_` prepended.
-    *   Keep the list sorted alphabetically by name.
-    *   For a feature with name `IPH_GoatTeleportation` you would add:
-        `<variant name="_GoatTeleportation" summary="For the goat teleportation feature."/>`
+1.  `//tools/metrics/histograms/metadata/feature_engagement/histograms.xml`:
+
+    Add feature to the histogram variant `IPHFeature`:
+    ```xml
+    <variants name="IPHFeature">
+        ...
+        <variant name="IPH_GoatTeleportation"
+            summary="Enables the IPH for the Goat Teleportation feature."/>
+        ...
+    </variants>
+    ```
+    The variant `name` must match the `base::Feature` **`feature_name`** member
+    of your feature (the String, _not_ the variable name).
+
+2.  `//tools/metrics/actions/actions.xml`.
+
+    Add feature to the action variant `InProductHelp_Type`:
+    ```xml
+    <variants name="InProductHelp_Type">
+        ...
+        <variant name="_GoatTeleportation"
+            summary="For the Goat Teleportation feature."/>
+        ...
+    </variants>
+    ```
+    The variant `name` must match the `base::Feature` **`feature_name`** member
+    of your feature (the String, _not_ the variable name), with the `IPH`
+    stripped but the `_` prefix included.
+
+These variants are used by the following actions:
+```
+InProductHelp.NotifyEvent.IPH
+InProductHelp.NotifyUsedEvent.IPH
+InProductHelp.ShouldTriggerHelpUI.IPH
+InProductHelp.ShouldTriggerHelpUIResult.NotTriggered.IPH
+InProductHelp.ShouldTriggerHelpUIResult.Triggered.IPH
+InProductHelp.ShouldTriggerHelpUIResult.WouldHaveTriggered.IPH
+```
+
+Note that the action includes `IPH` already, which is why we do **not** include
+that portion of the `feature_name` in the `actions.xml` file above.
+
+For a full description of these actions and the histograms recorded by the tracker, see [Metrics and Telemetry](#metrics-and-telemetry) below.
+
+### Writing a configuration
+
+
+
 
 ### Using the feature_engagement::Tracker
 
@@ -277,9 +363,9 @@ tracker->Dismissed(feature_engagement::kIPHGoatTeleportationFeature);
 
 #### Inspecting whether IPH has already been triggered for a feature
 
-Sometimes additional tracking is required to figure out if in-product help for a
+Sometimes additional tracking is required to figure out if In-Product Help for a
 particular feature should be shown, and sometimes this is costly. If the
-in-product help has already been shown for that feature, it might not be
+In-Product Help has already been shown for that feature, it might not be
 necessary any more to do the additional tracking of state.
 
 To check if the triggering condition has already been fulfilled (i.e. can not
@@ -297,17 +383,21 @@ else `NOT_READY` is always returned. See `IsInitialized()` and
 
 ##### A note about TriggerState naming
 
-Typically, the `FeatureConfig` (see below) for any particular in-product help
-requires the configuration for `event_trigger` to have a comparator value of
-`==0`, i.e. that it is a requirement that the particular in-product help has
-never been shown within the search window. The values of the `TriggerState` enum
-reflects this typical usage, whereas technically, this is the correct
-interpretation of the states:
+The values of the `TriggerState` enum are `HAS_BEEN_DISPLAYED`, `HAS_NOT_BEEN_DISPLAYED`,
+and `NOT_READY`. However, it is possible for the IPH to have been displayed at least
+once but for the `TriggerState` result to be `HAS_NOT_BEEN_DISPLAYED`.
+
+This is because the `TriggerState` enums are named in a way that assumes that
+`event_trigger` comparators have a value of `==0` (i.e. the IPH has never been shown
+within the search window), which is true for most `FeatureConfig`s.
+
+The true interpretation of the states is as follows:
 
 *   `HAS_BEEN_DISPLAYED`: `event_trigger` condition is NOT met and in-product
     help will not be displayed if `Tracker` is asked.
 *   `HAS_NOT_BEEN_DISPLAYED`: `event_trigger` condition is met and in-product
-    help might be displayed if `Tracker` is asked.
+    help **might** be displayed if `Tracker` is asked. Note that only the `event_trigger`
+    condition is checked; `WouldTriggerHelpUI` checks all of the relevant conditions.
 *   `NOT_READY`: `Tracker` not fully initialized yet, so it is unable to inspect
     the state.
 
@@ -317,21 +407,21 @@ Another way to check the internal state of the `Tracker` is to invoke
 `feature_engagement::Tracker::WouldTriggerHelpUI` which is basically the same as
 invoking `feature_engagement::Tracker::ShouldTriggerHelpUI`, but being allowed
 to ignore the state. It is still required to invoke
-`feature_engagement::Tracker::ShouldTriggerHelpUI` if in-product help should be
+`feature_engagement::Tracker::ShouldTriggerHelpUI` if In-Product Help should be
 shown.
 
 > **WARNING: It is not guaranteed that invoking `ShouldTriggerHelpUI(...)` after
-> this would yield the same result.** The state might change in-between the
-> calls because time has passed, other events might have been triggered, and
-> other state might have changed.
+> this would yield the same result.**
+> The state might change in-between the calls because time has passed, other
+> events might have been triggered, and other state might have changed.
 
-> **NOTE: For a `tracking_only` experiment, this will return the same result as
+> **NOTE:** For a `tracking_only` experiment, this will return the same result as
 > for a non-tracking experiment so that the comparison of groups can be properly
 > handled when `ShouldTriggerHelpUI(...)` is invoked.**
 
-## Configuring when to show in-product help
+## Configuring when to show In-Product Help
 
-To ensure that your in-product help triggers at the right time, you need to
+To ensure that your In-Product Help triggers at the right time, you need to
 configure what the constraints are for showing. There are two ways of doing
 this: (1) Using a [client side configuration](#client-side-configuration), or
 (2) using a [field trial configuration](#field-trial-configuration). It is also
@@ -380,7 +470,7 @@ it:
 
 As an example for when leaving an IPH disabled by default could be helpful,
 imagine that your feature uses one main feature flag in addition to multiple IPH
-feature flags. You can still check in all the configuration locally, but leave
+feature flags. You can still check in all the configurations locally, but leave
 the main feature flag and the IPHs off by default. This enables you to use a
 field trial to turn the IPHs on at the same time as your main feature flag. This
 could potentially help some features in two ways:
@@ -388,7 +478,7 @@ could potentially help some features in two ways:
 1.  They do not need to guard invocations of `ShouldTriggerHelpUI(...)` for each
     IPH with their main feature flag, possibly leading to simpler code if the
     IPH related code is spread around in the code base.
-1.  They can control when data collection starts for the IPHs.
+2.  They can control when data collection starts for the IPHs.
 
 ### Field trial configuration
 
@@ -400,13 +490,13 @@ The field trial configuration support is built into Chrome and supports both
 configuration. The configuration is written using JSON and the format is
 [described here](#configuration-format).
 
-There are two things required to display an in-product help feature using this
+There are two things required to display an In-Product Help feature using this
 approach:
 
 1.  Enable the feature by any means, typically by adding your IPH feature to the
     `enable_features` list, and doing the same thing when using a server side
     configuration.
-1.  Specify a configuration for when to display in-product help.
+2.  Specify a configuration for when to display In-Product Help.
 
 To ensure you test your feature with what you are planning to ship, it is
 required to also configure the expected launch configuration as the main testing
@@ -426,8 +516,8 @@ something like this:
           "params": {
             "availability": ">=30",
             "session_rate": "<1",
-            "event_used": "name:fun_event_happened;comparator:any;window:360;storage:360",
-            "event_trigger": "name:fun_feature_iph_triggered;comparator:any;window:360;storage:360",
+            "event_trigger": "name:goat_teleportation_iph_triggered;comparator:any;window:0;storage:360",
+            "event_used": "name:goat_teleportation_used;comparator:any;window:0;storage:360",
             "event_1": "name:related_fun_thing_happened;comparator:>=1;window:360;storage:360"
           },
           "enable_features": ["IPH_GoatTeleportationFeature"],
@@ -446,7 +536,15 @@ default configuration available.
 
 ### Mixed configuration
 
-When having an active field trial configuration in the fieldtrial_testing_config.json, it will override any configuration declared on the client side (default configuration). However it is still possible to test out the default client configuration by enabling the flag `IPH Use Client Config` from `chrome://flags`.
+An active field trial configuration in fieldtrial_testing_config.json will
+override any configuration declared on the client side (default configuration).
+However, it is still possible to test out the default client configuration by
+enabling the flag `IPH Use Client Config` from `chrome://flags`.
+
+> **WARNING:** When overriding any client-side (default) configuration, whether that is
+> from a field trial configuration or a server-side configuration, if a required
+> parameter is missing from the configuration (see below), the override will silently
+> fail / not apply, and the client-side (default) configuration will be used.
 
 ## Demo mode
 
@@ -471,18 +569,18 @@ How to select a feature or features is described below.
 ### Enabling all In-Product Help features in demo-mode
 
 1.  Go to chrome://flags
-1.  Find "In-Product Help Demo Mode" (#in-product-help-demo-mode-choice)
-1.  Select "Enabled"
-1.  Restart Chrome
+2.  Find "In-Product Help Demo Mode" (#in-product-help-demo-mode-choice)
+3.  Select "Enabled"
+4.  Restart Chrome
 
 ### Enabling a single In-Product Help feature in demo-mode
 
 1.  Go to chrome://flags
-1.  Find “In-Product Help Demo Mode” (#in-product-help-demo-mode-choice)
-1.  Select the feature you want with the "Enabled " prefix, for example for
+2.  Find “In-Product Help Demo Mode” (#in-product-help-demo-mode-choice)
+3.  Select the feature you want with the "Enabled " prefix, for example for
     `IPH_GoatTeleportationFeature` you would select:
     *   Enabled IPH_GoatTeleportationFeature
-1.  Restart Chrome
+4.  Restart Chrome
 
 
 ## Feature Grouping
@@ -507,18 +605,43 @@ The data types are listed below.
 
 ### FeatureConfig
 
-Format:
+Preferred format:
 
 ```
 {
+  // These 4 are mandatory for all configs
+  "IPH_GoatTeleportation_availability": "{Comparator}",
+  "IPH_GoatTeleportation_session_rate": "{Comparator}",
+  "IPH_GoatTeleportation_event_trigger": "{EventConfig}",
+  "IPH_GoatTeleportation_event_used": "{EventConfig}",
+
+  // These are optional and will be feature-specific.
+  "IPH_GoatTeleportation_session_rate_impact": "{SessionRateImpact}",
+  "IPH_GoatTeleportation_blocked_by": "{BlockedBy}",
+  "IPH_GoatTeleportation_blocking": "{Blocking}",
+  "IPH_GoatTeleportation_event_###": "{EventConfig}",
+  "IPH_GoatTeleportation_snooze_params": "{SnoozeParams}"
+  "IPH_GoatTeleportation_tracking_only": "{Boolean}"
+  "IPH_GoatTeleportation_groups": {GroupList},
+  "IPH_GoatTeleportation_x_???": "..."
+ }
+```
+
+Special-case format (use with caution, see below):
+
+```
+{
+  // These 4 are mandatory for all configs
   "availability": "{Comparator}",
   "session_rate": "{Comparator}",
+  "event_trigger": "{EventConfig}",
+  "event_used": "{EventConfig}",
+
+  // These are optional and will be feature-specific.
   "session_rate_impact": "{SessionRateImpact}",
   "blocked_by": "{BlockedBy}",
   "blocking": "{Blocking}",
-  "event_used": "{EventConfig}",
-  "event_trigger": "{EventConfig}",
-  "event_???": "{EventConfig}",
+  "event_###": "{EventConfig}",
   "snooze_params": "{SnoozeParams}"
   "tracking_only": "{Boolean}"
   "groups": {GroupList},
@@ -526,68 +649,66 @@ Format:
  }
 ```
 
-Alternate format:
+The `FeatureConfig` fields `availability`, `session_rate`, `event_used`, and
+`event_trigger` are **required**, and there can be an arbitrary amount of other
+`event_###` entries (`###` being numerals {1, 2, 3, etc}). If only one feature
+is being tracked in an experiment at a time, then the parameters can be added as
+they are in the "special-case" above (same as how they are written below).
+However, if more than one feature is being measured in an experiment, it is
+**necessary** to add the feature name prefix (e.g. `IPH_GoatTeleportation_`)
+before each parameter name for the system to be able to disambiguate between the
+similarly named parameters for each feature.
 
-```
-{
-  "IPH_GoatTeleportationFeature_availability": "{Comparator}",
-  "IPH_GoatTeleportationFeature_session_rate": "{Comparator}",
-  "IPH_GoatTeleportationFeature_session_rate_impact": "{SessionRateImpact}",
-  "IPH_GoatTeleportationFeature_blocked_by": "{BlockedBy}",
-  "IPH_GoatTeleportationFeature_blocking": "{Blocking}",
-  "IPH_GoatTeleportationFeature_event_used": "{EventConfig}",
-  "IPH_GoatTeleportationFeature_event_trigger": "{EventConfig}",
-  "IPH_GoatTeleportationFeature_event_???": "{EventConfig}",
-  "IPH_GoatTeleportationFeature_tracking_only": "{Boolean}"
-  "IPH_GoatTeleportationFeature_x_???": "..."
- }
-```
+> **NOTE:**
+> We **_strongly suggest_** adding the feature name for every parameter, regardless
+> of the number of features being experimented on. This keeps the code consistent
+> and will proactively protect against incorrect configs.
 
-The `FeatureConfig` fields `availability`, `session_rate`, `event_used` and
-`event_trigger` are required, and there can be an arbitrary amount of other
-`event_???` entries. The fields can optionally have a feature name prefix (e.g.
-`IPH_GoatTeleportationFeature_`) as well, which is sometimes required to
-disambiguate between param names between different IPHs if they are combined
-into the same field trial.
+#### Required Parameters
 
 *   `availability` __REQUIRED__
-    *   For how long must an in-product help experiment have been available to
+    *   For how long must an In-Product Help experiment have been available to
         the end user.
     *   The value of the `Comparator` is in a number of days.
+    *   For a feature that is always available (e.g. from day 1 onward), use kAlwaysAvailable.
     *   See [Comparator](#Comparator) below for details.
 *   `session_rate` __REQUIRED__
-    *   How many other in-product help have been displayed within the current
+    *   How many other In-Product Help have been displayed within the current
         end user session.
     *   The value of the `Comparator` is a count of total In-Product Help
         displayed in the current end user session.
+    *   For a feature that has no session restrictions, use kNoRestrictions.
     *   See [Comparator](#Comparator) below for details.
+*   `event_trigger` __REQUIRED__
+    *   Relates to the times In-Product Help is triggered and shown.
+    *   Automatically increments when the In-Product Help is triggered (no manual `NotifyEvent` call required).
+    *   Directly drives the `InProductHelp.ShouldTriggerHelpUIResult.Triggered.<feature>` / `NotTriggered` user actions, `InProductHelp.ShownTime.<feature>` duration timer, and the `FAILURE_TRIGGER_PRECONDITION_UNMET` histogram failure bucket.
+    *   See [EventConfig](#EventConfig) below for details.
+*   `event_used` __REQUIRED__
+    *   Relates to what the In-Product Help wants to highlight, i.e. teach the
+        user about and increase usage of.
+    *   This is typically recorded during the action that the In-Product Help
+        should stimulate usage of.
+    *   Emits the dedicated user action `InProductHelp.NotifyUsedEvent.<feature>` when notified, and logs the `FAILURE_USED_PRECONDITION_UNMET` histogram failure bucket if this precondition is not met.
+    *   See [EventConfig](#EventConfig) below for details.
+
+#### Optional Parameters
+
 *   `session_rate_impact`
-    *   Which other in-product help features showing the current IPH impacts.
+    *   Which other In-Product Help features showing the current IPH impacts.
     *   By default, a feature impacts every other feature.
     *   Defaults to `all`.
     *   See [SessionRateImpact](#SessionRateImpact) below for details.
 *   `blocked_by`
-    *   Which other in-product help features the current IPH is blocked by.
-    *   By default, a feature is blocked by any other feature.
+    *   Which other currently showing In-Product Help features block this IPH from showing.
+    *   By default, a feature is blocked by any other currently showing feature (unless that feature configured `blocking: none`).
     *   Defaults to `all`.
     *   See [BlockedBy](#BlockedBy) below for details.
 *   `blocking`
-    *   Which other in-product help features showing the current IPH blocks.
-    *   By default, a feature blocks every other feature.
+    *   Whether showing this In-Product Help blocks other features configured with `blocked_by: all`.
+    *   By default, showing a feature blocks every other feature.
     *   Defaults to `all`.
     *   See [Blocking](#Blocking) below for details.
-*   `event_used` __REQUIRED__
-    *   Relates to what the in-product help wants to highlight, i.e. teach the
-        user about and increase usage of.
-    *   This is typically recorded during the action that the In-Product Help
-        should stimulate usage of.
-    *   Special UMA is tracked for this.
-    *   See [EventConfig](#EventConfig) below for details.
-*   `event_trigger` __REQUIRED__
-    *   Relates to the times in-product help is triggered.
-    *   Automatically increments when the in-product help is triggered.
-    *   Special UMA is tracked for this.
-    *   See [EventConfig](#EventConfig) below for details.
 *   `event_???`
     *   Similar to the other `event_` items, but for all other preconditions
         that must have been met.
@@ -595,15 +716,15 @@ into the same field trial.
         `event_trigger`.
     *   See [EventConfig](#EventConfig) below for details.
 *   `snooze_params`
-    *   Enabled snooze capability for in-product help bubbles.
-    *   By default, an in-product help is not snoozable and is dismissed until triggered again.
+    *   Enabled snooze capability for In-Product Help bubbles.
+    *   By default, an In-Product Help is not snoozable and is dismissed until triggered again.
     *   See [SnoozeParams](#SnoozeParams) below for details.
 *   `groups`
     *   List of groups this feature is part of.
     *   The feature will be subject to all items from its groups' configurations.
     *   See [GroupList](#GroupList) below for details.
 *   `tracking_only`
-    *   Set to true if in-product help should never trigger.
+    *   Set to true if In-Product Help should never trigger.
     *   Tracker::ShouldTriggerHelpUI(...) will always return false, but if all
         other conditions are met, it will still be recorded as having been shown
         in the internal database and through UMA.
@@ -612,23 +733,21 @@ into the same field trial.
     *   This is meant to be used by either local tests or for comparisons
         between different experiment groups.
     *   If you want to later transition users with this flag set to `true` to in
-        fact display in-product help, you might want to use a different
+        fact display In-Product Help, you might want to use a different
         `EventConfig::name` for the `event_trigger` configuration than the
         non-tracking configuration.
     *   Defaults to `false`.
     *   See [Boolean](#Boolean) below for details.
 *   `x_???`
-
     *   Any parameter starting with `x_` is ignored by the feature engagement
         tracker.
     *   A typical use case for this would be if there are multiple experiments
-        for the same in-product help, and you want to specify different strings
+        for the same In-Product Help, and you want to specify different strings
         to use in each of them, such as:
 
         ```
         "x_promo_string": "IDS_GOATTELEPORTATION_PROMO_2"
         ```
-
     *   Failing to use an `x_`-prefix for parameters unrelated to the
         `FeatureConfig` will end up being recorded as `FAILURE_UNKNOWN_KEY` in
         the `InProductHelp.Config.ParsingEvent` histogram.
@@ -647,8 +766,8 @@ is allowed to have previously happened for the IPH to trigger.
 {
   "availability": ">=30",
   "session_rate": "<1",
-  "event_used": "name:download_home_opened;comparator:any;window:90;storage:360",
   "event_trigger": "name:download_home_iph_trigger;comparator:==0;window:90;storage:360",
+  "event_used": "name:download_home_opened;comparator:any;window:0;storage:360",
   "event_1": "name:download_completed;comparator:>=1;window:120;storage:180"
 }
 ```
@@ -660,9 +779,9 @@ to trigger as long as no other IPH has been shown.
 {
   "availability": ">=0",
   "session_rate": "<1",
-  "event_used": "name:shopping_list_track_price_from_menu;comparator:==0;window:360;storage:360",
   "event_trigger": "name:shopping_list_menu_item_iph_triggered;comparator:==0;window:7;storage:7",
-  "event_trigger_1": "name:shopping_list_menu_item_iph_triggered;comparator:<3;window:360;storage:360"
+  "event_used": "name:shopping_list_track_price_from_menu;comparator:==0;window:360;storage:360",
+  "event_1": "name:shopping_list_menu_item_iph_triggered;comparator:<3;window:360;storage:360"
 }
 ```
 
@@ -686,7 +805,7 @@ all described below:
     *   Search for this occurrences of the event within this window.
     *   The value must be given as a number of days.
     *   For value N, the following holds:
-        *   `0` Nothing should be counted.
+        *   `0` Nothing should be counted. Always returns 0 as a result.
         *   `1` |current_day| should be counted.
         *   `2+` |current_day| plus |N-1| more days should be counted.
     *   Value client side data type: uint32_t
@@ -725,7 +844,7 @@ name:user_has_seen_wifi;comparator:>=1;window:30;storage:180
 
 ### Comparator
 
-Format: `{COMPARATOR}[value]`
+Format: `{Comparator}[value]`
 
 The following comparators are allowed:
 
@@ -744,9 +863,15 @@ Other than `any`, all comparators require a value.
 ```
 >=10
 ==0
-any
+ANY
 <15
 ```
+
+> **NOTE:**
+> When creating an EventConfig where the desired outcome is always true (e.g. when
+> adding an event purely for data collection), the above values should be used, with
+> a window of 0. Conversely, a window of 0 should only be used when one of the above
+> constant values is used.
 
 ### Boolean
 
@@ -801,16 +926,24 @@ IPH_DownloadPage,IPH_DownloadHome
 
 Format: `[all|none|comma-separated list]`
 
-*   `all` means this feature is blocked by any other feature that is currently
-    showing. This is the default.
-*   `none` means that this feature is not blocked by any other features. This
-    feature may therefore be shown unrestricted by the currently showing features.
-*   `[comma-separated list]` means that this feature is only blocked by the
-    particular
-    features listed. Use the `base::Feature` name of the feature in the list.
-    *   It is *NOT* valid to use the feature names `all` or `none`. They must
-        only be used alone with no comma, at which point they work as described
-        above.
+`BlockedBy` (inbound) controls whether **this** feature is blocked from triggering
+when other features are currently showing.
+
+> **NOTE: What does "Currently Showing" mean?**
+> An IPH is considered "currently showing" in the Feature Engagement Tracker from
+> the moment `ShouldTriggerHelpUI(...)` returns `true` until `Tracker::Dismissed(...)`
+> is explicitly called for that feature.
+>
+> **No Queueing:**
+> If a feature is blocked by another currently showing feature, `ShouldTriggerHelpUI(...)`
+> returns `false` synchronously (and logs `TriggerHelpUIResult::FAILURE_CURRENTLY_SHOWING`
+> to UMA). The Feature Engagement Tracker **does not queue** blocked requests; the caller
+> must invoke `ShouldTriggerHelpUI(...)` again at a later time if it wishes to re-evaluate conditions.
+
+*   `all` means this feature is blocked from showing if any other feature is currently showing whose configuration has `blocking: all` (the default). If a currently showing feature explicitly specifies `blocking: none`, it will not block this feature. This is the default.
+*   `none` means this feature is not blocked by any other currently showing feature. It may trigger concurrently with other features (provided it is not already showing itself).
+*   `[comma-separated list]` means this feature is only blocked if one of the specific features in the list is currently showing. Use the `base::Feature` name of each feature.
+    *   It is *NOT* valid to mix `all` or `none` with other feature names in a comma-separated list.
 
 **Examples**
 
@@ -825,10 +958,10 @@ IPH_DownloadPage,IPH_DownloadHome
 
 Format: `[all|none]`
 
-*   `all` means this feature blocks every other feature regarding their
-    `IsBlocked` calculations. This is the default.
-*   `none` means that this feature does not block any other features regarding
-    the `IsBlocked` calculation.
+`Blocking` (outbound) controls whether displaying **this** feature blocks other features configured with `blocked_by: all` from showing at the same time.
+
+*   `all` means when this feature is currently showing, it blocks any other feature that has `blocked_by: all`. This is the default.
+*   `none` means when this feature is currently showing, it does not block other features configured with `blocked_by: all`. Those features will be allowed to trigger concurrently.
 
 **Examples**
 
@@ -836,6 +969,24 @@ Format: `[all|none]`
 all
 none
 ```
+
+### BlockedBy & Blocking Interactions (Precedence)
+
+When two features interact with different `BlockedBy` and `Blocking` configurations, the outcome is determined by the **incoming feature's** `BlockedBy` configuration when `ShouldTriggerHelpUI(...)` is called:
+
+| `Feature A` (Currently Showing) | `Feature B` (Incoming Feature) | Result for `Feature B` | Explanation |
+| :--- | :--- | :--- | :--- |
+| `blocking: all` | `blocked_by: none` | **NOT Blocked (Shows)** | `blocked_by: none` on the incoming feature acts as an absolute opt-out and wins. |
+| `blocking: all` | `blocked_by: all` | **BLOCKED** | Standard mutual exclusion between default IPHs. |
+| `blocking: all` | `blocked_by: [Feature A]` | **BLOCKED** | `Feature B` explicitly targets `Feature A`, which is active. |
+| `blocking: all` | `blocked_by: [Feature C]` | **NOT Blocked (Shows)** | `Feature B` is only blocked by `Feature C` (which is not showing). |
+| `blocking: none` | `blocked_by: none` | **NOT Blocked (Shows)** | Neither feature blocks or is blocked by the other. |
+| `blocking: none` | `blocked_by: all` | **NOT Blocked (Shows)** | `Feature A` opted out of blocking other features. |
+| `blocking: none` | `blocked_by: [Feature A]` | **BLOCKED** | Explicit lists bypass `Feature A`'s `blocking: none` because `Feature B` declared a hard incompatibility with `Feature A`. |
+| `blocking: none` | `blocked_by: [Feature C]` | **NOT Blocked (Shows)** | `Feature B` is only blocked by `Feature C` (which is not showing). |
+
+> **Self-Blocking Rule:**
+> A feature is **always blocked from triggering if an instance of itself is already currently showing**, regardless of any `BlockedBy` or `Blocking` configuration.
 
 ### SnoozeParams
 
@@ -876,7 +1027,7 @@ This is a comma-separated list of group names that this feature is part of.
 ### GroupConfig
 
 The `GroupConfig` fields `session_rate` and `event_trigger` are required, and
-there can be an arbitrary amount of other `event_???` entries. Like features,
+there can be an arbitrary amount of other `event_###` entries. Like features,
 the group fields can also have an optional name prefix.
 
 
@@ -884,7 +1035,7 @@ the group fields can also have an optional name prefix.
 {
   "session_rate": "{Comparator}",
   "event_trigger": "{EventConfig}",
-  "event_???": "{EventConfig}",
+  "event_###": "{EventConfig}",
   "x_???": "..."
  }
 ```
@@ -898,7 +1049,7 @@ the group fields can also have an optional name prefix.
     * Similar to the [FeatureConfig](#FeatureConfig) field of the same name.
     * Automatically increments whenever any feature in this group is triggered.
 
-* `event_???`
+* `event_###`
     * Similar to the [FeatureConfig](#FeatureConfig) field of the same name.
 
 **Examples**
@@ -910,15 +1061,15 @@ only one of the 2 to trigger every week.
 DownloadHomeIPH: {
   "availability": ">=30",
   "session_rate": "<1",
-  "event_used": "name:download_home_opened;comparator:any;window:90;storage:360",
   "event_trigger": "name:download_home_iph_trigger;comparator:==0;window:30;storage:30",
+  "event_used": "name:download_home_opened;comparator:any;window:0;storage:360",
   "groups": "DownloadGroup",
 }
 DownloadCustomIPH: {
   "availability": ">=30",
   "session_rate": "<1",
-  "event_used": "name:download_custom_opened;comparator:any;window:90;storage:360",
   "event_trigger": "name:download_custom_iph_trigger;comparator:==0;window:30;storage:30",
+  "event_used": "name:download_custom_opened;comparator:any;window:0;storage:360",
   "groups": "DownloadGroup",
 }
 DownloadGroup: {
@@ -930,7 +1081,7 @@ DownloadGroup: {
 ### Manual testing using field trial configurations
 
 Usually, the options for testing IPHs provided in
-[Configuring when to show in-product help](#Configuring-when-to-show-in-product-help)
+[Configuring when to show In-Product Help](#Configuring-when-to-show-in-product-help)
 are enough for most features. However, if you need to manually test your feature
 and want to test the whole flow from parsing field trial parameters to enabling
 your feature, the steps for this are described below.
@@ -956,8 +1107,8 @@ correctly.
               "params": {
                 "availability": ">=30",
                 "session_rate": "<1",
-                "event_used": "name:download_home_opened;comparator:any;window:90;storage:360",
-                "event_trigger": "name:download_home_iph_trigger;comparator:any;window:90;storage:360",
+                "event_trigger": "name:download_home_iph_trigger;comparator:any;window:0;storage:360",
+                "event_used": "name:download_home_opened;comparator:any;window:0;storage:360",
                 "event_1": "name:download_completed;comparator:>=1;window:120;storage:180"
               },
               "enable_features": ["IPH_DownloadHome"],
@@ -969,14 +1120,14 @@ correctly.
     }
     ```
 
-1.  Use the field trial utility to convert the JSON configuration to command
+2.  Use the field trial utility to convert the JSON configuration to command
     line arguments:
 
     ```bash
     python ./tools/variations/fieldtrial_util.py DownloadStudy.json android shell_cmd
     ```
 
-1.  Pass the command line along to the binary you are planning on running.
+3.  Pass the command line along to the binary you are planning on running.
 
     Note: For Android you need to ensure that all arguments are are within one
     set of double quotes. In particular, for the Android target
@@ -1024,57 +1175,116 @@ ninja -C out/Debug components_unittests ;
 When adding new test suites, also remember to add the suite to the filter file:
 `//components/feature_engagement/components_unittests.filter`.
 
-## In-product Help Analysis Guideline
+## Metrics and Telemetry
 
-See
-[this doc](https://docs.google.com/document/d/1EhQe3G9juBiw-otuRnGf5gzTsfHZVZiSKrgF6r7Sz4E/edit#heading=h.la5fs7q2klme)
+The Feature Engagement Tracker automatically logs several UMA histograms and User Actions across the lifecycle of an In-Product Help.
+
+### User Actions
+
+*   **`InProductHelp.ShouldTriggerHelpUI.<feature_name>`**: Recorded every time `Tracker::ShouldTriggerHelpUI` is queried.
+*   **`InProductHelp.ShouldTriggerHelpUIResult.Triggered.<feature_name>`**: Recorded when all conditions are satisfied and the IPH is triggered to show.
+*   **`InProductHelp.ShouldTriggerHelpUIResult.WouldHaveTriggered.<feature_name>`**: Recorded when all conditions were satisfied, but the feature configuration had `tracking_only: true`.
+*   **`InProductHelp.ShouldTriggerHelpUIResult.NotTriggered.<feature_name>`**: Recorded when one or more preconditions were not met.
+*   **`InProductHelp.NotifyUsedEvent.<feature_name>`**: Specifically emitted when `Tracker::NotifyEvent` is called with the event configured as `event_used`. Used to measure user conversion / adoption of the target feature.
+*   **`InProductHelp.NotifyEvent.<feature_name>`**: Emitted when `Tracker::NotifyEvent` is called for any event registered in the feature configuration.
+*   **`InProductHelp.Dismissed`**: Emitted when `Tracker::Dismissed` is called after showing an IPH.
+
+### Histograms
+
+*   **`InProductHelp.ShouldTriggerHelpUI.<feature_name>`** (`TriggerHelpUIResult` enum):
+    *   Logs `SUCCESS` (`0`) or `SUCCESS_TRACKING_ONLY` (`12`) when shown.
+    *   When an IPH fails to trigger, logs `FAILURE` (`1`) **and** the specific unmet precondition reason(s):
+        *   `FAILURE_USED_PRECONDITION_UNMET` (`6`): The `event_used` condition was not met (e.g. user already uses the feature).
+        *   `FAILURE_TRIGGER_PRECONDITION_UNMET` (`7`): The `event_trigger` condition was not met (e.g. IPH was already shown recently).
+        *   `FAILURE_OTHER_PRECONDITION_UNMET` (`8`): One of the `event_###` custom preconditions failed.
+        *   `FAILURE_SESSION_RATE` (`9`): Session rate limit exceeded.
+        *   `FAILURE_AVAILABILITY_PRECONDITION_UNMET` (`11`): Feature has not been available for long enough.
+        *   `FAILURE_CURRENTLY_SHOWING` (`3`): Blocked because another feature (or this feature itself) is currently showing.
+        *   `FAILURE_FEATURE_DISABLED` (`4`), `FAILURE_DISPLAY_LOCK` (`13`), `FAILURE_GROUPS_PRECONDITION_UNMET` (`14`), etc.
+*   **`InProductHelp.ShownTime.<feature_name>`** and **`InProductHelp.ShownTime2.<feature_name>`**:
+    *   Records the time duration during which the IPH was visible (elapsed time between `ShouldTriggerHelpUI` returning `true` and `Tracker::Dismissed` being called).
+*   **`InProductHelp.NotifyEventReadyState.<feature_name>`**:
+    *   Records whether the event model was initialized and ready when an event was notified.
+*   **`InProductHelp.Config.ParsingEvent`** (`ConfigParsingEvent` enum):
+    *   Tracks configuration parsing errors (e.g. `FAILURE_USED_EVENT_MISSING`, `FAILURE_TRIGGER_EVENT_PARSE`).
+*   **`InProductHelp.SnoozeAction`** and **`InProductHelp.TextBubble.ShowSnooze`**:
+    *   Tracks snooze impressions and actions taken (snoozed vs dismissed).
 
 ## Example
 
-Let's image you want to add an in-product help to increase the use of the "Save
-password" infobar. The in-product help will be shown at most once per year, when
-the user is shown an infobar, if the user ignored the infobar 3 times in the
-past 60 days and accepted it less than 2 times in the past two years.
+Let's imagine you want to add an In-Product Help to increase the use of the Goat
+Teleportation feature. The In-Product Help should only be shown at most once per
+week, and at most 3 times per year, as long as the user hasn't used the feature
+at all in the last 2 years. We want it to be available from day 1, but we do not
+want it to show if any other IPHs have shown this session.
 
 The configuration will look like this:
 
- ```
+```
 {
   "availability": ">=0",
   "session_rate": "<1",
-  "event_used": "name:password_infobar_accepted;comparator:<=2;window:720;storage:720",
-  "event_trigger": "name:password_infobar_iph_trigger;comparator:==0;window:360;storage:360",
-  "event_1": "name:password_infobar_ignored;comparator:>=3;window:60;storage:60"
+  "event_trigger": "name:goat_teleportation_iph_trigger;comparator:==0;window:7;storage:360",
+  "event_used": "name:goat_teleportation_used;comparator:==0;window:720;storage:720",
+  "event_1": "name:goat_teleportation_iph_trigger;comparator:<3;window:360;storage:360"
 }
+```
+
+The equivalent of this must be defined in the C++ code as well, which is most
+often placed in `//components/feature_engagement/public/feature_configurations.cc`:
+
+```c++
+  if (kIPHGoatTeleportationFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(GREATER_THAN_OR_EQUAL, 0);
+    config.session_rate = Comparator(LESS_THAN, 1);
+
+    // IPH is shown at most once per week (7 days).
+    config.trigger = EventConfig("goat_teleportation_iph_trigger",
+                                 Comparator(EQUAL, 0), 7, 360);
+
+    // IPH is shown only if the user has not used the feature in the last 2 years (720 days).
+    config.used = EventConfig("goat_teleportation_used",
+                              Comparator(EQUAL, 0), 720, 720);
+
+    // IPH is shown at most 3 times in the last year (360 days).
+    // This appears as "event_1" in the JSON fieldtrial config above.
+    config.event_configs.insert(EventConfig("goat_teleportation_iph_trigger",
+                                            Comparator(LESS_THAN, 3), 360, 360));
+
+    return config;
+  }
 ```
 
 In `//components/feature_engagement/public/feature_constants.h`:
 
 ```c++
-FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHPasswordInfobarFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGoatTeleportationFeature);
 ```
 
-In `//components/feature_engagement/public/event_constants.h`
+In `//components/feature_engagement/public/event_constants.h`:
 
 ```c++
-extern const char kPasswordInfobarIgnored[];  // "password_infobar_ignored"
-extern const char kPasswordInfobarAccepted[];  // "password_infobar_accepted"
+extern const char kGoatTeleportationUsed[];  // "goat_teleportation_used"
 ```
 
-In the Password Infobar code (example code):
+In the Goat Teleporter client code (example code):
 
 ```c++
-void PasswordInfobar::OnInfobarIgnored() {
-  tracker->NotifyEvent(kPasswordInfobarIgnored);
+void GoatTeleporter::TeleportGoat() {
+  // Teleport the goat...
+
+  // Notify FET that the feature was used, which prevents showing the IPH.
+  tracker->NotifyEvent(kGoatTeleportationUsed);
 }
 
-void PasswordInfobar::OnInfobarAccepted() {
-  tracker->NotifyEvent(kPasswordInfobarAccepted);
-}
+void GoatTeleporter::OnTeleporterSurfaceOpened() {
+  if (tracker->ShouldTriggerHelpUI(kIPHGoatTeleportationFeature)) {
+    // [... Code to display the Goat Teleportation IPH here...]
 
-void PasswordInfobar::OnInfobarPresented() {
-  if (tracker->ShouldTriggerHelpUI(kIPHPasswordInfobarFeature)) {
-    // Display the IPH.
+    // Remember to explicitly call Dismissed when the IPH is closed.
+    tracker->Dismissed(kIPHGoatTeleportationFeature);
   }
 }
 ```
