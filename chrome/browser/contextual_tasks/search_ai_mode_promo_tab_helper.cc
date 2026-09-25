@@ -134,12 +134,17 @@ class ContextualTaskNavigationObserver
         tabs::TabInterface::MaybeGetFromContents(web_contents());
     BrowserWindowInterface* browser = web_ui_interface->GetBrowser();
 
-    if (contextual_tasks_ui_service_) {
-      contextual_tasks_ui_service_->OnThreadLinkClicked(
-          target_url_, task_id, tab->GetWeakPtr(), browser->GetWeakPtr(),
-          url::Origin());
-    }
+    ContextualTasksUiService* service = contextual_tasks_ui_service_;
+    GURL target_url = target_url_;
+
+    // Run `NotifyComplete()` before `OnThreadLinkClicked()`, as
+    // `OnThreadLinkClicked()` detaches the tab and destroys `TabFeatures`
+    // (which owns `SearchAiModePromoTabHelper` and `this`).
     NotifyComplete();
+    if (service) {
+      service->OnThreadLinkClicked(target_url, task_id, tab->GetWeakPtr(),
+                                   browser->GetWeakPtr(), url::Origin());
+    }
   }
 
   void NotifyComplete() {
@@ -159,26 +164,44 @@ class ContextualTaskNavigationObserver
       this};
 };
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchAiModePromoTabHelper);
+DEFINE_USER_DATA(SearchAiModePromoTabHelper);
 
 BASE_FEATURE(kEnableLoadOriginalAIMSearchAfterSigninPromo,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 SearchAiModePromoTabHelper::SearchAiModePromoTabHelper(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<SearchAiModePromoTabHelper>(*web_contents),
       contextual_tasks_ui_service_(
           ContextualTasksUiServiceFactory::GetForBrowserContext(
               Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
       identity_manager_(IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
+      scoped_unowned_user_data_(std::in_place,
+                                tab.GetUnownedUserDataHost(),
+                                *this) {
   CHECK(base::FeatureList::IsEnabled(switches::kEnableSearchAIModeSigninPromo));
   CHECK(base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks));
   CHECK(contextual_tasks_ui_service_);
 }
 
 SearchAiModePromoTabHelper::~SearchAiModePromoTabHelper() = default;
+
+// static
+SearchAiModePromoTabHelper* SearchAiModePromoTabHelper::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+SearchAiModePromoTabHelper* SearchAiModePromoTabHelper::FromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  return From(tabs::TabInterface::MaybeGetFromContents(web_contents));
+}
 
 void SearchAiModePromoTabHelper::FireTimeoutReachedForTesting() {
   CHECK_IS_TEST();
@@ -408,11 +431,11 @@ bool SearchAiModePromoTabHelper::IsAIModeSearch(
 }
 
 void SearchAiModePromoTabHelper::SelfDestruct() {
+  promo_timer_.Stop();
   contextual_task_observer_.reset();
   identity_manager_scoped_observation_.Reset();
   signin_promo_controller_observation_.Reset();
-  if (web_contents()) {
-    web_contents()->RemoveUserData(SearchAiModePromoTabHelper::UserDataKey());
-  }
+  Observe(nullptr);
+  scoped_unowned_user_data_.reset();
 }
 }  // namespace contextual_tasks

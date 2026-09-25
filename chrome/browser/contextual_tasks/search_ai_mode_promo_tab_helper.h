@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_SEARCH_AI_MODE_PROMO_TAB_HELPER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -15,7 +16,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class SearchAIModeSignInPromoController;
 
@@ -23,6 +24,10 @@ namespace content {
 class NavigationHandle;
 class WebContents;
 }  // namespace content
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace contextual_tasks {
 
@@ -40,14 +45,21 @@ BASE_DECLARE_FEATURE(kEnableLoadOriginalAIMSearchAfterSigninPromo);
 // is not signed in.
 class SearchAiModePromoTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<SearchAiModePromoTabHelper>,
       public signin::IdentityManager::Observer,
       public SearchAIModeSignInPromoControllerObserver {
  public:
+  DECLARE_USER_DATA(SearchAiModePromoTabHelper);
+
+  SearchAiModePromoTabHelper(tabs::TabInterface& tab,
+                             content::WebContents* web_contents);
   SearchAiModePromoTabHelper(const SearchAiModePromoTabHelper&) = delete;
   SearchAiModePromoTabHelper& operator=(const SearchAiModePromoTabHelper&) =
       delete;
   ~SearchAiModePromoTabHelper() override;
+
+  static SearchAiModePromoTabHelper* From(tabs::TabInterface* tab);
+  static SearchAiModePromoTabHelper* FromWebContents(
+      content::WebContents* web_contents);
 
   void FireTimeoutReachedForTesting();
   void SetSigninPromoControllerFactoryForTesting(
@@ -57,9 +69,6 @@ class SearchAiModePromoTabHelper
   SearchAIModeSignInPromoController* GetSigninPromoControllerForTesting();
 
  private:
-  friend class content::WebContentsUserData<SearchAiModePromoTabHelper>;
-  explicit SearchAiModePromoTabHelper(content::WebContents* web_contents);
-
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -111,8 +120,9 @@ class SearchAiModePromoTabHelper
   base::ScopedObservation<SearchAIModeSignInPromoController,
                           SearchAIModeSignInPromoControllerObserver>
       signin_promo_controller_observation_{this};
+  std::optional<ui::ScopedUnownedUserData<SearchAiModePromoTabHelper>>
+      scoped_unowned_user_data_;
   base::WeakPtrFactory<SearchAiModePromoTabHelper> weak_ptr_factory_{this};
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace contextual_tasks
