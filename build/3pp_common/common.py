@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import argparse
+import glob
 import logging
 import os
 import pathlib
@@ -112,8 +113,9 @@ def _all_files(path):
     if os.path.isfile(path):
         return [path]
     assert os.path.isdir(path), 'Not a file or dir: ' + path
-    all_paths = pathlib.Path(path).glob('**/*')
-    return [str(f) for f in all_paths if f.is_file()]
+    ret = glob.glob('**/*', include_hidden=False)
+    # Same ignore pattern is used in copy_runtime_deps().
+    return [f for f in ret if os.path.isfile(f) and '__pycache__' not in f]
 
 
 def _resolve_runtime_deps(runtime_deps):
@@ -140,6 +142,7 @@ def copy_runtime_deps(checkout_dir, runtime_deps):
         if os.path.isfile(src_path):
             shutil.copy(src_path, dest_path)
         else:
+            # Same ignore pattern is used in _all_files().
             shutil.copytree(
                 src_path,
                 dest_path,

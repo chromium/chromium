@@ -120,9 +120,9 @@ def _build_overrides_jar(version, jar_path):
         # Setting JVM version doesn't matter for graalvm binary, but does
         # matter when google-java-format.jar is used (e.g. on non-Linux hosts).
         '-source',
-        '17',
+        '21',
         '-target',
-        '17',
+        '21',
         '-cp',
         jar_path,
         str(import_java),
