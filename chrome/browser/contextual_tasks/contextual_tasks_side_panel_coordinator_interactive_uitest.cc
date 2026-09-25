@@ -1528,6 +1528,7 @@ class ContextualTasksSignedOutAlignmentInteractiveUiTest
     std::vector<base::test::FeatureRef> disabled_features =
         GetDefaultDisabledFeatures();
     disabled_features.push_back(kContextualTasksForceEntryPointEligibility);
+    disabled_features.push_back(kEnableContextualTasksPinButtonInToolbar);
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }

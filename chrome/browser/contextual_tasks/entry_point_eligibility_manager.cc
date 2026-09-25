@@ -113,9 +113,6 @@ bool EntryPointEligibilityManager::IsPinningEligible(Profile* profile) {
           kContextualTasksForceEntryPointEligibility)) {
     return true;
   }
-  if (!IsEligible(profile)) {
-    return false;
-  }
   auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
   return aim_service && aim_service->IsFuseboxEligible();
 }

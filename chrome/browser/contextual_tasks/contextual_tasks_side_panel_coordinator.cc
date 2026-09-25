@@ -1504,7 +1504,9 @@ void ContextualTasksSidePanelCoordinator::OnEligibilityChange(
     if (auto* action_item = actions::ActionManager::Get().FindAction(
             kActionSidePanelShowContextualTasks,
             BrowserActions::From(browser_window_)->root_action_item())) {
-      action_item->SetVisible(is_eligible);
+      action_item->SetVisible(
+          EntryPointEligibilityManager::IsPinningEligible(
+              browser_window_->GetProfile()));
     }
   }
 #endif

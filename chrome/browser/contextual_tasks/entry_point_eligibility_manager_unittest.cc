@@ -402,6 +402,25 @@ TEST_F(EntryPointEligibilityManagerTest, IsPinningEligible_True) {
   EXPECT_TRUE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
 }
 
+TEST_F(EntryPointEligibilityManagerTest, IsPinningEligible_True_SignedOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
+      .WillRepeatedly(Return(false));
+
+  profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);  // Allowed
+
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  InitializeManager();
+
+  EXPECT_FALSE(EntryPointEligibilityManager::IsEligible(profile_.get()));
+  EXPECT_TRUE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
+}
+
 TEST_F(EntryPointEligibilityManagerTest,
        IsPinningEligible_True_ForceEntryPointEligibility) {
   base::test::ScopedFeatureList feature_list;
@@ -446,7 +465,7 @@ TEST_F(EntryPointEligibilityManagerTest,
 }
 
 TEST_F(EntryPointEligibilityManagerTest,
-       IsPinningEligible_False_NotEligible) {
+       IsPinningEligible_True_WhenNotContextualTasksEligible) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
@@ -458,7 +477,8 @@ TEST_F(EntryPointEligibilityManagerTest,
 
   InitializeManager();
 
-  EXPECT_FALSE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
+  EXPECT_FALSE(EntryPointEligibilityManager::IsEligible(profile_.get()));
+  EXPECT_TRUE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
 }
 
 TEST_F(EntryPointEligibilityManagerTest,

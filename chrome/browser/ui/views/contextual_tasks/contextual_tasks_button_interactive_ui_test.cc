@@ -826,13 +826,21 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
         ASSERT_NE(action_item, nullptr);
         EXPECT_TRUE(action_item->GetVisible());
       }),
-      ClearPrimaryAccount(), Do([&]() {
+      SetIsFuseboxEligible(false), Do([&]() {
         actions::ActionItem* action_item =
             actions::ActionManager::Get().FindAction(
                 kActionSidePanelShowContextualTasks,
                 BrowserActions::From(browser())->root_action_item());
         ASSERT_NE(action_item, nullptr);
         EXPECT_FALSE(action_item->GetVisible());
+      }),
+      SetIsFuseboxEligible(true), Do([&]() {
+        actions::ActionItem* action_item =
+            actions::ActionManager::Get().FindAction(
+                kActionSidePanelShowContextualTasks,
+                BrowserActions::From(browser())->root_action_item());
+        ASSERT_NE(action_item, nullptr);
+        EXPECT_TRUE(action_item->GetVisible());
       }));
 }
 
