@@ -16,6 +16,8 @@ source_set("readaloud") {
     "prefetch/prefetch_mode_scheduler.h",
     "read_aloud_playback_controller.h",
     "synthesis_response_parser.h",
+    "timeline/playback_timeline.h",
+    "timeline/timeline_position.h",
     "word_timing.h",
   ]
   sources = [
@@ -29,6 +31,7 @@ source_set("readaloud") {
     "prefetch/prefetch_mode_scheduler.cc",
     "read_aloud_playback_controller.cc",
     "synthesis_response_parser.cc",
+    "timeline/playback_timeline.cc",
   ]
 
   deps = [
@@ -68,6 +71,7 @@ source_set("unit_tests") {
     "prefetch/prefetch_mode_scheduler_unittest.cc",
     "read_aloud_playback_controller_unittest.cc",
     "synthesis_response_parser_unittest.cc",
+    "timeline/playback_timeline_unittest.cc",
   ]
 
   data = [ "//media/test/data/sfx-opus.ogg" ]
