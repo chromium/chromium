@@ -17,9 +17,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -33,6 +34,8 @@ namespace ash::graduation {
 namespace {
 constexpr GaiaId::Literal kUserGaiaId("111");
 constexpr char kUserEmail[] = "user1test@gmail.com";
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kUserEmail, kUserGaiaId);
 constexpr char kWebviewHostName[] = "graduation";
 
 }  // namespace
@@ -55,13 +58,13 @@ class GraduationUiHandlerTest : public testing::Test {
   ~GraduationUiHandlerTest() override = default;
 
   void SetUp() override {
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
-    fake_user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(&local_state_));
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
 
-    auto account_id = AccountId::FromUserEmailGaiaId(kUserEmail, kUserGaiaId);
-    auto* user = fake_user_manager_->AddGaiaUser(
-        account_id, user_manager::UserType::kRegular);
+    auto* user = user_session_test_environment_->AddRegularUser(kTestAccountId);
+    ASSERT_TRUE(user);
 
     handler_ = std::make_unique<GraduationUiHandler>(
         handler_remote_.BindNewPipeAndPassReceiver(),
@@ -72,7 +75,7 @@ class GraduationUiHandlerTest : public testing::Test {
 
   void TearDown() override {
     handler_.reset();
-    fake_user_manager_.Reset();
+    user_session_test_environment_.reset();
   }
 
   GraduationUiHandler* handler() { return handler_.get(); }
@@ -82,10 +85,10 @@ class GraduationUiHandlerTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   content::TestBrowserContext test_context_;
   mojo::Remote<graduation_ui::mojom::GraduationUiHandler> handler_remote_;
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_;
   std::unique_ptr<GraduationUiHandler> handler_;
 };
 

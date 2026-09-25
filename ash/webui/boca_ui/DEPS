@@ -20,6 +20,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "boca_app_page_handler_unittest\\.cc": [
+    "+components/session_manager/test/user_session_test_environment.h",
+  ],
   "tab_info_collector_browsertest\\.cc": [
     "+chrome/browser/profiles/profile_manager.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
