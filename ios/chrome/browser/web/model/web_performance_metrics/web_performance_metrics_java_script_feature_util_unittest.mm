@@ -127,6 +127,24 @@ TEST_F(WebPerformanceMetricsJavaScriptFeatureUtilTest,
           100);
   ASSERT_TRUE(with_outliers.has_value());
   EXPECT_EQ(with_outliers.value(), base::Milliseconds(80));
+
+  // 50 interactions -> outlier count = 1. Only 1 interaction was >= 16ms
+  // (300ms). That single interaction is discarded as an outlier, so the 98th
+  // percentile fell into the sub-16ms bucket.
+  std::optional<base::TimeDelta> sub_threshold =
+      web_performance_metrics::CalculateInteractionToNextPaint(
+          {base::Milliseconds(300)}, 50);
+  ASSERT_TRUE(sub_threshold.has_value());
+  EXPECT_EQ(sub_threshold.value(),
+            web_performance_metrics::kSubThresholdInteractionDuration);
+
+  // No interaction reached the 16ms threshold, so `durations` is empty while
+  // `interaction_count` is positive. The 98th percentile is sub-threshold.
+  std::optional<base::TimeDelta> all_sub_threshold =
+      web_performance_metrics::CalculateInteractionToNextPaint({}, 10);
+  ASSERT_TRUE(all_sub_threshold.has_value());
+  EXPECT_EQ(all_sub_threshold.value(),
+            web_performance_metrics::kSubThresholdInteractionDuration);
 }
 
 // Tests that CalculateAggregateInteractionToNextPaint correctly merges multiple

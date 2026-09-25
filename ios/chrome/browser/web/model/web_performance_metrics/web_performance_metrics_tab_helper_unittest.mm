@@ -52,14 +52,15 @@ TEST_F(WebPerformanceMetricsTabHelperTest,
   web::FakeNavigationContext navigation_context;
   fake_web_state.OnNavigationStarted(&navigation_context);
 
-  histogram_tester.ExpectUniqueSample(
-      web_performance_metrics::kAggregateInteractionToNextPaintHistogram, 120,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      web_performance_metrics::kInteractionToNextPaintMainFrameHistogram, 120,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      web_performance_metrics::kInteractionToNextPaintSubFrameHistogram, 50, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kAggregateInteractionToNextPaintHistogram,
+      base::Milliseconds(120), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kInteractionToNextPaintMainFrameHistogram,
+      base::Milliseconds(120), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kInteractionToNextPaintSubFrameHistogram,
+      base::Milliseconds(50), 1);
 }
 
 // Tests that Interaction to Next Paint is flushed when WebState is destroyed.
@@ -81,14 +82,15 @@ TEST_F(WebPerformanceMetricsTabHelperTest,
   // Destroy WebState (tab closure).
   fake_web_state.reset();
 
-  histogram_tester.ExpectUniqueSample(
-      web_performance_metrics::kAggregateInteractionToNextPaintHistogram, 95,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      web_performance_metrics::kInteractionToNextPaintMainFrameHistogram, 95,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      web_performance_metrics::kInteractionToNextPaintSubFrameHistogram, 60, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kAggregateInteractionToNextPaintHistogram,
+      base::Milliseconds(95), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kInteractionToNextPaintMainFrameHistogram,
+      base::Milliseconds(95), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kInteractionToNextPaintSubFrameHistogram,
+      base::Milliseconds(60), 1);
 }
 
 // Tests that the aggregate INP correctly merges multiple frames and discards
@@ -102,6 +104,8 @@ TEST_F(WebPerformanceMetricsTabHelperTest,
       WebPerformanceMetricsTabHelper::FromWebState(&fake_web_state);
 
   // Main frame has 100 interactions with worst latency 45ms.
+  // We only need to set the 45ms interaction. The other 99 will be synthesized
+  // by the calculation directly from the interaction count.
   tab_helper->SetFrameInteractionData("main_frame", {base::Milliseconds(45)},
                                       /*interaction_count=*/100,
                                       /*is_main_frame=*/true);
@@ -117,15 +121,15 @@ TEST_F(WebPerformanceMetricsTabHelperTest,
   // Total interactions = 102 -> outlier count = floor(102 / 50) = 2.
   // Merged worst durations = {300ms, 200ms, 45ms}.
   // Index 2 is selected -> 45ms for aggregate page INP!
-  histogram_tester.ExpectUniqueSample(
-      web_performance_metrics::kAggregateInteractionToNextPaintHistogram, 45,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      web_performance_metrics::kInteractionToNextPaintMainFrameHistogram, 45,
-      1);
-  histogram_tester.ExpectUniqueSample(
-      web_performance_metrics::kInteractionToNextPaintSubFrameHistogram, 300,
-      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kAggregateInteractionToNextPaintHistogram,
+      base::Milliseconds(45), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kInteractionToNextPaintMainFrameHistogram,
+      web_performance_metrics::kSubThresholdInteractionDuration, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      web_performance_metrics::kInteractionToNextPaintSubFrameHistogram,
+      base::Milliseconds(300), 1);
 }
 
 // Tests that when no user interactions occurred on the page, no aggregate

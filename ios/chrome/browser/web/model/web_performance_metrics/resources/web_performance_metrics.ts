@@ -16,7 +16,6 @@ const FIRST_CONTENTFUL_PAINT = 'first-contentful-paint';
 const WEB_PERFORMANCE_METRICS_HANDLER_NAME = 'WebPerformanceMetricsHandler';
 
 let loadedFromCache = false;
-let inpObserver: PerformanceObserver|null = null;
 
 // Placeholder replaced at script injection time based on the state of
 // `kIOSWebPerformanceMetricsINP`.
@@ -71,14 +70,21 @@ function processINPEvents(eventEntries: PerformanceObserverEntryList): void {
 // destroyed or the page is navigated away from. This only sends to the browser
 // the data needed to calculate the metric.
 function sendINPData(): void {
-  if (!isWebPerformanceMetricsINPEnabled() ||
-      interactionManager.totalCount === 0) {
+  if (!isWebPerformanceMetricsINPEnabled()) {
+    return;
+  }
+  // `performance.interactionCount` is undefined on WebKit versions prior to iOS
+  // 26.2. Note that this property counts interactions under 16ms which
+  // `PerformanceObserver` ignores, so `durations` may be empty when
+  // `interactionCount > 0`.
+  const interactionCount = performance.interactionCount ?? 0;
+  if (interactionCount === 0) {
     return;
   }
   const response = {
     'metric': 'InteractionToNextPaint',
     'durations': interactionManager.getLongestDurations(),
-    'interactionCount': interactionManager.totalCount,
+    'interactionCount': interactionCount,
     'frameId': gCrWeb.getFrameId(),
   };
   sendWebKitMessage(WEB_PERFORMANCE_METRICS_HANDLER_NAME, response);
@@ -143,14 +149,12 @@ function registerINPObserver(): void {
   if (!isWebPerformanceMetricsINPEnabled()) {
     return;
   }
-  try {
-    inpObserver = new PerformanceObserver(processINPEvents);
-    inpObserver.observe(
-        {type: 'event', buffered: true, durationThreshold: 16} as
-        PerformanceObserverInit);
-  } catch (e) {
-    inpObserver = null;
-  }
+
+  // Observing 'event' is a no-op on WebKit versions prior to iOS 26.2.
+  const observer = new PerformanceObserver(processINPEvents);
+  observer.observe(
+      {type: 'event', buffered: true, durationThreshold: 16} as
+      PerformanceObserverInit);
 }
 
 // Registers a passive event listener for each predefined

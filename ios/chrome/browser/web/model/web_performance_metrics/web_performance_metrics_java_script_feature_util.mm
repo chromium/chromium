@@ -37,7 +37,7 @@ double CalculateAbsoluteFirstContentfulPaint(
 std::optional<base::TimeDelta> CalculateInteractionToNextPaint(
     std::vector<base::TimeDelta> longest_durations,
     int interaction_count) {
-  if (longest_durations.empty() || interaction_count <= 0) {
+  if (interaction_count <= 0) {
     return std::nullopt;
   }
 
@@ -56,8 +56,18 @@ std::optional<base::TimeDelta> CalculateInteractionToNextPaint(
   // interactions."
   size_t outlier_count =
       static_cast<size_t>(interaction_count / kInteractionsPerOutlier);
-  size_t index = std::min(longest_durations.size() - 1, outlier_count);
-  return longest_durations[index];
+  if (outlier_count >= longest_durations.size()) {
+    if (longest_durations.size() < kMaxInteractions) {
+      // The 98th percentile falls outside the observed (>= 16ms) interactions,
+      // either because none were reported or because they were all discarded as
+      // outliers, so the 98th percentile interaction was under 16ms.
+      return kSubThresholdInteractionDuration;
+    }
+    // When the buffer reached capacity (kMaxInteractions), clamp to the 10th
+    // worst duration as an approximation for high-interaction pages (> 500).
+    return longest_durations.back();
+  }
+  return longest_durations[outlier_count];
 }
 
 // Calculates the Interaction to Next Paint metric across all frames.

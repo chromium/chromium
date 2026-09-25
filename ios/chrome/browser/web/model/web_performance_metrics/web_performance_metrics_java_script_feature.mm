@@ -12,6 +12,7 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/strings/strcat.h"
 #import "base/values.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/features.h"
@@ -126,35 +127,31 @@ void WebPerformanceMetricsJavaScriptFeature::LogInteractionToNextPaint(
     return;
   }
 
+  const int interaction_count = base::saturated_cast<int>(
+      body_dict.FindDouble(web_performance_metrics::kInteractionCountKey)
+          .value_or(0));
+
+  // We check the interaction count since the durations list can be empty if
+  // all the interactions are under 16ms.
+  if (interaction_count <= 0) {
+    return;
+  }
+
   // Extract durations data for the frame.
-  const auto* durations_list =
-      body_dict.FindList(web_performance_metrics::kDurationsKey);
-  if (!durations_list) {
-    return;
-  }
-
   std::vector<base::TimeDelta> durations;
-  durations.reserve(durations_list->size());
-  for (const auto& val : *durations_list) {
-    std::optional<double> duration = val.GetIfDouble();
-    if (duration.has_value()) {
-      durations.push_back(base::Milliseconds(duration.value()));
+  if (const base::ListValue* durations_list =
+          body_dict.FindList(web_performance_metrics::kDurationsKey)) {
+    durations.reserve(durations_list->size());
+    for (const auto& val : *durations_list) {
+      std::optional<double> duration = val.GetIfDouble();
+      if (duration.has_value()) {
+        durations.push_back(base::Milliseconds(duration.value()));
+      }
     }
-  }
-
-  // Double-check that durations did contain double values.
-  if (durations.empty()) {
-    return;
   }
 
   const std::string* frame_id =
       body_dict.FindString(web_performance_metrics::kFrameIdKey);
-  int interaction_count = std::max(
-      0, body_dict.FindInt(web_performance_metrics::kInteractionCountKey)
-             .value_or(0));
-  if (interaction_count == 0) {
-    interaction_count = static_cast<int>(durations.size());
-  }
 
   // Store the per-frame INP metrics in the TabHelper.
   if (WebPerformanceMetricsTabHelper* tab_helper =

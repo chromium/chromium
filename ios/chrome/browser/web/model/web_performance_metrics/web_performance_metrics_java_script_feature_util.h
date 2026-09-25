@@ -38,8 +38,7 @@ inline constexpr std::string_view kInteractionToNextPaintMainFrameHistogram =
 inline constexpr std::string_view kInteractionToNextPaintSubFrameHistogram =
     "IOS.Frame.InteractionToNextPaint.SubFrame";
 inline constexpr std::string_view kAggregateInteractionToNextPaintHistogram =
-    "PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2."
-    "MaxEventDuration";
+    "IOS.Frame.InteractionToNextPaint.Aggregate";
 
 // Histogram constants for First Contentful Paint (FCP).
 inline constexpr base::TimeDelta kTimeRangePaintHistogramMin =
@@ -70,7 +69,15 @@ inline constexpr int kInteractionsPerOutlier = 50;
 // samples a slightly higher percentile, providing a conservative approximation
 // without consuming unbounded memory. Corresponds to `kMaxInteractions` in
 // `components/page_load_metrics`.
+// LINT.IfChange(MaxInteractions)
 inline constexpr size_t kMaxInteractions = 10;
+// LINT.ThenChange(//ios/chrome/browser/web/model/web_performance_metrics/resources/interaction_manager.ts:MaxInteractions)
+
+// Duration reported for interactions that fall below the 16ms event timing
+// threshold from PerformanceObserver, matching WebKit's 8ms duration
+// granularity.
+inline constexpr base::TimeDelta kSubThresholdInteractionDuration =
+    base::Milliseconds(8);
 
 struct FirstContentfulPaint {
   // The time at which the frame started loading.

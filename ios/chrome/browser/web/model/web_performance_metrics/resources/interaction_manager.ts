@@ -5,7 +5,9 @@
 // Maximum number of longest interactions to keep in memory for INP.
 // A cap of 10 matches Google's official web-vitals.js library and yields the
 // exact 98th percentile for up to 500 interactions per page.
+// LINT.IfChange(MaxInteractions)
 const MAX_INTERACTIONS_TO_KEEP = 10;
+// LINT.ThenChange(//ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature_util.h:MaxInteractions)
 
 // Type aliases for interaction identifiers and duration units.
 type InteractionId = number;
@@ -16,18 +18,10 @@ export class InteractionManager {
   // Map to track the maximum event duration (ms) per interaction ID.
   private readonly longestDurationsByID = new Map<InteractionId, DurationMs>();
 
-  // Total number of unique user interactions observed in this frame.
-  private interactionCount = 0;
-
   // Cached ID and minimum duration among the tracked entries.
   // Allows O(1) instant rejection of fast interactions and O(1)
   // eviction once the map is full.
   private minEntry: {id: InteractionId, duration: DurationMs}|null = null;
-
-  // Total number of unique user interactions observed in this frame.
-  get totalCount(): number {
-    return this.interactionCount;
-  }
 
   // Records or updates a user interaction duration.
   record(eventId: InteractionId, duration: DurationMs): void {
@@ -47,8 +41,6 @@ export class InteractionManager {
       }
       return;
     }
-
-    this.interactionCount++;
 
     // We only need to keep the MAX_INTERACTIONS_TO_KEEP longest interactions.
     if (this.longestDurationsByID.size < MAX_INTERACTIONS_TO_KEEP) {
@@ -89,6 +81,5 @@ export class InteractionManager {
   clear(): void {
     this.longestDurationsByID.clear();
     this.minEntry = null;
-    this.interactionCount = 0;
   }
 }

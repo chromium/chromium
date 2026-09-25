@@ -66,8 +66,11 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h:ContextualPanelItemType) -->
 
 <variants name="IOSFrameType">
-  <variant name="MainFrame" summary="Main frame of the webpage"/>
-  <variant name="SubFrame" summary="Subframes (iframes) of the webpage"/>
+  <variant name="Aggregate"
+      summary="aggregated across all frames on the webpage"/>
+  <variant name="MainFrame" summary="isolated to the main frame"/>
+  <variant name="SubFrame"
+      summary="isolated to each subframe (iframe) on the webpage"/>
 </variants>
 
 <variants name="IOSSaveToDriveQueryTypeVariant">
@@ -2636,11 +2639,22 @@ chromium-metrics-reviews@google.com.
     interactions throughout a user's visit to a page, capturing the 98th
     percentile latency (discarding outliers).
 
-    Note that this histogram captures INP isolated to the {FrameType} and does
-    not aggregate interactions across all frames on the page.
+    This histogram records the INP {FrameType}.
+
+    Measured via the JavaScript PerformanceObserver API, where event timing
+    entries have a minimum duration threshold of 16ms. As a result, interactions
+    under 16ms are not reported individually, though
+    performance.interactionCount still counts them, so the INP calculation can
+    assume that missing interactions are at WebKit's 8ms duration granularity.
 
     Recorded when the page is navigated away from or the web state is destroyed,
-    for each {FrameType} where user interactions occurred.
+    provided user interactions were observed. This histogram only receives data
+    from users on iOS 26.2 and later due to WebKit Event Timing API
+    requirements.
+
+    The aggregate variant is equivalent to Blink's
+    PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration
+    but with less precision due to PerformanceObserver.
   </summary>
   <token key="FrameType" variants="IOSFrameType"/>
 </histogram>
