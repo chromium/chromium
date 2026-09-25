@@ -823,6 +823,13 @@ ContextualTasksSidePanelCoordinator::GetWebContentsCacheItemForWebContents(
 void ContextualTasksSidePanelCoordinator::OnTabAdded(TabListInterface& tab_list,
                                                      tabs::TabInterface* tab,
                                                      int index) {
+  // Do not inherit task association from the opener tab if the side panel is
+  // not open (e.g. when the panel was closed and only the ephemeral button
+  // remains, or when viewing a full-tab Contextual Tasks page).
+  if (!IsPanelOpenForContextualTask()) {
+    return;
+  }
+
   content::WebContents* content = tab->GetContents();
 
   // Background tabs opened via hotkey commands (e.g. Ctrl+Click, middle-click)

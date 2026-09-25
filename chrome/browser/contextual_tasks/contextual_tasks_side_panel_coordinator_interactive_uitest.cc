@@ -134,6 +134,8 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
     GetCoordinator()->SetPanelSuppressedForTesting(suppressed);
   }
 
+  void HidePanel() { GetCoordinator()->Hide(); }
+
   void SetUpTasks() {
     ActiveTaskContextProvider::From(browser())->AddObserver(
         &mock_active_task_context_provider_observer_);
@@ -966,6 +968,75 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   ASSERT_TRUE(task1);
   ASSERT_TRUE(task1_2);
   ASSERT_EQ(task1->GetTaskId(), task1_2->GetTaskId());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+    OpenNewTabWithLinkClick_WhenPanelClosed_DoesNotInheritOpenerTask) {
+  SetUpTasks();
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+  ASSERT_TRUE(coordinator->IsPanelOpenForContextualTask());
+
+  // Close the side panel on tab1 (under ephemeral button mode, tab1 remains
+  // associated with task1).
+  coordinator->Close();
+  ASSERT_FALSE(coordinator->IsPanelOpenForContextualTask());
+
+  chrome::AddSelectedTabWithURL(browser(), GURL(chrome::kChromeUISettingsURL),
+                                ui::PAGE_TRANSITION_LINK);
+  EXPECT_EQ(5, tab_list->GetTabCount());
+
+  // Because the side panel was closed on tab1, tab2 must NOT inherit task1.
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  std::optional<ContextualTask> task1 =
+      contextual_tasks_service->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(
+              tab_list->GetTab(1)->GetContents()));
+  std::optional<ContextualTask> task1_2 =
+      contextual_tasks_service->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(
+              tab_list->GetTab(2)->GetContents()));
+  ASSERT_TRUE(task1);
+  ASSERT_FALSE(task1_2);
+  EXPECT_FALSE(coordinator->IsPanelOpenForContextualTask());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+    OpenNewTabWithLinkClick_WhenPanelHidden_DoesNotInheritOpenerTask) {
+  SetUpTasks();
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+  ASSERT_TRUE(coordinator->IsPanelOpenForContextualTask());
+
+  // Hide the side panel without closing the task (e.g. as happens when viewing
+  // a full-tab Contextual Tasks page, where cache_item->is_open remains true).
+  HidePanel();
+  ASSERT_FALSE(coordinator->IsPanelOpenForContextualTask());
+
+  chrome::AddSelectedTabWithURL(browser(), GURL(chrome::kChromeUISettingsURL),
+                                ui::PAGE_TRANSITION_LINK);
+  EXPECT_EQ(5, tab_list->GetTabCount());
+
+  // Because the side panel was hidden on tab1, tab2 must NOT inherit task1 and
+  // must NOT automatically open the side panel.
+  ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  std::optional<ContextualTask> task1 =
+      contextual_tasks_service->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(
+              tab_list->GetTab(1)->GetContents()));
+  std::optional<ContextualTask> task1_2 =
+      contextual_tasks_service->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(
+              tab_list->GetTab(2)->GetContents()));
+  ASSERT_TRUE(task1);
+  ASSERT_FALSE(task1_2);
+  EXPECT_FALSE(coordinator->IsPanelOpenForContextualTask());
 }
 
 IN_PROC_BROWSER_TEST_F(
