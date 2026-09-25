@@ -107,6 +107,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const std::optional<url::Origin>& request_initiator_origin_lock() const {
     return request_initiator_origin_lock_;
   }
+  const std::optional<url::Origin>& isolated_world_origin_lock() const {
+    return isolated_world_origin_lock_;
+  }
 
   mojom::CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_ ? coep_reporter_.get() : nullptr;
@@ -192,6 +195,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const OriginatingProcessId process_id_;
   const std::optional<url::Origin> request_initiator_origin_lock_;
   const bool ignore_isolated_world_origin_;
+  const std::optional<url::Origin> isolated_world_origin_lock_;
   const mojom::TrustTokenOperationPolicyVerdict trust_token_issuance_policy_;
   const mojom::TrustTokenOperationPolicyVerdict trust_token_redemption_policy_;
   net::IsolationInfo isolation_info_;

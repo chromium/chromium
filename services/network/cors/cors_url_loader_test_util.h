@@ -35,6 +35,7 @@
 #include "services/network/resource_scheduler/resource_scheduler.h"
 #include "services/network/test/test_url_loader_network_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -157,6 +158,7 @@ class CorsURLLoaderTestBase : public testing::Test {
     // Members of `mojom::URLLoaderFactoryParams`.
     bool is_trusted;
     bool ignore_isolated_world_origin;
+    std::optional<url::Origin> isolated_world_origin_lock;
     mojom::ClientSecurityStatePtr client_security_state;
 
     // Member of `mojom::URLLoaderFactoryOverride`.
