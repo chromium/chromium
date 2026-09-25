@@ -450,7 +450,7 @@ bool VulkanDeviceQueue::InitCommon(VkPhysicalDevice vk_physical_device,
   return true;
 }
 
-bool VulkanDeviceQueue::InitializeFromANGLE(const bool is_thread_safe) {
+bool VulkanDeviceQueue::InitializeFromANGLE(bool is_thread_safe) {
   const VulkanInfo& info = instance_->vulkan_info();
   VkPhysicalDevice vk_physical_device = gl::QueryVkPhysicalDeviceFromANGLE();
   if (vk_physical_device == VK_NULL_HANDLE)
@@ -490,6 +490,17 @@ bool VulkanDeviceQueue::InitializeFromANGLE(const bool is_thread_safe) {
     return false;
 
   angle_display_ = gl::QueryDisplayFromANGLE();
+
+  // ChromeOS potentially uses Angle/Vulkan from other than main thread and
+  // because angle uses single vkQueue regardless of virtualization group, we
+  // have to make vma/queue access thread-safe to synchronize skia's access on
+  // the main thread with off-thread access in angle.
+#if BUILDFLAG(IS_CHROMEOS)
+  GetVulkanFunctionPointers()->per_queue_lock_map[vk_queue] =
+      std::make_unique<gpu::VulkanQueueLock>(angle_display_);
+  is_thread_safe = true;
+#endif
+
   return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
                     enabled_extensions, is_thread_safe);
 }
