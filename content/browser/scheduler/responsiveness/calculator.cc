@@ -152,7 +152,9 @@ void Calculator::TaskOrEventFinishedOnIOThread(
     base::TimeTicks execution_start_time,
     base::TimeTicks execution_finish_time) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
-  CHECK_GE(execution_start_time, queue_time, base::NotFatalUntil::M160);
+  // TODO(crbug.com/565232676): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK_GE(execution_start_time, queue_time);
 
   if (execution_finish_time - queue_time >= kCongestionThreshold) {
     base::AutoLock lock(io_thread_lock_);
