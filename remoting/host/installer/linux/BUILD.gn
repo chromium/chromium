@@ -55,6 +55,7 @@ if (enable_me2me_host && target_cpu == "x64") {
     inputs = [
       build_deb_script,
       "Makefile",
+      "apt.include",
       "debian/chrome-remote-desktop-environment.user.service",
       "debian/chrome-remote-desktop.service",
       "debian/chrome-remote-desktop.pam",
@@ -68,6 +69,10 @@ if (enable_me2me_host && target_cpu == "x64") {
       "debian/repo.cron",
       "debian/rules",
       "debian/triggers",
+      "installer.include",
+      "repo_variables.include",
+      "variables.include",
+      "//chrome/installer/linux/common/key.include",
 
       # Files to be packaged into the deb.
       "//remoting/host/installer/linux/Xsession",

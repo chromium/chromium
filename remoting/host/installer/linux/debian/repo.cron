@@ -17,9 +17,9 @@
 # "false" as desired. An empty $DEFAULTS_FILE is the same as setting both values
 # to "false".
 
-@@include@@../../../../../chrome/installer/linux/common/variables.include
+@@include@@../variables.include
 
-@@include@@../../../../../chrome/installer/linux/common/apt.include
+@@include@@../apt.include
 
 ## MAIN ##
 if [ -r "$DEFAULTS_FILE" ]; then
