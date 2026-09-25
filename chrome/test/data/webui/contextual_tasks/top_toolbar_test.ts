@@ -658,7 +658,7 @@ suite('TopToolbarTest', () => {
       const myActivityButton = buttons[1];
       assertTrue(!!myActivityButton);
       myActivityButton.click();
-      await proxy.handler.whenCalled('openMyActivityUi');
+      await toolbarProxy.handler.whenCalled('openMyActivityUi');
     });
 
     test('handles help click', async () => {
@@ -674,7 +674,7 @@ suite('TopToolbarTest', () => {
       const helpButton = buttons[2];
       assertTrue(!!helpButton);
       helpButton.click();
-      await proxy.handler.whenCalled('openFeedbackUi');
+      await toolbarProxy.handler.whenCalled('openFeedbackUi');
     });
 
     test('calls maybeTriggerPinningPromo when AI page is shown', async () => {

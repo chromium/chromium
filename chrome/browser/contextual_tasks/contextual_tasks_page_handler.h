@@ -75,10 +75,7 @@ class ContextualTasksPageHandler
   void CloseSidePanel() override;
   void ShowThreadHistory() override;
   void IsShownInTab(IsShownInTabCallback callback) override;
-  void OpenMyActivityUi() override;
-  void OpenFeedbackUi() override;
   void OpenOnboardingHelpUi() override;
-  void OpenOverflowMenuHelpUi() override;
   void OpenAskGHelpUi() override;
   void MoveTaskUiToNewTab() override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
@@ -114,10 +111,6 @@ class ContextualTasksPageHandler
       const contextual_tasks::ContextualTask& task,
       contextual_tasks::ContextualTasksService::TriggerSource source) override;
 
-  void set_skip_feedback_ui_for_testing(bool skip) {
-    skip_feedback_ui_for_testing_ = skip;
-  }
-
   actor::ActorActionsRunner* actions_runner_for_testing() const {
     return actions_runner_.get();
   }
@@ -139,8 +132,6 @@ class ContextualTasksPageHandler
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
   raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
   raw_ptr<contextual_tasks::ContextualTasksPanelController> panel_controller_;
-
-  bool skip_feedback_ui_for_testing_ = false;
 
   base::ScopedObservation<contextual_tasks::ContextualTasksService,
                           contextual_tasks::ContextualTasksService::Observer>

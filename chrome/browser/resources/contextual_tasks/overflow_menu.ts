@@ -196,20 +196,20 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
   protected onMyActivityClick_() {
     this.close();
     recordAction('ContextualTasks.WebUI.UserAction.OpenMyActivity');
-    this.browserProxy_.handler.openMyActivityUi();
+    this.toolbarBrowserProxy_.handler.openMyActivityUi();
   }
 
   protected onHelpClick_() {
     this.close();
     recordAction('ContextualTasks.WebUI.UserAction.OpenHelp');
-    this.browserProxy_.handler.openOverflowMenuHelpUi();
+    this.toolbarBrowserProxy_.handler.openOverflowMenuHelpUi();
   }
 
 
   protected onFeedbackClick_() {
     this.close();
     recordAction('ContextualTasks.WebUI.UserAction.OpenFeedback');
-    this.browserProxy_.handler.openFeedbackUi();
+    this.toolbarBrowserProxy_.handler.openFeedbackUi();
   }
 
   protected onNewThreadClick_() {

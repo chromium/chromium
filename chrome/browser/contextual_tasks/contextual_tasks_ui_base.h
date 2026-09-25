@@ -83,6 +83,9 @@ class ContextualTasksUIBase
   // contextual_tasks_toolbar::mojom::PageHandler:
   void PinSidePanel() override;
   void UnpinSidePanel() override;
+  void OpenMyActivityUi() override;
+  void OpenOverflowMenuHelpUi() override;
+  void OpenFeedbackUi() override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // PinnedToolbarActionsModel::Observer:

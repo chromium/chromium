@@ -68,7 +68,7 @@ suite('OverflowMenuTest', () => {
     assertTrue(!!myActivityButton);
 
     myActivityButton.click();
-    await proxy.handler.whenCalled('openMyActivityUi');
+    await toolbarProxy.handler.whenCalled('openMyActivityUi');
   });
 
   test('handles feedback click', async () => {
@@ -77,7 +77,7 @@ suite('OverflowMenuTest', () => {
     assertTrue(!!feedbackButton);
 
     feedbackButton.click();
-    await proxy.handler.whenCalled('openFeedbackUi');
+    await toolbarProxy.handler.whenCalled('openFeedbackUi');
   });
 
   suite('SmallFormFactor', () => {
@@ -106,7 +106,7 @@ suite('OverflowMenuTest', () => {
       assertTrue(!!myActivityButton);
 
       myActivityButton.click();
-      await proxy.handler.whenCalled('openMyActivityUi');
+      await toolbarProxy.handler.whenCalled('openMyActivityUi');
     });
 
     test('handles feedback click', async () => {
@@ -115,7 +115,7 @@ suite('OverflowMenuTest', () => {
       assertTrue(!!feedbackButton);
 
       feedbackButton.click();
-      await proxy.handler.whenCalled('openFeedbackUi');
+      await toolbarProxy.handler.whenCalled('openFeedbackUi');
     });
   });
 
@@ -350,7 +350,7 @@ suite('OverflowMenuTest', () => {
       assertTrue(!!helpButton);
 
       helpButton.click();
-      await proxy.handler.whenCalled('openOverflowMenuHelpUi');
+      await toolbarProxy.handler.whenCalled('openOverflowMenuHelpUi');
     });
 
     test('handles feedback click', async () => {
@@ -359,7 +359,7 @@ suite('OverflowMenuTest', () => {
       assertTrue(!!feedbackButton);
 
       feedbackButton.click();
-      await proxy.handler.whenCalled('openFeedbackUi');
+      await toolbarProxy.handler.whenCalled('openFeedbackUi');
     });
 
     suite('WithNewThreadInOverflow', () => {

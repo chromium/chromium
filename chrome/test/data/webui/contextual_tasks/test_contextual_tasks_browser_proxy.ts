@@ -234,10 +234,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'onImageClickedFromSourcesMenu',
       'onTabClickedFromSourcesMenu',
       'onWebviewMessage',
-      'openFeedbackUi',
-      'openMyActivityUi',
       'openOnboardingHelpUi',
-      'openOverflowMenuHelpUi',
       'openAskGHelpUi',
       'reopenTabs',
       'setTaskId',
@@ -333,20 +330,8 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     return Promise.resolve({isErrorDocument: false});
   }
 
-  openMyActivityUi() {
-    this.methodCalled('openMyActivityUi');
-  }
-
-  openFeedbackUi() {
-    this.methodCalled('openFeedbackUi');
-  }
-
   openOnboardingHelpUi() {
     this.methodCalled('openOnboardingHelpUi');
-  }
-
-  openOverflowMenuHelpUi() {
-    this.methodCalled('openOverflowMenuHelpUi');
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -600,6 +585,9 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
     super([
       'pinSidePanel',
       'unpinSidePanel',
+      'openMyActivityUi',
+      'openOverflowMenuHelpUi',
+      'openFeedbackUi',
     ]);
   }
 
@@ -609,6 +597,18 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
 
   unpinSidePanel() {
     this.methodCalled('unpinSidePanel');
+  }
+
+  openMyActivityUi() {
+    this.methodCalled('openMyActivityUi');
+  }
+
+  openOverflowMenuHelpUi() {
+    this.methodCalled('openOverflowMenuHelpUi');
+  }
+
+  openFeedbackUi() {
+    this.methodCalled('openFeedbackUi');
   }
 }
 

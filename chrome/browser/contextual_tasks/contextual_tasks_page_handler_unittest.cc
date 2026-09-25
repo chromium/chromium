@@ -205,7 +205,6 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
         mojo::PendingReceiver<mojom::PageHandler>(), contextual_tasks_ui_.get(),
         mock_contextual_tasks_ui_service_, mock_contextual_tasks_service_,
         mock_panel_controller_.get());
-    page_handler_->set_skip_feedback_ui_for_testing(true);
   }
 
   void TearDown() override {
@@ -951,25 +950,10 @@ TEST_F(ContextualTasksPageHandlerTest,
   page_handler_->OnWebviewMessage(serialized);
 }
 
-TEST_F(ContextualTasksPageHandlerTest, OpenMyActivityUi) {
-  // Navigation smoke test. We provide a null browser to safely exit early
-  // and avoid crashes in Navigate() which requires a full TabStripModel.
-  EXPECT_CALL(*contextual_tasks_ui_, GetBrowser()).WillOnce(Return(nullptr));
-  page_handler_->OpenMyActivityUi();
-}
-
-
-
 TEST_F(ContextualTasksPageHandlerTest, OpenOnboardingHelpUi) {
   // Navigation smoke test.
   EXPECT_CALL(*contextual_tasks_ui_, GetBrowser()).WillOnce(Return(nullptr));
   page_handler_->OpenOnboardingHelpUi();
-}
-
-TEST_F(ContextualTasksPageHandlerTest, OpenOverflowMenuHelpUi) {
-  // Navigation smoke test.
-  EXPECT_CALL(*contextual_tasks_ui_, GetBrowser()).WillOnce(Return(nullptr));
-  page_handler_->OpenOverflowMenuHelpUi();
 }
 
 TEST_F(ContextualTasksPageHandlerTest, OnboardingTooltipDismissed) {

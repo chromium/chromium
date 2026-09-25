@@ -10,10 +10,15 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_post_rearchitecture.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -33,10 +38,13 @@
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/grit/contextual_tasks_extension_resources.h"
@@ -56,6 +64,22 @@
 #endif
 
 namespace contextual_tasks {
+
+namespace {
+
+constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
+
+void OpenUrlWithDisposition(Profile* profile,
+                            const GURL& url,
+                            WindowOpenDisposition disposition,
+                            BrowserWindowInterface* browser) {
+  NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = disposition;
+  params.browser = browser;
+  Navigate(&params);
+}
+
+}  // namespace
 
 ContextualTasksUIBase::ContextualTasksUIBase(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui,
@@ -273,6 +297,47 @@ void ContextualTasksUIBase::UnpinSidePanel() {
     model->UpdatePinnedState(kActionSidePanelShowContextualTasks, false);
   }
 #endif
+}
+
+void ContextualTasksUIBase::OpenMyActivityUi() {
+  BrowserWindowInterface* browser = GetBrowser();
+  if (!browser) {
+    return;
+  }
+  OpenUrlWithDisposition(GetProfile(), GURL(kMyActivityUrl),
+                         WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
+}
+
+void ContextualTasksUIBase::OpenOverflowMenuHelpUi() {
+  BrowserWindowInterface* browser = GetBrowser();
+  if (!browser) {
+    return;
+  }
+  OpenUrlWithDisposition(
+      GetProfile(),
+      GURL(contextual_tasks::GetContextualTasksOverflowMenuHelpUrl()),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
+}
+
+void ContextualTasksUIBase::OpenFeedbackUi() {
+  BrowserWindowInterface* browser = GetBrowser();
+  if (!browser) {
+    return;
+  }
+  content::WebContents* web_contents = GetWebUIWebContents();
+  GURL page_url = web_contents ? web_contents->GetLastCommittedURL() : GURL();
+  if (auto* tab_list = TabListInterface::From(browser)) {
+    if (auto* active_tab = tab_list->GetActiveTab()) {
+      if (active_tab->GetContents()) {
+        page_url = active_tab->GetContents()->GetLastCommittedURL();
+      }
+    }
+  }
+
+  if (auto* ui_service =
+          ContextualTasksUiServiceFactory::GetForBrowserContext(GetProfile())) {
+    ui_service->OpenFeedbackUi(browser, page_url);
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

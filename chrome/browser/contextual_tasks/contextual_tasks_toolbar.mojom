@@ -25,6 +25,15 @@ interface PageHandler {
 
   // Unpins the side panel from the toolbar.
   UnpinSidePanel();
+
+  // Opens the My Activity page in a new tab.
+  OpenMyActivityUi();
+
+  // Opens the overflow menu help page in a new tab.
+  OpenOverflowMenuHelpUi();
+
+  // Opens the feedback UI.
+  OpenFeedbackUi();
 };
 
 // WebUI-side handler for requests from the browser.

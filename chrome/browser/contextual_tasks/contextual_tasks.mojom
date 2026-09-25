@@ -129,12 +129,6 @@ interface PageHandler {
   // shown in the side panel.
   IsShownInTab() => (bool is_in_tab);
 
-  // Opens the My Activity page in a new tab.
-  OpenMyActivityUi();
-
-  // Opens the Feedback page in a new tab.
-  OpenFeedbackUi();
-
   // Note: The following help UI methods are intentionally parameterless to
   // prevent compromised renderers from injecting arbitrary URLs or dispositions
   // (crbug.com/523750306). Target URLs and dispositions are resolved entirely
@@ -142,9 +136,6 @@ interface PageHandler {
 
   // Opens the onboarding help page in a new tab.
   OpenOnboardingHelpUi();
-
-  // Opens the overflow menu help page in a new tab.
-  OpenOverflowMenuHelpUi();
 
   // Opens the Ask G help page in a new tab.
   OpenAskGHelpUi();

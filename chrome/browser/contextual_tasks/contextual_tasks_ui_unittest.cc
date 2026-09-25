@@ -2595,4 +2595,43 @@ TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_FeatureDisabled) {
 }
 #endif
 
+TEST_F(ContextualTasksUiTest, OpenMyActivityUi_NoBrowser_SafeNoOp) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUIConfig config;
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* base_ui = static_cast<ContextualTasksUIBase*>(controller.get());
+  ASSERT_NE(base_ui, nullptr);
+
+  base_ui->OpenMyActivityUi();
+}
+
+TEST_F(ContextualTasksUiTest, OpenOverflowMenuHelpUi_NoBrowser_SafeNoOp) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUIConfig config;
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* base_ui = static_cast<ContextualTasksUIBase*>(controller.get());
+  ASSERT_NE(base_ui, nullptr);
+
+  base_ui->OpenOverflowMenuHelpUi();
+}
+
+TEST_F(ContextualTasksUiTest, OpenFeedbackUi_NoBrowser_SafeNoOp) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUIConfig config;
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* base_ui = static_cast<ContextualTasksUIBase*>(controller.get());
+  ASSERT_NE(base_ui, nullptr);
+
+  base_ui->OpenFeedbackUi();
+}
+
 }  // namespace contextual_tasks

@@ -88,7 +88,6 @@
 #endif
 
 namespace {
-constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
 
 void OpenUrlWithDisposition(Profile* profile,
                             const GURL& url,
@@ -405,34 +404,6 @@ void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
   std::move(callback).Run(web_ui_controller_->IsShownInTab());
 }
 
-void ContextualTasksPageHandler::OpenMyActivityUi() {
-  BrowserWindowInterface* browser = web_ui_controller_->GetBrowser();
-  if (!browser) {
-    return;
-  }
-  OpenUrlWithDisposition(web_ui_controller_->GetProfile(), GURL(kMyActivityUrl),
-                         WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
-}
-
-void ContextualTasksPageHandler::OpenFeedbackUi() {
-  if (skip_feedback_ui_for_testing_) {
-    return;
-  }
-  BrowserWindowInterface* browser = web_ui_controller_->GetBrowser();
-  if (!browser) {
-    return;
-  }
-  GURL page_url =
-      web_ui_controller_->GetWebUIWebContents()->GetLastCommittedURL();
-  if (auto* tab_list = TabListInterface::From(browser)) {
-    if (auto* active_tab = tab_list->GetActiveTab()) {
-      page_url = active_tab->GetContents()->GetLastCommittedURL();
-    }
-  }
-
-  ui_service_->OpenFeedbackUi(browser, page_url);
-}
-
 void ContextualTasksPageHandler::OpenOnboardingHelpUi() {
   BrowserWindowInterface* browser = web_ui_controller_->GetBrowser();
   if (!browser) {
@@ -441,17 +412,6 @@ void ContextualTasksPageHandler::OpenOnboardingHelpUi() {
   OpenUrlWithDisposition(
       web_ui_controller_->GetProfile(),
       GURL(contextual_tasks::GetContextualTasksOnboardingTooltipHelpUrl()),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
-}
-
-void ContextualTasksPageHandler::OpenOverflowMenuHelpUi() {
-  BrowserWindowInterface* browser = web_ui_controller_->GetBrowser();
-  if (!browser) {
-    return;
-  }
-  OpenUrlWithDisposition(
-      web_ui_controller_->GetProfile(),
-      GURL(contextual_tasks::GetContextualTasksOverflowMenuHelpUrl()),
       WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
 }
 
