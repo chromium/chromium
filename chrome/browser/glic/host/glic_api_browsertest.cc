@@ -3443,7 +3443,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
   EXPECT_LE(user_status_fetch_count_, 4u);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFails) {
+// TODO(crbug.com/565863579): Flaky timeout on Android waiting for
+// GlicHostRegistry in ExecuteJsTest.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_testInitializeFails DISABLED_testInitializeFails
+#else
+#define MAYBE_testInitializeFails testInitializeFails
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testInitializeFails) {
   if (GetParam().no_webview) {
     GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
   }
