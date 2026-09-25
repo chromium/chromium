@@ -999,6 +999,48 @@ TEST_P(LayerTreeHostImplTest, ScrollBlocksOnTouchEventHandlers) {
   EXPECT_EQ(TouchAction::kPanX, touch_action);
 }
 
+TEST_P(LayerTreeHostImplTest,
+       TouchEventListenerTypeOnUnscrollableLatchedViewport) {
+  SetupViewportLayersOuterScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
+  host_impl_->OuterViewportScrollNode()->user_scrollable_horizontal = false;
+  host_impl_->OuterViewportScrollNode()->user_scrollable_vertical = false;
+  host_impl_->InnerViewportScrollNode()->user_scrollable_horizontal = false;
+  host_impl_->InnerViewportScrollNode()->user_scrollable_vertical = false;
+  DrawFrame();
+
+  LayerImpl* root = root_layer();
+  TouchActionRegion touch_action_region;
+  touch_action_region.Union(TouchAction::kManipulation,
+                            gfx::Rect(0, 0, 100, 100));
+  root->SetTouchActionRegion(std::move(touch_action_region));
+
+  TouchAction touch_action;
+  EXPECT_EQ(InputHandler::TouchStartOrMoveEventListenerType::kHandler,
+            GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(
+                gfx::Rect(gfx::Point(10, 10), gfx::Size()), &touch_action));
+  EXPECT_EQ(TouchAction::kManipulation, touch_action);
+
+  InputHandler::ScrollStatus status = GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(10, 10), gfx::Vector2d(0, 10),
+                 ui::ScrollInputType::kTouchscreen)
+          .get(),
+      ui::ScrollInputType::kTouchscreen);
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+  EXPECT_EQ(host_impl_->OuterViewportScrollNode(),
+            host_impl_->CurrentlyScrollingNode());
+
+  // Subsequent touch event while latched to the unscrollable viewport should
+  // not crash in IsScrolledBy, and should return kHandler (not
+  // kHandlerOnScrollingLayer) since the unscrollable viewport cannot scroll
+  // content.
+  EXPECT_EQ(InputHandler::TouchStartOrMoveEventListenerType::kHandler,
+            GetInputHandler().EventListenerTypeForTouchStartOrMoveAt(
+                gfx::Rect(gfx::Point(10, 10), gfx::Size()), &touch_action));
+  EXPECT_EQ(TouchAction::kManipulation, touch_action);
+
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+}
+
 TEST_P(LayerTreeHostImplTest, ShouldScrollOnMainThread) {
   SetupViewportLayersOuterScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
   host_impl_->OuterViewportScrollNode()->main_thread_repaint_reasons = {

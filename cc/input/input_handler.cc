@@ -2639,7 +2639,12 @@ void InputHandler::UpdateScrollSourceInfo(const ScrollState& scroll_state,
 // ancestor along the scroll tree.
 bool InputHandler::IsScrolledBy(LayerImpl* child, ScrollNode* ancestor) {
   DCHECK(ancestor && (ancestor->user_scrollable_horizontal ||
-                      ancestor->user_scrollable_vertical));
+                      ancestor->user_scrollable_vertical ||
+                      GetViewport().ShouldScroll(*ancestor)));
+  if (!ancestor->user_scrollable_horizontal &&
+      !ancestor->user_scrollable_vertical) {
+    return false;
+  }
   if (!child)
     return false;
   DCHECK_EQ(child->layer_tree_impl(), &ActiveTree());
