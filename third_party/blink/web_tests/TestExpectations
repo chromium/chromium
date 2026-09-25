@@ -9173,9 +9173,6 @@ crbug.com/562009743 [ Win ] fast/ruby/base-shorter-than-text.html [ Failure Pass
 # Gardener 2026-09-17
 crbug.com/562895059 external/wpt/streams/readable-byte-streams/crashtests/from-cross-realm.html [ Crash Failure ]
 
-# Gardener 2026-09-18
-crbug.com/559396684 [ Debug ] external/wpt/content-security-policy/securitypolicyviolation/targeting-for-inline-handler-in-markup-then-disconnected.html [ Failure Pass ]
-
 # Temporarily disable tests to land crrev.com/c/8404432
 crbug.com/561536429 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
 crbug.com/561536429 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
