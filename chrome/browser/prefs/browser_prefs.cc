@@ -1020,6 +1020,10 @@ inline constexpr char kHatsAudioOutputProcSurveyCycleEndTs[] =
     "hats_audio_output_proc_cycle_end_timestamp";
 inline constexpr char kHatsAudioOutputProcDeviceIsSelected[] =
     "hats_audio_output_proc_device_is_selected";
+inline constexpr char kHatsArcGamesSurveyCycleEndTs[] =
+    "hats_arc_games_cycle_end_timestamp";
+inline constexpr char kHatsArcGamesDeviceIsSelected[] =
+    "hats_arc_games_device_is_selected";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deprecated 09/2026.
@@ -1460,6 +1464,8 @@ void RegisterProfilePrefsForMigration(
                                   base::TimeDelta());
   registry->RegisterInt64Pref(kHatsAudioOutputProcSurveyCycleEndTs, 0);
   registry->RegisterBooleanPref(kHatsAudioOutputProcDeviceIsSelected, false);
+  registry->RegisterInt64Pref(kHatsArcGamesSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(kHatsArcGamesDeviceIsSelected, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Deprecated 09/2026.
@@ -2836,6 +2842,8 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kActivityTimeAfterOnboarding);
   profile_prefs->ClearPref(kHatsAudioOutputProcSurveyCycleEndTs);
   profile_prefs->ClearPref(kHatsAudioOutputProcDeviceIsSelected);
+  profile_prefs->ClearPref(kHatsArcGamesSurveyCycleEndTs);
+  profile_prefs->ClearPref(kHatsArcGamesDeviceIsSelected);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Added 09/2026.

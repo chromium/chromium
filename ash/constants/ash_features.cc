@@ -1995,11 +1995,6 @@ BASE_FEATURE(kHappinessTrackingSystemStability,
 BASE_FEATURE(kHappinessTrackingSystemPerformance,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the Happiness Tracking System for ARC Games survey.
-BASE_FEATURE(kHappinessTrackingSystemArcGames,
-             "HappinessTrackingArcGames",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the Happiness Tracking System for Audio survey.
 BASE_FEATURE(kHappinessTrackingSystemAudio,
              "HappinessTrackingAudio",

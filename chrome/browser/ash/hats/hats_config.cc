@@ -72,14 +72,6 @@ const HatsConfig kHatsPerformanceSurvey = {
         kHatsPerformanceSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
-// ARC++ Games Survey -- shown after a user played a top XX ARC++ game
-const HatsConfig kHatsArcGamesSurvey = {
-    ash::features::kHappinessTrackingSystemArcGames,  // feature
-    base::Days(7),                                    // new_device_threshold
-    ash::prefs::kHatsArcGamesDeviceIsSelected,        // is_selected_pref_name
-    ash::prefs::kHatsArcGamesSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
-};
-
 // Audio Survey -- shown after a user closed an audio stream living for more
 // than 3 minutes
 const HatsConfig kHatsAudioSurvey = {
