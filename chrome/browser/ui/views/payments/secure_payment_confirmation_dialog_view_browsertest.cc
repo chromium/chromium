@@ -394,7 +394,9 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   // accepts all subsequent inputs.
   auto mock_input_protector =
       std::make_unique<views::MockInputEventActivationProtector>();
-  EXPECT_CALL(*mock_input_protector, IsPossiblyUnintendedInteraction)
+  EXPECT_CALL(*mock_input_protector,
+              IsPossiblyUnintendedInteraction(
+                  testing::_, /*allow_key_events=*/false, testing::_))
       .WillOnce(testing::Return(true))
       .WillRepeatedly(testing::Return(false));
   test_delegate_->dialog_view()

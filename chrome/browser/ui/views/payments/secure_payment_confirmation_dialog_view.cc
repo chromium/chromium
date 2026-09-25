@@ -355,6 +355,11 @@ bool SecurePaymentConfirmationDialogView::ShouldShowCloseButton() const {
   return false;
 }
 
+bool SecurePaymentConfirmationDialogView::
+    ShouldAllowKeyEventsDuringInputProtection() const {
+  return false;
+}
+
 bool SecurePaymentConfirmationDialogView::Accept() {
   views::DialogDelegateView::Accept();
 
