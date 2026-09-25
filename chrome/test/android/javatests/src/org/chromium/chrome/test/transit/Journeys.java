@@ -16,6 +16,7 @@ import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.TripBuilder;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -24,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
@@ -454,6 +456,19 @@ public class Journeys {
      */
     public static TabSwitcherGroupCardFacility mergeTabsToNewGroup(
             TabSwitcherStation tabSwitcher, List<Tab> tabs) {
+        return mergeTabsToNewGroup(tabSwitcher, tabs, /* groupTitle= */ null);
+    }
+
+    /**
+     * Merges a list of tabs into a new tab group with an optional custom title.
+     *
+     * @param tabSwitcher the TabSwitcherStation we will be merging tabs for.
+     * @param tabs a list of tabs to be merged.
+     * @param groupTitle optional custom title to input in the NewTabGroupDialogFacility.
+     * @return the facility representing the tab group card created as a result of merging tabs.
+     */
+    public static TabSwitcherGroupCardFacility mergeTabsToNewGroup(
+            TabSwitcherStation tabSwitcher, List<Tab> tabs, @Nullable String groupTitle) {
         assert !tabs.isEmpty();
         TabModel currentModel = tabSwitcher.tabModelElement.value();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
@@ -469,8 +484,11 @@ public class Journeys {
             editor = editor.addTabToSelection(tabCardIndex, tabId);
         }
 
-        TabSwitcherGroupCardFacility groupCard =
-                editor.openAppMenuWithEditor().groupTabs().pressDone();
+        NewTabGroupDialogFacility<?> dialog = editor.openAppMenuWithEditor().groupTabs();
+        if (groupTitle != null) {
+            dialog = dialog.inputName(groupTitle);
+        }
+        TabSwitcherGroupCardFacility groupCard = dialog.pressDone();
 
         verifyTabGroupMergeSuccessful(tabs, currentModel);
         return groupCard;
@@ -490,6 +508,33 @@ public class Journeys {
                 new NewTabGroupDialogFacility<>(softKeyboard);
         tripBuilder.enterFacilities(dialog, softKeyboard);
         return dialog;
+    }
+
+    /**
+     * Creates a tab group of {@code numTabs} new tabs with the given title and closes (hides) it so
+     * it remains saved in {@code TabGroupSyncService} with no local tab group ID.
+     *
+     * @param startPage The starting {@link CtaPageStation}.
+     * @param groupTitle The title to assign to the saved tab group.
+     * @param numTabs The number of tabs to create and merge into the group.
+     * @return The {@link RegularTabSwitcherStation} after the group closure has been committed.
+     */
+    public static RegularTabSwitcherStation createAndHideSavedTabGroup(
+            CtaPageStation startPage, String groupTitle, int numTabs) {
+        assert numTabs >= 1;
+        CtaPageStation currentPage = startPage;
+        List<Tab> tabsToGroup = new ArrayList<>(numTabs);
+        for (int i = 0; i < numTabs; i++) {
+            currentPage = currentPage.openNewTabFast();
+            tabsToGroup.add(currentPage.loadedTabElement.value());
+        }
+
+        RegularTabSwitcherStation tabSwitcher = currentPage.openRegularTabSwitcher();
+        TabSwitcherGroupCardFacility groupCard =
+                mergeTabsToNewGroup(tabSwitcher, tabsToGroup, groupTitle);
+        groupCard.openAppMenu().closeRegularTabGroup().dismissProgrammatically();
+
+        return tabSwitcher;
     }
 
     /**

@@ -19,6 +19,8 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 
 /**
  * A snackbar shown at the bottom of the Activity.
@@ -51,5 +53,22 @@ public class SnackbarFacility<HostStationT extends Station<?>> extends Facility<
                                 buttonElement, withText(expectedButtonText)));
             }
         }
+    }
+
+    /**
+     * Programmatically dismisses the snackbar via {@link SnackbarManager#dismissAllSnackbars()}
+     * (not a user gesture), exiting this facility and immediately triggering {@link
+     * SnackbarManager.SnackbarController#onDismissNoAction(Object)} to commit any pending tab/group
+     * closures without waiting for the snackbar timeout.
+     */
+    public void dismissProgrammatically() {
+        runOnUiThreadTo(
+                        () -> {
+                            assert mHostStation.getActivity() instanceof SnackbarManageable;
+                            ((SnackbarManageable) mHostStation.getActivity())
+                                    .getSnackbarManager()
+                                    .dismissAllSnackbars();
+                        })
+                .exitFacility();
     }
 }

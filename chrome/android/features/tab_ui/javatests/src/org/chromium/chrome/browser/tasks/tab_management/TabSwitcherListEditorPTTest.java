@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
@@ -24,6 +26,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -32,6 +35,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -39,6 +43,7 @@ import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.TabGroupDialogFacility;
+import org.chromium.chrome.test.transit.hub.TabGroupListBottomSheetFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
@@ -294,6 +299,78 @@ public class TabSwitcherListEditorPTTest {
 
         // Go back to PageStation for InitialStateRule to reset
         thirdPage = thirdTabCard.clickCard(RegularNewTabPageStation.newBuilder());
+        assertFinalDestination(thirdPage);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS + ":remote_group_operations/true"
+    })
+    public void testAddTabsToRemoteGroup_viaBottomSheet() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        Tab firstTab = firstPage.loadedTabElement.value();
+        int firstTabId = firstTab.getId();
+
+        RegularTabSwitcherStation tabSwitcher =
+                Journeys.createAndHideSavedTabGroup(
+                        firstPage, "RemoteSavedGroup", /* numTabs= */ 2);
+
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabToSelection(0, firstTabId);
+
+        TabGroupListBottomSheetFacility<RegularTabSwitcherStation> bottomSheet =
+                editor.openAppMenuWithEditor()
+                        .addTabsToGroupWithBottomSheet(/* isNewTabGroupRowVisible= */ true);
+        bottomSheet.clickTabGroup("RemoteSavedGroup");
+
+        assertNotNull(firstTab.getTabGroupId());
+        List<Integer> tabIdsInGroup =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                TabModelUtils.getTabIds(
+                                        tabSwitcher
+                                                .getTabModel()
+                                                .getTabsInGroup(firstTab.getTabGroupId())));
+        assertEquals(3, tabIdsInGroup.size());
+        tabSwitcher.expectGroupCard(tabIdsInGroup, "RemoteSavedGroup");
+
+        firstPage = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
+        assertFinalDestination(firstPage);
+    }
+
+    @Test
+    @MediumTest
+    public void testSelectTabsInOnlyExistingGroup_updatesTextAndAvoidsEmptySheet() {
+        WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
+        Tab firstTab = firstPage.loadedTabElement.value();
+        int firstTabId = firstTab.getId();
+        RegularNewTabPageStation secondPage = firstPage.openNewTabFast();
+        Tab secondTab = secondPage.loadedTabElement.value();
+        int secondTabId = secondTab.getId();
+        RegularNewTabPageStation thirdPage = secondPage.openNewTabFast();
+        int thirdTabId = thirdPage.loadedTabElement.value().getId();
+
+        RegularTabSwitcherStation tabSwitcher = thirdPage.openRegularTabSwitcher();
+        Journeys.mergeTabsToNewGroup(tabSwitcher, List.of(firstTab, secondTab), "OnlyGroup");
+
+        TabSwitcherListEditorFacility<RegularTabSwitcherStation> editor =
+                tabSwitcher.openAppMenu().clickSelectTabs();
+        editor = editor.addTabGroupToSelection(0, List.of(firstTabId, secondTabId));
+        editor = editor.openAppMenuWithEditor().verifyAddTabsToNewGroupVisibleAndClose();
+
+        editor = editor.addTabToSelection(1, thirdTabId);
+        TabGroupListBottomSheetFacility<RegularTabSwitcherStation> bottomSheet =
+                editor.openAppMenuWithEditor()
+                        .addTabsToGroupWithBottomSheet(/* isNewTabGroupRowVisible= */ false);
+        bottomSheet.clickTabGroup("OnlyGroup");
+
+        tabSwitcher.expectGroupCard(List.of(firstTabId, secondTabId, thirdTabId), "OnlyGroup");
+        TabBinningUtil.assertBinsEqual(
+                tabSwitcher.getTabModel(), group(firstTabId, secondTabId, thirdTabId));
+
+        thirdPage = tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());
         assertFinalDestination(thirdPage);
     }
 }

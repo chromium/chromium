@@ -6,8 +6,12 @@ package org.chromium.chrome.test.transit.hub;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+
 import android.util.Pair;
 
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
@@ -18,6 +22,7 @@ import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,7 +38,8 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
 
     private final TabSwitcherListEditorFacility<HostStationT> mListEditor;
     private Item mCloseMenuItem;
-    private Item mGroupOrAddTabsMenuItem;
+    private Item mAddTabsToNewGroupMenuItem;
+    private Item mAddTabsToGroupMenuItem;
     private Item mPinMenuItem;
 
     public TabListEditorAppMenu(TabSwitcherListEditorFacility<HostStationT> listEditor) {
@@ -52,11 +58,15 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
                         withText("Close " + tabOrTabs),
                         withMenuItemId(R.id.tab_list_editor_close_menu_item));
 
-        // "Group tab(s)" or "Add tab(s) to new group"
-        mGroupOrAddTabsMenuItem =
-                items.declareItem(
-                        withText(String.format("Add %s to new group", tabOrTabs)),
-                        withMenuItemId(R.id.tab_list_editor_add_tab_to_group_menu_item));
+        // Mutually exclusive labels depending on whether valid destination groups exist:
+        mAddTabsToNewGroupMenuItem =
+                items.declarePossibleItem(
+                        viewSpec(withText(String.format("Add %s to new group", tabOrTabs))),
+                        /* offScreenDataMatcher= */ null);
+        mAddTabsToGroupMenuItem =
+                items.declarePossibleItem(
+                        viewSpec(withText(String.format("Add %s to group", tabOrTabs))),
+                        /* offScreenDataMatcher= */ null);
 
         items.declareItem(
                 withText("Bookmark " + tabOrTabs),
@@ -78,14 +88,47 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
      * @return the "New tab group" dialog as a Facility.
      */
     public NewTabGroupDialogFacility<HostStationT> groupTabs() {
+        checkItemsAbsent(mAddTabsToGroupMenuItem);
         SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
         NewTabGroupDialogFacility<HostStationT> dialog =
                 new NewTabGroupDialogFacility<>(mListEditor.getAllTabIdsSelected(), softKeyboard);
-        return mGroupOrAddTabsMenuItem
+        return mAddTabsToNewGroupMenuItem
                 .scrollToAndSelectTo()
                 .exitFacilityAnd(mListEditor)
                 .enterFacilityAnd(softKeyboard)
                 .enterFacility(dialog);
+    }
+
+    /**
+     * Select "Add tab(s) to group" to open the {@link TabGroupListBottomSheetFacility} when at
+     * least one valid destination tab group exists.
+     *
+     * @param isNewTabGroupRowVisible Whether the 'New tab group' row is expected to be visible.
+     */
+    public TabGroupListBottomSheetFacility<HostStationT> addTabsToGroupWithBottomSheet(
+            boolean isNewTabGroupRowVisible) {
+        checkItemsAbsent(mAddTabsToNewGroupMenuItem);
+        TabModel tabModel = mHostStation.tabModelElement.value();
+        List<Token> allTabGroupIds =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new ArrayList<>(tabModel.getAllTabGroupIds()));
+        return mAddTabsToGroupMenuItem
+                .scrollToAndSelectTo()
+                .exitFacilityAnd(mListEditor)
+                .enterFacility(
+                        new TabGroupListBottomSheetFacility<>(
+                                allTabGroupIds, isNewTabGroupRowVisible));
+    }
+
+    /**
+     * Verifies that 'Add tab(s) to new group' is visible, 'Add tab(s) to group' is absent, and
+     * closes the menu via back press.
+     */
+    public TabSwitcherListEditorFacility<HostStationT> verifyAddTabsToNewGroupVisibleAndClose() {
+        checkItemsAbsent(mAddTabsToGroupMenuItem);
+        ItemOnScreenFacility itemOnScreen = mAddTabsToNewGroupMenuItem.scrollToItemIfNeeded();
+        pressBackTo().exitFacilities(this, itemOnScreen);
+        return mListEditor;
     }
 
     /**
@@ -99,6 +142,7 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
     public Pair<TabSwitcherGroupCardFacility, UndoSnackbarFacility<HostStationT>>
             groupTabsWithoutDialog() {
         assert mListEditor.isAnyGroupSelected();
+        checkItemsAbsent(mAddTabsToGroupMenuItem);
 
         List<Integer> tabIdsSelected = mListEditor.getAllTabIdsSelected();
         String title = TabGroupUtil.getNumberOfTabsString(tabIdsSelected.size());
@@ -108,7 +152,7 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
         UndoSnackbarFacility<HostStationT> undoSnackbar =
                 new UndoSnackbarFacility<>(snackbarMessage);
 
-        mGroupOrAddTabsMenuItem
+        mAddTabsToNewGroupMenuItem
                 .scrollToAndSelectTo()
                 .exitFacilityAnd(mListEditor)
                 .enterFacilities(card, undoSnackbar);

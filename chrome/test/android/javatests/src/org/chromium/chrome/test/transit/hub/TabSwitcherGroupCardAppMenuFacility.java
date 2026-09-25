@@ -21,12 +21,15 @@ import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
  */
 public class TabSwitcherGroupCardAppMenuFacility<HostStationT extends TabSwitcherStation>
         extends ScrollableFacility<HostStationT> {
+    private final TabSwitcherGroupCardFacility mGroupCard;
     private final boolean mIsIncognito;
     private final String mTitle;
     public final ViewElement<View> menuListElement;
     private Item mCloseRegularTabGroup;
 
-    public TabSwitcherGroupCardAppMenuFacility(boolean isIncognito, String title) {
+    public TabSwitcherGroupCardAppMenuFacility(
+            TabSwitcherGroupCardFacility groupCard, boolean isIncognito, String title) {
+        mGroupCard = groupCard;
         mIsIncognito = isIncognito;
         mTitle = title;
         menuListElement =
@@ -51,6 +54,7 @@ public class TabSwitcherGroupCardAppMenuFacility<HostStationT extends TabSwitche
         String snackbarMessage = TabGroupUtil.getUndoCloseGroupSnackbarMessageString(mTitle);
         return mCloseRegularTabGroup
                 .scrollToAndSelectTo()
+                .exitFacilityAnd(mGroupCard)
                 .enterFacility(new UndoSnackbarFacility<>(snackbarMessage));
     }
 }
