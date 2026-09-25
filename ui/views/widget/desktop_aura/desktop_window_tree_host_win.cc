@@ -304,9 +304,10 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   window()->Show();
 
   // Stack immediately above its parent so that it does not cover other
-  // root-level windows, with the exception of menus, to allow them to be
-  // displayed on top of other windows.
-  if (params.parent && params.type != views::Widget::InitParams::TYPE_MENU) {
+  // root-level windows, with the exception of menus and security surfaces, to
+  // allow them to be displayed on top of other windows.
+  if (params.parent && params.type != views::Widget::InitParams::TYPE_MENU &&
+      z_order_ != ui::ZOrderLevel::kSecuritySurface) {
     StackAbove(params.parent);
   }
 }
