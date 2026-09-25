@@ -333,6 +333,16 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
+            "name": "rust/gen_allow_all_warnings_rsp",
+            "command_prefix": platform.python_bin + " ../../build/rust/gni_impl/gen_allow_all_warnings_rsp.py",
+            "inputs": [
+                "third_party/rust-toolchain:toolchain",
+            ],
+            "remote": remote,
+            "timeout": "2m",
+            "remote_command": platform.remote_python_bin,
+        },
+        {
             "name": "rust/rustc_print_cfg",
             "command_prefix": platform.python_bin + " ../../build/rust/gni_impl/rustc_print_cfg.py",
             "inputs": [
