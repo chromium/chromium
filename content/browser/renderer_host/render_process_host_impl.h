@@ -446,11 +446,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static void RegisterHost(ChildProcessId host_id, RenderProcessHost* host);
   static void UnregisterHost(ChildProcessId host_id);
 
-  // TODO(crbug.com/379869738): Deprecated, please use the ChildProcessId
-  // version above.
-  static void RegisterHost(int host_id, RenderProcessHost* host);
-  static void UnregisterHost(int host_id);
-
   // "Keep alive ref count" represents the number of the customers of this
   // render process who wish the renderer process to be alive. While the ref
   // count is positive, |this| object will keep the renderer process alive,

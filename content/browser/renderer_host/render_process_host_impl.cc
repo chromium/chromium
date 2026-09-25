@@ -4809,11 +4809,6 @@ bool RenderProcessHostImpl::FastShutdownStarted() {
 }
 
 // static
-void RenderProcessHostImpl::RegisterHost(int host_id, RenderProcessHost* host) {
-  RenderProcessHostImpl::RegisterHost(ChildProcessId(host_id), host);
-}
-
-// static
 void RenderProcessHostImpl::RegisterHost(ChildProcessId host_id,
                                          RenderProcessHost* host) {
   TRACE_EVENT(
@@ -4824,11 +4819,6 @@ void RenderProcessHostImpl::RegisterHost(ChildProcessId host_id,
             host_id.GetUnsafeValue());
       });
   GetAllHosts().AddWithID(host, host_id);
-}
-
-// static
-void RenderProcessHostImpl::UnregisterHost(int host_id) {
-  return UnregisterHost(ChildProcessId(host_id));
 }
 
 // static
