@@ -268,6 +268,10 @@ class CastWebContents : public mojom::CastWebContents {
   // Utility Methods
   // ===========================================================================
 
+  // Returns whether |feature_name| is enabled in the set of renderer features
+  // configured for this CastWebContents via AddRendererFeatures().
+  virtual bool HasRendererFeature(std::string_view feature_name) const = 0;
+
   // Asks the CastWebContents to bind an interface receiver using either its
   // registry or any registered InterfaceProvider.
   virtual bool TryBindReceiver(mojo::GenericPendingReceiver& receiver) = 0;

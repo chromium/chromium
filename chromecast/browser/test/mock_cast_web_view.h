@@ -30,6 +30,7 @@ class MockCastWebContents : public CastWebContents {
               (),
               (const override));
   MOCK_METHOD(void, AddRendererFeatures, (base::DictValue), (override));
+  MOCK_METHOD(bool, HasRendererFeature, (std::string_view), (const, override));
   MOCK_METHOD(void,
               SetInterfacesForRenderer,
               (mojo::PendingRemote<mojom::RemoteInterfaces>),

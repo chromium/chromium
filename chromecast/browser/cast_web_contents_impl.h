@@ -83,6 +83,7 @@ class CastWebContentsImpl : public CastWebContents,
   void ClosePage() override;
   void Stop(int error_code) override;
   void SetWebVisibilityAndPaint(bool visible) override;
+  bool HasRendererFeature(std::string_view feature_name) const override;
   bool TryBindReceiver(mojo::GenericPendingReceiver& receiver) override;
   InterfaceBundle* local_interfaces() override;
   void BlockMediaLoading(bool blocked) override;

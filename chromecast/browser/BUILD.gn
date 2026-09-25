@@ -212,6 +212,7 @@ cast_source_set("browser") {
     "//chromecast/common",
     "//chromecast/common:activity_url_filter",
     "//chromecast/common:cors_exempt_headers",
+    "//chromecast/common:feature_constants",
     "//chromecast/common:queryable_data",
     "//chromecast/common/media",
     "//chromecast/external_mojo/broker_service",

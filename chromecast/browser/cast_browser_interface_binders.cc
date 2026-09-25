@@ -4,12 +4,15 @@
 
 #include "chromecast/browser/cast_browser_interface_binders.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "chromecast/browser/application_media_capabilities.h"
 #include "chromecast/browser/application_media_info_manager.h"
 #include "chromecast/browser/audio_socket_broker.h"
 #include "chromecast/browser/cast_navigation_ui_data.h"
 #include "chromecast/browser/cast_web_contents.h"
+#include "chromecast/common/feature_constants.h"
 #include "chromecast/common/mojom/activity_window.mojom.h"
 #include "chromecast/common/mojom/application_media_capabilities.mojom.h"
 #include "chromecast/common/mojom/assistant_messenger.mojom.h"
@@ -36,15 +39,42 @@ void BindNetworkHintsHandler(
                                                        std::move(receiver));
 }
 
+CastWebContents* CastWebContentsFromFrameHost(
+    content::RenderFrameHost* frame_host) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
+  if (!web_contents) {
+    return nullptr;
+  }
+  return CastWebContents::FromWebContents(web_contents);
+}
+
 template <typename Interface>
 void BindFromCastWebContents(content::RenderFrameHost* frame_host,
                              mojo::PendingReceiver<Interface> receiver) {
-  auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
-  if (!web_contents)
+  auto* cast_web_contents = CastWebContentsFromFrameHost(frame_host);
+  if (!cast_web_contents) {
     return;
-  auto* cast_web_contents = CastWebContents::FromWebContents(web_contents);
-  if (!cast_web_contents)
+  }
+  mojo::GenericPendingReceiver generic_receiver(std::move(receiver));
+  cast_web_contents->TryBindReceiver(generic_receiver);
+}
+
+// Similar to BindFromCastWebContents() above, but only routes the receiver if
+// |feature_name| is enabled in the CastWebContents' renderer features.
+template <typename Interface>
+void BindFromCastWebContentsWithFeature(
+    std::string_view feature_name,
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<Interface> receiver) {
+  auto* cast_web_contents = CastWebContentsFromFrameHost(frame_host);
+  if (!cast_web_contents) {
     return;
+  }
+  if (!cast_web_contents->HasRendererFeature(feature_name)) {
+    DVLOG(1) << "Dropping receiver for " << Interface::Name_
+             << "; required feature " << feature_name << " is not enabled.";
+    return;
+  }
   mojo::GenericPendingReceiver generic_receiver(std::move(receiver));
   cast_web_contents->TryBindReceiver(generic_receiver);
 }
@@ -120,16 +150,21 @@ void PopulateCastFrameBinders(
   binder_map->Add<::media::mojom::Remotee>(
       base::BindRepeating(&BindFromCastWebContents<::media::mojom::Remotee>));
   binder_map->Add<::chromecast::mojom::ActivityWindow>(base::BindRepeating(
-      &BindFromCastWebContents<::chromecast::mojom::ActivityWindow>));
+      &BindFromCastWebContentsWithFeature<::chromecast::mojom::ActivityWindow>,
+      feature::kEnableWindowControls));
   binder_map->Add<
       ::chromecast::mojom::AssistantMessageService>(base::BindRepeating(
       &BindFromCastWebContents<::chromecast::mojom::AssistantMessageService>));
   binder_map->Add<::chromecast::mojom::GestureSource>(base::BindRepeating(
-      &BindFromCastWebContents<::chromecast::mojom::GestureSource>));
-  binder_map->Add<::chromecast::mojom::SettingsPlatform>(base::BindRepeating(
-      &BindFromCastWebContents<::chromecast::mojom::SettingsPlatform>));
+      &BindFromCastWebContentsWithFeature<::chromecast::mojom::GestureSource>,
+      feature::kEnableSystemGestures));
+  binder_map->Add<::chromecast::mojom::SettingsPlatform>(
+      base::BindRepeating(&BindFromCastWebContentsWithFeature<
+                              ::chromecast::mojom::SettingsPlatform>,
+                          feature::kEnableSettingsUiMojo));
   binder_map->Add<mojom::CastDemo>(
-      base::BindRepeating(&BindFromCastWebContents<mojom::CastDemo>));
+      base::BindRepeating(&BindFromCastWebContentsWithFeature<mojom::CastDemo>,
+                          feature::kEnableDemoStandaloneMode));
 
   binder_map->SetDefaultBinderDeprecated(
       base::BindRepeating(&HandleGenericReceiver));

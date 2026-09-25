@@ -26,7 +26,10 @@
 #include "chromecast/browser/test/cast_browser_test.h"
 #include "chromecast/browser/test_interfaces.test-mojom.h"
 #include "chromecast/common/feature_constants.h"
+#include "chromecast/common/mojom/activity_window.mojom.h"
+#include "chromecast/common/mojom/cast_demo.mojom.h"
 #include "chromecast/common/mojom/gesture.mojom.h"
+#include "chromecast/common/mojom/settings_ui.mojom.h"
 #include "chromecast/mojo/interface_bundle.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -1267,6 +1270,114 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
   // The main frame's renderer must still be responsive.
   EXPECT_EQ(true, content::EvalJs(web_contents_.get(),
                                   "document.querySelector('iframe') === null"));
+}
+
+IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
+                       FeatureGatedInterfacesRequireRendererFeature) {
+  // ===========================================================================
+  // Test: PopulateCastFrameBinders() registers several interfaces behind a
+  // renderer feature. The browser must drop incoming receivers for those
+  // interfaces unless the corresponding feature was configured via
+  // AddRendererFeatures(), mirroring the renderer-side checks in
+  // FeatureManager and CastWindowManagerBindings.
+  //
+  // Requests are issued from the page through Mojo JS so that they travel the
+  // real frame binder map. Calling TryBindReceiver() directly would bypass the
+  // feature gate entirely and pass regardless of this CL.
+  // ===========================================================================
+  int num_activity_window = 0;
+  int num_gesture_source = 0;
+  int num_settings_platform = 0;
+  int num_cast_demo = 0;
+
+  auto* bundle = cast_web_contents_->local_interfaces();
+  bundle->AddBinder<::chromecast::mojom::ActivityWindow>(
+      base::BindLambdaForTesting(
+          [&](mojo::PendingReceiver<::chromecast::mojom::ActivityWindow>) {
+            ++num_activity_window;
+          }));
+  bundle->AddBinder<::chromecast::mojom::GestureSource>(
+      base::BindLambdaForTesting(
+          [&](mojo::PendingReceiver<::chromecast::mojom::GestureSource>) {
+            ++num_gesture_source;
+          }));
+  bundle->AddBinder<::chromecast::mojom::SettingsPlatform>(
+      base::BindLambdaForTesting(
+          [&](mojo::PendingReceiver<::chromecast::mojom::SettingsPlatform>) {
+            ++num_settings_platform;
+          }));
+  bundle->AddBinder<::chromecast::shell::mojom::CastDemo>(
+      base::BindLambdaForTesting(
+          [&](mojo::PendingReceiver<::chromecast::shell::mojom::CastDemo>) {
+            ++num_cast_demo;
+          }));
+
+  // TestAdder is not in PopulateCastFrameBinders(), so it reaches the bundle
+  // through the ungated default binder. It is requested last and serves as a
+  // barrier: frame interface requests share one pipe and are dispatched in
+  // order, so once it arrives every gated request before it has been handled.
+  base::RunLoop canary_loop;
+  bundle->AddBinder<mojom::TestAdder>(base::BindLambdaForTesting(
+      [&](mojo::PendingReceiver<mojom::TestAdder>) { canary_loop.Quit(); }));
+
+  run_loop_ = std::make_unique<base::RunLoop>();
+  {
+    InSequence seq;
+    EXPECT_CALL(mock_cast_wc_observer_, PageStateChanged(PageState::LOADING));
+    EXPECT_CALL(mock_cast_wc_observer_, PageStateChanged(PageState::LOADED))
+        .WillOnce(InvokeWithoutArgs([&]() { QuitRunLoop(); }));
+  }
+  cast_web_contents_->LoadUrl(GURL(url::kAboutBlankURL));
+  run_loop_->Run();
+
+  constexpr const char* kGatedInterfaces[] = {
+      "chromecast.mojom.ActivityWindow",
+      "chromecast.mojom.GestureSource",
+      "chromecast.mojom.SettingsPlatform",
+      "chromecast.shell.mojom.CastDemo",
+  };
+
+  // No renderer features are configured yet, so every receiver must be
+  // dropped by BindFromCastWebContentsWithFeature().
+  for (const char* interface_name : kGatedInterfaces) {
+    ASSERT_TRUE(
+        ExecJs(web_contents_.get(),
+               content::JsReplace(
+                   "Mojo.bindInterface($1, Mojo.createMessagePipe().handle0);",
+                   interface_name)));
+  }
+
+  // Enable all four features, then request each interface again.
+  base::DictValue features;
+  features.Set(feature::kEnableWindowControls, base::DictValue());
+  features.Set(feature::kEnableSystemGestures, base::DictValue());
+  features.Set(feature::kEnableSettingsUiMojo, base::DictValue());
+  features.Set(feature::kEnableDemoStandaloneMode, base::DictValue());
+  cast_web_contents_->AddRendererFeatures(std::move(features));
+
+  for (const char* interface_name : kGatedInterfaces) {
+    ASSERT_TRUE(
+        ExecJs(web_contents_.get(),
+               content::JsReplace(
+                   "Mojo.bindInterface($1, Mojo.createMessagePipe().handle0);",
+                   interface_name)));
+  }
+
+  // Wait for the canary rather than for the gated binds themselves. Waiting
+  // for four binds could be satisfied by the first batch alone if the gate were
+  // broken, letting the assertions below run before the second batch arrives.
+  ASSERT_TRUE(ExecJs(
+      web_contents_.get(),
+      "Mojo.bindInterface('chromecast.mojom.TestAdder', "
+      "Mojo.createMessagePipe().handle0);"));
+  canary_loop.Run();
+
+  // Exactly one bind per interface: the gated request was dropped, the enabled
+  // one was routed. A broken gate yields 2, an over-eager one yields 0.
+  EXPECT_EQ(1, num_activity_window);
+  EXPECT_EQ(1, num_gesture_source);
+  EXPECT_EQ(1, num_settings_platform);
+  EXPECT_EQ(1, num_cast_demo);
 }
 
 }  // namespace chromecast
