@@ -6332,6 +6332,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE" desc="Title of the infobar modal shown when the user taps Camera/Microphone access.">
         Edit permissions
       </message>
+      <message name="IDS_IOS_PERMISSIONS_LOCATION" desc="Usually used to show whether user has enabled a site's permission to use the device location.">
+        Location
+      </message>
       <message name="IDS_IOS_PERMISSIONS_MICROPHONE" desc="Usually used to show whether user has enabled a site's permission to use the device microphone.">
         Microphone
       </message>
@@ -8359,6 +8362,51 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SIGN_TRUSTED_VAULT_ERROR_DIALOG_TITLE" desc="Alert title to display an error after a reauthentication, related to IDS_IOS_SIGN_TRUSTED_VAULT_ERROR_DIALOG_MESSAGE [iOS only]">
         Authentication error
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_ALLOWED" desc="Text indicating that a site or permission category is allowed. Used as a section header, menu option, and setting state in Site Settings. [iOS only]">
+        Allowed
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_ASK_FIRST" desc="Subtitle shown in Site Settings for a permission category when sites must ask for permission before using it. [iOS only]">
+        Ask first
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_CAMERA_ASK_TITLE" desc="Title for the option in Camera settings that allows sites to request camera access. [iOS only]">
+        Sites can ask for your camera
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_CAMERA_BLOCK_SUBTITLE" desc="Subtitle for the option in Camera settings that blocks sites from using the camera. [iOS only]">
+        Features that need a camera won't work
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_CAMERA_BLOCK_TITLE" desc="Title for the option in Camera settings that blocks sites from using the camera. [iOS only]">
+        Don't allow sites to use your camera
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_DONT_ALLOW" desc="Subtitle shown in Site Settings for a permission category when the user has chosen not to allow any site to use it. [iOS only]">
+        Don't allow
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_LOCATION_ASK_TITLE" desc="Title for the option in Location settings that allows sites to request location access. [iOS only]">
+        Sites can ask for your location
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_LOCATION_BLOCK_SUBTITLE" desc="Subtitle for the option in Location settings that blocks sites from using the device location. [iOS only]">
+        Features that need your location won't work
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_LOCATION_BLOCK_TITLE" desc="Title for the option in Location settings that blocks sites from using the device location. [iOS only]">
+        Don't allow sites to use your location
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_MICROPHONE_ASK_TITLE" desc="Title for the option in Microphone settings that allows sites to request microphone access. [iOS only]">
+        Sites can ask for your microphone
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_MICROPHONE_BLOCK_SUBTITLE" desc="Subtitle for the option in Microphone settings that blocks sites from using the microphone. [iOS only]">
+        Features that need a microphone won't work
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_MICROPHONE_BLOCK_TITLE" desc="Title for the option in Microphone settings that blocks sites from using the microphone. [iOS only]">
+        Don't allow sites to use your microphone
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_NOT_ALLOWED" desc="Title for the section header and popup menu option in Site Settings for sites that are blocked from using a permission. [iOS only]">
+        Not Allowed
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_PERMISSIONS_HEADER" desc="Header text for the Permissions section in Site Settings. [iOS only]">
+        Permissions
+      </message>
+      <message name="IDS_IOS_SITE_SETTINGS_TITLE" desc="Title for the Site Settings screen and its entry row in Settings. [iOS only]">
+        Site settings
       </message>
       <message name="IDS_IOS_SNACKBAR_DISMISS_ACTION" desc="The name of the 'Dismiss' accessibility action for a snackbar, which can be activated via the rotor.">
         Dismiss

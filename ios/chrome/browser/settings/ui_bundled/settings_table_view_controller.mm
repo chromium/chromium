@@ -1208,9 +1208,9 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 }
 
 - (TableViewItem*)siteSettingsDetailItem {
-  // TODO(crbug.com/553098545): Use localized string.
   return [self detailItemWithType:SettingsItemTypeSiteSettings
-                             text:@"Site settings"
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_SITE_SETTINGS_TITLE)
                        detailText:nil
                            symbol:SettingsRootSymbol(SymbolSliderHorizontal)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]

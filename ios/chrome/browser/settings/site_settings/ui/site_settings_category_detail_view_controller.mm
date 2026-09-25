@@ -39,18 +39,18 @@ constexpr base::TimeDelta kSearchControllerRemovalDelay =
 // Section identifiers for the Category Detail table view.
 enum SectionIdentifier {
   SectionIdentifierDefaultSetting = kSectionIdentifierEnumZero,
-  SectionIdentifierNotAllowed,
   SectionIdentifierAllowed,
+  SectionIdentifierNotAllowed,
 };
 
 // Item types for the Category Detail table view.
 enum ItemType {
   ItemTypeDefaultSettingAsk = kItemTypeEnumZero,
   ItemTypeDefaultSettingBlock,
-  ItemTypeNotAllowedHeader,
-  ItemTypeNotAllowedSite,
   ItemTypeAllowedHeader,
   ItemTypeAllowedSite,
+  ItemTypeNotAllowedHeader,
+  ItemTypeNotAllowedSite,
 };
 
 }  // namespace
@@ -152,21 +152,23 @@ enum ItemType {
   // 1. Default Setting Section.
   [self loadDefaultSettingSection];
 
-  // 2. Not Allowed Section (only if non-empty).
-  [self loadSitesSectionWithIdentifier:SectionIdentifierNotAllowed
-                            headerType:ItemTypeNotAllowedHeader
-                              itemType:ItemTypeNotAllowedSite
-                             titleText:@"Not Allowed"
-                            sectionTag:@"NotAllowed"
-                                 sites:_filteredNotAllowedSites];
-
-  // 3. Allowed Section (only if non-empty).
+  // 2. Allowed Section (only if non-empty).
   [self loadSitesSectionWithIdentifier:SectionIdentifierAllowed
                             headerType:ItemTypeAllowedHeader
                               itemType:ItemTypeAllowedSite
-                             titleText:@"Allowed"
+                             titleText:l10n_util::GetNSString(
+                                           IDS_IOS_SITE_SETTINGS_ALLOWED)
                             sectionTag:@"Allowed"
                                  sites:_filteredAllowedSites];
+
+  // 3. Not Allowed Section (only if non-empty).
+  [self loadSitesSectionWithIdentifier:SectionIdentifierNotAllowed
+                            headerType:ItemTypeNotAllowedHeader
+                              itemType:ItemTypeNotAllowedSite
+                             titleText:l10n_util::GetNSString(
+                                           IDS_IOS_SITE_SETTINGS_NOT_ALLOWED)
+                            sectionTag:@"NotAllowed"
+                                 sites:_filteredNotAllowedSites];
 }
 
 - (BOOL)shouldHideToolbar {
@@ -546,7 +548,7 @@ enum ItemType {
 }
 
 // Adds a collapsible section for the given `sites` list if non-empty,
-// configuring the header with item count, collapse state key, and site items.
+// configuring the header, collapse state key, and site items.
 - (void)loadSitesSectionWithIdentifier:(SectionIdentifier)sectionIdentifier
                             headerType:(ItemType)headerType
                               itemType:(ItemType)itemType
@@ -566,9 +568,7 @@ enum ItemType {
 
   TableViewDisclosureHeaderFooterItem* header =
       [[TableViewDisclosureHeaderFooterItem alloc] initWithType:headerType];
-  // TODO(crbug.com/553098545): Use localized strings.
-  header.text = [NSString
-      stringWithFormat:@"%@ (%lu)", titleText, (unsigned long)sites.count];
+  header.text = titleText;
   header.collapsed = [model sectionIsCollapsed:sectionIdentifier];
   [model setHeader:header forSectionWithIdentifier:sectionIdentifier];
 
@@ -617,9 +617,10 @@ enum ItemType {
   UIButton* menuButton = [self menuButtonForSiteException:siteException
                                            currentSetting:currentSetting];
   cell.accessoryView = menuButton;
-  // TODO(crbug.com/553098545): Use localized strings.
   cell.accessibilityValue =
-      currentSetting == CONTENT_SETTING_ALLOW ? @"Allowed" : @"Not Allowed";
+      l10n_util::GetNSString(currentSetting == CONTENT_SETTING_ALLOW
+                                 ? IDS_IOS_SITE_SETTINGS_ALLOWED
+                                 : IDS_IOS_SITE_SETTINGS_NOT_ALLOWED);
   __weak UITableViewCell* weakCell = cell;
   __weak UIView* weakButton = menuButton;
   cell.accessibilityActivationPointBlock = ^CGPoint() {
@@ -644,27 +645,26 @@ enum ItemType {
   button.showsMenuAsPrimaryAction = YES;
 
   __weak __typeof(self) weakSelf = self;
-  // TODO(crbug.com/553098545): Use localized strings.
-  UIAction* allowAction =
-      [UIAction actionWithTitle:@"Allowed"
-                          image:nil
-                     identifier:nil
-                        handler:^(UIAction* action) {
-                          [weakSelf.mutator setSetting:CONTENT_SETTING_ALLOW
-                                               forSite:siteException];
-                        }];
+  UIAction* allowAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_ALLOWED)
+                image:nil
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.mutator setSetting:CONTENT_SETTING_ALLOW
+                                     forSite:siteException];
+              }];
   allowAction.state = currentSetting == CONTENT_SETTING_ALLOW
                           ? UIMenuElementStateOn
                           : UIMenuElementStateOff;
 
-  UIAction* notAllowedAction =
-      [UIAction actionWithTitle:@"Not Allowed"
-                          image:nil
-                     identifier:nil
-                        handler:^(UIAction* action) {
-                          [weakSelf.mutator setSetting:CONTENT_SETTING_BLOCK
-                                               forSite:siteException];
-                        }];
+  UIAction* notAllowedAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_NOT_ALLOWED)
+                image:nil
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.mutator setSetting:CONTENT_SETTING_BLOCK
+                                     forSite:siteException];
+              }];
   notAllowedAction.state = currentSetting == CONTENT_SETTING_BLOCK
                                ? UIMenuElementStateOn
                                : UIMenuElementStateOff;
@@ -828,53 +828,53 @@ enum ItemType {
 
 // Returns the navigation bar title for the current permission category.
 - (NSString*)categoryTitle {
-  // TODO(crbug.com/553098545): Use localized strings.
   switch (_category) {
     case SiteSettingsCategory::kMicrophone:
-      return @"Microphone";
+      return l10n_util::GetNSString(IDS_IOS_PERMISSIONS_MICROPHONE);
     case SiteSettingsCategory::kCamera:
-      return @"Camera";
+      return l10n_util::GetNSString(IDS_IOS_PERMISSIONS_CAMERA);
     case SiteSettingsCategory::kLocation:
-      return @"Location";
+      return l10n_util::GetNSString(IDS_IOS_PERMISSIONS_LOCATION);
   }
 }
 
 // Returns the primary title for the "Ask" permission choice.
 - (NSString*)askOptionTitle {
-  // TODO(crbug.com/553098545): Use localized strings.
   switch (_category) {
     case SiteSettingsCategory::kMicrophone:
-      return @"Sites can ask for your microphone";
+      return l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_MICROPHONE_ASK_TITLE);
     case SiteSettingsCategory::kCamera:
-      return @"Sites can ask for your camera";
+      return l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_CAMERA_ASK_TITLE);
     case SiteSettingsCategory::kLocation:
-      return @"Sites can ask for your location";
+      return l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_LOCATION_ASK_TITLE);
   }
 }
 
 // Returns the primary title for the "Block" permission choice.
 - (NSString*)blockOptionTitle {
-  // TODO(crbug.com/553098545): Use localized strings.
   switch (_category) {
     case SiteSettingsCategory::kMicrophone:
-      return @"Don't allow sites to use your microphone";
+      return l10n_util::GetNSString(
+          IDS_IOS_SITE_SETTINGS_MICROPHONE_BLOCK_TITLE);
     case SiteSettingsCategory::kCamera:
-      return @"Don't allow sites to use your camera";
+      return l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_CAMERA_BLOCK_TITLE);
     case SiteSettingsCategory::kLocation:
-      return @"Don't allow sites to use your location";
+      return l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_LOCATION_BLOCK_TITLE);
   }
 }
 
 // Returns the explanatory subtitle for the "Block" permission choice.
 - (NSString*)blockOptionSubtitle {
-  // TODO(crbug.com/553098545): Use localized strings.
   switch (_category) {
     case SiteSettingsCategory::kMicrophone:
-      return @"Features that need a microphone won't work";
+      return l10n_util::GetNSString(
+          IDS_IOS_SITE_SETTINGS_MICROPHONE_BLOCK_SUBTITLE);
     case SiteSettingsCategory::kCamera:
-      return @"Features that need a camera won't work";
+      return l10n_util::GetNSString(
+          IDS_IOS_SITE_SETTINGS_CAMERA_BLOCK_SUBTITLE);
     case SiteSettingsCategory::kLocation:
-      return @"Features that need your location won't work";
+      return l10n_util::GetNSString(
+          IDS_IOS_SITE_SETTINGS_LOCATION_BLOCK_SUBTITLE);
   }
 }
 

@@ -11,9 +11,11 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 class SiteSettingsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
@@ -46,7 +48,8 @@ TEST_F(SiteSettingsTableViewControllerTest, TestCategoriesAndSubtitles) {
 
   SiteSettingsTableViewController* controller =
       GetSiteSettingsTableViewController();
-  EXPECT_NSEQ(@"Site settings", controller.title);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_TITLE),
+              controller.title);
   EXPECT_NSEQ(kSiteSettingsTableViewId,
               controller.tableView.accessibilityIdentifier);
 
@@ -85,9 +88,12 @@ TEST_F(SiteSettingsTableViewControllerTest, TestCategoriesAndSubtitles) {
   [controller setDefaultSetting:CONTENT_SETTING_ASK
                         forType:ContentSettingsType::GEOLOCATION];
 
-  EXPECT_NSEQ(@"Ask first", micItem.detailText);
-  EXPECT_NSEQ(@"Not allowed", cameraItem.detailText);
-  EXPECT_NSEQ(@"Ask first", locationItem.detailText);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_ASK_FIRST),
+              micItem.detailText);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DONT_ALLOW),
+              cameraItem.detailText);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_ASK_FIRST),
+              locationItem.detailText);
 
   // Disable location and verify it is removed.
   [controller setLocationCategoryEnabled:NO];

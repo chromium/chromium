@@ -34,14 +34,13 @@ enum ItemType {
 
 // Returns the detail text representing the given ContentSetting.
 NSString* DetailTextForSetting(ContentSetting setting) {
-  // TODO(crbug.com/553098545): Use localized strings.
   switch (setting) {
     case CONTENT_SETTING_ASK:
-      return @"Ask first";
+      return l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_ASK_FIRST);
     case CONTENT_SETTING_BLOCK:
-      return @"Not allowed";
+      return l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_DONT_ALLOW);
     case CONTENT_SETTING_ALLOW:
-      return @"Allowed";
+      return l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_ALLOWED);
     default:
       return nil;
   }
@@ -74,8 +73,7 @@ NSString* DetailTextForSetting(ContentSetting setting) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // TODO(crbug.com/553098545): Use localized string.
-  self.title = @"Site settings";
+  self.title = l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_TITLE);
   self.tableView.accessibilityIdentifier = kSiteSettingsTableViewId;
 
   [self loadModel];
@@ -98,8 +96,8 @@ NSString* DetailTextForSetting(ContentSetting setting) {
 
   TableViewTextHeaderFooterItem* permissionsHeader =
       [[TableViewTextHeaderFooterItem alloc] initWithType:kPermissionsHeader];
-  // TODO(crbug.com/553098545): Use localized string.
-  permissionsHeader.text = @"Permissions";
+  permissionsHeader.text =
+      l10n_util::GetNSString(IDS_IOS_SITE_SETTINGS_PERMISSIONS_HEADER);
   [model setHeader:permissionsHeader forSectionWithIdentifier:kSettings];
 
   _microphoneItem =
@@ -242,9 +240,9 @@ NSString* DetailTextForSetting(ContentSetting setting) {
 
 // Creates and returns the location TableViewDetailIconItem.
 - (TableViewDetailIconItem*)locationItem {
-  // TODO(crbug.com/553098545): Use localized string.
   return [self detailItemWithType:kLocation
-                             text:@"Location"
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_PERMISSIONS_LOCATION)
                        detailText:DetailTextForSetting(_locationSetting)
                            symbol:SymbolLocation
           accessibilityIdentifier:kSiteSettingsLocationCellId];

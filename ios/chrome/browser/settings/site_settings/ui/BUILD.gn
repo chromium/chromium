@@ -45,6 +45,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/common",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/site_settings/public",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -52,6 +53,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
     "//url",
   ]
 }
