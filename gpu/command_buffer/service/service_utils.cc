@@ -157,8 +157,7 @@ gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
     if (IsWebGL2OrES3ContextType(context_type)) {
       attribs.client_major_es_version = 3;
       attribs.client_minor_es_version = 0;
-      attribs.allow_es_version_fallback =
-          !features::ShouldFallbackToSWIfGLES3NotSupported();
+      attribs.allow_es_version_fallback = false;
     } else {
       DCHECK(IsWebGL1OrES2ContextType(context_type));
       attribs.client_major_es_version = 2;

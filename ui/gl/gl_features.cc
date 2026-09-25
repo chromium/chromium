@@ -109,12 +109,6 @@ BASE_FEATURE(kDefaultPassthroughCommandDecoder,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-// Controls whether the GPU process falls back to software if GLES3 is not
-// supported.
-BASE_FEATURE(kFallbackToSWIfGLES3NotSupported,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 // If true, VsyncThreadWin will use the compositor clock
@@ -271,13 +265,6 @@ void GetANGLEFeaturesFromCommandLineAndFinch(
   }
 }
 
-bool ShouldFallbackToSWIfGLES3NotSupported() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  return base::FeatureList::IsEnabled(kFallbackToSWIfGLES3NotSupported);
-#else   // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  return true;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-}
 
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
 #if BUILDFLAG(IS_FUCHSIA)

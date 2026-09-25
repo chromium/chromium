@@ -2922,12 +2922,6 @@ inline constexpr char kChromeDarkNeutrals26Name[] = "Chrome Dark Neutrals 26";
 inline constexpr char kChromeDarkNeutrals26Description[] =
     "When enabled, updates the neutral palette for dark mode default theme";
 
-inline constexpr char kFallbackToSWIfGLES3NotSupportedName[] =
-    "Fallback to software if GLES3 is not supported";
-inline constexpr char kFallbackToSWIfGLES3NotSupportedDescription[] =
-    "Controls whether the GPU process falls back to software if GLES3 is not "
-    "supported.";
-
 inline constexpr char kFlexFirmwareUpdateName[] =
     "ChromeOS Flex Firmware Updates";
 inline constexpr char kFlexFirmwareUpdateDescription[] =

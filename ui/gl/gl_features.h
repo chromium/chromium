@@ -27,9 +27,6 @@ GL_EXPORT bool UseCompositorClockVSyncInterval();
 GL_EXPORT BASE_DECLARE_FEATURE(kDefaultPassthroughCommandDecoder);
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-GL_EXPORT BASE_DECLARE_FEATURE(kFallbackToSWIfGLES3NotSupported);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 GL_EXPORT BASE_DECLARE_FEATURE(kUseCompositorClockVSyncInterval);
@@ -53,7 +50,6 @@ GL_EXPORT void GetANGLEFeaturesFromCommandLineAndFinch(
     std::vector<std::string>& enabled_angle_features,
     std::vector<std::string>& disabled_angle_features);
 
-GL_EXPORT bool ShouldFallbackToSWIfGLES3NotSupported();
 
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
 GL_EXPORT BASE_DECLARE_FEATURE(kAllowSwiftShaderFallback);
