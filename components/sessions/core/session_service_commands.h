@@ -132,6 +132,30 @@ SESSIONS_EXPORT bool ReplacePendingCommand(
 // Returns true if provided |command| either closes a window or a tab.
 SESSIONS_EXPORT bool IsClosingCommand(SessionCommand* command);
 
+// How a replay of a session's commands turned out. This describes facts about
+// the replay only; whether a given result counts as a failed session restore is
+// a policy decision made by the embedder (see
+// //chrome/browser/sessions/session_restore_metrics.h).
+enum class SessionReplayResult {
+  // All commands replayed and at least one window was produced.
+  kSuccess,
+  // There was nothing to replay.
+  kNoCommands,
+  // Replay aborted part way through, because a command had an unexpected
+  // payload size or an id this version does not know about. Any windows
+  // produced before that point are still returned, but the session is
+  // incomplete.
+  kCorruptedCommand,
+  // Every command replayed cleanly, and every window had been closed before
+  // the session ended.
+  kAllCommandsClosed,
+  // Tabs were replayed, but every one of them had no navigations, so they were
+  // all dropped.
+  kAllTabsPrunedNoNavigations,
+  // Windows were replayed, but none of them retained a tab.
+  kAllWindowsHadNoValidTabs,
+};
+
 // Converts a list of commands into SessionWindows. On return any valid
 // windows are added to `valid_windows`. `active_window_id` will be set with the
 // id of the last active window, but it's only valid when this id corresponds
@@ -139,7 +163,10 @@ SESSIONS_EXPORT bool IsClosingCommand(SessionCommand* command);
 // windows, eg: the ones with no tab or previously closed are inserted
 // into `discarded_window_ids`. If present, `platform_session_id` is set with
 // the window system level session id, on platforms that support it.
-SESSIONS_EXPORT void RestoreSessionFromCommands(
+//
+// Returns how the replay went. Note that a kCorruptedCommand result can still
+// be accompanied by a non-empty `valid_windows`.
+SESSIONS_EXPORT SessionReplayResult RestoreSessionFromCommands(
     const std::vector<std::unique_ptr<SessionCommand>>& commands,
     std::vector<std::unique_ptr<SessionWindow>>* valid_windows,
     SessionID* active_window_id,
