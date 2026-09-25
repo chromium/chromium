@@ -198,8 +198,106 @@ class AtMemoryHandlerTest : public test::AutofillRendererTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/550313683): Parametrize remaining tests from
-// `AtMemoryHandlerTest`.
+// Tests that pressing Ctrl twice in a password field doesn't trigger AtMemory.
+TEST_F(AtMemoryHandlerTest, DoubleCtrlNotTriggeredOnPasswordField) {
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(0);
+
+  LoadHTML(R"(<input id="f" type="password">)");
+  WaitForFormsSeen();
+  Focus("f");
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that pressing Ctrl twice in a disabled field doesn't trigger AtMemory.
+TEST_F(AtMemoryHandlerTest, DoubleCtrlNotTriggeredOnDisabledField) {
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(0);
+
+  LoadHTML(R"(<input id="f" disabled>)");
+  WaitForFormsSeen();
+  Focus("f");
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that pressing Ctrl twice in a read-only field doesn't trigger AtMemory.
+TEST_F(AtMemoryHandlerTest, DoubleCtrlNotTriggeredOnReadOnlyField) {
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(0);
+
+  LoadHTML(R"(<input id="f" readonly>)");
+  WaitForFormsSeen();
+  Focus("f");
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  task_environment_.RunUntilIdle();
+}
+
+// Tests that even a non-contenteditable element within a contenteditable does
+// not break filling.
+//
+// WebLocalFrame::ExtendSelectionAndReplace() cannot handle such cases because
+// the selection, even if it is empty and unchanged, is put into the
+// non-editable <span>.
+// WebElement::PasteText() handles the case fine.
+//
+// This test mimics Gmail's placeholder (crbug.com/555717699).
+TEST_F(AtMemoryHandlerTest, DoubleCtrlWithNonContentEditable) {
+  LoadHTML(
+      "<div contenteditable id=f>"
+      "<span contenteditable=false>Foo</span>"
+      "</div>");
+  WaitForFormsSeen();
+  Focus("f");
+
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _,
+                  Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _));
+
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  WaitForApplyFieldAction();
+  blink::WebElement f = GetWebElementById("f");
+  EXPECT_EQ(f.TextContent().Utf16(), u"Fooresult");
+}
+
+// Tests that changing focus cancels the double Ctrl sequence.
+TEST_F(AtMemoryHandlerTest, FocusChangeCancelsDoubleCtrl) {
+  LoadHTML(R"(<input id="f1"><input id="f2">)");
+  WaitForFormsSeen();
+  Focus("f1");
+
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(0);
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
+      .Times(AnyNumber());
+
+  SendCtrlKeyDown();
+  Focus("f2");
+  SendCtrlKeyDown();
+  task_environment_.RunUntilIdle();
+}
+
 class AtMemoryHandlerTest_SingleField
     : public AtMemoryHandlerTest,
       public WithParamInterface<FormControlType> {
@@ -610,12 +708,8 @@ TEST_P(AtMemoryHandlerTest_SingleField,
   EXPECT_EQ(SelectionEnd(), 13);
 }
 
-// Tests that pressing Ctrl twice triggers AtMemory in an <input>.
-TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInInput) {
-  LoadHTML(R"(<input id="f">)");
-  WaitForFormsSeen();
-  Focus("f");
-
+// Tests that pressing Ctrl twice triggers AtMemory.
+TEST_P(AtMemoryHandlerTest_SingleField, DoubleCtrlTriggersAtMemory) {
   EXPECT_CALL(autofill_driver(),
               AskForValuesToFill(
                   _, _, _,
@@ -624,85 +718,15 @@ TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInInput) {
   SendCtrlKeyDown();
   SendCtrlKeyDown();
   WaitForApplyFieldAction();
-  blink::WebInputElement input = GetInputElementById("f");
-  EXPECT_EQ(input.Value().Utf16(), u"result");
-}
-
-// Tests that pressing Ctrl twice triggers AtMemory in a <textarea>.
-TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInTextArea) {
-  LoadHTML(R"(<textarea id="f"></textarea>)");
-  WaitForFormsSeen();
-  Focus("f");
-
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _,
-                  Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _));
-
-  SendCtrlKeyDown();
-  SendCtrlKeyDown();
-  WaitForApplyFieldAction();
-  blink::WebFormControlElement textarea = GetFormControlElementById("f");
-  EXPECT_EQ(textarea.Value().Utf16(), u"result");
-}
-
-// Tests that pressing Ctrl twice triggers AtMemory in a contenteditable.
-TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInContentEditable) {
-  LoadHTML(R"(<div contenteditable id="f"></div>)");
-  WaitForFormsSeen();
-  Focus("f");
-
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _,
-                  Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _));
-
-  SendCtrlKeyDown();
-  SendCtrlKeyDown();
-  WaitForApplyFieldAction();
-  blink::WebElement f = GetWebElementById("f");
-  EXPECT_EQ(f.TextContent().Utf16(), u"result");
-}
-
-// Tests that even a non-contenteditable element within a contenteditable does
-// not break filling.
-//
-// WebLocalFrame::ExtendSelectionAndReplace() cannot handle such cases because
-// the selection, even if it is empty and unchanged, is put into the
-// non-editable <span>.
-// WebElement::PasteText() handles the case fine.
-//
-// This test mimics Gmail's placeholder (crbug.com/555717699).
-TEST_F(AtMemoryHandlerTest, DoubleCtrlWithNonContentEditable) {
-  LoadHTML(
-      "<div contenteditable id=f>"
-      "<span contenteditable=false>Foo</span>"
-      "</div>");
-  WaitForFormsSeen();
-  Focus("f");
-
-  EXPECT_CALL(autofill_driver(),
-              AskForValuesToFill(
-                  _, _, _,
-                  Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _));
-
-  SendCtrlKeyDown();
-  SendCtrlKeyDown();
-  WaitForApplyFieldAction();
-  blink::WebElement f = GetWebElementById("f");
-  EXPECT_EQ(f.TextContent().Utf16(), u"Fooresult");
+  EXPECT_EQ(GetValue(), u"result");
 }
 
 // Tests that pressing Ctrl twice triggers AtMemory even when a non-empty
 // selection has been made, and replaces the selection with the filled value.
-TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryWithSelection) {
-  LoadHTML(R"(<input id="f">)");
-  WaitForFormsSeen();
-  blink::WebInputElement input = GetInputElementById("f");
-  Focus("f");
-
-  input.SetValue(blink::WebString::FromUtf16(u"hello selection world"));
-  input.SetSelectionRange(6, 15);
+TEST_P(AtMemoryHandlerTest_SingleField,
+       DoubleCtrlTriggersAtMemoryWithSelection) {
+  SetValue(u"hello selection world");
+  SetSelectionRange(6, 15);
 
   EXPECT_CALL(autofill_driver(),
               AskForValuesToFill(
@@ -713,16 +737,12 @@ TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryWithSelection) {
   SendCtrlKeyDown();
   WaitForApplyFieldAction();
 
-  EXPECT_EQ(input.Value().Utf16(), u"hello result world");
-  EXPECT_EQ(input.SelectionStart(), 12u);
+  EXPECT_EQ(GetValue(), u"hello result world");
+  EXPECT_EQ(SelectionStart(), 12);
 }
 
 // Tests that typing an intervening character cancels the double Ctrl sequence.
-TEST_F(AtMemoryHandlerTest, InterveningKeyCancelsDoubleCtrl) {
-  LoadHTML(R"(<input id="f">)");
-  WaitForFormsSeen();
-  Focus("f");
-
+TEST_P(AtMemoryHandlerTest_SingleField, InterveningKeyCancelsDoubleCtrl) {
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
@@ -741,11 +761,7 @@ TEST_F(AtMemoryHandlerTest, InterveningKeyCancelsDoubleCtrl) {
 }
 
 // Tests that exceeding the timeout cancels the double Ctrl sequence.
-TEST_F(AtMemoryHandlerTest, TimeoutCancelsDoubleCtrl) {
-  LoadHTML(R"(<input id="f">)");
-  WaitForFormsSeen();
-  Focus("f");
-
+TEST_P(AtMemoryHandlerTest_SingleField, TimeoutCancelsDoubleCtrl) {
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
@@ -764,11 +780,7 @@ TEST_F(AtMemoryHandlerTest, TimeoutCancelsDoubleCtrl) {
 }
 
 // Tests that an auto-repeat Ctrl keydown event does not trigger AtMemory.
-TEST_F(AtMemoryHandlerTest, AutoRepeatDoesNotTrigger) {
-  LoadHTML(R"(<input id="f">)");
-  WaitForFormsSeen();
-  Focus("f");
-
+TEST_P(AtMemoryHandlerTest_SingleField, AutoRepeatDoesNotTrigger) {
   EXPECT_CALL(
       autofill_driver(),
       AskForValuesToFill(
@@ -785,36 +797,9 @@ TEST_F(AtMemoryHandlerTest, AutoRepeatDoesNotTrigger) {
   task_environment_.RunUntilIdle();
 }
 
-// Tests that changing focus cancels the double Ctrl sequence.
-TEST_F(AtMemoryHandlerTest, FocusChangeCancelsDoubleCtrl) {
-  LoadHTML(R"(<input id="f1"><input id="f2">)");
-  WaitForFormsSeen();
-  Focus("f1");
-
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
-      .Times(0);
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _, Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
-      .Times(AnyNumber());
-
-  SendCtrlKeyDown();
-  Focus("f2");
-  SendCtrlKeyDown();
-  task_environment_.RunUntilIdle();
-}
-
 // Tests that Left Ctrl followed by Right Ctrl does not trigger AtMemory, but
 // Left Ctrl followed by two Right Ctrls does.
-TEST_F(AtMemoryHandlerTest, LeftCtrlFollowedByRightCtrl) {
-  LoadHTML(R"(<input id="f">)");
-  WaitForFormsSeen();
-  Focus("f");
-
+TEST_P(AtMemoryHandlerTest_SingleField, LeftCtrlFollowedByRightCtrl) {
   testing::MockFunction<void(int)> check_point;
   {
     testing::InSequence s;
@@ -850,54 +835,6 @@ TEST_F(AtMemoryHandlerTest, LeftCtrlFollowedByRightCtrl) {
   SendCtrlKeyDown(CtrlKey::kRight);
   task_environment_.RunUntilIdle();
   check_point.Call(2);
-}
-
-// Tests that pressing Ctrl twice in a password field doesn't trigger AtMemory.
-TEST_F(AtMemoryHandlerTest, DoubleCtrlNotTriggeredOnPasswordField) {
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
-      .Times(0);
-
-  LoadHTML(R"(<input id="f" type="password">)");
-  WaitForFormsSeen();
-  Focus("f");
-  SendCtrlKeyDown();
-  SendCtrlKeyDown();
-  task_environment_.RunUntilIdle();
-}
-
-// Tests that pressing Ctrl twice in a disabled field doesn't trigger AtMemory.
-TEST_F(AtMemoryHandlerTest, DoubleCtrlNotTriggeredOnDisabledField) {
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
-      .Times(0);
-
-  LoadHTML(R"(<input id="f" disabled>)");
-  WaitForFormsSeen();
-  Focus("f");
-  SendCtrlKeyDown();
-  SendCtrlKeyDown();
-  task_environment_.RunUntilIdle();
-}
-
-// Tests that pressing Ctrl twice in a read-only field doesn't trigger AtMemory.
-TEST_F(AtMemoryHandlerTest, DoubleCtrlNotTriggeredOnReadOnlyField) {
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _))
-      .Times(0);
-
-  LoadHTML(R"(<input id="f" readonly>)");
-  WaitForFormsSeen();
-  Focus("f");
-  SendCtrlKeyDown();
-  SendCtrlKeyDown();
-  task_environment_.RunUntilIdle();
 }
 
 class AtMemoryHandlerInactivityNudgeTest : public AtMemoryHandlerTest {
