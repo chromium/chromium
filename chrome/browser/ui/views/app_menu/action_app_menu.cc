@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_chip_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_minor_text_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -270,6 +271,11 @@ std::optional<SkColor> ActionAppMenu::GetLabelColor(int id) const {
   return std::nullopt;
 }
 
+int ActionAppMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
+  return ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_MAX_WIDTH);
+}
+
 void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id) {
   if (!action_to_execute_on_close_.has_value()) {
     auto action_iterator = command_to_action_map_.find(action_id);
@@ -413,10 +419,12 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
   const ui::Accelerator& accel = action_item->GetAccelerator();
   if (accel.key_code() != ui::VKEY_UNKNOWN) {
     menu_item->SetMinorText(accel.GetShortcutText());
-  } else if (const std::u16string* minor_text =
-                 child_base->GetProperty(AppMenuActionItem::kMinorTextKey);
-             minor_text && !minor_text->empty()) {
-    menu_item->SetMinorText(*minor_text);
+  }
+
+  if (const std::u16string* minor_text =
+          child_base->GetProperty(AppMenuActionItem::kMinorTextKey);
+      minor_text && !minor_text->empty()) {
+    AppMenuMinorTextView::AttachTo(menu_item, *minor_text);
   }
 
   if (std::u16string* chip_text =

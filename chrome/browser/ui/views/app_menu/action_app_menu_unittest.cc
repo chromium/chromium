@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_chip_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_minor_text_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
@@ -1769,6 +1770,23 @@ TEST_F(ActionAppMenuTest, BlockSectionAndMenuHostWidth) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuTest, MaxWidthForMenu) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  EXPECT_EQ(menu.GetMaxWidthForMenu(root),
+            ChromeLayoutProvider::Get()->GetDistanceMetric(
+                DISTANCE_ACTION_APP_MENU_MAX_WIDTH));
+  EXPECT_EQ(menu.GetMaxWidthForMenu(root), 380);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
   if (!browser_defaults::kShowUpgradeMenuItem) {
@@ -1807,6 +1825,16 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
   ASSERT_TRUE(upgrade_item);
   EXPECT_TRUE(upgrade_item->GetVisible());
   EXPECT_EQ(upgrade_item->title(), u"Update Chrome");
+  AppMenuMinorTextView* minor_text_view = nullptr;
+  for (views::View* child : upgrade_item->children()) {
+    if (auto* candidate = views::AsViewClass<AppMenuMinorTextView>(child)) {
+      minor_text_view = candidate;
+      break;
+    }
+  }
+  ASSERT_NE(minor_text_view, nullptr);
+  EXPECT_EQ(minor_text_view->label_for_testing()->GetText(),
+            u"Restart to update");
   EXPECT_EQ(upgrade_item->GetViewAccessibility().GetCachedName(),
             views::MenuItemView::GetAccessibleNameForMenuItem(
                 u"Update Chrome", u"Restart to update", std::nullopt));

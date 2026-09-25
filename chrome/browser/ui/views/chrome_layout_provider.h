@@ -258,6 +258,8 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING,
   // Horizontal margin for Block-style Action App Menu section container cards.
   DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN,
+  // Maximum width for the Block-style Action App Menu.
+  DISTANCE_ACTION_APP_MENU_MAX_WIDTH,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {
