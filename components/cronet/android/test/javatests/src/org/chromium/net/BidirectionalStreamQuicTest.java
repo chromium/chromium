@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
@@ -31,12 +32,12 @@ import java.util.Date;
 
 /** Tests functionality of BidirectionalStream's QUIC implementation. */
 @RunWith(AndroidJUnit4.class)
-// TODO(b/344966604): Fix and batch afterwards.
 @IgnoreFor(
         implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
         reason =
                 "The fallback implementation doesn't support bidirectional streaming. "
                         + "crbug.com/1494870: Enable for AOSP_PLATFORM once fixed")
+@Batch(Batch.PER_CLASS)
 public class BidirectionalStreamQuicTest {
     private final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
     private final CronetLoggerTestRule<TestLogger> mLoggerTestRule =
