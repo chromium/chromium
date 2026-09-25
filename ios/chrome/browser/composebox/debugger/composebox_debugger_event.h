@@ -81,6 +81,7 @@ enum class Environment {
 }  // namespace event
 
 enum class AttachmentType {
+  kUnknown,
   kFile,
   kTab,
   kImage,

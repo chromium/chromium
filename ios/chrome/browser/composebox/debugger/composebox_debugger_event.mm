@@ -149,6 +149,8 @@ NSString* GetEventDescription(
 NSString* GetAttachmentTypeName(composebox_debugger::AttachmentType type) {
   using enum composebox_debugger::AttachmentType;
   switch (type) {
+    case kUnknown:
+      return @"Unknown";
     case kFile:
       return @"File";
     case kTab:
