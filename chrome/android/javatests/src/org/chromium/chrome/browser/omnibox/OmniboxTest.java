@@ -683,6 +683,7 @@ public class OmniboxTest {
     @Test
     @MediumTest
     @Feature({"Omnibox"})
+    @DisabledTest(message = "crbug.com/565931069")
     public void testFastTypingWithLatency() {
         mActivityTestRule.startOnBlankPage();
         OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
