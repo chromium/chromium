@@ -20,6 +20,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
@@ -49,6 +52,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.hamcrest.Matcher;
@@ -140,6 +144,7 @@ public class KeyboardAccessoryControllerTest {
     @Mock private KeyboardAccessoryCoordinator.BarVisibilityDelegate mMockBarVisibilityDelegate;
     @Mock private AccessorySheetCoordinator.SheetVisibilityDelegate mMockSheetVisibilityDelegate;
     @Mock private KeyboardAccessoryView mMockView;
+    @Mock private RecyclerView mMockBarItemsView;
     @Mock private KeyboardAccessoryButtonGroupCoordinator mMockButtonGroup;
     @Mock private KeyboardAccessoryCoordinator.TabSwitchingDelegate mMockTabSwitchingDelegate;
     @Mock private AutofillDelegate mMockAutofillDelegate;
@@ -1680,6 +1685,93 @@ public class KeyboardAccessoryControllerTest {
 
         // Verify that the unselectable suggestion at index 1 was never selected.
         verify(mMockAutofillDelegate, never()).suggestionSelectionStateChanged(eq(1), anyBoolean());
+    }
+
+    @Test
+    public void testSelectingSuggestionScrollsItsBarItemIntoView() {
+        setUpMockBarItemsView();
+        mCoordinator.setSuggestions(createSuggestions(4), mMockAutofillDelegate);
+
+        // The first three suggestions share a group at BAR_ITEMS[0], the fourth one is
+        // BAR_ITEMS[1]. The remaining bar item is the sheet opener.
+        assertThat(mModel.get(BAR_ITEMS).size(), is(3));
+        assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(GroupBarItem.class));
+        assertThat(mModel.get(BAR_ITEMS).get(1), instanceOf(AutofillBarItem.class));
+
+        // Each of the grouped suggestions scrolls to the group's position.
+        for (int suggestionIndex = 0; suggestionIndex < 3; suggestionIndex++) {
+            clearInvocations(mMockBarItemsView);
+            selectSuggestionAndBind(suggestionIndex);
+            verify(mMockBarItemsView).smoothScrollToPosition(0);
+        }
+
+        // The ungrouped suggestion scrolls to its own position.
+        clearInvocations(mMockBarItemsView);
+        selectSuggestionAndBind(3);
+        verify(mMockBarItemsView).smoothScrollToPosition(1);
+
+        // Clearing the selection doesn't scroll anywhere.
+        clearInvocations(mMockBarItemsView);
+        selectSuggestionAndBind(null);
+        verify(mMockBarItemsView, never()).smoothScrollToPosition(anyInt());
+    }
+
+    @Test
+    public void testSelectingAlreadyAttachedSuggestionDoesNotScroll() {
+        setUpMockBarItemsView();
+        // The bar item rendering the suggestion is attached, so `updateSelection` scrolls it into
+        // view with chip precision and no coarse scroll is needed.
+        when(mMockBarItemsView.findViewHolderForAdapterPosition(anyInt()))
+                .thenReturn(mock(RecyclerView.ViewHolder.class));
+        mCoordinator.setSuggestions(createSuggestions(1), mMockAutofillDelegate);
+
+        selectSuggestionAndBind(0);
+
+        verify(mMockBarItemsView, never()).smoothScrollToPosition(anyInt());
+    }
+
+    /**
+     * Makes the mocked accessory view expose a mocked {@link RecyclerView} with an adapter. The
+     * adapter is created with its real constructor because {@link
+     * RecyclerView.Adapter#notifyItemChanged} is final and would otherwise run against an
+     * uninitialized mock.
+     */
+    private void setUpMockBarItemsView() {
+        mMockView.mBarItemsView = mMockBarItemsView;
+        doReturn(mock(RecyclerView.Adapter.class, withSettings().useConstructor()))
+                .when(mMockBarItemsView)
+                .getAdapter();
+    }
+
+    /**
+     * Creates address suggestions that differ only in label and original index.
+     *
+     * @param count The number of suggestions to create.
+     * @return The created suggestions, with original indices 0 to {@code count - 1}.
+     */
+    private static List<AutofillSuggestion> createSuggestions(int count) {
+        AutofillSuggestion.Builder builder =
+                new AutofillSuggestion.Builder()
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY);
+        List<AutofillSuggestion> suggestions = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            suggestions.add(builder.setLabel("Suggestion " + i).setOriginalIndex(i).build());
+        }
+        return suggestions;
+    }
+
+    /**
+     * Selects the suggestion with the given original index and dispatches the resulting property
+     * change to the view binder. The binder is invoked directly because inflating the view through
+     * the model change processor requires native code that isn't available in this test.
+     *
+     * @param suggestionIndex The original index of the suggestion to select, or null to clear the
+     *     selection.
+     */
+    private void selectSuggestionAndBind(Integer suggestionIndex) {
+        mCoordinator.setSelectedSuggestion(suggestionIndex);
+        KeyboardAccessoryViewBinder.bind(mModel, mMockView, SELECTED_SUGGESTION_INDEX);
     }
 
     private int getGenerationImpressionCount() {
