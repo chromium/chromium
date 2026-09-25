@@ -294,7 +294,6 @@ void SurfaceEmbedWebPlugin::InitializeSurfaceLayer() {
   // We'll be embedding an outside surface layer.
   layer_ = cc::SurfaceLayer::Create();
   layer_->SetIsDrawable(true);
-  layer_->SetContentsOpaque(true);
   layer_->SetBackgroundColor(SkColors::kTransparent);
   layer_->SetSurfaceHitTestable(true);
   // Don't use the layer for `container_` yet because it does not have a valid

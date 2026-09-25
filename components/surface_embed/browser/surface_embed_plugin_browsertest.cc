@@ -2045,4 +2045,82 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
       [&]() { return !child_connector->IsDisplayLockedForTesting(); }));
 }
 
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       TransparentChildWebContentsAndUnsubmittedSurface) {
+  NavigateToAttachHarness();
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.body.style.backgroundColor = 'rgb(0, 255, 0)';"));
+
+  // 1. Attach an unnavigated child WebContents (which has no active surface
+  // yet, matching `webui_examples --webshell`). The parent's green background
+  // should show through the <embed> bounds rather than being occluded/culled.
+  std::unique_ptr<content::WebContents> child_contents =
+      CreateChildWebContents();
+  AttachChildToEmbedWithId(child_contents.get(), "embed1");
+
+  gfx::Rect scaled_embed_bounds;
+  CalculateBitmapBoundsToCheck(gfx::Rect(10, 10, 100, 100),
+                               &scaled_embed_bounds);
+  EXPECT_TRUE(
+      CheckHasPixelInColorInBitmapBounds(SK_ColorGREEN, scaled_embed_bounds));
+  EXPECT_FALSE(HasPixelInColor(SK_ColorBLUE));
+
+  // 2. Navigate the child WebContents, make its background transparent, and
+  // render a 50x50 red box <div>. The red box is intentional to verify that
+  // opaque foreground content in the child is still painted (checked in the
+  // top-left region below), while the surrounding background is transparent
+  // and shows the parent's green background (checked in the bottom-right
+  // region).
+  //
+  // Transparency must be set at 3 places corresponding to the nested
+  // container levels:
+  //   - RenderWidgetHostView (window/compositor default background)
+  //     - html / documentElement (styled opaque red by `kRedBoxUrl`)
+  //       - body (styled opaque red by `kRedBoxUrl`)
+  //         - 50x50 red box <div>
+  // If any level above the <div> uses an opaque background, the resulting
+  // background will be opaque.
+  NavigateChildToUrl(child_contents.get(), kRedBoxUrl);
+  ASSERT_NE(nullptr, child_contents->GetRenderWidgetHostView());
+  // TODO(crbug.com/565576788): Remove the `RunUntil` wait below (and allow
+  // calling `SetBackgroundColor(SK_ColorTRANSPARENT)` at any time, e.g. before
+  // `NavigateChildToUrl` or after `ExecJs`) once
+  // `RenderWidgetHostViewChildFrame::UpdateBackgroundColor()` stops using
+  // `content_background_color_` to overwrite `SetBackgroundOpaque(false)`.
+  // Until then, wait for `kRedBoxUrl`'s initial frame metadata (`SK_ColorRED`)
+  // to arrive at the browser and set `SK_ColorTRANSPARENT` before clearing the
+  // DOM backgrounds in JS so an in-flight opaque `content_background_color_`
+  // update does not clobber `SetBackgroundOpaque(false)`.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetRenderWidgetHostView()->GetBackgroundColor() ==
+           SK_ColorRED;
+  }));
+  child_contents->GetRenderWidgetHostView()->SetBackgroundColor(
+      SK_ColorTRANSPARENT);
+  ASSERT_TRUE(content::ExecJs(child_contents.get(), R"(
+    document.documentElement.style.backgroundColor = 'transparent';
+    document.body.style.backgroundColor = 'transparent';
+    const box = document.createElement('div');
+    box.style.width = '50px';
+    box.style.height = '50px';
+    box.style.backgroundColor = 'rgb(255, 0, 0)';
+    document.body.appendChild(box);
+  )"));
+
+  gfx::Rect scaled_top_left_bounds;
+  CalculateBitmapBoundsToCheck(gfx::Rect(15, 15, 30, 30),
+                               &scaled_top_left_bounds);
+  gfx::Rect scaled_bottom_right_bounds;
+  CalculateBitmapBoundsToCheck(gfx::Rect(70, 70, 30, 30),
+                               &scaled_bottom_right_bounds);
+
+  // Wait until both the child's red box and the parent's green background
+  // (showing through the transparent region of the child) are visible.
+  EXPECT_TRUE(
+      CheckHasPixelInColorInBitmapBounds(SK_ColorRED, scaled_top_left_bounds));
+  EXPECT_TRUE(CheckHasPixelInColorInBitmapBounds(SK_ColorGREEN,
+                                                 scaled_bottom_right_bounds));
+}
+
 }  // namespace surface_embed
