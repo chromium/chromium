@@ -22,6 +22,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -70,6 +71,8 @@ void TabContextualizationController::WillDiscardContents(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   is_page_context_eligible_ = false;
+  did_first_visually_non_empty_paint_ = false;
+  did_dom_content_loaded_ = false;
   pending_page_context_timer_.Stop();
   in_flight_weak_ptr_factory_.InvalidateWeakPtrs();
   Observe(new_contents);
@@ -97,6 +100,7 @@ void TabContextualizationController::OnPageContextEligibilityAPILoaded(
 void TabContextualizationController::PrimaryPageChanged(content::Page& page) {
   is_page_context_eligible_ = false;
   did_first_visually_non_empty_paint_ = false;
+  did_dom_content_loaded_ = false;
   pending_page_context_timer_.Stop();
   in_flight_weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -116,6 +120,15 @@ void TabContextualizationController::
 
 void TabContextualizationController::DidFirstVisuallyNonEmptyPaint() {
   did_first_visually_non_empty_paint_ = true;
+  MaybeCompleteDeferredPageContextRequests();
+}
+
+void TabContextualizationController::DOMContentLoaded(
+    content::RenderFrameHost* render_frame_host) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+  did_dom_content_loaded_ = true;
   MaybeCompleteDeferredPageContextRequests();
 }
 
@@ -156,23 +169,41 @@ TabContextualizationController::GetPageContextAvailability() const {
     return PageContextAvailability::kReadyToExtract;
   }
 #if BUILDFLAG(IS_ANDROID)
+  const bool is_optimization_enabled = base::FeatureList::IsEnabled(
+      chrome::android::kOnDemandBackgroundTabContextCaptureOptimization);
+  const bool is_activated = tab_->IsActivated();
+
   // If the initial visual paint has already completed, the page is visually
   // rendered and the primary DOM is ready. We can safely extract immediately
   // without waiting for subresources or ads to finish loading, provided either:
   // 1) early first paint completion is enabled, or
   // 2) this is the active foreground tab and skip_delay_for_active_tab is on.
   const bool is_first_paint_optimization_enabled =
-      base::FeatureList::IsEnabled(
-          chrome::android::kOnDemandBackgroundTabContextCaptureOptimization) &&
+      is_optimization_enabled &&
       (chrome::android::kOnDemandBackgroundTabContextCaptureEnableFirstPaint
            .Get() ||
-       (tab_->IsActivated() &&
+       (is_activated &&
         chrome::android::
             kOnDemandBackgroundTabContextCaptureSkipDelayForActiveTab.Get()));
   const bool has_first_paint =
       did_first_visually_non_empty_paint_ ||
       web_contents->CompletedFirstVisuallyNonEmptyPaint();
   if (has_first_paint && is_first_paint_optimization_enabled) {
+    return PageContextAvailability::kReadyToExtract;
+  }
+
+  // First paint is unreliable for background tabs, so it cannot be the only
+  // readiness signal. Annotated page content is extracted from the DOM rather
+  // than from pixels, so a parsed document is sufficient to extract.
+  const bool is_background_dom_content_loaded_enabled =
+      !is_activated && is_optimization_enabled &&
+      chrome::android::
+          kOnDemandBackgroundTabContextCaptureBackgroundTabUseDomContentLoaded
+              .Get();
+  const bool has_dom_content_loaded =
+      did_dom_content_loaded_ ||
+      web_contents->GetPrimaryMainFrame()->IsDOMContentLoaded();
+  if (has_dom_content_loaded && is_background_dom_content_loaded_enabled) {
     return PageContextAvailability::kReadyToExtract;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

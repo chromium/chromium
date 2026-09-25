@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,6 +91,24 @@ class TabContextCaptureRequestTest : public testing::Test {
     // TabContextCaptureRequest manages its own lifetime.
     request_ = new TabContextCaptureRequest(
         mock_controller_.get(), mock_tab_interface_.get(), std::move(callback));
+  }
+
+  void EnableOptimizationWithParams(const base::FieldTrialParams& params) {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{chrome::android::kOnDemandBackgroundTabContextCapture, {}},
+         {chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
+          params}},
+        /*disabled_features=*/{});
+  }
+
+  void ExpectSingleCapture() {
+    EXPECT_CALL(*mock_controller_, GetPageContext(_))
+        .WillOnce([](auto callback) {
+          std::move(callback).Run(
+              std::make_unique<lens::ContextualInputData>());
+        });
   }
 
   void TearDown() override { mock_controller_.reset(); }
@@ -405,6 +425,102 @@ TEST_F(TabContextCaptureRequestTest,
   run_loop.Run();
 }
 
+// TODO(crbug.com/564961363): Cover DOMContentLoaded having already fired
+// before Start(). TestRenderFrameHost can only dispatch DOMContentLoaded
+// together with onload, so that path needs a content test API or a browser
+// test.
+TEST_F(TabContextCaptureRequestTest, BackgroundTabCapturesOnDomContentLoaded) {
+  EnableOptimizationWithParams(
+      {{"background_tab_use_dom_content_loaded", "true"}});
+  base::RunLoop run_loop;
+  CreateTabContextCaptureRequest(base::BindLambdaForTesting(
+      [&](std::unique_ptr<lens::ContextualInputData> data) {
+        run_loop.Quit();
+      }));
+  ExpectSingleCapture();
+
+  request_->Start();
+  ASSERT_FALSE(run_loop.AnyQuitCalled());
+  request_->DOMContentLoaded(web_contents()->GetPrimaryMainFrame());
+  EXPECT_TRUE(run_loop.AnyQuitCalled());
+  run_loop.Run();
+}
+
+TEST_F(TabContextCaptureRequestTest,
+       BackgroundTabIgnoresDomContentLoadedWhenParamDisabled) {
+  EnableOptimizationWithParams({});
+  base::RunLoop run_loop;
+  CreateTabContextCaptureRequest(base::BindLambdaForTesting(
+      [&](std::unique_ptr<lens::ContextualInputData> data) {
+        run_loop.Quit();
+      }));
+  ExpectSingleCapture();
+
+  request_->Start();
+  request_->DOMContentLoaded(web_contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  task_environment()->FastForwardBy(base::Seconds(25));
+  run_loop.Run();
+}
+
+TEST_F(TabContextCaptureRequestTest, ActiveTabIgnoresDomContentLoaded) {
+  EnableOptimizationWithParams(
+      {{"background_tab_use_dom_content_loaded", "true"}});
+  base::RunLoop run_loop;
+  CreateTabContextCaptureRequest(base::BindLambdaForTesting(
+      [&](std::unique_ptr<lens::ContextualInputData> data) {
+        run_loop.Quit();
+      }));
+  EXPECT_CALL(*mock_tab_interface_, IsActivated()).WillRepeatedly(Return(true));
+  ExpectSingleCapture();
+
+  request_->Start();
+  request_->DOMContentLoaded(web_contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  task_environment()->FastForwardBy(base::Seconds(25));
+  run_loop.Run();
+}
+
+TEST_F(TabContextCaptureRequestTest, BackgroundTabSkipsPaintGraceOnLoad) {
+  EnableOptimizationWithParams(
+      {{"background_tab_use_dom_content_loaded", "true"}});
+  base::RunLoop run_loop;
+  CreateTabContextCaptureRequest(base::BindLambdaForTesting(
+      [&](std::unique_ptr<lens::ContextualInputData> data) {
+        run_loop.Quit();
+      }));
+  ExpectSingleCapture();
+
+  request_->DocumentOnLoadCompletedInPrimaryMainFrame();
+  EXPECT_TRUE(run_loop.AnyQuitCalled());
+  run_loop.Run();
+}
+
+TEST_F(TabContextCaptureRequestTest, SubframeDomContentLoadedIsIgnored) {
+  EnableOptimizationWithParams(
+      {{"background_tab_use_dom_content_loaded", "true"}});
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), web_contents());
+  navigation->SetKeepLoading(true);
+  navigation->Commit();
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+          ->AppendChild("subframe");
+  base::RunLoop run_loop;
+  CreateTabContextCaptureRequest(base::BindLambdaForTesting(
+      [&](std::unique_ptr<lens::ContextualInputData> data) {
+        run_loop.Quit();
+      }));
+  ExpectSingleCapture();
+
+  request_->Start();
+  request_->DOMContentLoaded(subframe);
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  request_->DOMContentLoaded(web_contents()->GetPrimaryMainFrame());
+  EXPECT_TRUE(run_loop.AnyQuitCalled());
+  run_loop.Run();
+}
+
 class TestTabContextualizationController
     : public lens::TabContextualizationController {
  public:
@@ -600,4 +716,46 @@ TEST_F(TabContextualizationControllerTest,
       ->DidFirstVisuallyNonEmptyPaint();
   EXPECT_TRUE(run_loop.AnyQuitCalled());
   run_loop.Run();
+}
+
+TEST_F(TabContextualizationControllerTest,
+       BackgroundTabDomContentLoadedFlushesImmediately) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
+        {{"background_tab_use_dom_content_loaded", "true"}}}},
+      /*disabled_features=*/{});
+  StartPendingNavigation();
+  navigation_->SetKeepLoading(true);
+  navigation_->Commit();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*controller_, FetchPageContextInternal(_))
+      .WillOnce([&](auto callback) { run_loop.Quit(); });
+  controller_->GetPageContext(base::DoNothing());
+  ASSERT_FALSE(run_loop.AnyQuitCalled());
+
+  static_cast<content::WebContentsObserver*>(controller_.get())
+      ->DOMContentLoaded(web_contents()->GetPrimaryMainFrame());
+  EXPECT_TRUE(run_loop.AnyQuitCalled());
+}
+
+TEST_F(TabContextualizationControllerTest,
+       ActiveTabDomContentLoadedDoesNotFlush) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{chrome::android::kOnDemandBackgroundTabContextCaptureOptimization,
+        {{"background_tab_use_dom_content_loaded", "true"}}}},
+      /*disabled_features=*/{});
+  EXPECT_CALL(*mock_tab_interface_, IsActivated()).WillRepeatedly(Return(true));
+  StartPendingNavigation();
+  navigation_->SetKeepLoading(true);
+  navigation_->Commit();
+
+  EXPECT_CALL(*controller_, FetchPageContextInternal(_)).Times(0);
+  controller_->GetPageContext(base::DoNothing());
+  static_cast<content::WebContentsObserver*>(controller_.get())
+      ->DOMContentLoaded(web_contents()->GetPrimaryMainFrame());
 }

@@ -481,6 +481,15 @@ inline constexpr base::FeatureParam<int>
         "active_tab_flush_timeout_seconds",
         /*default_value=*/1);
 
+// Whether background (non-activated) tabs may extract page context as soon as
+// DOMContentLoaded fires, instead of waiting for full onload plus the 5s paint
+// grace.
+inline constexpr base::FeatureParam<bool>
+    kOnDemandBackgroundTabContextCaptureBackgroundTabUseDomContentLoaded(
+        &kOnDemandBackgroundTabContextCaptureOptimization,
+        "background_tab_use_dom_content_loaded",
+        /*default_value=*/false);
+
 inline constexpr base::FeatureParam<int> kProtectRecentlyVisibleTabDuration(
     &kProtectRecentlyVisibleTab,
     "duration_in_seconds",

@@ -133,6 +133,7 @@ class TabContextualizationController : public content::WebContentsObserver {
   void PrimaryPageChanged(content::Page& page) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void DidFirstVisuallyNonEmptyPaint() override;
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidStopLoading() override;
@@ -210,6 +211,10 @@ class TabContextualizationController : public content::WebContentsObserver {
 
   bool is_page_context_eligible_ = false;
   bool did_first_visually_non_empty_paint_ = false;
+
+  // Whether the primary main frame has dispatched DOMContentLoaded for the
+  // current page. Reset in PrimaryPageChanged().
+  bool did_dom_content_loaded_ = false;
 
   struct DeferredPageContextRequest {
     std::optional<base::UnguessableToken> cancellation_id;
