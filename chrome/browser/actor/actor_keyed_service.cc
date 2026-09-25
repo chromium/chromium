@@ -211,6 +211,11 @@ void ActorKeyedService::Shutdown() {
     StopTask(task_id, ActorTask::StoppedReason::kShutdown);
   }
 
+  if (!pending_tasks_.empty()) {
+    pending_tasks_.clear();
+    NotifyPendingTaskCountChanged();
+  }
+
   // Ensure tasks get deleted synchronously to avoid dangling refs.
   CHECK(active_tasks_.empty());
   pending_delete_tasks_.clear();
@@ -539,6 +544,12 @@ TaskId ActorKeyedService::CreateTaskImpl(
 #endif
 
   NotifyTaskStateChanged(*active_tasks_[task_id]);
+
+  if (source_info.type == TaskSourceInfo::Client::kExperimentalActor &&
+      source_info.id.has_value()) {
+    RemovePendingTask(*source_info.id);
+  }
+
   return task_id;
 }
 
@@ -920,6 +931,7 @@ void ActorKeyedService::NotifyBackgroundTabReady(
 
 void ActorKeyedService::NotifyBackgroundSetupFailed(
     const std::string& glic_trigger_message_id) {
+  RemovePendingTask(glic_trigger_message_id);
   for (auto& observer : observers_) {
     observer.OnBackgroundSetupFailed(glic_trigger_message_id);
   }
@@ -933,7 +945,44 @@ ActorKeyedService::AddMessageTriggerTaskStoppedCallback(
 
 void ActorKeyedService::OnMessageTriggerTaskStopped(
     const std::string& message_id) {
+  RemovePendingTask(message_id);
   message_trigger_task_stopped_callbacks_.Notify(message_id);
+}
+
+void ActorKeyedService::AddPendingTask(
+    const std::string& triggering_context_id) {
+  CHECK(!triggering_context_id.empty());
+  auto [it, inserted] = pending_tasks_.try_emplace(
+      triggering_context_id, PendingTask{triggering_context_id});
+  if (inserted) {
+    NotifyPendingTaskCountChanged();
+  }
+}
+
+void ActorKeyedService::RemovePendingTask(
+    const std::string& triggering_context_id) {
+  if (pending_tasks_.erase(triggering_context_id) > 0) {
+    NotifyPendingTaskCountChanged();
+  }
+}
+
+size_t ActorKeyedService::GetPendingTasksCount() const {
+  return pending_tasks_.size();
+}
+
+bool ActorKeyedService::HasPendingTask(
+    const std::string& triggering_context_id) const {
+  return pending_tasks_.contains(triggering_context_id);
+}
+
+base::CallbackListSubscription
+ActorKeyedService::AddPendingTaskCountChangedCallback(
+    PendingTaskCountChangedCallback callback) {
+  return pending_task_count_change_callback_list_.Add(std::move(callback));
+}
+
+void ActorKeyedService::NotifyPendingTaskCountChanged() {
+  pending_task_count_change_callback_list_.Notify(pending_tasks_.size());
 }
 
 #if BUILDFLAG(IS_ANDROID)

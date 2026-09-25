@@ -381,6 +381,100 @@ TEST_F(ActorKeyedServiceTest, TraceRecordingToDirectory) {
   EXPECT_GT(*file_size, 0);
 }
 
+TEST_F(ActorKeyedServiceTest, PendingTasksLifecycle) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+
+  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
+  EXPECT_FALSE(actor_service->HasPendingTask("msg-1"));
+
+  int notification_call_count = 0;
+  size_t last_notified_count = 999;
+  base::CallbackListSubscription subscription =
+      actor_service->AddPendingTaskCountChangedCallback(
+          base::BindLambdaForTesting([&](size_t count) {
+            notification_call_count++;
+            last_notified_count = count;
+          }));
+
+  // Adding a pending task fires notification.
+  actor_service->AddPendingTask("msg-1");
+  EXPECT_EQ(1, notification_call_count);
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+  EXPECT_TRUE(actor_service->HasPendingTask("msg-1"));
+  EXPECT_EQ(1u, last_notified_count);
+
+  // Duplicate addition is ignored and does NOT fire notification.
+  actor_service->AddPendingTask("msg-1");
+  EXPECT_EQ(1, notification_call_count);
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+
+  // Second pending task.
+  actor_service->AddPendingTask("msg-2");
+  EXPECT_EQ(2, notification_call_count);
+  EXPECT_EQ(2u, actor_service->GetPendingTasksCount());
+  EXPECT_EQ(2u, last_notified_count);
+
+  // Remove first pending task.
+  actor_service->RemovePendingTask("msg-1");
+  EXPECT_EQ(3, notification_call_count);
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+  EXPECT_FALSE(actor_service->HasPendingTask("msg-1"));
+  EXPECT_TRUE(actor_service->HasPendingTask("msg-2"));
+  EXPECT_EQ(1u, last_notified_count);
+
+  // Remove second pending task.
+  actor_service->RemovePendingTask("msg-2");
+  EXPECT_EQ(4, notification_call_count);
+  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
+  EXPECT_EQ(0u, last_notified_count);
+}
+
+TEST_F(ActorKeyedServiceTest, PendingTaskRemovedOnFailureAndCancellation) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+
+  // 1. Verify NotifyBackgroundSetupFailed removes the pending task.
+  actor_service->AddPendingTask("fail-msg");
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+  EXPECT_TRUE(actor_service->HasPendingTask("fail-msg"));
+
+  actor_service->NotifyBackgroundSetupFailed("fail-msg");
+  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
+  EXPECT_FALSE(actor_service->HasPendingTask("fail-msg"));
+
+  // 2. Verify OnMessageTriggerTaskStopped removes the pending task.
+  actor_service->AddPendingTask("cancel-msg");
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+  EXPECT_TRUE(actor_service->HasPendingTask("cancel-msg"));
+
+  actor_service->OnMessageTriggerTaskStopped("cancel-msg");
+  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
+  EXPECT_FALSE(actor_service->HasPendingTask("cancel-msg"));
+}
+
+TEST_F(ActorKeyedServiceTest, PendingTaskResolvedOnCreateTask) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+
+  actor_service->AddPendingTask("trigger-123");
+  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
+  EXPECT_TRUE(actor_service->HasPendingTask("trigger-123"));
+
+  TaskSourceInfo source_info(TaskSourceInfo::Client::kExperimentalActor,
+                             "trigger-123");
+
+  TaskId id = actor_service->CreateTaskWithOptions(
+      source_info, NoEnterprisePolicyChecker(), /*options=*/nullptr,
+      /*delegate=*/nullptr, ui_state_manager());
+  EXPECT_FALSE(id.is_null());
+
+  // Task is now active and removed from pending.
+  EXPECT_EQ(1u, actor_service->GetActiveTasksCount());
+  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
+  EXPECT_FALSE(actor_service->HasPendingTask("trigger-123"));
+}
+
 }  // namespace
 
 }  // namespace actor

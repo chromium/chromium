@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -238,6 +239,32 @@ class ActorKeyedService : public KeyedService,
       MessageTriggerTaskStoppedCallback callback);
   void OnMessageTriggerTaskStopped(const std::string& message_id);
 
+  // Holds information about a task that is preparing resources before an
+  // ActorTask is formally created.
+  // Note: `triggering_context_id` refers to the same context identifier as
+  // `glic_trigger_message_id` and `message_id` on neighboring methods.
+  struct PendingTask {
+    std::string triggering_context_id;
+  };
+
+  // Registers a pending task for the given unique triggering context ID.
+  // While pending, the task is preparing resources before an ActorTask is
+  // formally created.
+  void AddPendingTask(const std::string& triggering_context_id);
+
+  // Removes a pending task (e.g. on cancellation, failure, or handoff).
+  void RemovePendingTask(const std::string& triggering_context_id);
+
+  // Returns the count of pending tasks currently preparing resources.
+  size_t GetPendingTasksCount() const;
+
+  // Returns true if there is a pending task with the given context ID.
+  bool HasPendingTask(const std::string& triggering_context_id) const;
+
+  using PendingTaskCountChangedCallback = base::RepeatingCallback<void(size_t)>;
+  base::CallbackListSubscription AddPendingTaskCountChangedCallback(
+      PendingTaskCountChangedCallback callback);
+
 #if BUILDFLAG(IS_ANDROID)
   using EnsureForegroundServiceStartedCallback =
       base::RepeatingCallback<void(const std::string&)>;
@@ -272,6 +299,7 @@ class ActorKeyedService : public KeyedService,
   void InitializeTraceRecording(const base::FilePath& trace_path);
   void OnTraceFilePathResolved(const base::FilePath& resolved_path);
   void OnTraceFileInitDone(bool success);
+  void NotifyPendingTaskCountChanged();
 
   // Serializes journal events to a file when --actor-trace-path is set.
   std::unique_ptr<AggregatedJournalFileSerializer> trace_file_serializer_;
@@ -310,6 +338,10 @@ class ActorKeyedService : public KeyedService,
 
   base::RepeatingCallbackList<void(const std::string&)>
       message_trigger_task_stopped_callbacks_;
+
+  base::flat_map<std::string, PendingTask> pending_tasks_;
+  base::RepeatingCallbackList<void(size_t)>
+      pending_task_count_change_callback_list_;
 
 #if BUILDFLAG(IS_ANDROID)
   base::RepeatingCallbackList<void(const std::string&)>

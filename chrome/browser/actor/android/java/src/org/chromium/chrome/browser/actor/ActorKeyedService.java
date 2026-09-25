@@ -41,6 +41,9 @@ public class ActorKeyedService {
 
         /** Triggered when a task is stopped or completed with a reason. */
         default void onTaskStopped(@ActorTaskId int taskId, @StoppedReason int stoppedReason) {}
+
+        /** Triggered when the number of pending tasks changes. */
+        default void onPendingTaskCountChanged(int pendingCount) {}
     }
 
     @CalledByNative
@@ -195,8 +198,41 @@ public class ActorKeyedService {
         }
     }
 
+    @CalledByNative
+    private void onPendingTaskCountChanged(int pendingCount) {
+        for (Observer obs : mObservers) {
+            obs.onPendingTaskCountChanged(pendingCount);
+        }
+    }
+
+    /** Returns the number of pending tasks currently preparing resources. */
+    public int getPendingTasksCount() {
+        if (mNativePtr == 0) return 0;
+        return ActorKeyedServiceJni.get().getPendingTasksCount(mNativePtr);
+    }
+
+    /** Registers a pending task for the given context ID. */
+    public void addPendingTask(String contextId) {
+        if (mNativePtr == 0) return;
+        ActorKeyedServiceJni.get().addPendingTask(mNativePtr, contextId);
+    }
+
+    /** Removes a pending task for the given context ID. */
+    public void removePendingTask(String contextId) {
+        if (mNativePtr == 0) return;
+        ActorKeyedServiceJni.get().removePendingTask(mNativePtr, contextId);
+    }
+
     @NativeMethods
     interface Natives {
+        int getPendingTasksCount(long nativeActorKeyedServiceAndroid);
+
+        void addPendingTask(
+                long nativeActorKeyedServiceAndroid, @JniType("std::string") String contextId);
+
+        void removePendingTask(
+                long nativeActorKeyedServiceAndroid, @JniType("std::string") String contextId);
+
         @JniType("std::vector<jni_zero::ScopedJavaLocalRef<jobject>>")
         List<ActorTask> getActiveTasks(long nativeActorKeyedServiceAndroid);
 
