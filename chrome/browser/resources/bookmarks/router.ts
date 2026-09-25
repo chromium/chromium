@@ -11,7 +11,6 @@ import {selectFolder, setSearchTerm} from './actions.js';
 import {ROOT_NODE_ID} from './constants.js';
 import {Store} from './store.js';
 import type {BookmarksPageState} from './types.js';
-import {findIdByLegacyId} from './util.js';
 
 /**
  * This element is a one way bound interface that routes the page URL to
@@ -68,14 +67,7 @@ export class BookmarksRouter implements StoreObserver<BookmarksPageState> {
       // `Store.getInstance().data` will only evaluate after the Store is
       // initialized.
       Store.getInstance().dispatchAsync((dispatch) => {
-        const nodes = Store.getInstance().data.nodes;
-        // The browser (e.g. the bookmark bar context menu) and older saved
-        // URLs refer to folders by their legacy numeric id. Map those to the
-        // UUID-based ids used by the store.
-        const resolvedId = nodes[selectedId] ?
-            selectedId :
-            (findIdByLegacyId(nodes, selectedId) ?? selectedId);
-        const action = selectFolder(resolvedId, nodes);
+        const action = selectFolder(selectedId, Store.getInstance().data.nodes);
         if (action) {
           dispatch(action);
         }
