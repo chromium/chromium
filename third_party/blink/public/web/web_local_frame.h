@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/callback_list.h"
 #include "base/containers/span.h"
@@ -62,6 +63,9 @@
 namespace base {
 class Location;
 class SingleThreadTaskRunner;
+#if BUILDFLAG(IS_ANDROID)
+class UnsafeSharedMemoryRegion;
+#endif
 }
 
 namespace cc {
@@ -103,6 +107,7 @@ class WebPerformanceMetricsForNestedContexts;
 class WebPlugin;
 class WebPrintClient;
 class WebRange;
+class WebSecurityOrigin;
 class WebSpellCheckPanelHostClient;
 class WebString;
 class WebTextCheckClient;
@@ -117,6 +122,10 @@ struct WebPrintPageDescription;
 struct WebPrintParams;
 struct WebPrintPresetOptions;
 struct WebScriptSource;
+
+#if BUILDFLAG(IS_ANDROID)
+class MessagePortDescriptor;
+#endif
 
 #if BUILDFLAG(IS_WIN)
 struct WebFontFamilyNames;
@@ -745,6 +754,28 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // document and it's still hidden (possibly preserved in the back-forward
   // cache, or unloaded).
   virtual bool DispatchedPagehideAndStillHidden() const = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Dispatches a `message` event targeting the frame's window on behalf of
+  // the embedder. This is used to support passing a SharedArrayBuffer
+  // (constructed from `region`) from an app embedding an Android WebView to
+  // the page. `region` must be valid; `ports` may be empty.
+  //
+  // If `target_origin` is not null and it does not match the window's
+  // origin, the event will be dropped, similar to a regular `postMessage()`.
+  // Specifying a null `target_origin` means the message will always be
+  // delivered; use caution as this can potentially race with navigations in
+  // the frame.
+  //
+  // Note that the `message` event will always be treated as originating from
+  // the target window's agent cluster; there are no additional safety checks
+  // beyond `target_origin`, so the caller must ensure that the target window
+  // is the intended recipient of `ports` and `region`.
+  virtual void PostEmbedderMessageEvent(
+      const WebSecurityOrigin& target_origin,
+      std::vector<MessagePortDescriptor> ports,
+      base::UnsafeSharedMemoryRegion region) = 0;
+#endif
 
   // Scheduling ---------------------------------------------------------------
 

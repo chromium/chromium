@@ -5,6 +5,8 @@
 #ifndef ANDROID_WEBVIEW_RENDERER_AW_RENDER_FRAME_EXT_H_
 #define ANDROID_WEBVIEW_RENDERER_AW_RENDER_FRAME_EXT_H_
 
+#include <optional>
+
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -57,6 +59,9 @@ class AwRenderFrameExt : public content::RenderFrameObserver,
   void SmoothScroll(int32_t target_x,
                     int32_t target_y,
                     base::TimeDelta duration) override;
+  void PostEmbedderMessageEvent(
+      const std::optional<url::Origin>& target_origin,
+      mojom::EmbedderTransferableMessagePtr message) override;
 
   void BindLocalMainFrame(
       mojo::PendingAssociatedReceiver<mojom::LocalMainFrame> pending_receiver);

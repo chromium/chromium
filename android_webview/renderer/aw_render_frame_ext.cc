@@ -5,11 +5,14 @@
 #include "android_webview/renderer/aw_render_frame_ext.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/mojom/frame.mojom.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
@@ -19,6 +22,7 @@
 #include "components/content_capture/renderer/content_capture_sender.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
@@ -304,9 +308,30 @@ void AwRenderFrameExt::ResetScrollAndScaleState() {
   webview->ResetScrollAndScaleState();
 }
 
+void AwRenderFrameExt::PostEmbedderMessageEvent(
+    const std::optional<url::Origin>& target_origin,
+    mojom::EmbedderTransferableMessagePtr embedder_message) {
+  if (!render_frame()) {
+    return;
+  }
+
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  if (!frame) {
+    return;
+  }
+
+
+  frame->PostEmbedderMessageEvent(
+      target_origin ? blink::WebSecurityOrigin(*target_origin)
+                    : blink::WebSecurityOrigin(),
+      std::move(embedder_message->ports),
+      std::move(embedder_message->shared_array_buffer));
+}
+
 blink::WebView* AwRenderFrameExt::GetWebView() {
-  if (!render_frame())
+  if (!render_frame()) {
     return nullptr;
+  }
 
   return render_frame()->GetWebView();
 }

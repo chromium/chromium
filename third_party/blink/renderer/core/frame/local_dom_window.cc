@@ -1407,7 +1407,10 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
           this,
           WebFeature::kMessageEventSharedArrayBufferDifferentAgentCluster);
       event = MessageEvent::CreateError(event);
-    } else {
+    } else if (sender_origin) {
+      // `sender_origin` is null when there is no sending document at all, e.g.
+      // for a message posted by the application embedding the renderer. Neither
+      // counter applies in that case.
       if (!sender_origin->IsSameOriginWith(GetSecurityOrigin())) {
         UseCounter::Count(
             this, WebFeature::kMessageEventSharedArrayBufferSameAgentCluster);

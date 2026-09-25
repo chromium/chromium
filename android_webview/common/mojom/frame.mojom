@@ -4,9 +4,12 @@
 
 module android_webview.mojom;
 
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 enum HitTestDataType{
@@ -74,6 +77,24 @@ struct HitTestData {
   url.mojom.Url img_src;
 };
 
+// The payload of a message posted by the embedder (the Android application)
+// to the main frame's document, via WebView's postMessageToMainFrame() API.
+//
+// Only SharedArrayBuffers use this struct. Strings and ArrayBuffers are
+// serialized in the browser and delivered through the platform-wide
+// content::MessagePortProvider -> blink.mojom.LocalFrame.PostMessageEvent()
+// path. SharedArrayBuffers can't use that path, because the region backing
+// them cannot travel in a blink.mojom.TransferableMessage.
+struct EmbedderTransferableMessage {
+  // Any MessagePorts being transferred as part of this message.
+  array<blink.mojom.MessagePortDescriptor> ports;
+
+  // The SharedArrayBuffer being transferred. It is mapped into the renderer's
+  // address space on arrival and exposed to script as the message's data.
+  // Every message over this interface transfers exactly one buffer.
+  mojo_base.mojom.UnsafeSharedMemoryRegion shared_array_buffer;
+};
+
 // Similar to blink::mojom::LocalMainFrame. This interface adds additional
 // things that webview needs from the main frame.
 interface LocalMainFrame {
@@ -99,6 +120,21 @@ interface LocalMainFrame {
   // miliseconds.
   SmoothScroll(
       int32 target_x, int32 target_y, mojo_base.mojom.TimeDelta duration);
+
+  // Dispatches a "message" event at the main frame's window, on behalf of the
+  // embedder. This is the renderer half of WebView's postMessageToMainFrame()
+  // API.
+  //
+  // `target_origin` specifies the origin the embedder expects the document to
+  // have; if it does not match, the message is discarded. A null
+  // `target_origin` is a wildcard.
+  //
+  // Unlike a postMessage() between two documents, there is no source frame:
+  // the message originates from the application hosting this WebView, which
+  // is trusted, and it is delivered as if it came from the target document's
+  // own agent cluster so that SharedArrayBuffers can be transferred.
+  PostEmbedderMessageEvent(
+      url.mojom.Origin? target_origin, EmbedderTransferableMessage message);
 };
 
 // Similar to blink::mojom::FrameHost. Implemented in Browser, this

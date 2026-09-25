@@ -108,6 +108,7 @@ specific_include_rules = {
     "+ui/gfx/ca_layer_result.h",
   ],
   "web_frame_test\\.cc": [
+    "+base/memory/unsafe_shared_memory_region.h",
     "+ui/base/mojom/menu_source_type.mojom-blink.h",
     "+ui/gfx/transform.h",
   ],
@@ -115,6 +116,11 @@ specific_include_rules = {
     "+base/run_loop.h",
     "+components/stylus_handwriting/win/features.h",
     "+components/viz/common/surfaces/parent_local_surface_id_allocator.h",
+  ],
+  "web_local_frame_impl\\.cc": [
+    # PostEmbedderMessageEvent() takes a region by value, so the complete type
+    # is required here; the public header only needs the forward declaration.
+    "+base/memory/unsafe_shared_memory_region.h",
   ],
   "settings\\.h": [
     "+ui/base/pointer/pointer_device.h",

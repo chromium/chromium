@@ -5,6 +5,8 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_RENDERER_HOST_AW_RENDER_VIEW_HOST_EXT_H_
 #define ANDROID_WEBVIEW_BROWSER_RENDERER_HOST_AW_RENDER_VIEW_HOST_EXT_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -18,6 +20,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "url/origin.h"
 
 namespace android_webview {
 
@@ -75,6 +78,13 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
   void SetWillSuppressErrorPage(bool suppress);
 
   void SmoothScroll(int target_x, int target_y, base::TimeDelta duration);
+
+  // Asks the renderer to dispatch a "message" event at the main frame's
+  // window on behalf of the embedding application. A null `target_origin`
+  // acts as a wildcard. See android_webview.mojom.LocalMainFrame.
+  void PostEmbedderMessageEvent(
+      const std::optional<url::Origin>& target_origin,
+      mojom::EmbedderTransferableMessagePtr message);
 
  private:
   // content::WebContentsObserver implementation.

@@ -45,7 +45,8 @@ namespace blink {
 ArrayBufferContents::ArrayBufferContents(
     const base::subtle::PlatformSharedMemoryRegion& region,
     uint64_t offset,
-    size_t length) {
+    size_t length,
+    SharingType is_shared) {
   DCHECK(region.IsValid());
 
   // The offset must be a multiples of |SysInfo::VMAllocationGranularity()|.
@@ -71,8 +72,13 @@ ArrayBufferContents::ArrayBufferContents(
     base::subtle::PlatformSharedMemoryRegion::Unmap(mapping, mapper);
   };
   uint8_t* base = &result.value()[offset_rounding];
-  backing_store_ =
-      v8::ArrayBuffer::NewBackingStore(base, length, deleter, nullptr);
+  if (is_shared == kShared) {
+    backing_store_ =
+        v8::SharedArrayBuffer::NewBackingStore(base, length, deleter, nullptr);
+  } else {
+    backing_store_ =
+        v8::ArrayBuffer::NewBackingStore(base, length, deleter, nullptr);
+  }
 }
 
 ArrayBufferContents::ArrayBufferContents(

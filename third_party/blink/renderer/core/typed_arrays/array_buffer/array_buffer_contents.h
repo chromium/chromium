@@ -94,10 +94,16 @@ class CORE_EXPORT ArrayBufferContents {
                       AllocationFailureBehavior allocation_failure_behavior =
                           AllocationFailureBehavior::kInvalid);
 
+  // The resulting contents is backed by `shared_memory_region`; `offset` is
+  // down to a multiple of the VM allocation granularity. If `sharing_type`
+  // is `kShared`, creates a backing store for a `SharedArrayBuffer` that
+  // uses a mapping from the passed in `shared_memory_region`; otherwise,
+  // creates a backing store for a regular `ArrayBuffer`.
   ArrayBufferContents(
       const base::subtle::PlatformSharedMemoryRegion& shared_memory_region,
       uint64_t offset,
-      size_t length);
+      size_t length,
+      SharingType is_shared);
 
   ArrayBufferContents(ArrayBufferContents&&) = default;
 

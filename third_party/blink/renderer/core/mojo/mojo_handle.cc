@@ -246,7 +246,8 @@ MojoMapBufferResult* MojoHandle::mapBuffer(unsigned offset,
       mojo::ScopedSharedBufferHandle(buffer_handle));
 
   if (region.IsValid()) {
-    ArrayBufferContents contents(region, offset, num_bytes);
+    ArrayBufferContents contents(region, offset, num_bytes,
+                                 ArrayBufferContents::kNotShared);
     if (contents.IsValid()) {
       result_dict->setResult(MOJO_RESULT_OK);
       result_dict->setBuffer(DOMArrayBuffer::Create(contents));

@@ -104,6 +104,16 @@ void AwRenderViewHostExt::SmoothScroll(int target_x,
     local_main_frame_remote->SmoothScroll(target_x, target_y, duration);
 }
 
+void AwRenderViewHostExt::PostEmbedderMessageEvent(
+    const std::optional<url::Origin>& target_origin,
+    mojom::EmbedderTransferableMessagePtr message) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (auto* local_main_frame_remote = GetLocalMainFrameRemote()) {
+    local_main_frame_remote->PostEmbedderMessageEvent(target_origin,
+                                                      std::move(message));
+  }
+}
+
 void AwRenderViewHostExt::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (will_suppress_error_page_)
