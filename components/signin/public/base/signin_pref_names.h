@@ -65,12 +65,6 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kHistorySyncLastDeclinedTimestamp[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kHistorySyncSuccessiveDeclineCount[];
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kHistoryPageHistorySyncPromoLastDismissedTimestamp[];
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kHistoryPageHistorySyncPromoShownAfterDismissal[];
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kHistoryPageHistorySyncPromoShownCount[];
 #if BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kRestrictAccountsToPatterns[];

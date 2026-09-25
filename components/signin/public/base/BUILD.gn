@@ -26,6 +26,11 @@ proto_library("hybrid_encryption_key_proto") {
   ]
 }
 
+source_set("signin_prefs_internal") {
+  visibility = [ ":base" ]
+  sources = [ "signin_prefs_keys.h" ]
+}
+
 static_library("base") {
   sources = [
     "account_consistency_method.h",
@@ -60,6 +65,7 @@ static_library("base") {
     "wait_for_network_callback_helper.h",
   ]
   deps = [
+    ":signin_prefs_internal",
     "//components/contextual_tasks/public:feature_list",
     "//components/metrics",
     "//components/prefs",
