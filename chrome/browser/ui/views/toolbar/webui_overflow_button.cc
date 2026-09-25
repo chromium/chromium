@@ -38,6 +38,7 @@ bool ElementCanOverflow(ui::ElementIdentifier id) {
           id == kToolbarHomeButtonElementId ||
           id == kToolbarSplitTabsToolbarButtonElementId ||
           id == kToolbarAvatarButtonElementId ||
+          id == kToolbarMediaButtonElementId ||
           id == kToolbarBatterySaverButtonElementId);
 }
 

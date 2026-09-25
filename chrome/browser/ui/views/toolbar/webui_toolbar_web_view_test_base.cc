@@ -18,11 +18,13 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_media_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
@@ -161,6 +163,48 @@ void WebUIToolbarWebViewTestBase::EnableBatterySaverButton(
     return ui::ElementTracker::GetElementTracker()->IsElementVisible(
         kToolbarBatterySaverButtonElementId,
         BrowserElements::From(browser())->GetContext());
+  }));
+}
+
+bool WebUIToolbarWebViewTestBase::IsMediaButtonSupported() {
+  return GetWebUIToolbarWebView(browser())->GetMediaToolbarButton() != nullptr;
+}
+
+void WebUIToolbarWebViewTestBase::ShowMediaButton() {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  auto* media_button = static_cast<WebUIMediaToolbarButton*>(
+      webui_toolbar_view->GetMediaToolbarButton());
+  ASSERT_TRUE(media_button)
+      << "The media button is not supported on this platform.";
+  media_button->GetController()->ShowToolbarButton();
+
+  // Verify the button element becomes visible.
+  EXPECT_TRUE(WaitForButtonVisible(GetWebUIWebContents(), "#media"));
+  // Wait for the ElementTracker to be updated.
+  EXPECT_TRUE(WaitForTrackedElementVisible(kToolbarMediaButtonElementId));
+}
+
+void WebUIToolbarWebViewTestBase::DisableMediaButton() {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  auto* media_button = static_cast<WebUIMediaToolbarButton*>(
+      webui_toolbar_view->GetMediaToolbarButton());
+  ASSERT_TRUE(media_button)
+      << "The media button is not supported on this platform.";
+  media_button->Disable();
+
+  const std::string check_media_button_disabled =
+      base::StringPrintf(R"(
+                         (() => {
+                             const button = %s?.shadowRoot?.querySelector(
+                                 'cr-icon-button');
+                             return !!button && button.disabled;
+                         })();)",
+                         GetButtonAppJS("#media").c_str());
+
+  content::WebContents* webui_web_contents = GetWebUIWebContents();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(webui_web_contents, check_media_button_disabled)
+        .ExtractBool();
   }));
 }
 

@@ -1029,6 +1029,7 @@ export class ToolbarAppElement extends AppElementBase {
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#home'),
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
           '#battery-saver'),
+      this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#media'),
     ];
 
     const groupedControls =

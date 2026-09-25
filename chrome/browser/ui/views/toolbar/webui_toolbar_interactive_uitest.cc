@@ -3114,6 +3114,97 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
                                     IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER));
 }
 
+// Test clicking the media button when it appears on the overflow menu.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       OverflowMenuClickMediaButtonEnabled) {
+  // The media button isn't supported on all platforms. There is no single
+  // #define for it, so check it at runtime, rather than redundantly hard-coding
+  // a list of platforms that can become outdated.
+  if (!IsMediaButtonSupported()) {
+    GTEST_SKIP() << "The media button is not supported on this platform.";
+  }
+
+  // Show the media button.
+  ShowMediaButton();
+
+  // Set the spacer width to the full width of the window, forcing all
+  // overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
+
+  // Wait for forward and media buttons to be hidden and overflow button
+  // to be visible.
+  ASSERT_TRUE(WaitForTrackedElements(
+      {kToolbarOverflowButtonElementId},
+      {kToolbarForwardButtonElementId, kToolbarMediaButtonElementId}));
+
+  OverflowMenu* overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  // Check that the overflow menu has forward, a separator, and media controls,
+  // in that order.
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       kSeparator,
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS}},
+      /*expect_avatar_button_if_not_chromeos=*/true));
+
+  // Click the media button in the overflow menu and wait for the
+  // overflow menu to close.
+  //
+  // TODO(crbug.com/491791965): Also verify that the media dialog is
+  // shown once clicking the overflow menu item is wired up to open the dialog.
+  ASSERT_TRUE(ClickOverflowMenuItem(
+      *overflow_menu, IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS));
+}
+
+// Test that when the media button is shown but disabled (greyed out), it
+// appears on the overflow menu but is marked as disabled.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       OverflowMenuMediaButtonDisabled) {
+  // The media button isn't supported on all platforms. There is no single
+  // #define for it, so check it at runtime, rather than redundantly hard-coding
+  // a list of platforms that can become outdated.
+  if (!IsMediaButtonSupported()) {
+    GTEST_SKIP() << "The media button is not supported on this platform.";
+  }
+
+  // Show the media button, then disable it.
+  ShowMediaButton();
+  DisableMediaButton();
+
+  // Set the spacer width to the full width of the window, forcing all
+  // overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
+
+  // Wait for forward and media buttons to be hidden and overflow button
+  // to be visible.
+  ASSERT_TRUE(WaitForTrackedElements(
+      {kToolbarOverflowButtonElementId},
+      {kToolbarForwardButtonElementId, kToolbarMediaButtonElementId}));
+
+  OverflowMenu* overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  // Check that the overflow menu contains the media button, but it is disabled.
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       kSeparator,
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
+        .enabled = false}},
+      /*expect_avatar_button_if_not_chromeos=*/true));
+
+  // Close the menu. Not strictly needed, but seems a good idea.
+  overflow_menu->root_menu_item()->Cancel();
+}
+
 // Test that clicking a pinned action (the Downloads button) on the overflow
 // menu works.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,

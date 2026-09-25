@@ -14,10 +14,12 @@ import type {MediaControlState} from '/shared/toolbar_ui_api_data_model.mojom-we
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getHtml} from './media_button.html.js';
+import {OverflowableButtonMixin} from './overflowable_button.js';
 import {getCss} from './toolbar_button.css.js';
 import {getContextMenuPosition, HelpBubbleAnchorMixin, PressHandler} from './toolbar_button.js';
 
-const MediaButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
+const MediaButtonElementBase =
+    HelpBubbleAnchorMixin(OverflowableButtonMixin(CrLitElement));
 
 export class MediaButtonElement extends MediaButtonElementBase {
   static get is() {
@@ -34,11 +36,12 @@ export class MediaButtonElement extends MediaButtonElementBase {
 
   static override get properties() {
     return {
+      ...super.properties,
       state: {type: Object},
     };
   }
 
-  accessor state: MediaControlState = {
+  override accessor state: MediaControlState = {
     enabled: true,
     shouldBeShown: false,
     isContextMenuVisible: false,

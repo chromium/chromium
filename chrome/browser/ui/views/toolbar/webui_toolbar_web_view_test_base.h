@@ -88,9 +88,27 @@ class WebUIToolbarWebViewTestBase : public InProcessBrowserTest {
       ui::ElementIdentifier id,
       BrowserWindowInterface* browser_instance = nullptr);
 
-  // Enables Battery Saver mode and waits until the button is visible.
+  // Enables battery saver mode and waits until the button is visible.
   void EnableBatterySaverButton(
       content::WebContents* webui_web_contents = nullptr);
+
+  // Returns whether the media button is supported by the WebUI toolbar. The
+  // media button is not available on all platforms, so tests that depend on it
+  // should check this at runtime, rather than hardcoding the list of supported
+  // platforms, which could otherwise silently go stale.
+  bool IsMediaButtonSupported();
+
+  // Shows the media button and waits until the button is visible, as observed
+  // by the ElementTracker. Calls directly into the media button to show it,
+  // rather than by playing audio. The media button must be supported on the
+  // current platform.
+  void ShowMediaButton();
+
+  // Disables (that is, greys out, rather than hides) the media button and waits
+  // until the WebUI renderer process's DOM element is updated to be disabled.
+  // Requires the media button to already be visible. Calls directly into the
+  // media button to disable it, as opposed to by opening a dialog.
+  void DisableMediaButton();
 
  protected:
   WebUIToolbarWebViewTestBase(
