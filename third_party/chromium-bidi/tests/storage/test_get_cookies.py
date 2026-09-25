@@ -113,6 +113,84 @@ async def test_cookies_get_partition_source_origin(websocket, context_id):
 
 
 @pytest.mark.asyncio
+async def test_cookies_get_partition_has_cross_site_ancestor(websocket, context_id):
+    unpartitioned_cookie = get_bidi_cookie(
+        "unpartitioned", SOME_COOKIE_VALUE, SOME_DOMAIN
+    )
+    await set_cookie(websocket, context_id, unpartitioned_cookie)
+
+    same_site_cookie = get_bidi_cookie(SOME_COOKIE_NAME, SOME_COOKIE_VALUE, SOME_DOMAIN)
+    await set_cookie(
+        websocket,
+        context_id,
+        same_site_cookie,
+        partition={
+            "type": "storageKey",
+            "sourceOrigin": SOME_URL,
+            "goog:hasCrossSiteAncestor": False,
+        },
+    )
+
+    cross_site_cookie = get_bidi_cookie(
+        ANOTHER_COOKIE_NAME, ANOTHER_COOKIE_VALUE, SOME_DOMAIN
+    )
+    await set_cookie(
+        websocket,
+        context_id,
+        cross_site_cookie,
+        partition={
+            "type": "storageKey",
+            "sourceOrigin": SOME_URL,
+            "goog:hasCrossSiteAncestor": True,
+        },
+    )
+
+    res = await execute_command(
+        websocket,
+        {
+            "method": "storage.getCookies",
+            "params": {
+                "partition": {
+                    "type": "storageKey",
+                    "sourceOrigin": SOME_URL,
+                    "goog:hasCrossSiteAncestor": True,
+                },
+            },
+        },
+    )
+
+    assert res == {
+        "cookies": [AnyExtending(cross_site_cookie)],
+        "partitionKey": {
+            "sourceOrigin": SOME_ORIGIN_WITHOUT_PORT,
+            "userContext": "default",
+            "goog:hasCrossSiteAncestor": True,
+        },
+    }
+
+    res = await execute_command(
+        websocket,
+        {
+            "method": "storage.getCookies",
+            "params": {
+                "partition": {
+                    "type": "storageKey",
+                    "goog:hasCrossSiteAncestor": False,
+                },
+            },
+        },
+    )
+
+    assert res == {
+        "cookies": [AnyExtending(same_site_cookie)],
+        "partitionKey": {
+            "userContext": "default",
+            "goog:hasCrossSiteAncestor": False,
+        },
+    }
+
+
+@pytest.mark.asyncio
 async def test_cookies_get_partition_user_context(
     websocket, context_id, user_context_id
 ):

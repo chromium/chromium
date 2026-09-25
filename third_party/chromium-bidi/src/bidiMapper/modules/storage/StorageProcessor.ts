@@ -14,8 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type {Protocol} from 'devtools-protocol';
+
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {
+  InvalidArgumentException,
   NoSuchUserContextException,
   UnableToSetCookieException,
 } from '../../../protocol/protocol.js';
@@ -71,14 +74,7 @@ export class StorageProcessor {
     }
 
     const cdpCookiesToDelete = cdpResponse.cookies
-      .filter(
-        // CDP's partition key is the source origin. If the request specifies the
-        // `sourceOrigin` partition key, only cookies with the requested source origin
-        // are returned.
-        (c) =>
-          partitionKey.sourceOrigin === undefined ||
-          c.partitionKey?.topLevelSite === partitionKey.sourceOrigin,
-      )
+      .filter((c) => this.#matchCookiePartitionKey(c, partitionKey))
       .filter((cdpCookie) => {
         const bidiCookie = cdpToBiDiCookie(cdpCookie);
         return this.#matchCookie(bidiCookie, params.filter);
@@ -120,14 +116,7 @@ export class StorageProcessor {
     }
 
     const filteredBiDiCookies = cdpResponse.cookies
-      .filter(
-        // CDP's partition key is the source origin. If the request specifies the
-        // `sourceOrigin` partition key, only cookies with the requested source origin
-        // are returned.
-        (c) =>
-          partitionKey.sourceOrigin === undefined ||
-          c.partitionKey?.topLevelSite === partitionKey.sourceOrigin,
-      )
+      .filter((c) => this.#matchCookiePartitionKey(c, partitionKey))
       .map((c) => cdpToBiDiCookie(c))
       .filter((c) => this.#matchCookie(c, params.filter));
 
@@ -208,11 +197,27 @@ export class StorageProcessor {
       }
     }
 
+    const hasCrossSiteAncestor = descriptor['goog:hasCrossSiteAncestor'];
+    if (
+      hasCrossSiteAncestor !== undefined &&
+      typeof hasCrossSiteAncestor !== 'boolean'
+    ) {
+      // Extension partition keys bypass generated schema validation.
+      throw new InvalidArgumentException(
+        `Expected 'goog:hasCrossSiteAncestor' to be a boolean, got ${typeof hasCrossSiteAncestor}.`,
+      );
+    }
+
     for (const [key, value] of Object.entries(descriptor)) {
       if (
         key !== undefined &&
         value !== undefined &&
-        !['type', 'sourceOrigin', 'userContext'].includes(key)
+        ![
+          'type',
+          'sourceOrigin',
+          'userContext',
+          'goog:hasCrossSiteAncestor',
+        ].includes(key)
       ) {
         unsupportedPartitionKeys.set(key, value);
       }
@@ -232,6 +237,9 @@ export class StorageProcessor {
     return {
       userContext,
       ...(sourceOrigin === undefined ? {} : {sourceOrigin}),
+      ...(hasCrossSiteAncestor === undefined
+        ? {}
+        : {'goog:hasCrossSiteAncestor': hasCrossSiteAncestor}),
     };
   }
 
@@ -249,6 +257,21 @@ export class StorageProcessor {
     // Partition spec is a storage partition.
     // Let partition key be partition spec.
     return this.#expandStoragePartitionSpecByStorageKey(partitionSpec);
+  }
+
+  #matchCookiePartitionKey(
+    cookie: Protocol.Network.Cookie,
+    partitionKey: Storage.PartitionKey,
+  ): boolean {
+    // CDP maps `sourceOrigin` to `topLevelSite` and exposes `hasCrossSiteAncestor`.
+    // Filter only by partition key fields explicitly present in the expanded key.
+    return (
+      (partitionKey.sourceOrigin === undefined ||
+        cookie.partitionKey?.topLevelSite === partitionKey.sourceOrigin) &&
+      (partitionKey['goog:hasCrossSiteAncestor'] === undefined ||
+        cookie.partitionKey?.hasCrossSiteAncestor ===
+          partitionKey['goog:hasCrossSiteAncestor'])
+    );
   }
 
   #matchCookie(cookie: Network.Cookie, filter?: Storage.CookieFilter): boolean {

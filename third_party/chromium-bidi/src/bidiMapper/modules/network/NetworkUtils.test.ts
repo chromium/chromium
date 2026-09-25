@@ -19,7 +19,11 @@ import {describe, it} from 'node:test';
 import {assert} from 'chai';
 import type {Protocol} from 'devtools-protocol';
 
-import type {Network} from '../../../protocol/protocol.js';
+import {
+  type Network,
+  type Storage,
+  UnableToSetCookieException,
+} from '../../../protocol/protocol.js';
 
 import {NetworkProcessor} from './NetworkProcessor.js';
 import * as networkUtils from './NetworkUtils.js';
@@ -382,6 +386,70 @@ describe('NetworkUtils', () => {
         ),
         true,
       );
+    });
+  });
+
+  describe('bidiToCdpCookie', () => {
+    const baseCookie: Storage.PartialCookie = {
+      name: 'test_cookie',
+      value: {type: 'string', value: 'test_value'},
+      domain: 'example.com',
+    };
+
+    it('should omit partitionKey when neither sourceOrigin nor goog:partitionKey is set', () => {
+      const cdpCookie = networkUtils.bidiToCdpCookie({cookie: baseCookie}, {});
+      assert.isUndefined(cdpCookie.partitionKey);
+    });
+
+    it('should default hasCrossSiteAncestor to false when sourceOrigin is set without goog:hasCrossSiteAncestor', () => {
+      const cdpCookie = networkUtils.bidiToCdpCookie(
+        {cookie: baseCookie},
+        {sourceOrigin: 'https://example.com'},
+      );
+      assert.deepEqual(cdpCookie.partitionKey, {
+        topLevelSite: 'https://example.com',
+        hasCrossSiteAncestor: false,
+      });
+    });
+
+    it('should pass goog:hasCrossSiteAncestor when provided with sourceOrigin', () => {
+      const cdpCookie = networkUtils.bidiToCdpCookie(
+        {cookie: baseCookie},
+        {
+          sourceOrigin: 'https://example.com',
+          'goog:hasCrossSiteAncestor': true,
+        },
+      );
+      assert.deepEqual(cdpCookie.partitionKey, {
+        topLevelSite: 'https://example.com',
+        hasCrossSiteAncestor: true,
+      });
+    });
+
+    it('should throw UnableToSetCookieException when goog:hasCrossSiteAncestor is provided without sourceOrigin', () => {
+      assert.throws(() => {
+        networkUtils.bidiToCdpCookie(
+          {cookie: baseCookie},
+          {'goog:hasCrossSiteAncestor': true},
+        );
+      }, UnableToSetCookieException);
+    });
+
+    it('should pass through goog:partitionKey on cookie', () => {
+      const customPartitionKey = {
+        topLevelSite: 'https://custom.example',
+        hasCrossSiteAncestor: true,
+      };
+      const cdpCookie = networkUtils.bidiToCdpCookie(
+        {
+          cookie: {
+            ...baseCookie,
+            'goog:partitionKey': customPartitionKey,
+          },
+        },
+        {},
+      );
+      assert.deepEqual(cdpCookie.partitionKey, customPartitionKey);
     });
   });
 });

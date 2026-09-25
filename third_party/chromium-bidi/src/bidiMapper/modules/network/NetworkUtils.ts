@@ -21,7 +21,10 @@
  */
 import type {Protocol} from 'devtools-protocol';
 
-import {InvalidArgumentException} from '../../../protocol/ErrorResponse.js';
+import {
+  InvalidArgumentException,
+  UnableToSetCookieException,
+} from '../../../protocol/ErrorResponse.js';
 import {Network, type Storage} from '../../../protocol/protocol.js';
 import {base64ToString} from '../../../utils/base64.js';
 
@@ -233,6 +236,17 @@ export function bidiToCdpCookie(
   params: Storage.SetCookieParameters,
   partitionKey: Storage.PartitionKey,
 ): Protocol.Network.CookieParam {
+  if (
+    partitionKey['goog:hasCrossSiteAncestor'] !== undefined &&
+    partitionKey.sourceOrigin === undefined &&
+    params.cookie['goog:partitionKey'] === undefined
+  ) {
+    // CDP requires `topLevelSite` whenever `partitionKey` is set.
+    throw new UnableToSetCookieException(
+      'Cannot set goog:hasCrossSiteAncestor without sourceOrigin.',
+    );
+  }
+
   const deserializedValue = deserializeByteValue(params.cookie.value);
   const result: Protocol.Network.CookieParam = {
     name: params.cookie.name,
@@ -243,7 +257,10 @@ export function bidiToCdpCookie(
     httpOnly: params.cookie.httpOnly ?? false,
     ...(partitionKey.sourceOrigin !== undefined && {
       partitionKey: {
-        hasCrossSiteAncestor: false,
+        // Default to same-site ancestor unless overridden by BiDi+ extension.
+        hasCrossSiteAncestor:
+          (partitionKey['goog:hasCrossSiteAncestor'] as boolean | undefined) ??
+          false,
         // CDP's `partitionKey.topLevelSite` is the BiDi's `partition.sourceOrigin`.
         topLevelSite: partitionKey.sourceOrigin,
       },
@@ -268,6 +285,9 @@ export function bidiToCdpCookie(
   }
   if (params.cookie[`goog:sourcePort`] !== undefined) {
     result.sourcePort = params.cookie[`goog:sourcePort`];
+  }
+  if (params.cookie[`goog:partitionKey`] !== undefined) {
+    result.partitionKey = params.cookie[`goog:partitionKey`];
   }
 
   return result;
