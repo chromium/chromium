@@ -105,7 +105,9 @@ VideoCaptureManager::VideoCaptureManager(
 }
 
 VideoCaptureManager::~VideoCaptureManager() {
-  CHECK(device_start_request_queue_.empty(), base::NotFatalUntil::M158);
+  // TODO(crbug.com/565224265): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(device_start_request_queue_.empty());
   ScreenlockMonitor* screenlock_monitor = ScreenlockMonitor::Get();
   if (screenlock_monitor) {
     screenlock_monitor->RemoveObserver(this);
