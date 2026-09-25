@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
@@ -42,16 +43,12 @@ void ActorBrowserAgent::WebStateListDestroyed(WebStateList* web_state_list) {
   web_state_list_observation_.Reset();
 }
 
-void ActorBrowserAgent::OnActuationStateChanged(ActorTabHelper* tab_helper,
-                                                web::WebState* web_state,
-                                                bool actuating) {
-  id<ActorOverlayCommands> handler = HandlerForProtocol(
-      browser_->GetCommandDispatcher(), ActorOverlayCommands);
-  if (actuating) {
-    [handler showActorOverlayForWebState:web_state];
-  } else {
-    [handler hideActorOverlay];
-  }
+void ActorBrowserAgent::OnControlStateChanged(
+    ActorTabHelper* tab_helper,
+    web::WebState* web_state,
+    actor::ActorControlState previous_control_state,
+    actor::ActorControlState new_control_state) {
+  UpdateOverlayForControlState(new_control_state, web_state);
 }
 
 void ActorBrowserAgent::UpdateActiveWebState(web::WebState* old_web_state,
@@ -64,26 +61,36 @@ void ActorBrowserAgent::UpdateActiveWebState(web::WebState* old_web_state,
 
   ActorTabHelper* old_tab_helper =
       old_web_state ? ActorTabHelper::FromWebState(old_web_state) : nullptr;
-  const bool old_state_was_actuating =
-      old_tab_helper && old_tab_helper->IsActuating();
+  const actor::ActorControlState old_control_state =
+      old_tab_helper ? old_tab_helper->GetControlState()
+                     : actor::ActorControlState::kInactive;
 
   ActorTabHelper* new_tab_helper =
       new_web_state ? ActorTabHelper::FromWebState(new_web_state) : nullptr;
-  const bool new_state_is_actuating =
-      new_tab_helper && new_tab_helper->IsActuating();
+  const actor::ActorControlState new_control_state =
+      new_tab_helper ? new_tab_helper->GetControlState()
+                     : actor::ActorControlState::kInactive;
 
-  if (old_state_was_actuating || new_state_is_actuating) {
-    id<ActorOverlayCommands> handler = HandlerForProtocol(
-        browser_->GetCommandDispatcher(), ActorOverlayCommands);
-    if (old_state_was_actuating) {
-      [handler hideActorOverlay];
-    }
-    if (new_state_is_actuating) {
-      [handler showActorOverlayForWebState:new_web_state];
-    }
+  if (old_control_state != new_control_state) {
+    UpdateOverlayForControlState(new_control_state, new_web_state);
   }
 
   if (new_tab_helper) {
     tab_helper_observation_.Observe(new_tab_helper);
+  }
+}
+
+void ActorBrowserAgent::UpdateOverlayForControlState(
+    actor::ActorControlState control_state,
+    web::WebState* web_state) {
+  id<ActorOverlayCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), ActorOverlayCommands);
+  switch (control_state) {
+    case actor::ActorControlState::kInactive:
+      [handler hideActorOverlay];
+      break;
+    case actor::ActorControlState::kActorControlled:
+      [handler showActorOverlayForWebState:web_state];
+      break;
   }
 }

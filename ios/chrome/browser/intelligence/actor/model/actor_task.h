@@ -17,6 +17,7 @@
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -156,9 +157,9 @@ class ActorTask : public web::WebStateObserver,
  private:
   friend class ActorTaskTest;
 
-  // Sets the actuation state on all controlled `WebState`s based on
-  // `actuating`.
-  void SetActuatingOnWebStates(bool actuating);
+  // Sets the `ActorControlState` on all controlled `WebState`s based on
+  // `control_state`.
+  void SetControlStateOnWebStates(ActorControlState control_state);
 
   // Sets `SetKeepRenderProcessAlive` on all controlled `WebState`s.
   void SetKeepRenderProcessAliveOnControlledWebStates(bool keep_alive);

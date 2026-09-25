@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -718,44 +719,47 @@ TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeTimeoutCallback) {
   EXPECT_EQ(ActorTaskState::kReflecting, state_in_callback);
 }
 
-// Test that calling `Stop()` on the task stops actuation on controlled
-// `WebState`s.
-TEST_F(ActorTaskTest, StopSetsActuatingStateToFalse) {
+// Test that stopping a task resets the tab helper's control state to
+// kInactive.
+TEST_F(ActorTaskTest, StopSetsControlStateToInactive) {
   auto web_state = std::make_unique<web::FakeWebState>();
   ActorTabHelper::CreateForWebState(web_state.get());
   ActorTabHelper* helper = ActorTabHelper::FromWebState(web_state.get());
   ASSERT_NE(helper, nullptr);
-  EXPECT_FALSE(helper->IsActuating());
+  EXPECT_EQ(helper->GetControlState(), actor::ActorControlState::kInactive);
 
   SetTaskState(ActorTaskState::kActing);
   AddControlledWebState(web_state->GetWeakPtr());
-  EXPECT_TRUE(helper->IsActuating());
+  EXPECT_EQ(helper->GetControlState(),
+            actor::ActorControlState::kActorControlled);
 
   task_->Stop(ActorTaskStoppedReason::kTaskComplete);
-  EXPECT_FALSE(helper->IsActuating());
+  EXPECT_EQ(helper->GetControlState(), actor::ActorControlState::kInactive);
 }
 
-// Test that adding a controlled `WebState` with `ActorTabHelper` sets actuating
-// to true, and destroying the task stops actuation without removing the helper.
-TEST_F(ActorTaskTest, ActorTabHelperActuatingState) {
+// Test that adding a controlled `WebState` with `ActorTabHelper` sets control
+// state to kActorControlled, and destroying the task resets the state without
+// removing the helper.
+TEST_F(ActorTaskTest, ActorTabHelperControlState) {
   auto web_state = std::make_unique<web::FakeWebState>();
   ActorTabHelper::CreateForWebState(web_state.get());
   ActorTabHelper* helper = ActorTabHelper::FromWebState(web_state.get());
   ASSERT_NE(helper, nullptr);
-  EXPECT_FALSE(helper->IsActuating());
+  EXPECT_EQ(helper->GetControlState(), actor::ActorControlState::kInactive);
 
   SetTaskState(ActorTaskState::kActing);
   AddControlledWebState(web_state->GetWeakPtr());
-  EXPECT_TRUE(helper->IsActuating());
+  EXPECT_EQ(helper->GetControlState(),
+            actor::ActorControlState::kActorControlled);
 
   task_.reset();
   EXPECT_NE(ActorTabHelper::FromWebState(web_state.get()), nullptr);
-  EXPECT_FALSE(helper->IsActuating());
+  EXPECT_EQ(helper->GetControlState(), actor::ActorControlState::kInactive);
 }
 
-// Test that destroying a controlled `WebState` stops actuation on its
+// Test that destroying a controlled `WebState` resets the control state on its
 // `ActorTabHelper` before removal.
-TEST_F(ActorTaskTest, WebStateDestroyedResetsActorTabHelperActuatingState) {
+TEST_F(ActorTaskTest, WebStateDestroyedResetsActorTabHelperControlState) {
   auto web_state = std::make_unique<web::FakeWebState>();
   ActorTabHelper::CreateForWebState(web_state.get());
   ActorTabHelper* helper = ActorTabHelper::FromWebState(web_state.get());
@@ -763,10 +767,11 @@ TEST_F(ActorTaskTest, WebStateDestroyedResetsActorTabHelperActuatingState) {
 
   SetTaskState(ActorTaskState::kActing);
   AddControlledWebState(web_state->GetWeakPtr());
-  EXPECT_TRUE(helper->IsActuating());
+  EXPECT_EQ(helper->GetControlState(),
+            actor::ActorControlState::kActorControlled);
 
   task_->WebStateDestroyed(web_state.get());
-  EXPECT_FALSE(helper->IsActuating());
+  EXPECT_EQ(helper->GetControlState(), actor::ActorControlState::kInactive);
 }
 
 TEST_F(ActorTaskTest, WindowIdAndInsertWebState) {

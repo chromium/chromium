@@ -18,6 +18,7 @@ source_set("eg_app_support+eg2") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/model:tab_helper",
+    "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
     "//ios/chrome/browser/intelligence/actor/tools/model:java_script_features",
     "//ios/chrome/browser/intelligence/actor/tools/public",

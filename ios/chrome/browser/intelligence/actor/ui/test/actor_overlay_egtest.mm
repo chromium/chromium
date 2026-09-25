@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_app_interface.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -32,7 +33,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   if (request.relative_url == "/input.html") {
     http_response->set_content(
-        "<html><body><input type='text' id='input'></body></html>");
+        "<html><body><h1>Input</h1><input type='text' id='input'></body>"
+        "</html>");
     return http_response;
   }
   if (request.relative_url == "/button.html") {
@@ -71,8 +73,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 }
 
 - (void)tearDownHelper {
-  [ActorAppInterface setActuating:NO forWebStateAtIndex:0];
-  [ActorAppInterface setActuating:NO forWebStateAtIndex:1];
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:1];
   [super tearDownHelper];
 }
 
@@ -95,17 +99,20 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // overlay is presented.
 - (void)testKeyboardDismissalOnOverlay {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/input.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Input"];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId("input")];
   [ChromeEarlGrey waitForKeyboardToAppear];
 
-  // Present the overlay by setting actuating state.
-  [ActorAppInterface setActuating:YES forWebStateAtIndex:0];
+  // Present the overlay by setting actor-controlled state.
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:0];
 
   [ChromeEarlGrey waitForKeyboardToDisappear];
 
   // Clean up.
-  [ActorAppInterface setActuating:NO forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
 }
 
 // Test that the overlay successfully intercepts and blocks touch interactions
@@ -115,7 +122,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey waitForWebStateContainingText:"Button"];
 
   // Present the overlay.
-  [ActorAppInterface setActuating:YES forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:0];
 
   // Try to tap the content scrim.
   [[EarlGrey
@@ -128,7 +136,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey waitForWebStateContainingText:"Button"];
 
   // Clean up.
-  [ActorAppInterface setActuating:NO forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
 }
 
 // Test that the overlay successfully intercepts and blocks touch interactions
@@ -142,7 +151,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey waitForWebStateContainingText:"Button"];
 
   // Present the overlay.
-  [ActorAppInterface setActuating:YES forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:0];
 
   // Try to tap the defocused location view.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
@@ -157,19 +167,23 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
                   @"Keyboard should not be visible.");
 
   // Clean up.
-  [ActorAppInterface setActuating:NO forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
 }
 
-// Test that setting the actuation state on/off correctly toggles the overlay
+// Test that setting the control state on/off correctly toggles the overlay
 // visibility.
-- (void)testOverlayLifecycleOnActuationChange {
+- (void)testOverlayLifecycleOnControlStateChange {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/input.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Input"];
   [self assertOverlayVisible:NO];
 
-  [ActorAppInterface setActuating:YES forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:0];
   [self assertOverlayVisible:YES];
 
-  [ActorAppInterface setActuating:NO forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
   [self assertOverlayVisible:NO];
 }
 
@@ -177,40 +191,48 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 - (void)testOverlayTabSwitchingBehavior {
   net::test_server::EmbeddedTestServer* testServer = self.testServer;
   [ChromeEarlGrey loadURL:testServer->GetURL("/input.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Input"];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:testServer->GetURL("/input.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Input"];
 
   [ChromeEarlGrey selectTabAtIndex:0];
   [self assertOverlayVisible:NO];
 
-  [ActorAppInterface setActuating:YES forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:0];
   [self assertOverlayVisible:YES];
 
-  // Switch to Tab 1 (which is not actuating).
+  // Switch to Tab 1 (which is not actor-controlled).
   [ChromeEarlGrey selectTabAtIndex:1];
   [self assertOverlayVisible:NO];
 
-  // Switch back to Tab 0 (which is actuating).
+  // Switch back to Tab 0 (which is actor-controlled).
   [ChromeEarlGrey selectTabAtIndex:0];
   [self assertOverlayVisible:YES];
 
   // Clean up.
-  [ActorAppInterface setActuating:NO forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
   [self assertOverlayVisible:NO];
 }
 
-// Test that actuating a background tab does not show the overlay.
-- (void)testBackgroundTabActuationDoesNotShowOverlay {
+// Test that setting control state on a background tab does not show the
+// overlay.
+- (void)testBackgroundTabControlStateDoesNotShowOverlay {
   net::test_server::EmbeddedTestServer* testServer = self.testServer;
   [ChromeEarlGrey loadURL:testServer->GetURL("/input.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Input"];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:testServer->GetURL("/input.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Input"];
 
   [ChromeEarlGrey selectTabAtIndex:0];
   [self assertOverlayVisible:NO];
 
-  // Actuate Tab 1 (which is in the background).
-  [ActorAppInterface setActuating:YES forWebStateAtIndex:1];
+  // Set Tab 1 (which is in the background) to actor-controlled.
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:1];
   [self assertOverlayVisible:NO];
 
   // Switch to Tab 1.
@@ -222,26 +244,30 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [self assertOverlayVisible:NO];
 
   // Clean up.
-  [ActorAppInterface setActuating:NO forWebStateAtIndex:1];
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:1];
 }
 
-// Test that closing the active actuating tab dismisses the overlay.
+// Test that closing the active actor-controlled tab dismisses the overlay.
 - (void)testOverlayDismissedOnActiveTabClosed {
   net::test_server::EmbeddedTestServer* testServer = self.testServer;
   [ChromeEarlGrey loadURL:testServer->GetURL("/input.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Input"];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:testServer->GetURL("/input.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Input"];
 
   [ChromeEarlGrey selectTabAtIndex:1];
   [self assertOverlayVisible:NO];
 
-  [ActorAppInterface setActuating:YES forWebStateAtIndex:1];
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:1];
   [self assertOverlayVisible:YES];
 
   // Close Tab 1. Tab 0 will automatically become active.
   [ChromeEarlGrey closeTabAtIndex:1];
 
-  // Verify overlay is dismissed since Tab 0 is active and not actuating.
+  // Verify overlay is dismissed since Tab 0 is active and not actor-controlled.
   [self assertOverlayVisible:NO];
 }
 
@@ -255,7 +281,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/button.html")];
 
   // Present the overlay.
-  [ActorAppInterface setActuating:YES forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
+                  forWebStateAtIndex:0];
   [self assertOverlayVisible:YES];
 
   // Tap the Show Tabs button in the bottom toolbar using `ChromeEarlGreyUI`.
@@ -274,7 +301,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
                       chrome_test_util::DefocusedLocationView()];
 
   // Clean up.
-  [ActorAppInterface setActuating:NO forWebStateAtIndex:0];
+  [ActorAppInterface setControlState:actor::ActorControlState::kInactive
+                  forWebStateAtIndex:0];
   [self assertOverlayVisible:NO];
 }
 

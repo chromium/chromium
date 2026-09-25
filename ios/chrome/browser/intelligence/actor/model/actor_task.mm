@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -79,17 +80,17 @@ std::string ActorTaskStateToString(ActorTaskState state) {
   }
 }
 
-// Returns true if the task state corresponds to an actuating state.
-bool IsActuatingState(ActorTaskState state) {
-  switch (state) {
+// Returns the control state corresponding to `task_state`.
+ActorControlState ControlStateForTaskState(ActorTaskState task_state) {
+  switch (task_state) {
     case ActorTaskState::kActing:
     case ActorTaskState::kReflecting:
-      return true;
+      return ActorControlState::kActorControlled;
     case ActorTaskState::kInit:
-      return false;
+      return ActorControlState::kInactive;
     // TODO(crbug.com/496164697): Add all states and remove the default case.
     default:
-      return false;
+      return ActorControlState::kInactive;
   }
 }
 
@@ -120,7 +121,7 @@ ActorTask::ActorTask(ActorTaskId task_id,
 }
 
 ActorTask::~ActorTask() {
-  SetActuatingOnWebStates(false);
+  SetControlStateOnWebStates(ActorControlState::kInactive);
   SetKeepRenderProcessAliveOnControlledWebStates(/*keep_alive=*/false);
   load_timeout_timer_.Stop();
 
@@ -221,21 +222,19 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
     }
 
     if (ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state)) {
-      const bool is_actuating = IsActuatingState(state_);
-      tab_helper->SetActuating(is_actuating);
+      tab_helper->SetControlState(ControlStateForTaskState(state_));
     }
-    [observers_ actorTaskWithID:task_id_
-                 didAddWebState:web_state->GetUniqueIdentifier()];
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
     StartHeartbeatTimer();
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+
+    [observers_ actorTaskWithID:task_id_
+                 didAddWebState:web_state->GetUniqueIdentifier()];
   }
 }
 
 void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
-  [observers_ actorTaskDidStopWithID:task_id_ finalState:state_];
-  SetActuatingOnWebStates(false);
   SetKeepRenderProcessAliveOnControlledWebStates(/*keep_alive=*/false);
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
@@ -244,8 +243,9 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
                        stop_reason == ActorTaskStoppedReason::kStoppedByUser;
   FinalizeBackgroundTask(success);
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-
   // TODO(crbug.com/496164697): Implement and test.
+  SetControlStateOnWebStates(ActorControlState::kInactive);
+  [observers_ actorTaskDidStopWithID:task_id_ finalState:state_];
 }
 
 void ActorTask::Pause(bool from_actor) {
@@ -381,7 +381,7 @@ void ActorTask::WebStateDestroyed(web::WebState* web_state) {
   policy_deciders_.erase(web_state->GetUniqueIdentifier());
   OnWebStateFinishedLoading(web_state);
   if (ActorTabHelper* tab_helper = ActorTabHelper::FromWebState(web_state)) {
-    tab_helper->SetActuating(false);
+    tab_helper->SetControlState(ActorControlState::kInactive);
   }
   PruneDestroyedWebStates(web_state);
 
@@ -394,7 +394,7 @@ void ActorTask::WebStateDestroyed(web::WebState* web_state) {
 
 #pragma mark - Private
 
-void ActorTask::SetActuatingOnWebStates(bool actuating) {
+void ActorTask::SetControlStateOnWebStates(ActorControlState control_state) {
   for (const base::WeakPtr<web::WebState>& web_state_weak :
        controlled_web_states_) {
     web::WebState* web_state = web_state_weak.get();
@@ -405,7 +405,7 @@ void ActorTask::SetActuatingOnWebStates(bool actuating) {
     if (!tab_helper) {
       continue;
     }
-    tab_helper->SetActuating(actuating);
+    tab_helper->SetControlState(control_state);
   }
 }
 
@@ -426,10 +426,10 @@ void ActorTask::SetState(ActorTaskState new_state) {
   ActorTaskState old_state = state_;
   state_ = new_state;
 
-  bool old_is_actuating = IsActuatingState(old_state);
-  bool new_is_actuating = IsActuatingState(new_state);
-  if (old_is_actuating != new_is_actuating) {
-    SetActuatingOnWebStates(new_is_actuating);
+  ActorControlState old_control_state = ControlStateForTaskState(old_state);
+  ActorControlState new_control_state = ControlStateForTaskState(new_state);
+  if (old_control_state != new_control_state) {
+    SetControlStateOnWebStates(new_control_state);
   }
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)

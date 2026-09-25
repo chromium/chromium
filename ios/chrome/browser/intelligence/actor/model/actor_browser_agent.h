@@ -8,6 +8,7 @@
 #import "base/scoped_observation.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper_observer.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
@@ -16,7 +17,7 @@ class Browser;
 class WebStateList;
 
 // Observes the `WebStateList` and the active tab's `ActorTabHelper` to dispatch
-// commands to show/hide the actuation UI when a tab undergoes actuation.
+// commands to show/hide the overlay UI based on the tab's `ActorControlState`.
 class ActorBrowserAgent : public BrowserUserData<ActorBrowserAgent>,
                           public WebStateListObserver,
                           public ActorTabHelperObserver {
@@ -41,14 +42,23 @@ class ActorBrowserAgent : public BrowserUserData<ActorBrowserAgent>,
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   // ActorTabHelperObserver:
-  void OnActuationStateChanged(ActorTabHelper* tab_helper,
-                               web::WebState* web_state,
-                               bool actuating) override;
+  void OnControlStateChanged(
+      ActorTabHelper* tab_helper,
+      web::WebState* web_state,
+      actor::ActorControlState previous_control_state,
+      actor::ActorControlState new_control_state) override;
 
   // Updates the observed tab helper based on the active `WebState` change from
   // `old_web_state` to `new_web_state`.
   void UpdateActiveWebState(web::WebState* old_web_state,
                             web::WebState* new_web_state);
+
+  // Dispatches commands to update the overlay UI based on `control_state`.
+  // `web_state` is forwarded to the show command.
+  // TODO(crbug.com/548051839): `web_state` is unused by the overlay; remove it
+  // from `ActorOverlayCommands`, `ActorOverlayCoordinator`, and here.
+  void UpdateOverlayForControlState(actor::ActorControlState control_state,
+                                    web::WebState* web_state);
 
   // The active `WebState`'s tab helper observation.
   base::ScopedObservation<ActorTabHelper, ActorTabHelperObserver>

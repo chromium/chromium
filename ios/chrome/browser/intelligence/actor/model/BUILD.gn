@@ -32,6 +32,7 @@ source_set("model") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/origin_gating/core",
     "//ios/chrome/app:background_mode_buildflags",
+    "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_factory",
@@ -72,7 +73,10 @@ source_set("tab_helper") {
     "actor_tab_helper.h",
     "actor_tab_helper.mm",
     "actor_tab_helper_observer.h",
+    "actor_tab_helper_observer.mm",
   ]
+  public_deps =
+      [ "//ios/chrome/browser/intelligence/actor/public:actor_control_state" ]
   deps = [
     "//base",
     "//ios/web/public",
@@ -112,6 +116,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/origin_gating/core",
     "//ios/chrome/app:background_mode_buildflags",
+    "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_factory",

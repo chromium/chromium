@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
@@ -269,7 +270,8 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
       main_frame->AsWeakPtr(), std::move(callback));
 }
 
-+ (void)setActuating:(BOOL)actuating forWebStateAtIndex:(int)index {
++ (void)setControlState:(actor::ActorControlState)controlState
+     forWebStateAtIndex:(int)index {
   Browser* browser = chrome_test_util::GetMainBrowser();
   if (!browser || !browser->GetWebStateList()) {
     return;
@@ -283,7 +285,7 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
     return;
   }
   if (ActorTabHelper* tabHelper = ActorTabHelper::FromWebState(webState)) {
-    tabHelper->SetActuating(actuating);
+    tabHelper->SetControlState(controlState);
   }
 }
 

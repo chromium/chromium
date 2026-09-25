@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace actor {
+enum class ActorControlState;
+}  // namespace actor
+
 // Error domain for ActorAppInterface.
 extern NSString* const kActorAppInterfaceErrorDomain;
 
@@ -40,8 +44,9 @@ typedef NS_ENUM(NSInteger, ActorAppInterfaceErrorCode) {
 // Waits for page stability in the current main frame.
 + (void)waitForPageStabilityWithCompletion:(void (^)(NSError* error))completion;
 
-// Sets the actuating state on the ActorTabHelper of the WebState at `index`.
-+ (void)setActuating:(BOOL)actuating forWebStateAtIndex:(int)index;
+// Sets the ActorControlState on the ActorTabHelper of the WebState at `index`.
++ (void)setControlState:(actor::ActorControlState)controlState
+     forWebStateAtIndex:(int)index;
 
 // Simulates in-flight Autofill server predictions for the active `WebState`'s
 // `AutofillManager` to hold `FormPredictionsTracker` in a waiting state.
