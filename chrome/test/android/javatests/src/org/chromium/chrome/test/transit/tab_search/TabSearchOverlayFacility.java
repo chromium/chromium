@@ -65,7 +65,10 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
     public TabSearchOverlayFacility() {
         super("TabSearchOverlayFacility");
         scrimElement = declareView(withId(R.id.tab_search_overlay_scrim));
-        panelElement = declareView(withId(R.id.tab_search_overlay_panel));
+        panelElement =
+                declareView(
+                        withId(R.id.tab_search_overlay_panel),
+                        ViewElement.initialSettleTimeOption(250));
         closeButtonElement = declareView(ImageView.class, withId(R.id.tab_search_close_button));
         locationBarElement = declareView(LocationBarLayout.class, withId(R.id.search_location_bar));
         urlBarElement =
