@@ -5,12 +5,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
+#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
@@ -26,8 +28,10 @@ class AutofillInternalsWebUIBrowserTest : public InProcessBrowserTest {
  public:
   AutofillInternalsWebUIBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{autofill::features::kAutofillAiServerModel,
-                              autofill::features::kAutofillAiWithDataSchema},
+        /*enabled_features=*/
+        {autofill::features::kAutofillAiServerModel,
+         autofill::features::kAutofillAiWithDataSchema,
+         autofill::features::kAutofillAmbientAutofillSuppression},
         /*disabled_features=*/{});
   }
 
@@ -97,6 +101,50 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest, ResetCache) {
   while (EvalJs(kDialogTextVisible).ExtractBool()) {
     SpinRunLoop();
   }
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
+                       ClearAutofillAiEntitySuppressions) {
+  autofill::EntitySuppressionManager* suppression_manager =
+      autofill::EntitySuppressionManagerFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(suppression_manager);
+
+  autofill::EntityInstance passport =
+      autofill::test::GetPassportEntityInstance();
+  ASSERT_TRUE(suppression_manager->SuppressEntity(passport));
+  ASSERT_TRUE(suppression_manager->IsSuppressed(passport));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://autofill-internals")));
+
+  // Wait for clear-autofill-ai-entity-suppressions-fake-button to become
+  // visible.
+  constexpr char kGetButtonDisplayStyle[] =
+      "document.getElementById("
+      "'clear-autofill-ai-entity-suppressions-fake-button').style.display";
+  while ("inline" != EvalJs(kGetButtonDisplayStyle)) {
+    SpinRunLoop();
+  }
+
+  // Trigger clear entity suppressions button.
+  constexpr char kClickButton[] =
+      "document.getElementById("
+      "'clear-autofill-ai-entity-suppressions-fake-button').click();";
+  EXPECT_TRUE(ExecJs(kClickButton));
+
+  // Wait for dialog to appear.
+  constexpr char kDialogTextVisible[] =
+      "document.getElementsByClassName('modal-dialog-text').length > 0";
+  while (!EvalJs(kDialogTextVisible).ExtractBool()) {
+    SpinRunLoop();
+  }
+
+  // Check result text and verify suppression was removed.
+  constexpr char kDialogText[] =
+      "document.getElementsByClassName('modal-dialog-text')[0].innerText";
+  EXPECT_EQ(autofill::kClearAutofillAiEntitySuppressionsDone,
+            EvalJs(kDialogText));
+  EXPECT_FALSE(suppression_manager->IsSuppressed(passport));
 }
 
 // Tests the "Check AtMemory permissions" button works as expected.

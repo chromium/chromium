@@ -19,6 +19,7 @@
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
 #include "chrome/browser/autofill/autofill_ai_personal_context_access_manager_factory.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
+#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +27,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -139,6 +141,11 @@ void InternalsUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "resetCache", base::BindRepeating(&InternalsUIHandler::OnResetCache,
                                         base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "clearAutofillAiEntitySuppressions",
+      base::BindRepeating(
+          &InternalsUIHandler::OnClearAutofillAiEntitySuppressions,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "dumpAddresses", base::BindRepeating(&InternalsUIHandler::OnDumpAddresses,
                                            base::Unretained(this)));
@@ -440,6 +447,17 @@ void InternalsUIHandler::OnResetCache(const base::ListValue& args) {
 
 void InternalsUIHandler::OnResetCacheDone(const std::string& message) {
   FireWebUIListener("notify-reset-done", base::Value(message));
+}
+
+void InternalsUIHandler::OnClearAutofillAiEntitySuppressions(
+    const base::ListValue& args) {
+  if (EntitySuppressionManager* suppression_manager =
+          EntitySuppressionManagerFactory::GetForProfile(
+              Profile::FromWebUI(web_ui()))) {
+    suppression_manager->ClearAllSuppressions();
+  }
+  FireWebUIListener("notify-reset-done",
+                    base::Value(kClearAutofillAiEntitySuppressionsDone));
 }
 
 void InternalsUIHandler::OnDumpAddresses(const base::ListValue& args) {

@@ -252,6 +252,7 @@ function setUpStopRecording() {
 
 interface OnLoadArgument {
   autofillAiServerModelEnabled: boolean;
+  autofillAmbientAutofillSuppressionEnabled: boolean;
   showDomNodeIDsEnabled: boolean;
 }
 
@@ -266,6 +267,9 @@ function setUpAutofillInternals(onLoadArgument: OnLoadArgument) {
   setUpScopeCheckboxes();
   setUpSettingCheckboxes();
   setUpMarker();
+  if (onLoadArgument.autofillAmbientAutofillSuppressionEnabled) {
+    setUpClearAutofillAiEntitySuppressionsButton();
+  }
   setUpDumpAddressesButton();
   setUpSubmittedFormsJSONDataDownload();
   setUpCheckAutofillAiPermissions();
@@ -986,6 +990,17 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.send('dumpAddresses');
   });
 });
+
+function setUpClearAutofillAiEntitySuppressionsButton() {
+  // <if expr="not is_ios" >
+  const button =
+      getRequiredElement('clear-autofill-ai-entity-suppressions-fake-button');
+  button.style.display = 'inline';
+  button.addEventListener('click', () => {
+    chrome.send('clearAutofillAiEntitySuppressions');
+  });
+  // </if>
+}
 
 function setUpDumpAddressesButton() {
   getRequiredElement('dump-addresses-fake-button').style.display = 'inline';
