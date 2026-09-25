@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -42,6 +43,7 @@ public class ActorOverlayDesktopPTTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/565895755")
     public void testActorOverlayIsInflatedAndCanShow() {
         mTestRule.startOnBlankPage();
 
