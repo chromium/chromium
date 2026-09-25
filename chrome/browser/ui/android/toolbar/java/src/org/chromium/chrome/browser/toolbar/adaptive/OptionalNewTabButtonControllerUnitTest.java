@@ -36,9 +36,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -151,16 +149,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @Features.DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
-    public void testShouldShowButton_tablet_resizeRefactorDisabled() {
-        mTabStripVisibilitySupplier.set(StripVisibilityState.HIDDEN_BY_FADE);
-        assertFalse(mOptionalNewTabButtonController.shouldShowButton(mTab));
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp")
-    @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
-    public void testShouldShowButton_tablet_resizeRefactorEnabled() {
+    public void testShouldShowButton_tablet() {
         // Hide the tab strip.
         mTabStripVisibilitySupplier.set(StripVisibilityState.HIDDEN_BY_FADE);
         assertTrue(mOptionalNewTabButtonController.shouldShowButton(mTab));
@@ -172,7 +161,6 @@ public final class OptionalNewTabButtonControllerUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testShouldShowButton_onTabStripVisibilityStateChanged() {
         mOptionalNewTabButtonController.addObserver(mButtonDataObserver);
 
