@@ -104,8 +104,16 @@ export class LensChipAppElement extends CrLitElement {
     }
   }
 
-  protected onCloseClick_() {
-    // Dismissal will be handled in a follow-up CL.
+  protected async onCloseClick_() {
+    this.fire('close-chip');
+    if (this.dataUri) {
+      this.dataUri = '';
+      try {
+        await this.getPageHandler_().removeLensCrop();
+      } catch (e) {
+        // Ignore
+      }
+    }
   }
 }
 

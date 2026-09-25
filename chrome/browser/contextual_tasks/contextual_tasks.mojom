@@ -437,6 +437,10 @@ interface ExtensionPageHandler {
   // to prevent race conditions where the embedding page could request an image
   // for a stale `data_id` that no longer exists in the browser.
   GetLensCropPreview() => (string? data_uri);
+
+  // Removes the active Lens region crop, clearing region selection
+  // and closing the Lens overlay.
+  RemoveLensCrop();
 };
 
 // Extension-side handler for requests from the browser process.

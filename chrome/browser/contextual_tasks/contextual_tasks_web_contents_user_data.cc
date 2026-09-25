@@ -129,6 +129,9 @@ ContextualTasksWebContentsUserData::GetOrCreateInputStateModel(
       session_handle, config ? *config : omnibox::SearchboxConfig(), url,
       is_off_the_record, identity_state.is_signed_in,
       identity_state.browser_identity_matches_aim_identity);
+  if (profile) {
+    model->SetPrefService(profile->GetPrefs());
+  }
 
   last_active_model_ = model->AsWeakPtr();
   input_state_models_[session_handle.session_id()] = std::move(model);

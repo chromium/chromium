@@ -535,6 +535,7 @@ export class TestExtensionPageHandler extends TestBrowserProxy implements
       'getHandshakeMessage',
       'getLensCropPreview',
       'onWebviewMessage',
+      'removeLensCrop',
       'setTaskId',
       'updateComposeboxHeight',
     ]);
@@ -549,6 +550,11 @@ export class TestExtensionPageHandler extends TestBrowserProxy implements
   getLensCropPreview() {
     this.methodCalled('getLensCropPreview');
     return Promise.resolve(this.lensCropPreviewResult);
+  }
+
+  removeLensCrop() {
+    this.methodCalled('removeLensCrop');
+    return Promise.resolve();
   }
 
   getHandshakeMessage() {

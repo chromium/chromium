@@ -9,7 +9,7 @@ import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_ta
 import type {LensChipAppElement} from 'chrome://contextual-tasks/contextual_tasks_extension/lens_chip_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestExtensionBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
@@ -82,6 +82,31 @@ suite('LensChipTest', () => {
         assertEquals(null, cropImage);
         const chipRoot = app.shadowRoot?.querySelector('#chipRoot');
         assertEquals(null, chipRoot);
+      });
+
+  test(
+      'Clicking close button fires close-chip event and calls removeLensCrop',
+      async () => {
+        browserProxy.handler.setLensCropPreviewResult(MOCK_DATA_URI);
+
+        app = document.createElement('lens-chip-app');
+        document.body.appendChild(app);
+        await microtasksFinished();
+
+        await browserProxy.handler.whenCalled('getLensCropPreview');
+        assertEquals(MOCK_DATA_URI, app.getDataUriForTesting());
+
+        const closeButton =
+            app.shadowRoot?.querySelector<HTMLElement>('#closeButton');
+        assertTrue(!!closeButton);
+
+        const closeEventPromise = eventToPromise('close-chip', app);
+        closeButton.click();
+        await closeEventPromise;
+
+        await browserProxy.handler.whenCalled('removeLensCrop');
+        assertEquals(1, browserProxy.handler.getCallCount('removeLensCrop'));
+        assertEquals('', app.getDataUriForTesting());
       });
 
   test('Dark mode reflects attribute correctly', async () => {

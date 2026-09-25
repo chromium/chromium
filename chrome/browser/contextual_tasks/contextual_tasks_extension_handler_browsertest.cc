@@ -16,6 +16,7 @@
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
@@ -43,6 +44,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
@@ -97,11 +100,16 @@ class MockLensSearchController : public LensSearchController {
 class MockLensOverlayController : public LensOverlayController {
  public:
   MockLensOverlayController(tabs::TabInterface* tab,
-                            LensSearchController* lens_search_controller,
+                            LensSearchController* search_controller,
+                            Profile* profile)
+      : LensOverlayController(tab, search_controller, profile->GetPrefs()) {}
+  MockLensOverlayController(tabs::TabInterface* tab,
+                            LensSearchController* search_controller,
                             PrefService* pref_service)
-      : LensOverlayController(tab, lens_search_controller, pref_service) {}
+      : LensOverlayController(tab, search_controller, pref_service) {}
   ~MockLensOverlayController() override = default;
 
+  MOCK_METHOD(void, ClearRegionSelection, (), (override));
   MOCK_METHOD(bool, HasRegionSelection, (), (const, override));
   const lens::mojom::CenterRotatedBoxPtr& selected_region() const override {
     return selected_region_;
@@ -190,9 +198,15 @@ class ContextualTasksExtensionHandlerBrowserTestBase
     ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
         ->SetTaskSession(std::nullopt, std::move(session_handle),
                          /*input_state_model=*/nullptr);
+
+    mock_lens_overlay_controller_ =
+        std::make_unique<NiceMock<MockLensOverlayController>>(
+            browser()->tab_strip_model()->GetActiveTab(), mock_lens_controller_,
+            Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   }
 
   void TearDownOnMainThread() override {
+    mock_lens_overlay_controller_.reset();
     if (mock_lens_controller_) {
       testing::Mock::VerifyAndClearExpectations(mock_lens_controller_);
       mock_lens_controller_ = nullptr;
@@ -208,6 +222,8 @@ class ContextualTasksExtensionHandlerBrowserTestBase
  protected:
   ui::UserDataFactory::ScopedOverride lens_controller_override_;
   raw_ptr<MockLensSearchController> mock_lens_controller_ = nullptr;
+  std::unique_ptr<NiceMock<MockLensOverlayController>>
+      mock_lens_overlay_controller_;
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   raw_ptr<ContextualTasksExtensionHandler> handler_ = nullptr;
@@ -512,6 +528,28 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
         run_loop.Quit();
       }));
   run_loop.Run();
+
+  // Verify child handler calling RemoveLensCrop clears the model and notifies
+  // the primary handler (which hosts lens_button) to emit InjectChromeInput
+  // with is_active=false to AIM.
+  base::RunLoop unmount_run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        const auto& inject_input = message->inject_chrome_input();
+        EXPECT_EQ(inject_input.input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_FALSE(inject_input.is_active());
+        unmount_run_loop.Quit();
+      });
+
+  child_handler->RemoveLensCrop();
+  unmount_run_loop.Run();
+
+  EXPECT_FALSE(model1->GetLensCrop().has_value());
+  EXPECT_FALSE(model1->lens_crop().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -911,6 +949,242 @@ IN_PROC_BROWSER_TEST_F(
 
   handler_->OnWebviewMessage(serialized_message);
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       RemoveLensCrop_DismissesLensClearsModelAndEmitsUnmount) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        const auto& inject_input = message->inject_chrome_input();
+        EXPECT_EQ(inject_input.input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_TRUE(inject_input.is_active());
+        run_loop.Quit();
+      });
+  handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,test_crop");
+  run_loop.Run();
+
+  auto model = handler_->GetOrCreateInputStateModelForTesting();
+  ASSERT_TRUE(model);
+  EXPECT_TRUE(model->GetLensCrop().has_value());
+
+  // Verify that ClearRegionSelection() (via lens_overlay_controller()) is
+  // called strictly before CloseLensAsync() (load-bearing ordering 1-before-2).
+  EXPECT_CALL(*mock_lens_controller_, lens_overlay_controller())
+      .WillRepeatedly(Return(mock_lens_overlay_controller_.get()));
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(*mock_lens_overlay_controller_, ClearRegionSelection())
+        .Times(1);
+    EXPECT_CALL(
+        *mock_lens_controller_,
+        CloseLensAsync(
+            lens::LensOverlayDismissalSource::kContextualTasksLensChipRemoved))
+        .Times(1);
+  }
+
+  base::RunLoop run_loop2;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        const auto& inject_input = message->inject_chrome_input();
+        EXPECT_EQ(inject_input.input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_FALSE(inject_input.is_active());
+        run_loop2.Quit();
+      });
+
+  handler_->RemoveLensCrop();
+  run_loop2.Run();
+
+  EXPECT_FALSE(model->GetLensCrop().has_value());
+  EXPECT_FALSE(model->lens_crop().has_value());
+  EXPECT_EQ(std::nullopt, handler_->GetLensOverlayTokenForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       RemoveLensCrop_WhenNoCropDoesNotDismiss) {
+  auto model = handler_->GetOrCreateInputStateModelForTesting();
+  ASSERT_TRUE(model);
+  EXPECT_FALSE(model->lens_crop().has_value());
+
+  // Calling RemoveLensCrop when no crop exists should be a no-op:
+  // no CloseLensAsync, no ClearRegionSelection, no PostSearchMessage.
+  EXPECT_CALL(*mock_lens_controller_, CloseLensAsync(_)).Times(0);
+  EXPECT_CALL(mock_page_, PostSearchMessage(_)).Times(0);
+
+  handler_->RemoveLensCrop();
+
+  EXPECT_FALSE(model->lens_crop().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    OnLensOverlayStateChanged_ReverseSyncClearsModelAndEmitsUnmount) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        const auto& inject_input = message->inject_chrome_input();
+        EXPECT_EQ(inject_input.input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_TRUE(inject_input.is_active());
+        run_loop.Quit();
+      });
+  handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,test_crop");
+  run_loop.Run();
+
+  auto model = handler_->GetOrCreateInputStateModelForTesting();
+  ASSERT_TRUE(model);
+  EXPECT_TRUE(model->GetLensCrop().has_value());
+
+  base::RunLoop run_loop2;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        const auto& inject_input = message->inject_chrome_input();
+        EXPECT_EQ(inject_input.input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_FALSE(inject_input.is_active());
+        run_loop2.Quit();
+      });
+
+  handler_->OnLensOverlayStateChanged(false);
+  run_loop2.Run();
+
+  EXPECT_FALSE(model->GetLensCrop().has_value());
+  EXPECT_FALSE(model->lens_crop().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    CreateExtensionPageHandler_InitializesInputStateModelAndEmitsPostSearchMessage) {
+  ASSERT_TRUE(
+      content::ExecJs(web_contents_,
+                      "const iframe = document.createElement('iframe'); "
+                      "document.body.appendChild(iframe);"));
+  content::RenderFrameHost* child_rfh =
+      content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(child_rfh, nullptr);
+
+  ContextualTasksExtensionHandler::CreateForCurrentDocument(child_rfh);
+  auto* child_handler =
+      ContextualTasksExtensionHandler::GetForCurrentDocument(child_rfh);
+  ASSERT_NE(child_handler, nullptr);
+
+  testing::NiceMock<MockContextualTasksExtensionPage> mock_child_page;
+  mojo::PendingReceiver<mojom::ExtensionPageHandler> child_handler_receiver;
+  child_handler->CreateExtensionPageHandler(mock_child_page.BindAndGetRemote(),
+                                            std::move(child_handler_receiver));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_child_page, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        const auto& inject_input = message->inject_chrome_input();
+        EXPECT_EQ(inject_input.input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_TRUE(inject_input.is_active());
+        run_loop.Quit();
+      });
+
+  child_handler->OnLensThumbnailCreatedForTesting(
+      "data:image/png;base64,test_crop");
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    OnInputStateChanged_LensChipUrlDoesNotEmitPostSearchMessage) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url.find("lens_chip.html") != std::string::npos) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html");
+          response->set_content("<html><body>lens chip</body></html>");
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL chip_url = embedded_test_server()->GetURL("/lens_chip.html");
+  ASSERT_TRUE(
+      content::ExecJs(web_contents_,
+                      "const iframe = document.createElement('iframe'); "
+                      "iframe.id = 'chip_iframe'; "
+                      "iframe.name = 'chip_iframe'; "
+                      "document.body.appendChild(iframe);"));
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(web_contents_, "chip_iframe", chip_url));
+
+  content::RenderFrameHost* child_rfh =
+      content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(child_rfh, nullptr);
+  ContextualTasksExtensionHandler::CreateForCurrentDocument(child_rfh);
+  auto* chip_handler =
+      ContextualTasksExtensionHandler::GetForCurrentDocument(child_rfh);
+  ASSERT_NE(chip_handler, nullptr);
+
+  testing::NiceMock<MockContextualTasksExtensionPage> mock_chip_page;
+  mojo::PendingReceiver<mojom::ExtensionPageHandler> chip_handler_receiver;
+  chip_handler->CreateExtensionPageHandler(mock_chip_page.BindAndGetRemote(),
+                                           std::move(chip_handler_receiver));
+
+  EXPECT_CALL(mock_chip_page, PostSearchMessage(_)).Times(0);
+
+  chip_handler->OnLensThumbnailCreatedForTesting(
+      "data:image/png;base64,test_crop");
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    PostSearchMessage_FakeAimPageReceivesProtoWithTargetOrigin) {
+  base::RunLoop run_loop;
+  std::string serialized_proto_bytes;
+
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        const auto& inject_input = message->inject_chrome_input();
+        EXPECT_EQ(inject_input.input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_TRUE(inject_input.is_active());
+        EXPECT_TRUE(message->SerializeToString(&serialized_proto_bytes));
+        run_loop.Quit();
+      });
+
+  handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,test_crop");
+  run_loop.Run();
+
+  ASSERT_FALSE(serialized_proto_bytes.empty());
+
+  lens::ClientToSearchMessage parsed_message;
+  ASSERT_TRUE(parsed_message.ParseFromString(serialized_proto_bytes));
+  EXPECT_TRUE(parsed_message.has_inject_chrome_input());
+  EXPECT_EQ(parsed_message.inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+  EXPECT_TRUE(parsed_message.inject_chrome_input().is_active());
 }
 
 }  // namespace contextual_tasks

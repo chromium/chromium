@@ -295,7 +295,7 @@ class LensOverlayController : public OverlayBaseController,
   void SetInvocationTimeForWebUIBinding(base::TimeTicks time);
 
   // Clears the selected region.
-  void ClearRegionSelection();
+  virtual void ClearRegionSelection();
 
   // Returns the lens suggest inputs stored in this controller for testing.
   lens::proto::LensOverlaySuggestInputs GetLensSuggestInputsForTesting();

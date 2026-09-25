@@ -107,6 +107,15 @@ void ContextualTasksExtensionHandler::OnLensOverlayStateChanged(
   if (contextual_tasks_page_) {
     contextual_tasks_page_->OnLensOverlayStateChanged(is_showing);
   }
+  if (!is_showing) {
+    auto model = GetOrCreateInputStateModel();
+    if (model) {
+      // RemoveLensCrop() notifies observers via OnInputStateChanged, which
+      // emits the reverse-sync unmount message (InjectChromeInput with
+      // is_active: false) to AIM to remove the chip.
+      model->RemoveLensCrop();
+    }
+  }
 }
 
 void ContextualTasksExtensionHandler::OnPermissionPromptChanged(
@@ -166,11 +175,13 @@ void ContextualTasksExtensionHandler::CreateExtensionPageHandler(
   contextual_tasks_handler_receiver_.Bind(std::move(receiver));
   contextual_tasks_page_.reset();
   contextual_tasks_page_.Bind(std::move(page));
+  InitializeInputStateModel();
 }
 
 // contextual_tasks::mojom::ExtensionPageHandler:
 void ContextualTasksExtensionHandler::SetTaskId(const base::Uuid& uuid) {
   task_id_ = uuid;
+  GetOrCreateInputStateModel();
 }
 
 void ContextualTasksExtensionHandler::OnWebviewMessage(
@@ -370,6 +381,25 @@ void ContextualTasksExtensionHandler::GetLensCropPreview(
   std::move(callback).Run(model->GetLensCrop());
 }
 
+void ContextualTasksExtensionHandler::RemoveLensCrop() {
+  auto model = GetOrCreateInputStateModel();
+  if (!model || !model->lens_crop().has_value()) {
+    return;
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = GetLensSearchController()) {
+    if (auto* overlay = controller->lens_overlay_controller()) {
+      overlay->ClearRegionSelection();
+    }
+    controller->CloseLensAsync(
+        lens::LensOverlayDismissalSource::kContextualTasksLensChipRemoved);
+  }
+#endif
+
+  model->RemoveLensCrop();
+}
+
 void ContextualTasksExtensionHandler::OnLensThumbnailCreated(
     const std::string& thumbnail_uri) {
   auto model = GetOrCreateInputStateModel();
@@ -377,13 +407,6 @@ void ContextualTasksExtensionHandler::OnLensThumbnailCreated(
     return;
   }
   model->SetLensCrop(thumbnail_uri);
-
-  lens::ClientToSearchMessage search_message;
-  auto* inject_input = search_message.mutable_inject_chrome_input();
-  inject_input->set_input_type(
-      lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
-  inject_input->set_is_active(true);
-  PostSearchMessage(search_message);
 }
 
 // composebox::mojom::PageHandler stubs:
@@ -754,26 +777,50 @@ LensSearchController* ContextualTasksExtensionHandler::GetLensSearchController()
 #endif
 
 void ContextualTasksExtensionHandler::InitializeInputStateModel() {
-  input_state_model_ = GetOrCreateInputStateModel();
-  if (!input_state_model_) {
-    return;
+  input_state_model_ = nullptr;
+  is_lens_crop_mounted_ = false;
+  auto model = GetOrCreateInputStateModel();
+  if (model) {
+    auto* browser_context = render_frame_host().GetBrowserContext();
+    if (auto* profile = Profile::FromBrowserContext(browser_context)) {
+      model->SetPrefService(profile->GetPrefs());
+    }
+    model->Initialize();
   }
-
-  auto* browser_context = render_frame_host().GetBrowserContext();
-  if (auto* profile = Profile::FromBrowserContext(browser_context)) {
-    input_state_model_->SetPrefService(profile->GetPrefs());
-  }
-
-  input_state_subscription_ = input_state_model_->subscribe(
-      base::BindRepeating(&ContextualTasksExtensionHandler::OnInputStateChanged,
-                          base::Unretained(this)));
-  input_state_model_->Initialize();
 }
 
 void ContextualTasksExtensionHandler::OnInputStateChanged(
     const omnibox::InputState& state) {
   if (searchbox_page_) {
     searchbox_page_->OnInputStateChanged(state);
+  }
+
+  // Reverse sync and state propagation to AIM via PostSearchMessage.
+  // Only the frame hosting lens_button (which relays messages up to AIM via
+  // window.parent.postMessage) should emit search communication messages.
+  if (!contextual_tasks_page_.is_bound() || !input_state_model_) {
+    return;
+  }
+
+  // TODO(crbug.com/549306496): Ensure only one message is sent per page via one
+  // of the extension iframes if lens_button is not present.
+  if (render_frame_host().GetLastCommittedURL().ExtractFileName() ==
+      "lens_chip.html") {
+    return;
+  }
+
+  const auto& crop = input_state_model_->lens_crop();
+  bool has_crop = crop.has_value();
+
+  if (is_lens_crop_mounted_ != has_crop) {
+    lens::ClientToSearchMessage search_message;
+    auto* inject_input = search_message.mutable_inject_chrome_input();
+    inject_input->set_input_type(
+        lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+    inject_input->set_is_active(has_crop);
+    PostSearchMessage(search_message);
+
+    is_lens_crop_mounted_ = has_crop;
   }
 }
 
@@ -798,7 +845,21 @@ ContextualTasksExtensionHandler::GetOrCreateInputStateModel() {
         contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
             web_contents);
   }
-  return user_data->GetOrCreateInputStateModel(*session_handle);
+  auto model = user_data->GetOrCreateInputStateModel(*session_handle);
+  if (input_state_model_.get() != model.get()) {
+    input_state_model_ = model;
+    is_lens_crop_mounted_ = false;
+    if (model && render_frame_host().GetLastCommittedURL().ExtractFileName() !=
+                     "lens_chip.html") {
+      input_state_subscription_ =
+          input_state_model_->subscribe(base::BindRepeating(
+              &ContextualTasksExtensionHandler::OnInputStateChanged,
+              base::Unretained(this)));
+    } else {
+      input_state_subscription_ = {};
+    }
+  }
+  return input_state_model_;
 }
 
 void ContextualTasksExtensionHandler::StartScreenshare(

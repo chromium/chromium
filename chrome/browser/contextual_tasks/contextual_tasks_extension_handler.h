@@ -95,6 +95,7 @@ class ContextualTasksExtensionHandler
   void OnWebviewMessage(const std::vector<uint8_t>& message) override;
   void GetHandshakeMessage(GetHandshakeMessageCallback callback) override;
   void GetLensCropPreview(GetLensCropPreviewCallback callback) override;
+  void RemoveLensCrop() override;
 
   base::WeakPtr<contextual_search::InputStateModel>
   GetOrCreateInputStateModelForTesting() {
@@ -102,6 +103,9 @@ class ContextualTasksExtensionHandler
   }
   void OnLensThumbnailCreatedForTesting(const std::string& thumbnail_uri) {
     OnLensThumbnailCreated(thumbnail_uri);
+  }
+  std::optional<base::UnguessableToken> GetLensOverlayTokenForTesting() {
+    return GetLensOverlayToken();
   }
 
   void BindComposeboxFactory(
@@ -284,6 +288,7 @@ class ContextualTasksExtensionHandler
   omnibox::ToolMode active_tool_ = omnibox::TOOL_MODE_UNSPECIFIED;
   omnibox::ModelMode active_model_ = omnibox::MODEL_MODE_UNSPECIFIED;
 
+  bool is_lens_crop_mounted_ = false;
   base::WeakPtrFactory<ContextualTasksExtensionHandler> weak_ptr_factory_{this};
 };
 

@@ -152,7 +152,11 @@ enum class LensOverlayDismissalSource {
   // image uploads. Only used on Desktop.
   kContextualTasksImageUploadsDisabled = 38,
 
-  kMaxValue = kContextualTasksImageUploadsDisabled,
+  // The Lens region chip was removed in the Contextual Tasks composebox. Only
+  // used on Desktop.
+  kContextualTasksLensChipRemoved = 39,
+
+  kMaxValue = kContextualTasksLensChipRemoved,
 
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
