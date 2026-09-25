@@ -81,9 +81,11 @@ class TestBrowserInstance {
         .WillByDefault(testing::Return(&mock_window_));
     ON_CALL(mock_bwi_, GetFeatures())
         .WillByDefault(testing::ReturnRef(features_));
-    ON_CALL(mock_bwi_, RegisterDidBecomeActive(testing::_)).WillByDefault([] {
-      return base::CallbackListSubscription();
-    });
+    ON_CALL(mock_bwi_, RegisterDidBecomeActive(testing::_))
+        .WillByDefault(
+            [this](BrowserWindowInterface::DidBecomeActiveCallback cb) {
+              return active_callbacks_.Add(std::move(cb));
+            });
     ON_CALL(mock_bwi_, RegisterDidBecomeInactive(testing::_)).WillByDefault([] {
       return base::CallbackListSubscription();
     });
@@ -105,6 +107,10 @@ class TestBrowserInstance {
   TabStripModel* tab_strip_model() { return &tab_strip_model_; }
   BrowserWindowInterface* bwi() { return &mock_bwi_; }
 
+  // Simulates the window becoming active, which moves it to the front of the
+  // browser activation order.
+  void Activate() { active_callbacks_.Notify(&mock_bwi_); }
+
  private:
   raw_ptr<Profile> profile_;
   testing::NiceMock<ui::MockBaseWindow> mock_window_;
@@ -112,6 +118,7 @@ class TestBrowserInstance {
   TabStripModel tab_strip_model_;
   testing::NiceMock<MockBrowserWindowInterface> mock_bwi_;
   BrowserWindowFeatures features_;
+  base::RepeatingCallbackList<void(BrowserWindowInterface*)> active_callbacks_;
   base::RepeatingCallbackList<void(BrowserWindowInterface*)> close_callbacks_;
 };
 
@@ -378,6 +385,37 @@ TEST_F(ContextHubTabProviderDesktopTest, ConfirmTabGroups_CrossWindow) {
   ASSERT_TRUE(group_id.has_value());
   EXPECT_EQ(second_browser->tab_strip_model()->GetTabGroupForTab(1), group_id);
   EXPECT_EQ(second_browser->tab_strip_model()->GetTabGroupForTab(2), group_id);
+
+  // Close tabs in second_browser before destroying.
+  second_browser->tab_strip_model()->CloseAllTabs();
+}
+
+TEST_F(ContextHubTabProviderDesktopTest,
+       ConfirmTabGroups_TieBreaksToMruWindow) {
+  // Both windows hold one tab each, so the group is consolidated into the most
+  // recently activated window.
+  AddTab(browser(), GURL("https://example.com/1"));
+  int64_t id1 = GetTabId(0);
+
+  auto second_browser = std::make_unique<TestBrowserInstance>(
+      profile(), BrowserWindowInterface::TYPE_NORMAL,
+      /*supports_tab_groups=*/true);
+  AddTab(second_browser.get(), GURL("https://example.com/2"));
+  int64_t id2 = GetTabId(second_browser->tab_strip_model(), 0);
+
+  second_browser->Activate();
+
+  TabGroupEntry group;
+  group.label = "Tied Group";
+  group.tab_ids = {id1, id2};
+
+  EXPECT_TRUE(provider_->ConfirmTabGroups({group}));
+
+  EXPECT_EQ(second_browser->tab_strip_model()->count(), 2);
+  std::optional<tab_groups::TabGroupId> group_id =
+      second_browser->tab_strip_model()->GetTabGroupForTab(0);
+  ASSERT_TRUE(group_id.has_value());
+  EXPECT_EQ(second_browser->tab_strip_model()->GetTabGroupForTab(1), group_id);
 
   // Close tabs in second_browser before destroying.
   second_browser->tab_strip_model()->CloseAllTabs();

@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -20,6 +20,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -44,8 +45,9 @@
 namespace context_hub {
 namespace {
 
-using WindowTabIndicesMap =
-    base::flat_map<BrowserWindowInterface*, std::vector<int>>;
+// Windows and their matching tab indices, most-recently-activated first.
+using WindowTabIndicesList =
+    std::vector<std::pair<BrowserWindowInterface*, std::vector<int>>>;
 
 // Finds tab indices in a TabStripModel matching a set of session tab IDs.
 std::vector<int> GetMatchingTabIndices(
@@ -70,10 +72,10 @@ std::vector<int> GetMatchingTabIndices(
 }
 
 // Maps browser windows to their tab indices matching the group's tab IDs.
-WindowTabIndicesMap FindTabsForGroup(
+WindowTabIndicesList FindTabsForGroup(
     Profile* profile,
     const base::flat_set<int64_t>& group_tab_ids) {
-  WindowTabIndicesMap window_indices;
+  WindowTabIndicesList window_indices;
   ProfileBrowserCollection* collection =
       ProfileBrowserCollection::GetForProfile(profile);
   if (!collection) {
@@ -84,17 +86,19 @@ WindowTabIndicesMap FindTabsForGroup(
         std::vector<int> indices =
             GetMatchingTabIndices(b->GetTabStripModel(), group_tab_ids);
         if (!indices.empty()) {
-          window_indices[b] = std::move(indices);
+          window_indices.emplace_back(b, std::move(indices));
         }
         return true;
-      });
+      },
+      BrowserCollection::Order::kActivation);
   return window_indices;
 }
 
 // Returns the browser window containing the most tabs for the target group.
-// TODO(crbug.com/542259689): Add tiebreaker using MRU window.
+// `window_indices` is most-recently-activated first and max_element() returns
+// the first of equal elements, so ties go to the most recently used window.
 BrowserWindowInterface* GetMajorityBrowser(
-    const WindowTabIndicesMap& window_indices) {
+    const WindowTabIndicesList& window_indices) {
   auto it = std::ranges::max_element(window_indices, {}, [](const auto& entry) {
     return entry.second.size();
   });
@@ -103,7 +107,7 @@ BrowserWindowInterface* GetMajorityBrowser(
 
 // Moves tabs from other browser windows into the target browser window.
 void MoveTabsToBrowser(BrowserWindowInterface* target_browser,
-                       const WindowTabIndicesMap& window_indices) {
+                       const WindowTabIndicesList& window_indices) {
   for (const auto& [source_browser, indices] : window_indices) {
     if (source_browser != target_browser) {
       chrome::MoveTabsToExistingWindow(source_browser, target_browser, indices);
@@ -113,9 +117,8 @@ void MoveTabsToBrowser(BrowserWindowInterface* target_browser,
 
 // Returns true if any of the target tabs currently belong to a tab group
 // that is pinned to the bookmarks bar.
-bool WereAnyTabsInPinnedGroup(
-    Profile* profile,
-    const WindowTabIndicesMap& window_indices) {
+bool WereAnyTabsInPinnedGroup(Profile* profile,
+                              const WindowTabIndicesList& window_indices) {
   tab_groups::TabGroupSyncService* sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   if (!sync_service) {
@@ -195,8 +198,7 @@ bool ConfirmSingleTabGroup(Profile* profile, const TabGroupEntry& group) {
         session_id != SessionID::InvalidValue().id() ? session_id : id);
   }
   base::flat_set<int64_t> tab_ids(std::move(resolved_ids));
-  WindowTabIndicesMap window_indices =
-      FindTabsForGroup(profile, tab_ids);
+  WindowTabIndicesList window_indices = FindTabsForGroup(profile, tab_ids);
   if (window_indices.empty()) {
     return false;
   }
