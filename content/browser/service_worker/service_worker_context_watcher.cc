@@ -210,8 +210,9 @@ void ServiceWorkerContextWatcher::OnNewLiveVersion(
   if (it != version_info_map_.end()) {
     CHECK_EQ(it->second->registration_id, version_info.registration_id,
              base::NotFatalUntil::M159);
-    CHECK_EQ(it->second->script_url, version_info.script_url,
-             base::NotFatalUntil::M159);
+    // TODO(crbug.com/564870546): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(it->second->script_url, version_info.script_url);
     return;
   }
 
