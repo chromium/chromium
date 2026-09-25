@@ -14,7 +14,6 @@ import static org.mockito.AdditionalMatchers.geq;
 import static org.mockito.AdditionalMatchers.lt;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -41,13 +40,11 @@ import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarCompon
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.TAB_SWITCHER;
 
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Looper;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
@@ -70,15 +67,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -126,14 +120,11 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ToastManager;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /** Unit tests for @{@link ToolbarTablet} */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public final class ToolbarTabletUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock private LocationBarCoordinator mLocationBar;
@@ -455,37 +446,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/501137241")
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
-    public void onMeasureSmallWidth_hidesToolbarButtons_Legacy() {
-        mToolbarTablet.measure(300, 300);
-
-        assertEquals(
-                "Toolbar button visibility is not as expected",
-                View.GONE,
-                mForwardButton.getVisibility());
-
-        verify(mReloadButtonCoordinator).setVisibility(false);
-        verify(mBackButtonCoordinator).setVisibility(false);
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/501137241")
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
-    public void onMeasureLargeWidth_showsToolbarButtons_Legacy() {
-        mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
-        mToolbarTablet.measure(700, 300);
-
-        assertEquals(
-                "Toolbar button visibility is not as expected",
-                View.VISIBLE,
-                mForwardButton.getVisibility());
-
-        verify(mReloadButtonCoordinator).setVisibility(true);
-        verify(mBackButtonCoordinator).setVisibility(true);
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void onMeasureIncognito_flipIncognitoVisibility() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
@@ -530,56 +490,6 @@ public final class ToolbarTabletUnitTest {
                 "Incognito indicator visibility is not as expected.",
                 View.GONE,
                 incognitoIndicator.getVisibility());
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/501137241")
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
-    public void onMeasureSmallWidthWithAnimation_hidesToolbarButtons_Legacy() {
-        doReturn(true).when(mToolbarTablet).isShown();
-
-        when(mLocationBar.createHideButtonAnimatorForTablet(mForwardButton))
-                .thenReturn(ObjectAnimator.ofFloat(mForwardButton, View.ALPHA, 0.f));
-        when(mLocationBar.getHideButtonsWhenUnfocusedAnimatorsForTablet(anyInt()))
-                .thenReturn(new ArrayList<>());
-
-        mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
-        // Call
-        mToolbarTablet.measure(300, 300);
-        verify(mTabStripTransitionCoordinator).requestDeferTabStripTransitionToken();
-        Shadows.shadowOf(Looper.getMainLooper()).idle();
-        // Verify
-        assertEquals(
-                "Toolbar button visibility is not as expected",
-                View.GONE,
-                mForwardButton.getVisibility());
-        verify(mReloadButtonCoordinator).setVisibility(false);
-        verify(mTabStripTransitionCoordinator, atLeastOnce()).releaseTabStripToken(anyInt());
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/501137241")
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
-    public void onMeasureLargeWidthWithAnimation_showsToolbarButtons_Legacy() {
-        doReturn(true).when(mToolbarTablet).isShown();
-        mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
-        mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
-
-        when(mLocationBar.createShowButtonAnimatorForTablet(mForwardButton))
-                .thenReturn(ObjectAnimator.ofFloat(mForwardButton, View.ALPHA, 1.f));
-        when(mLocationBar.getShowButtonsWhenUnfocusedAnimatorsForTablet(anyInt()))
-                .thenReturn(new ArrayList<>());
-        // Call
-        mToolbarTablet.measure(700, 300);
-        verify(mTabStripTransitionCoordinator).requestDeferTabStripTransitionToken();
-        Shadows.shadowOf(Looper.getMainLooper()).idle();
-        // Verify
-        assertEquals(
-                "Toolbar button visibility is not as expected",
-                View.VISIBLE,
-                mForwardButton.getVisibility());
-        verify(mReloadButtonCoordinator).setVisibility(true);
-        verify(mTabStripTransitionCoordinator, atLeastOnce()).releaseTabStripToken(anyInt());
     }
 
     @Test
@@ -759,63 +669,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/501137241")
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
-    public void testIsReadyForTextureCapture_ButtonShowAnimationInProgress_Legacy() {
-        mToolbarTablet.measure(300, 300);
-        mToolbarTablet.layout(0, 0, 0, 0);
-        mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
-        mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
-
-        // Set a test-only animator so the animation can have an in-between state.
-        ValueAnimator animator = ValueAnimator.ofFloat(0.f, 1.f);
-        when(mLocationBar.getShowButtonsWhenUnfocusedAnimatorsForTablet(anyInt()))
-                .thenReturn(List.of(animator));
-
-        // Run animation.
-        mToolbarTablet.measure(700, 300);
-        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
-        assertFalse(result.isReady);
-        assertEquals(
-                TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS,
-                result.blockReason);
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        result = mToolbarTablet.isReadyForTextureCapture();
-        assertTrue(result.isReady);
-        assertEquals(TopToolbarAllowCaptureReason.SNAPSHOT_DIFFERENCE, result.allowReason);
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/501137241")
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
-    public void testIsReadyForTextureCapture_ButtonHideAnimationInProgress_Legacy() {
-        mToolbarTablet.measure(300, 300);
-        mToolbarTablet.layout(0, 0, 0, 0);
-        mToolbarTablet.setToolbarButtonsVisibleForTesting(true);
-        mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
-
-        // Set a test-only animator so the animation can have an in-between state.
-        ValueAnimator animator = ValueAnimator.ofFloat(0.f, 1.f);
-        when(mLocationBar.getHideButtonsWhenUnfocusedAnimatorsForTablet(anyInt()))
-                .thenReturn(List.of(animator));
-
-        // Run animation.
-        mToolbarTablet.measure(310, 310);
-        mToolbarTablet.layout(0, 1, 0, 1);
-        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
-        assertFalse(result.isReady);
-        assertEquals(
-                TopToolbarBlockCaptureReason.TABLET_BUTTON_ANIMATION_IN_PROGRESS,
-                result.blockReason);
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        result = mToolbarTablet.isReadyForTextureCapture();
-        assertTrue(result.isReady);
-        assertEquals(TopToolbarAllowCaptureReason.SNAPSHOT_DIFFERENCE, result.allowReason);
-    }
-
-    @Test
     public void testIsReadyForTextureCapture_Snapshot() {
         mToolbarTablet.measure(300, 300);
         mToolbarTablet.layout(0, 0, 0, 0);
@@ -893,7 +746,6 @@ public final class ToolbarTabletUnitTest {
 
     @SuppressLint("WrongCall")
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testResizeTabletToolbar_buttonsShowInRankedOrder() {
         int locationBarMidWidth = 200;
         int padding =
@@ -1059,7 +911,6 @@ public final class ToolbarTabletUnitTest {
 
     @SuppressLint("WrongCall")
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testResizeTabletToolbar_buttonsHideInRankedOrder() {
         int locationBarMidWidth = 200;
         int padding =
@@ -1225,7 +1076,6 @@ public final class ToolbarTabletUnitTest {
 
     @SuppressLint("WrongCall")
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testResizeTabletToolbar_toggleOptionalButtonHidden() {
         int locationBarMidWidth = 200;
         int padding =
@@ -1298,7 +1148,6 @@ public final class ToolbarTabletUnitTest {
 
     @SuppressLint("WrongCall")
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testAreAnyToolbarComponentsMissingForWidth() {
         doReturn(true).when(mReloadButtonCoordinator).hasSpaceToShow();
         assertFalse(mToolbarTablet.areAnyToolbarComponentsMissingForWidth(new int[] {RELOAD}));
@@ -1311,7 +1160,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testOptionalButtonToolbarWidthConsumer_returnsPartialWidthWhenNoSpace() {
         ToolbarWidthConsumer consumer = mToolbarTablet.getOptionalButtonWidthConsumerForTesting();
         int buttonWidth =
@@ -1331,7 +1179,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testAllocateAvailableToolbarWidth_subtractsControlContainerMargins() {
         updateOptionalButton(
                 /* buttonVariant= */ AdaptiveToolbarButtonVariant.SHARE,
@@ -1351,7 +1198,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testGlicToolbarWidthConsumer_hidesWhenNoSpace() {
         mToolbarTablet.ensureGlicToolbarWidthConsumer();
         ToolbarWidthConsumer consumer = mToolbarTablet.getGlicIconWidthConsumerForTesting();
@@ -1391,7 +1237,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testGlicTextToolbarWidthConsumer_hidesTextWhenNoSpace() {
         mToolbarTablet.ensureGlicToolbarWidthConsumer();
         ToolbarWidthConsumer iconConsumer = mToolbarTablet.getGlicIconWidthConsumerForTesting();
@@ -1585,7 +1430,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testSetGlicActionChipVisibility_invokesOnWidthConsumerVisibilityChanged() {
         View.OnClickListener mockClickListener = mock(View.OnClickListener.class);
         View.OnLongClickListener mockLongClickListener = mock(View.OnLongClickListener.class);
