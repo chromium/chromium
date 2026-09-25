@@ -23,7 +23,6 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_prefs/user_prefs.h"
@@ -90,8 +89,7 @@ bool GetScreenMagnifierEnabledFromPref() {
 
 void LogIn(const AccountId& account_id) {
   session_manager::SessionManager::Get()->CreateSession(
-      account_id,
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
       /*new_user=*/false,
       /*has_active_session=*/false);
 }
