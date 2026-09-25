@@ -617,3 +617,32 @@ TEST_F(TabUsageRecorderBrowserAgentTest,
   histogram_tester_.ExpectTotalCount(
       "Startup.TimeFromMainToFirstPageLoaded.WithoutWebExtensions", 0);
 }
+
+// Tests that Startup.TimeFromMainToFirstNavigation and
+// Startup.TimeFromMainToFirstPageLoaded metrics are not recorded during first
+// run.
+TEST_F(TabUsageRecorderBrowserAgentTest,
+       TimeFromMainToFirstStartupMetricsFirstRun) {
+  web::FakeWebState* mock_tab = InsertFakeWebState(kURL, IN_MEMORY);
+  fake_startup_information_.isFirstRun = YES;
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kURL));
+  context.SetWebState(mock_tab);
+  context.SetPageTransition(ui::PAGE_TRANSITION_LINK);
+  mock_tab->OnNavigationStarted(&context);
+  mock_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstNavigation",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstNavigation.WithoutWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount("Startup.TimeFromMainToFirstPageLoaded",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithWebExtensions", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Startup.TimeFromMainToFirstPageLoaded.WithoutWebExtensions", 0);
+}
