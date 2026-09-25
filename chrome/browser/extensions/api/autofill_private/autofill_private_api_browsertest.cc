@@ -973,6 +973,21 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
+                       PreloadDetailsForUpsertPass_CallsManagerWhenEnabled) {
+  EXPECT_CALL(wallet_manager(),
+              PreloadDetailsForUpsertPass(testing::Eq(
+                  autofill::EntityType(autofill::EntityTypeName::kVehicle))))
+      .Times(1);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivatePreloadDetailsForUpsertPassFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  ASSERT_TRUE(
+      extensions::api_test_utils::RunFunction(function.get(), "[]", profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
                        AddVehicle_SavesToWallet_WhenContextTokenPresent) {
   EntityInstance entity_instance = autofill::test::GetVehicleEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});

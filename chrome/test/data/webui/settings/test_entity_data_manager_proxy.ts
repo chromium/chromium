@@ -11,6 +11,7 @@ type AttributeType = chrome.autofillPrivate.AttributeType;
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 type EntityType = chrome.autofillPrivate.EntityType;
+type UpsertPassDetails = chrome.autofillPrivate.UpsertPassDetails;
 
 export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     EntityDataManagerProxy {
@@ -28,6 +29,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
   private authenticateUserBeforeViewingEntityDataResponse_: boolean = true;
   private saveResolver_: PromiseResolver<void>|null = null;
   private autoResolveSave_: boolean = true;
+  private upsertPassDetails_: UpsertPassDetails|null = null;
 
   constructor() {
     super([
@@ -40,6 +42,8 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
       'getOptInStatus',
       'getWalletablePassDetectionOptInStatus',
       'getWritableEntityTypes',
+      'getDetailsForUpsertPass',
+      'preloadDetailsForUpsertPass',
       'loadEntityInstances',
       'removeEntityInstance',
       'removeEntityInstancesChangedListener',
@@ -86,6 +90,10 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
 
   setSetWalletablePassDetectionOptInStatusResponse(success: boolean): void {
     this.setWalletablePassDetectionOptInStatusResponse_ = success;
+  }
+
+  setGetDetailsForUpsertPassResponse(details: UpsertPassDetails|null): void {
+    this.upsertPassDetails_ = details;
   }
 
   callEntityInstancesChangedListener(
@@ -195,5 +203,14 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
 
   toggleAutofillAiReauthRequirement(): void {
     this.methodCalled('toggleAutofillAiReauthRequirement');
+  }
+
+  getDetailsForUpsertPass(): Promise<UpsertPassDetails|null> {
+    this.methodCalled('getDetailsForUpsertPass');
+    return Promise.resolve(this.upsertPassDetails_);
+  }
+
+  preloadDetailsForUpsertPass(): void {
+    this.methodCalled('preloadDetailsForUpsertPass');
   }
 }

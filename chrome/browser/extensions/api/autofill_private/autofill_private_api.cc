@@ -1461,6 +1461,38 @@ void AutofillPrivateGetDetailsForUpsertPassFunction::
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivatePreloadDetailsForUpsertPassFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivatePreloadDetailsForUpsertPassFunction::Run() {
+  // Preloading is an opportunistic, fire-and-forget background pre-warm
+  // triggered when entering the settings page. If the feature is disabled,
+  // gracefully no-op without returning an error to avoid triggering
+  // `Unchecked runtime.lastError` in the WebUI console.
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillEnableWalletDisclosureNoticePublicPass)) {
+    return RespondNow(NoArguments());
+  }
+
+  // `pass_manager` can be null during browser shutdown or in test
+  // environments where the wallet pass manager is not instantiated. In those
+  // cases, gracefully no-op as preloading is not applicable.
+  autofill::WalletPassAccessManager* pass_manager =
+      autofill_client() ? autofill_client()->GetWalletPassAccessManager()
+                        : nullptr;
+  if (!pass_manager) {
+    return RespondNow(NoArguments());
+  }
+
+  // TODO(crbug.com/557059912): Pass the entity type from the caller instead of
+  // hardcoding vehicle.
+  pass_manager->PreloadDetailsForUpsertPass(
+      autofill::EntityType(autofill::EntityTypeName::kVehicle));
+  return RespondNow(NoArguments());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateGetWritableEntityTypesFunction
 
 ExtensionFunction::ResponseAction

@@ -2923,6 +2923,7 @@ Called by update_extension_histograms.py.-->
   <int value="1988" label="ENTERPRISE_WEBRTC_STOPCAPTURE"/>
   <int value="1989" label="ENTERPRISE_WEBRTC_GETSNAPSHOT"/>
   <int value="1990" label="AUTOFILLPRIVATE_GETDETAILSFORUPSERTPASS"/>
+  <int value="1991" label="AUTOFILLPRIVATE_PRELOADDETAILSFORUPSERTPASS"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

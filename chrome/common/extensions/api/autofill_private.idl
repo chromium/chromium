@@ -710,6 +710,10 @@ namespace autofillPrivate {
     // public pass.
     static void getDetailsForUpsertPass(
       GetDetailsForUpsertPassCallback callback);
+
+    // Preloads legal disclosure lines and context token for upserting a
+    // public pass.
+    static void preloadDetailsForUpsertPass();
   };
 
   interface Events {

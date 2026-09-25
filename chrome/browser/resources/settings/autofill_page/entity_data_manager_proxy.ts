@@ -6,6 +6,7 @@ type AttributeType = chrome.autofillPrivate.AttributeType;
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 type EntityType = chrome.autofillPrivate.EntityType;
+type UpsertPassDetails = chrome.autofillPrivate.UpsertPassDetails;
 
 export type EntityInstancesChangedListener =
     (entityInstances: EntityInstanceWithLabels[]) => void;
@@ -102,6 +103,18 @@ export interface EntityDataManagerProxy {
    * Sets the opt-in status for walletable pass detection for the current user.
    */
   setWalletablePassDetectionOptInStatus(optedIn: boolean): Promise<boolean>;
+
+  /**
+   * Preloads legal disclosure lines and context token for upserting a public
+   * pass into the backend cache.
+   */
+  preloadDetailsForUpsertPass(): void;
+
+  /**
+   * Fetches legal disclosure lines and context token for upserting a public
+   * pass.
+   */
+  getDetailsForUpsertPass(): Promise<UpsertPassDetails|null>;
 }
 
 export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
@@ -168,6 +181,14 @@ export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
   setWalletablePassDetectionOptInStatus(optedIn: boolean) {
     return chrome.autofillPrivate.setWalletablePassDetectionOptInStatus(
         optedIn);
+  }
+
+  preloadDetailsForUpsertPass(): void {
+    chrome.autofillPrivate.preloadDetailsForUpsertPass();
+  }
+
+  getDetailsForUpsertPass(): Promise<UpsertPassDetails|null> {
+    return chrome.autofillPrivate.getDetailsForUpsertPass();
   }
 
   static getInstance() {

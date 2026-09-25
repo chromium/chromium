@@ -554,6 +554,24 @@ class AutofillPrivateGetDetailsForUpsertPassFunction
           wallet::WalletHttpClient::WalletRequestError> response);
 };
 
+class AutofillPrivatePreloadDetailsForUpsertPassFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivatePreloadDetailsForUpsertPassFunction() = default;
+  AutofillPrivatePreloadDetailsForUpsertPassFunction(
+      const AutofillPrivatePreloadDetailsForUpsertPassFunction&) = delete;
+  AutofillPrivatePreloadDetailsForUpsertPassFunction& operator=(
+      const AutofillPrivatePreloadDetailsForUpsertPassFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.preloadDetailsForUpsertPass",
+                             AUTOFILLPRIVATE_PRELOADDETAILSFORUPSERTPASS)
+
+ protected:
+  ~AutofillPrivatePreloadDetailsForUpsertPassFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class AutofillPrivateGetWritableEntityTypesFunction
     : public AutofillPrivateExtensionFunction {
  public:

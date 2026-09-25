@@ -42,6 +42,14 @@ suite('TravelPage', function() {
     CrSettingsPrefs.resetForTesting();
   });
 
+  test('triggers prefetch on connect', async function() {
+    assertEquals(
+        0, entityDataManager.getCallCount('preloadDetailsForUpsertPass'));
+    await setupPage();
+    assertEquals(
+        1, entityDataManager.getCallCount('preloadDetailsForUpsertPass'));
+  });
+
   [{travelOptIn: true},
    {travelOptIn: false},
   ].forEach(({travelOptIn}) => {

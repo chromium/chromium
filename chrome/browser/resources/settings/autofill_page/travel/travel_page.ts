@@ -32,6 +32,8 @@ import {MetricsBrowserProxyImpl, SuggestionsFromGeminiEntryPoint} from '../../me
 import {routes} from '../../route.js';
 import {Router} from '../../router.js';
 import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+import type {EntityDataManagerProxy} from '../entity_data_manager_proxy.js';
+import {EntityDataManagerProxyImpl} from '../entity_data_manager_proxy.js';
 import {AutofillPolicyDataCategory, checkAutofillPoliciesAndModifyPrefIfNecessary} from '../policy_utils.js';
 import type {TypesBlockedEntry} from '../policy_utils.js';
 
@@ -118,6 +120,8 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private entityDataManager_: EntityDataManagerProxy =
+      EntityDataManagerProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -125,6 +129,8 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
     CrSettingsPrefs.initialized.then(() => {
       this.prefsInitialized_ = true;
     });
+
+    this.entityDataManager_.preloadDetailsForUpsertPass();
   }
 
   private optInToggleDisabled_(): boolean {

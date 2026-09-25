@@ -287,6 +287,22 @@ declare global {
         value: string|DateValue;
       }
 
+      export interface LegalMessageLink {
+        start: number;
+        end: number;
+        url: string;
+      }
+
+      export interface LegalMessageLine {
+        text: string;
+        links: LegalMessageLink[];
+      }
+
+      export interface UpsertPassDetails {
+        legalMessageLines: LegalMessageLine[];
+        contextToken: string;
+      }
+
       export interface EntityInstance {
         type: EntityType;
         attributeInstances: AttributeInstance[];
@@ -295,6 +311,7 @@ declare global {
         shouldAuthenticateToView?: boolean;
         storedInWallet?: boolean;
         isReadOnly?: boolean;
+        contextToken?: string;
       }
 
       export interface EntityInstanceWithLabels {
@@ -362,6 +379,9 @@ declare global {
           Promise<boolean>;
       export function fetchUserDataProcessingConsent():
           Promise<UserDataProcessingConsentStates>;
+      export function getDetailsForUpsertPass():
+          Promise<UpsertPassDetails|null>;
+      export function preloadDetailsForUpsertPass(): void;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
            ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],
