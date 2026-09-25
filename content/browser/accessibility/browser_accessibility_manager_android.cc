@@ -1210,9 +1210,6 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
     // A non BEFORE_TEXT child offset for a leaf node points to after the anchor
     // point. Hence again the target is set to the anchor node, but keeping a
     // note to select after it.
-    // TODO(crbug.com/443078007): Add test for both cases. The position is
-    // inside the container and not before or after the container, hence moving
-    // it before or after the `target_node` is not right.
     target_node = position->GetAnchor();
     at_end_of_anchor =
         (position->child_index() != ui::AXNodePosition::BEFORE_TEXT);
