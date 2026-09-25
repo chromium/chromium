@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/modules/breakout_box/frame_queue_transferring_optimizer.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_track_generator.h"
 #include "third_party/blink/renderer/modules/breakout_box/metrics.h"
@@ -557,6 +559,42 @@ TEST_F(MediaStreamTrackProcessorTest, TransferAfterClearDoesNotTransfer) {
   // already cleared.
   EXPECT_EQ(source_b->TotalFrames(), 0u);
   EXPECT_EQ(source_a->DiscardedFrames(), 1u);
+}
+
+TEST_F(MediaStreamTrackProcessorTest,
+       OptimizationAfterContextDestroyedDoesNotTransfer) {
+  V8TestingScope host_scope;
+  ScriptState* host_script_state = host_scope.GetScriptState();
+  ExceptionState& exception_state = host_scope.GetExceptionState();
+  PushableMediaStreamVideoSource* pushable_video_source =
+      CreatePushableVideoSource();
+  MediaStreamTrackProcessor* track_processor =
+      MediaStreamTrackProcessor::Create(
+          host_script_state,
+          CreateVideoMediaStreamTrack(host_scope.GetExecutionContext(),
+                                      pushable_video_source),
+          exception_state);
+
+  MediaStreamVideoTrack* video_track =
+      MediaStreamVideoTrack::From(track_processor->InputTrack()->Component());
+  ReadableStream* readable = track_processor->readable(host_script_state);
+  EXPECT_EQ(video_track->CountSinks(), 1u);
+  auto optimizer = readable->TakeTransferringOptimizer();
+
+  V8TestingScope dest_scope;
+  dest_scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  EXPECT_EQ(
+      optimizer->PerformInProcessOptimization(dest_scope.GetScriptState()),
+      nullptr);
+
+  base::test::TestFuture<void> flush_host_runner;
+  host_scope.GetExecutionContext()
+      ->GetTaskRunner(TaskType::kInternalMediaRealTime)
+      ->PostTask(FROM_HERE, flush_host_runner.GetCallback());
+  EXPECT_TRUE(flush_host_runner.Wait());
+  EXPECT_TRUE(readable->IsClosed());
+  EXPECT_EQ(video_track->CountSinks(), 0u);
 }
 
 TEST_F(MediaStreamTrackProcessorTest, AudioStats) {
