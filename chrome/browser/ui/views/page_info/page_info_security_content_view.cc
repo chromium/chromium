@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 
 #include <string>
+#include <vector>
 
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -15,9 +17,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "net/base/features.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -179,17 +183,34 @@ void PageInfoSecurityContentView::SetIdentityInfo(
             ChromeLayoutProvider::Get()
                 ->GetInsetsMetric(views::INSETS_DIALOG)
                 .left()));
+        one_qwac_view_->SetID(
+            PageInfoViewFactory::VIEW_ID_PAGE_INFO_ONE_QWAC_INFORMATION);
         one_qwac_view_->SetSummary(qwac_title,
                                    views::style::STYLE_BODY_3_MEDIUM);
         one_qwac_view_->SetIcon(qwac_icon);
+        std::vector<std::u16string> qwac_a11y_parts = {
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_QWAC_ICON_A11Y_LABEL),
+            qwac_title};
         if (certificate_ &&
             !certificate_->subject().organization_names.empty() &&
             !certificate_->subject().country_name.empty()) {
-          one_qwac_view_->SetDetails(l10n_util::GetStringFUTF16(
+          std::u16string qwac_details = l10n_util::GetStringFUTF16(
               IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
               base::UTF8ToUTF16(certificate_->subject().organization_names[0]),
-              base::UTF8ToUTF16(certificate_->subject().country_name)));
+              base::UTF8ToUTF16(certificate_->subject().country_name));
+          one_qwac_view_->SetDetails(qwac_details);
+          qwac_a11y_parts.push_back(qwac_details);
         }
+        // Unlike the 2-QWAC row, this row is not a button and contains no
+        // focusable controls, so a screen reader following keyboard focus
+        // skips it entirely. Expose it as an accessibility-only focus target
+        // naming its whole contents, so the EU qualified status is announced
+        // for 1-QWAC sites just as it is for 2-QWAC ones.
+        one_qwac_view_->SetFocusBehavior(
+            views::View::FocusBehavior::ACCESSIBLE_ONLY);
+        one_qwac_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+        one_qwac_view_->GetViewAccessibility().SetName(
+            base::JoinString(qwac_a11y_parts, u"\n"));
       }
       // If QWAC info line has been added previously, remove the old one before
       // recreating it. Re-adding it bumps it to the bottom of the container,
@@ -217,6 +238,13 @@ void PageInfoSecurityContentView::SetIdentityInfo(
                 this),
             qwac_icon, qwac_title, qwac_subtitle,
             PageInfoViewFactory::GetLaunchIcon()));
+        two_qwac_button_->SetID(
+            PageInfoViewFactory::
+                VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_TWO_QWAC_CERTIFICATE_VIEWER);
+        two_qwac_button_->SetIconAccessibleName(
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_QWAC_ICON_A11Y_LABEL));
+        two_qwac_button_->SetActionIconAccessibleName(
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_OPEN_QWAC_A11Y_LABEL));
         two_qwac_button_->SetTitleTextStyleAndColor(
             views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
         two_qwac_button_->SetSubtitleTextStyleAndColor(
@@ -245,6 +273,8 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     certificate_button_->SetID(
         PageInfoViewFactory::
             VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER);
+    certificate_button_->SetActionIconAccessibleName(l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_OPEN_CERTIFICATE_DETAILS_A11Y_LABEL));
     certificate_button_->SetTooltipText(tooltip);
     certificate_button_->SetTitleTextStyleAndColor(
         views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);

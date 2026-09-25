@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_HOVER_BUTTON_H_
 
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -59,6 +60,11 @@ class RichHoverButton : public HoverButton {
 
   ui::ImageModel GetIcon() const;
   void SetIcon(ui::ImageModel icon);
+  // Sets text describing the main icon, to be included in this button's
+  // accessible name. The icon itself is not exposed to accessibility: it is not
+  // focusable, so screen readers would only reach it if the user explicitly
+  // navigated into the button.
+  void SetIconAccessibleName(const std::u16string& accessible_name);
 
   std::u16string_view GetTitleText() const;
   void SetTitleText(std::u16string_view title_text);
@@ -68,6 +74,9 @@ class RichHoverButton : public HoverButton {
 
   ui::ImageModel GetActionIcon() const;
   void SetActionIcon(ui::ImageModel action_icon);
+  // Sets text describing the action icon, to be included in this button's
+  // accessible name. See `SetIconAccessibleName()`.
+  void SetActionIconAccessibleName(const std::u16string& accessible_name);
 
   std::u16string_view GetSubtitleText() const;
   void SetSubtitleText(std::u16string_view subtitle_text);
@@ -136,7 +145,8 @@ class RichHoverButton : public HoverButton {
   // obviate the need to recreate the layout after construction.
   void RecreateLayout();
 
-  // Recomputes the accessible name, which is affected by both labels.
+  // Recomputes the accessible name, which is affected by both labels and by the
+  // icon descriptions.
   void UpdateAccessibleName();
 
   // Adds filler views for state icon (if set) and action icon columns. Used for
@@ -149,6 +159,10 @@ class RichHoverButton : public HoverButton {
   raw_ptr<views::Label> title_;  // Never null.
   raw_ptr<views::ImageView> state_icon_ = nullptr;
   raw_ptr<views::ImageView> action_icon_ = nullptr;
+  // Descriptions of the icons, folded into the accessible name. Empty if the
+  // corresponding icon is purely decorative.
+  std::u16string icon_accessible_name_;
+  std::u16string action_icon_accessible_name_;
   size_t custom_view_row_start_;
   std::vector<raw_ptr<views::View>> custom_view_row_views_;
   std::vector<raw_ptr<views::View>> subtitle_row_views_;

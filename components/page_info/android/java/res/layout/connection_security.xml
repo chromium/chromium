@@ -78,7 +78,7 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="24dp"
-                android:importantForAccessibility="no"
+                android:contentDescription="@string/page_info_qwac_icon_a11y_label"
                 app:tint="@color/default_icon_color_tint_list"
                 android:src="@drawable/qwac_status" />
             <LinearLayout
@@ -106,7 +106,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="24dp"
                 android:layout_gravity="end"
-                android:importantForAccessibility="no"
+                android:contentDescription="@string/page_info_open_qwac_a11y_label"
                 app:tint="@color/default_icon_color_tint_list"
                 android:src="@drawable/open_in_new" />
     </LinearLayout>
@@ -144,7 +144,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="24dp"
                 android:layout_gravity="end"
-                android:importantForAccessibility="no"
+                android:contentDescription="@string/page_info_open_certificate_details_a11y_label"
                 app:tint="@color/default_icon_color_tint_list"
                 android:src="@drawable/open_in_new" />
     </LinearLayout>

@@ -206,6 +206,15 @@
     <message name="IDS_PAGE_INFO_QWAC_STATUS_TITLE" desc="The text of the title of the Page Info row that shows EU Qualified Certificate status." formatter_data="android_java">
       EU Qualified Status
     </message>
+    <message name="IDS_PAGE_INFO_QWAC_ICON_A11Y_LABEL" desc="The accessibility label for the EU trust mark logo icon in the Page Info row that shows EU Qualified Certificate status." formatter_data="android_java" is_accessibility_with_no_ui="true">
+      EU trust mark
+    </message>
+    <message name="IDS_PAGE_INFO_OPEN_CERTIFICATE_DETAILS_A11Y_LABEL" desc="The accessibility label for the button icon that opens the certificate details dialog in Page Info." formatter_data="android_java" is_accessibility_with_no_ui="true">
+      Open certificate details
+    </message>
+    <message name="IDS_PAGE_INFO_OPEN_QWAC_A11Y_LABEL" desc="The accessibility label for the button icon that opens the EU Qualified Certificate (QWAC) dialog in Page Info." formatter_data="android_java" is_accessibility_with_no_ui="true">
+      Open EU Qualified Certificate (QWAC)
+    </message>
 
     <!-- Certificate Info strings -->
     <if expr="is_android">

@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
-#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -120,6 +122,15 @@ void RichHoverButton::SetIcon(ui::ImageModel icon) {
   SetIconMember(icon_, start_, std::move(icon), true);
 }
 
+void RichHoverButton::SetIconAccessibleName(
+    const std::u16string& accessible_name) {
+  if (icon_accessible_name_ == accessible_name) {
+    return;
+  }
+  icon_accessible_name_ = accessible_name;
+  UpdateAccessibleName();
+}
+
 std::u16string_view RichHoverButton::GetTitleText() const {
   return title_->GetText();
 }
@@ -144,6 +155,15 @@ ui::ImageModel RichHoverButton::GetActionIcon() const {
 void RichHoverButton::SetActionIcon(ui::ImageModel action_icon) {
   SetIconMember(action_icon_, start_ + (state_icon_ ? 3 : 2),
                 std::move(action_icon), true);
+}
+
+void RichHoverButton::SetActionIconAccessibleName(
+    const std::u16string& accessible_name) {
+  if (action_icon_accessible_name_ == accessible_name) {
+    return;
+  }
+  action_icon_accessible_name_ = accessible_name;
+  UpdateAccessibleName();
 }
 
 std::u16string_view RichHoverButton::GetSubtitleText() const {
@@ -293,11 +313,21 @@ void RichHoverButton::RecreateLayout() {
 }
 
 void RichHoverButton::UpdateAccessibleName() {
-  const std::u16string_view title_text = GetTitleText();
+  // Assemble the name in visual reading order: main icon, title, subtitle,
+  // action icon.
+  std::vector<std::u16string_view> parts;
+  if (!icon_accessible_name_.empty()) {
+    parts.push_back(icon_accessible_name_);
+  }
+  parts.push_back(GetTitleText());
   const std::u16string_view subtitle_text = GetSubtitleText();
-  HoverButton::GetViewAccessibility().SetName(
-      subtitle_text.empty() ? std::u16string(title_text)
-                            : base::StrCat({title_text, u"\n", subtitle_text}));
+  if (!subtitle_text.empty()) {
+    parts.push_back(subtitle_text);
+  }
+  if (!action_icon_accessible_name_.empty()) {
+    parts.push_back(action_icon_accessible_name_);
+  }
+  HoverButton::GetViewAccessibility().SetName(base::JoinString(parts, u"\n"));
 }
 
 std::vector<raw_ptr<views::View>> RichHoverButton::AddFillerViews(

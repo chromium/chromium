@@ -47,3 +47,16 @@ source_set("controls") {
     "//content/public/browser",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "rich_hover_button_unittest.cc" ]
+  deps = [
+    ":controls",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
