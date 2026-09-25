@@ -43,7 +43,6 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/speech/extension_api",
   "+chrome/browser/sync",
   "+chrome/browser/ui/ash/keyboard",
@@ -58,3 +57,9 @@ include_rules = [
   "+chrome/common/webui_url_constants.h",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  ".*browsertest\\.cc": [
+    "+chrome/browser/signin",
+  ],
+}
