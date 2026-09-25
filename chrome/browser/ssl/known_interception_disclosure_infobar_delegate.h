@@ -53,6 +53,11 @@ class KnownInterceptionDisclosureCooldown {
 
   void SetClockForTesting(std::unique_ptr<base::Clock> clock);
 
+  // Resets the clock to base::DefaultClock, resets singleton state flags,
+  // and (on Android) clears the cooldown timestamp from the provided profile's
+  // preferences if non-null.
+  void ResetForTesting(Profile* profile = nullptr);
+
  private:
   friend struct base::DefaultSingletonTraits<
       KnownInterceptionDisclosureCooldown>;

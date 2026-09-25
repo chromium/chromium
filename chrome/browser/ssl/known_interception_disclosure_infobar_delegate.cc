@@ -61,7 +61,20 @@ void KnownInterceptionDisclosureCooldown::Activate(Profile* profile) {
 
 void KnownInterceptionDisclosureCooldown::SetClockForTesting(
     std::unique_ptr<base::Clock> clock) {
-  clock_ = std::move(clock);
+  clock_ = clock ? std::move(clock) : std::make_unique<base::DefaultClock>();
+}
+
+void KnownInterceptionDisclosureCooldown::ResetForTesting(Profile* profile) {
+  clock_ = std::make_unique<base::DefaultClock>();
+  has_seen_known_interception_ = false;
+#if BUILDFLAG(IS_ANDROID)
+  if (profile) {
+    profile->GetPrefs()->ClearPref(
+        prefs::kKnownInterceptionDisclosureInfobarLastShown);
+  }
+#else
+  last_dismissal_time_ = base::Time();
+#endif
 }
 
 KnownInterceptionDisclosureCooldown::KnownInterceptionDisclosureCooldown() =

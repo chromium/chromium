@@ -42,6 +42,9 @@ class KnownInterceptionDisclosureMessageDelegateTest
   }
 
   void TearDown() override {
+    clock_ = nullptr;
+    KnownInterceptionDisclosureCooldown::GetInstance()->ResetForTesting(
+        profile());
     ChromeRenderViewHostTestHarness::TearDown();
     messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
   }

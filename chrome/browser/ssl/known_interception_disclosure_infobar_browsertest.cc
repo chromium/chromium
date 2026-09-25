@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_restrictions.h"
@@ -132,6 +134,7 @@ class KnownInterceptionDisclosurePlatformBrowserTest
     messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
     g_last_message_wrapper = nullptr;
 #endif
+    KnownInterceptionDisclosureCooldown::GetInstance()->ResetForTesting();
     PlatformBrowserTest::TearDown();
   }
 
@@ -183,6 +186,11 @@ IN_PROC_BROWSER_TEST_P(KnownInterceptionDisclosurePlatformBrowserTest,
   const GURL kInterceptedUrl(https_server_.GetURL("/ssl/google.html"));
 
   content::WebContents* tab1 = chrome_test_utils::GetActiveWebContents(this);
+
+  base::ScopedClosureRunner reset_cooldown(base::BindOnce(
+      &KnownInterceptionDisclosureCooldown::ResetForTesting,
+      base::Unretained(KnownInterceptionDisclosureCooldown::GetInstance()),
+      chrome_test_utils::GetProfile(this)));
 
   auto clock = std::make_unique<base::SimpleTestClock>();
   auto* clock_ptr = clock.get();
@@ -274,9 +282,20 @@ IN_PROC_BROWSER_TEST_P(KnownInterceptionDisclosurePlatformBrowserTest,
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Centralized infobars are not supported on Android, which instead uses
+// Messages. Only instantiate once for the default path.
+INSTANTIATE_TEST_SUITE_P(All,
+                         KnownInterceptionDisclosurePlatformBrowserTest,
+                         testing::Values(false),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return "Default";
+                         });
+#else
 INSTANTIATE_TEST_SUITE_P(All,
                          KnownInterceptionDisclosurePlatformBrowserTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "Migrated" : "Legacy";
                          });
+#endif
