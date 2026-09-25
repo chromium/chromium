@@ -90,6 +90,10 @@ void DefaultBrowserModalHandler::Confirm() {
 }
 
 void DefaultBrowserModalHandler::TryAgain() {
+  if (auto* surface_manager = DefaultBrowserPromptManager::GetInstance()
+                                  ->GetPromptSurfaceManager()) {
+    surface_manager->HandleRetry();
+  }
 #if BUILDFLAG(IS_WIN)
   // Re-open Windows Settings directly rather than via `DefaultBrowserSetter`:
   // `OpenSystemSettingsHelper::Begin()` cancels any in-flight watcher,

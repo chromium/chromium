@@ -59,6 +59,10 @@ enum class DefaultBrowserInteractionType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:DefaultBrowserUserInteraction)
 
+// Retry counts at or above this value are reported in a single "3+" bucket of
+// the `RetryCount` histogram.
+inline constexpr int kMaxRecordedRetryCount = 3;
+
 std::string UiEntrypointTypeToString(
     DefaultBrowserEntrypointType ui_entrypoint);
 std::string SetterTypeToString(DefaultBrowserSetterType setter_type);
@@ -84,6 +88,9 @@ class DefaultBrowserController {
       const DefaultBrowserSetter::ExecuteParams& params = {});
   void OnIgnored();
   void OnDismissed();
+
+  static void RecordRetryCount(DefaultBrowserEntrypointType ui_entrypoint,
+                               int retry_count);
 
  private:
   void OnSetterExecutionComplete(

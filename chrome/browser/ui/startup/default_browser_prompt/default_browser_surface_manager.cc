@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -52,6 +53,14 @@ browser_util::PinAppToTaskbarChannel EntrypointToPinToTaskbarChannel(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+bool IsStickyModalEntrypoint(
+    default_browser::DefaultBrowserEntrypointType entrypoint_type) {
+  return entrypoint_type == default_browser::DefaultBrowserEntrypointType::
+                                kStickyModalDialogWithSettingsIllustration ||
+         entrypoint_type == default_browser::DefaultBrowserEntrypointType::
+                                kStickyModalDialogWithoutSettingsIllustration;
+}
+
 }  // namespace
 
 DefaultBrowserSurfaceManager::DefaultBrowserSurfaceManager() = default;
@@ -66,6 +75,7 @@ void DefaultBrowserSurfaceManager::Show(bool can_pin_to_taskbar) {
   CloseAll();
   can_pin_to_taskbar_ = can_pin_to_taskbar;
   has_accepted_ = false;
+  retry_count_.reset();
 
   controller_ = default_browser::DefaultBrowserManager::CreateControllerFor(
       GetEntrypointType());
@@ -94,6 +104,7 @@ void DefaultBrowserSurfaceManager::Show(bool can_pin_to_taskbar) {
 }
 
 void DefaultBrowserSurfaceManager::CloseAll() {
+  RecordRetryCountIfAccepted();
   can_pin_to_taskbar_ = false;
   default_browser_subscription_ = {};
   browser_collection_observation_.Reset();
@@ -139,6 +150,15 @@ void DefaultBrowserSurfaceManager::OnDefaultBrowserStateChanged(
   }
 }
 
+void DefaultBrowserSurfaceManager::RecordRetryCountIfAccepted() {
+  if (!retry_count_) {
+    return;
+  }
+  default_browser::DefaultBrowserController::RecordRetryCount(
+      GetEntrypointType(), *retry_count_);
+  retry_count_.reset();
+}
+
 void DefaultBrowserSurfaceManager::HandleAccept() {
   if (!controller_) {
     return;
@@ -146,6 +166,9 @@ void DefaultBrowserSurfaceManager::HandleAccept() {
 
   has_accepted_ = true;
   has_accepted_callbacks_.Notify(true);
+  if (IsStickyModalEntrypoint(GetEntrypointType())) {
+    retry_count_ = 0;
+  }
 
   default_browser::DefaultBrowserSetter::ExecuteParams execute_params;
   if (can_pin_to_taskbar()) {
@@ -170,6 +193,15 @@ void DefaultBrowserSurfaceManager::HandleAccept() {
 
   controller_->OnAccepted(base::DoNothingWithBoundArgs(std::move(controller_)),
                           std::move(execute_params));
+}
+
+void DefaultBrowserSurfaceManager::HandleRetry() {
+  if (!retry_count_) {
+    return;
+  }
+  // Retries beyond the max are all reported in the "3+" bucket.
+  *retry_count_ =
+      std::min(*retry_count_ + 1, default_browser::kMaxRecordedRetryCount);
 }
 
 void DefaultBrowserSurfaceManager::HandleDismiss() {

@@ -26,19 +26,25 @@
 
 class TestDefaultBrowserSurfaceManager : public DefaultBrowserSurfaceManager {
  public:
-  TestDefaultBrowserSurfaceManager() = default;
+  explicit TestDefaultBrowserSurfaceManager(
+      default_browser::DefaultBrowserEntrypointType entrypoint_type =
+          default_browser::DefaultBrowserEntrypointType::kStartupInfobar)
+      : entrypoint_type_(entrypoint_type) {}
   ~TestDefaultBrowserSurfaceManager() override = default;
 
   using DefaultBrowserSurfaceManager::IsBrowserValidForShowing;
 
   default_browser::DefaultBrowserEntrypointType GetEntrypointType()
       const override {
-    return default_browser::DefaultBrowserEntrypointType::kStartupInfobar;
+    return entrypoint_type_;
   }
 
   void ShowForBrowser(BrowserWindowInterface* browser) override {}
   void CloseForBrowser(BrowserWindowInterface* browser) override {}
   void CloseAllPromptInstances() override {}
+
+ private:
+  default_browser::DefaultBrowserEntrypointType entrypoint_type_;
 };
 
 class DefaultBrowserSurfaceManagerTest : public testing::Test {
@@ -164,4 +170,49 @@ TEST_F(DefaultBrowserSurfaceManagerTest, HandleAcceptNotifiesObservers) {
 
   manager.Show(/*can_pin_to_taskbar=*/false);
   EXPECT_FALSE(manager.has_accepted());
+}
+
+TEST_F(DefaultBrowserSurfaceManagerTest, RecordsRetryCountOnCloseAfterAccept) {
+  base::HistogramTester histogram_tester;
+
+  // Non-sticky surfaces do not emit RetryCount.
+  TestDefaultBrowserSurfaceManager non_sticky_manager(
+      default_browser::DefaultBrowserEntrypointType::kStartupInfobar);
+  non_sticky_manager.Show(/*can_pin_to_taskbar=*/false);
+  non_sticky_manager.HandleAccept();
+  non_sticky_manager.CloseAll();
+  histogram_tester.ExpectTotalCount(
+      "DefaultBrowser.InfoBar.ShellIntegration.RetryCount", 0);
+
+  TestDefaultBrowserSurfaceManager sticky_manager(
+      default_browser::DefaultBrowserEntrypointType::
+          kStickyModalDialogWithoutSettingsIllustration);
+  constexpr char kStickyHistogram[] =
+      "DefaultBrowser.StickyModalDialogWithoutSettingsIllustration."
+      "ShellIntegration.RetryCount";
+
+  sticky_manager.Show(/*can_pin_to_taskbar=*/false);
+  sticky_manager.HandleRetry();
+  sticky_manager.HandleDismiss();
+  sticky_manager.CloseAll();
+  histogram_tester.ExpectTotalCount(kStickyHistogram, 0);
+
+  sticky_manager.Show(/*can_pin_to_taskbar=*/false);
+  sticky_manager.HandleAccept();
+  sticky_manager.HandleRetry();
+  sticky_manager.HandleRetry();
+  sticky_manager.CloseAll();
+  histogram_tester.ExpectBucketCount(kStickyHistogram, 2, 1);
+  // Recording the retry count does not change the accepted state.
+  EXPECT_TRUE(sticky_manager.has_accepted());
+
+  // Retrying 5 times caps into the 3+ bucket.
+  sticky_manager.Show(/*can_pin_to_taskbar=*/false);
+  sticky_manager.HandleAccept();
+  for (int i = 0; i < 5; ++i) {
+    sticky_manager.HandleRetry();
+  }
+  sticky_manager.CloseAll();
+  histogram_tester.ExpectBucketCount(kStickyHistogram, 3, 1);
+  histogram_tester.ExpectTotalCount(kStickyHistogram, 2);
 }

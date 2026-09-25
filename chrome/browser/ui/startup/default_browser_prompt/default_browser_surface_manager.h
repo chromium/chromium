@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_SURFACE_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
@@ -60,6 +61,7 @@ class DefaultBrowserSurfaceManager : public BrowserCollectionObserver {
 
   // Methods for derived classes to handle user interactions via the controller.
   void HandleAccept();
+  void HandleRetry();
   void HandleDismiss();
   void HandleIgnore();
 
@@ -92,11 +94,17 @@ class DefaultBrowserSurfaceManager : public BrowserCollectionObserver {
   void OnDefaultBrowserStateChanged(
       shell_integration::DefaultWebClientState state);
 
+  // Records the session retry count histogram if the prompt was accepted.
+  void RecordRetryCountIfAccepted();
+
   // Flag indicating if the taskbar pinning option should be available.
   bool can_pin_to_taskbar_ = false;
 
   // Flag indicating if an accept was already handled in this session.
   bool has_accepted_ = false;
+
+  // Number of times the user clicked retry after accepting in this session.
+  std::optional<int> retry_count_;
 
   // Observers notified when `has_accepted_` changes.
   base::RepeatingCallbackList<void(bool)> has_accepted_callbacks_;
