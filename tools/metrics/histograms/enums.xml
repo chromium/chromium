@@ -6533,7 +6533,7 @@ shown properly on the user-facing crash UI.
   <int value="25192" label="Bihari"/>
   <int value="25193" label="Bislama"/>
   <int value="25197" label="Bambara"/>
-  <int value="25198" label="Bengali"/>
+  <int value="25198" label="Bangla"/>
   <int value="25199" label="Tibetan"/>
   <int value="25202" label="Breton"/>
   <int value="25203" label="Bosnian"/>
@@ -6640,7 +6640,7 @@ shown properly on the user-facing crash UI.
   <int value="28515" label="Occitan"/>
   <int value="28522" label="Ojibwa"/>
   <int value="28525" label="Oromo"/>
-  <int value="28530" label="Oriya"/>
+  <int value="28530" label="Odia"/>
   <int value="28531" label="Ossetic"/>
   <int value="28769" label="Punjabi"/>
   <int value="28777" label="Pali"/>
@@ -7638,10 +7638,10 @@ shown properly on the user-facing crash UI.
   <int value="-226066958" label="bg-Latn">Bulgarian (Latin)</int>
   <int value="-219674420" label="ta">Tamil</int>
   <int value="-183664425" label="pt-PT">European Portuguese</int>
-  <int value="-181870943" label="bn">Bengali</int>
+  <int value="-181870943" label="bn">Bangla</int>
   <int value="-119774173" label="dav">Taita</int>
   <int value="-110306666" label="sr">Serbian</int>
-  <int value="-96372035" label="bn-BD">Bengali (Bangladesh)</int>
+  <int value="-96372035" label="bn-BD">Bangla (Bangladesh)</int>
   <int value="-91748674" label="tn">Tswana</int>
   <int value="-91654905" label="luo">Luo</int>
   <int value="-78164291" label="kk">Kazakh</int>
