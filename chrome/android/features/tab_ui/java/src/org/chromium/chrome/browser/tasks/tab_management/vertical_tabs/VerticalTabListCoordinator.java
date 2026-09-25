@@ -1072,7 +1072,7 @@ public class VerticalTabListCoordinator {
     /**
      * Toggles the expanded/collapsed visual and layout state of a tab group.
      *
-     * @param tabId the ID of the representative tab representing the tab group.
+     * @param tabId The ID of a tab in the tab group.
      */
     @VisibleForTesting
     void toggleTabGroupExpansion(int tabId) {
@@ -1360,8 +1360,7 @@ public class VerticalTabListCoordinator {
 
                         // Do not allow dragging out the last tab in a group.
                         // (To be handled when dragging out tab groups is enabled).
-                        if (tabModel.isTabInTabGroup(tab)
-                                && tabModel.getRelatedTabList(tabId).size() == 1) {
+                        if (tabModel.getTabCountForGroup(tab.getTabGroupId()) == 1) {
                             return;
                         }
                     }

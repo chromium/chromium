@@ -534,8 +534,6 @@ public class FlatLayoutDelegateUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
-
         when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
 
         // Execute merging mTab2.

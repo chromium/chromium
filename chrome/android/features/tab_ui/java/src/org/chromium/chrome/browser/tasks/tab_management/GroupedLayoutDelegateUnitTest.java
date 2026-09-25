@@ -769,8 +769,7 @@ public class GroupedLayoutDelegateUnitTest {
 
         mDelegate.didChangeTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
 
-        verify(mMediator).updateTabGroupProperties(mTab1, model, TabGroupColorId.BLUE);
-        verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
+        verify(mMediator).updateTabGroupProperties(model, TAB_GROUP_ID, TabGroupColorId.BLUE);
         verify(mMediator).updateDescriptionString(model);
         verify(mMediator).updateActionButtonDescriptionString(mTab1, model);
         verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
@@ -886,9 +885,9 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testDidMoveTabOutOfGroup_UngroupRepresentativeTab_AddsCard() {
-        // When the representative tab is ungrouped (movedTab == previousGroupTab), a new card must
-        // be added to the model because the TAB_GROUP card will be deleted by didRemoveTabGroup.
+    public void testDidMoveTabOutOfGroup_UngroupTab_AddsCard() {
+        // When a tab is ungrouped, a new card must be added to the model because the TAB_GROUP
+        // card will be deleted by didRemoveTabGroup.
         when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
         setupRepresentativeTab(mTab1, mTab1, 0);
         when(mTab1.getTabGroupId()).thenReturn(null);
@@ -1044,7 +1043,8 @@ public class GroupedLayoutDelegateUnitTest {
     public void testDidMergeTabToGroup_featureDisabled() {
         setupTabsInModel(mTab1, mTab2);
         setupRepresentativeTab(mTab1, mTab1, 0);
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
 
         PropertyModel model1 = createAndAddPropertyModel(TAB1_ID);
         model1.set(TabProperties.TITLE, "Tab 1");
@@ -1064,9 +1064,10 @@ public class GroupedLayoutDelegateUnitTest {
     public void testDidMergeTabToGroup_UpdatesCards_featureDisabled() {
         setupTabsInModel(mTab1, mTab2);
         setupRepresentativeTab(mTab2, mTab2, 0);
-        when(mMediator.getRelatedTabsForId(TAB2_ID)).thenReturn(List.of(mTab1, mTab2));
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB2_ID);
         when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
 
@@ -1139,7 +1140,7 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTab2.getTabGroupId()).thenReturn(groupId1);
         setupTabsInModel(mTab1, mTab2);
         setupRepresentativeTab(mTab1, mTab1, 0);
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(groupId1)).thenReturn(List.of(mTab1, mTab2));
 
         GroupedLayoutDelegate delegate =
                 new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
@@ -1169,11 +1170,10 @@ public class GroupedLayoutDelegateUnitTest {
     public void testDidMergeTabToGroup_UpdatesCards() {
         setupTabsInModel(mTab1, mTab2);
         setupRepresentativeTab(mTab2, mTab2, 0);
-        when(mMediator.getRelatedTabsForId(TAB2_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB2_ID);
         when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
 
         GroupedLayoutDelegate delegate =
@@ -1423,10 +1423,10 @@ public class GroupedLayoutDelegateUnitTest {
         GroupedLayoutDelegate delegate =
                 new GroupedLayoutDelegate(mMediator, mModelList, mThumbnailProvider);
 
-        // The representative tab resolves to the group card.
+        // The tab whose ID is on the card resolves to the group card.
         assertEquals(1, delegate.getIndexFromTabId(TAB2_ID));
 
-        // Non-representative tab in the group also resolves to the group card.
+        // Another tab in the group also resolves to the group card via the group Token.
         assertEquals(1, delegate.getIndexFromTabId(TAB3_ID));
         assertEquals(TabModel.INVALID_TAB_INDEX, mModelList.indexFromTabId(TAB3_ID));
     }
@@ -1704,11 +1704,11 @@ public class GroupedLayoutDelegateUnitTest {
         return model;
     }
 
-    private PropertyModel createAndAddGroupCardModel(Token tabGroupId, int representativeTabId) {
+    private PropertyModel createAndAddGroupCardModel(Token tabGroupId, int tabId) {
         PropertyModel model =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(CARD_TYPE, TAB_GROUP)
-                        .with(TabProperties.TAB_ID, representativeTabId)
+                        .with(TabProperties.TAB_ID, tabId)
                         .with(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId)
                         .with(TabProperties.TAB_GROUP_ID, null)
                         .with(TabProperties.IS_COLLAPSED, true)

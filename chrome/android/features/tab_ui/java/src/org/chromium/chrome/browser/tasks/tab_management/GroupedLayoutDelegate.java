@@ -311,8 +311,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         Tab tab = indexAndTab.second;
         PropertyModel model = mModelList.get(indexAndTab.first).model;
 
-        mMediator.updateTabGroupProperties(tab, model, newColor);
-        mMediator.updateFaviconForTab(model, tab, null, null);
+        mMediator.updateTabGroupProperties(model, tabGroupId, newColor);
         mMediator.updateDescriptionString(model);
         mMediator.updateActionButtonDescriptionString(tab, model);
         mMediator.updateThumbnailFetcher(model, tab.getId());
@@ -382,15 +381,22 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
+        Token tabGroupId = movedTab.getTabGroupId();
+        if (tabGroupId == null) return;
+
+        TabModel tabModel = mMediator.getCurrentTabModelChecked();
+        List<Tab> groupTabs = tabModel.getTabsInGroup(tabGroupId);
+        if (groupTabs.isEmpty()) return;
+
         boolean mergedSourceCard =
                 mUseTabGroupCardType
-                        ? didMergeTabToGroupByToken(movedTab, isDestinationTab)
-                        : didMergeTabToGroupLegacy(movedTab, isDestinationTab);
+                        ? didMergeTabToGroupByToken(movedTab, isDestinationTab, groupTabs)
+                        : didMergeTabToGroupLegacy(tabModel, movedTab, isDestinationTab, groupTabs);
         if (!mergedSourceCard) return;
 
         // TODO(crbug.com/434246302): These metrics are probably wrong as it looks
         // like they get emitted per-tab merged, rather than per-group merged.
-        if (mMediator.getRelatedTabsForId(movedTab.getId()).size() == 2) {
+        if (groupTabs.size() == 2) {
             // When users use drop-to-merge to create a group.
             RecordUserAction.record("TabGroup.Created.DropToMerge");
         } else {
@@ -398,17 +404,18 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         }
     }
 
-    private boolean didMergeTabToGroupByToken(Tab movedTab, boolean isDestinationTab) {
-        List<Tab> relatedTabs = mMediator.getRelatedTabsForId(movedTab.getId());
+    private boolean didMergeTabToGroupByToken(
+            Tab movedTab, boolean isDestinationTab, List<Tab> groupTabs) {
         Pair<Integer, Integer> positions =
-                getIndexesForMergeToGroupByToken(movedTab, isDestinationTab, relatedTabs);
+                getIndexesForMergeToGroupByToken(movedTab, isDestinationTab, groupTabs);
         int desIndex = positions.first;
         int srcIndex = positions.second;
         if (!mModelList.isValidIndex(desIndex)) return false;
 
         if (srcIndex == TabModel.INVALID_TAB_INDEX) {
             // Update the destination group card.
-            mMediator.updateTab(desIndex, movedTab, true, false);
+            mMediator.updateTab(
+                    desIndex, movedTab, /* isUpdatingId= */ true, /* quickMode= */ false);
             if (isDestinationTab) {
                 // Only reposition when movedTab is the target tab starting the group; when
                 // another tab joins an existing group, the group card stays in its spot.
@@ -422,16 +429,15 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         // Remove the merged source card and update the destination group card.
         mModelList.removeAt(srcIndex);
         desIndex = srcIndex > desIndex ? desIndex : mModelList.getTabIndexBefore(desIndex);
-        mMediator.updateTab(desIndex, movedTab, true, false);
+        mMediator.updateTab(desIndex, movedTab, /* isUpdatingId= */ true, /* quickMode= */ false);
         return true;
     }
 
     // TODO(crbug.com/517544602): Delete when removing the flag.
-    private boolean didMergeTabToGroupLegacy(Tab movedTab, boolean isDestinationTab) {
-        TabModel tabModel = mMediator.getCurrentTabModelChecked();
-        List<Tab> relatedTabs = mMediator.getRelatedTabsForId(movedTab.getId());
+    private boolean didMergeTabToGroupLegacy(
+            TabModel tabModel, Tab movedTab, boolean isDestinationTab, List<Tab> groupTabs) {
         Pair<Integer, Integer> positions =
-                getIndexesForMergeToGroupLegacy(tabModel, movedTab, isDestinationTab, relatedTabs);
+                getIndexesForMergeToGroupLegacy(tabModel, movedTab, isDestinationTab, groupTabs);
         int srcIndex = positions.second;
         int desIndex = positions.first;
 
@@ -704,8 +710,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         int index = mModelList.indexFromTabId(tab.getId());
         if (index != TabModel.INVALID_TAB_INDEX) return index;
 
-        // A group Token is immutable for the life of the group, unlike the representative tab ID.
-        // This only matches a card whose CARD_TYPE is TAB_GROUP.
+        // Fall back to resolving the tab's group card by its Token (only matches TAB_GROUP cards).
         Token tabGroupId = tab.getTabGroupId();
         if (tabGroupId == null) return TabModel.INVALID_TAB_INDEX;
         return mModelList.indexFromTabGroupId(tabGroupId);

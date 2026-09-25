@@ -790,7 +790,6 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
         when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(tab));
-        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(tab));
 
         createCoordinator();
         mActivity.setContentView(mCoordinator.getView());
@@ -1049,7 +1048,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     public void testToggleTabGroupExpansion_Expand() {
         Token tabGroupId = new Token(1L, 2L);
-        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        setupMockTabGroup(tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
 
         final boolean[] collapsedState = {true};
         doAnswer(invocation -> collapsedState[0])
@@ -1086,7 +1085,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     public void testTabGroupHeaderActionButton_ClickShowsContextMenu() {
         Token tabGroupId = new Token(1L, 2L);
-        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        setupMockTabGroup(tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
 
         createCoordinator();
         mCoordinator.setTabGroupContextMenuCoordinatorForTesting(mTabGroupContextMenuCoordinator);
@@ -1117,7 +1116,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     public void testTabGroupHeaderActionButton_SyncId_NoOp() {
         Token tabGroupId = new Token(1L, 2L);
-        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        setupMockTabGroup(tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
 
         createCoordinator();
         mCoordinator.setTabGroupContextMenuCoordinatorForTesting(mTabGroupContextMenuCoordinator);
@@ -1157,7 +1156,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     public void testToggleTabGroupExpansion_Collapse() {
         Token tabGroupId = new Token(1L, 2L);
-        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        setupMockTabGroup(tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
 
         final boolean[] collapsedState = {false};
         doAnswer(invocation -> collapsedState[0])
@@ -1603,7 +1602,6 @@ public class VerticalTabListCoordinatorUnitTest {
 
         Tab tab2 = prepareMockTab(mMockTab2, TAB_ID_2);
         Tab tab3 = prepareMockTab(mMockTab3, TAB_ID_3);
-        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(headerTab, tab2, tab3));
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(headerTab, tab2, tab3));
         when(mTabModel.getTabCountForGroup(groupId)).thenReturn(3);
 
@@ -2317,15 +2315,15 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     public void testSingleTabDragOut_LastTabInGroupBlocked() {
         Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
+        when(tab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab1);
-        when(mTabModel.isTabInTabGroup(tab1)).thenReturn(true);
-        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(List.of(tab1));
+        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
 
         createCoordinator();
         PropertyModel model = createTabPropertyModel();
         model.set(TabProperties.TAB_ID, TAB_ID_1);
 
-        // Dragging out the last tab in a group (relatedTabList size == 1) is blocked.
+        // Dragging out the last tab in a group (group tab count == 1) is blocked.
         getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
         verify(mMainTabSwitcherDragHandler, never()).startTabDragAction(any(), any(), any(), any());
     }
@@ -2334,7 +2332,6 @@ public class VerticalTabListCoordinatorUnitTest {
     public void testSingleTabDragOut_Success() {
         Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(tab1);
-        when(mTabModel.isTabInTabGroup(tab1)).thenReturn(false);
 
         createCoordinator();
         PropertyModel model = createTabPropertyModel();
@@ -2347,7 +2344,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     public void testGroupHeaderDragOut_AllTabsInWindow() {
         Token tabGroupId = new Token(1L, 2L);
-        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        setupMockTabGroup(tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
         when(mTabModel.getCount()).thenReturn(1);
 
         createCoordinator();
@@ -2364,7 +2361,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     public void testGroupHeaderDragOut_Success() {
         Token tabGroupId = new Token(1L, 2L);
-        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        setupMockTabGroup(tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
         when(mTabModel.getCount()).thenReturn(2);
 
         createCoordinator();
@@ -2998,7 +2995,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     public void testGroupHeaderDragOut_StartDragFailure_RestoresDelegate() {
         Token tabGroupId = new Token(1L, 2L);
-        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
+        setupMockTabGroup(tabGroupId, List.of(prepareMockTab(mMockTab1, TAB_ID_1)));
         when(mTabModel.getCount()).thenReturn(2);
 
         createCoordinator();
@@ -3056,7 +3053,7 @@ public class VerticalTabListCoordinatorUnitTest {
         Token tabGroupId = new Token(1L, 2L);
         Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
         Tab tab2 = prepareMockTab(mMockTab2, TAB_ID_2);
-        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(tab1, tab2));
+        setupMockTabGroup(tabGroupId, List.of(tab1, tab2));
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getTabGroupColor(tabGroupId)).thenReturn(TabGroupColorId.GREY);
         when(mTabModel.getTabGroupTitle(tabGroupId)).thenReturn("Test Group");
@@ -3377,7 +3374,7 @@ public class VerticalTabListCoordinatorUnitTest {
         Token groupId = new Token(1L, 2L);
         Tab childTab = prepareMockTab(mMockTab1, TAB_ID_1);
         when(childTab.getTabGroupId()).thenReturn(groupId);
-        setupMockTabGroup(TAB_ID_1, groupId, List.of(childTab));
+        setupMockTabGroup(groupId, List.of(childTab));
         when(mTabModel.indexOf(childTab)).thenReturn(0);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
@@ -3652,7 +3649,7 @@ public class VerticalTabListCoordinatorUnitTest {
         Token destGroupId = new Token(1L, 2L);
         Tab childTab = prepareMockTab(mMockTab1, TAB_ID_1);
         when(childTab.getTabGroupId()).thenReturn(destGroupId);
-        setupMockTabGroup(TAB_ID_1, destGroupId, List.of(childTab));
+        setupMockTabGroup(destGroupId, List.of(childTab));
         when(mTabModel.indexOf(childTab)).thenReturn(0);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
@@ -3725,7 +3722,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(childTab1.getTabGroupId()).thenReturn(groupId);
         when(childTab2.getTabGroupId()).thenReturn(groupId);
         when(childTab3.getTabGroupId()).thenReturn(groupId);
-        setupMockTabGroup(TAB_ID_1, groupId, List.of(childTab1, childTab2, childTab3));
+        setupMockTabGroup(groupId, List.of(childTab1, childTab2, childTab3));
         when(mTabModel.indexOf(childTab1)).thenReturn(0);
         when(mTabModel.indexOf(childTab2)).thenReturn(1);
         when(mTabModel.indexOf(childTab3)).thenReturn(2);
@@ -3826,7 +3823,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(childTab1.getTabGroupId()).thenReturn(groupId);
         when(childTab2.getTabGroupId()).thenReturn(groupId);
         when(childTab3.getTabGroupId()).thenReturn(groupId);
-        setupMockTabGroup(TAB_ID_1, groupId, List.of(childTab1, childTab2, childTab3));
+        setupMockTabGroup(groupId, List.of(childTab1, childTab2, childTab3));
         when(mTabModel.indexOf(childTab1)).thenReturn(0);
         when(mTabModel.indexOf(childTab2)).thenReturn(1);
         when(mTabModel.indexOf(childTab3)).thenReturn(2);
@@ -4266,7 +4263,6 @@ public class VerticalTabListCoordinatorUnitTest {
         // Mock the backend model.
         Tab mockTab = prepareMockTab(tab, tabId);
         when(mTabModel.getTabById(tabId)).thenReturn(mockTab);
-        when(mTabModel.getRelatedTabList(tabId)).thenReturn(Collections.singletonList(mockTab));
 
         RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(0, 0);
         SimpleRecyclerViewAdapter.ViewHolder viewHolder =
@@ -4415,18 +4411,17 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     /** Helper to wire mock tab group data into {@link TabModel}. */
-    private void setupMockTabGroup(int repTabId, Token groupId, List<Tab> tabsInGroup) {
-        Tab repTab = tabsInGroup.get(0);
-        when(repTab.getTabGroupId()).thenReturn(groupId);
+    private void setupMockTabGroup(Token groupId, List<Tab> tabsInGroup) {
+        Tab firstTab = tabsInGroup.get(0);
         for (Tab tab : tabsInGroup) {
+            when(tab.getTabGroupId()).thenReturn(groupId);
             when(mTabModel.getTabById(tab.getId())).thenReturn(tab);
             when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
-            when(mTabModel.getRelatedTabList(tab.getId())).thenReturn(tabsInGroup);
         }
         when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(tabsInGroup);
-        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(repTab));
-        when(mTabModel.getGroupLastShownTabId(groupId)).thenReturn(repTabId);
+        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(tabsInGroup.size());
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(firstTab));
     }
 
     private Tab prepareAndShowHoverCard(Tab mockTab) {
@@ -4678,7 +4673,7 @@ public class VerticalTabListCoordinatorUnitTest {
         Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
         Tab tab2 = prepareMockTab(mMockTab2, TAB_ID_2);
         Tab tab3 = prepareMockTab(mMockTab3, TAB_ID_3);
-        setupMockTabGroup(TAB_ID_1, tabGroupId, List.of(tab1, tab2));
+        setupMockTabGroup(tabGroupId, List.of(tab1, tab2));
         setupMockTabModelWithTabs(List.of(tab1, tab2, tab3), 0);
         when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(tab1, tab3));
 

@@ -297,7 +297,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
             model.set(TabProperties.TAB_GROUP_ID, tabGroupId);
             TabModel tabModel = mMediator.getCurrentTabModelChecked();
             @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
-            mMediator.updateTabGroupProperties(tab, model, colorId);
+            mMediator.updateTabGroupProperties(model, tabGroupId, colorId);
         } else {
             mMediator.clearTabGroupProperties(model);
         }

@@ -598,7 +598,7 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testDidMoveTabOutOfGroup_RepresentativeTab() {
+    public void testDidMoveTabOutOfGroup_HeaderTabIdUpdated() {
         setupTabsInModel(mTab1, mTab3);
         addGroupHeaderToModelList(TAB1_ID);
         PropertyModel tab1Model = addTabToModelList(TAB1_ID, TAB_GROUP_ID);
@@ -662,8 +662,8 @@ public class NestedLayoutDelegateUnitTest {
 
         assertEquals(TAB_GROUP_ID, tab1Model.get(TabProperties.TAB_GROUP_ID));
         assertEquals(TAB_GROUP_ID, tab2Model.get(TabProperties.TAB_GROUP_ID));
-        verify(mMediator).updateTabGroupProperties(mTab1, tab1Model, TabGroupColorId.BLUE);
-        verify(mMediator).updateTabGroupProperties(mTab2, tab2Model, TabGroupColorId.BLUE);
+        verify(mMediator).updateTabGroupProperties(tab1Model, TAB_GROUP_ID, TabGroupColorId.BLUE);
+        verify(mMediator).updateTabGroupProperties(tab2Model, TAB_GROUP_ID, TabGroupColorId.BLUE);
         verify(mMediator).addTabInfoToModelForGroup(mTab1, TAB_GROUP_ID, 0);
         verify(mMediator, times(2)).updateTabGroupTitle(TAB_GROUP_ID);
     }
@@ -682,7 +682,7 @@ public class NestedLayoutDelegateUnitTest {
         mDelegate.didMergeTabToGroup(mTab3, false);
 
         assertEquals(TAB_GROUP_ID, tab1Model.get(TabProperties.TAB_GROUP_ID));
-        verify(mMediator).updateTabGroupProperties(mTab3, tab1Model, TabGroupColorId.BLUE);
+        verify(mMediator).updateTabGroupProperties(tab1Model, TAB_GROUP_ID, TabGroupColorId.BLUE);
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
     }
 
