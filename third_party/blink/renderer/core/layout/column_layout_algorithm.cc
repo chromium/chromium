@@ -352,6 +352,7 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   intrinsic_block_size_ =
       std::max(intrinsic_block_size_, BorderScrollbarPadding().block_start);
 
+  std::optional<LayoutUnit> final_column_row_block_end;
   if (!Style().HasAutoColumnHeight()) {
     // Use all of column-height on the last row as well, but don't let that
     // overflow the outer fragmentainer, if nested.
@@ -366,6 +367,10 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
     if (remaining_column_height < RowHeight()) {
       intrinsic_block_size_ += remaining_column_height;
     }
+
+    // This is the final column row's block-end after accounting for its used
+    // column-height, which may differ from the container's content edge.
+    final_column_row_block_end = intrinsic_block_size_;
   }
 
   intrinsic_block_size_ += BorderScrollbarPadding().block_end;
@@ -428,7 +433,7 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
 
   if (gap_accumulator_) {
     const GapGeometry* gap_geometry = gap_accumulator_->BuildGapGeometry(
-        container_builder_, ColumnInlineSize());
+        container_builder_, ColumnInlineSize(), final_column_row_block_end);
     if (gap_geometry) {
       container_builder_.SetGapGeometry(gap_geometry);
     }

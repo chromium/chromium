@@ -6874,7 +6874,7 @@ TEST_F(ColumnLayoutAlgorithmTest,
   EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(2));
   EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(2));
   EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(202));
-  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(202));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(172));
 
   EXPECT_TRUE(main_gaps[0].IsSpannerMainGap());
   EXPECT_TRUE(main_gaps[0].IsStartSpannerMainGap());

@@ -90,7 +90,8 @@ bool ColumnGapAccumulator::LastMainGapIsStartSpanner() const {
 
 const GapGeometry* ColumnGapAccumulator::BuildGapGeometry(
     const BoxFragmentBuilder& container_builder,
-    LayoutUnit column_inline_size) {
+    LayoutUnit column_inline_size,
+    std::optional<LayoutUnit> final_column_row_block_end) {
   if (!first_column_offset_.has_value()) {
     return nullptr;
   }
@@ -138,11 +139,10 @@ const GapGeometry* ColumnGapAccumulator::BuildGapGeometry(
       container_builder.ApplicableBorders().block_end -
       container_builder.ApplicableScrollbar().block_end -
       container_builder.ApplicablePadding().block_end;
+  if (gap_geometry_->CrossGapCount() > 0 && final_column_row_block_end) {
+    content_block_end = final_column_row_block_end.value();
+  }
   if (gap_geometry_->MainGapCount() > 0) {
-    // TODO(crbug.com/357648037): There is content beyond the last main gap,
-    // so using this as the offset isn't right. The bug here is that if the
-    // multicol container is overflowed, the column gaps in the last row will
-    // be missing.
     content_block_end = std::max(
         content_block_end, gap_geometry_->GetMainGaps().back().GetGapOffset());
     gap_geometry_->SetBlockGapSize(row_gap_size_);
