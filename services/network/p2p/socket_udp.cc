@@ -417,13 +417,18 @@ bool P2PSocketUdp::DoSend(P2PPendingPacket packet) {
   int64_t send_time_ms = send_time_us / 1000;
 
   if (base::FeatureList::IsEnabled(kEnforceP2PSocketPortRestrictions)) {
-    bool is_restricted_port =
-        !net::IsPortAllowedForIpEndpoint(packet.to) ||
-        !net::IsPortAllowedForScheme(packet.to.port(), "stun");
-    if (is_restricted_port) {
-      OnError();
-      return false;
+    if (!net::IsPortAllowedForScheme(packet.to.port(), "stun")) {
+      // Drop the packet without destroying the socket. The renderer expects
+      // send completions in order for all packets it generates.
+      send_completions_.emplace_back(packet.id, packet.packet_options.packet_id,
+                                     send_time_ms);
+      return true;
     }
+  }
+
+  if (!net::IsPortAllowedForIpEndpoint(packet.to)) {
+    OnError();
+    return false;
   }
 
   // The peer is considered not connected until the first incoming STUN

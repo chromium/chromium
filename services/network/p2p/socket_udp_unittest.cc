@@ -1986,13 +1986,20 @@ TEST_F(P2PSocketUdpTest, SendRejectsRestrictedPort) {
 
   net::IPEndPoint restricted_dest = ParseAddress(kTestIpAddress1, 25);
 
-  socket_ = nullptr;
-  P2PSocketUdp* socket_impl_ptr = socket_impl_.get();
-  socket_delegate_.ExpectDestruction(std::move(socket_impl_));
-  socket_impl_ptr->Send(request_packet, P2PPacketInfo(restricted_dest, {}, 0));
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(1);
 
-  EXPECT_TRUE(
-      base::test::RunUntil([&]() { return fake_client_->connection_error(); }));
+  socket_impl_->Send(request_packet, P2PPacketInfo(restricted_dest, {}, 0));
+  base::RunLoop().RunUntilIdle();
+
+  // The packet must not have been sent to the network.
+  EXPECT_EQ(0U, sent_packets_.size());
+  EXPECT_FALSE(fake_client_->connection_error());
+
+  // Subsequent send to a non-restricted port should succeed.
+  EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(1);
+  socket_impl_->Send(request_packet, P2PPacketInfo(dest1_, {}, 0));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1U, sent_packets_.size());
 }
 
 }  // namespace network
