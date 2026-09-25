@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.View.MeasureSpec;
 
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceFragmentCompat;
@@ -314,6 +315,18 @@ public class WideDisplayPadding {
             int padding = computePadding();
             if (padding == view.getPaddingStart()) return;
             applyPadding(padding);
+
+            // The requestLayout() triggered by setPaddingRelative() is dropped here, because
+            // View.layout() clears PFLAG_FORCE_LAYOUT right after notifying layout change
+            // listeners, so the children would stay positioned for the old padding. This happens
+            // when the initial padding was estimated from the window width because no ancestor
+            // had been measured yet, for example when settings is opened in a new tab next to the
+            // vertical tab strip. Lay out the children again right away, within the same layout
+            // pass, so the stale layout is never drawn. See crbug.com/565658549.
+            view.measure(
+                    MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY));
+            view.layout(left, top, right, bottom);
         }
 
         private void applyPadding(int padding) {

@@ -99,7 +99,9 @@ public class WideDisplayPaddingApplierTest {
         @Override
         public View onCreateView(
                 LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            return new View(requireContext());
+            FrameLayout root = new FrameLayout(requireContext());
+            root.addView(new View(requireContext()));
+            return root;
         }
 
         @Override
@@ -290,6 +292,51 @@ public class WideDisplayPaddingApplierTest {
                 "Padding should be derived from the settings container, not the window",
                 minWidePaddingPx,
                 view.getPaddingStart());
+    }
+
+    /**
+     * Regression test for crbug.com/565658549: when a layout pass changes the padding, the children
+     * must be laid out for the new padding within that same pass. A layout request made from a
+     * layout change listener is dropped, which left the children positioned for the old padding.
+     */
+    @Test
+    @Config(qualifiers = "w800dp-h1280dp")
+    public void testEmbeddablePage_relayoutsChildrenWhenLayoutChangesPadding() {
+        DisplayMetrics metrics = mTestActivity.getResources().getDisplayMetrics();
+
+        // Lay out the container at the full window width first, e.g. before the vertical tab
+        // strip took some of the width away.
+        FrameLayout container = new FrameLayout(mTestActivity);
+        container.setId(View.generateViewId());
+        mTestActivity.setContentView(container);
+        layoutView(container, ViewUtils.dpToPx(metrics, 800));
+
+        TestEmbeddablePageFragment fragment = new TestEmbeddablePageFragment();
+        mTestActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(container.getId(), fragment, "other_tag")
+                .commitNow();
+        ViewGroup view = (ViewGroup) fragment.getView();
+        assertNotNull(view);
+        // (800 - 600) / 2 = 100dp.
+        assertEquals(ViewUtils.dpToPx(metrics, 100), view.getPaddingStart());
+
+        // Shrink the container. A single layout pass must position the child for the new padding.
+        layoutView(container, ViewUtils.dpToPx(metrics, 560));
+        int minWidePaddingPx =
+                mTestActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.settings_wide_display_min_padding);
+        assertEquals(minWidePaddingPx, view.getPaddingStart());
+        assertEquals(minWidePaddingPx, view.getChildAt(0).getLeft());
+    }
+
+    private static void layoutView(View view, int widthPx) {
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec(widthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+        view.layout(0, 0, widthPx, 1000);
     }
 
     @Test
