@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
@@ -43,9 +44,23 @@ ToolController::~ToolController() {
 
 void ToolController::ProcessToolCall(const ToolRequest& tool_request,
                                      ToolResponseCallback callback) {
+  // Every tool below is executed as an actor tool within an actor task, so no
+  // tools are supported if the actor service isn't available. This matches
+  // GetToolDefinitions().
+  if (!actor::ActorKeyedService::Get(GetProfile())) {
+    std::move(callback).Run(ToolResponse::Error(
+        actor::mojom::ActionResultCode::kToolUnknown, "Unsupported tool"));
+    return;
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   if (tool_request.name == "open_url") {
     OpenUrl(tool_request.arguments, std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "perform_search") {
+    PerformSearch(tool_request.arguments, std::move(callback));
     return;
   }
 #endif
@@ -81,6 +96,29 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   open_url.behavior = ToolDefinition::Behavior::kBlocking;
   open_url.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(open_url));
+
+  ToolDefinition perform_search;
+  perform_search.name = "perform_search";
+  perform_search.description = "Search using the default search engine.";
+  perform_search.parameters_json_schema =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue()
+                   .Set("query",
+                        base::DictValue()
+                            .Set("type", "string")
+                            .Set("description", "The terms to search for."))
+                   .Set("new_tab",
+                        base::DictValue()
+                            .Set("type", "boolean")
+                            .Set("description",
+                                 "If true, performs the search in a new tab; "
+                                 "otherwise, navigates the current tab.")))
+          .Set("required", base::ListValue().Append("query").Append("new_tab"));
+  perform_search.behavior = ToolDefinition::Behavior::kBlocking;
+  perform_search.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(perform_search));
 #endif
 
   return tools;
@@ -119,7 +157,7 @@ void ToolController::OpenUrl(const base::DictValue& arguments,
 
   bool new_tab = arguments.FindBool("new_tab").value_or(false);
 
-  // TODO(b/544823467): Add support for opening in a new tab.
+  // TODO(b/561651267): Add support for opening in a new tab.
   if (new_tab) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kNotImplemented,
@@ -127,6 +165,48 @@ void ToolController::OpenUrl(const base::DictValue& arguments,
     return;
   }
 
+  PerformActionOnActiveTab(
+      [&url](
+          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::NavigateToolRequest>(tab_handle,
+                                                            GURL(*url));
+      },
+      std::move(callback));
+}
+
+void ToolController::PerformSearch(const base::DictValue& arguments,
+                                   ToolResponseCallback callback) {
+  const std::string* query = arguments.FindString("query");
+  if (!query) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing query argument"));
+    return;
+  }
+
+  bool new_tab = arguments.FindBool("new_tab").value_or(false);
+
+  // TODO(b/561651267): Add support for searching in a new tab.
+  if (new_tab) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kNotImplemented,
+                            "New tab not supported yet"));
+    return;
+  }
+
+  PerformActionOnActiveTab(
+      [&query](
+          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::PerformSearchToolRequest>(tab_handle,
+                                                                 *query);
+      },
+      std::move(callback));
+}
+
+void ToolController::PerformActionOnActiveTab(
+    base::FunctionRef<std::unique_ptr<actor::ToolRequest>(tabs::TabHandle)>
+        create_action,
+    ToolResponseCallback callback) {
   // TODO(b/561651267): Get BrowserWindowInterface* from SessionControllerImpl
   // (or a class that manages the active window for the session).
   BrowserWindowInterface* browser = nullptr;
@@ -143,12 +223,7 @@ void ToolController::OpenUrl(const base::DictValue& arguments,
 
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(GetProfile());
-  if (!actor_service) {
-    // No actor error code describes an unavailable ActorKeyedService.
-    std::move(callback).Run(ToolResponse::Error("Something went wrong"));
-    return;
-  }
-
+  CHECK(actor_service);
   EnsureTaskCreated(actor_service);
 
   tabs::TabInterface* active_tab = browser->GetTabStripModel()->GetActiveTab();
@@ -158,16 +233,15 @@ void ToolController::OpenUrl(const base::DictValue& arguments,
     return;
   }
   std::vector<std::unique_ptr<actor::ToolRequest>> actions;
-  actions.push_back(std::make_unique<actor::NavigateToolRequest>(
-      active_tab->GetHandle(), GURL(*url)));
+  actions.push_back(create_action(active_tab->GetHandle()));
 
   actor_service->PerformActions(
       task_id_, std::move(actions), actor::ActorTaskMetadata(),
-      base::BindOnce(&ToolController::OnNavigateActionsFinished,
+      base::BindOnce(&ToolController::OnActionsFinished,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ToolController::OnNavigateActionsFinished(
+void ToolController::OnActionsFinished(
     ToolResponseCallback callback,
     std::vector<actor::ActionResultWithLatencyInfo> results,
     actor::TabObservationStrategy strategy) {

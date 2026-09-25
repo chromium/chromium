@@ -175,6 +175,7 @@ if (!is_android) {
       "//components/actor/core",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/page_content_annotations/content",
+      "//components/search_engines",
       "//components/tabs:public",
       "//content/public/browser",
       "//content/public/common",

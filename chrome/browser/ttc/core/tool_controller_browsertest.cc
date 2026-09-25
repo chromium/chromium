@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ttc/app/public/tool_types.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
@@ -23,8 +24,12 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -75,6 +80,67 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenUrlCurrentTab) {
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
 }
 
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PerformSearchCurrentTab) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  // Point the default search engine at the test server so the search
+  // navigation actually commits.
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(template_url_service);
+  search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+  TemplateURLData data;
+  data.SetShortName(u"test");
+  data.SetKeyword(u"test");
+  data.SetURL(embedded_https_test_server()
+                  .GetURL("example.com", "/title1.html?q={searchTerms}")
+                  .spec());
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(template_url);
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+  base::test::TestFuture<ToolResponse> future;
+
+  ToolRequest tool_request;
+  tool_request.name = "perform_search";
+  tool_request.arguments.Set("query", "kittens");
+  tool_request.arguments.Set("new_tab", false);
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TRUE(response.Ok());
+
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(),
+            embedded_https_test_server().GetURL("example.com",
+                                                "/title1.html?q=kittens"));
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PerformSearchMissingQuery) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+
+  ToolRequest tool_request;
+  tool_request.name = "perform_search";
+  tool_request.arguments.Set("new_tab", false);
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -102,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
-  ASSERT_EQ(tools.size(), 1u);
+  ASSERT_EQ(tools.size(), 2u);
 
   const ToolDefinition& open_url = tools[0];
   EXPECT_EQ(open_url.name, "open_url");
@@ -129,6 +195,33 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   const base::ListValue* required = schema.FindList("required");
   ASSERT_TRUE(required);
   EXPECT_EQ(*required, base::ListValue().Append("url").Append("new_tab"));
+
+  const ToolDefinition& perform_search = tools[1];
+  EXPECT_EQ(perform_search.name, "perform_search");
+  EXPECT_FALSE(perform_search.description.empty());
+  EXPECT_EQ(perform_search.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(perform_search.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  const base::DictValue& search_schema = perform_search.parameters_json_schema;
+  const std::string* search_schema_type = search_schema.FindString("type");
+  ASSERT_TRUE(search_schema_type);
+  EXPECT_EQ(*search_schema_type, "object");
+
+  const std::string* query_type =
+      search_schema.FindStringByDottedPath("properties.query.type");
+  ASSERT_TRUE(query_type);
+  EXPECT_EQ(*query_type, "string");
+
+  const std::string* search_new_tab_type =
+      search_schema.FindStringByDottedPath("properties.new_tab.type");
+  ASSERT_TRUE(search_new_tab_type);
+  EXPECT_EQ(*search_new_tab_type, "boolean");
+
+  const base::ListValue* search_required = search_schema.FindList("required");
+  ASSERT_TRUE(search_required);
+  EXPECT_EQ(*search_required,
+            base::ListValue().Append("query").Append("new_tab"));
 }
 
 // TTC actor tasks are given TtcKeyedService's ActorUiStateManager rather than
