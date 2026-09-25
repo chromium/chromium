@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/native_theme/native_theme.h"
@@ -84,6 +85,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
 
   // Token returned by add_PropertiesChanged, used to unregister the event.
   EventRegistrationToken caption_properties_changed_token_{};
+
+  // Retains the caption style cache while PropertiesChanged listener is active.
+  base::ScopedClosureRunner caption_style_tracker_;
 };
 
 }  // namespace ui

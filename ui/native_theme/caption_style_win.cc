@@ -8,16 +8,24 @@
 #include <wrl/client.h>
 
 #include <string>
+#include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/registry.h"
 #include "skia/ext/skia_utils_win.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/caption_style_win.h"
 
 namespace CC = ABI::Windows::Media::ClosedCaptioning;
 
@@ -318,10 +326,107 @@ std::optional<CaptionStyle> InitializeFromSystemSettings() {
   return caption_style;
 }
 
+// Thread-safe cache for the system caption style. Caching is only active while
+// a ScopedClosureRunner returned by EnableCaptionStyleCaching() is held.
+//
+// Style computation (InitializeFromSystemSettings()) is slow and may block, so
+// it is performed outside the lock. To prevent stale data from being published
+// if the style changes or is invalidated concurrently while
+// InitializeFromSystemSettings() is running, a `generation_` counter is
+// incremented on every invalidation and when caching is disabled. A freshly
+// computed style is only committed to the cache if the current generation
+// matches the generation when computation began.
+class SystemCaptionStyleCache {
+ public:
+  static SystemCaptionStyleCache& GetInstance() {
+    static base::NoDestructor<SystemCaptionStyleCache> instance;
+    return *instance;
+  }
+
+  SystemCaptionStyleCache() = default;
+  SystemCaptionStyleCache(const SystemCaptionStyleCache&) = delete;
+  SystemCaptionStyleCache& operator=(const SystemCaptionStyleCache&) = delete;
+
+  std::optional<CaptionStyle> GetStyle() {
+    uint64_t generation;
+    {
+      base::AutoLock auto_lock(lock_);
+      if (caching_enabled_ && is_valid_) {
+        return style_;
+      }
+      generation = generation_;
+    }
+
+    // Computed without holding the lock, since reading the OS settings may
+    // block. Concurrent callers may duplicate this work, which is harmless
+    // because they compute the same value.
+    std::optional<CaptionStyle> style = InitializeFromSystemSettings();
+
+    base::AutoLock auto_lock(lock_);
+    // Only publish the result if caching is enabled, and if the settings did
+    // not change while the style was being computed (in which case it may
+    // already be stale).
+    if (caching_enabled_ && generation == generation_) {
+      style_ = style;
+      is_valid_ = true;
+    }
+    return style;
+  }
+
+  void EnableCaching() {
+    base::AutoLock auto_lock(lock_);
+    CHECK(!caching_enabled_);
+    caching_enabled_ = true;
+  }
+
+  void DisableCaching() {
+    base::AutoLock auto_lock(lock_);
+    CHECK(caching_enabled_);
+    caching_enabled_ = false;
+    ++generation_;
+    is_valid_ = false;
+    style_.reset();
+  }
+
+  void Invalidate() {
+    base::AutoLock auto_lock(lock_);
+    ++generation_;
+    is_valid_ = false;
+    style_.reset();
+  }
+
+ private:
+  base::Lock lock_;
+
+  // Whether the style may be cached at all. False until a watcher of the OS
+  // caption settings takes responsibility for invalidating the cache.
+  bool caching_enabled_ GUARDED_BY(lock_) = false;
+
+  // Whether `style_` holds the style last read from the OS. Note that `style_`
+  // is itself optional, since reading the OS settings can fail.
+  bool is_valid_ GUARDED_BY(lock_) = false;
+  std::optional<CaptionStyle> style_ GUARDED_BY(lock_);
+
+  // Incremented on every invalidation, to detect results computed against
+  // settings that have since changed.
+  uint64_t generation_ GUARDED_BY(lock_) = 0;
+};
+
 }  // namespace
 
+base::ScopedClosureRunner EnableCaptionStyleCaching() {
+  SystemCaptionStyleCache::GetInstance().EnableCaching();
+  return base::ScopedClosureRunner(base::BindOnce(
+      &SystemCaptionStyleCache::DisableCaching,
+      base::Unretained(&SystemCaptionStyleCache::GetInstance())));
+}
+
+void InvalidateCaptionStyleCache() {
+  SystemCaptionStyleCache::GetInstance().Invalidate();
+}
+
 std::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
-  return InitializeFromSystemSettings();
+  return SystemCaptionStyleCache::GetInstance().GetStyle();
 }
 
 }  // namespace ui
