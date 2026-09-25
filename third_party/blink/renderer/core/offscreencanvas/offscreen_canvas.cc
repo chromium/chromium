@@ -504,8 +504,8 @@ void OffscreenCanvas::updateElementGeometry(
 
   const FloatClipRect* clip_ptr = nullptr;
   FloatClipRect clip;
-  if (options->hasClip()) {
-    const DOMRectInit* rect = options->clip();
+  if (options->hasCanvasClip()) {
+    const DOMRectInit* rect = options->canvasClip();
     double x = rect->x();
     double y = rect->y();
     double width = rect->width();

@@ -13,7 +13,7 @@ dictionary UpdateElementGeometryOptions {
   // coordinate space of `canvasTransform`.
   // If omitted, the pre-existing value of the element's canvas clip is
   // preserved.
-  DOMRectInit clip;
+  DOMRectInit canvasClip;
 
   // Sets the element's canvas transform. If omitted, the pre-existing
   // value of the element's canvas transform is preserved.
