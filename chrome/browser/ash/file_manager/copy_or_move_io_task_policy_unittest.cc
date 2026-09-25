@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
@@ -15,7 +17,7 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
@@ -31,12 +33,15 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -91,8 +96,9 @@ constexpr std::initializer_list<
          "MY_FILES"},
     };
 
-constexpr char kEmailId[] = "test@example.com";
-constexpr GaiaId::Literal kGaiaId("12345");
+constexpr AccountId::Literal kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@example.com",
+                                            GaiaId::Literal("12345"));
 
 struct FileInfo {
   std::string file_contents;
@@ -1496,14 +1502,20 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(ash::features::kNewFilesPolicyUX);
 
-    AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
+    TestingBrowserProcess* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+    user_session_test_environment_->LogIn(kAccountId);
+    // The delegate creates a TestingProfile on LogIn().
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kAccountId)));
+    ASSERT_TRUE(profile_);
     profile_->SetIsNewProfile(true);
-    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
-        profile_.get());
-    fake_user_manager_->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-    fake_user_manager_->SimulateUserProfileLoad(account_id);
 
     // DLP Setup.
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
@@ -1528,6 +1540,15 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
         nullptr, temp_dir_.GetPath());
   }
 
+  void TearDown() override {
+    file_system_context_.reset();
+    files_controller_.reset();
+    mock_rules_manager_ = nullptr;
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
+    scoped_feature_list_.Reset();
+  }
+
   storage::FileSystemURL CreateFileSystemURL(const std::string& path) {
     return file_system_context_->CreateCrackedFileSystemURL(
         kTestStorageKey, storage::kFileSystemTypeTest,
@@ -1537,12 +1558,10 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
-  const std::unique_ptr<TestingProfile> profile_{
-      std::make_unique<TestingProfile>()};
-  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged> mock_rules_manager_ =
-      nullptr;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager> mock_rules_manager_ = nullptr;
   std::unique_ptr<policy::MockDlpFilesControllerAsh> files_controller_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;

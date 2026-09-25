@@ -26,21 +26,24 @@
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
-#include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/extension_builder.h"
@@ -72,6 +75,9 @@ const char kActivityLabelText[] = "some_text_activity";
 const char kActivityLabelImage[] = "some_image_activity";
 const char kActivityLabelAny[] = "some_any_file";
 const char kActivityLabelTextWild[] = "some_text_wild_file";
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@test",
+                                            GaiaId::Literal("12345"));
 
 }  // namespace
 
@@ -82,9 +88,21 @@ using test::AddFakeWebApp;
 
 class AppServiceFileTasksTest : public testing::Test {
  protected:
-  AppServiceFileTasksTest() = default;
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
+    TestingBrowserProcess* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
+    user_session_test_environment_->LogIn(kTestAccountId);
+    // The delegate creates a TestingProfile on LogIn().
+    profile_ = static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kTestAccountId)));
+    ASSERT_TRUE(profile_);
+
     app_service_test_.SetUp(profile_.get());
     app_service_proxy_ =
         apps::AppServiceProxyFactory::GetForProfile(profile_.get());
@@ -95,7 +113,14 @@ class AppServiceFileTasksTest : public testing::Test {
         util::GetMyFilesFolderForProfile(profile_.get()));
   }
 
-  Profile* profile() { return profile_.get(); }
+  void TearDown() override {
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+    app_service_proxy_ = nullptr;
+    profile_ = nullptr;
+    user_session_test_environment_.reset();
+  }
+
+  Profile* profile() { return profile_; }
 
   struct FakeFile {
     std::string file_name;
@@ -352,7 +377,9 @@ class AppServiceFileTasksTest : public testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   raw_ptr<apps::AppServiceProxy> app_service_proxy_ = nullptr;
   apps::AppServiceTest app_service_test_;
 };
@@ -846,15 +873,7 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTest {
   void SetUp() override {
     AppServiceFileTasksTest::SetUp();
 
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
     profile_->SetIsNewProfile(true);
-    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
-        profile_.get());
-    fake_user_manager_->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-    fake_user_manager_->SimulateUserProfileLoad(account_id);
 
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
         profile_.get(),
@@ -870,12 +889,14 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTest {
         .WillByDefault(testing::Return(mock_files_controller_.get()));
   }
 
-  void TearDown() override { fake_user_manager_.Reset(); }
+  void TearDown() override {
+    mock_files_controller_.reset();
+    rules_manager_ = nullptr;
+    AppServiceFileTasksTest::TearDown();
+  }
 
   raw_ptr<policy::MockDlpRulesManager> rules_manager_ = nullptr;
   std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
 };
 
 // Test that out of two apps, one can be blocked by DLP and the other allowed.

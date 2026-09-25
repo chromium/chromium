@@ -37,13 +37,13 @@
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/download/download_dir_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -56,14 +56,15 @@
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/storage_monitor/storage_info.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -79,6 +80,13 @@ using ::ash::disks::DiskMountManager;
 using ::ash::disks::FakeDiskMountManager;
 using base::FilePath;
 using ::testing::UnorderedElementsAre;
+
+constexpr AccountId::Literal kPrimaryAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("primary@test",
+                                            GaiaId::Literal("1111111111"));
+constexpr AccountId::Literal kSecondaryAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("secondary@test",
+                                            GaiaId::Literal("2222222222"));
 
 constexpr auto kArcVolumeIds = std::to_array<const char*>(
     {arc::kImagesRootId, arc::kVideosRootId, arc::kAudioRootId,
@@ -372,39 +380,39 @@ class VolumeManagerTest : public testing::Test {
 
     chromeos::PowerManagerClient::InitializeFake();
     disk_mount_manager_ = std::make_unique<FakeDiskMountManager>();
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(testing_profile_manager_->SetUp());
+    TestingBrowserProcess* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(
+        user_session_test_environment_->AddRegularUser(kPrimaryAccountId));
+    ASSERT_TRUE(
+        user_session_test_environment_->AddRegularUser(kSecondaryAccountId));
 
     primary_profile_ = std::make_unique<ProfileEnvironment>(
-        AddLoggedInUser(AccountId::FromUserEmail("primary@test")),
-        disk_mount_manager_.get());
+        AddLoggedInUser(kPrimaryAccountId), disk_mount_manager_.get());
   }
 
   void TearDown() override {
     task_environment_.RunUntilIdle();
     primary_profile_.reset();
-    testing_profile_manager_->DeleteAllTestingProfiles();
-
-    disk_mount_manager_.reset();
-    chromeos::PowerManagerClient::Shutdown();
-
     // ExternalMountPoints instance for the system is global singleton,
     // so some states can be leaked to another test. Revoke all of them
     // explicitly.
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+    user_session_test_environment_.reset();
+    disk_mount_manager_.reset();
+    chromeos::PowerManagerClient::Shutdown();
   }
 
   virtual TestingProfile* AddLoggedInUser(const AccountId& account_id) {
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-    TestingProfile* profile = testing_profile_manager_->CreateTestingProfile(
-        account_id.GetUserEmail());
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        fake_user_manager_->FindUserAndModify(account_id), profile);
-    return profile;
+    // The delegate creates a TestingProfile on LogIn().
+    user_session_test_environment_->LogIn(account_id);
+    return static_cast<TestingProfile*>(Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id)));
   }
 
   // Accessors to the primary profile.
@@ -417,10 +425,9 @@ class VolumeManagerTest : public testing::Test {
   base::test::ScopedCommandLine scoped_command_line_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FakeDiskMountManager> disk_mount_manager_;
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<ProfileEnvironment> primary_profile_;
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
 };
 
 TEST(VolumeTest, CreateForRemovable) {
@@ -959,8 +966,7 @@ TEST_F(VolumeManagerTest, OnExternalStorageDisabledChanged) {
 
 TEST_F(VolumeManagerTest, ExternalStorageDisabledPolicyMultiProfile) {
   auto secondary = std::make_unique<ProfileEnvironment>(
-      AddLoggedInUser(AccountId::FromUserEmail("secondary@test")),
-      disk_mount_manager_.get());
+      AddLoggedInUser(kSecondaryAccountId), disk_mount_manager_.get());
   volume_manager()->Initialize();
   secondary->volume_manager()->Initialize();
 
@@ -1303,8 +1309,7 @@ TEST_F(VolumeManagerTest, OnRenameEvent_CompletedFailed) {
 
 TEST_F(VolumeManagerTest, VolumeManagerInitializeForMultiProfiles) {
   auto secondary_profile = std::make_unique<ProfileEnvironment>(
-      AddLoggedInUser(AccountId::FromUserEmail("secondary@test")),
-      disk_mount_manager_.get());
+      AddLoggedInUser(kSecondaryAccountId), disk_mount_manager_.get());
 
   volume_manager()->Initialize();
   secondary_profile->volume_manager()->Initialize();
