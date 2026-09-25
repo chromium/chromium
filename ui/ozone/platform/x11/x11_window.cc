@@ -1137,11 +1137,14 @@ void X11Window::SetOpacity(float opacity) {
 }
 
 bool X11Window::CanSetDecorationInsets() const {
-  // Xfwm handles _GTK_FRAME_EXTENTS a bit unexpected way.  That is a known bug
-  // that will be eventually fixed, but for now we have to disable the function
-  // for Xfce.  The block below should be removed when Xfwm is updated with the
-  // fix and is known to work properly.
-  // See https://crbug.com/1260821.
+  // Xfwm4 releases before 4.17.0 do not handle removal of _GTK_FRAME_EXTENTS
+  // (fixed by xfwm4 commit 488288f6), so maximized windows end up larger than
+  // the screen. See https://crbug.com/40201996 and https://crbug.com/378898637.
+  // Xfwm4 does not publish its version, but releases since 4.17.0 no longer
+  // advertise _NET_SYSTEM_TRAY_OPCODE in _NET_SUPPORTED (xfwm4 commit
+  // c26c9394), while all older releases do, so use that to detect a buggy
+  // Xfwm4. The block below should be removed once Xfwm4 4.16 and older are no
+  // longer supported. See https://crbug.com/40804717.
   {
     static WindowManagerName wm_name = WM_OTHER;
     static bool checked_for_wm = false;
@@ -1149,7 +1152,8 @@ bool X11Window::CanSetDecorationInsets() const {
       wm_name = GuessWindowManager();
       checked_for_wm = true;
     }
-    if (wm_name == WM_XFWM4) {
+    if (wm_name == WM_XFWM4 &&
+        connection_->WmSupportsHint(x11::GetAtom("_NET_SYSTEM_TRAY_OPCODE"))) {
       return false;
     }
   }
