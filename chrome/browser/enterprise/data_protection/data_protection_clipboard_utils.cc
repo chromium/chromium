@@ -108,12 +108,16 @@ bool SkipDataControlOrContentAnalysisChecks(
     const content::ClipboardEndpoint& main_endpoint) {
   // Data Controls and content analysis copy/paste checks require an active tab
   // to be meaningful, so if it's gone they can be skipped.
-  auto* web_contents = main_endpoint.web_contents();
-  if (!web_contents) {
-    return true;
+  if (main_endpoint.web_contents()) {
+    return false;
   }
 
-  return false;
+  // A service worker never has a tab, but it does have a BrowserContext to
+  // evaluate rules against, so the checks still apply. The fetcher returns
+  // null once the worker or its context is gone, and every lookup past this
+  // point needs one.
+  return !(main_endpoint.is_service_worker() &&
+           main_endpoint.browser_context());
 }
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -206,7 +210,7 @@ void PasteIfAllowedByContentAnalysis(
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
   DCHECK(web_contents);
-  DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
+  DCHECK(destination.web_contents());
 
   // Always allow if the source of the last clipboard commit was this host.
   destination.web_contents()->GetPrimaryMainFrame()->IsClipboardOwner(
@@ -641,7 +645,7 @@ void PasteIfAllowedByDataControls(
     const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
-  DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
+  DCHECK(destination.web_contents());
 
   auto verdict = GetPasteVerdict(source, destination, metadata);
   auto* factory = GetDialogFactory();
@@ -753,8 +757,12 @@ void IsCopyToOSClipboardRestricted(
   }
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  // Content analysis needs a tab: ContentAnalysisDelegate is created from a
+  // WebContents and has no tab-free entry point, so a service worker copy is
+  // not scanned.
   if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kContentAnalysisClipboardCopy)) {
+          enterprise_connectors::kContentAnalysisClipboardCopy) &&
+      source.web_contents()) {
     CopyIfAllowedByContentAnalysis(source.web_contents(), source, metadata,
                                    data, std::move(callback));
   } else {
@@ -806,7 +814,7 @@ void IsCopyRestrictedByDialog(
   auto* factory = GetDialogFactory();
   if (source_only_verdict.level() == data_controls::Rule::Level::kBlock) {
     MaybeReportDataControlsCopy(source, metadata, source_only_verdict);
-    if (factory) {
+    if (factory && source.web_contents()) {
       factory->ShowDialogIfNeeded(source.web_contents(), block_dialog_type);
     }
     std::move(callback).Run(metadata.format_type, content::ClipboardPasteData(),
@@ -827,12 +835,15 @@ void IsCopyRestrictedByDialog(
     auto verdict = data_controls::Verdict::MergeCopyWarningVerdicts(
         std::move(source_only_verdict), std::move(os_clipboard_verdict));
     MaybeReportDataControlsCopy(source, metadata, verdict);
-    if (factory) {
+    if (factory && source.web_contents()) {
       factory->ShowDialogIfNeeded(
           source.web_contents(), warn_dialog_type,
           base::BindOnce(&OnDataControlsCopyWarning, source, metadata, data,
                          std::move(verdict), std::move(callback)));
     } else {
+      // Without a tab there is nothing to host the warning dialog, so the
+      // copy is refused rather than offering a bypass nobody can accept.
+      // DesktopDataControlsDialog does the same for a non-tab WebContents.
       std::move(callback).Run(metadata.format_type,
                               content::ClipboardPasteData(),
                               /*replacement_data=*/std::nullopt);
@@ -1056,7 +1067,7 @@ void IsClipboardCopyAllowedByPolicy(
     return;
   }
 
-  DCHECK(source.web_contents());
+  DCHECK(source.web_contents() || source.is_service_worker());
   DCHECK(source.browser_context());
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1121,7 +1132,7 @@ void IsClipboardShareAllowedByPolicy(
     return;
   }
 
-  DCHECK(source.web_contents());
+  DCHECK(source.web_contents() || source.is_service_worker());
   DCHECK(source.browser_context());
 
   IsCopyRestrictedByDialog(
@@ -1140,7 +1151,7 @@ void IsClipboardGenericCopyActionAllowedByPolicy(
     return;
   }
 
-  DCHECK(source.web_contents());
+  DCHECK(source.web_contents() || source.is_service_worker());
   DCHECK(source.browser_context());
 
   IsCopyRestrictedByDialog(
@@ -1208,7 +1219,7 @@ bool IsDragAllowedByPolicy(const content::ClipboardEndpoint& source,
 
   if (blocked) {
     auto* factory = GetDialogFactory();
-    if (factory) {
+    if (factory && source.web_contents()) {
       factory->ShowDialogIfNeeded(
           source.web_contents(),
           data_controls::DataControlsDialog::Type::kClipboardDragBlock);

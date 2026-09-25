@@ -159,6 +159,21 @@ class DataProtectionClipboardTest : public testing::Test {
     EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
   }
 
+  content::ClipboardEndpoint ServiceWorkerEndpoint(GURL url) {
+    return content::ClipboardEndpoint::ForServiceWorker(
+        ui::DataTransferEndpoint(std::move(url)),
+        base::BindLambdaForTesting(
+            [this]() { return contents()->GetBrowserContext(); }));
+  }
+
+  // An endpoint with a BrowserContext but no tab that is NOT a service worker,
+  // e.g. a tab that has yet to load. Policy checks stay skipped for these.
+  content::ClipboardEndpoint NotLoadedTabEndpoint(GURL url) {
+    return content::ClipboardEndpoint::ForUnloadedTab(
+        ui::DataTransferEndpoint(std::move(url)),
+        base::BindLambdaForTesting(
+            [this]() { return contents()->GetBrowserContext(); }));
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -332,9 +347,20 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
-       DataProtectionPaste_NoDestinationWebContents) {
-  // Missing a destination WebContents implies the tab is gone, so null should
-  // always be returned even if no DC rule is set.
+       DestinationWithoutWebContents_Disallowed) {
+  // Destinations without a WebContents cannot have Data Controls paste rules
+  // evaluated or user warnings shown, so pasting is always disallowed
+  // regardless of policy rules.
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+        "destinations": {
+          "urls": ["destination.com"]
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "ALLOW"}
+        ]
+    })"});
+
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   auto source = SourceEndpoint();
   auto destination = content::ClipboardEndpoint::ForUnloadedTab(
@@ -343,7 +369,7 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
           [](Profile* profile) -> content::BrowserContext* { return profile; },
           base::Unretained(profile_)));
   ui::ClipboardMetadata metadata = {.size = 1234};
-  EXPECT_FALSE(IsPastePolicyCheckRequired(source, destination, metadata));
+  EXPECT_TRUE(IsPastePolicyCheckRequired(source, destination, metadata));
   PasteIfAllowedByPolicy(source, destination, metadata,
                          MakeClipboardPasteData("text", "image", {}),
                          future.GetCallback());
@@ -924,6 +950,140 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
   EXPECT_TRUE(same_tab_data.empty());
 }
 
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
+       CopyAction_ServiceWorker_Blocked) {
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "sources": {
+                      "urls": ["source.com"]
+                    },
+                    "destinations": {
+                      "os_clipboard": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  auto source = ServiceWorkerEndpoint(GURL("https://source.com"));
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  ASSERT_TRUE(replacement);
+  EXPECT_EQ(*replacement,
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
+       CopyAction_ServiceWorker_SourceBlock_EmptyWrite) {
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "sources": {
+                      "urls": ["source.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  auto source = ServiceWorkerEndpoint(GURL("https://source.com"));
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
+
+  // A source-only block writes nothing. There is no tab to show the block
+  // dialog in, so the copy is simply refused.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get<content::ClipboardPasteData>().text.empty());
+  EXPECT_FALSE(future.Get<std::optional<std::u16string>>());
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
+       CopyAction_ServiceWorker_Warn_RejectedWithoutBypass) {
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "sources": {
+                      "urls": ["source.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "WARN"}
+                    ]
+                  })"});
+
+  auto source = ServiceWorkerEndpoint(GURL("https://source.com"));
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
+
+  // A worker has no tab to host the warning dialog, so the warning resolves
+  // as not bypassed rather than waiting on a user who cannot be asked.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get<content::ClipboardPasteData>().text.empty());
+  EXPECT_FALSE(future.Get<std::optional<std::u16string>>());
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
+       CopyAction_ServiceWorker_NoRule_Allowed) {
+  auto source = ServiceWorkerEndpoint(GURL("https://source.com"));
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get<content::ClipboardPasteData>().text, u"foo");
+  EXPECT_FALSE(future.Get<std::optional<std::u16string>>());
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
+       CopyAction_NotLoadedTabSource_StillSkipped) {
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "sources": {
+                      "urls": ["source.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  auto source = NotLoadedTabEndpoint(GURL("https://source.com"));
+  ui::ClipboardMetadata metadata = {.size = 1234};
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(source, metadata,
+                                 MakeClipboardPasteData("foo", "", {}),
+                                 future.GetCallback());
+
+  // Only service workers opt back in. An endpoint without a tab that is not a
+  // worker keeps being skipped, as it was before.
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get<content::ClipboardPasteData>().text, u"foo");
+  EXPECT_FALSE(future.Get<std::optional<std::u16string>>());
+}
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class DataProtectionIsClipboardCopyAllowedByContentAnalysisTest
