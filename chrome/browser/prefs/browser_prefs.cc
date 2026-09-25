@@ -369,7 +369,6 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager.h"
-#include "chrome/browser/ash/bluetooth/hats_bluetooth_revamp_trigger_impl.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
@@ -1039,6 +1038,8 @@ inline constexpr char kHatsBorealisGamesSurveyIsSelected[] =
     "hats_borealis_games_is_selected";
 inline constexpr char kHatsBorealisGamesLastInteractionTimestamp[] =
     "hats_borealis_games_last_interaction_timestamp";
+inline constexpr char kUserPairedWithFastPair[] =
+    "ash.user.paired_with_fast_pair";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Deprecated 09/2026.
@@ -1456,6 +1457,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kHatsBorealisGamesSurveyIsSelected, false);
   registry->RegisterTimePref(kHatsBorealisGamesLastInteractionTimestamp,
                              base::Time());
+  registry->RegisterBooleanPref(kUserPairedWithFastPair, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Deprecated 09/2026.
@@ -2149,7 +2151,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::bluetooth::DebugLogsManager::RegisterPrefs(registry);
   ash::bluetooth_config::BluetoothPowerControllerImpl::RegisterProfilePrefs(
       registry);
-  ash::HatsBluetoothRevampTriggerImpl::RegisterProfilePrefs(registry);
   user_manager::UserManagerImpl::RegisterProfilePrefs(registry);
   ash::ClientAppMetadataProviderService::RegisterProfilePrefs(registry);
   ash::CupsPrintersManager::RegisterProfilePrefs(registry);
@@ -2821,6 +2822,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHatsBorealisGamesSurveyCycleEndTs);
   profile_prefs->ClearPref(kHatsBorealisGamesSurveyIsSelected);
   profile_prefs->ClearPref(kHatsBorealisGamesLastInteractionTimestamp);
+  profile_prefs->ClearPref(kUserPairedWithFastPair);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Added 09/2026.

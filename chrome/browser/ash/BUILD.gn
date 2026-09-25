@@ -244,7 +244,6 @@ group("browser_tests") {
     "//chrome/browser/ash/arc:browser_tests",
     "//chrome/browser/ash/audio:browser_tests",
     "//chrome/browser/ash/base:browser_tests",
-    "//chrome/browser/ash/bluetooth:browser_tests",
     "//chrome/browser/ash/boca/on_task:browser_tests",
     "//chrome/browser/ash/boca/spotlight:browser_tests",
     "//chrome/browser/ash/bruschetta:browser_tests",

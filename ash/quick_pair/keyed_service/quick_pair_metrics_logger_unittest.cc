@@ -167,15 +167,8 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
                              /*for_test=*/true);
 
-    AccountId account_id =
-        SimulateUserLogin({kUserEmail},
-                          /*account_id=*/std::nullopt, std::move(user_prefs));
-
-    static_cast<TestingPrefServiceSimple*>(
-        ash_test_helper()->prefs_provider()->GetUserPrefs(account_id))
-        ->registry()
-        ->RegisterBooleanPref(ash::prefs::kUserPairedWithFastPair,
-                              /*default_value=*/false);
+    SimulateUserLogin({kUserEmail},
+                      /*account_id=*/std::nullopt, std::move(user_prefs));
 
     adapter_ = base::MakeRefCounted<FakeMetricBluetoothAdapter>();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
@@ -483,14 +476,6 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     auto* bt_device_ptr = bluetooth_device.get();
     adapter_->AddMockDevice(std::move(bluetooth_device));
     adapter_->NotifyDevicePairedChanged(bt_device_ptr, new_paired_status);
-  }
-
-  void AssertUserPairedWithFastPairPref(bool pref_value) {
-    EXPECT_EQ(Shell::Get()
-                  ->session_controller()
-                  ->GetLastActiveUserPrefService()
-                  ->GetBoolean(ash::prefs::kUserPairedWithFastPair),
-              pref_value);
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -907,7 +892,6 @@ TEST_F(QuickPairMetricsLoggerTest,
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Initial) {
-  AssertUserPairedWithFastPairPref(false);
   SimulateDiscoveryUiConnectPressed(Protocol::kFastPairInitial);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -954,11 +938,9 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Initial) {
                 kFastPairEngagementFlowMetricInitial,
                 FastPairEngagementFlowEvent::kDiscoveryUiDismissedByTimeout),
             0);
-  AssertUserPairedWithFastPairPref(true);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Subsequent) {
-  AssertUserPairedWithFastPairPref(false);
   SimulateDiscoveryUiConnectPressed(Protocol::kFastPairSubsequent);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(histogram_tester().GetBucketCount(
@@ -1005,7 +987,6 @@ TEST_F(QuickPairMetricsLoggerTest, LogDiscoveryUiConnectPressed_Subsequent) {
                 kFastPairEngagementFlowMetricSubsequent,
                 FastPairEngagementFlowEvent::kDiscoveryUiDismissedByTimeout),
             0);
-  AssertUserPairedWithFastPairPref(true);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogPairingFailed_Initial) {
@@ -1841,7 +1822,6 @@ TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountDismissedByTimeout) {
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountSavePressed) {
-  AssertUserPairedWithFastPairPref(false);
   SimulateAssociateAccountUiSavePressed();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
@@ -1894,7 +1874,6 @@ TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountSavePressed) {
                 FastPairRetroactiveEngagementFlowEvent::
                     kAssociateAccountUiDismissedByTimeout),
             0);
-  AssertUserPairedWithFastPairPref(true);
 }
 
 TEST_F(QuickPairMetricsLoggerTest, LogAssociateAccountLearnMorePressed) {

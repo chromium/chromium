@@ -5111,8 +5111,6 @@ static_library("test_support") {
     "metrics/user_metrics_recorder_test_api.h",
     "projector/test/mock_projector_metadata_controller.cc",
     "projector/test/mock_projector_metadata_controller.h",
-    "public/cpp/fake_hats_bluetooth_revamp_trigger_impl.cc",
-    "public/cpp/fake_hats_bluetooth_revamp_trigger_impl.h",
     "quick_insert/mock_quick_insert_asset_fetcher.cc",
     "quick_insert/mock_quick_insert_asset_fetcher.h",
     "quick_insert/mock_quick_insert_client.cc",

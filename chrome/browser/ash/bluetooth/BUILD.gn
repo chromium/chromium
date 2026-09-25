@@ -15,8 +15,6 @@ static_library("bluetooth") {
     "debug_logs_manager.h",
     "debug_logs_manager_factory.cc",
     "debug_logs_manager_factory.h",
-    "hats_bluetooth_revamp_trigger_impl.cc",
-    "hats_bluetooth_revamp_trigger_impl.h",
   ]
   deps = [
     "//chrome/browser/ash/profiles",
@@ -29,7 +27,6 @@ static_library("bluetooth") {
     "//ash",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/hats",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
     "//device/bluetooth",
@@ -54,33 +51,6 @@ source_set("unit_tests") {
     "//components/session_manager/test:test_support",
     "//dbus",
     "//device/bluetooth",
-  ]
-}
-
-source_set("browser_tests") {
-  testonly = true
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  sources = [ "hats_bluetooth_revamp_trigger_impl_browsertest.cc" ]
-
-  deps = [
-    ":bluetooth",
-    "//ash/constants",
-    "//ash/public/cpp",
-    "//base/test:test_support",
-    "//chrome/browser/ash/hats",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
-    "//chrome/common",
-    "//chrome/test:test_support",
-    "//chrome/test/base:testing_browser_process",
-    "//chromeos/ash/components/browser_context_helper",
-    "//chromeos/ash/components/network",
-    "//components/prefs",
-    "//components/session_manager/core",
-    "//content/test:test_support",
-    "//ui/message_center:test_support",
   ]
 }
 

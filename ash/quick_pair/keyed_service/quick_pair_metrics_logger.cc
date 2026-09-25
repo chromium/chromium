@@ -4,17 +4,13 @@
 
 #include "ash/quick_pair/keyed_service/quick_pair_metrics_logger.h"
 
-#include "ash/constants/ash_pref_names.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_feature_usage_metrics_logger.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
 #include "components/cross_device/logging/logging.h"
-#include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
 namespace ash {
@@ -72,10 +68,6 @@ void GetDeviceMetadataAndLogRetroactiveEngagementFunnelWithMetadata(
       base::BindOnce(
           &AttemptToRecordRetroactiveEngagementFunnelFlowWithMetadata, device,
           event));
-}
-
-PrefService* GetLastActiveUserPrefService() {
-  return Shell::Get()->session_controller()->GetLastActiveUserPrefService();
 }
 
 }  // namespace
@@ -225,11 +217,6 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
                         kDiscoveryUiConnectPressedAfterLearnMorePressed);
         discovery_learn_more_devices_.erase(device);
         break;
-      }
-
-      PrefService* pref = GetLastActiveUserPrefService();
-      if (pref->FindPreference(ash::prefs::kUserPairedWithFastPair)) {
-        pref->SetBoolean(ash::prefs::kUserPairedWithFastPair, true);
       }
 
       AttemptRecordingFastPairEngagementFlow(
@@ -428,11 +415,6 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
                         kAssociateAccountSavePressedAfterLearnMorePressed);
         associate_account_learn_more_devices_.erase(device);
         break;
-      }
-
-      PrefService* pref = GetLastActiveUserPrefService();
-      if (pref->FindPreference(ash::prefs::kUserPairedWithFastPair)) {
-        pref->SetBoolean(ash::prefs::kUserPairedWithFastPair, true);
       }
 
       AttemptRecordingFastPairRetroactiveEngagementFlow(

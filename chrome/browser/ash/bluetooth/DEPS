@@ -14,7 +14,6 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/hats",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
@@ -25,9 +24,5 @@ specific_include_rules = {
   ".*test\\.cc": [
     "+chrome/browser/ui/chrome_pages.h",
     "+chrome/test/base",
-  ],
-
-  "hats_bluetooth_revamp_trigger_impl_browsertest\\.cc": [
-    "+ui/message_center/test/message_center_waiter.h",
   ],
 }
