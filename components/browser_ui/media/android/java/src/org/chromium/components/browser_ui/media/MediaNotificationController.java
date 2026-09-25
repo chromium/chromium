@@ -640,6 +640,7 @@ public class MediaNotificationController {
     /** Handles the service destruction. */
     public void onServiceDestroyed() {
         mService = null;
+        mIsForeground = false;
         MediaNotificationManager.setService(getMediaTypeId(), null);
     }
 
@@ -650,8 +651,18 @@ public class MediaNotificationController {
             // The intent comes from  {@link AppHooks#startForegroundService}.
             onServiceStarted(service);
         } else {
-            // The intent comes from the notification. In this case, {@link onServiceStarted()}
-            // does need to be called.
+            // In multiple-notification mode, a paused notification outlives its service when
+            // Android stops the idle background service (onServiceDestroyed() nulls mService
+            // without hiding the notification). When the user later triggers a notification
+            // action (e.g. Play or Swipe), PendingIntent.getService() launches a new service
+            // instance with a non-null action, bypassing onServiceStarted(). Re-bind mService
+            // and the shared service map when null or stale so stopListenerService() can stop
+            // it on Swipe/Stop and showNotification() can directly promote it on Play without
+            // a redundant startForegroundService() call.
+            if (mService != service) {
+                mService = service;
+                MediaNotificationManager.setService(getMediaTypeId(), service);
+            }
             processAction(intent.getAction());
         }
         return true;
@@ -903,7 +914,12 @@ public class MediaNotificationController {
 
         if (MediaNotificationManager.isServiceNeeded(
                 getMediaTypeId(), mDelegate.getNotificationId())) {
+            if (mIsForeground) {
+                ForegroundServiceUtils.getInstance()
+                        .stopForeground(mService, Service.STOP_FOREGROUND_REMOVE);
+            }
             mService = null;
+            mIsForeground = false;
             return;
         }
 
@@ -912,6 +928,7 @@ public class MediaNotificationController {
         mService.stopSelf();
         mService = null;
         mIsForeground = false;
+        MediaNotificationManager.onServiceDestroyed(getMediaTypeId());
     }
 
     @VisibleForTesting
@@ -1387,10 +1404,10 @@ public class MediaNotificationController {
      *     service running in the background.
      */
     public void demote(boolean stopFgs) {
-        if (mService == null) return;
         if (!mIsForeground) return;
-
         mIsForeground = false;
+        if (mService == null) return;
+
         demoteInternal(stopFgs);
         updateNotification(/* shouldLogNotification= */ false);
     }

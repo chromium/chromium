@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -116,6 +117,62 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         setUpService();
         getController().mMediaNotificationInfo = null;
         assertFalse(mService.getImpl().processIntent(new Intent()));
+    }
+
+    @Test
+    public void testProcessActionIntentRebindsServiceAfterDestroy() {
+        setUpServiceAndClearInvocations();
+        MediaNotificationController controller = getController();
+        controller.mMediaNotificationInfo = mMediaNotificationInfoBuilder.setPaused(true).build();
+
+        // Simulate Android destroying the idle background service while keeping the paused
+        // notification alive (as happens when AllowMultipleMediaNotifications is enabled).
+        controller.onServiceDestroyed();
+        assertNull(controller.mService);
+        assertNull(MediaNotificationManager.getService(controller.getMediaTypeId()));
+
+        // Dispatching ACTION_SWIPE via PendingIntent starts a new service instance with a
+        // non-null action. processIntent() should re-bind mService so stopListenerService()
+        // actually stops the newly started service instead of returning early.
+        Intent swipeIntent = new Intent(MediaNotificationController.ACTION_SWIPE);
+        assertTrue(mService.getImpl().processIntent(swipeIntent));
+        verify(controller).stopListenerService();
+        verify(mMockForegroundServiceUtils)
+                .stopForeground(eq(mService), eq(Service.STOP_FOREGROUND_REMOVE));
+        verify(mService).stopSelf();
+        assertNull(controller.mService);
+        assertNull(MediaNotificationManager.getService(controller.getMediaTypeId()));
+    }
+
+    @Test
+    public void testProcessPlayIntentRebindsServiceAndPromotesAfterDestroy() {
+        setUpServiceAndClearInvocations();
+        MediaNotificationController controller = getController();
+        controller.mMediaNotificationInfo = mMediaNotificationInfoBuilder.setPaused(true).build();
+
+        // Simulate Android destroying the idle background service while keeping the paused
+        // notification alive.
+        controller.onServiceDestroyed();
+        assertNull(controller.mService);
+        assertNull(MediaNotificationManager.getService(controller.getMediaTypeId()));
+
+        // Dispatching ACTION_PLAY via PendingIntent starts a new service instance with a
+        // non-null action and re-binds mService and sServices.
+        Intent playIntent = new Intent(MediaNotificationController.ACTION_PLAY);
+        assertTrue(mService.getImpl().processIntent(playIntent));
+        assertEquals(mService, controller.mService);
+        assertEquals(mService, MediaNotificationManager.getService(controller.getMediaTypeId()));
+
+        // Subsequent showNotification(paused=false) promotes the rebound service directly
+        // without calling startForegroundService().
+        controller.showNotification(mMediaNotificationInfoBuilder.setPaused(false).build());
+        verify(mMockForegroundServiceUtils)
+                .startForeground(
+                        eq(mService),
+                        eq(getNotificationId()),
+                        any(Notification.class),
+                        eq(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK));
+        verify(mMockForegroundServiceUtils, never()).startForegroundService(any(Intent.class));
     }
 
     @Test

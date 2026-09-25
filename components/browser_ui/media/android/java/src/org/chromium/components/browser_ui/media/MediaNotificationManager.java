@@ -383,18 +383,25 @@ public class MediaNotificationManager {
     }
 
     /**
-     * Checks if the foreground service is still needed by any active (non-paused) controller of the
-     * specified media type, excluding a specific controller.
+     * Checks if the foreground service is still needed by any other controller of the specified
+     * media type, excluding a specific controller.
      *
      * @param mediaTypeId The media type ID of the service to check.
      * @param excludeNotificationId The unique notification ID of the controller to exclude from the
      *     check (usually the one that is being paused or destroyed).
-     * @return True if there is at least one other non-paused controller of the same media type,
-     *     false otherwise.
+     * @return True if there is at least one other non-paused or foreground controller of the same
+     *     media type, false otherwise.
      */
     public static boolean isServiceNeeded(@MediaTypeId int mediaTypeId, int excludeNotificationId) {
-        return getFallbackPlayingControllerId(mediaTypeId, excludeNotificationId)
-                != MediaNotificationInfo.INVALID_ID;
+        for (int i = 0; i < sControllers.size(); i++) {
+            int id = sControllers.keyAt(i);
+            if (id == excludeNotificationId || getMediaTypeId(id) != mediaTypeId) continue;
+            MediaNotificationController c = sControllers.valueAt(i);
+            if (c != null && (!c.isPaused() || c.isForeground())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean hasPlayingController(@MediaTypeId int mediaTypeId) {
