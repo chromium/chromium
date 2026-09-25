@@ -28,10 +28,14 @@ bool IsBookmarkBarLocation(BookmarkLaunchLocation location) {
 
 auto GetMetricProfile(const Profile* profile) {
   DCHECK(profile);
-  DCHECK(profile->IsRegularProfile() || profile->IsIncognitoProfile());
-  return profile->IsRegularProfile()
-             ? profile_metrics::BrowserProfileType::kRegular
-             : profile_metrics::BrowserProfileType::kIncognito;
+  DCHECK(profile->IsRegularProfile() ||
+         profile->IsPrimaryOTRProfileWithRegularParent());
+  if (profile->IsRegularProfile()) {
+    return profile_metrics::BrowserProfileType::kRegular;
+  } else if (profile->IsIncognitoProfile()) {
+    return profile_metrics::BrowserProfileType::kIncognito;
+  }
+  return profile_metrics::BrowserProfileType::kEnterpriseIsolated;
 }
 
 }  // namespace

@@ -114,7 +114,7 @@ OpenedWebContentsSet OpenAllHelper(
   bool opening_urls_in_incognito = false;
   if (profile) {
     opening_urls_in_incognito =
-        profile->IsIncognitoProfile() ||
+        profile->IsPrimaryOTRProfileWithRegularParent() ||
         initial_disposition == WindowOpenDisposition::OFF_THE_RECORD;
   } else {
     opening_urls_in_incognito =
@@ -201,7 +201,7 @@ OpenedWebContentsSet OpenAllHelper(
     // the disposition and the URL type.
     Profile* new_tab_profile =
         Profile::FromBrowserContext(opened_tab->GetBrowserContext());
-    if (new_tab_profile->IsIncognitoProfile()) {
+    if (new_tab_profile->IsPrimaryOTRProfileWithRegularParent()) {
       if (!incognito_browser) {
         incognito_browser =
             ProfileBrowserCollection::GetForProfile(new_tab_profile)
