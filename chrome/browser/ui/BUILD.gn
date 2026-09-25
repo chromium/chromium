@@ -1131,10 +1131,6 @@ source_set("tab_helpers_impl") {
     deps += [ "//chrome/browser/offline_pages" ]
   }
 
-  if (enable_plugins) {
-    deps += [ "//chrome/browser/plugins" ]
-  }
-
   if (enable_printing) {
     deps += [ "//chrome/browser/printing" ]
   }

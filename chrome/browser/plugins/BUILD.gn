@@ -38,10 +38,12 @@ source_set("plugins") {
       "//components/infobars/core",
       "//components/keyed_service/core",
       "//components/prefs",
+      "//components/tabs:public",
       "//extensions/buildflags",
       "//media:media_buildflags",
       "//services/network/public/mojom",
       "//third_party/blink/public/common",
+      "//ui/base/unowned_user_data",
     ]
   }
 

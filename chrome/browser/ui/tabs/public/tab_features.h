@@ -32,6 +32,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/buildflags.h"
+#include "content/public/common/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
@@ -250,6 +251,10 @@ class ProtocolHandlerPickerCoordinator;
 
 #if BUILDFLAG(ENABLE_RLZ)
 class ChromeRLZTrackerWebContentsObserver;
+#endif
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+class PluginObserver;
 #endif
 
 namespace indigo {
@@ -761,6 +766,10 @@ class TabFeatures {
 #if BUILDFLAG(ENABLE_RLZ)
   std::unique_ptr<ChromeRLZTrackerWebContentsObserver>
       chrome_rlz_tracker_web_contents_observer_;
+#endif
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  std::unique_ptr<PluginObserver> plugin_observer_;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -204,6 +204,10 @@
 #include "chrome/browser/rlz/chrome_rlz_tracker_web_contents_observer.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "chrome/browser/plugins/plugin_observer.h"
+#endif
+
 namespace tabs {
 
 TabFeatures::TabFeatures() = default;
@@ -801,6 +805,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   chrome_rlz_tracker_web_contents_observer_ =
       ChromeRLZTrackerWebContentsObserver::MaybeCreate(tab.GetContents());
 #endif
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  plugin_observer_ = GetUserDataFactory().CreateInstance<PluginObserver>(
+      tab, tab, tab.GetContents());
+#endif
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1046,6 +1055,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 #if BUILDFLAG(ENABLE_RLZ)
   chrome_rlz_tracker_web_contents_observer_ =
       ChromeRLZTrackerWebContentsObserver::MaybeCreate(new_contents);
+#endif
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  plugin_observer_.reset();
+  plugin_observer_ = GetUserDataFactory().CreateInstance<PluginObserver>(
+      *tab, *tab, new_contents);
 #endif
 }
 

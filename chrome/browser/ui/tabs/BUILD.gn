@@ -5,6 +5,7 @@
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 import("//chrome/common/features.gni")
+import("//content/public/common/features.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 # This is the public interface for tabs in a desktop browser. Most features in
@@ -22,6 +23,7 @@ source_set("tabs_public") {
     "//chrome/common:buildflags",
     "//components/tab_groups",
     "//components/tabs:public",
+    "//content/public/common:buildflags",
     "//rlz/buildflags",
   ]
   deps = [
@@ -700,6 +702,10 @@ if (!is_android) {
 
     if (enable_rlz) {
       deps += [ "//chrome/browser/rlz" ]
+    }
+
+    if (enable_plugins) {
+      deps += [ "//chrome/browser/plugins" ]
     }
   }
 

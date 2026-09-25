@@ -232,10 +232,6 @@
 #include "chrome/browser/offline_pages/recent_tab_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/plugin_observer.h"
-#endif
-
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/printing/printing_init.h"
 #endif
@@ -769,10 +765,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   offline_pages::OfflinePageTabHelper::CreateForWebContents(web_contents);
   offline_pages::RecentTabHelper::CreateForWebContents(web_contents);
   offline_pages::AutoFetchPageLoadWatcher::CreateForWebContents(web_contents);
-#endif
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  PluginObserver::CreateForWebContents(web_contents);
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
