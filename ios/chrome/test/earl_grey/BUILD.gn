@@ -98,6 +98,8 @@ source_set("eg_app_support+eg2") {
     "chrome_matchers_app_interface.mm",
     "chrome_test_case_app_interface.h",
     "chrome_test_case_app_interface.mm",
+    "duo_simulator_util.h",
+    "duo_simulator_util.mm",
     "earl_grey_scoped_block_swizzler_app_interface.h",
     "earl_grey_scoped_block_swizzler_app_interface.mm",
     "recording_command_dispatcher.h",

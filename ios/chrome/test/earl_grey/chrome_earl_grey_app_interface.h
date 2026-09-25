@@ -295,6 +295,22 @@ enum class TipsNotificationType;
 // Returns the interface orientation of the scene.
 + (UIInterfaceOrientation)interfaceOrientation;
 
+// Returns YES if running on an iPhone Duo simulator.
++ (BOOL)isDuoSimulator;
+
+// Sends a simulated hinge angle event (0.0 = Closed, 130.0 = Book,
+// 180.0 = Open).
++ (BOOL)dispatchSimulatedDuoHingeAngle:(double)angleInDegrees;
+
+// Returns YES if the window and hinge posture match `angleInDegrees`.
++ (BOOL)isSimulatedDuoHingePostureSettled:(double)angleInDegrees;
+
+// Sends a simulated device orientation event.
++ (BOOL)dispatchSimulatedDuoOrientation:(UIDeviceOrientation)orientation;
+
+// Returns YES if the scene and window orientation match `orientation`.
++ (BOOL)isSimulatedDuoOrientationSettled:(UIDeviceOrientation)orientation;
+
 #pragma mark - WebState Utilities (EG2)
 
 // Attempts to tap the element with `element_id` within window.frames[0] of the

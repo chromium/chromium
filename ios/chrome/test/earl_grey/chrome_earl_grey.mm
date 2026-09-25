@@ -13,6 +13,7 @@
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/time/time.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/reader_mode/test/reader_mode_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -42,6 +43,41 @@ using chrome_test_util::OpenLinkInNewWindowButton;
 using chrome_test_util::ShareButton;
 
 namespace {
+
+constexpr base::TimeDelta kDuoTransitionTimeout = base::Seconds(10);
+constexpr base::TimeDelta kDuoTransitionSettleDuration =
+    base::Milliseconds(250);
+
+bool WaitForDuoTransitionToSettle(BOOL (^is_settled)()) {
+  __block base::TimeTicks settled_since;
+  return WaitUntilConditionOrTimeout(kDuoTransitionTimeout, ^bool {
+    if (!is_settled()) {
+      settled_since = base::TimeTicks();
+      return false;
+    }
+    if (settled_since.is_null()) {
+      settled_since = base::TimeTicks::Now();
+      return false;
+    }
+    return (base::TimeTicks::Now() - settled_since) >=
+           kDuoTransitionSettleDuration;
+  });
+}
+
+// Maps a UIHingeStatus posture bucket to its representative simulator hinge
+// angle in degrees.
+API_AVAILABLE(ios(27.1))
+double SimulatedDuoHingeAngleForStatus(UIHingeStatus status) {
+  switch (status) {
+    case UIHingeStatusClosed:
+    case UIHingeStatusUnknown:
+      return 0.0;
+    case UIHingeStatusPartiallyOpen:
+      return 130.0;
+    case UIHingeStatusFullyOpen:
+      return 180.0;
+  }
+}
 
 // Accessibility ID of the Activity menu.
 NSString* const kActivityMenuIdentifier = @"ActivityListView";
@@ -203,6 +239,47 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (UIInterfaceOrientation)interfaceOrientation {
   return [ChromeEarlGreyAppInterface interfaceOrientation];
+}
+
+- (BOOL)isDuoSimulator {
+  return [ChromeEarlGreyAppInterface isDuoSimulator];
+}
+
+- (void)setSimulatedDuoHingeStatus:(UIHingeStatus)hingeStatus {
+  double angleInDegrees = SimulatedDuoHingeAngleForStatus(hingeStatus);
+  if ([ChromeEarlGreyAppInterface
+          isSimulatedDuoHingePostureSettled:angleInDegrees]) {
+    return;
+  }
+  NSString* description = [NSString
+      stringWithFormat:@"Failed to set simulated Duo hinge angle to %f.",
+                       angleInDegrees];
+  EG_TEST_HELPER_ASSERT_TRUE([ChromeEarlGreyAppInterface
+                                 dispatchSimulatedDuoHingeAngle:angleInDegrees],
+                             description);
+  bool settled = WaitForDuoTransitionToSettle(^BOOL {
+    return [ChromeEarlGreyAppInterface
+        isSimulatedDuoHingePostureSettled:angleInDegrees];
+  });
+  EG_TEST_HELPER_ASSERT_TRUE(settled, description);
+}
+
+- (void)setSimulatedDuoOrientation:(UIDeviceOrientation)orientation {
+  if ([ChromeEarlGreyAppInterface
+          isSimulatedDuoOrientationSettled:orientation]) {
+    return;
+  }
+  NSString* description = [NSString
+      stringWithFormat:@"Failed to set simulated Duo orientation to %ld.",
+                       static_cast<long>(orientation)];
+  EG_TEST_HELPER_ASSERT_TRUE(
+      [ChromeEarlGreyAppInterface dispatchSimulatedDuoOrientation:orientation],
+      description);
+  bool settled = WaitForDuoTransitionToSettle(^BOOL {
+    return [ChromeEarlGreyAppInterface
+        isSimulatedDuoOrientationSettled:orientation];
+  });
+  EG_TEST_HELPER_ASSERT_TRUE(settled, description);
 }
 
 #pragma mark - Profile Utilities (EG2)

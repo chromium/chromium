@@ -17,6 +17,15 @@
 #include "third_party/metrics_proto/user_demographics.pb.h"
 #include "url/gurl.h"
 
+#if !defined(__IPHONE_27_1) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_27_1
+typedef NS_ENUM(NSInteger, UIHingeStatus) {
+  UIHingeStatusUnknown = 0,
+  UIHingeStatusClosed = 1,
+  UIHingeStatusPartiallyOpen = 2,
+  UIHingeStatusFullyOpen = 3,
+};
+#endif
+
 @class FakeSystemIdentity;
 @class ElementSelector;
 @class JavaScriptExecutionResult;
@@ -110,6 +119,16 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns the interface orientation of the scene.
 - (UIInterfaceOrientation)interfaceOrientation;
+
+// Returns YES if running on an iPhone Duo simulator.
+- (BOOL)isDuoSimulator;
+
+// Sets the simulated hinge posture on an iPhone Duo simulator.
+- (void)setSimulatedDuoHingeStatus:(UIHingeStatus)hingeStatus
+    API_AVAILABLE(ios(27.1));
+
+// Sets the simulated device orientation on an iPhone Duo simulator.
+- (void)setSimulatedDuoOrientation:(UIDeviceOrientation)orientation;
 
 #pragma mark - Profile Utilities (EG2)
 

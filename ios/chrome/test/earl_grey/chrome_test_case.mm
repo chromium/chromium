@@ -309,13 +309,20 @@ void ResetAuthentication() {
   // orientation may not be available at -setUp).
   if (![ChromeTestCase isStartupTest] &&
       _originalOrientation != UIInterfaceOrientationUnknown) {
-    UIInterfaceOrientation currentOrientation =
-        [ChromeEarlGrey interfaceOrientation];
-    if (currentOrientation != _originalOrientation) {
+    if ([ChromeEarlGrey isDuoSimulator]) {
       // Synchronization off due to an infinite spinner if the keyboard is
       // visible.
       ScopedSynchronizationDisabler disabler;
-
+      // Restore the Duo simulator to Closed/Portrait. These calls are no-ops
+      // when already in that state.
+      if (@available(iOS 27.1, *)) {
+        [ChromeEarlGrey setSimulatedDuoHingeStatus:UIHingeStatusClosed];
+      }
+      [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
+    } else if ([ChromeEarlGrey interfaceOrientation] != _originalOrientation) {
+      // Synchronization off due to an infinite spinner if the keyboard is
+      // visible.
+      ScopedSynchronizationDisabler disabler;
       // Rotate the device back to the original orientation, since some tests
       // attempt to run in other orientations.
       [EarlGrey rotateInterfaceToOrientation:_originalOrientation error:nil];
@@ -483,9 +490,17 @@ void ResetAuthentication() {
   }
   [ChromeEarlGrey setPopupPrefValue:CONTENT_SETTING_DEFAULT];
 
-  // Enforce the assumption that the tests are runing in portrait.
-  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
-                                   error:nil];
+  // Enforce the assumption that the tests are running in portrait.
+  if ([ChromeEarlGrey isDuoSimulator]) {
+    // Reset the Duo simulator to Closed/Portrait via its virtual HID service.
+    if (@available(iOS 27.1, *)) {
+      [ChromeEarlGrey setSimulatedDuoHingeStatus:UIHingeStatusClosed];
+    }
+    [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
+  } else {
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                     error:nil];
+  }
 
   // Clear multiwindow root and any extra windows. Once in `setUpForTestCase`
   // (in case of crashes) and on every `tearDown`.
