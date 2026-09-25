@@ -70,7 +70,7 @@ class ChildProcessTask : public Task {
                int64_t refresh_flags) override;
   Type GetType() const override;
   SubType GetSubType() const override;
-  int GetChildProcessUniqueID() const override;
+  content::ChildProcessId GetChildProcessUniqueID() const override;
   std::optional<base::ByteSize> GetV8MemoryAllocated() const override;
   std::optional<base::ByteSize> GetV8MemoryUsed() const override;
 

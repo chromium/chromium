@@ -41,9 +41,9 @@ bool VmProcessTask::IsKillable() {
   return profile && owner_id_ == crostini::CryptohomeIdForProfile(profile);
 }
 
-int VmProcessTask::GetChildProcessUniqueID() const {
+content::ChildProcessId VmProcessTask::GetChildProcessUniqueID() const {
   // VMs are not child processes of the browser.
-  return content::ChildProcessHost::kInvalidUniqueID;
+  return content::ChildProcessId();
 }
 
 }  // namespace task_manager

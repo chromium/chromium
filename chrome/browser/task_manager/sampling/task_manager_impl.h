@@ -24,6 +24,7 @@
 #include "chrome/browser/task_manager/sampling/task_group.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 
@@ -80,7 +81,8 @@ class TaskManagerImpl : public TaskManagerInterface,
   Task::Type GetType(TaskId task_id) const override;
   Task::SubType GetSubType(TaskId task_id) const override;
   SessionID GetTabId(TaskId task_id) const override;
-  int GetChildProcessUniqueId(TaskId task_id) const override;
+  content::ChildProcessId GetChildProcessUniqueId(
+      TaskId task_id) const override;
   void GetTerminationStatus(TaskId task_id,
                             base::TerminationStatus* out_status,
                             int* out_error_code) const override;

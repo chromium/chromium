@@ -123,8 +123,9 @@ SessionID TestTaskManager::GetTabId(TaskId task_id) const {
   return SessionID::InvalidValue();
 }
 
-int TestTaskManager::GetChildProcessUniqueId(TaskId task_id) const {
-  return 0;
+content::ChildProcessId TestTaskManager::GetChildProcessUniqueId(
+    TaskId task_id) const {
+  return content::ChildProcessId();
 }
 
 void TestTaskManager::GetTerminationStatus(TaskId task_id,

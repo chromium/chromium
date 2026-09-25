@@ -120,9 +120,9 @@ Task::Type ArcProcessTask::GetType() const {
   return Task::ARC;
 }
 
-int ArcProcessTask::GetChildProcessUniqueID() const {
+content::ChildProcessId ArcProcessTask::GetChildProcessUniqueID() const {
   // ARC process is not a child process of the browser.
-  return content::ChildProcessHost::kInvalidUniqueID;
+  return content::ChildProcessId();
 }
 
 bool ArcProcessTask::IsKillable() {

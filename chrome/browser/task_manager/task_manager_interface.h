@@ -22,6 +22,7 @@
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id.h"
 
 class PrefRegistrySimple;
 
@@ -169,7 +170,8 @@ class TaskManagerInterface {
   // value is also 0. For other tasks that represent renderers and other child
   // processes, the return value is whatever unique IDs of their hosts in the
   // browser process.
-  virtual int GetChildProcessUniqueId(TaskId task_id) const = 0;
+  virtual content::ChildProcessId GetChildProcessUniqueId(
+      TaskId task_id) const = 0;
 
   // If the process, in which the task with |task_id| is running, is terminated
   // this gets the termination status. Currently implemented only for Renderer

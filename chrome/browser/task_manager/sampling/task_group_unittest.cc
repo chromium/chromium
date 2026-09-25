@@ -19,6 +19,7 @@
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +40,9 @@ class FakeTask : public Task {
 
   Type GetType() const override { return type_; }
 
-  int GetChildProcessUniqueID() const override { return 0; }
+  content::ChildProcessId GetChildProcessUniqueID() const override {
+    return content::ChildProcessId(1);
+  }
 
   base::WeakPtr<Task> GetParentTask() const override { return nullptr; }
 

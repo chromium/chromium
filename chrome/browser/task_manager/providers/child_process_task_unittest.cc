@@ -121,8 +121,7 @@ TEST_F(ChildProcessTaskTest, TestAll) {
   EXPECT_EQ(base::GetCurrentProcId(), task->process_id());
   EXPECT_EQ(expected_name, task->title());
   EXPECT_EQ(Task::UTILITY, task->GetType());
-  // TODO(crbug.com/379869738): Remove GetUnsafeValue() usage.
-  EXPECT_EQ(unique_id.GetUnsafeValue(), task->GetChildProcessUniqueID());
+  EXPECT_EQ(unique_id, task->GetChildProcessUniqueID());
   EXPECT_EQ(std::u16string(), task->GetProfileName());
   EXPECT_FALSE(task->ReportsSqliteMemory());
   EXPECT_FALSE(task->ReportsWebCacheStats());

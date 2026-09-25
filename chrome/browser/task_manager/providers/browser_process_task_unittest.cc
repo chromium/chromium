@@ -7,6 +7,7 @@
 #include "chrome/browser/task_manager/providers/browser_process_task_provider.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/common/child_process_id.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -76,7 +77,8 @@ TEST_F(BrowserProcessTaskProviderTest, TestProvidedTask) {
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_TASK_MANAGER_WEB_BROWSER_CELL_TEXT),
             provided_task_->title());
   EXPECT_EQ(Task::BROWSER, provided_task_->GetType());
-  EXPECT_EQ(0, provided_task_->GetChildProcessUniqueID());
+  EXPECT_EQ(content::ChildProcessId(0),
+            provided_task_->GetChildProcessUniqueID());
   constexpr base::ByteSize received_bytes = base::KiB(1);
   EXPECT_TRUE(provided_task_->GetNetworkUsageRate().is_zero());
   provided_task_->OnNetworkBytesRead(received_bytes);

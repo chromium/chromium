@@ -11,6 +11,7 @@
 #include "base/byte_size.h"
 #include "base/time/time.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
+#include "content/public/common/child_process_id.h"
 
 namespace task_manager {
 
@@ -57,7 +58,8 @@ class TestTaskManager : public TaskManagerInterface {
   Task::Type GetType(TaskId task_id) const override;
   Task::SubType GetSubType(TaskId task_id) const override;
   SessionID GetTabId(TaskId task_id) const override;
-  int GetChildProcessUniqueId(TaskId task_id) const override;
+  content::ChildProcessId GetChildProcessUniqueId(
+      TaskId task_id) const override;
   void GetTerminationStatus(TaskId task_id,
                             base::TerminationStatus* out_status,
                             int* out_error_code) const override;

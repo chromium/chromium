@@ -47,8 +47,10 @@ Task::Type BrowserProcessTask::GetType() const {
   return Task::BROWSER;
 }
 
-int BrowserProcessTask::GetChildProcessUniqueID() const {
-  return 0;
+content::ChildProcessId BrowserProcessTask::GetChildProcessUniqueID() const {
+  // TODO(crbug.com/379869738): Ideally this should return -1 and GetType()
+  // should mean that this is never called.
+  return content::ChildProcessId(0);
 }
 
 std::optional<base::ByteSize> BrowserProcessTask::GetSqliteMemoryUsed() const {

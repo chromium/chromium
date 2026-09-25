@@ -287,7 +287,8 @@ SessionID TaskManagerImpl::GetTabId(TaskId task_id) const {
   return GetTaskByTaskId(task_id)->GetTabId();
 }
 
-int TaskManagerImpl::GetChildProcessUniqueId(TaskId task_id) const {
+content::ChildProcessId TaskManagerImpl::GetChildProcessUniqueId(
+    TaskId task_id) const {
   return GetTaskByTaskId(task_id)->GetChildProcessUniqueID();
 }
 

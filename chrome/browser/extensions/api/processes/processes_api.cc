@@ -116,7 +116,8 @@ void FillProcessData(
     api::processes::Process* out_process) {
   DCHECK(out_process);
 
-  out_process->id = task_manager->GetChildProcessUniqueId(id);
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
+  out_process->id = task_manager->GetChildProcessUniqueId(id).GetUnsafeValue();
   out_process->os_process_id = task_manager->GetProcessId(id);
   out_process->type = GetProcessType(task_manager->GetType(id));
   out_process->profile = base::UTF16ToUTF8(task_manager->GetProfileName(id));
@@ -269,11 +270,12 @@ void ProcessesEventRouter::OnTasksRefreshedWithBackgroundCalculations(
       continue;
     }
 
-    const int child_process_host_id =
+    const content::ChildProcessId child_process_host_id =
         observed_task_manager()->GetChildProcessUniqueId(task_id);
     // Ignore tasks that don't have a valid child process host ID like ARC
     // processes. We report the browser process info here though.
-    if (child_process_host_id == content::ChildProcessHost::kInvalidUniqueID) {
+    if (!child_process_host_id && observed_task_manager()->GetType(task_id) !=
+                                      task_manager::Task::BROWSER) {
       continue;
     }
 
@@ -294,8 +296,8 @@ void ProcessesEventRouter::OnTasksRefreshedWithBackgroundCalculations(
 
     // Store each process indexed by the string version of its ChildProcessHost
     // ID.
-    processes_dictionary.Set(base::NumberToString(child_process_host_id),
-                             process.ToValue());
+    processes_dictionary.Set(
+        base::NumberToString(child_process_host_id.value()), process.ToValue());
   }
 
   // Done with data collection. Now dispatch the appropriate events according to
@@ -364,8 +366,9 @@ bool ProcessesEventRouter::ShouldReportOnCreatedOrOnExited(
   // Ignore tasks that don't have a valid child process host ID like ARC
   // processes, as well as the browser process (neither onCreated() nor
   // onExited() shouldn't report the browser process).
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   *out_child_process_host_id =
-      observed_task_manager()->GetChildProcessUniqueId(id);
+      observed_task_manager()->GetChildProcessUniqueId(id).GetUnsafeValue();
   if (*out_child_process_host_id ==
           content::ChildProcessHost::kInvalidUniqueID ||
       *out_child_process_host_id == 0) {
@@ -617,18 +620,20 @@ void ProcessesGetProcessInfoFunction::GatherDataAndRespond(
       continue;
     }
 
-    const int child_process_host_id =
+    const content::ChildProcessId child_process_host_id =
         observed_task_manager()->GetChildProcessUniqueId(task_id);
     // Ignore tasks that don't have a valid child process host ID like ARC
     // processes. We report the browser process info here though.
-    if (child_process_host_id == content::ChildProcessHost::kInvalidUniqueID) {
+    if (!child_process_host_id && observed_task_manager()->GetType(task_id) !=
+                                      task_manager::Task::BROWSER) {
       continue;
     }
 
     if (specific_processes_requested) {
       // Note: we can't use |!process_host_ids_.empty()| directly in the above
       // condition as we will erase from |process_host_ids_| below.
-      auto itr = std::ranges::find(process_host_ids_, child_process_host_id);
+      auto itr =
+          std::ranges::find(process_host_ids_, child_process_host_id.value());
       if (itr == process_host_ids_.end()) {
         continue;
       }
@@ -658,7 +663,7 @@ void ProcessesGetProcessInfoFunction::GatherDataAndRespond(
     // Store each process indexed by the string version of its
     // ChildProcessHost ID.
     processes.additional_properties.Set(
-        base::NumberToString(child_process_host_id), process.ToValue());
+        base::NumberToString(child_process_host_id.value()), process.ToValue());
   }
 
   // Report the invalid host ids sent in the arguments.

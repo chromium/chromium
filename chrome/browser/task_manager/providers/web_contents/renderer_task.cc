@@ -93,7 +93,7 @@ RendererTask::RendererTask(const std::u16string& title,
       render_process_host_(render_process_host),
       renderer_resources_sampler_(
           CreateRendererResourcesSampler(render_process_host_)),
-      render_process_id_(render_process_host_->GetDeprecatedID()),
+      render_process_id_(render_process_host_->GetID()),
       profile_name_(GetRendererProfileName(render_process_host_)) {
   OnNetworkBytesRead(base::ByteSize(0));
 
@@ -164,7 +164,7 @@ Task::Type RendererTask::GetType() const {
   return Task::RENDERER;
 }
 
-int RendererTask::GetChildProcessUniqueID() const {
+content::ChildProcessId RendererTask::GetChildProcessUniqueID() const {
   return render_process_id_;
 }
 

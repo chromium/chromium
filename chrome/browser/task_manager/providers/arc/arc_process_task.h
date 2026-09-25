@@ -15,6 +15,7 @@
 #include "chromeos/ash/experiences/arc/mojom/process.mojom-forward.h"
 #include "chromeos/ash/experiences/arc/process/arc_process.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
+#include "content/public/common/child_process_id.h"
 
 namespace task_manager {
 
@@ -30,7 +31,7 @@ class ArcProcessTask
 
   // task_manager::Task:
   Type GetType() const override;
-  int GetChildProcessUniqueID() const override;
+  content::ChildProcessId GetChildProcessUniqueID() const override;
   bool IsKillable() override;
   bool Kill() override;
   bool IsRunningInVM() const override;

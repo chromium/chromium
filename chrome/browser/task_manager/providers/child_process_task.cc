@@ -257,9 +257,8 @@ Task::SubType ChildProcessTask::GetSubType() const {
   }
 }
 
-int ChildProcessTask::GetChildProcessUniqueID() const {
-  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
-  return unique_child_process_id_.GetUnsafeValue();
+content::ChildProcessId ChildProcessTask::GetChildProcessUniqueID() const {
+  return unique_child_process_id_;
 }
 
 std::optional<base::ByteSize> ChildProcessTask::GetV8MemoryAllocated() const {

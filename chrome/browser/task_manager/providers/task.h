@@ -16,6 +16,7 @@
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/common/child_process_id.h"
 #include "third_party/blink/public/common/web_cache/web_cache_resource_type_stats.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -127,7 +128,7 @@ class Task {
   // For a task that represents the browser process, the return value is 0. For
   // other tasks that represent renderers and other child processes, the return
   // value is whatever unique IDs of their hosts in the browser process.
-  virtual int GetChildProcessUniqueID() const = 0;
+  virtual content::ChildProcessId GetChildProcessUniqueID() const = 0;
 
   // If the process, in which this task is running, is terminated, this gets the
   // termination status. Currently implemented only for Renderer processes.

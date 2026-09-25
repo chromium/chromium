@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "components/favicon/core/favicon_driver_observer.h"
+#include "content/public/common/child_process_id.h"
 
 class ProcessResourceUsage;
 
@@ -59,7 +60,7 @@ class RendererTask : public Task,
   void Refresh(const base::TimeDelta& update_interval,
                int64_t refresh_flags) override;
   Type GetType() const override;
-  int GetChildProcessUniqueID() const override;
+  content::ChildProcessId GetChildProcessUniqueID() const override;
   void GetTerminationStatus(base::TerminationStatus* out_status,
                             int* out_error_code) const override;
   std::u16string GetProfileName() const override;
@@ -138,7 +139,7 @@ class RendererTask : public Task,
   std::unique_ptr<ProcessResourceUsage> renderer_resources_sampler_;
 
   // The unique ID of the RenderProcessHost.
-  const int render_process_id_;
+  const content::ChildProcessId render_process_id_;
 
   // The allocated and used V8 memory (in bytes).
   base::ByteSize v8_memory_allocated_;

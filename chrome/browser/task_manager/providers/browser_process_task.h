@@ -9,6 +9,7 @@
 
 #include "base/byte_size.h"
 #include "chrome/browser/task_manager/providers/task.h"
+#include "content/public/common/child_process_id.h"
 
 namespace task_manager {
 
@@ -26,7 +27,7 @@ class BrowserProcessTask : public Task {
   void Refresh(const base::TimeDelta& update_interval,
                int64_t refresh_flags) override;
   Type GetType() const override;
-  int GetChildProcessUniqueID() const override;
+  content::ChildProcessId GetChildProcessUniqueID() const override;
   std::optional<base::ByteSize> GetSqliteMemoryUsed() const override;
 
  private:
