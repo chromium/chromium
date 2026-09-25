@@ -1980,18 +1980,13 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.valid = true;
     config.availability = Comparator(GREATER_THAN, 1);
     config.session_rate = Comparator(LESS_THAN, 1);
-    config.used =
-        EventConfig("desktop_site_settings_page_opened", kAlwaysTrue, 360, 360);
+    config.used = EventConfig("desktop_site_default_on_primary_action",
+                              Comparator(EQUAL, 0), 360, 360);
     config.trigger = EventConfig("request_desktop_site_default_on_iph_trigger",
                                  Comparator(LESS_THAN_OR_EQUAL, 1), 360, 360);
     config.event_configs.insert(
         EventConfig("request_desktop_site_default_on_iph_trigger",
                     Comparator(EQUAL, 0), 7, 360));
-    config.event_configs.insert(
-        EventConfig("desktop_site_default_on_primary_action",
-                    Comparator(EQUAL, 0), 360, 360));
-    config.event_configs.insert(
-        EventConfig("desktop_site_default_on_gesture", kAlwaysTrue, 360, 360));
     return config;
   }
 
