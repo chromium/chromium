@@ -10,6 +10,10 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
@@ -41,6 +45,55 @@
 const char kURL1[] = "https://www.some.url.com";
 const char kURL2[] = "https://www.some.url2.com";
 
+namespace {
+
+class StubAppLauncherTabHelperDelegate : public AppLauncherTabHelperDelegate {
+ public:
+  void CompleteAppLaunch() {
+    CHECK(app_launch_completion_);
+    CHECK(back_to_app_completion_);
+    std::move(app_launch_completion_).Run(/*success=*/true);
+    std::move(back_to_app_completion_).Run();
+  }
+
+  // Whether `LaunchAppForTabHelper()` was called and the launch has not been
+  // completed yet.
+  bool IsAppLaunchPending() const { return !!app_launch_completion_; }
+
+  // AppLauncherTabHelperDelegate:
+  void LaunchAppForTabHelper(
+      AppLauncherTabHelper* tab_helper,
+      const GURL& url,
+      base::OnceCallback<void(bool)> completion,
+      base::OnceCallback<void()> back_to_app_completion) override {
+    app_launch_completion_ = std::move(completion);
+    back_to_app_completion_ = std::move(back_to_app_completion);
+  }
+  void ShowAppLaunchAlert(AppLauncherTabHelper* tab_helper,
+                          AppLauncherAlertCause cause,
+                          base::OnceCallback<void(bool)> completion) override {
+    std::move(completion).Run(/*user_allowed=*/false);
+  }
+
+ private:
+  base::OnceCallback<void(bool)> app_launch_completion_;
+  base::OnceCallback<void()> back_to_app_completion_;
+};
+
+}  // namespace
+
+@interface WebStateDelegateTestAppLauncherPresentationProvider
+    : NSObject <AppLauncherTabHelperBrowserPresentationProvider>
+@end
+
+@implementation WebStateDelegateTestAppLauncherPresentationProvider
+
+- (BOOL)isBrowserPresentingUI {
+  return NO;
+}
+
+@end
+
 // Test fixture for WebStateDelegateTabHelper.
 class WebStateDelegateBrowserAgentTest : public PlatformTest {
  public:
@@ -49,6 +102,8 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     WebStateDelegateBrowserAgent::CreateForBrowser(browser_.get());
+    app_launcher_presentation_provider_ =
+        [[WebStateDelegateTestAppLauncherPresentationProvider alloc] init];
   }
   ~WebStateDelegateBrowserAgentTest() override = default;
 
@@ -80,9 +135,24 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
     return web_state_list->GetActiveWebState();
   }
 
+  AppLauncherTabHelper* AttachAppLauncherTabHelper(web::WebState* web_state) {
+    AppLauncherTabHelper::CreateForWebState(
+        web_state, [[AppLauncherAbuseDetector alloc] init],
+        /*incognito=*/false);
+    AppLauncherTabHelper* tab_helper =
+        AppLauncherTabHelper::FromWebState(web_state);
+    tab_helper->SetDelegate(&app_launcher_delegate_);
+    tab_helper->SetBrowserPresentationProvider(
+        app_launcher_presentation_provider_);
+    return tab_helper;
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
+  StubAppLauncherTabHelperDelegate app_launcher_delegate_;
+  WebStateDelegateTestAppLauncherPresentationProvider*
+      app_launcher_presentation_provider_;
   std::unique_ptr<TestBrowser> browser_;
 };
 
@@ -114,6 +184,86 @@ TEST_F(WebStateDelegateBrowserAgentTest, CreateNewWebStateAndPopup) {
   // web state list.
   EXPECT_EQ(web_state2, nullptr);
   EXPECT_EQ(browser_->GetWebStateList()->count(), 1);
+}
+
+// Test that CreateNewWebState() and CloseWebState() are dropped (including
+// from background opener WebStates) while a call-prompt app launch (e.g.
+// facetime-audio:) is pending in the active WebState, and allowed again once
+// the launch resolves.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       DropWindowRequestsDuringCallPromptLaunch) {
+  web::WebState* opener_web_state = InsertNewWebState(GURL(kURL1));
+  AttachAppLauncherTabHelper(opener_web_state);
+  web::WebState* active_web_state = InsertNewWebState(GURL(kURL1));
+  AppLauncherTabHelper* tab_helper =
+      AttachAppLauncherTabHelper(active_web_state);
+  active_web_state->WasShown();
+
+  tab_helper->RequestToLaunchApp(GURL("facetime-audio://+1234"), GURL(kURL1),
+                                 /*link_transition=*/true,
+                                 /*is_user_initiated=*/true,
+                                 /*user_tapped_recently=*/true);
+  ASSERT_TRUE(tab_helper->IsCallPromptLaunchPending());
+
+  // Window open and close requests from both the active WebState and a
+  // background opener WebState are dropped while the call prompt is pending.
+  EXPECT_EQ(nullptr, delegate()->CreateNewWebState(
+                         active_web_state, GURL(kURL2), GURL(kURL1), true));
+  EXPECT_EQ(nullptr, delegate()->CreateNewWebState(
+                         opener_web_state, GURL(kURL2), GURL(kURL1), true));
+  delegate()->CloseWebState(active_web_state);
+  delegate()->CloseWebState(opener_web_state);
+  EXPECT_EQ(browser_->GetWebStateList()->count(), 2);
+
+  // Once the call prompt launch completes, window requests succeed again.
+  app_launcher_delegate_.CompleteAppLaunch();
+  ASSERT_FALSE(tab_helper->IsCallPromptLaunchPending());
+  EXPECT_NE(nullptr, delegate()->CreateNewWebState(
+                         active_web_state, GURL(kURL2), GURL(kURL1), true));
+  EXPECT_EQ(browser_->GetWebStateList()->count(), 3);
+}
+
+// Test that window open and close requests are allowed while an app launch
+// that shows no iOS system prompt (e.g. calshow:) is pending. Chrome is
+// backgrounded for the whole round-trip for those schemes, so the renderer is
+// suspended and there is nothing to spoof; dropping the requests would instead
+// orphan tabs, since a page that launches an app and then closes itself gets
+// no second chance to call `window.close()`.
+// TODO(crbug.com/40166678): The test fails on device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_AllowWindowRequestsDuringNonPromptLaunch \
+  AllowWindowRequestsDuringNonPromptLaunch
+#else
+#define MAYBE_AllowWindowRequestsDuringNonPromptLaunch \
+  DISABLED_AllowWindowRequestsDuringNonPromptLaunch
+#endif
+TEST_F(WebStateDelegateBrowserAgentTest,
+       MAYBE_AllowWindowRequestsDuringNonPromptLaunch) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web::WebState* active_web_state = InsertNewWebState(GURL(kURL1));
+  AppLauncherTabHelper* tab_helper =
+      AttachAppLauncherTabHelper(active_web_state);
+  active_web_state->WasShown();
+
+  tab_helper->RequestToLaunchApp(GURL("calshow://1234"), GURL(kURL1),
+                                 /*link_transition=*/true,
+                                 /*is_user_initiated=*/true,
+                                 /*user_tapped_recently=*/true);
+  // The launch is under way, but it shows no system prompt.
+  ASSERT_TRUE(app_launcher_delegate_.IsAppLaunchPending());
+  ASSERT_FALSE(tab_helper->IsCallPromptLaunchPending());
+
+  EXPECT_NE(nullptr, delegate()->CreateNewWebState(
+                         active_web_state, GURL(kURL2), GURL(kURL1), true));
+  EXPECT_EQ(web_state_list->count(), 2);
+
+  // The DOM insertion above activated the new WebState. Re-activate the
+  // launching WebState so the close request below is evaluated against it.
+  web_state_list->ActivateWebStateAt(
+      web_state_list->GetIndexOfWebState(active_web_state));
+
+  delegate()->CloseWebState(active_web_state);
+  EXPECT_EQ(web_state_list->count(), 1);
 }
 
 // Test that CloseWebState() removed the web state from the web state list.

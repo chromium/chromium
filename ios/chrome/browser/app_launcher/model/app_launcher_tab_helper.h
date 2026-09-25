@@ -39,6 +39,12 @@ class AppLauncherTabHelper
       id<AppLauncherTabHelperBrowserPresentationProvider>
           browser_presentation_provider);
 
+  // Returns true if an app launch for a call scheme that shows a system prompt
+  // (e.g. facetime:, facetime-audio:, tel:) is currently pending completion.
+  bool IsCallPromptLaunchPending() const {
+    return is_call_prompt_launch_pending_;
+  }
+
   // Requests to open the application with `url`.
   // The method checks if the application for `url` has been opened repeatedly
   // by the `source_page_url` page in a short time frame, in that case a prompt
@@ -56,6 +62,10 @@ class AppLauncherTabHelper
   void ShouldAllowRequest(
       NSURLRequest* request,
       web::WebStatePolicyDecider::RequestInfo request_info,
+      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
+  void ShouldAllowResponse(
+      NSURLResponse* response,
+      web::WebStatePolicyDecider::ResponseInfo response_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
 
  protected:
@@ -142,6 +152,10 @@ class AppLauncherTabHelper
   // Whether there is an app launch request pending. Set to `true` before
   // calling `LaunchAppForTabHelper()` on the delegate.
   bool is_app_launch_request_pending_ = false;
+
+  // Whether there is a pending app launch request for a call URL scheme that
+  // displays a system prompt over Chrome.
+  bool is_call_prompt_launch_pending_ = false;
 
   // Stores callbacks which should be called once the ongoing app launch
   // completes. When `ShouldAllowRequest()` asks this tab helper for a policy

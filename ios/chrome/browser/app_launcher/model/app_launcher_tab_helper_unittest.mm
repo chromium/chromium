@@ -15,6 +15,7 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "base/time/default_clock.h"
 #import "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #import "components/policy/policy_constants.h"
@@ -490,6 +491,90 @@ TEST_F(AppLauncherTabHelperTest,
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
   EXPECT_TRUE(callback_called);
   EXPECT_TRUE(policy_decision.ShouldAllowNavigation());
+}
+
+// Test that IsCallPromptLaunchPending() returns true only while a call-prompt
+// URL launch (e.g. facetime-audio:) is pending completion.
+TEST_F(AppLauncherTabHelperTest, IsCallPromptLaunchPending) {
+  delegate_.SetShouldCompleteAppLaunchImmediately(false);
+  EXPECT_FALSE(tab_helper_->IsCallPromptLaunchPending());
+
+  // Non-call app schemes do not set IsCallPromptLaunchPending().
+  EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
+                                      /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
+                                      /*target_window_is_cross_origin=*/false,
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
+  EXPECT_FALSE(tab_helper_->IsCallPromptLaunchPending());
+  delegate_.CompleteAppLaunch();
+  delegate_.CompleteBackToApp();
+
+  // Call schemes (such as facetime-audio:) set IsCallPromptLaunchPending()
+  // until the scene becomes active again.
+  EXPECT_FALSE(TestShouldAllowRequest(@"facetime-audio://+12345551212",
+                                      /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
+                                      /*target_window_is_cross_origin=*/false,
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
+  EXPECT_TRUE(tab_helper_->IsCallPromptLaunchPending());
+
+  delegate_.CompleteAppLaunch();
+  EXPECT_TRUE(tab_helper_->IsCallPromptLaunchPending());
+
+  delegate_.CompleteBackToApp();
+  EXPECT_FALSE(tab_helper_->IsCallPromptLaunchPending());
+}
+
+// Test that ShouldAllowResponse() allows navigation response immediately when
+// no app launch is pending.
+TEST_F(AppLauncherTabHelperTest, ShouldAllowResponseWhenNoAppLaunchPending) {
+  NSURL* url = [NSURL URLWithString:@"https://example.com"];
+  NSURLResponse* response = [[NSURLResponse alloc] initWithURL:url
+                                                      MIMEType:@"text/html"
+                                         expectedContentLength:0
+                                              textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision> future;
+  tab_helper_->ShouldAllowResponse(
+      response,
+      web::WebStatePolicyDecider::ResponseInfo(/*for_main_frame=*/true),
+      future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().ShouldAllowNavigation());
+}
+
+// Test that ShouldAllowResponse() waits for any pending app launch and scene
+// activation before allowing a navigation response to commit.
+TEST_F(AppLauncherTabHelperTest, ShouldAllowResponseWhileAppLaunchPending) {
+  delegate_.SetShouldCompleteAppLaunchImmediately(false);
+
+  EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
+                                      /*target_frame_is_main=*/true,
+                                      /*target_frame_is_cross_origin=*/false,
+                                      /*target_window_is_cross_origin=*/false,
+                                      /*is_user_initiated=*/true,
+                                      /*user_tapped_recently=*/true));
+  ASSERT_TRUE(delegate_.IsAppLaunchCompletionPending());
+
+  NSURL* url = [NSURL URLWithString:@"https://example.com"];
+  NSURLResponse* response = [[NSURLResponse alloc] initWithURL:url
+                                                      MIMEType:@"text/html"
+                                         expectedContentLength:0
+                                              textEncodingName:nil];
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision> future;
+  tab_helper_->ShouldAllowResponse(
+      response,
+      web::WebStatePolicyDecider::ResponseInfo(/*for_main_frame=*/true),
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  delegate_.CompleteAppLaunch();
+  EXPECT_FALSE(future.IsReady());
+
+  delegate_.CompleteBackToApp();
+  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get().ShouldAllowNavigation());
 }
 
 // Tests that a valid URL does not launch app when launch policy is to block.

@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/app_launcher/model",
   "+ios/chrome/browser/application_context/model",
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/browser_content/model",

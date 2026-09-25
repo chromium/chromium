@@ -15,6 +15,7 @@
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/enterprise/client_certificates/ios/certificate_provisioning_service_ios.h"
 #import "components/enterprise/client_certificates/ios/client_identity_ios.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/dialogs/ui_bundled/nsurl_protection_space_util.h"
@@ -91,6 +92,18 @@ void OnInsecureFormWarningResponse(base::OnceCallback<void(bool)> callback,
     }
   }
   std::move(callback).Run(false);
+}
+
+// Returns whether window open or close requests should be dropped because a
+// system-prompted call launch (e.g. facetime:, tel:) is pending in
+// `active_web_state`.
+bool ShouldDropWindowRequests(web::WebState* active_web_state) {
+  if (!active_web_state) {
+    return false;
+  }
+  AppLauncherTabHelper* helper =
+      AppLauncherTabHelper::FromWebState(active_web_state);
+  return helper && helper->IsCallPromptLaunchPending();
 }
 
 // Returns true if a supervised user attempts to access the microphone or camera
@@ -255,6 +268,10 @@ web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
     return nullptr;
   }
 
+  if (ShouldDropWindowRequests(web_state_list_->GetActiveWebState())) {
+    return nullptr;
+  }
+
   // Check if requested web state is a popup and block it if necessary.
   if (!initiated_by_user) {
     auto* helper = BlockedPopupTabHelper::FromWebState(source);
@@ -280,7 +297,8 @@ web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
 
 void WebStateDelegateBrowserAgent::CloseWebState(web::WebState* source) {
   int index = web_state_list_->GetIndexOfWebState(source);
-  if (index != WebStateList::kInvalidIndex) {
+  if (index != WebStateList::kInvalidIndex &&
+      !ShouldDropWindowRequests(web_state_list_->GetActiveWebState())) {
     web_state_list_->CloseWebStateAt(index,
                                      WebStateList::ClosingReason::kUserAction);
   }
