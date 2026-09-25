@@ -178,33 +178,40 @@ public class LaunchIntentDispatcher {
                 return Action.FINISH_ACTIVITY;
             }
 
-            if (GlicEnabling.experimentalOptInIsNeeded(profile)) {
-                return Action.CONTINUE;
+            if (!GlicEnabling.experimentalOptInIsNeeded(profile)) {
+                // EXTRA_CONVERSATION_ID is only populated for task interrupts of already active
+                // tasks.
+                String conversationId =
+                        IntentUtils.safeGetStringExtra(
+                                intent, GlicIntentConstants.EXTRA_CONVERSATION_ID);
+                if (!TextUtils.isEmpty(conversationId)
+                        && ChromeFeatureList.sActorNotificationIntentRouting.isEnabled()) {
+                    return routeTaskInterrupt(currentActivity, profile, conversationId);
+                }
+
+                // TODO(b/557413667): It should be possible to warm up Glic instance here as
+                // well, in the future.
+                if (ActorUtils.isBackgroundActuationEnabled()) {
+                    Intent serviceIntent =
+                            new Intent(
+                                    currentActivity,
+                                    org.chromium.chrome.browser.actor.ActorForegroundService.class);
+                    serviceIntent.setAction(START_ACTOR_FOREGROUND_SERVICE);
+                    IntentUtils.addTrustedIntentExtras(serviceIntent);
+                    ForegroundServiceUtils.getInstance().startForegroundService(serviceIntent);
+                    // TODO(b/548905982): Ensure foreground service started before finishing
+                    // activity.
+                    currentActivity.setResult(Activity.RESULT_OK);
+                    return Action.FINISH_ACTIVITY;
+                }
             }
 
-            String conversationId =
-                    IntentUtils.safeGetStringExtra(
-                            intent, GlicIntentConstants.EXTRA_CONVERSATION_ID);
-            if (!TextUtils.isEmpty(conversationId)
-                    && ChromeFeatureList.sActorNotificationIntentRouting.isEnabled()) {
-                return routeTaskInterrupt(currentActivity, profile, conversationId);
-            }
-            // TODO(b/557413667): It should be possible to warm up Glic instance here as
-            // well, in the future.
-            if (ActorUtils.isBackgroundActuationEnabled()) {
-                Intent serviceIntent =
-                        new Intent(
-                                currentActivity,
-                                org.chromium.chrome.browser.actor.ActorForegroundService.class);
-                serviceIntent.setAction(START_ACTOR_FOREGROUND_SERVICE);
-                IntentUtils.addTrustedIntentExtras(serviceIntent);
-                ForegroundServiceUtils.getInstance().startForegroundService(serviceIntent);
-                // TODO(b/548905982): Ensure foreground service started before finishing activity.
-                currentActivity.setResult(Activity.RESULT_OK);
-                return Action.FINISH_ACTIVITY;
-            }
-
-            return Action.CONTINUE;
+            Intent newTabIntent =
+                    IntentHandler.createTrustedOpenNewTabIntent(
+                            currentActivity, /* incognito= */ false);
+            newTabIntent.putExtra(GlicIntentConstants.EXTRA_GLIC_PENDING_ACTOR_TASK, true);
+            currentActivity.setResult(Activity.RESULT_OK);
+            return dispatchToTabbedActivity(currentActivity, newTabIntent);
         } else {
             currentActivity.setResult(Activity.RESULT_CANCELED);
             return Action.FINISH_ACTIVITY;

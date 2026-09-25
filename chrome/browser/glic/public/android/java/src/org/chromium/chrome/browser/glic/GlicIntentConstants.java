@@ -17,5 +17,12 @@ public final class GlicIntentConstants {
     public static final String EXTRA_CONVERSATION_ID =
             "org.chromium.chrome.browser.glic.CONVERSATION_ID";
 
+    /**
+     * Boolean extra indicating that a Glic external trigger fell back to foregrounding Chrome and a
+     * new actor task is pending creation.
+     */
+    public static final String EXTRA_GLIC_PENDING_ACTOR_TASK =
+            "org.chromium.chrome.browser.glic.PENDING_ACTOR_TASK";
+
     private GlicIntentConstants() {}
 }

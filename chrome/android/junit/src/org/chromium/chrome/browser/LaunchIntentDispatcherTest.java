@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +34,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Process;
+import android.provider.Browser;
 
 import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -92,6 +94,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.Arrays;
@@ -955,8 +958,21 @@ public class LaunchIntentDispatcherTest {
 
         int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
 
-        assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
         verifyNoInteractions(mForegroundServiceUtils);
+
+        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(launchedIntentCaptor.capture(), any());
+        Intent launchedIntent = launchedIntentCaptor.getValue();
+        assertNotNull(launchedIntent);
+        assertEquals(Intent.ACTION_VIEW, launchedIntent.getAction());
+        assertEquals(UrlConstants.NTP_URL, launchedIntent.getDataString());
+        assertTrue(launchedIntent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        assertTrue(
+                launchedIntent.getBooleanExtra(
+                        GlicIntentConstants.EXTRA_GLIC_PENDING_ACTOR_TASK, false));
+        assertTrue(IntentUtils.isTrustedIntentFromSelf(launchedIntent));
     }
 
     @Test
@@ -988,7 +1004,7 @@ public class LaunchIntentDispatcherTest {
     }
 
     @Test
-    public void testDispatchGlicExternalTrigger_NotificationsDisabled_ContinuesToActivity() {
+    public void testDispatchGlicExternalTrigger_NotificationsDisabled_OpensNewTab() {
         NotificationProxyUtils.setNotificationEnabledForTest(false);
         Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
         Activity spyActivity = spy(mActivity);
@@ -1003,8 +1019,21 @@ public class LaunchIntentDispatcherTest {
 
         int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
 
-        assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
         verifyNoInteractions(mForegroundServiceUtils);
+
+        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(launchedIntentCaptor.capture(), any());
+        Intent launchedIntent = launchedIntentCaptor.getValue();
+        assertNotNull(launchedIntent);
+        assertEquals(Intent.ACTION_VIEW, launchedIntent.getAction());
+        assertEquals(UrlConstants.NTP_URL, launchedIntent.getDataString());
+        assertTrue(launchedIntent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        assertTrue(
+                launchedIntent.getBooleanExtra(
+                        GlicIntentConstants.EXTRA_GLIC_PENDING_ACTOR_TASK, false));
+        assertTrue(IntentUtils.isTrustedIntentFromSelf(launchedIntent));
     }
 
     @Test
@@ -1142,7 +1171,7 @@ public class LaunchIntentDispatcherTest {
     }
 
     @Test
-    public void testDispatchGlicExternalTrigger_WithConversationId_ConsentRequired_Continues() {
+    public void testDispatchGlicExternalTrigger_WithConversationId_ConsentRequired_OpensNewTab() {
         Intent intent = createGlicInterruptIntent("conv_123");
         Activity spyActivity = spy(mActivity);
         setUpTrustedGlicCaller(spyActivity);
@@ -1150,9 +1179,21 @@ public class LaunchIntentDispatcherTest {
 
         int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
 
-        assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
-        verify(spyActivity, never()).startActivity(any());
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
         verifyNoInteractions(mForegroundServiceUtils);
+
+        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(launchedIntentCaptor.capture(), any());
+        Intent launchedIntent = launchedIntentCaptor.getValue();
+        assertNotNull(launchedIntent);
+        assertEquals(Intent.ACTION_VIEW, launchedIntent.getAction());
+        assertEquals(UrlConstants.NTP_URL, launchedIntent.getDataString());
+        assertTrue(launchedIntent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        assertTrue(
+                launchedIntent.getBooleanExtra(
+                        GlicIntentConstants.EXTRA_GLIC_PENDING_ACTOR_TASK, false));
+        assertTrue(IntentUtils.isTrustedIntentFromSelf(launchedIntent));
     }
 
     @Test
@@ -1523,7 +1564,7 @@ public class LaunchIntentDispatcherTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
-    public void testDispatchGlicExternalTrigger_BackgroundActuationDisabled_ContinuesToActivity() {
+    public void testDispatchGlicExternalTrigger_BackgroundActuationDisabled_OpensNewTab() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         Intent intent = new Intent(GLIC_EXTERNAL_TRIGGERING_ACTION);
         Activity spyActivity = spy(mActivity);
@@ -1538,8 +1579,21 @@ public class LaunchIntentDispatcherTest {
 
         int result = LaunchIntentDispatcher.dispatchGlicExternalTrigger(spyActivity, intent);
 
-        assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
+        assertEquals(LaunchIntentDispatcher.Action.FINISH_ACTIVITY, result);
+        verify(spyActivity).setResult(Activity.RESULT_OK);
         verifyNoInteractions(mForegroundServiceUtils);
+
+        ArgumentCaptor<Intent> launchedIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(launchedIntentCaptor.capture(), any());
+        Intent launchedIntent = launchedIntentCaptor.getValue();
+        assertNotNull(launchedIntent);
+        assertEquals(Intent.ACTION_VIEW, launchedIntent.getAction());
+        assertEquals(UrlConstants.NTP_URL, launchedIntent.getDataString());
+        assertTrue(launchedIntent.getBooleanExtra(Browser.EXTRA_CREATE_NEW_TAB, false));
+        assertTrue(
+                launchedIntent.getBooleanExtra(
+                        GlicIntentConstants.EXTRA_GLIC_PENDING_ACTOR_TASK, false));
+        assertTrue(IntentUtils.isTrustedIntentFromSelf(launchedIntent));
     }
 
     @Test
