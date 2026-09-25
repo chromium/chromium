@@ -39,6 +39,7 @@ source_set("contextual_cueing") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/sync/service",
     "//ios/chrome/browser/intelligence/bwg/metrics",

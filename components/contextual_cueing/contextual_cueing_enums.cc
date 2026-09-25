@@ -77,6 +77,8 @@ const char* GetName(ContextualCueingDecision decision) {
       return "WebContentsDestroyed";
     case ContextualCueingDecision::kNoLongerActiveTabAfterEligibilityCheck:
       return "NoLongerActiveTabAfterEligibilityCheck";
+    case ContextualCueingDecision::kUserIneligible:
+      return "UserIneligible";
   }
 }
 

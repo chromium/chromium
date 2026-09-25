@@ -18,6 +18,7 @@
 #import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -38,6 +39,7 @@
 #import "ios/chrome/browser/intelligence/page_classification/page_classification_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -52,6 +54,28 @@ ContextualCueingTabHelper::ContextualCueingTabHelper(web::WebState* web_state)
       current_url_(web_state ? web_state->GetLastCommittedURL() : GURL()) {
   CHECK(web_state_);
   web_state_observation_.Observe(web_state_);
+
+  if (IsGeminiContextualSuggestionsCuesEnabled()) {
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+    if (profile && !profile->IsOffTheRecord()) {
+      PrefService* prefs = profile->GetPrefs();
+      if (prefs) {
+        pref_change_registrar_.Init(prefs);
+        pref_change_registrar_.Add(
+            prefs::kIOSGeminiSuggestionsSetting,
+            base::BindRepeating(
+                &ContextualCueingTabHelper::OnSuggestionsPreferenceChanged,
+                base::Unretained(this)));
+      }
+
+      GeminiService* gemini_service =
+          GeminiServiceFactory::GetForProfile(profile);
+      if (gemini_service) {
+        gemini_service_observation_.Observe(gemini_service);
+      }
+    }
+  }
 }
 
 ContextualCueingTabHelper::~ContextualCueingTabHelper() {
@@ -165,6 +189,13 @@ void ContextualCueingTabHelper::DidFinishNavigation(
   }
   current_url_ = url;
 
+  if (!IsGeminiSuggestionsSettingEnabled()) {
+    CancelClassification();
+    categories_.reset();
+    page_classification_result_.reset();
+    return;
+  }
+
   if (url.is_valid() && url.SchemeIsHTTPOrHTTPS() &&
       !navigation_context->GetError()) {
     ContextualCueingCapTrackerService* cap_service = GetCapTrackerService();
@@ -185,12 +216,18 @@ void ContextualCueingTabHelper::DidFinishNavigation(
 void ContextualCueingTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
+  if (!IsGeminiSuggestionsSettingEnabled()) {
+    return;
+  }
   if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
     StartClassification();
   }
 }
 
 void ContextualCueingTabHelper::WasShown(web::WebState* web_state) {
+  if (!IsGeminiSuggestionsSettingEnabled()) {
+    return;
+  }
   if (!categories_.has_value() && web_state_ && web_state_->IsVisible() &&
       !web_state_->IsLoading() &&
       web_state_->GetLastCommittedURL().is_valid()) {
@@ -204,6 +241,8 @@ void ContextualCueingTabHelper::WasHidden(web::WebState* web_state) {
 
 void ContextualCueingTabHelper::WebStateDestroyed(web::WebState* web_state) {
   CancelClassification();
+  pref_change_registrar_.Reset();
+  gemini_service_observation_.Reset();
   web_state_observation_.Reset();
   web_state_ = nullptr;
 }
@@ -248,10 +287,11 @@ void ContextualCueingTabHelper::StartClassification() {
     return;
   }
 
+  CHECK(IsGeminiSuggestionsSettingEnabled());
+
   if (!IsIgnoreContextualCueingThresholdsEnabled()) {
     if (!IsUserEligibleForGemini(profile)) {
-      RecordContextualCueingDecision(
-          ContextualCueingDecision::kTargetFeatureNotEligible);
+      RecordContextualCueingDecision(ContextualCueingDecision::kUserIneligible);
       return;
     }
 
@@ -373,6 +413,19 @@ void ContextualCueingTabHelper::ProcessClassificationResult(
 
   for (Observer& observer : observers_) {
     observer.OnPageClassificationCompleted(this, categories_);
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  CHECK(profile);
+  if (!IsGeminiSuggestionsSettingEnabled()) {
+    RecordContextualCueingDecision(ContextualCueingDecision::kUserOptedOut);
+    return;
+  }
+  if (!IsIgnoreContextualCueingThresholdsEnabled() &&
+      !IsUserEligibleForGemini(profile)) {
+    RecordContextualCueingDecision(ContextualCueingDecision::kUserIneligible);
+    return;
   }
 
   if (!categories_.has_value() || categories_->empty()) {
@@ -589,6 +642,45 @@ ContextualCueingTabHelper::GetFeatureEngagementTracker() const {
     return nullptr;
   }
   return feature_engagement::TrackerFactory::GetForProfile(profile);
+}
+
+#pragma mark - GeminiService::Observer
+
+void ContextualCueingTabHelper::OnGeminiEligibilityChanged() {
+  OnSuggestionsPreferenceChanged();
+}
+
+#pragma mark - Private
+
+bool ContextualCueingTabHelper::IsGeminiSuggestionsSettingEnabled() const {
+  if (!web_state_) {
+    return false;
+  }
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
+  return profile->GetPrefs()->GetBoolean(prefs::kIOSGeminiSuggestionsSetting);
+}
+
+void ContextualCueingTabHelper::OnSuggestionsPreferenceChanged() {
+  if (!web_state_) {
+    return;
+  }
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (!profile) {
+    return;
+  }
+
+  bool is_eligible =
+      IsGeminiSuggestionsSettingEnabled() && IsUserEligibleForGemini(profile);
+  if (!is_eligible) {
+    CancelClassification();
+    categories_.reset();
+    page_classification_result_.reset();
+  }
 }
 
 void ContextualCueingTabHelper::DismissFeatureEngagementPromo() {

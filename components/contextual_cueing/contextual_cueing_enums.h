@@ -84,7 +84,10 @@ enum class ContextualCueingDecision {
   kWebContentsDestroyed = 32,
   // Tab navigated away or is no longer active during async eligibility check.
   kNoLongerActiveTabAfterEligibilityCheck = 33,
-  kMaxValue = kNoLongerActiveTabAfterEligibilityCheck,
+  // (iOS only) The user is not eligible for contextual cues (e.g.,
+  // missing account capability, or disabled by enterprise or workspace policy).
+  kUserIneligible = 34,
+  kMaxValue = kUserIneligible,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 

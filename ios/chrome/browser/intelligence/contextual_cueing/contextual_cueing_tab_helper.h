@@ -18,6 +18,8 @@
 #import "base/scoped_observation.h"
 #import "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_evaluator.h"
 #import "ios/chrome/browser/intelligence/page_classification/page_classification_service.h"
 #import "ios/web/public/web_state_observer.h"
@@ -45,7 +47,8 @@ class ContextualCueingCapTrackerService;
 // to request and present contextual cues via Model Execution Service.
 class ContextualCueingTabHelper
     : public web::WebStateObserver,
-      public web::WebStateUserData<ContextualCueingTabHelper> {
+      public web::WebStateUserData<ContextualCueingTabHelper>,
+      public GeminiService::Observer {
  public:
   struct BackgroundTabContext {
     GURL url;
@@ -137,6 +140,9 @@ class ContextualCueingTabHelper
   void WasHidden(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
+  // GeminiService::Observer:
+  void OnGeminiEligibilityChanged() override;
+
  private:
   friend class web::WebStateUserData<ContextualCueingTabHelper>;
   friend class ContextualCueingTabHelperTest;
@@ -192,6 +198,12 @@ class ContextualCueingTabHelper
   // Checks if the user is eligible for Gemini.
   bool IsUserEligibleForGemini(ProfileIOS* profile);
 
+  // Checks if the user has enabled Gemini suggestions in settings.
+  bool IsGeminiSuggestionsSettingEnabled() const;
+
+  // Callback invoked when Gemini suggestions setting or policies change.
+  void OnSuggestionsPreferenceChanged();
+
   // Returns the CapTrackerService for the associated profile, or nullptr.
   ContextualCueingCapTrackerService* GetCapTrackerService() const;
 
@@ -206,6 +218,10 @@ class ContextualCueingTabHelper
   raw_ptr<web::WebState> web_state_ = nullptr;
   raw_ptr<Delegate> delegate_ = nullptr;
   GURL current_url_;
+
+  PrefChangeRegistrar pref_change_registrar_;
+  base::ScopedObservation<GeminiService, GeminiService::Observer>
+      gemini_service_observation_{this};
 
   // Runs `feature_engagement::Tracker::Dismissed` when the contextual cue chip
   // stops showing (or on tab helper destruction). Empty when not active.
