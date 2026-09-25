@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Toggle invoker cannot escape inert attribute on itself or an ancestor</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://open-ui.org/components/overscroll-actions.explainer/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  [overscrollcontainer] {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  [overscrollarea] {
+    width: 100%;
+    height: 100%;
+    right: 100%;
+  }
+</style>
+
+<button id="outside">Outside</button>
+
+<div id="ancestor">
+  <div id="container" overscrollcontainer>
+    <div id="area" overscrollarea>
+      <div id="wrapper">
+        <button id="invoker" command="toggle-overscroll" commandfor="area">Toggle Area</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function assertInvokerFocusable(description) {
+  outside.focus();
+  invoker.focus({ preventScroll: true });
+  assert_equals(document.activeElement, invoker, description);
+}
+
+function assertInvokerInert(description) {
+  outside.focus();
+  invoker.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outside, description);
+}
+
+test(t => {
+  assert_false(area.matches(':overscroll-open'));
+  assertInvokerFocusable("Baseline: toggle invoker inside closed area escapes overscroll inertness");
+
+  invoker.inert = true;
+  t.add_cleanup(() => { invoker.inert = false; });
+  assertInvokerInert("Invoker with inert attribute on itself remains inert");
+
+  invoker.inert = false;
+  assertInvokerFocusable("Invoker escapes overscroll inertness again after removing inert from itself");
+}, "Toggle invoker cannot escape inert attribute applied to itself");
+
+test(t => {
+  assert_false(area.matches(':overscroll-open'));
+
+  wrapper.inert = true;
+  t.add_cleanup(() => { wrapper.inert = false; });
+  assertInvokerInert("Invoker with inert attribute on wrapper inside overscrollarea remains inert");
+
+  wrapper.inert = false;
+  assertInvokerFocusable("Invoker escapes overscroll inertness after removing inert from wrapper");
+}, "Toggle invoker cannot escape inert attribute applied to an ancestor inside overscrollarea");
+
+test(t => {
+  assert_false(area.matches(':overscroll-open'));
+
+  area.inert = true;
+  t.add_cleanup(() => { area.inert = false; });
+  assertInvokerInert("Invoker with inert attribute on overscrollarea itself remains inert");
+
+  area.inert = false;
+  assertInvokerFocusable("Invoker escapes overscroll inertness after removing inert from overscrollarea");
+}, "Toggle invoker cannot escape inert attribute applied to overscrollarea");
+
+test(t => {
+  assert_false(area.matches(':overscroll-open'));
+
+  container.inert = true;
+  t.add_cleanup(() => { container.inert = false; });
+  assertInvokerInert("Invoker with inert attribute on overscrollcontainer remains inert");
+
+  container.inert = false;
+  assertInvokerFocusable("Invoker escapes overscroll inertness after removing inert from overscrollcontainer");
+}, "Toggle invoker cannot escape inert attribute applied to overscrollcontainer");
+
+test(t => {
+  assert_false(area.matches(':overscroll-open'));
+
+  ancestor.inert = true;
+  t.add_cleanup(() => { ancestor.inert = false; });
+  assertInvokerInert("Invoker with inert attribute on ancestor of overscrollcontainer remains inert");
+
+  ancestor.inert = false;
+  assertInvokerFocusable("Invoker escapes overscroll inertness after removing inert from ancestor");
+}, "Toggle invoker cannot escape inert attribute applied to an ancestor of overscrollcontainer");
+</script>

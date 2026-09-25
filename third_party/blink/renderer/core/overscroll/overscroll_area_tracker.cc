@@ -57,7 +57,9 @@ void ScrollTo(PaintLayerScrollableArea* scrollable_area, ScrollOffset offset) {
 
 void AdjustAreaOrContentInertness(const Element& element,
                                   bool is_overscroll_area,
-                                  std::optional<bool>& html_inert) {
+                                  const ComputedStyle& parent_style,
+                                  std::optional<bool>& html_inert,
+                                  bool& can_escape_overscroll_inertness) {
   Element* parent = FlatTreeTraversal::ParentElement(element);
   if (!parent) {
     return;
@@ -71,6 +73,7 @@ void AdjustAreaOrContentInertness(const Element& element,
     // open.
     if (!element.MatchesOverscrollOpen()) {
       html_inert = true;
+      can_escape_overscroll_inertness = !parent_style.IsInert();
     } else {
       CHECK(tracker);
       if (tracker->HasOpenAreaAbove(&element)) {
@@ -88,7 +91,12 @@ void AdjustAreaOrContentInertness(const Element& element,
 }
 
 void AdjustInvokerInertness(const Element& element,
+                            const ComputedStyle& parent_style,
                             std::optional<bool>& html_inert) {
+  if (html_inert.has_value() || !parent_style.CanEscapeOverscrollInertness()) {
+    return;
+  }
+
   auto* html_element = DynamicTo<HTMLElement>(&element);
   if (!html_element || !html_element->CanBeCommandInvoker()) {
     return;
@@ -193,11 +201,15 @@ bool OverscrollAreaTracker::IsValidOverscrollArea(
 }
 
 // static
-void OverscrollAreaTracker::AdjustInertness(const Element& element,
-                                            bool is_overscroll_area,
-                                            std::optional<bool>& html_inert) {
-  AdjustAreaOrContentInertness(element, is_overscroll_area, html_inert);
-  AdjustInvokerInertness(element, html_inert);
+void OverscrollAreaTracker::AdjustInertness(
+    const Element& element,
+    bool is_overscroll_area,
+    const ComputedStyle& parent_style,
+    std::optional<bool>& html_inert,
+    bool& can_escape_overscroll_inertness) {
+  AdjustAreaOrContentInertness(element, is_overscroll_area, parent_style,
+                               html_inert, can_escape_overscroll_inertness);
+  AdjustInvokerInertness(element, parent_style, html_inert);
 }
 
 bool OverscrollAreaTracker::HasOpenAreaAbove(const Element* area) {
@@ -242,17 +254,16 @@ bool OverscrollAreaTracker::ShouldRemoveInertness(const Element* invoker,
   if (invoker->GetTreeScope() != target->GetTreeScope()) {
     return false;
   }
-  // If the container itself is inert (e.g. via the inert attribute), nothing
-  // inside it should have inertness removed.
+  // If the container itself is inert (e.g. via modal dialog or the inert
+  // attribute), nothing inside it should have inertness removed.
   if (container_->GetComputedStyle() &&
       container_->GetComputedStyle()->IsInert()) {
     return false;
   }
 
-  // Only a toggle invoker that is part of a closed overscroll area escapes
-  // inertness (e.g. a handle or tab peaking out when the area is closed),
-  // provided it is not covered by an open area above it in visual stacking
-  // order.
+  // Only a toggle invoker inside a closed overscroll area escapes inertness
+  // (e.g. a handle or tab peaking out when the area is closed), provided it is
+  // not covered by an open area above it in visual stacking order.
   if (ContainingOverscrollArea(invoker) == target &&
       !target->MatchesOverscrollOpen() && !HasOpenAreaAbove(target)) {
     return true;

@@ -1880,8 +1880,10 @@ StyleAdjuster::ElementTypeForCache StyleAdjuster::GetElementTypeCacheKey(
   }
 }
 
-void StyleAdjuster::AdjustOverscrollInertness(const StyleResolverState& state,
-                                              std::optional<bool>& html_inert) {
+void StyleAdjuster::AdjustOverscrollInertness(
+    const StyleResolverState& state,
+    std::optional<bool>& html_inert,
+    bool& can_escape_overscroll_inertness) {
   DCHECK(state.HasOverscrollContainerAncestor());
   if (!RuntimeEnabledFeatures::OverscrollGesturesEnabled() ||
       state.IsForPseudoElement() || html_inert.has_value()) {
@@ -1893,7 +1895,8 @@ void StyleAdjuster::AdjustOverscrollInertness(const StyleResolverState& state,
       element, state.StyleBuilder(), state.ParentStyle());
 
   OverscrollAreaTracker::AdjustInertness(element, is_overscroll_area,
-                                         html_inert);
+                                         *state.ParentStyle(), html_inert,
+                                         can_escape_overscroll_inertness);
 }
 
 }  // namespace blink

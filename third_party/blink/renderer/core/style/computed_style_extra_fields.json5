@@ -1304,6 +1304,18 @@
       invalidate: ["inert"],
     },
     {
+      // True when the current HTML inertness was established solely by a single
+      // closed overscroll area, allowing a toggle-overscroll command invoker
+      // inside that area to escape inertness. Reset to false if an
+      // already-inert subtree is inerted again (e.g. a nested closed area).
+      name: "CanEscapeOverscrollInertness",
+      inherited: true,
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      field_group: "*",
+    },
+    {
       // We need to go through LayoutObject::SetStyle with
       // ApplyStyleChanges::kYes if the body changes from being the first body
       // element to a secondary one because the same style could lead to

@@ -560,8 +560,10 @@ void ApplyInertness(StyleResolverState& state) {
     }
   }
 
+  bool can_escape_overscroll_inertness = false;
   if (state.HasOverscrollContainerAncestor()) {
-    StyleAdjuster::AdjustOverscrollInertness(state, html_inert);
+    StyleAdjuster::AdjustOverscrollInertness(state, html_inert,
+                                             can_escape_overscroll_inertness);
   }
 
   if (html_inert.has_value()) {
@@ -571,6 +573,10 @@ void ApplyInertness(StyleResolverState& state) {
   if (css_inert.has_value()) {
     state.StyleBuilder().SetIsCSSInert(css_inert.value());
     state.StyleBuilder().SetIsCSSInertIsInherited(false);
+  }
+  if (html_inert.has_value() || css_inert.has_value()) {
+    state.StyleBuilder().SetCanEscapeOverscrollInertness(
+        can_escape_overscroll_inertness && !css_inert.value_or(false));
   }
 }
 

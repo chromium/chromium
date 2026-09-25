@@ -52,7 +52,9 @@ class CORE_EXPORT OverscrollAreaTracker
 
   static void AdjustInertness(const Element& element,
                               bool is_overscroll_area,
-                              std::optional<bool>& html_inert);
+                              const ComputedStyle& parent_style,
+                              std::optional<bool>& html_inert,
+                              bool& can_escape_overscroll_inertness);
 
   // Returns true if there is an open overscroll area above |area| in the visual
   // stacking order (i.e. preceding |area| in DOM order). If so, |area| is

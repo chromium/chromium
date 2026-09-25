@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: Toggle invoker for outer area inside closed inner area is inert</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://open-ui.org/components/overscroll-actions.explainer/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  [overscrollcontainer] {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  [overscrollarea] {
+    width: 100%;
+    height: 100%;
+    right: 100%;
+  }
+</style>
+
+<button id="outside">Outside</button>
+<button command="toggle-overscroll" commandfor="B">Toggle B</button>
+<button command="toggle-overscroll" commandfor="C">Toggle C</button>
+
+<div id="outer" overscrollcontainer>
+  <div id="A" overscrollarea>
+    <div id="inner" overscrollcontainer>
+      <div id="B" overscrollarea>
+        <button id="invoker" command="toggle-overscroll" commandfor="A">Toggle A</button>
+      </div>
+      <button id="C" overscrollarea command="toggle-overscroll" commandfor="A">Area C / Toggle A</button>
+    </div>
+  </div>
+</div>
+
+<script>
+test(() => {
+  assert_false(A.matches(':overscroll-open'));
+  assert_false(B.matches(':overscroll-open'));
+  assert_false(C.matches(':overscroll-open'));
+
+  outside.focus();
+  invoker.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outside);
+
+  C.focus({ preventScroll: true });
+  assert_equals(document.activeElement, outside);
+}, "Toggle invoker for outer closed area inside or as nested closed area remains inert");
+</script>
