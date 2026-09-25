@@ -221,6 +221,9 @@ void OtpManagerImpl::OnFieldTypesDetermined(
 void OtpManagerImpl::OnBeforeFocusOnFormField(AutofillManager& manager,
                                               FormGlobalId form,
                                               FieldGlobalId field) {
+  currently_focused_form_id_ = form;
+  currently_focused_field_id_ = field;
+
   if (last_pending_get_suggestions_callback_) {
     // Post the callback asynchronously to prevent re-entrancy when notifying
     // `Observer::OnAfterAskForValuesToFill` from inside this
@@ -237,6 +240,9 @@ void OtpManagerImpl::OnBeforeFocusOnFormField(AutofillManager& manager,
 // TODO(crbug.com/451991285): Remove this method once we switch to using
 // observers instead of delaying the callback.
 void OtpManagerImpl::OnBeforeFocusOnNonFormField(AutofillManager& manager) {
+  currently_focused_form_id_.reset();
+  currently_focused_field_id_.reset();
+
   if (last_pending_get_suggestions_callback_) {
     // Post the callback asynchronously to prevent re-entrancy when notifying
     // `Observer::OnAfterAskForValuesToFill` from inside this
@@ -416,9 +422,8 @@ std::optional<OneTimeToken> OtpManagerImpl::SelectMostRecentToken(
             one_time_tokens::kCacheDurationForOldTokens) {
       continue;
     }
-    if (!most_recent ||
-        token.on_device_arrival_time() >
-            most_recent->on_device_arrival_time()) {
+    if (!most_recent || token.on_device_arrival_time() >
+                            most_recent->on_device_arrival_time()) {
       most_recent = &token;
     }
   }

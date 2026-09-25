@@ -879,10 +879,10 @@ TEST_F(OtpManagerImplTest,
       .WillByDefault(Return(sms_only_tokens));
 
   OtpManagerImpl otp_manager(autofill_manager(), &sms_only_service);
-  EXPECT_FALSE(test_api(otp_manager)
-                   .SelectMostRecentToken(
-                       one_time_tokens::OneTimeTokenType::kGmail)
-                   .has_value());
+  EXPECT_FALSE(
+      test_api(otp_manager)
+          .SelectMostRecentToken(one_time_tokens::OneTimeTokenType::kGmail)
+          .has_value());
 }
 
 // Tests that `SelectMostRecentToken` returns nullopt when matching tokens are
@@ -891,8 +891,8 @@ TEST_F(OtpManagerImplTest,
        SelectMostRecentToken_ReturnsNulloptWhenTokensExpired) {
   base::TimeTicks now = base::TimeTicks::Now();
   std::vector<one_time_tokens::OneTimeToken> expired_tokens = {
-      {one_time_tokens::OneTimeTokenType::kGmail, "999",
-       now - base::Minutes(5), "sender@example.com"}};
+      {one_time_tokens::OneTimeTokenType::kGmail, "999", now - base::Minutes(5),
+       "sender@example.com"}};
 
   NiceMock<one_time_tokens::MockOneTimeTokenService> expired_mock_service;
   ON_CALL(expired_mock_service, GetCachedOneTimeTokens)
@@ -958,13 +958,13 @@ TEST_F(OtpManagerImplTest,
   OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
 
   EXPECT_CALL(mock_service, GetRecentOneTimeTokens).Times(1);
-  EXPECT_CALL(mock_service,
-              Subscribe(one_time_tokens::OneTimeTokenSource::kOnDeviceSms, _,
-                        _, _))
+  EXPECT_CALL(
+      mock_service,
+      Subscribe(one_time_tokens::OneTimeTokenSource::kOnDeviceSms, _, _, _))
       .Times(1);
-  EXPECT_CALL(mock_service,
-              SubscribeToTickles(one_time_tokens::OneTimeTokenSource::kGmail,
-                                 _, _))
+  EXPECT_CALL(
+      mock_service,
+      SubscribeToTickles(one_time_tokens::OneTimeTokenSource::kGmail, _, _))
       .Times(1);
   EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck)
       .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
@@ -978,15 +978,16 @@ TEST_F(OtpManagerImplTest,
   EXPECT_TRUE(autofill_manager()
                   .GetOtpFormEventLogger()
                   .HasLoggedDataToFillAvailableForTesting());
+  histogram_tester_.ExpectUniqueSample(kPhishGuardCheckPerformedHistogram, true,
+                                       1);
   histogram_tester_.ExpectUniqueSample(
-      kPhishGuardCheckPerformedHistogram, true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      kPhishGuardVerdictHistogram,
-      OneTimeTokensPhishGuardVerdict::kNotPhishing, 1);
+      kPhishGuardVerdictHistogram, OneTimeTokensPhishGuardVerdict::kNotPhishing,
+      1);
 }
 
 // Tests that `GetOtpSuggestions` suppresses delivery of cached Gmail OTPs
-// when PhishGuard identifies a phishing risk, while still renewing subscriptions.
+// when PhishGuard identifies a phishing risk, while still renewing
+// subscriptions.
 TEST_F(OtpManagerImplTest,
        GetOtpSuggestions_CachedGmailOtpSuppressedWhenPhishing) {
   const FormStructure* form = AddFormWithOtpField();
@@ -1015,11 +1016,11 @@ TEST_F(OtpManagerImplTest,
   EXPECT_TRUE(autofill_manager()
                   .GetOtpFormEventLogger()
                   .HasLoggedDataToFillAvailableForTesting());
+  histogram_tester_.ExpectUniqueSample(kPhishGuardCheckPerformedHistogram, true,
+                                       1);
   histogram_tester_.ExpectUniqueSample(
-      kPhishGuardCheckPerformedHistogram, true, 1);
-  histogram_tester_.ExpectUniqueSample(
-      kPhishGuardVerdictHistogram,
-      OneTimeTokensPhishGuardVerdict::kPhishing, 1);
+      kPhishGuardVerdictHistogram, OneTimeTokensPhishGuardVerdict::kPhishing,
+      1);
 }
 
 // Tests that subsequent tokens returned by `GetRecentOneTimeTokens` do not
@@ -1073,8 +1074,8 @@ TEST_F(OtpManagerImplTest,
 
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_service;
   ON_CALL(mock_service, GetCachedOneTimeTokens)
-      .WillByDefault(Return(
-          std::vector<one_time_tokens::OneTimeToken>{sms_otp}));
+      .WillByDefault(
+          Return(std::vector<one_time_tokens::OneTimeToken>{sms_otp}));
 
   OtpManagerImpl otp_manager(autofill_manager(), &mock_service);
 
@@ -1645,6 +1646,28 @@ TEST_F(OtpManagerImplTest,
       OtpManagerImplTestApi::kSmsOtpSubscriptionDuration + base::Seconds(1));
   EXPECT_TRUE(second_future.IsReady());
   EXPECT_TRUE(second_future.Get().empty());
+}
+
+// Tests that focus events correctly track the currently focused field and form.
+TEST_F(OtpManagerImplTest, FocusTracking_SetsAndClearsFocusedFieldAndForm) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+  FieldGlobalId otp_field_id = form->field(0)->global_id();
+  FormGlobalId form_id = form->global_id();
+
+  EXPECT_FALSE(test_api(otp_manager).currently_focused_field_id().has_value());
+  EXPECT_FALSE(test_api(otp_manager).currently_focused_form_id().has_value());
+
+  otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form_id,
+                                       otp_field_id);
+  EXPECT_EQ(test_api(otp_manager).currently_focused_field_id(), otp_field_id);
+  EXPECT_EQ(test_api(otp_manager).currently_focused_form_id(), form_id);
+
+  otp_manager.OnBeforeFocusOnNonFormField(autofill_manager());
+  EXPECT_FALSE(test_api(otp_manager).currently_focused_field_id().has_value());
+  EXPECT_FALSE(test_api(otp_manager).currently_focused_form_id().has_value());
 }
 
 }  // namespace autofill

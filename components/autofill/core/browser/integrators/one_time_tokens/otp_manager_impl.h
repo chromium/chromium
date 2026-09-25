@@ -158,6 +158,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // The time when the phish guard check was started.
   base::TimeTicks phish_guard_check_start_time_;
 
+  // Tracks the currently focused form and field, if any.
+  std::optional<FormGlobalId> currently_focused_form_id_;
+  std::optional<FieldGlobalId> currently_focused_field_id_;
+
   base::ScopedObservation<BrowserAutofillManager, AutofillManager::Observer>
       autofill_manager_observation_{this};
 

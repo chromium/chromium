@@ -46,6 +46,14 @@ class OtpManagerImplTestApi {
 
   bool has_log_subscription() const { return !!manager_->log_subscription_; }
 
+  std::optional<FormGlobalId> currently_focused_form_id() const {
+    return manager_->currently_focused_form_id_;
+  }
+
+  std::optional<FieldGlobalId> currently_focused_field_id() const {
+    return manager_->currently_focused_field_id_;
+  }
+
  private:
   raw_ref<OtpManagerImpl> manager_;
 };
