@@ -154,14 +154,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   _omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view insertSubview:_omniboxPopupContainer atIndex:0];
 
-  if (_theme.useIncognitoViewFallback) {
-    _incognitoView = [[IncognitoView alloc] init];
-    _incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
-    _incognitoView.delegate = self;
-    _incognitoView.hidden = YES;
-
-    [self.view insertSubview:_incognitoView atIndex:0];
-  }
+  [self createIncognitoViewIfNeeded];
 
   [[NSNotificationCenter defaultCenter]
       addObserver:self
@@ -171,12 +164,6 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
   [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withAction:@selector(userInterfaceStyleChanged)];
-
-  if (_theme.useIncognitoViewFallback) {
-    [self
-        registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
-                     withAction:@selector(preferredContentSizeCategoryChanged)];
-  }
 
   __weak ComposeboxViewController* weakSelf = self;
   [self
@@ -308,6 +295,26 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   [self setupConstraints];
 }
 
+// Creates the Incognito fallback view if the current theme requires it and it
+// has not been created yet. The theme is swapped at runtime (e.g. on a
+// horizontal size class change), so `useIncognitoViewFallback` can become YES
+// long after `viewDidLoad`.
+- (void)createIncognitoViewIfNeeded {
+  if (!_theme.useIncognitoViewFallback || _incognitoView) {
+    return;
+  }
+
+  _incognitoView = [[IncognitoView alloc] init];
+  _incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
+  _incognitoView.delegate = self;
+  _incognitoView.hidden = YES;
+
+  [self.view insertSubview:_incognitoView atIndex:0];
+
+  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                     withAction:@selector(preferredContentSizeCategoryChanged)];
+}
+
 - (void)setupConstraints {
   for (NSLayoutConstraint* staleConstraint in _constraintsForCurrentPosition) {
     staleConstraint.active = NO;
@@ -339,8 +346,10 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
         constraintEqualToAnchor:safeAreaGuide.topAnchor],
   ]];
 
-  // Constraints for the incognito info view.
-  if (_theme.useIncognitoViewFallback) {
+  // Constraints for the incognito info view. `_incognitoView` is checked
+  // explicitly: passing nil anchors to the array literal below would raise an
+  // exception. See crbug.com/562100200.
+  if (_theme.useIncognitoViewFallback && _incognitoView) {
     [_constraintsForCurrentPosition addObjectsFromArray:@[
       [_incognitoView.topAnchor
           constraintEqualToAnchor:safeAreaGuide.topAnchor],
@@ -654,6 +663,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 
 - (void)updateTheme:(ComposeboxTheme*)theme {
   _theme = theme;
+  [self createIncognitoViewIfNeeded];
   self.view.backgroundColor = _theme.composeboxBackgroundColor;
   UIButtonConfiguration* config = _closeButton.configuration;
   config.image = CloseButtonImage(_theme.closeButtonBackgroundColor, NO);
