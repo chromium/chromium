@@ -49,6 +49,11 @@ class WebState;
 // monochrome with the specified tint color. Otherwise, it will be multicolor.
 - (void)setLogoTintColor:(UIColor*)tintColor;
 
+// Sets the light and dark logo file paths to override the default logo when no
+// Doodle is displayed. Pass nil to clear.
+- (void)setOverrideLogoPath:(NSString*)logoPath
+               darkLogoPath:(NSString*)darkLogoPath;
+
 // Disconnect the instance.
 - (void)disconnect;
 
