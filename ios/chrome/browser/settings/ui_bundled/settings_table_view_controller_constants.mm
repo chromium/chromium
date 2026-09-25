@@ -91,5 +91,3 @@ NSString* const kSettingsDetectUnitsCellId = @"kSettingsDetectUnitsCellId";
 NSString* const kSettingsSafetyCheckCellId = @"SettingsSafetyCheckCellId";
 NSString* const kSettingsDefaultBrowserPassiveCellId =
     @"kSettingsDefaultBrowserPassiveCellId";
-NSString* const kSettingsSitePermissionsCellId =
-    @"kSettingsSitePermissionsCellId";

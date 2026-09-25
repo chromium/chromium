@@ -120,8 +120,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/site_permissions/site_permissions_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/site_permissions/site_permissions_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/voice_search_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -282,7 +280,6 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     SafariDataImportUIHandler,
     SafetyCheckCoordinatorDelegate,
     SearchEngineObserving,
-    SitePermissionsCoordinatorDelegate,
     SiteSettingsCoordinatorDelegate,
     SyncObserverModelBridge,
     TabsSettingsCoordinatorDelegate> {
@@ -401,8 +398,6 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   // Downloads settings coordinator.
   DownloadsSettingsCoordinator* _downloadsSettingsCoordinator;
 
-  // Site permissions coordinator.
-  SitePermissionsCoordinator* _sitePermissionsCoordinator;
 
   // Site settings coordinator.
   SiteSettingsCoordinator* _siteSettingsCoordinator;
@@ -1197,16 +1192,6 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
           accessibilityIdentifier:kSettingsContentSettingsCellId];
 }
 
-- (TableViewItem*)sitePermissionsDetailItem {
-  // TODO(crbug.com/553098545): Use localized string.
-  return [self detailItemWithType:SettingsItemTypeSitePermissions
-                             text:@"Site Permissions"
-                       detailText:nil
-                           symbol:SettingsRootSymbol(SymbolGearshape2)
-            symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
-          accessibilityIdentifier:kSettingsSitePermissionsCellId];
-}
-
 - (TableViewItem*)siteSettingsDetailItem {
   return [self detailItemWithType:SettingsItemTypeSiteSettings
                              text:l10n_util::GetNSString(
@@ -1581,10 +1566,6 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     case SettingsItemTypeContentSettings:
       base::RecordAction(base::UserMetricsAction("Settings.ContentSettings"));
       [self showContentSettings];
-      break;
-    case SettingsItemTypeSitePermissions:
-      base::RecordAction(base::UserMetricsAction("Settings.SitePermissions"));
-      [self showSitePermissionsSettings];
       break;
     case SettingsItemTypeSiteSettings:
       base::RecordAction(base::UserMetricsAction("Settings.SiteSettings"));
@@ -2483,22 +2464,6 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   [_downloadsSettingsCoordinator start];
 }
 
-- (void)showSitePermissionsSettings {
-  if (_sitePermissionsCoordinator &&
-      self.navigationController.topViewController != self) {
-    base::debug::DumpWithoutCrashing();
-  }
-
-  // Stop the coordinator before restarting it, if it exists.
-  [_sitePermissionsCoordinator stop];
-
-  _sitePermissionsCoordinator = [[SitePermissionsCoordinator alloc]
-      initWithBaseNavigationController:self.navigationController
-                               browser:_browser];
-  _sitePermissionsCoordinator.delegate = self;
-  [_sitePermissionsCoordinator start];
-}
-
 - (void)showSiteSettings {
   if (_siteSettingsCoordinator &&
       self.navigationController.topViewController != self) {
@@ -2891,8 +2856,8 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   [_downloadsSettingsCoordinator stop];
   _downloadsSettingsCoordinator = nil;
 
-  [_sitePermissionsCoordinator stop];
-  _sitePermissionsCoordinator = nil;
+  [_siteSettingsCoordinator stop];
+  _siteSettingsCoordinator = nil;
 
   // Stop observable prefs.
   [_showMemoryDebugToolsEnabled stop];
@@ -3318,14 +3283,6 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     (DownloadsSettingsCoordinator*)coordinator {
   [_downloadsSettingsCoordinator stop];
   _downloadsSettingsCoordinator = nil;
-}
-
-#pragma mark - SitePermissionsCoordinatorDelegate
-
-- (void)sitePermissionsCoordinatorWasRemoved:
-    (SitePermissionsCoordinator*)coordinator {
-  [_sitePermissionsCoordinator stop];
-  _sitePermissionsCoordinator = nil;
 }
 
 #pragma mark - SiteSettingsCoordinatorDelegate
