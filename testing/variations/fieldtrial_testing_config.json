@@ -8363,6 +8363,26 @@
             ]
         }
     ],
+    "FlushPersistentSystemProfileOnWrite": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260925",
+                    "enable_features": [
+                        "FlushPersistentSystemProfileOnWrite"
+                    ]
+                }
+            ]
+        }
+    ],
     "FontDataServiceChromeOS": [
         {
             "platforms": [
