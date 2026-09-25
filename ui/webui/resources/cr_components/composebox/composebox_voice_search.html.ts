@@ -55,7 +55,9 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
               class="${this.shouldShowErrorScrim_() ? 'hidden' : ''}">
             <cr-icon-button id="stopButton" part="voice-stop-button"
                 iron-icon="composebox:stop-filled"
-                 title="${this.i18n('voiceStop')}"
+                title="${this.i18n('voiceStop')}"
+                aria-label="${this.i18n('voiceStop')}"
+                tabindex="0"
                 @click="${this.onStopClick_}"
             ></cr-icon-button>
             <cr-composebox-submit id="submitButton"
