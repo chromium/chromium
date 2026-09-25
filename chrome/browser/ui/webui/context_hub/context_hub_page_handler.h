@@ -147,6 +147,7 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
                           const std::vector<GURL>& urls,
                           OpenUrlsInTabGroupCallback callback) override;
   void GetTopics(GetTopicsCallback callback) override;
+  void GetTopic(const std::string& id, GetTopicCallback callback) override;
   void OpenTopic(
       browser::context_hub::mojom::TopicIdOrUrlPtr topic_id_or_url) override;
   void OpenGlicPanel(const std::vector<std::string>& prompts) override;
@@ -160,8 +161,8 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   std::unique_ptr<TabProvider> tab_provider_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
-  // Tracks in-flight HistoryService::GetAllJourneys queries. Destroying it
-  // cancels their replies, so a query outliving this handler is dropped.
+  // Tracks in-flight HistoryService journey queries. Destroying it cancels
+  // their replies, so a query outliving this handler is dropped.
   base::CancelableTaskTracker topics_task_tracker_;
   base::WeakPtrFactory<ContextHubPageHandler> weak_factory_{this};
 };

@@ -188,6 +188,15 @@
   max-width: 820px;
 }
 
+.not-found-message {
+  margin: auto;
+  padding: 24px 36px;
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--cr-secondary-text-color, #5f6368);
+  text-align: center;
+}
+
 @media (prefers-color-scheme: dark) {
   :host {
     --topic-details-header-bg: rgba(31, 31, 31, 0.1);

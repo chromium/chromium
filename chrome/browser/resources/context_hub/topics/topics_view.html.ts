@@ -22,11 +22,10 @@ export function getHtml(this: TopicsViewElement) {
             ${repeat(
                 this.topics,
                 topic => topic.id,
-                (topic, index) => html`
+                topic => html`
                   <topic-card
                       role="listitem"
                       .topic="${topic}"
-                      .index="${index}"
                       @jump-back-in="${this.onJumpBackIn_}">
                   </topic-card>
                 `)}

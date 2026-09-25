@@ -417,6 +417,11 @@ interface PageHandler {
   [RuntimeFeature=kTopics]
   GetTopics() => (array<Topic> topics);
 
+  // Returns the Topic identified by `id`, or null if there is no such topic or
+  // it cannot be fully populated (i.e. it would be omitted by `GetTopics()`).
+  [RuntimeFeature=kTopics]
+  GetTopic(string id) => (Topic? topic);
+
   // Opens the specified topic (by topic ID or full URL) in a new tab.
   [RuntimeFeature=kTopics]
   OpenTopic(TopicIdOrUrl topic_id_or_url);

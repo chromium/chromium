@@ -128,6 +128,12 @@ class MockHistoryService : public history::HistoryService {
               (history::HistoryService::GetAllJourneysCallback callback,
                base::CancelableTaskTracker* tracker),
               (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetJourney,
+              (const std::string& journey_id,
+               history::HistoryService::GetJourneyCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockHistoryService(
@@ -2418,6 +2424,71 @@ TEST_F(ContextHubPageHandlerTest, GetTopics_NoJourneys) {
   handler_->GetTopics(future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
+}
+
+TEST_F(ContextHubPageHandlerTest, GetTopic_MapsResolvedJourney) {
+  history::journeys::Journey journey(
+      "test-topic-id", "Test Topic Title", base::Time::FromTimeT(1000),
+      "Test Topic Emoji", "Test Topic Long Description",
+      "Test Topic Short Description",
+      {history::journeys::JourneyVisit(GURL("https://example.com/visit"),
+                                       u"Test Visit Title")},
+      {history::journeys::JourneyContinuationQuery(
+          "Test Continuation Query Title", "Test Continuation Query Prompt")});
+
+  EXPECT_CALL(*GetMockHistoryService(), GetJourney("test-topic-id", _, _))
+      .WillOnce([&journey](const std::string& journey_id,
+                           history::HistoryService::GetJourneyCallback callback,
+                           base::CancelableTaskTracker* tracker) {
+        std::move(callback).Run(journey);
+        return base::CancelableTaskTracker::kBadTaskId;
+      });
+
+  base::test::TestFuture<browser::context_hub::mojom::TopicPtr> future;
+  handler_->GetTopic("test-topic-id", future.GetCallback());
+
+  const browser::context_hub::mojom::TopicPtr& topic = future.Get();
+  ASSERT_TRUE(topic);
+  EXPECT_EQ(topic->id, "test-topic-id");
+  EXPECT_EQ(topic->title, "Test Topic Title");
+  EXPECT_EQ(topic->creation_time, base::Time::FromTimeT(1000));
+  EXPECT_EQ(topic->emoji, "Test Topic Emoji");
+  EXPECT_EQ(topic->overview, "Test Topic Long Description");
+  EXPECT_EQ(topic->short_overview, "Test Topic Short Description");
+
+  ASSERT_EQ(topic->visits.size(), 1u);
+  EXPECT_EQ(topic->visits[0]->url, GURL("https://example.com/visit"));
+  EXPECT_EQ(topic->visits[0]->title, "Test Visit Title");
+
+  ASSERT_EQ(topic->continuation_queries.size(), 1u);
+  EXPECT_EQ(topic->continuation_queries[0]->title,
+            "Test Continuation Query Title");
+  EXPECT_EQ(topic->continuation_queries[0]->prompt,
+            "Test Continuation Query Prompt");
+}
+
+TEST_F(ContextHubPageHandlerTest, GetTopic_NotFound) {
+  EXPECT_CALL(*GetMockHistoryService(), GetJourney("missing", _, _))
+      .WillOnce([](const std::string& journey_id,
+                   history::HistoryService::GetJourneyCallback callback,
+                   base::CancelableTaskTracker* tracker) {
+        std::move(callback).Run(std::nullopt);
+        return base::CancelableTaskTracker::kBadTaskId;
+      });
+
+  base::test::TestFuture<browser::context_hub::mojom::TopicPtr> future;
+  handler_->GetTopic("missing", future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest, GetTopic_EmptyId_DoesNotQueryHistory) {
+  EXPECT_CALL(*GetMockHistoryService(), GetJourney).Times(0);
+
+  base::test::TestFuture<browser::context_hub::mojom::TopicPtr> future;
+  handler_->GetTopic("", future.GetCallback());
+
+  EXPECT_FALSE(future.Get());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -9,7 +9,6 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --topic-card-fallback-bg: var(--google-blue-100);
   align-items: center;
   background-color: var(--cr-card-background-color, #fff);
   border: 1px solid var(--cr-separator-color, transparent);
