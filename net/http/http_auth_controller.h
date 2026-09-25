@@ -93,11 +93,20 @@ class NET_EXPORT_PRIVATE HttpAuthController
                      HttpAuthHandlerFactory* http_auth_handler_factory,
                      HostResolver* host_resolver);
 
-  // Generate an authentication token for |target| if necessary. The return
-  // value is a net error code. |OK| will be returned both in the case that
+  // Generate an authentication token for `target` if necessary. The return
+  // value is a net error code. `OK` will be returned both in the case that
   // a token is correctly generated synchronously, as well as when no tokens
   // were necessary.
+  //
+  // `ssl_info` is the certificate information for the connection the token
+  // will be sent over, and must match what HandleAuthChallenge() is given for
+  // responses on that connection. It is empty when no certificate applies to
+  // this controller's target, for example for "http" origins and for proxy
+  // auth. If a connection-based handler was created on a connection with a
+  // different server certificate, it is dropped instead of generating a token,
+  // so that authentication restarts on the current connection.
   int MaybeGenerateAuthToken(const HttpRequestInfo* request,
+                             const SSLInfo& ssl_info,
                              CompletionOnceCallback callback,
                              const NetLogWithSource& net_log);
 
@@ -206,6 +215,10 @@ class NET_EXPORT_PRIVATE HttpAuthController
 
   // Records the number of authentication events per authentication scheme.
   void HistogramAuthEvent(AuthEvent auth_event);
+
+  // If the current handler is connection-based and was created for a connection
+  // with a different server certificate, invalidates the handler.
+  void InvalidateIfServerCertChanged(const X509Certificate* cert);
 
   // Indicates if this handler is for Proxy auth or Server auth.
   HttpAuth::Target target_;

@@ -187,6 +187,24 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // tunneled via the CONNECT method.
   bool UsingHttpProxyWithoutTunnel() const;
 
+  // Returns the SSLInfo of the destination server's connection. This is the
+  // sole source of certificate information for *server* authentication, used
+  // by both HandleAuthChallenge() and MaybeGenerateAuthToken(), so the two are
+  // guaranteed to observe the same value for a given `stream_`. Proxy
+  // authentication never uses this; it is always passed an empty SSLInfo.
+  //
+  // Returns an empty SSLInfo for non-secure requests, even if the connection
+  // uses TLS: an "http" request through an HTTPS proxy runs over TLS to that
+  // proxy, but that certificate belongs to the proxy rather than to the
+  // destination server, so server auth must not observe it.
+  //
+  // Consequently this never returns a proxy's certificate. When
+  // `IsSecureRequest()` is true the connection is either direct or tunneled
+  // through CONNECT -- a GET-to-proxy connection is impossible, because
+  // `UsingHttpProxyWithoutTunnel()` requires an "http" scheme -- so in both
+  // cases the top of the socket stack terminates at the destination server.
+  SSLInfo GetStreamSSLInfo();
+
   void DoCallback(int result);
   void OnIOComplete(int result);
 

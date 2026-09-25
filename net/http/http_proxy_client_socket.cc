@@ -339,7 +339,7 @@ int HttpProxyClientSocket::DoLoop(int last_io_result) {
 int HttpProxyClientSocket::DoGenerateAuthToken() {
   next_state_ = STATE_GENERATE_AUTH_TOKEN_COMPLETE;
   return auth_->MaybeGenerateAuthToken(
-      &request_,
+      &request_, response_.ssl_info,
       base::BindOnce(&HttpProxyClientSocket::OnIOComplete,
                      weak_factory_.GetWeakPtr()),
       net_log_);
