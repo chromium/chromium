@@ -47,6 +47,11 @@ class WebStateID;
 - (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
                     finalState:(actor::ActorTaskState)finalState;
 
+// Called when a pending user confirmation prompt has been resolved by the
+// user.
+- (void)actorTaskDidResolveConfirmationInterruptWithID:
+    (actor::ActorTaskId)taskID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_PUBLIC_ACTOR_TASK_UPDATES_OBSERVER_H_

@@ -118,6 +118,12 @@ class ActorEngine : public ToolDelegate {
   // Fails the current in-flight tool with `reason` and completes the action.
   void FailCurrentTool(mojom::ActionResultCode reason);
 
+  // Pauses any ongoing actions being executed by the engine.
+  void PauseOngoingActions();
+
+  // Notifies the engine that the task was uninterrupted.
+  void DidUninterruptTask();
+
   // ToolDelegate:
   ActorTaskId GetTaskId() const override;
   AggregatedJournal& GetJournal() const override;
@@ -218,6 +224,9 @@ class ActorEngine : public ToolDelegate {
   std::unique_ptr<ActorTaskFormFillingHandler> form_filling_handler_;
 
   // Handler object that intercepts task UI interventions.
+  // TODO(crbug.com/548051839): Consolidate intervention handling into a single
+  // `ActorTaskInterventionDelegate` (e.g., `ActuationWorklogMediator` via
+  // `ActorTask`) and remove `ActorTaskInterventionHandler`.
   __strong ActorTaskInterventionHandler* intervention_handler_ = nil;
 
   // Weak pointer factory.

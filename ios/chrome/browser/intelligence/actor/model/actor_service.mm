@@ -14,6 +14,7 @@
 #import "components/actor/core/aggregated_journal.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -152,9 +153,29 @@ void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
   // TODO(crbug.com/496163986): Implement and test.
 }
 
+void ActorService::SetTaskInterventionDelegate(
+    ActorTaskId task_id,
+    id<ActorTaskInterventionDelegate> delegate) {
+  auto it = active_tasks_.find(task_id);
+  if (it != active_tasks_.end()) {
+    it->second->SetInterventionDelegate(delegate);
+  }
+}
+
 void ActorService::InterruptTask(ActorTaskId task_id,
-                                 ActorTaskInterruptReason reason) {
-  // TODO(crbug.com/548051839): Implement and test.
+                                 ActorTaskInterruptReason reason,
+                                 std::string_view message) {
+  auto it = active_tasks_.find(task_id);
+  if (it == active_tasks_.end()) {
+    return;
+  }
+  it->second->Interrupt(reason, message);
+  // TODO(crbug.com/532978481): Clean up once `ActorTask` routes
+  // task-initiated stops directly through `ActorService::StopTask`.
+  it = active_tasks_.find(task_id);
+  if (it != active_tasks_.end() && IsTerminalState(it->second->GetState())) {
+    active_tasks_.erase(it);
+  }
 }
 
 void ActorService::StopTask(ActorTaskId task_id,

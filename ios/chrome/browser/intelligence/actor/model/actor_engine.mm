@@ -172,6 +172,14 @@ void ActorEngine::FailCurrentTool(mojom::ActionResultCode reason) {
   tool_controller_->FailCurrentTool(reason);
 }
 
+void ActorEngine::PauseOngoingActions() {
+  // TODO(crbug.com/548051839): Support pausing in-progress tool actions.
+}
+
+void ActorEngine::DidUninterruptTask() {
+  // TODO(crbug.com/548051839): Support resuming deferred tool invoke.
+}
+
 #pragma mark - ToolDelegate
 
 ActorTaskId ActorEngine::GetTaskId() const {
@@ -202,8 +210,9 @@ ActorTaskFormFillingHandler* ActorEngine::GetActorTaskFormFillingHandler() {
 
 void ActorEngine::InterruptFromTool() {
   CHECK(owner_task_);
-  owner_task_->Interrupt(/*retain_user_control=*/false,
-                         ActorTaskInterruptReason::kUnknownReason);
+  // TODO(crbug.com/566215654): Add an explicit `ActorTaskInterruptReason` for
+  // tool interrupts.
+  owner_task_->Interrupt(ActorTaskInterruptReason::kUnknownReason);
 }
 
 void ActorEngine::UninterruptFromTool() {

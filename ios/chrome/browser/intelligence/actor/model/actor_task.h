@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TASK_H_
 
 #import <string>
+#import <string_view>
 #import <vector>
 
 #import "base/containers/flat_map.h"
@@ -33,6 +34,7 @@ class Value;
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 @class CRBProtocolObservers;
+@protocol ActorTaskInterventionDelegate;
 
 class Browser;
 class BrowserList;
@@ -104,12 +106,14 @@ class ActorTask : public web::WebStateObserver,
   // Resumes task execution from a paused state.
   void Resume();
 
+  // Sets the intervention delegate for UI interaction.
+  void SetInterventionDelegate(id<ActorTaskInterventionDelegate> delegate);
+
   // Interrupts task execution to wait for user input, suspending ongoing
-  // actions without cancelling them. If `retain_user_control` is true, user
-  // interaction with the controlled WebState is permitted; if false, WebState
-  // interaction remains blocked.
-  void Interrupt(bool retain_user_control,
-                 ActorTaskInterruptReason interrupt_reason);
+  // actions without cancelling them. Accepts an optional message to display to
+  // the user.
+  void Interrupt(ActorTaskInterruptReason interrupt_reason,
+                 std::string_view message = "");
 
   // Uninterrupts the task from waiting on user input, resuming execution into
   // the given `resumed_state`.
@@ -202,6 +206,12 @@ class ActorTask : public web::WebStateObserver,
   // blocked by origin gating policy.
   void OnNavigationBlocked(mojom::ActionResultCode code);
 
+  // Requests user confirmation via the intervention delegate.
+  void RequestInterruptConfirmation(std::string_view message);
+
+  // Handles the user resolving the confirmation.
+  void OnInterruptConfirmationResolved();
+
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   // Updates the subtitle of the background continued processing task to match
   // `task_update`. Does nothing if `task_update` is empty or identical to the
@@ -287,6 +297,9 @@ class ActorTask : public web::WebStateObserver,
 
   // The latest non-empty task update string.
   std::string last_task_update_;
+
+  // The delegate handling user intervention UI. Weak reference.
+  __weak id<ActorTaskInterventionDelegate> intervention_delegate_ = nil;
 
   // List of registered observers notified of task state changes and tool
   // executions. `CRBProtocolObservers` itself is held strongly, but the

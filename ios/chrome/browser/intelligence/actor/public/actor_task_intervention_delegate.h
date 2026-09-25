@@ -30,8 +30,9 @@
                       BOOL shouldStorePermission))completionHandler;
 
 // Prompts the user with an intervention card containing a title,
-// subtitle, and action button text. `completionHandler` is invoked when
-// the user confirms the action to resume the task.
+// subtitle, and action button text. The `completionHandler` is only invoked
+// when the user confirms the action to resume the task. To abort, the user
+// should stop the execution.
 - (void)actorTask:(actor::ActorTaskId)taskID
     requestUserInterventionWithTitle:(NSString*)title
                             subtitle:(NSString*)subtitle

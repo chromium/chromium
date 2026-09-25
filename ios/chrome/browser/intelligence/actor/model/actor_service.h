@@ -9,6 +9,7 @@
 #import <memory>
 #import <optional>
 #import <string>
+#import <string_view>
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
@@ -20,6 +21,7 @@
 #import "ios/web/public/web_state_id.h"
 
 @class PageContextWrapper;
+@protocol ActorTaskInterventionDelegate;
 @protocol ActorTaskUpdatesObserver;
 class ProfileIOS;
 
@@ -75,9 +77,16 @@ class ActorService : public KeyedService {
   // WebState to the user.
   void PauseTask(ActorTaskId task_id, bool from_actor);
 
+  // Sets the intervention delegate for UI interaction on the given task.
+  void SetTaskInterventionDelegate(ActorTaskId task_id,
+                                   id<ActorTaskInterventionDelegate> delegate);
+
   // Interrupts a task to wait for user input, suspending ongoing actions
-  // without cancelling them.
-  void InterruptTask(ActorTaskId task_id, ActorTaskInterruptReason reason);
+  // without cancelling them. Accepts an optional message to display to the
+  // user.
+  void InterruptTask(ActorTaskId task_id,
+                     ActorTaskInterruptReason reason,
+                     std::string_view message = "");
 
   // Stops a task.
   void StopTask(ActorTaskId task_id, ActorTaskStoppedReason reason);

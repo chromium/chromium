@@ -7,6 +7,7 @@
 #import <algorithm>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -45,6 +47,10 @@ namespace {
 
 // Safety timeout duration to wait for pages to finish loading.
 constexpr base::TimeDelta kPageLoadTimeout = base::Seconds(7);
+
+// Default button text for confirmation intervention prompts.
+// TODO(crbug.com/556739755): Localize default button text string.
+NSString* const kDefaultConfirmationButtonText = @"Continue";
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 // Interval between JavaScript heartbeat pings. Found to be the sweetspot for
@@ -85,6 +91,7 @@ ActorControlState ControlStateForTaskState(ActorTaskState task_state) {
   switch (task_state) {
     case ActorTaskState::kActing:
     case ActorTaskState::kReflecting:
+    case ActorTaskState::kWaitingOnUser:
       return ActorControlState::kActorControlled;
     case ActorTaskState::kInit:
       return ActorControlState::kInactive;
@@ -235,6 +242,14 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
 }
 
 void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
+  if (IsTerminalState(state_)) {
+    return;
+  }
+  // TODO(crbug.com/532978481): Map `stop_reason` to the corresponding terminal
+  // `ActorTaskState` (`kFinished`, `kFailed`, `kCancelled`) instead of
+  // hardcoding `kCancelled`.
+  // `SetState` also transitions the web states to `kInactive` control state.
+  SetState(ActorTaskState::kCancelled);
   SetKeepRenderProcessAliveOnControlledWebStates(/*keep_alive=*/false);
 
 #if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
@@ -244,7 +259,6 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   FinalizeBackgroundTask(success);
 #endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   // TODO(crbug.com/496164697): Implement and test.
-  SetControlStateOnWebStates(ActorControlState::kInactive);
   [observers_ actorTaskDidStopWithID:task_id_ finalState:state_];
 }
 
@@ -260,24 +274,76 @@ void ActorTask::Resume() {
   // TODO(crbug.com/496164697): Implement and test.
 }
 
-void ActorTask::Interrupt(bool retain_user_control,
-                          ActorTaskInterruptReason interrupt_reason) {
-  // TODO(crbug.com/548051839): Implement and test.
-  if (state_ != ActorTaskState::kReflecting &&
+void ActorTask::SetInterventionDelegate(
+    id<ActorTaskInterventionDelegate> delegate) {
+  intervention_delegate_ = delegate;
+}
+
+void ActorTask::Interrupt(ActorTaskInterruptReason interrupt_reason,
+                          std::string_view message) {
+  if (state_ != ActorTaskState::kInit &&
+      state_ != ActorTaskState::kReflecting &&
       state_ != ActorTaskState::kActing) {
+    // TODO(crbug.com/548051839): Enforce valid state transitions with a CHECK
+    // or log a signal when an unexpected interrupt occurs.
     return;
   }
-  Pause(/*from_actor=*/true);
+
+  engine_->PauseOngoingActions();
   SetState(ActorTaskState::kWaitingOnUser);
+
+  switch (interrupt_reason) {
+    case ActorTaskInterruptReason::kWaitingUserConfirmation:
+      RequestInterruptConfirmation(message);
+      break;
+    case ActorTaskInterruptReason::kWaitingUserClarification:
+    case ActorTaskInterruptReason::kWaitingUserTakeover:
+    case ActorTaskInterruptReason::kWaitingIrrelevantUserInput:
+      // TODO(crbug.com/548051839): Support additional interrupt reasons.
+      // TODO(crbug.com/532978481): Route task-initiated stops through
+      // `ActorService::StopTask`.
+      Stop(ActorTaskStoppedReason::kBrowserFailure);
+      break;
+    case ActorTaskInterruptReason::kUnknownReason:
+      // Internal or tool-level interrupts do not request user confirmation.
+      break;
+  }
+}
+
+void ActorTask::RequestInterruptConfirmation(std::string_view message) {
+  if (!intervention_delegate_ || message.empty()) {
+    // TODO(crbug.com/532978481): Route task-initiated stops through
+    // `ActorService::StopTask`.
+    Stop(ActorTaskStoppedReason::kBrowserFailure);
+    return;
+  }
+  void (^completion)(void) = base::CallbackToBlock(
+      base::BindOnce(&ActorTask::OnInterruptConfirmationResolved,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  [intervention_delegate_ actorTask:task_id_
+      requestUserInterventionWithTitle:base::SysUTF8ToNSString(message)
+                              subtitle:nil
+                            buttonText:kDefaultConfirmationButtonText
+                     completionHandler:completion];
+}
+
+void ActorTask::OnInterruptConfirmationResolved() {
+  if (state_ != ActorTaskState::kWaitingOnUser) {
+    // TODO(crbug.com/548051839): Enforce valid state transitions once task
+    // state transitions and async intervention cancellation are fully audited.
+    return;
+  }
+  Uninterrupt(ActorTaskState::kReflecting);
+  [observers_ actorTaskDidResolveConfirmationInterruptWithID:task_id_];
 }
 
 void ActorTask::Uninterrupt(ActorTaskState resumed_state) {
-  // TODO(crbug.com/548051839): Implement and test.
   if (state_ != ActorTaskState::kWaitingOnUser) {
     return;
   }
-  Resume();
   SetState(resumed_state);
+  engine_->DidUninterruptTask();
 }
 
 bool ActorTask::IsControllingWebState(web::WebState* web_state) const {
