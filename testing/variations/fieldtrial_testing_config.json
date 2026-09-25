@@ -15766,39 +15766,6 @@
             ]
         }
     ],
-    "ReadAnythingLineFocusExperiment": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IPH_ReadingModeLineFocus",
-                        "ReadAnythingLineFocus"
-                    ]
-                },
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "IPH_ReadingModeLineFocus",
-                        "ReadAnythingLineFocus"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "IPH_ReadingModeLineFocus",
-                        "ReadAnythingLineFocus"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReadAnythingMenuShuffleExperiment": [
         {
             "platforms": [
