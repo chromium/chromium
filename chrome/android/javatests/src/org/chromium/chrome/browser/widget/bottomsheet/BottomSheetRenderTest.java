@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -89,6 +90,8 @@ public class BottomSheetRenderTest {
 
     @Mock private InsetObserver mInsetObserver;
 
+    private SettableNonNullObservableSupplier<Integer> mEdgeToEdgeBottomInsetSupplier;
+    private SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
     private Activity mActivity;
     private ViewGroup mViewport;
     private ViewGroup mSheetContainer;
@@ -163,8 +166,10 @@ public class BottomSheetRenderTest {
         mActivityTestRule.launchActivity(null);
         runOnUiThreadBlocking(
                 () -> {
+                    mEdgeToEdgeBottomInsetSupplier = ObservableSuppliers.createNonNull(0);
+                    mKeyboardInsetSupplier = ObservableSuppliers.createNonNull(0);
                     when(mInsetObserver.getSupplierForKeyboardInset())
-                            .thenReturn(ObservableSuppliers.alwaysZero());
+                            .thenReturn(mKeyboardInsetSupplier);
                     mActivity = mActivityTestRule.getActivity();
                 });
     }
@@ -273,6 +278,32 @@ public class BottomSheetRenderTest {
         mRenderTestRule.render(mViewport, "standard_sheet_glow_spec_long");
     }
 
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStandard_EdgeToEdgeAndKeyboardInsets() throws IOException {
+        DeviceInfo.setIsDesktopForTesting(false);
+        initController(/* enableLargeFormFactorUi= */ false);
+        runOnUiThreadBlocking(
+                () -> {
+                    mEdgeToEdgeBottomInsetSupplier.set(48);
+                    mKeyboardInsetSupplier.set(0);
+                });
+        RenderSheetContent content = createCardContent("Edge-To-Edge Bottom Inset Sheet", 240);
+        content.setFullHeightRatio(HeightMode.RESIZE_CONTENT);
+        showSheet(content, SheetState.HALF);
+        mRenderTestRule.render(mViewport, "standard_sheet_edge_to_edge_inset_no_keyboard");
+
+        runOnUiThreadBlocking(
+                () -> {
+                    mKeyboardInsetSupplier.set(200);
+                    mTestSupport.setSheetState(SheetState.HALF, /* animate= */ false);
+                    mTestSupport.endAllAnimations();
+                });
+        pollUiThread(() -> !mTestSupport.getSheetContainer().isLayoutRequested());
+        mRenderTestRule.render(mViewport, "standard_sheet_edge_to_edge_inset_with_keyboard");
+    }
+
     private void initController(boolean enableLargeFormFactorUi) {
         runOnUiThreadBlocking(
                 () -> {
@@ -310,7 +341,7 @@ public class BottomSheetRenderTest {
                                     mActivity.getWindow(),
                                     KeyboardVisibilityDelegate.getInstance(),
                                     () -> mSheetContainer,
-                                    () -> 0,
+                                    mEdgeToEdgeBottomInsetSupplier,
                                     /* desktopWindowStateManager= */ null,
                                     mInsetObserver,
                                     enableLargeFormFactorUi);

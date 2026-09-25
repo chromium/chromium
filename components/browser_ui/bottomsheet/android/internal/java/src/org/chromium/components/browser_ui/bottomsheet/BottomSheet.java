@@ -497,10 +497,11 @@ class BottomSheet extends BottomSheetView
         updateContentContainerHeight();
     }
 
-    private int getEdgeToEdgeBottomInset() {
-        return mBottomMargin == 0
-                ? ViewUtils.dpToPx(getContext(), mEdgeToEdgeBottomInsetSupplier.get())
-                : 0;
+    private @Px int getEdgeToEdgeBottomInset() {
+        if (mBottomMargin != 0) return 0;
+        @Px int bottomInset = ViewUtils.dpToPx(getContext(), mEdgeToEdgeBottomInsetSupplier.get());
+        @Px int keyboardInset = mInsetObserver.getSupplierForKeyboardInset().get();
+        return Math.max(0, bottomInset - keyboardInset);
     }
 
     private int getViewportBottomInset() {
