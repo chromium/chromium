@@ -28,6 +28,10 @@ namespace {
 // it, and returns the infobar type to show.
 std::optional<StartupLaunchInfoBarManager::InfoBarType>
 UpdatePrefAndGetInfoBarType(PrefService* local_state) {
+  // Don't show the infobar or update the pref if promotions are disabled.
+  if (!local_state->GetBoolean(prefs::kPromotionsEnabled)) {
+    return std::nullopt;
+  }
   if (!local_state->FindPreference(prefs::kForegroundLaunchOnLogin)
            ->IsDefaultValue()) {
     return std::nullopt;
@@ -53,6 +57,10 @@ bool ShouldShowInfoBars() {
   constexpr int kRepromptDurationDays = 21;
 
   PrefService* local_state = g_browser_process->local_state();
+
+  if (!local_state->GetBoolean(prefs::kPromotionsEnabled)) {
+    return false;
+  }
 
   const bool is_accepted =
       local_state->GetBoolean(prefs::kStartupLaunchInfobarAccepted);
