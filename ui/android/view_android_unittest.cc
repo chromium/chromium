@@ -120,10 +120,11 @@ class ViewAndroidBoundsTest : public testing::Test {
     TestEventHandler* handlers[4] = {&handler1_, &handler2_, &handler3_,
                                      &handlerm_};
     for (auto* handler : handlers) {
-      if (&hitHandler == handler)
+      if (&hitHandler == handler) {
         EXPECT_TRUE(handler->TouchEventHandled());
-      else
+      } else {
         EXPECT_FALSE(handler->TouchEventHandled());
+      }
     }
     Reset();
   }
@@ -640,6 +641,9 @@ TEST(ViewAndroidTest, WindowAndroidDestructionDetachesAllViewAndroid) {
 }
 
 TEST(ViewAndroidTest, WindowAndroidColorProviderSource) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kAvoidPerContextColorProviders);
+
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
       ui::WindowAndroid::CreateForTesting();
   ui::WindowAndroid* window_android = window->get();
