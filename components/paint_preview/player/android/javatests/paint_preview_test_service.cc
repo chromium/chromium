@@ -4,6 +4,7 @@
 
 #include "components/paint_preview/player/android/javatests/paint_preview_test_service.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -157,9 +158,13 @@ PaintPreviewTestService::CreateSingleSkp(
   if (id == 0) {
     color = SK_ColorGRAY;
   } else {
-    constexpr SkColor colors[4] = {SK_ColorRED, SK_ColorBLUE, SK_ColorGREEN,
-                                   SK_ColorMAGENTA};
-    color = UNSAFE_TODO(colors[id % 4]);
+    static constexpr std::array<SkColor, 4> colors = {
+        SK_ColorRED,
+        SK_ColorBLUE,
+        SK_ColorGREEN,
+        SK_ColorMAGENTA,
+    };
+    color = colors[id % colors.size()];
   }
   CreateBackground(canvas, color, width, height);
 
