@@ -2,7 +2,7 @@ Name: Vulkan API headers
 Short Name: Vulkan
 URL: https://github.com/KhronosGroup/Vulkan-Headers
 Version: N/A
-Revision: b0c3dd6851e22621f194306d511b9253e4c1577f
+Revision: 3c65a01745e4a1134d32b9c2c456472212dba16d
 Update Mechanism: Autoroll
 Security Critical: yes
 Shipped: yes
