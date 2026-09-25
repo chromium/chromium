@@ -212,13 +212,20 @@ TEST_F(InputProtectionInteractiveUiTest,
 }
 
 // Verifies that an Always-On-Top window actively occluding an element blocks
-// clicks, and that clicks succeed after the AOT window is removed and cooldown
+// events, and that clicks succeed after the AOT window is removed and cooldown
 // expires.
-TEST_F(InputProtectionInteractiveUiTest, LiveAotWindowBlocksClicks) {
+TEST_F(InputProtectionInteractiveUiTest, LiveAotWindowBlocksEvents) {
   RunTestSequence(
+      EnableInputEventActivationProtection(),
+      AdvancePastInputProtectionInterval(),
       OccludeElementWithAotWindow(kPrimaryButtonId),
-      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count()),
+      // Reactivate target surface so it can receive focus (required on macOS).
+      ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      // Fully occluded element blocks Return key.
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_RETURN,
+                                         primary_click_count()),
       HideAotWindow(), AdvancePastInputProtectionInterval(),
+      // After AOT window dismissal and cooldown expiration, clicks succeed.
       ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()));
 }
 
@@ -226,11 +233,15 @@ TEST_F(InputProtectionInteractiveUiTest, LiveAotWindowBlocksClicks) {
 // clicks on an unoccluded element.
 TEST_F(InputProtectionInteractiveUiTest, AotWindowAllowsUnoccludedClicks) {
   RunTestSequence(
+      EnableInputEventActivationProtection(),
+      AdvancePastInputProtectionInterval(),
       OccludeElementWithAotWindow(kSecondaryButtonId),
       // Clicks on the unoccluded primary button succeed.
       ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()),
-      // Clicks on the occluded secondary button are blocked.
-      ClickExpectingBlocked(kSecondaryButtonId, secondary_click_count()));
+      // Key presses targeting the occluded secondary button are blocked.
+      ActivateSurface(kSecondaryButtonId), FocusElement(kSecondaryButtonId),
+      KeyPressAndReleaseExpectingBlocked(kSecondaryButtonId, ui::VKEY_SPACE,
+                                         secondary_click_count()));
 }
 
 // Verifies that dismissing an active Always-On-Top window triggers historical
