@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/controls/webview/webview.h"
 
 namespace {
 

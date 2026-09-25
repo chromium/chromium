@@ -164,6 +164,7 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/custom_floating_corner.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
@@ -1331,6 +1332,10 @@ TabStripRegionView* BrowserView::tab_strip_view() const {
   }
 
   return horizontal_tab_strip_region_view_.get();
+}
+
+ContentsWebView* BrowserView::contents_web_view_for_testing() {
+  return static_cast<ContentsWebView*>(GetContentsView());
 }
 
 views::LabelButton* BrowserView::GetGlicButton() {

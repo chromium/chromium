@@ -53,6 +53,7 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/test/views_test_utils.h"

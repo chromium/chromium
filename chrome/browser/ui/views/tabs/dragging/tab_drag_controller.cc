@@ -21,6 +21,7 @@
 #include "base/memory/weak_auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/trace_event/trace_event.h"

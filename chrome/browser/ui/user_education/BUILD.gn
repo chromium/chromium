@@ -110,6 +110,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/common",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 

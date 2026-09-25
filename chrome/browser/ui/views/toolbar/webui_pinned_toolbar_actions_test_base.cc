@@ -37,6 +37,7 @@
 #include "ui/actions/actions.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/views/controls/webview/webview.h"
 
 WebUIPinnedToolbarActionsTestBase::WebUIPinnedToolbarActionsTestBase()
     : WebUIToolbarWebViewTestBase(

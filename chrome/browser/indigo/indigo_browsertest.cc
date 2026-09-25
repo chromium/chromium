@@ -61,6 +61,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/display_switches.h"
+#include "ui/views/controls/webview/webview.h"
 
 namespace indigo {
 namespace {

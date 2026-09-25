@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
-#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "chrome/browser/ui/views/frame/shadow_overlay_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -80,6 +79,8 @@ class BookmarkBarView;
 class BrowserWindowInterface;
 class BrowserViewLayout;
 class ContentsContainerView;
+class ContentsWebView;
+class CustomFloatingCorner;
 struct DropData;
 class ExclusiveAccessBubbleViews;
 class ExclusiveAccessBubbleViewsContext;
@@ -121,10 +122,9 @@ enum class Channel;
 
 namespace views {
 class LabelButton;
+class NativeViewHost;
 class WebView;
 }  // namespace views
-
-class CustomFloatingCorner;
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView
@@ -307,9 +307,7 @@ class BrowserView : public BrowserWindow,
   // Will return the single active contents view. If side by side is enabled,
   // it may make more sense to use GetAllVisibleContentsWebViews() depending on
   // the use case.
-  ContentsWebView* contents_web_view_for_testing() {
-    return static_cast<ContentsWebView*>(GetContentsView());
-  }
+  ContentsWebView* contents_web_view_for_testing();
 
   ScrimView* window_scrim_view() { return window_scrim_view_; }
 

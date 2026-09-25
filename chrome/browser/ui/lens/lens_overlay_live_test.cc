@@ -54,6 +54,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/controls/webview/webview.h"
 
 namespace lens {
 

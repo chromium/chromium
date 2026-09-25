@@ -24,6 +24,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
