@@ -5,7 +5,7 @@
 const createWindowUtil = function(urlToLoad, createdCallback) {
   try {
     chrome.windows.create(
-        {url: urlToLoad, type: 'normal', width: 600, height: 400},
+        {url: urlToLoad, type: 'normal', width: 600, height: 500},
         createdCallback);
   } catch (e) {
     chrome.test.fail(e);
@@ -41,7 +41,7 @@ chrome.test.runTests([
   function testWindowCreate() {
     createWindowUtil('blank.html', function(createdWindowData) {
       chrome.test.assertEq(600, createdWindowData.width);
-      chrome.test.assertEq(400, createdWindowData.height);
+      chrome.test.assertEq(500, createdWindowData.height);
       chrome.test.succeed();
     });
   },
@@ -53,7 +53,7 @@ chrome.test.runTests([
       const createdWindowId = allWindowsData[allWindowsData.length - 1].id;
       getWindowUtil(createdWindowId, function(windowData) {
         chrome.test.assertEq(600, windowData.width);
-        chrome.test.assertEq(400, windowData.height);
+        chrome.test.assertEq(500, windowData.height);
         chrome.test.succeed();
       });
     });
