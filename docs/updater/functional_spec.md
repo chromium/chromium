@@ -1767,6 +1767,23 @@ The proxy settings include a combination of auto-proxy (WPAD), proxy
 auto-configuration, or named proxy. The updater tries one of these mechanisms
 in the order described above.
 
+#### NTLM credential leakage (Windows)
+Consistent with Chrome's policy, the updater does not treat the leakage of NTLM
+credentials (for example, NTLMv2 challenge-responses sent to an
+attacker-controlled proxy or server) as a security vulnerability. This applies
+to any type of NTLM leakage, including the leakage of the machine account
+credentials when the updater runs as `SYSTEM` for system-scoped installs.
+
+NTLM is an operating-system-provided authentication mechanism that Microsoft
+has deprecated. Reducing or disabling NTLM, and migrating to Kerberos, is an
+operating system and network configuration matter. Accordingly, the updater
+does not add specific mitigations against these attacks, since doing so would
+legitimize them as a class of issue that is accepted as a security bug.
+
+See the Chrome Security FAQ entry
+[I can make Chrome perform potentially insecure NTLM requests to an attacker controlled server. Is this a security bug?](../security/faq.md#I-can-make-Chrome-perform-potentially-insecure-NTLM-requests-to-an-attacker-controlled-server_Is-this-a-security-bug)
+for more details.
+
 ## Services
 
 ### Crash Reporting
