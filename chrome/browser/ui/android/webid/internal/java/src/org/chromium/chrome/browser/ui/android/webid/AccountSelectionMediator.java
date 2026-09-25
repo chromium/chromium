@@ -1303,8 +1303,6 @@ class AccountSelectionMediator {
     }
 
     private void recordCloseSheetMetrics() {
-        RecordHistogram.recordBooleanHistogram(
-                "Blink.FedCm.CloseVerifySheet.Android", mHeaderType == HeaderType.VERIFY);
         RecordHistogram.recordEnumeratedHistogram(
                 "Blink.FedCm.ClosedSheetType.Android", getSheetType(), SheetType.MAX_VALUE + 1);
     }
