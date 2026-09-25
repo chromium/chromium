@@ -137,6 +137,7 @@ packager_builder(
     builderless = True,
     cores = None,
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "packager|3pp|win",
         short_name = "amd64",
