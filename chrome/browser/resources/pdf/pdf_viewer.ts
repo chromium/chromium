@@ -39,7 +39,7 @@ import type {BrowserApi} from './browser_api.js';
 import type {Attachment, DocumentMetadata, Point} from './constants.js';
 // <if expr="enable_pdf_ink2">
 import type {ExtendedKeyEvent} from './constants.js';
-import {AnnotationMode, TextStyle} from './constants.js';
+import {AnnotationMode} from './constants.js';
 // </if>
 import {FittingType, FormFieldFocusType} from './constants.js';
 // <if expr="enable_pdf_save_to_drive">
@@ -84,7 +84,7 @@ import {getSaveToDriveManageStorageUrl, getSaveToDriveOpenInDriveUrl} from './pd
 // </if> enable_pdf_save_to_drive
 import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents, verifyPdfHeader} from './pdf_viewer_utils.js';
 // <if expr="enable_pdf_ink2">
-import {isStrikethroughShortcut} from './pdf_viewer_utils.js';
+import {getTextStyleForShortcut} from './pdf_viewer_utils.js';
 // </if>
 // <if expr="enable_pdf_save_to_drive">
 import {recordSaveToDriveBubbleActionMetrics, recordSaveToDriveBubbleRetryMetrics, recordSaveToDriveMetrics, recordShowSaveToDriveBubbleMetrics} from './save_to_drive_metrics.js';
@@ -558,6 +558,17 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       return;
     }
 
+    // <if expr="enable_pdf_ink2">
+    if (this.isInTextAnnotationMode_()) {
+      const textStyle = getTextStyleForShortcut(e);
+      if (textStyle !== null) {
+        e.preventDefault();
+        Ink2Manager.getInstance().toggleTextStyle(textStyle);
+        return;
+      }
+    }
+    // </if>
+
     switch (e.key) {
       case 'a':
         // Take over Ctrl+A (but not other combinations like Ctrl-Shift-A).
@@ -569,24 +580,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         }
         return;
       // <if expr="enable_pdf_ink2">
-      case 'b':
-      case 'B':
-        if (hasCtrlModifierOnly(e) && this.isInTextAnnotationMode_()) {
-          Ink2Manager.getInstance().toggleTextStyle(TextStyle.BOLD);
-          e.preventDefault();
-        }
-        return;
       case 'Enter':
         if ((e as ExtendedKeyEvent).fromPlugin &&
             this.isInTextAnnotationMode_()) {
           this.maybeCreateTextAnnotation_();
-        }
-        return;
-      case 'i':
-      case 'I':
-        if (hasCtrlModifierOnly(e) && this.isInTextAnnotationMode_()) {
-          Ink2Manager.getInstance().toggleTextStyle(TextStyle.ITALIC);
-          e.preventDefault();
         }
         return;
       case 'v':
@@ -595,24 +592,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           this.maybePasteTextAnnotation_();
         }
         return;
-      // <if expr="not is_macosx">
-      case '5':
-      case '%':
-        if (isStrikethroughShortcut(e) && this.isInTextAnnotationMode_()) {
-          Ink2Manager.getInstance().toggleTextStyle(TextStyle.STRIKETHROUGH);
-          e.preventDefault();
-        }
-        return;
-      // </if>
-      // <if expr="is_macosx">
-      case 'x':
-      case 'X':
-        if (isStrikethroughShortcut(e) && this.isInTextAnnotationMode_()) {
-          Ink2Manager.getInstance().toggleTextStyle(TextStyle.STRIKETHROUGH);
-          e.preventDefault();
-        }
-        return;
-      // </if>
       // </if>
       default:
         break;

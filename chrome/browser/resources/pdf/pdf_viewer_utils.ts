@@ -7,6 +7,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
 // <if expr="enable_pdf_ink2">
 import type {Color} from './constants.js';
+import {TextStyle} from './constants.js';
 // </if>
 import type {LayoutOptions, ViewportRect} from './viewport.js';
 
@@ -84,7 +85,7 @@ export function hasCtrlModifierOnly(e: KeyboardEvent): boolean {
  * Determines if the event matches the platform shortcut for strikethrough.
  * Alt+Shift+5 on non-Mac, and Cmd+Shift+X on Mac.
  */
-export function isStrikethroughShortcut(e: KeyboardEvent): boolean {
+function isStrikethroughShortcut(e: KeyboardEvent): boolean {
   // <if expr="is_macosx">
   return e.metaKey && e.shiftKey && !e.ctrlKey && !e.altKey &&
       e.key.toLowerCase() === 'x';
@@ -93,6 +94,24 @@ export function isStrikethroughShortcut(e: KeyboardEvent): boolean {
   return e.altKey && e.shiftKey && !e.ctrlKey && !e.metaKey &&
       (e.key === '5' || e.key === '%' || e.code === 'Digit5');
   // </if>
+}
+
+/**
+ * Returns the `TextStyle` corresponding to the keyboard shortcut event `e`, or
+ * `null` if `e` does not match any text style shortcut.
+ */
+export function getTextStyleForShortcut(e: KeyboardEvent): TextStyle|null {
+  if (hasCtrlModifierOnly(e)) {
+    switch (e.key.toLowerCase()) {
+      case 'b':
+        return TextStyle.BOLD;
+      case 'i':
+        return TextStyle.ITALIC;
+      default:
+        return null;
+    }
+  }
+  return isStrikethroughShortcut(e) ? TextStyle.STRIKETHROUGH : null;
 }
 // </if>
 
