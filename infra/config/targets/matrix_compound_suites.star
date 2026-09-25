@@ -842,6 +842,7 @@ targets.legacy_matrix_compound_suite(
     basic_suites = {
         "model_validation_tests_suite": None,
         "model_validation_tests_light_suite": None,
+        "ondevice_api_scrape_tests_suite": None,
         "ondevice_stability_tests_suite": None,
         "litert_e2e_tests_gpu_suite": None,
         "litert_e2e_tests_cpu_suite": None,
@@ -889,6 +890,11 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "model_validation_tests_light_suite": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
+        ),
+        "ondevice_api_scrape_tests_suite": targets.legacy_matrix_config(
             mixins = [
                 "gce",
             ],
@@ -1019,6 +1025,11 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "model_validation_tests_light_suite": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
+        ),
+        "ondevice_api_scrape_tests_suite": targets.legacy_matrix_config(
             mixins = [
                 "gce",
             ],

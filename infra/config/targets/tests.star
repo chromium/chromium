@@ -1852,6 +1852,10 @@ targets.tests.gtest_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "ondevice_api_scrape_tests",
+)
+
+targets.tests.isolated_script_test(
     name = "ondevice_stability_tests",
 )
 

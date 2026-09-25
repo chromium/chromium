@@ -1776,6 +1776,36 @@
           "chromedriver",
           "--binary",
           "chrome",
+          "--use-xvfb"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_api_scrape_tests",
+        "module_scheme": "flat",
+        "name": "ondevice_api_scrape_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_api_scrape_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_api_scrape_tests/"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "chrome",
           "--no-xvfb"
         ],
         "merge": {
@@ -2301,6 +2331,34 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_api_scrape_tests",
+        "module_scheme": "flat",
+        "name": "ondevice_api_scrape_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-26",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_api_scrape_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_api_scrape_tests/"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "Google Chrome.app/Contents/MacOS/Google Chrome"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
         "module_name": "//components/optimization_guide/internal/testing:ondevice_stability_tests",
         "module_scheme": "flat",
         "name": "ondevice_stability_tests",
@@ -2803,6 +2861,34 @@
         },
         "test": "model_validation_tests_light",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests_light/"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "Google Chrome.app/Contents/MacOS/Google Chrome"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_api_scrape_tests",
+        "module_scheme": "flat",
+        "name": "ondevice_api_scrape_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-15",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_api_scrape_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_api_scrape_tests/"
       },
       {
         "args": [
@@ -4176,6 +4262,34 @@
         },
         "test": "model_validation_tests_light",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests_light/"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver.exe",
+          "--binary",
+          "Chrome.exe"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_api_scrape_tests",
+        "module_scheme": "flat",
+        "name": "ondevice_api_scrape_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gce": "1",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_api_scrape_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_api_scrape_tests/"
       },
       {
         "args": [

@@ -1650,7 +1650,6 @@
     "label": "//components/optimization_guide/internal/testing:ondevice_api_scrape_tests",
     "type": "generated_script",
     "module_scheme": "flat",
-    "skip_usage_check": True,
   },
   "ondevice_model_benchmark": {
     "label": "//components/optimization_guide/internal:ondevice_model_benchmark",
