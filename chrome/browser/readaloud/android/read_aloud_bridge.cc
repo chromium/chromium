@@ -52,6 +52,34 @@ int32_t ToJavaPlaybackState(read_aloud::mojom::PlaybackState state) {
   NOTREACHED();
 }
 
+// Maps the integer values of Java PlaybackArgs.PlaybackMode onto
+// ReadAloudService::PlaybackMode.
+ReadAloudService::PlaybackMode FromJavaPlaybackMode(int mode) {
+  switch (mode) {
+    case 0:
+      return ReadAloudService::PlaybackMode::kUnspecified;
+    case 1:
+      return ReadAloudService::PlaybackMode::kClassic;
+    case 2:
+      return ReadAloudService::PlaybackMode::kOverview;
+  }
+  NOTREACHED();
+}
+
+// Maps the integer values of Java Feedback.FeedbackType onto
+// ReadAloudService::FeedbackType.
+ReadAloudService::FeedbackType FromJavaFeedbackType(int feedback_type) {
+  switch (feedback_type) {
+    case 0:
+      return ReadAloudService::FeedbackType::kNone;
+    case 1:
+      return ReadAloudService::FeedbackType::kPositive;
+    case 2:
+      return ReadAloudService::FeedbackType::kNegative;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 ReadAloudBridge::ReadAloudBridge(JNIEnv* env,
@@ -293,8 +321,7 @@ void ReadAloudBridge::StopVoicePreview(JNIEnv* env) {
 
 void ReadAloudBridge::SetPlaybackMode(JNIEnv* env, jint mode) {
   if (service_) {
-    service_->SetPlaybackMode(
-        static_cast<ReadAloudService::PlaybackMode>(mode));
+    service_->SetPlaybackMode(FromJavaPlaybackMode(mode));
   }
 }
 
@@ -306,8 +333,7 @@ void ReadAloudBridge::SetHighlightingEnabled(JNIEnv* env, jboolean enabled) {
 
 void ReadAloudBridge::SendFeedback(JNIEnv* env, jint feedback_type) {
   if (service_) {
-    service_->SendFeedback(
-        static_cast<ReadAloudService::FeedbackType>(feedback_type));
+    service_->SendFeedback(FromJavaFeedbackType(feedback_type));
   }
 }
 

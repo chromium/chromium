@@ -57,6 +57,7 @@ if (is_android) {
     testonly = true
     sources = [
       "android/prefs_unittest.cc",
+      "android/read_aloud_bridge_unittest.cc",
       "audio_generation/overview_generation_broker_unittest.cc",
       "audio_generation/speech_synthesis_broker_unittest.cc",
       "fake_audio_stream_factory.cc",
