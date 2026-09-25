@@ -1907,6 +1907,12 @@ You can remove this suggestion from Chrome. Your original source won't be delete
     <message name="IDS_AUTOFILL_AI_ATTRIBUTION_BOTTOM_SHEET_TITLE" desc="Title for the Autofill AI source attribution bottom sheet on Android." formatter_data="android_java">
       Sources
     </message>
+    <message name="IDS_AUTOFILL_AI_ATTRIBUTION_SHEET_ACCESSIBILITY_TITLE" desc="Accessibility title announced by TalkBack when the Autofill AI source attribution bottom sheet opens at full height." formatter_data="android_java" is_accessibility_with_no_ui="true">
+      Sources for suggestion
+    </message>
+    <message name="IDS_AUTOFILL_AI_ATTRIBUTION_SHEET_CLOSED" desc="Accessibility announcement when the Autofill AI source attribution bottom sheet closes." formatter_data="android_java" is_accessibility_with_no_ui="true">
+      Sources sheet closed
+    </message>
   </if>
 
   <!-- Autofill AI Suppression Snackbar Strings (Android) -->

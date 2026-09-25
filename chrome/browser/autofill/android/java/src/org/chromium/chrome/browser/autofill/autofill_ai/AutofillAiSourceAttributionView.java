@@ -34,4 +34,8 @@ import org.chromium.chrome.browser.autofill.R;
     public void setAdapter(RecyclerView.Adapter<?> adapter) {
         mRecyclerView.setAdapter(adapter);
     }
+
+    int getVerticalScrollOffset() {
+        return mRecyclerView.computeVerticalScrollOffset();
+    }
 }
