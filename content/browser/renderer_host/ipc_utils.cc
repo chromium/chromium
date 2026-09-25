@@ -195,6 +195,15 @@ bool VerifyDownloadUrlParams(RenderProcessHost* process,
   if (!VerifyBlobToken(process_id, params.blob_url_token, params.url))
     return false;
 
+  // Unlike OpenURL (where a renderer may legitimately navigate to an external
+  // blob: URL without a token, e.g. via drag-and-drop), renderer-initiated
+  // downloads of blob: URLs always bind a BlobURLToken.
+  if (params.url.SchemeIsBlob() && !params.blob_url_token.is_valid()) {
+    bad_message::ReceivedBadMessage(
+        process_id, bad_message::RFH_DOWNLOAD_URL_BLOB_WITHOUT_TOKEN);
+    return false;
+  }
+
   // Verify |params.initiator_origin|.
   if (params.initiator_origin &&
       !VerifyInitiatorOrigin(process_id, *params.initiator_origin))

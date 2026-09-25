@@ -590,6 +590,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="403"
       label="BIBI_BIND_PICTURE_IN_PICTURE_SERVICE_BLOCKED_BY_PERMISSIONS_POLICY"/>
   <int value="404" label="RFH_DETACH_WHILE_BFCACHED"/>
+  <int value="405" label="RFH_DOWNLOAD_URL_BLOB_WITHOUT_TOKEN"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
