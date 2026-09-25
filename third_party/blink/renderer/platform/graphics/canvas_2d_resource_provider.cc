@@ -242,12 +242,6 @@ void Canvas2DResourceProvider::EnsureResourceReadyForDraw() {
   }
 }
 
-std::unique_ptr<gpu::RasterScopedAccess>
-Canvas2DResourceProvider::WillDrawInternal() {
-  EnsureResourceReadyForDraw();
-  return resource_->BeginAccess(/*readonly=*/false);
-}
-
 void Canvas2DResourceProvider::WillDrawUnaccelerated() {
   CHECK(!IsAccelerated());
 
@@ -455,8 +449,8 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot(
     cached_snapshot_ = resource_->Bitmap();
 
     // We'll record its content_id to be used by the FlushForImageListener.
-    // This will be needed in WillDrawInternal, but we are doing it now, as we
-    // don't know if later on we will be in the same thread the
+    // This will be needed in EnsureResourceReadyForDraw(), but we are doing it
+    // now, as we don't know if later on we will be in the same thread the
     // cached_snapshot_ was created and we wouldn't be able to
     // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
     // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
@@ -576,7 +570,8 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
     return;
   }
 
-  auto access = WillDrawInternal();
+  EnsureResourceReadyForDraw();
+  auto access = resource_->BeginAccess(/*readonly=*/false);
   EnsureWriteAccess();
 
   cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback;
