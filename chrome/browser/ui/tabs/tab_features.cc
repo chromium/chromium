@@ -182,6 +182,7 @@
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/hats/hats_helper.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_hats_service_factory.h"
+#include "chrome/browser/ui/shared_highlighting/shared_highlighting_promo.h"
 #endif
 
 namespace tabs {
@@ -715,6 +716,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       PerformanceControlsHatsServiceFactory::IsAnySurveyFeatureEnabled()) {
     hats_helper_ = std::make_unique<HatsHelper>(tab.GetContents());
   }
+  shared_highlighting_promo_ =
+      std::make_unique<SharedHighlightingPromo>(tab.GetContents());
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
@@ -957,6 +960,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   if (hats_helper_) {
     hats_helper_ = std::make_unique<HatsHelper>(new_contents);
   }
+  shared_highlighting_promo_ =
+      std::make_unique<SharedHighlightingPromo>(new_contents);
 #endif
 }
 

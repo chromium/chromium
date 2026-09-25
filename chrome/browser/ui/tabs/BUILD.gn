@@ -670,6 +670,7 @@ if (!is_android) {
         "//chrome/browser/multistep_filter",
         "//chrome/browser/multistep_filter/ui",
         "//chrome/browser/ui/hats",
+        "//chrome/browser/ui/shared_highlighting",
         "//chrome/browser/wallet",
       ]
     }

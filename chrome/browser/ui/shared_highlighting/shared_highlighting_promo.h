@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 
@@ -18,10 +17,9 @@ class WebContents;
 
 // SharedHighlightingPromo is responsible for displaying a promo when user
 // opens a page with highlighted text.
-class SharedHighlightingPromo
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<SharedHighlightingPromo> {
+class SharedHighlightingPromo : public content::WebContentsObserver {
  public:
+  explicit SharedHighlightingPromo(content::WebContents* web_contents);
   ~SharedHighlightingPromo() override;
   SharedHighlightingPromo(const SharedHighlightingPromo& other) = delete;
   SharedHighlightingPromo& operator=(const SharedHighlightingPromo& other) =
@@ -31,17 +29,11 @@ class SharedHighlightingPromo
                      const GURL& validated_url) override;
 
  private:
-  friend class content::WebContentsUserData<SharedHighlightingPromo>;
-
-  explicit SharedHighlightingPromo(content::WebContents* web_contents);
-
   void CheckExistingSelectors(content::RenderFrameHost* render_frame_host);
 
   bool HasTextFragment(std::string url);
 
   mojo::Remote<blink::mojom::TextFragmentReceiver> remote_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_SHARED_HIGHLIGHTING_SHARED_HIGHLIGHTING_PROMO_H_

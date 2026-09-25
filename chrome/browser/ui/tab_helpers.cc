@@ -209,11 +209,6 @@
 #include "chromeos/ash/experiences/isolated_web_app/cros_isolated_web_app_enabler.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/shared_highlighting/shared_highlighting_promo.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/font_prewarmer_tab_helper.h"
 #endif
@@ -765,11 +760,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   metrics::DesktopSessionDurationObserver::CreateForWebContents(web_contents);
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  SharedHighlightingPromo::CreateForWebContents(web_contents);
 #endif
 
 #if BUILDFLAG(IS_WIN)

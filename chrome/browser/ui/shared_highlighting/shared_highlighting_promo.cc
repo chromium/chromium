@@ -31,8 +31,7 @@ void OnGetExistingSelectorsComplete(
 
 SharedHighlightingPromo::SharedHighlightingPromo(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<SharedHighlightingPromo>(*web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 SharedHighlightingPromo::~SharedHighlightingPromo() = default;
 
@@ -72,5 +71,3 @@ bool SharedHighlightingPromo::HasTextFragment(std::string url) {
 
   return url.find(":~:text=") != std::string::npos;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SharedHighlightingPromo);

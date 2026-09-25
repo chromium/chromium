@@ -70,6 +70,7 @@ class SadTabHelper;
 class SearchEngineChoiceTabHelper;
 class SearchPromotionNavigationObserver;
 class SecurityStateEventObserver;
+class SharedHighlightingPromo;
 class SidePanelRegistry;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
@@ -705,6 +706,7 @@ class TabFeatures {
   std::unique_ptr<enterprise_reporting::SaasUsageNavigationObserver>
       saas_usage_navigation_observer_;
   std::unique_ptr<HatsHelper> hats_helper_;
+  std::unique_ptr<SharedHighlightingPromo> shared_highlighting_promo_;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)
