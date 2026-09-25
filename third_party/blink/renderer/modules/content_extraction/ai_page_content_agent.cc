@@ -1650,7 +1650,13 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
         should_redact_value = true;
       }
     }
-    if (!should_redact_value) {
+    // In Blink, `HTMLInputElement` subclasses `TextControlElement` for all
+    // input types. Skip `field_value` for checkboxes and radio buttons because
+    // their `Value()` is a form-submission identifier (defaulting to "on" even
+    // when unchecked) rather than user-entered text or checked state.
+    const bool is_checkable_input =
+        input_element && input_element->IsCheckable();
+    if (!is_checkable_input && !should_redact_value) {
       form_control_data->field_value =
           ReplaceUnpairedSurrogates(text_control_element->Value());
     }

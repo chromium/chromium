@@ -3277,8 +3277,7 @@ TEST_F(AIPageContentAgentTest, FormWithCheckbox) {
       "  <form name='vehicles'>"
       "    <input type='checkbox' id='vehicle1' name='vehicle1' value='Bike'>"
       "    <label for='vehicle1'>I have a bike</label><br>"
-      "    <input type='checkbox' id='vehicle2' name='vehicle2' value='Car' "
-      "     checked>"
+      "    <input type='checkbox' id='vehicle2' name='vehicle2' checked>"
       "    <label for='vehicle2'>I have a car</label><br>"
       "  </form>"
       "</body>",
@@ -3305,7 +3304,7 @@ TEST_F(AIPageContentAgentTest, FormWithCheckbox) {
   EXPECT_EQ(checkbox1.content_attributes->form_control_data->field_name,
             "vehicle1");
   EXPECT_EQ(checkbox1.content_attributes->form_control_data->field_value,
-            "Bike");
+            nullptr);
   EXPECT_FALSE(checkbox1.content_attributes->form_control_data->is_checked);
   EXPECT_EQ(checkbox1.children_nodes.size(), 0u);
 
@@ -3317,7 +3316,7 @@ TEST_F(AIPageContentAgentTest, FormWithCheckbox) {
   EXPECT_EQ(checkbox2.content_attributes->form_control_data->field_name,
             "vehicle2");
   EXPECT_EQ(checkbox2.content_attributes->form_control_data->field_value,
-            "Car");
+            nullptr);
   EXPECT_TRUE(checkbox2.content_attributes->form_control_data->is_checked);
   EXPECT_EQ(checkbox2.children_nodes.size(), 0u);
 
@@ -3331,8 +3330,7 @@ TEST_F(AIPageContentAgentTest, FormWithRadio) {
       "  <form name='vehicles'>"
       "    <input type='radio' id='vehicle1' name='vehicle1' value='Bike'>"
       "    <label for='vehicle1'>I have a bike</label><br>"
-      "    <input type='radio' id='vehicle2' name='vehicle2' value='Car' "
-      "     checked>"
+      "    <input type='radio' id='vehicle2' name='vehicle2' checked>"
       "    <label for='vehicle2'>I have a car</label><br>"
       "  </form>"
       "</body>",
@@ -3357,7 +3355,7 @@ TEST_F(AIPageContentAgentTest, FormWithRadio) {
   CheckFormControlNode(radio1, mojom::blink::FormControlType::kInputRadio);
   EXPECT_EQ(radio1.content_attributes->form_control_data->field_name,
             "vehicle1");
-  EXPECT_EQ(radio1.content_attributes->form_control_data->field_value, "Bike");
+  EXPECT_EQ(radio1.content_attributes->form_control_data->field_value, nullptr);
   EXPECT_EQ(radio1.content_attributes->redaction_decision,
             mojom::AIPageContentRedactionDecision::kNoRedactionNecessary);
   EXPECT_FALSE(radio1.content_attributes->form_control_data->is_checked);
@@ -3369,7 +3367,7 @@ TEST_F(AIPageContentAgentTest, FormWithRadio) {
   CheckFormControlNode(radio2, mojom::blink::FormControlType::kInputRadio);
   EXPECT_EQ(radio2.content_attributes->form_control_data->field_name,
             "vehicle2");
-  EXPECT_EQ(radio2.content_attributes->form_control_data->field_value, "Car");
+  EXPECT_EQ(radio2.content_attributes->form_control_data->field_value, nullptr);
   EXPECT_TRUE(radio2.content_attributes->form_control_data->is_checked);
   EXPECT_EQ(radio2.children_nodes.size(), 0u);
 
