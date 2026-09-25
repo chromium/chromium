@@ -140,6 +140,61 @@ TEST_F(InspectorHighlightTest, BuildSnapContainerInfoSnapAreas) {
                         expected_container);
 }
 
+TEST_F(InspectorHighlightTest, BuildSnapContainerInfoPairSnapAreas) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #snap {
+        background-color: white;
+        scroll-snap-type: pair mandatory;
+        overflow: scroll;
+        width: 150px;
+        height: 150px;
+      }
+      #snap > div {
+        width: 75px;
+        height: 75px;
+        margin: 10px;
+        padding: 10px;
+      }
+      .both {
+        scroll-snap-align: center;
+      }
+      .block-only {
+        scroll-snap-align: center none;
+      }
+    </style>
+    <div id="snap"><div class="both">A</div><div class="block-only">B</div></div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  Element* container = GetDocument().getElementById(AtomicString("snap"));
+  auto info = BuildSnapContainerInfo(container);
+  EXPECT_TRUE(info);
+
+  EXPECT_EQ(2u, info->getArray("snapAreas")->size());
+  protocol::ErrorSupport errors;
+  std::string expected_container = R"JSON(
+    {
+      "snapport":["M",8,8,"L",158,8,"L",158,158,"L",8,158,"Z"],
+      "paddingBox":["M",8,8,"L",158,8,"L",158,158,"L",8,158,"Z"],
+      "snapAreas": [
+        {
+          "path":["M",18,18,"L",113,18,"L",113,113,"L",18,113,"Z"],
+          "borderBox":["M",18,18,"L",113,18,"L",113,113,"L",18,113,"Z"],
+          "alignBlock":"center",
+          "alignInline":"center"
+        },
+        {
+          "path":["M",18,123,"L",113,123,"L",113,218,"L",18,218,"Z"],
+          "borderBox":["M",18,123,"L",113,123,"L",113,218,"L",18,218,"Z"]
+        }
+      ]
+    }
+  )JSON";
+  AssertValueEqualsJSON(protocol::ValueConversions<protocol::Value>::fromValue(
+                            info.get(), &errors),
+                        expected_container);
+}
+
 TEST_F(InspectorHighlightTest, BuildSnapContainerInfoTopLevelSnapAreas) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>

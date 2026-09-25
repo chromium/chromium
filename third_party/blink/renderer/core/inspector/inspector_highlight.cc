@@ -729,14 +729,17 @@ void BuildSnapAlignment(const cc::ScrollSnapType& snap_type,
                         const cc::SnapAlignment& alignment_block,
                         const cc::SnapAlignment& alignment_inline,
                         std::unique_ptr<protocol::DictionaryValue>& result) {
+  const bool is_valid_pair = snap_type.axis == cc::SnapAxis::kPair &&
+                             alignment_block != cc::SnapAlignment::kNone &&
+                             alignment_inline != cc::SnapAlignment::kNone;
   if (snap_type.axis == cc::SnapAxis::kBlock ||
       snap_type.axis == cc::SnapAxis::kBoth ||
-      snap_type.axis == cc::SnapAxis::kY) {
+      snap_type.axis == cc::SnapAxis::kY || is_valid_pair) {
     result->setString("alignBlock", SnapAlignToString(alignment_block));
   }
   if (snap_type.axis == cc::SnapAxis::kInline ||
       snap_type.axis == cc::SnapAxis::kBoth ||
-      snap_type.axis == cc::SnapAxis::kX) {
+      snap_type.axis == cc::SnapAxis::kX || is_valid_pair) {
     result->setString("alignInline", SnapAlignToString(alignment_inline));
   }
 }
