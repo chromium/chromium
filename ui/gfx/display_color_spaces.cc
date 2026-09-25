@@ -200,9 +200,9 @@ void DisplayColorSpaces::ToStrings(
   while (i != kConfigCount) {
     // Keep growing the interval [i, j) until entry j is different, or past the
     // end.
-    if (UNSAFE_TODO(color_spaces_[i]) == UNSAFE_TODO(color_spaces_[j]) &&
-        UNSAFE_TODO(formats_[i]) == UNSAFE_TODO(formats_[j]) &&
-        j != kConfigCount) {
+    if (j != kConfigCount &&
+        UNSAFE_TODO(color_spaces_[i]) == UNSAFE_TODO(color_spaces_[j]) &&
+        UNSAFE_TODO(formats_[i]) == UNSAFE_TODO(formats_[j])) {
       j += 1;
       continue;
     }
