@@ -640,7 +640,7 @@ void QuicSessionPool::QuicCryptoClientConfigOwner::OnMemoryPressure(
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     // The memory pressure level might have changed, which potentially changed
     // the memory limit. Enforce the new limit.
-    session_cache->UpdateMaxSize(max_cache_entries_ * GetMemoryLimitRatio());
+    session_cache->UpdateMaxSize(GetMemoryLimit().Scale(max_cache_entries_));
     return;
   }
 

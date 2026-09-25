@@ -26,7 +26,7 @@ namespace base {
 
 namespace {
 
-int GetMemoryLimitForMemoryPressureLevel(MemoryPressureLevel level) {
+MemoryLimit GetMemoryLimitForMemoryPressureLevel(MemoryPressureLevel level) {
   switch (level) {
     case MEMORY_PRESSURE_LEVEL_NONE:
       return kNoMemoryPressureThreshold;
@@ -72,13 +72,9 @@ void MemoryPressureListener::SimulatePressureNotificationAsync(
       memory_pressure_level, std::move(on_notification_sent_callback));
 }
 
-int MemoryPressureListener::GetMemoryLimit() const {
+MemoryLimit MemoryPressureListener::GetMemoryLimit() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetMemoryLimitForMemoryPressureLevel(memory_pressure_level_);
-}
-
-double MemoryPressureListener::GetMemoryLimitRatio() const {
-  return GetMemoryLimit() / 100.0;
 }
 
 void MemoryPressureListener::SetInitialMemoryPressureLevel(
