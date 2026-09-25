@@ -45,6 +45,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class PhysicalDisplayAndroidTest {
@@ -94,8 +95,15 @@ public class PhysicalDisplayAndroidTest {
     private static final int DEFAULT_BITS_PER_PIXEL = 24;
     private static final int DEFAULT_BITS_PER_COMPONENT = 8;
 
+    // From CINNAMON_BUN, PhysicalDisplayAndroid reads Display#getFrameRateVelocityMapping(), which
+    // the mocked Display answers with an empty list.
     private static final DisplayAndroid.AdaptiveRefreshRateInfo DEFAULT_ADAPTIVE_REFRESH_RATE_INFO =
-            new DisplayAndroid.AdaptiveRefreshRateInfo(false, 0.0f, null);
+            new DisplayAndroid.AdaptiveRefreshRateInfo(
+                    false,
+                    0.0f,
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN
+                            ? Collections.emptyList()
+                            : null);
 
     private static final boolean DEFAULT_IS_WIDE_COLOR_GAMUT = false;
     private static final boolean DEFAULT_DISPLAY_IS_HDR = false;
