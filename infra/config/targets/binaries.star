@@ -1846,6 +1846,25 @@ targets.binaries.generated_script(
     module_scheme = "webtest",
 )
 
+# Same as chrome_ai_wpt_tests, but downloads a pre-built chrome at runtime
+# instead of building one, so it can run on bots that don't build chrome.
+targets.binaries.generated_script(
+    name = "chrome_ai_wpt_tests_light",
+    label = "//components/optimization_guide/internal/testing:chrome_ai_wpt_tests_light",
+    results_handler = "layout tests",
+    args = [
+        "--results-directory",
+        "${ISOLATED_OUTDIR}",
+    ],
+    merge = targets.merge(
+        script = "//third_party/blink/tools/merge_web_test_results.py",
+        args = [
+            "--verbose",
+        ],
+    ),
+    module_scheme = "webtest",
+)
+
 targets.binaries.generated_script(
     name = "one_time_tokens_junit_tests",
     label = "//components/one_time_tokens/android/backend/sms:one_time_tokens_junit_tests",

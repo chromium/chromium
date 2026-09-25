@@ -497,6 +497,15 @@
       "${ISOLATED_OUTDIR}",
     ],
   },
+  "chrome_ai_wpt_tests_light": {
+    "label": "//components/optimization_guide/internal/testing:chrome_ai_wpt_tests_light",
+    "type": "generated_script",
+    "module_scheme": "webtest",
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
+  },
   "chrome_all_tast_tests": {
     "label": "//chromeos:chrome_all_tast_tests",
     "type": "generated_script",
