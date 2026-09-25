@@ -1,0 +1,75 @@
+<style>
+    a {
+        display: inline-block;
+        padding: 20px 30px;
+        margin: 5px;
+        font-size: 16px;
+        background: #eee;
+        border: 1px solid #ccc;
+    }
+    br {
+        display: none;
+    }
+</style>
+<p>This page launches pop-ups with different parameters depending on what is clicked.</p>
+<a id="link_open_popup" href="javascript:openPopupWindow()">Open a basic pop-up</a>
+<br/>
+<a id="link_open_popup_bounds" href="javascript:openPopupWindowWithBounds()">Open a pop-up with launch bounds</a>
+<br/>
+<a id="link_open_popup_small_bounds" href="javascript:window.open('navigate/simple.html', '', 'left=50, top=60, width=100, height=100')">Open a pop-up with small launch bounds</a>
+<br/>
+<a id="link_open_popup_medium_bounds" href="javascript:window.open('navigate/simple.html', '', 'left=50, top=60, width=220, height=220')">Open a pop-up with medium launch bounds</a>
+<br/>
+<a id="link_close_popup" href="javascript:closePopupWindow()">Close the pop-up</a>
+<br/>
+<a id="link_focus_popup" href="javascript:focusPopupWindow()">Focus the pop-up</a>
+<br/>
+<a id="link_move_popup_to" href="javascript:movePopupWindowTo()">Move the pop-up to (75, 75)</a>
+<br/>
+<a id="link_move_popup_by" href="javascript:movePopupWindowBy()">Move the pop-up by (30, -20)</a>
+<br/>
+<a id="link_resize_popup_to" href="javascript:resizePopupWindowTo()">Resize the pop-up to (420, 380)</a>
+<br/>
+<a id="link_resize_popup_to_small_bounds" href="javascript:resizePopupWindowToSmallBounds()">Resize the pop-up to (100, 100)</a>
+<br/>
+<a id="link_resize_popup_by" href="javascript:resizePopupWindowBy()">Resize the pop-up by (-15, 35)</a>
+
+<script>
+    let basicPopupWindow = null;
+
+    function openPopupWindow() {
+        basicPopupWindow = window.open('navigate/simple.html', '', 'popup');
+    }
+
+    function openPopupWindowWithBounds() {
+        basicPopupWindow = window.open('navigate/simple.html', '', 'left=100, top=100, width=300, height=300');
+    }
+
+    function closePopupWindow() {
+        basicPopupWindow.close();
+    }
+
+    function focusPopupWindow() {
+        basicPopupWindow.focus();
+    }
+
+    function movePopupWindowTo() {
+        basicPopupWindow.moveTo(75, 75);
+    }
+
+    function movePopupWindowBy() {
+        basicPopupWindow.moveBy(30, -20);
+    }
+
+    function resizePopupWindowTo() {
+        basicPopupWindow.resizeTo(420, 380);
+    }
+
+    function resizePopupWindowToSmallBounds() {
+        basicPopupWindow.resizeTo(100, 100);
+    }
+
+    function resizePopupWindowBy() {
+        basicPopupWindow.resizeBy(-15, 35);
+    }
+</script>
