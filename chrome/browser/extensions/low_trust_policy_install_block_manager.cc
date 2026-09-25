@@ -9,13 +9,18 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -95,9 +100,6 @@ LowTrustPolicyInstallBlockManager::LowTrustPolicyInstallBlockManager(
   CHECK(context_);
   extension_management_observation_.Observe(&extension_management_.get());
 
-  // Policy-blocked extensions must be uninstalled once installed extensions
-  // are loaded into memory on startup.
-  //
   // ExtensionSystem cannot be retrieved synchronously here because
   // ChromeExtensionSystemSharedFactory depends on ExtensionManagementFactory.
   // Querying ExtensionSystem while ExtensionManagement is still being
@@ -106,26 +108,103 @@ LowTrustPolicyInstallBlockManager::LowTrustPolicyInstallBlockManager(
   // construction finishes.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LowTrustPolicyInstallBlockManager::
-                                    UninstallBlockedExtensionsWhenReady,
+                                    CleanupBlockedCacheAndExtensionsWhenReady,
                                 weak_factory_.GetWeakPtr()));
 }
 
-LowTrustPolicyInstallBlockManager::~LowTrustPolicyInstallBlockManager() =
-    default;
+LowTrustPolicyInstallBlockManager::~LowTrustPolicyInstallBlockManager() {
+  if (observing_policy_service_) {
+    policy_service()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+  }
+}
 
-void LowTrustPolicyInstallBlockManager::UninstallBlockedExtensionsWhenReady() {
-  // ExtensionSystem::ready() indicates that all installed extensions have
-  // been loaded into memory from disk, at which point the installed
-  // extensions can be inspected and uninstalled if they violate policy.
+void LowTrustPolicyInstallBlockManager::
+    CleanupBlockedCacheAndExtensionsWhenReady() {
+  // Wait for ExtensionSystem::ready() so that all installed extensions are
+  // loaded into memory before inspecting and uninstalling policy-blocked
+  // extensions. This also triggers blocked cache cleanup (which will defer
+  // further if PolicyService has not yet finished initializing).
   ExtensionSystem::Get(context_)->ready().Post(
-      FROM_HERE,
-      base::BindOnce(
-          &LowTrustPolicyInstallBlockManager::UninstallBlockedExtensions,
-          weak_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&LowTrustPolicyInstallBlockManager::
+                                    OnExtensionManagementSettingsChanged,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void LowTrustPolicyInstallBlockManager::OnExtensionManagementSettingsChanged() {
+  // Uninstall blocked extensions first so that if an extension's policy was
+  // removed at the same time as a low-trust transition, any cache entry added
+  // during uninstallation is immediately evicted below.
   UninstallBlockedExtensions();
+  CleanupRemovedPolicyRecords();
+}
+
+void LowTrustPolicyInstallBlockManager::OnPolicyUpdated(
+    const policy::PolicyNamespace& ns,
+    const policy::PolicyMap& previous,
+    const policy::PolicyMap& current) {}
+
+void LowTrustPolicyInstallBlockManager::OnPolicyServiceInitialized(
+    policy::PolicyDomain domain) {
+  CHECK_EQ(domain, policy::POLICY_DOMAIN_CHROME);
+  CHECK(observing_policy_service_);
+  policy_service()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+  observing_policy_service_ = false;
+  CleanupRemovedPolicyRecords();
+}
+
+void LowTrustPolicyInstallBlockManager::CleanupRemovedPolicyRecords() {
+  base::flat_map<ExtensionId, BlockedExtensionInfo> blocked_extensions =
+      GetAllBlocked();
+  if (blocked_extensions.empty()) {
+    return;
+  }
+
+  // Wait until Chrome browser policies (`ExtensionSettings` and
+  // `ExtensionInstallForcelist`) have finished loading before evicting entries
+  // missing from `extension_management_`. On the synchronous profile startup
+  // path (`CreateMode::kSynchronous`), `ExtensionSystem::ready()` can be
+  // signaled before asynchronous policy providers complete initialization;
+  // `OnPolicyServiceInitialized()` will re-invoke this method once
+  // `POLICY_DOMAIN_CHROME` is ready.
+  if (!policy_service()->IsInitializationComplete(
+          policy::POLICY_DOMAIN_CHROME)) {
+    if (!observing_policy_service_) {
+      policy_service()->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+      observing_policy_service_ = true;
+    }
+    return;
+  }
+
+  std::vector<ExtensionId> removed_ids;
+  for (const auto& [id, info] : blocked_extensions) {
+    // Note: If an ID-based policy's update URL changes,
+    // `IsForcedOrRecommendedInstallConfigured` will still return true
+    // (matching by ID), so the cache entry is retained with the old update
+    // URL. This is safe because metrics will still resolve the mode by ID,
+    // and the entry will be cleared if the policy is removed entirely.
+    if (!extension_management_->IsForcedOrRecommendedInstallConfigured(
+            id, info.update_url)) {
+      removed_ids.push_back(id);
+    }
+  }
+
+  if (removed_ids.empty()) {
+    return;
+  }
+
+  ScopedDictPrefUpdate update(&pref_service_.get(),
+                              kBlockedLowTrustPolicyExtensions);
+  for (const auto& id : removed_ids) {
+    // Querying ExtensionManagement above may lazily load deferred settings and
+    // re-entrantly invoke this method, so verify the entry was still present
+    // before logging its removal.
+    if (update->Remove(id)) {
+      LOG_POLICY(INFO, POLICY_PROCESSING)
+          << "[BlockLowTrustExtension] Cleared blocked cache entry for "
+             "extension "
+          << id << ": Enterprise policy is no longer configured.";
+    }
+  }
 }
 
 void LowTrustPolicyInstallBlockManager::UninstallBlockedExtensions() {
@@ -245,6 +324,25 @@ size_t LowTrustPolicyInstallBlockManager::CleanupStaleRecords() {
 // static
 base::TimeDelta LowTrustPolicyInstallBlockManager::GetTTLForTesting() {
   return kLowTrustBlockTTL;
+}
+
+void LowTrustPolicyInstallBlockManager::SetPolicyServiceForTesting(
+    policy::PolicyService* policy_service) {
+  if (observing_policy_service_) {
+    this->policy_service()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+    observing_policy_service_ = false;
+  }
+  policy_service_for_testing_ = policy_service;
+}
+
+policy::PolicyService* LowTrustPolicyInstallBlockManager::policy_service()
+    const {
+  if (policy_service_for_testing_) {
+    return policy_service_for_testing_;
+  }
+  return Profile::FromBrowserContext(context_)
+      ->GetProfilePolicyConnector()
+      ->policy_service();
 }
 
 }  // namespace extensions

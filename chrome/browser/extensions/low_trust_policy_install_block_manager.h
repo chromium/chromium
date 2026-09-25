@@ -15,6 +15,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_service.h"
 #include "extensions/common/extension_id.h"
 
 class PrefService;
@@ -41,7 +43,9 @@ struct BlockedExtensionInfo {
 //
 // Owned by `ExtensionManagement` as a per-profile component whose lifecycle is
 // bound to the associated `Profile`.
-class LowTrustPolicyInstallBlockManager : public ExtensionManagement::Observer {
+class LowTrustPolicyInstallBlockManager
+    : public ExtensionManagement::Observer,
+      public policy::PolicyService::Observer {
  public:
   // Registers the profile dictionary preference for tracking policy extensions
   // blocked in low-trust environments.
@@ -59,6 +63,12 @@ class LowTrustPolicyInstallBlockManager : public ExtensionManagement::Observer {
 
   // ExtensionManagement::Observer:
   void OnExtensionManagementSettingsChanged() override;
+
+  // policy::PolicyService::Observer:
+  void OnPolicyUpdated(const policy::PolicyNamespace& ns,
+                       const policy::PolicyMap& previous,
+                       const policy::PolicyMap& current) override;
+  void OnPolicyServiceInitialized(policy::PolicyDomain domain) override;
 
   // Records an enterprise policy extension installation as blocked by low
   // trust in preferences, saving its metadata and timestamp for TTL expiration
@@ -88,17 +98,28 @@ class LowTrustPolicyInstallBlockManager : public ExtensionManagement::Observer {
   // Provided for unit testing TTL eviction behavior.
   static base::TimeDelta GetTTLForTesting();
 
+  void SetPolicyServiceForTesting(policy::PolicyService* policy_service);
+
  private:
   // Subscribes to ExtensionSystem::ready() once ExtensionManagement
   // construction completes. When ExtensionSystem signals that all installed
   // extensions are loaded into memory, this triggers
-  // UninstallBlockedExtensions() to clean up extensions that violate policy.
-  void UninstallBlockedExtensionsWhenReady();
+  // OnExtensionManagementSettingsChanged() to purge blocked cache entries for
+  // policies that no longer exist and uninstall extensions that violate policy.
+  void CleanupBlockedCacheAndExtensionsWhenReady();
+
+  // Scans the blocked cache and removes entries for extensions that are no
+  // longer configured as forced or recommended installs in enterprise policy.
+  // Runs unconditionally (even when blocking is inactive) to maintain cache
+  // hygiene when policies are removed.
+  void CleanupRemovedPolicyRecords();
 
   // Uninstalls policy-installed DSE and NTP override extensions when running
   // in a low-trust environment to protect consumer devices from persistent
   // overrides after trust is lost, and records them in the blocked cache.
   void UninstallBlockedExtensions();
+
+  policy::PolicyService* policy_service() const;
 
   // Associated browser context. Guaranteed to be non-null and to outlive this
   // object.
@@ -110,6 +131,9 @@ class LowTrustPolicyInstallBlockManager : public ExtensionManagement::Observer {
   // Reference to the owning ExtensionManagement instance. Guaranteed to outlive
   // this object because this manager is owned exclusively by it.
   const raw_ref<ExtensionManagement> extension_management_;
+
+  raw_ptr<policy::PolicyService> policy_service_for_testing_ = nullptr;
+  bool observing_policy_service_ = false;
 
   base::ScopedObservation<ExtensionManagement, ExtensionManagement::Observer>
       extension_management_observation_{this};

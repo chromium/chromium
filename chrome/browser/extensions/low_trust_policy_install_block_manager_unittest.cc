@@ -7,20 +7,26 @@
 #include <memory>
 
 #include "base/json/values_util.h"
+#include "base/one_shot_event.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/test_extension_prefs.h"
 #include "extensions/common/extension_builder.h"
@@ -197,19 +203,138 @@ TEST_F(LowTrustPolicyInstallBlockManagerTest, CleanupStaleRecords) {
   EXPECT_TRUE(manager()->IsBlocked(kFreshId));
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 class LowTrustPolicyInstallBlockManagerServiceTest
     : public ExtensionServiceTestBase {
  protected:
+  static constexpr char kRetainedId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  static constexpr char kRemovedId[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+  static constexpr char kUpdateUrl[] =
+      "https://clients2.google.com/service/update2/crx";
+
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
+    policy_provider()->SetDefaultReturns(
+        /*is_initialization_complete_return=*/false,
+        /*is_first_policy_load_complete_return=*/false);
     ExtensionServiceInitParams params;
     params.prefs_content = "{}";
     params.autoupdate_enabled = false;
     InitializeExtensionService(std::move(params));
+    block_manager()->SetPolicyServiceForTesting(policy_service());
+  }
+
+  LowTrustPolicyInstallBlockManager* block_manager() {
+    return ExtensionManagementFactory::GetForBrowserContext(profile())
+        ->low_trust_block_manager();
+  }
+
+  void SeedBlockedCacheEntries() {
+    block_manager()->MarkBlocked(
+        kRetainedId,
+        BlockedExtensionInfo{.override_type = util::DseNtpOverrideType::kDse,
+                             .update_url = kUpdateUrl,
+                             .timestamp = base::Time::Now()});
+    block_manager()->MarkBlocked(
+        kRemovedId,
+        BlockedExtensionInfo{.override_type = util::DseNtpOverrideType::kNtp,
+                             .update_url = kUpdateUrl,
+                             .timestamp = base::Time::Now()});
+    ASSERT_TRUE(block_manager()->IsBlocked(kRetainedId));
+    ASSERT_TRUE(block_manager()->IsBlocked(kRemovedId));
+  }
+
+  void SetForceInstallPolicy(const ExtensionId& extension_id,
+                             const std::string& update_url) {
+    policy_provider()->SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::PolicyMap policies;
+    base::ListValue forcelist;
+    forcelist.Append(extension_id + ";" + update_url);
+    policies.Set(policy::key::kExtensionInstallForcelist,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_PLATFORM,
+                 base::Value(std::move(forcelist)),
+                 /*external_data_fetcher=*/nullptr);
+    policy_provider()->UpdateChromePolicy(policies);
   }
 };
 
+// Verifies that when an enterprise policy is updated at runtime to remove a
+// previously blocked extension, LowTrustPolicyInstallBlockManager observes the
+// ExtensionManagement update and evicts the removed extension from the blocked
+// cache while retaining extensions that remain configured in policy.
+TEST_F(LowTrustPolicyInstallBlockManagerServiceTest,
+       LowTrustPolicyRemovalCleanup) {
+  SeedBlockedCacheEntries();
+
+  // Configure force-install policy for kRetainedId only (simulating removal of
+  // kRemovedId). Updating the managed pref triggers
+  // ExtensionManagement::Refresh(), which notifies
+  // LowTrustPolicyInstallBlockManager::OnExtensionManagementSettingsChanged().
+  SetForceInstallPolicy(kRetainedId, kUpdateUrl);
+
+  EXPECT_TRUE(block_manager()->IsBlocked(kRetainedId));
+  EXPECT_FALSE(block_manager()->IsBlocked(kRemovedId));
+}
+
+// Verifies that when the browser starts up with persisted entries in the
+// low-trust blocked cache from a previous session and policies are already
+// loaded, LowTrustPolicyInstallBlockManager evicts entries whose enterprise
+// policies are no longer configured once ExtensionSystem::ready() is signaled.
+TEST_F(LowTrustPolicyInstallBlockManagerServiceTest,
+       LowTrustPolicyRemovalStartupCleanup) {
+  // Simulate a profile starting up where PolicyService has already loaded
+  // kRetainedId, while the persisted blocked cache still holds both kRetainedId
+  // and kRemovedId prior to ExtensionService::Init() signaling
+  // ExtensionSystem::ready().
+  SetForceInstallPolicy(kRetainedId, kUpdateUrl);
+  SeedBlockedCacheEntries();
+  ASSERT_FALSE(ExtensionSystem::Get(profile())->ready().is_signaled());
+
+  // Initialize ExtensionService so ExtensionSystem::ready() fires and runs the
+  // deferred startup cleanup callback queued by `block_manager()`.
+  service()->Init();
+  base::RunLoop run_loop;
+  ExtensionSystem::Get(profile())->ready().Post(FROM_HERE,
+                                                run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(block_manager()->IsBlocked(kRetainedId));
+  EXPECT_FALSE(block_manager()->IsBlocked(kRemovedId));
+}
+
+// Verifies that if ExtensionSystem::ready() is signaled before PolicyService
+// finishes initializing POLICY_DOMAIN_CHROME, LowTrustPolicyInstallBlockManager
+// does not prematurely evict blocked cache entries and instead waits until
+// OnPolicyServiceInitialized() fires.
+TEST_F(LowTrustPolicyInstallBlockManagerServiceTest,
+       LowTrustPolicyRemovalDelayedPolicyInitCleanup) {
+  SeedBlockedCacheEntries();
+  ASSERT_FALSE(ExtensionSystem::Get(profile())->ready().is_signaled());
+
+  // Initialize ExtensionService so ExtensionSystem::ready() fires while
+  // PolicyService is still uninitialized. Neither entry should be prematurely
+  // evicted before Chrome-domain policies finish loading.
+  service()->Init();
+  base::RunLoop run_loop;
+  ExtensionSystem::Get(profile())->ready().Post(FROM_HERE,
+                                                run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(block_manager()->IsBlocked(kRetainedId));
+  EXPECT_TRUE(block_manager()->IsBlocked(kRemovedId));
+
+  // Complete PolicyService initialization with only kRetainedId configured in
+  // policy. OnPolicyServiceInitialized() should evict kRemovedId while
+  // retaining kRetainedId.
+  SetForceInstallPolicy(kRetainedId, kUpdateUrl);
+
+  EXPECT_TRUE(block_manager()->IsBlocked(kRetainedId));
+  EXPECT_FALSE(block_manager()->IsBlocked(kRemovedId));
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Tests that when a policy-installed extension overriding the New Tab Page is
 // present on a managed machine, transitioning to an unmanaged (low trust)
 // environment uninstalls the extension and marks it in the low-trust blocked
@@ -235,6 +360,7 @@ TEST_F(LowTrustPolicyInstallBlockManagerServiceTest,
           )")
           .Build();
 
+  SetForceInstallPolicy(extension->id(), kUpdateUrl);
   registrar()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(),
                                     kInstallFlagInstallImmediately);
 
@@ -249,16 +375,13 @@ TEST_F(LowTrustPolicyInstallBlockManagerServiceTest,
 
   // Trigger low-trust uninstallation of active policy-installed settings
   // override extensions via the ExtensionManagement::Observer callback.
-  LowTrustPolicyInstallBlockManager* block_manager =
-      ExtensionManagementFactory::GetForBrowserContext(profile())
-          ->low_trust_block_manager();
-  block_manager->OnExtensionManagementSettingsChanged();
+  block_manager()->OnExtensionManagementSettingsChanged();
 
   // When management trust is lost, active policy-installed settings-override
   // extensions must be uninstalled to restore user control, and their IDs must
   // be cached in the low-trust blocked manager to prevent subsequent installs.
   EXPECT_FALSE(registry()->GetInstalledExtension(extension->id()));
-  EXPECT_TRUE(block_manager->IsBlocked(extension->id()));
+  EXPECT_TRUE(block_manager()->IsBlocked(extension->id()));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
