@@ -1114,6 +1114,27 @@
     "expires": "Feb 1, 2027"
   },
   {
+    "prefix": "fedcm-delegation",
+    "owners": [
+      "ryqin@chromium.org",
+      "web-identity-eng@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fedcm/fedcm-delegation/"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=EmailVerificationProtocol,FedCmPreservePortsForTesting",
+      "--dns-txt-resolver-url-prefix=https://web-platform.test:8444/fedcm/support/delegation-dns.py?name="
+    ],
+    "expires": "Feb 1, 2027"
+  },
+  {
     "prefix": "fedcm-navigation-interception",
     "platforms": [
       "Linux",

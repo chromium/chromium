@@ -33,6 +33,9 @@ external/wpt/ai/translator/*
 external/wpt/storage-access-api/*
 external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
 
+# Email Verification Protocol relies on the `//chrome` Autofill layer.
+external/wpt/fedcm/fedcm-delegation/*
+virtual/fedcm-delegation/external/wpt/fedcm/fedcm-delegation/*
 
 # Device Bound Session Credentials relies on the `//chrome` layer.
 external/wpt/device-bound-session-credentials/*

@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -79,8 +80,15 @@ void DnsRequest::SendRequest(const std::string& hostname,
     return;
   }
 
-  const std::string& prefix =
-      GetContentClient()->browser()->GetDnsTxtResolverUrlPrefix();
+  static constexpr char kDnsTxtResolverUrlPrefixSwitch[] =
+      "dns-txt-resolver-url-prefix";
+  std::string prefix;
+  const base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  if (cmd->HasSwitch(kDnsTxtResolverUrlPrefixSwitch)) {
+    prefix = cmd->GetSwitchValueASCII(kDnsTxtResolverUrlPrefixSwitch);
+  } else {
+    prefix = GetContentClient()->browser()->GetDnsTxtResolverUrlPrefix();
+  }
   if (prefix.empty()) {
     std::move(callback).Run(std::nullopt);
     return;
