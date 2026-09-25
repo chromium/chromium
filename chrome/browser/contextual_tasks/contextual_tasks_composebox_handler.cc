@@ -695,6 +695,20 @@ void ContextualTasksComposeboxHandler::CacheSubmittedTabsFromSessionHandle() {
       !IsContextualSearchTabSharingEligible()) {
     return;
   }
+#if !BUILDFLAG(IS_ANDROID)
+  if (visual_selection_token_.has_value()) {
+    return;
+  }
+  if (auto* controller = GetLensSearchController()) {
+    if (controller->lens_overlay_controller()->HasRegionSelection() &&
+        controller->query_router() &&
+        controller->query_router()
+            ->overlay_tab_context_file_token()
+            .has_value()) {
+      return;
+    }
+  }
+#endif
   auto* session_handle = GetContextualSessionHandle();
   if (!session_handle) {
     return;

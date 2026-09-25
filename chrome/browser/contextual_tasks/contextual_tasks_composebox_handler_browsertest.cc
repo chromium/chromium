@@ -4258,6 +4258,46 @@ IN_PROC_BROWSER_TEST_F(
   mock_ui_->SetSessionHandle(nullptr);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
+    CacheSubmittedTabs_SkippedWhenLensVisualSelectionActive) {
+  SetUpHandler();
+  ASSERT_NE(handler_, nullptr);
+  searchbox_page_receiver_.FlushForTesting();
+
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  contextual_search::FileInfo tab_info;
+  tab_info.tab_url = GURL("https://example.com");
+  tab_info.tab_title = "Example";
+  tab_info.tab_session_id = SessionID::FromSerializedValue(42);
+  tab_info.mime_type = lens::MimeType::kHtml;
+  tab_info.selection_time = base::Time::Now();
+  EXPECT_CALL(*mock_session, GetSubmittedContextFileInfos())
+      .WillRepeatedly(
+          testing::Return(std::vector<contextual_search::FileInfo>{tab_info}));
+  ON_CALL(*mock_session, GetController())
+      .WillByDefault(testing::Return(mock_controller_.get()));
+  mock_ui_->SetSessionHandle(mock_session.get());
+
+  base::UnguessableToken overlay_token = base::UnguessableToken::Create();
+  EXPECT_CALL(*mock_lens_controller_->mock_router(),
+              overlay_tab_context_file_token())
+      .WillRepeatedly(testing::Return(overlay_token));
+
+  // Simulate an active Lens visual selection thumbnail in the composebox.
+  handler_->OnLensThumbnailCreated("data:image/png;base64,DATA");
+
+  // Re-initializing input state while a Lens visual selection is active should
+  // not convert the tab into a restored tab.
+  EXPECT_CALL(mock_searchbox_page_, SetAimThreadRestoredTabs(testing::_))
+      .Times(0);
+  handler_->InitializeInputStateModel();
+  searchbox_page_receiver_.FlushForTesting();
+
+  mock_ui_->SetSessionHandle(nullptr);
+}
+
 class ContextualTasksComposeboxHandlerSmartTabSharingTest
     : public ContextualTasksComposeboxHandlerTest {
  public:

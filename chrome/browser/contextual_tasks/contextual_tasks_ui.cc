@@ -110,6 +110,8 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #else
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_query_flow_router.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
@@ -1271,6 +1273,21 @@ void ContextualTasksUI::OnContextRetrievedForActiveTab(
   bool is_tab_already_in_context =
       context &&
       context->ContainsURL(last_committed_url, url_duplication_helper.get());
+#if !BUILDFLAG(IS_ANDROID)
+  if (is_tab_already_in_context) {
+    if (auto* controller =
+            LensSearchController::FromTabWebContents(tab->GetContents())) {
+      if (controller->lens_overlay_controller() &&
+          controller->lens_overlay_controller()->HasRegionSelection() &&
+          controller->query_router() &&
+          controller->query_router()
+              ->overlay_tab_context_file_token()
+              .has_value()) {
+        is_tab_already_in_context = false;
+      }
+    }
+  }
+#endif
   if (!is_tab_already_in_context && composebox_handler_) {
     const auto* current_suggestion =
         auto_suggestion_manager_->GetCurrentSuggestion();
