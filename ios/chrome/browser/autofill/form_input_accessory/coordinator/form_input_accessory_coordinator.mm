@@ -1126,7 +1126,7 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
                         IDS_IOS_AUTOFILL_AI_REMOVE_SNACKBAR_TITLE)];
   message.action = action;
 
-  [snackbarHandler showSnackbarMessage:message];
+  [snackbarHandler showSnackbarMessageAfterDismissingKeyboard:message];
 }
 
 // Resets suggestions in the form input accessory mediator.
