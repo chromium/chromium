@@ -109,14 +109,30 @@
   width: 16px;
 }
 
-/* Middle column: Voice Name (min-width: 0 enables ellipsis truncation) */
+/* Middle column: the voice's identity (title and description). */
+.voice-text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+  padding-inline: 8px;
+}
+
 .voice-name {
   color: var(--color-sys-on-surface, var(--cr-primary-text-color));
-  flex-grow: 1;
   font-size: 13px;
-  min-width: 0;
+  line-height: 20px;
   overflow: hidden;
-  padding-inline: 8px;
+  text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.voice-description {
+  color: var(--color-sys-on-surface-variant, var(--cr-secondary-text-color));
+  font-size: 11px;
+  line-height: 16px;
+  overflow: hidden;
   text-align: start;
   text-overflow: ellipsis;
   white-space: nowrap;

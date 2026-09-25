@@ -49,7 +49,7 @@ export function getHtml(this: VoiceSelectionDialogElement) {
           <cr-radio-button
               class="voice-row label-first"
               hide-label-text
-              label="${this.voiceLabel_(voiceItem.title)}"
+              label="${this.voiceLabel_(this.voiceDisplayName_(voiceItem))}"
               name="${voiceItem.voice.name}"
               data-test-id="${voiceItem.id}">
             <div class="voice-row-content">
@@ -79,8 +79,18 @@ export function getHtml(this: VoiceSelectionDialogElement) {
                 </span>
               </div>
 
-              <!-- CENTER: Voice Name -->
-              <span class="voice-name">${voiceItem.title}</span>
+              <!-- CENTER: Voice identity: The nature name and the voice
+                   description. -->
+              <div class="voice-text">
+                <span class="voice-name" aria-hidden="true"
+                    lang="${this.voiceLang_(voiceItem)}">${
+                    this.voiceDisplayName_(voiceItem)}</span>
+                ${voiceItem.natureNaming ? html`
+                  <span class="voice-description"
+                      lang="${voiceItem.voice.lang}">${
+                      voiceItem.natureNaming.description}</span>
+                ` : ''}
+              </div>
             </div>
           </cr-radio-button>
         `)}

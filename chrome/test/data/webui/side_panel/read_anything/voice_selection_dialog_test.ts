@@ -10,7 +10,7 @@ import type {CrRadioButtonElement} from '//resources/cr_elements/cr_radio_button
 import type {CrRadioGroupElement} from '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {VoiceSelectionDialogElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AudioBrowserProxyImpl, ReadAloudSettingsChange, spinnerDebounceTimeout, stringToHtmlTestId, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, getVoiceNatureNaming, ReadAloudSettingsChange, spinnerDebounceTimeout, stringToHtmlTestId, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -29,6 +29,12 @@ suite('VoiceSelectionDialog', () => {
       createSpeechSynthesisVoice({name: 'Google US English', lang: 'en-US'});
   const googleItalianVoice =
       createSpeechSynthesisVoice({name: 'Google Italian Voice', lang: 'it-IT'});
+  // Key for getVoiceNatureNaming. googleNaturalVoice can't be used as key
+  // due to the missing voice number.
+  const mappedVoice = createSpeechSynthesisVoice(
+      {name: 'Google US English 1 (Natural)', lang: 'en-US'});
+  const mappedSpanishVoice = createSpeechSynthesisVoice(
+      {name: 'Google español de Estados Unidos 1 (Natural)', lang: 'es-US'});
 
   async function setAvailableVoicesAndEnabledLangs(
       availableVoices: SpeechSynthesisVoice[],
@@ -497,4 +503,158 @@ suite('VoiceSelectionDialog', () => {
 
         assertTrue(downloadMessage.textContent.includes('Italian'));
       });
+
+  test(
+      'renders the nature name and descriptor for a mapped voice',
+      async () => {
+        await setAvailableVoicesAndEnabledLangs(
+            [mappedVoice, mappedSpanishVoice]);
+        await drawDialog();
+
+        for (const voice of [mappedVoice, mappedSpanishVoice]) {
+          const expected = getVoiceNatureNaming(voice.name)!;
+          const row = getDropdownItemForVoice(voice);
+          const nameSpan = row.querySelector<HTMLElement>('.voice-name')!;
+          const descriptionSpan =
+              row.querySelector<HTMLElement>('.voice-description')!;
+
+          assertEquals(expected.natureName, nameSpan.textContent);
+          assertEquals(expected.description, descriptionSpan.textContent);
+          // The nature name duplicates the accessible name, so it is hidden
+          // from assistive technology; the descriptor is not, because it
+          // contributes to the row's accessible description.
+          assertEquals('true', nameSpan.getAttribute('aria-hidden'));
+          assertFalse(descriptionSpan.hasAttribute('aria-hidden'));
+        }
+      });
+
+  test('synthesizes no joiner between the two identity lines', async () => {
+    await setAvailableVoicesAndEnabledLangs([mappedVoice, mappedSpanishVoice]);
+    await drawDialog();
+
+    for (const voice of [mappedVoice, mappedSpanishVoice]) {
+      const expected = getVoiceNatureNaming(voice.name)!;
+      const row = getDropdownItemForVoice(voice);
+      const text = row.textContent;
+      const nameIndex = text.indexOf(expected.natureName);
+      const descriptionIndex = text.indexOf(expected.description);
+
+      assertTrue(nameIndex >= 0);
+      assertTrue(descriptionIndex > nameIndex);
+
+      assertEquals(
+          '',
+          text.substring(
+                  nameIndex + expected.natureName.length, descriptionIndex)
+              .trim());
+    }
+  });
+
+  test('labels a mapped row with the nature name, still wrapped', async () => {
+    await setAvailableVoicesAndEnabledLangs([mappedVoice, mappedSpanishVoice]);
+    await drawDialog();
+
+    for (const voice of [mappedVoice, mappedSpanishVoice]) {
+      const expected = getVoiceNatureNaming(voice.name)!;
+      const row = getDropdownItemForVoice(voice);
+
+      assertEquals(`Select ${expected.natureName}`, row.getAttribute('label'));
+    }
+  });
+
+  test('falls back to the engine name when a voice is unmapped', async () => {
+    await setAvailableVoicesAndEnabledLangs([googleNaturalVoice]);
+    await drawDialog();
+
+    const row = getDropdownItemForVoice(googleNaturalVoice);
+    const nameSpan = row.querySelector<HTMLElement>('.voice-name')!;
+
+    assertEquals(googleNaturalVoice.name, nameSpan.textContent);
+    assertEquals(
+        `Select ${googleNaturalVoice.name}`, row.getAttribute('label'));
+    // Absent from the DOM, not present and empty.
+    assertEquals(null, row.querySelector('.voice-description'));
+  });
+
+  test('tags both identity lines with the voice language', async () => {
+    await setAvailableVoicesAndEnabledLangs([mappedVoice, mappedSpanishVoice]);
+    await drawDialog();
+
+    for (const voice of [mappedVoice, mappedSpanishVoice]) {
+      const row = getDropdownItemForVoice(voice);
+      const nameSpan = row.querySelector<HTMLElement>('.voice-name')!;
+      const descriptionSpan =
+          row.querySelector<HTMLElement>('.voice-description')!;
+
+      // Emitted verbatim: the engine's value is never normalised or validated.
+      assertEquals(voice.lang, nameSpan.getAttribute('lang'));
+      assertEquals(voice.lang, descriptionSpan.getAttribute('lang'));
+    }
+  });
+
+  test('leaves an unmapped row untagged despite a valid lang', async () => {
+    await setAvailableVoicesAndEnabledLangs([googleNaturalVoice]);
+    await drawDialog();
+
+    const row = getDropdownItemForVoice(googleNaturalVoice);
+    const nameSpan = row.querySelector<HTMLElement>('.voice-name')!;
+
+    // googleNaturalVoice.lang is 'en-US', so this is not about the value
+    // being unusable. An unmapped row shows the engine's own string, which
+    // is predominantly English with an embedded native fragment; claiming it
+    // is written in the voice's locale asserts something we do not know.
+    assertFalse(nameSpan.hasAttribute('lang'));
+  });
+
+  test('tags only the identity spans, never the row host', async () => {
+    await setAvailableVoicesAndEnabledLangs([
+      mappedVoice,
+      mappedSpanishVoice,
+      googleNaturalVoice,
+      googleItalianVoice,
+    ]);
+    await drawDialog();
+
+    const rows =
+        dialog.$.voiceSelectionDialog.querySelectorAll<CrRadioButtonElement>(
+            'cr-radio-button');
+
+    assertEquals(4, rows.length);
+    for (const row of rows) {
+      // The accessible name is bilingual -- nature name plus an English
+      // instruction -- so no single lang can describe it, and tagging the
+      // host would apply one to both halves.
+      assertFalse(row.hasAttribute('lang'));
+
+      for (const tagged of row.querySelectorAll('[lang]')) {
+        assertTrue(
+            tagged.classList.contains('voice-name') ||
+                tagged.classList.contains('voice-description'),
+            `unexpected lang on ${tagged.className}`);
+      }
+    }
+  });
+
+  test('saving a mapped row still commits the engine voice', async () => {
+    await setAvailableVoicesAndEnabledLangs([mappedVoice, googleStandardVoice]);
+    dialog.selectedVoice = googleStandardVoice;
+    await drawDialog();
+
+    const voiceEventPromise =
+        eventToPromise<CustomEvent<{selectedVoice: SpeechSynthesisVoice}>>(
+            ToolbarEvent.VOICE, dialog);
+
+    getDropdownItemForVoice(mappedVoice).click();
+    await microtasksFinished();
+
+    dialog.$.voiceSelectionDialog
+        .querySelector<CrButtonElement>('#saveButton')!.click();
+    const event = await voiceEventPromise;
+
+    // The display name is the nature name; the identity is not.
+    assertEquals(mappedVoice.name, event.detail.selectedVoice.name);
+    assertEquals(
+        ReadAloudSettingsChange.VOICE_NAME_CHANGE,
+        await metrics.whenCalled('recordSpeechSettingsChange'));
+  });
 });
