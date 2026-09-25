@@ -1541,7 +1541,6 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "chrome_ai_wpt_tests_manifest_cpu_suite",
     tests = {
-        "chrome_ai_wpt_tests_light_manifest_cpu": _CHROME_AI_WPT_TEST_CONFIG,
         "chrome_ai_wpt_tests_manifest_cpu": _CHROME_AI_WPT_TEST_CONFIG,
     },
 )
@@ -1556,7 +1555,6 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "chrome_ai_wpt_tests_manifest_gpu_high_tier_suite",
     tests = {
-        "chrome_ai_wpt_tests_light_manifest_gpu_high_tier": _CHROME_AI_WPT_GPU_HIGH_TIER_TEST_CONFIG,
         "chrome_ai_wpt_tests_manifest_gpu_high_tier": _CHROME_AI_WPT_GPU_HIGH_TIER_TEST_CONFIG,
     },
 )

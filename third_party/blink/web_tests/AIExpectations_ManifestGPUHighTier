@@ -22,9 +22,6 @@ crbug.com/517535239 external/wpt/ai/writer/writer-iframe.tentative.https.html [ 
 # The overflow test times out because filling the context window takes too long.
 external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.html [ Timeout ]
 
-# Proofreader on-device model execution is not supported in current pre-built Linux Chrome builds.
-crbug.com/548118790 [ linux ] external/wpt/ai/proofreader/* [ Failure Pass ]
-
 # Temporarily skip semantic embedder WPTs
 crbug.com/428233906 external/wpt/ai/semantic_embedder/* [ Skip ]
 

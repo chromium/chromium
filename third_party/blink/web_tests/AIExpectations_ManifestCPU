@@ -34,9 +34,6 @@ crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/image/* [ F
 crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/mix-post-abort.tentative.https.window.html [ Failure Pass ]
 crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/video/* [ Failure Pass ]
 
-# Proofreader on-device model execution is not supported in current pre-built Linux Chrome builds.
-crbug.com/548118790 [ linux ] external/wpt/ai/proofreader/* [ Failure Pass ]
-
 # Temporarily skip semantic embedder WPTs
 crbug.com/428233906 external/wpt/ai/semantic_embedder/* [ Skip ]
 

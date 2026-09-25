@@ -1959,25 +1959,6 @@ targets.tests.isolated_script_test(
     binary = "chrome_ai_wpt_tests",
 )
 
-# The *_light variants below run the same tests against a pre-built chrome
-# that is downloaded at runtime, so they can be scheduled on bots that don't
-# build chrome (e.g. the google3 model validation integration tests).
-targets.tests.isolated_script_test(
-    name = "chrome_ai_wpt_tests_light_manifest_cpu",
-    args = [
-        "--manifest-test-config=../../components/optimization_guide/internal/testing/configs/manifest_test_config_cpu.json",
-    ],
-    binary = "chrome_ai_wpt_tests_light",
-)
-
-targets.tests.isolated_script_test(
-    name = "chrome_ai_wpt_tests_light_manifest_gpu_high_tier",
-    args = [
-        "--manifest-test-config=../../components/optimization_guide/internal/testing/configs/manifest_test_config_gpu_high_tier.json",
-    ],
-    binary = "chrome_ai_wpt_tests_light",
-)
-
 targets.tests.gtest_test(
     name = "oobe_only_browser_tests",
     args = [
