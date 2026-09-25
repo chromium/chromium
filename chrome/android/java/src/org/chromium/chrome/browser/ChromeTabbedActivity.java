@@ -1647,12 +1647,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     public void finishNativeInitialization() {
         try (TraceEvent te = TraceEvent.scoped("ChromeTabbedActivity.finishNativeInitialization")) {
             var profileProvider = assertNonNull(getProfileProviderSupplier().get());
-            var profile = profileProvider.getOriginalProfile();
-            new NavigationPredictorBridge(profile, getLifecycleDispatcher(), this::isWarmOnResume);
+            var originalProfile = profileProvider.getOriginalProfile();
+            new NavigationPredictorBridge(
+                    originalProfile, getLifecycleDispatcher(), this::isWarmOnResume);
 
             if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled() && !isIncognitoWindow()) {
                 CrossDeviceThemeTracker themeTracker =
-                        CrossDeviceThemeTracker.getForProfile(profile);
+                        CrossDeviceThemeTracker.getForProfile(originalProfile);
                 if (themeTracker != null) {
                     themeTracker.setActivity(this);
                 }
@@ -1660,7 +1661,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             super.finishNativeInitialization();
 
-            TabbedStartupWindowPolicyDelegate.getInstance().initializeWithNative(profile);
+            TabbedStartupWindowPolicyDelegate.getInstance().initializeWithNative(originalProfile);
 
             if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
                 recordFirstAppLaunchTimestampIfNeeded();
@@ -1705,7 +1706,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()
                     && FindsFeatures.sChromeFinds.isEnabled()) {
-                initFindsManager(profile);
+                initFindsManager(originalProfile);
             }
         }
     }
@@ -4131,7 +4132,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
             recordFirstAppLaunchTimestampIfNeeded();
             if (FindsFeatures.sChromeFinds.isEnabled()) {
-                initFindsManager(profile);
+                initFindsManager(originalProfile);
             }
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
                 initGroupSuggestionsPromotionCoordinator();
@@ -4154,13 +4155,23 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         }
     }
 
-    private void initFindsManager(Profile profile) {
-        FindsService findsService = FindsService.getForProfile(profile);
+    /**
+     * Creates the {@link FindsManager}, which observes the {@link FindsService} and shows the opt
+     * in UI when its criteria are fulfilled.
+     *
+     * @param originalProfile The original (never off-the-record) profile. {@link FindsManager}
+     *     keeps it for pref writes, which must not land on the incognito overlay, and an
+     *     off-the-record profile is destroyed with the last incognito tab.
+     */
+    private void initFindsManager(Profile originalProfile) {
+        assert !originalProfile.isOffTheRecord();
+        if (mFindsManager != null) return;
+        FindsService findsService = FindsService.getForProfile(originalProfile);
         if (findsService != null) {
             mFindsManager =
                     new FindsManager(
                             this,
-                            profile,
+                            originalProfile,
                             assertNonNull(mRootUiCoordinator.getBottomSheetController()),
                             getSnackbarManager(),
                             findsService);

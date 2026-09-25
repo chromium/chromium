@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -43,6 +44,7 @@ public class FindToolbarManagerTest {
     @Mock private View mAnchorView;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private SideUiStateProvider mSideUiStateProvider;
+    @Captor private ArgumentCaptor<FindToolbarObserver> mObserverCaptor;
 
     @Before
     public void setUp() {
@@ -90,6 +92,35 @@ public class FindToolbarManagerTest {
         aggObserver.onFindToolbarShown();
         Mockito.verify(observer1, Mockito.times(2)).onFindToolbarShown();
         Mockito.verify(observer2, Mockito.times(1)).onFindToolbarShown();
+    }
+
+    /**
+     * Observers can be registered after the toolbar has been shown (e.g. because they subscribe
+     * through a posted callback). They must still learn that the toolbar is showing.
+     */
+    @Test
+    public void testObserverAddedWhileShown_isNotifiedOfShow() {
+        FindToolbarObserver earlyObserver = Mockito.mock(FindToolbarObserver.class);
+        mFindToolbarManager.addObserver(earlyObserver);
+        showAndNotifyShown();
+
+        FindToolbarObserver lateObserver = Mockito.mock(FindToolbarObserver.class);
+        mFindToolbarManager.addObserver(lateObserver);
+
+        Mockito.verify(lateObserver).onFindToolbarShown();
+        // The already registered observer must not be notified a second time.
+        Mockito.verify(earlyObserver, Mockito.times(1)).onFindToolbarShown();
+    }
+
+    @Test
+    public void testObserverAddedAfterHiding_isNotNotifiedOfShow() {
+        FindToolbarObserver aggObserver = showAndNotifyShown();
+        aggObserver.onFindToolbarHidden();
+
+        FindToolbarObserver lateObserver = Mockito.mock(FindToolbarObserver.class);
+        mFindToolbarManager.addObserver(lateObserver);
+
+        Mockito.verify(lateObserver, Mockito.never()).onFindToolbarShown();
     }
 
     @Test
@@ -196,5 +227,19 @@ public class FindToolbarManagerTest {
         mFindToolbarManager.showToolbar();
         mFindToolbarManager.destroy();
         Mockito.verify(mFindToolbar).destroy();
+    }
+
+    /**
+     * Shows the toolbar and simulates the {@link FindToolbar} notifying that it is shown, which it
+     * does synchronously from within {@link FindToolbarManager#showToolbar()}.
+     *
+     * @return The observer the manager installed on the {@link FindToolbar}.
+     */
+    private FindToolbarObserver showAndNotifyShown() {
+        mFindToolbarManager.showToolbar();
+        Mockito.verify(mFindToolbar).setObserver(mObserverCaptor.capture());
+        FindToolbarObserver aggObserver = mObserverCaptor.getValue();
+        aggObserver.onFindToolbarShown();
+        return aggObserver;
     }
 }

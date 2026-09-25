@@ -38,6 +38,17 @@ public class FindToolbarManager {
     private @Nullable SideUiStateProvider mSideUiStateProvider;
 
     /**
+     * Whether observers have been notified that the find toolbar is shown (and not yet notified
+     * that it is hidden). This mirrors exactly what {@link FindToolbarObserver}s have been told, so
+     * that observers registering late can be given the same notifications as the ones that
+     * registered earlier. This is intentionally not {@link #isShowing()}, which is based on the
+     * {@link View} visibility and can disagree with the notified state (e.g. while the tablet find
+     * toolbar plays its exit animation the view is still visible although observers have already
+     * been told that the toolbar is hidden).
+     */
+    private boolean mNotifiedShown;
+
+    /**
      * Creates an instance of a {@link FindToolbarManager}.
      *
      * @param findToolbarStub The {@link ViewStub} where for the find toolbar.
@@ -117,6 +128,7 @@ public class FindToolbarManager {
                     new FindToolbarObserver() {
                         @Override
                         public void onFindToolbarShown() {
+                            mNotifiedShown = true;
                             for (FindToolbarObserver observer : mObservers) {
                                 observer.onFindToolbarShown();
                             }
@@ -124,6 +136,7 @@ public class FindToolbarManager {
 
                         @Override
                         public void onFindToolbarHidden() {
+                            mNotifiedShown = false;
                             for (FindToolbarObserver observer : mObservers) {
                                 observer.onFindToolbarHidden();
                             }
@@ -158,6 +171,8 @@ public class FindToolbarManager {
             mFindToolbar.destroy();
             mFindToolbar = null;
         }
+        mNotifiedShown = false;
+        mObservers.clear();
         mSideUiStateProvider = null;
     }
 
@@ -167,9 +182,17 @@ public class FindToolbarManager {
         mFindToolbar.setFindQuery(findText);
     }
 
-    /** Add an observer for find in page changes. */
+    /**
+     * Adds an observer for find in page changes.
+     *
+     * <p>If the find toolbar is already shown, the observer is immediately (and synchronously) told
+     * about it, so that observers which subscribe after the toolbar was shown do not miss the
+     * event. Only the newly added observer is notified.
+     */
     public void addObserver(FindToolbarObserver observer) {
-        mObservers.addObserver(observer);
+        if (mObservers.addObserver(observer) && mNotifiedShown) {
+            observer.onFindToolbarShown();
+        }
     }
 
     /** Remove an observer for find in page changes. */

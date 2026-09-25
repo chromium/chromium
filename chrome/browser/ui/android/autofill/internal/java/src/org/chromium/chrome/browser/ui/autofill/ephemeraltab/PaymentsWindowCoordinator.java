@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.ui.autofill.ephemeraltab;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
@@ -47,12 +47,24 @@ class PaymentsWindowCoordinator implements EphemeralTabObserver {
     void openEphemeralTab(GURL url, String title, WebContents merchantWebContents) {
         assert merchantWebContents != null;
         WindowAndroid windowAndroid = merchantWebContents.getTopLevelNativeWindow();
+        // TODO(crbug.com/525079251): The two early returns below also owe native an
+        // OnUserDeniedTabOpening() notification; that gap predates this code. The same bug tracks
+        // the unbalanced addObserver() below: when the sheet is denied via requestDeniedCallback
+        // there is no matching removeObserver(), so this coordinator stays registered.
         if (windowAndroid == null) return;
         MonotonicObservableSupplier<EphemeralTabCoordinator> supplier =
                 EphemeralTabCoordinatorSupplier.from(windowAndroid);
         if (supplier == null) return;
         mEphemeralTabCoordinator = supplier.get();
-        assumeNonNull(mEphemeralTabCoordinator);
+        if (mEphemeralTabCoordinator == null) {
+            // The coordinator is unavailable when ephemeral tabs are not supported by the embedder
+            // (e.g. on low end devices). Native waits for a terminal notification, so tell it that
+            // the tab will not open. This is posted because the native caller
+            // (AndroidPaymentsWindowManager::CreateTab()) keeps using its flow state after this
+            // method returns, while the notification tears that state down.
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::onUserDeniedTabOpening);
+            return;
+        }
         mEphemeralTabCoordinator.addObserver(this);
         Profile profile = Profile.fromWebContents(merchantWebContents);
         assert profile != null;

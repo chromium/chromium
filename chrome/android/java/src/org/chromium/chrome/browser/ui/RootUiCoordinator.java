@@ -1391,9 +1391,7 @@ public class RootUiCoordinator
             initializeEdgeToEdgeController();
         }
 
-        if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
-            initEphemeralTabCoordinator();
-        }
+        initEphemeralTabCoordinator();
         ReadAloudController controller =
                 new ReadAloudController(
                         mActivity,
@@ -1541,7 +1539,6 @@ public class RootUiCoordinator
     }
 
     private void initEphemeralTabCoordinator() {
-        if (mEphemeralTabCoordinatorSupplier.get() != null) return;
         if (EphemeralTabCoordinator.isSupported()) {
             Supplier<TabCreator> tabCreator =
                     () ->
@@ -1949,7 +1946,11 @@ public class RootUiCoordinator
                 }
             }
 
-            getOrCreateFindToolbarManager().showToolbar();
+            FindToolbarManager findToolbarManager = getOrCreateFindToolbarManager();
+            // Null only after destroy(). Report the action as handled anyway: there is nothing to
+            // show, and no other (equally torn down) handler should get a chance to act on it.
+            if (findToolbarManager == null) return true;
+            findToolbarManager.showToolbar();
 
             if (fromMenu) {
                 RecordUserAction.record("MobileMenuFindInPage");
@@ -2481,6 +2482,10 @@ public class RootUiCoordinator
     }
 
     private FindToolbarManager createFindToolbarManager() {
+        // This uses the activity, so it must not run after destroy(). The lazy supplier is
+        // triggered from onInflationComplete() (flag off, i.e. long before destroy()) and from
+        // getOrCreateFindToolbarManager(), which returns early once the activity is gone.
+        assert mActivity != null;
         int stubId = getFindToolbarStub();
         FindToolbarManager manager =
                 new FindToolbarManager(
@@ -2760,25 +2765,27 @@ public class RootUiCoordinator
      * @return Supplies the {@link EphemeralTabCoordinator}
      */
     public Supplier<@Nullable EphemeralTabCoordinator> getEphemeralTabCoordinatorSupplier() {
-        if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
-            return mEphemeralTabCoordinatorSupplier;
-        }
-        return () -> {
-            initEphemeralTabCoordinator();
-            return mEphemeralTabCoordinatorSupplier.get();
-        };
+        return mEphemeralTabCoordinatorSupplier;
     }
 
     /**
      * @return The {@link FindToolbarManager} controlling find toolbar.
      */
     public @Nullable FindToolbarManager getFindToolbarManager() {
+        if (mActivity == null) return null;
         return mFindToolbarManagerSupplier.hasValue() ? mFindToolbarManagerSupplier.get() : null;
     }
 
-    /** Returns the {@link FindToolbarManager} controlling find toolbar, creating it if needed. */
-    public FindToolbarManager getOrCreateFindToolbarManager() {
-        return assumeNonNull(mFindToolbarManagerSupplier.get());
+    /**
+     * Returns the {@link FindToolbarManager} controlling find toolbar, creating it if needed, or
+     * null if this coordinator has been destroyed.
+     */
+    public @Nullable FindToolbarManager getOrCreateFindToolbarManager() {
+        // Creating the manager requires the activity, so do not resurrect it after destroy().
+        // Any manager created earlier has already been destroyed by then (see destroy()), so it
+        // must not be handed out either.
+        if (mActivity == null) return null;
+        return mFindToolbarManagerSupplier.get();
     }
 
     /** Returns the country {@link OneshotSupplier} for testing. */

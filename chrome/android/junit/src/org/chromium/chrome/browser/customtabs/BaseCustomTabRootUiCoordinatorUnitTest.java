@@ -284,6 +284,31 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         assertFalse(mBaseCustomTabRootUiCoordinator.shouldAllowThemingOnTablets());
     }
 
+    /**
+     * The find toolbar cannot be built without an activity, so a request that arrives after
+     * teardown (which nulls the activity out) must return null rather than crash.
+     */
+    @Test
+    public void testFindToolbarManagerNotCreatedAfterDestroy() {
+        mBaseCustomTabRootUiCoordinator.destroyActivityForTesting();
+
+        assertNull(mBaseCustomTabRootUiCoordinator.getOrCreateFindToolbarManager());
+    }
+
+    /**
+     * A manager created before teardown has already been destroyed by then, and its view stub has
+     * been spent, so handing it back would crash on the next showToolbar(). It must be withheld
+     * just like one that was never created.
+     */
+    @Test
+    public void testFindToolbarManagerNotReturnedAfterDestroy_alreadyCreated() {
+        assertNotNull(mBaseCustomTabRootUiCoordinator.getOrCreateFindToolbarManager());
+
+        mBaseCustomTabRootUiCoordinator.destroyActivityForTesting();
+
+        assertNull(mBaseCustomTabRootUiCoordinator.getOrCreateFindToolbarManager());
+    }
+
     @After
     public void tearDown() {
         mFakeTimeTestRule.resetTimes();
