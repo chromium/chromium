@@ -1606,20 +1606,6 @@ chromium-metrics-reviews@google.com.
   <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
 </histogram>
 
-<histogram
-    name="OptimizationGuide.ModelExecution.TimeToProcessRedactions.{ModelExecutionFeature}"
-    units="microseconds" expires_after="M145">
-  <owner>holte@chromium.org</owner>
-  <owner>wittman@chromium.org</owner>
-  <summary>
-    Records amount of time it takes to process redactions. This is called every
-    time text is received from the model.
-
-    Note: This metric is dropped for clients without high-precision clocks.
-  </summary>
-  <token key="ModelExecutionFeature" variants="ModelExecutionFeature"/>
-</histogram>
-
 <histogram name="OptimizationGuide.ModelExecutionFetcher.NetErrorCode"
     enum="NetErrorCodes" expires_after="2027-04-14">
   <owner>freedjm@google.com</owner>
