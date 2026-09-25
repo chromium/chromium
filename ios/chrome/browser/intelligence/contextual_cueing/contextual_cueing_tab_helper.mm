@@ -15,6 +15,7 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
@@ -452,7 +453,10 @@ void ContextualCueingTabHelper::InitiateModelExecutionRequest(
 
   service->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextualCueing, request,
-      /*options=*/{},
+      {.service_type =
+           kUsePrivateAi.Get()
+               ? optimization_guide::ModelExecutionServiceType::kPrivateAi
+               : optimization_guide::ModelExecutionServiceType::kDefault},
       base::BindOnce(
           &ContextualCueingTabHelper::OnModelExecutionResponseReceived,
           weak_ptr_factory_.GetWeakPtr(), expected_url));

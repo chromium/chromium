@@ -192,4 +192,9 @@ BASE_FEATURE_PARAM(bool,
                    &kGeminiContextualSuggestionsCues,
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kUsePrivateAi,
+                   &kGeminiContextualSuggestionsCues,
+                   true);
+
 }  // namespace contextual_cueing

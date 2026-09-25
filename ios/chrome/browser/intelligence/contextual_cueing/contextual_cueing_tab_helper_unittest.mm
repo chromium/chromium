@@ -16,6 +16,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
+#import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #import "components/page_content_annotations/core/page_content_annotation_type.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -190,9 +191,34 @@ std::unique_ptr<KeyedService> BuildFakePageClassificationService(
   return std::make_unique<FakePageClassificationService>();
 }
 
+class TestOptimizationGuideService : public FakeOptimizationGuideService {
+ public:
+  using FakeOptimizationGuideService::FakeOptimizationGuideService;
+
+  void ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      const google::protobuf::MessageLite& request_metadata,
+      const optimization_guide::ModelExecutionOptions& options,
+      optimization_guide::OptimizationGuideModelExecutionResultCallback
+          callback) override {
+    last_service_type_ = options.service_type;
+    FakeOptimizationGuideService::ExecuteModel(feature, request_metadata,
+                                               options, std::move(callback));
+  }
+
+  std::optional<optimization_guide::ModelExecutionServiceType>
+  last_service_type() const {
+    return last_service_type_;
+  }
+
+ private:
+  std::optional<optimization_guide::ModelExecutionServiceType>
+      last_service_type_;
+};
+
 std::unique_ptr<KeyedService> CreateFakeOptimizationGuideService(
     ProfileIOS* profile) {
-  return std::make_unique<FakeOptimizationGuideService>(
+  return std::make_unique<TestOptimizationGuideService>(
       profile->GetProtoDatabaseProvider(), profile->GetStatePath(),
       profile->IsOffTheRecord(), "en",
       base::WeakPtr<optimization_guide::OptimizationGuideStore>(),
@@ -321,7 +347,7 @@ class ContextualCueingTabHelperTest : public PlatformTest {
                                 BuildIdentityManagerForTests));
     profile_ = std::move(builder).Build();
 
-    fake_opt_guide_service_ = static_cast<FakeOptimizationGuideService*>(
+    fake_opt_guide_service_ = static_cast<TestOptimizationGuideService*>(
         OptimizationGuideServiceFactory::GetForProfile(profile_.get()));
     fake_page_classification_service_ =
         static_cast<FakeOnDevicePageClassificationService*>(
@@ -374,7 +400,7 @@ class ContextualCueingTabHelperTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<FakeOptimizationGuideService> fake_opt_guide_service_ = nullptr;
+  raw_ptr<TestOptimizationGuideService> fake_opt_guide_service_ = nullptr;
   raw_ptr<FakeOnDevicePageClassificationService>
       fake_page_classification_service_ = nullptr;
   raw_ptr<FakePageClassificationService>
@@ -1499,6 +1525,68 @@ TEST_F(ContextualCueingTabHelperTest,
           ->GetCueUiTypeForCategory(
               page_content_annotations::CategoryType::kShopping),
       ContextualCueUiType::kMessage);
+}
+
+// Test that model execution uses `ModelExecutionServiceType::kPrivateAi` by
+// default when `kUsePrivateAi` is not overridden.
+TEST_F(ContextualCueingTabHelperTest, ModelExecutionUsesPrivateAiByDefault) {
+  const GURL test_url("https://example.com/store/item123");
+  web_state_->SetCurrentURL(test_url);
+
+  auto response = CreateTestCueResponse("Buy now", "Explore deals");
+  fake_opt_guide_service_->SetResponse(
+      optimization_guide::ModelBasedCapabilityKey::kContextualCueing, response,
+      "optimization_guide.proto.ContextualCueingResponse");
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+
+  std::vector<page_content_annotations::Category> categories = {
+      {page_content_annotations::CategoryType::kShopping, 0.85f}};
+  OnPageClassified(tab_helper, test_url, categories);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_helper->GetContextualCue().has_value(); }));
+
+  ASSERT_TRUE(fake_opt_guide_service_->last_service_type().has_value());
+  EXPECT_EQ(fake_opt_guide_service_->last_service_type().value(),
+            optimization_guide::ModelExecutionServiceType::kPrivateAi);
+}
+
+// Test that model execution uses `ModelExecutionServiceType::kDefault` when
+// `kUsePrivateAi` is set to false.
+TEST_F(ContextualCueingTabHelperTest,
+       ModelExecutionUsesDefaultWhenPrivateAiDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kGeminiContextualSuggestionsCues,
+        {{kGeminiContextualSuggestionsCuesOnDeviceClassifierParam, "true"},
+         {kGeminiContextualSuggestionsCuesServerModelExecutionParam, "true"},
+         {kUsePrivateAi.name, "false"}}},
+       {kPageActionMenu, {}}},
+      {});
+
+  const GURL test_url("https://example.com/store/item123");
+  web_state_->SetCurrentURL(test_url);
+
+  auto response = CreateTestCueResponse("Buy now", "Explore deals");
+  fake_opt_guide_service_->SetResponse(
+      optimization_guide::ModelBasedCapabilityKey::kContextualCueing, response,
+      "optimization_guide.proto.ContextualCueingResponse");
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+
+  std::vector<page_content_annotations::Category> categories = {
+      {page_content_annotations::CategoryType::kShopping, 0.85f}};
+  OnPageClassified(tab_helper, test_url, categories);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return tab_helper->GetContextualCue().has_value(); }));
+
+  ASSERT_TRUE(fake_opt_guide_service_->last_service_type().has_value());
+  EXPECT_EQ(fake_opt_guide_service_->last_service_type().value(),
+            optimization_guide::ModelExecutionServiceType::kDefault);
 }
 
 }  // namespace contextual_cueing

@@ -116,6 +116,10 @@ BASE_DECLARE_FEATURE_PARAM(bool, kForceMessageUiOnly);
 // Message UI.
 BASE_DECLARE_FEATURE_PARAM(bool, kForceOmniboxChipUiOnly);
 
+// Whether to use Private AI (`ModelExecutionServiceType::kPrivateAi`) when
+// executing contextual cue model requests.
+BASE_DECLARE_FEATURE_PARAM(bool, kUsePrivateAi);
+
 }  // namespace contextual_cueing
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_FEATURES_H_
