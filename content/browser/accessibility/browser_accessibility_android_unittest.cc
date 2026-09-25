@@ -3253,4 +3253,85 @@ TEST_F(BrowserAccessibilityAndroidTest, TestNavigateOnlySentForRootFrame) {
   EXPECT_EQ(new_root_node->GetUniqueId(), navigate_root_id);
 }
 
+// A child frame's tree and the tree containing the node that hosts it may come
+// from different renderer processes, so the hosting node can be created before
+// the child frame's tree exists. Once the child frame's tree is connected to
+// it, the hosting node has a new child, so it must be invalidated to have its
+// subtree refetched.
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestHostInvalidatedWhenChildFrameArrivesAfterHost) {
+  ui::AXNodeData child_frame_root;
+  child_frame_root.id = 1;
+  child_frame_root.role = ax::mojom::Role::kRootWebArea;
+
+  ui::AXTreeUpdate child_frame_update =
+      MakeAXTreeUpdateForTesting(child_frame_root);
+
+  ui::AXNodeData iframe;
+  iframe.id = 2;
+  iframe.role = ax::mojom::Role::kIframe;
+  iframe.AddChildTreeId(child_frame_update.tree_data.tree_id);
+
+  // Node ids are only unique within a tree, so the root of the hosting tree
+  // can reuse the id of the child frame's root.
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {iframe.id};
+
+  ui::AXTreeUpdate host_update = MakeAXTreeUpdateForTesting(root, iframe);
+  child_frame_update.tree_data.parent_tree_id = host_update.tree_data.tree_id;
+
+  // The tree containing the hosting node arrives first.
+  std::unique_ptr<ui::BrowserAccessibilityManager> root_manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          host_update, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  // The child frame's tree arrives second.
+  ui::TestAXPlatformTreeManagerDelegate child_frame_delegate;
+  child_frame_delegate.is_root_frame_ = false;
+  child_frame_delegate.SetWebContentsAccessibility(
+      &mock_web_contents_accessibility_android_);
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> child_manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          child_frame_update, node_id_delegate_, &child_frame_delegate));
+
+  auto* iframe_node = static_cast<BrowserAccessibilityAndroid*>(
+      root_manager->GetFromID(iframe.id));
+  ASSERT_NE(nullptr, iframe_node);
+  ASSERT_NE(nullptr,
+            child_manager->GetParentNodeFromParentTreeAsBrowserAccessibility());
+
+  testing::Mock::VerifyAndClearExpectations(
+      &mock_web_contents_accessibility_android_);
+
+  // The content of the update does not matter, only that it arrives through
+  // OnAccessibilityEvents. The update is only prepared here and sent further
+  // below, after the expectations are set up.
+  ui::AXUpdatesAndEvents updates_and_events;
+  updates_and_events.updates.resize(1);
+  updates_and_events.updates[0].nodes.resize(1);
+  updates_and_events.updates[0].nodes[0].id = child_frame_root.id;
+  updates_and_events.updates[0].nodes[0].role = ax::mojom::Role::kRootWebArea;
+
+  // Connecting the child frame's tree gives the hosting node a new child. That
+  // is reported as a CHILDREN_CHANGED event on the hosting node, which reaches
+  // Java as a content changed call for that node, with the subtree flag set so
+  // that its subtree is refetched and not just the node itself.
+  EXPECT_CALL(
+      mock_web_contents_accessibility_android_,
+      HandleContentChanged(static_cast<int32_t>(iframe_node->GetUniqueId()),
+                           /*set_subtree_changed=*/true))
+      .Times(testing::AtLeast(1));
+
+  // The child frame's renderer sends an update. Once it is unserialized,
+  // OnAccessibilityEvents calls EnsureParentConnectionIfNotRootManager, which
+  // looks for the node hosting this tree in the parent tree. Finding one
+  // connects the two trees through ParentConnectionChanged, which is what
+  // fires the event expected above.
+  child_manager->OnAccessibilityEvents(updates_and_events);
+}
+
 }  // namespace content
