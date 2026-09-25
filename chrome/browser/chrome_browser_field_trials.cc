@@ -390,6 +390,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // complete.
   feature_overrides.EnableFeature(chrome::android::kSubmenusInAppMenuLff);
 
+  // Enables DevTools frontend on desktop Android.
+  // TODO(crbug.com/438369690): Remove when we enable DevTools frontend on all
+  // LFF devices.
+  feature_overrides.EnableFeature(features::kAndroidDevToolsFrontend);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
