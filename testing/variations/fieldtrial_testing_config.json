@@ -18806,6 +18806,22 @@
             ]
         }
     ],
+    "UseFrameIntervalDeciderAdaptiveFrameRate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260924",
+                    "enable_features": [
+                        "UseFrameIntervalDeciderAdaptiveFrameRate"
+                    ],
+                    "min_os_version": "15"
+                }
+            ]
+        }
+    ],
     "UsePersistentCacheForCodeCache": [
         {
             "platforms": [
