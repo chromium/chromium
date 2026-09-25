@@ -938,16 +938,14 @@ targets.legacy_matrix_compound_suite(
                 "linux_gpu_high_tier_ai_wpt_dimensions",
             ],
         ),
-        # TODO(crbug.com/543943930): Re-enable once LiteRT-LM WebGPU delegate
-        # dawn proc table initialization is fixed on Linux.
-        # "chrome_ai_wpt_tests_manifest_gpu_high_tier_gemma4_suite": targets.legacy_matrix_config(
-        #     mixins = [
-        #         "chrome-intelligence-swarming-pool",
-        #         "non-gce",
-        #         "x64_ai_wpt_shards",
-        #         "linux_gpu_high_tier_gemma4_ai_wpt_dimensions",
-        #     ],
-        # ),
+        "chrome_ai_wpt_tests_manifest_gpu_high_tier_gemma4_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+                "x64_ai_wpt_shards",
+                "linux_gpu_high_tier_gemma4_ai_wpt_dimensions",
+            ],
+        ),
         "chrome_ai_wpt_tests_manifest_gpu_low_tier_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
@@ -955,15 +953,14 @@ targets.legacy_matrix_compound_suite(
                 "x64_ai_wpt_shards",
             ],
         ),
-        # TODO(crbug.com/543943930): Re-enable once LiteRT-LM WebGPU delegate
-        # dawn proc table initialization is fixed on Linux.
-        # "chrome_ai_wpt_tests_manifest_gpu_low_tier_gemma4_suite": targets.legacy_matrix_config(
-        #     mixins = [
-        #         "chrome-intelligence-swarming-pool",
-        #         "non-gce",
-        #         "x64_ai_wpt_shards",
-        #     ],
-        # ),
+        "chrome_ai_wpt_tests_manifest_gpu_low_tier_gemma4_suite": targets.legacy_matrix_config(
+            mixins = [
+                "chrome-intelligence-swarming-pool",
+                "non-gce",
+                "x64_ai_wpt_shards",
+                "linux_gpu_high_tier_gemma4_ai_wpt_dimensions",
+            ],
+        ),
         "litert_lm_advanced_main_legacy_tests_gpu_suite": targets.legacy_matrix_config(
             mixins = [
                 "chrome-intelligence-swarming-pool",
