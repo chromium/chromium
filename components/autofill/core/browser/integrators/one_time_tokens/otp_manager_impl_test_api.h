@@ -12,6 +12,8 @@
 
 namespace autofill {
 
+class AutofillField;
+
 // Test API for `OtpManagerImpl`.
 class OtpManagerImplTestApi {
  public:
@@ -52,6 +54,10 @@ class OtpManagerImplTestApi {
 
   std::optional<FieldGlobalId> currently_focused_field_id() const {
     return manager_->currently_focused_field_id_;
+  }
+
+  const AutofillField* GetFocusedOtpField() const {
+    return manager_->GetFocusedOtpField();
   }
 
  private:

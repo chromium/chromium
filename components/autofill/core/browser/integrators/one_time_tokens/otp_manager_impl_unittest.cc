@@ -1670,4 +1670,57 @@ TEST_F(OtpManagerImplTest, FocusTracking_SetsAndClearsFocusedFieldAndForm) {
   EXPECT_FALSE(test_api(otp_manager).currently_focused_form_id().has_value());
 }
 
+// Tests that `GetFocusedOtpField` returns the focused field when it is an OTP
+// field.
+TEST_F(OtpManagerImplTest, GetFocusedOtpField_ReturnsOtpFieldWhenFocused) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+  ASSERT_FALSE(form->fields().empty());
+  FieldGlobalId otp_field_id = form->field(0)->global_id();
+  FormGlobalId form_id = form->global_id();
+
+  otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form_id,
+                                       otp_field_id);
+  const AutofillField* focused_otp_field =
+      test_api(otp_manager).GetFocusedOtpField();
+  ASSERT_NE(focused_otp_field, nullptr);
+  EXPECT_EQ(focused_otp_field->global_id(), otp_field_id);
+}
+
+// Tests that `GetFocusedOtpField` returns nullptr when the focused field is not
+// an OTP field.
+TEST_F(OtpManagerImplTest,
+       GetFocusedOtpField_ReturnsNullptrWhenNonOtpFieldFocused) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  const FormStructure* form = AddForm({
+      .fields =
+          {
+              {.role = NAME_FIRST},
+              {.role = ONE_TIME_CODE},
+          },
+  });
+  ASSERT_TRUE(form);
+  ASSERT_FALSE(form->fields().empty());
+  FieldGlobalId name_field_id = form->field(0)->global_id();
+  FormGlobalId form_id = form->global_id();
+
+  otp_manager.OnBeforeFocusOnFormField(autofill_manager(), form_id,
+                                       name_field_id);
+  EXPECT_EQ(test_api(otp_manager).GetFocusedOtpField(), nullptr);
+}
+
+// Tests that `GetFocusedOtpField` returns nullptr when no field is focused.
+TEST_F(OtpManagerImplTest,
+       GetFocusedOtpField_ReturnsNullptrWhenNoFieldFocused) {
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  EXPECT_EQ(test_api(otp_manager).GetFocusedOtpField(), nullptr);
+}
+
 }  // namespace autofill

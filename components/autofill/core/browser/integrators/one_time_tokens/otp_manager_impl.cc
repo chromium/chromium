@@ -378,6 +378,30 @@ void OtpManagerImpl::MaybeShowOtpSuggestions(
   std::move(last_pending_get_suggestions_callback_).Run(std::move(suggestions));
 }
 
+const AutofillField* OtpManagerImpl::GetFocusedOtpField() const {
+  if (!currently_focused_field_id_.has_value()) {
+    return nullptr;
+  }
+  const AutofillField* field = nullptr;
+  if (currently_focused_form_id_.has_value()) {
+    field = owner_
+                ->FindFormAndField(*currently_focused_form_id_,
+                                   *currently_focused_field_id_)
+                .autofill_field;
+  }
+  if (!field) {
+    // AutofillManager provides an overload `FindCachedFormById(const
+    // FieldGlobalId&)` that searches cached forms for the one containing the
+    // given field ID.
+    if (const FormStructure* form =
+            owner_->FindCachedFormById(*currently_focused_field_id_)) {
+      field = form->GetFieldById(*currently_focused_field_id_);
+    }
+  }
+  return field && field->Type().GetTypes().contains(ONE_TIME_CODE) ? field
+                                                                   : nullptr;
+}
+
 bool OtpManagerImpl::IsOtpDeliveryBlocked() {
   return owner_->client().DocumentUsedWebOTP();
 }

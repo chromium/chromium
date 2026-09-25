@@ -28,6 +28,7 @@
 
 namespace autofill {
 
+class AutofillField;
 class BrowserAutofillManager;
 class FormFieldData;
 class FormStructure;
@@ -119,6 +120,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // Callback for `OtpPhishGuardDelegate::StartOtpPhishGuardCheck`.
   void MaybeShowOtpSuggestions(one_time_tokens::OneTimeToken token,
                                OneTimeTokensPhishGuardVerdict verdict);
+
+  // Returns the currently focused field if it exists and has `ONE_TIME_CODE`
+  // type, or nullptr otherwise.
+  const AutofillField* GetFocusedOtpField() const;
 
   // Returns true if an OTP must not be delivered to the caller in an autofill
   // context, e.g., because the page called the WebOTP API.
