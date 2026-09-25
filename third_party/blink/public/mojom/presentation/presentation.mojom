@@ -91,31 +91,20 @@ struct PresentationConnectionResult {
   pending_receiver<PresentationConnection> connection_receiver;
 };
 
-// Service provided by the browser process to implement parts of the
-// Presentation API for initiating a presentation. This includes querying screen
-// availability, starting/reconnecting a presentation, and setting the
-// page-level default presentation request.
-// A PresentationService is instantiated on a frame when Presentation API is
-// first used on a page. The renderer process of the page will then set either
-// a PresentationController or PresentationReceiver on the service to receive
+// Service provided by the browser process to implement the controller part of
+// the Presentation API. This includes querying screen availability,
+// starting/reconnecting a presentation, and setting the page-level default
+// presentation request.
+// A PresentationService is instantiated on a frame when the controller part of
+// the Presentation API is first used on a page. The renderer process of the
+// page will then set a PresentationController on the service to receive
 // updates.
-// TODO(crbug.com/749327): The Presentation API code is in the process of being
-// onion-souped. Part of the work will be to split this interface into
-// controller and receiver parts.
+// The receiver part of the API is served by PresentationReceiverService.
 interface PresentationService {
   // Sets the PresentationController of the frame. This is called by the
   // controller page of a presentation to listen for screen availability and
   // initiate presentations.
   SetController(pending_remote<PresentationController> controller);
-
-  // Sets the PresentationReceiver of the page. This is called by the
-  // presentation page of a 1-UA presentation in order to receive updates on new
-  // connections (initiated by a controller) becoming available.
-  // TODO(crbug.com/749327): Move this method out of PresentationService and
-  // define a new interface that implements only Presentation Receiver APIs.
-  SetReceiver(pending_remote<PresentationReceiver> receiver);
-
-  ///////////// Functions here are for the controller part of the API. /////////
 
   // Called when the frame sets or changes the default presentation URLs.
   // When the default presentation is started on this frame,
@@ -157,6 +146,24 @@ interface PresentationService {
   // TODO(crbug.com/749327): Move this method into a separate interface that
   // deals with modifying the state of a presentation.
   Terminate(url.mojom.Url presentation_url, string presentation_id);
+};
+
+// Service provided by the browser process to implement the receiver part of
+// the Presentation API for 1-UA presentations. It is bound by the presentation
+// page so that the page can be notified of receiver PresentationConnections
+// becoming available.
+// Unlike PresentationService, this interface can be bound by frames that are
+// sandboxed without 'allow-presentation': acting as a presentation receiver is
+// a different capability from acting as a presentation controller, and it is
+// authorized by the embedder-provided receiver delegate rather than by the
+// sandbox flag.
+interface PresentationReceiverService {
+  // Sets the PresentationReceiver of the page. This is called by the
+  // presentation page of a 1-UA presentation in order to receive updates on new
+  // connections (initiated by a controller) becoming available. It may only be
+  // called once, and only from the outermost document of a presentation
+  // receiver page.
+  SetReceiver(pending_remote<PresentationReceiver> receiver);
 };
 
 // Implemented by a render frame that uses the Presentation Controller API.

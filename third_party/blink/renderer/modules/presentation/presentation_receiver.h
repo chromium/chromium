@@ -60,8 +60,8 @@ class MODULES_EXPORT PresentationReceiver final
 
   HeapMojoReceiver<mojom::blink::PresentationReceiver, PresentationReceiver>
       presentation_receiver_receiver_;
-  HeapMojoRemote<mojom::blink::PresentationService>
-      presentation_service_remote_;
+  HeapMojoRemote<mojom::blink::PresentationReceiverService>
+      presentation_receiver_service_remote_;
   Member<LocalDOMWindow> window_;
 };
 

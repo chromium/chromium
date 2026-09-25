@@ -1087,6 +1087,10 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::PermissionService>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreatePermissionService>);
 
+  map->Add<blink::mojom::PresentationReceiverService>(
+      &BindRenderFrameHostImpl<
+          &RenderFrameHostImpl::GetPresentationReceiverService>);
+
   map->Add<blink::mojom::PresentationService>(
       &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetPresentationService>);
 

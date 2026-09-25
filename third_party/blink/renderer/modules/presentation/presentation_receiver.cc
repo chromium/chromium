@@ -18,18 +18,20 @@ PresentationReceiver::PresentationReceiver(LocalDOMWindow* window)
     : connection_list_(
           MakeGarbageCollected<PresentationConnectionList>(window)),
       presentation_receiver_receiver_(this, window),
-      presentation_service_remote_(window),
+      presentation_receiver_service_remote_(window),
       window_(window) {
   DCHECK(window_->GetFrame()->IsOutermostMainFrame());
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       window->GetTaskRunner(TaskType::kPresentation);
   window->GetBrowserInterfaceBroker().GetInterface(
-      presentation_service_remote_.BindNewPipeAndPassReceiver(task_runner));
+      presentation_receiver_service_remote_.BindNewPipeAndPassReceiver(
+          task_runner));
 
-  // Set the mojo::Remote<T> that remote implementation of PresentationService
-  // will use to interact with the associated PresentationReceiver, in order
-  // to receive updates on new connections becoming available.
-  presentation_service_remote_->SetReceiver(
+  // Set the mojo::Remote<T> that the browser side implementation of
+  // PresentationReceiverService will use to interact with the associated
+  // PresentationReceiver, in order to receive updates on new connections
+  // becoming available.
+  presentation_receiver_service_remote_->SetReceiver(
       presentation_receiver_receiver_.BindNewPipeAndPassRemote(task_runner));
 }
 
@@ -90,7 +92,7 @@ void PresentationReceiver::Trace(Visitor* visitor) const {
   visitor->Trace(connection_list_);
   visitor->Trace(connection_list_property_);
   visitor->Trace(presentation_receiver_receiver_);
-  visitor->Trace(presentation_service_remote_);
+  visitor->Trace(presentation_receiver_service_remote_);
   visitor->Trace(window_);
   ScriptWrappable::Trace(visitor);
 }

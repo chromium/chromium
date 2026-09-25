@@ -125,6 +125,16 @@ void PresentationServiceImpl::Bind(
       &PresentationServiceImpl::OnConnectionError, base::Unretained(this)));
 }
 
+void PresentationServiceImpl::BindReceiverService(
+    mojo::PendingReceiver<blink::mojom::PresentationReceiverService> receiver) {
+  presentation_receiver_service_receivers_.Add(this, std::move(receiver));
+  // TODO(crbug.com/566111376): Consider not closing both pipes when one of them
+  // closes.
+  presentation_receiver_service_receivers_.set_disconnect_handler(
+      base::BindRepeating(&PresentationServiceImpl::OnConnectionError,
+                          base::Unretained(this)));
+}
+
 void PresentationServiceImpl::SetController(
     mojo::PendingRemote<blink::mojom::PresentationController>
         presentation_controller_remote) {
@@ -157,15 +167,14 @@ void PresentationServiceImpl::SetReceiver(
     return;
   }
 
-  if (!receiver_delegate_ || !is_outermost_document_) {
-    presentation_service_receivers_.ReportBadMessage(
-        "SetReceiver can only be called from a "
-        "presentation receiver outermost document.");
+  if (!receiver_delegate_) {
+    presentation_receiver_service_receivers_.ReportBadMessage(
+        "SetReceiver can only be called from a presentation receiver page.");
     return;
   }
 
   if (presentation_receiver_remote_) {
-    presentation_service_receivers_.ReportBadMessage(
+    presentation_receiver_service_receivers_.ReportBadMessage(
         "SetReceiver can only be called once.");
     return;
   }
@@ -514,6 +523,7 @@ void PresentationServiceImpl::Reset() {
   pending_reconnect_presentation_cbs_.clear();
 
   presentation_service_receivers_.Clear();
+  presentation_receiver_service_receivers_.Clear();
   presentation_controller_remote_.reset();
   presentation_receiver_remote_.reset();
 }

@@ -15007,6 +15007,20 @@ void RenderFrameHostImpl::GetPresentationService(
   presentation_service_->Bind(std::move(receiver));
 }
 
+void RenderFrameHostImpl::GetPresentationReceiverService(
+    mojo::PendingReceiver<blink::mojom::PresentationReceiverService> receiver) {
+  if (!IsOutermostMainFrame()) {
+    mojo::ReportBadMessage(
+        "PresentationReceiverService can only be bound by an outermost "
+        "document.");
+    return;
+  }
+  if (!presentation_service_) {
+    presentation_service_ = PresentationServiceImpl::Create(this);
+  }
+  presentation_service_->BindReceiverService(std::move(receiver));
+}
+
 PresentationServiceImpl&
 RenderFrameHostImpl::GetPresentationServiceForTesting() {
   CHECK(presentation_service_);

@@ -15,8 +15,6 @@ class MockPresentationService : public mojom::blink::PresentationService {
  public:
   void SetController(
       mojo::PendingRemote<mojom::blink::PresentationController>) override {}
-  void SetReceiver(
-      mojo::PendingRemote<mojom::blink::PresentationReceiver>) override {}
   MOCK_METHOD1(SetDefaultPresentationUrls, void(const Vector<KURL>&));
   MOCK_METHOD1(ListenForScreenAvailability, void(const KURL&));
   MOCK_METHOD1(StopListeningForScreenAvailability, void(const KURL&));

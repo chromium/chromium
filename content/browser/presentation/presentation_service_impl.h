@@ -49,6 +49,7 @@ class RenderFrameHost;
 // separate classes so that each is easier to reason about.
 class CONTENT_EXPORT PresentationServiceImpl
     : public blink::mojom::PresentationService,
+      public blink::mojom::PresentationReceiverService,
       public WebContentsObserver,
       public PresentationServiceDelegate::Observer {
  public:
@@ -69,13 +70,16 @@ class CONTENT_EXPORT PresentationServiceImpl
   // PresentationServiceImpl instance can be bound to multiple receivers.
   void Bind(mojo::PendingReceiver<blink::mojom::PresentationService> receiver);
 
+  // Same as above, for the receiver side of the API.
+  void BindReceiverService(
+      mojo::PendingReceiver<blink::mojom::PresentationReceiverService>
+          receiver);
+
   // PresentationService implementation.
   void SetDefaultPresentationUrls(
       const std::vector<GURL>& presentation_urls) override;
   void SetController(mojo::PendingRemote<blink::mojom::PresentationController>
                          presentation_controller_remote) override;
-  void SetReceiver(mojo::PendingRemote<blink::mojom::PresentationReceiver>
-                       presentation_receiver_remote) override;
   void ListenForScreenAvailability(const GURL& url) override;
   void StopListeningForScreenAvailability(const GURL& url) override;
   void StartPresentation(const std::vector<GURL>& presentation_urls,
@@ -87,6 +91,10 @@ class CONTENT_EXPORT PresentationServiceImpl
                        const std::string& presentation_id) override;
   void Terminate(const GURL& presentation_url,
                  const std::string& presentation_id) override;
+
+  // PresentationReceiverService implementation.
+  void SetReceiver(mojo::PendingRemote<blink::mojom::PresentationReceiver>
+                       presentation_receiver_remote) override;
 
   void SetControllerDelegateForTesting(
       ControllerPresentationServiceDelegate* controller_delegate);
@@ -286,6 +294,9 @@ class CONTENT_EXPORT PresentationServiceImpl
 
   mojo::ReceiverSet<blink::mojom::PresentationService>
       presentation_service_receivers_;
+
+  mojo::ReceiverSet<blink::mojom::PresentationReceiverService>
+      presentation_receiver_service_receivers_;
 
   // ID of the RenderFrameHost this object is associated with.
   int render_process_id_;

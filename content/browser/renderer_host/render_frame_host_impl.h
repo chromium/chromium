@@ -1951,6 +1951,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void GetPresentationService(
       mojo::PendingReceiver<blink::mojom::PresentationService> receiver);
 
+  void GetPresentationReceiverService(
+      mojo::PendingReceiver<blink::mojom::PresentationReceiverService>
+          receiver);
+
   PresentationServiceImpl& GetPresentationServiceForTesting();
 
   void GetSpeechSynthesis(

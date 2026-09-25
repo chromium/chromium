@@ -2,12 +2,14 @@
  * Mock implementation of mojo PresentationService.
  */
 
-import {PresentationConnectionRemote, PresentationConnectionState, PresentationService, PresentationServiceReceiver} from '/gen/third_party/blink/public/mojom/presentation/presentation.mojom.m.js';
+import {PresentationConnectionRemote, PresentationConnectionState, PresentationReceiverService, PresentationReceiverServiceReceiver, PresentationService, PresentationServiceReceiver} from '/gen/third_party/blink/public/mojom/presentation/presentation.mojom.m.js';
 
 export class PresentationServiceMock {
   constructor() {
     this.pendingResponse_ = null;
     this.serviceReceiver_ = new PresentationServiceReceiver(this);
+    this.receiverServiceReceiver_ =
+        new PresentationReceiverServiceReceiver(this);
     this.controllerConnectionPtr_ = null;
     this.receiverConnectionRequest_ = null;
 
@@ -16,6 +18,14 @@ export class PresentationServiceMock {
     this.interceptor_.oninterfacerequest =
         e => this.serviceReceiver_.$.bindHandle(e.handle);
     this.interceptor_.start();
+
+    // SetReceiver() lives on its own interface, which the presentation page
+    // binds separately from PresentationService.
+    this.receiverServiceInterceptor_ = new MojoInterfaceInterceptor(
+        PresentationReceiverService.$interfaceName);
+    this.receiverServiceInterceptor_.oninterfacerequest = e =>
+        this.receiverServiceReceiver_.$.bindHandle(e.handle);
+    this.receiverServiceInterceptor_.start();
 
     this.controller_ = null;
     this.onSetController = null;
@@ -27,6 +37,8 @@ export class PresentationServiceMock {
   reset() {
     this.serviceReceiver_.closeBindings();
     this.interceptor_.stop();
+    this.receiverServiceReceiver_.closeBindings();
+    this.receiverServiceInterceptor_.stop();
   }
 
   setController(controller) {
