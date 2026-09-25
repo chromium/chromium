@@ -121,6 +121,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   // Return the LayerTreeHost backing this popup widget.
   cc::LayerTreeHost* LayerTreeHostForTesting();
+  void WidgetHostDisconnectedForTesting();
 
   // Called when the browser has shown the popup.
   void DidShowPopup();

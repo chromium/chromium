@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/css/media_feature_overrides.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -190,6 +192,84 @@ TEST_F(InternalPopupMenuTest, ShowSelectDeviceScaleFactorBelowOne) {
 
   select->ShowPopup();
   EXPECT_TRUE(select->PopupIsVisible());
+}
+
+namespace {
+class DisconnectOnChangeListener final : public NativeEventListener {
+ public:
+  explicit DisconnectOnChangeListener(WebPagePopupImpl* popup)
+      : popup_(popup) {}
+  void Invoke(ExecutionContext*, Event*) override {
+    if (popup_) {
+      popup_->WidgetHostDisconnectedForTesting();
+      popup_ = nullptr;
+    }
+  }
+
+ private:
+  raw_ptr<WebPagePopupImpl> popup_;
+};
+}  // namespace
+
+// See crbug.com/565774991.
+TEST_F(InternalPopupMenuTest, DisconnectDuringPopupUpdate) {
+  if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
+    return;
+  }
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view = web_view_helper.Initialize();
+  if (web_view->GetChromeClient().UseExternalPopupMenus()) {
+    // <select> doesn't use a WebPagePopupImpl on this platform.
+    return;
+  }
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(), R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { margin: 0; }
+      select {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100px;
+        height: 50px;
+      }
+    </style>
+    <select id="select">
+      <option>1</option>
+      <option>2</option>
+    </select>
+  )HTML",
+                                     base_url);
+
+  Document& document =
+      *web_view->MainFrameImpl()->GetDocument().Unwrap<Document>();
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* select =
+      To<HTMLSelectElement>(document.getElementById(AtomicString("select")));
+  ASSERT_TRUE(select);
+
+  select->ShowPopup();
+  EXPECT_TRUE(select->PopupIsVisible());
+
+  WebPagePopupImpl* popup = web_view->GetPagePopup();
+  ASSERT_TRUE(popup);
+  popup->DidShowPopup();
+
+  select->ProvisionalSelectionChanged(1);
+  select->addEventListener(
+      event_type_names::kChange,
+      MakeGarbageCollected<DisconnectOnChangeListener>(popup));
+
+  select->SetInlineStyleProperty(CSSPropertyID::kPosition, "absolute");
+  select->SetInlineStyleProperty(CSSPropertyID::kTop, "5000px");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  web_view->UpdatePagePopup();
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
