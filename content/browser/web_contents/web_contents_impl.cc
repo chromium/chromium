@@ -12378,6 +12378,9 @@ bool WebContentsImpl::SetDeviceEmulationSize(const gfx::Size& new_size) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetDeviceEmulationSize");
   device_emulation_size_ = new_size;
   RenderWidgetHostView* rwhv = GetPrimaryMainFrame()->GetView();
+  if (!rwhv) {
+    return false;
+  }
 
   const gfx::Size current_size = rwhv->GetViewBounds().size();
   if (view_size_before_emulation_.IsEmpty()) {
@@ -12394,6 +12397,9 @@ bool WebContentsImpl::SetDeviceEmulationSize(const gfx::Size& new_size) {
 void WebContentsImpl::ClearDeviceEmulationSize() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::ClearDeviceEmulationSize");
   RenderWidgetHostView* rwhv = GetPrimaryMainFrame()->GetView();
+  if (!rwhv) {
+    return;
+  }
   // WebContentsView could get resized during emulation, which also resizes
   // RWHV. If it happens, assume user would like to keep using the size after
   // emulation.

@@ -6191,4 +6191,19 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageGetSubApps) {
   EXPECT_TRUE(sibling_apps->empty());
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       SetDeviceMetricsOverrideWithoutView) {
+  ASSERT_FALSE(shell()->web_contents()->GetPrimaryMainFrame()->GetView());
+  Attach();
+  base::DictValue params;
+  params.Set("width", 400);
+  params.Set("height", 300);
+  params.Set("deviceScaleFactor", 1);
+  params.Set("mobile", false);
+  // Next two commands should not crash without a RenderWidgetHostView.
+  SendCommandAsync("Emulation.setDeviceMetricsOverride", std::move(params));
+  SendCommandAsync("Emulation.clearDeviceMetricsOverride");
+  SendCommandSync("Target.getTargets");
+}
+
 }  // namespace content
