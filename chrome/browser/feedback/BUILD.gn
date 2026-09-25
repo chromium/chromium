@@ -109,8 +109,6 @@ source_set("feedback_impl") {
       "system_logs/log_sources/memory_details_log_source.h",
       "system_logs/log_sources/performance_log_source.cc",
       "system_logs/log_sources/performance_log_source.h",
-      "system_logs/log_sources/related_website_sets_source.cc",
-      "system_logs/log_sources/related_website_sets_source.h",
     ]
     public_deps += [
       "//chrome/browser/feedback:feedback_enum",
@@ -126,7 +124,6 @@ source_set("feedback_impl") {
       "//chrome/browser/devtools",
       "//chrome/browser/extensions",
       "//chrome/browser/feedback/report_unsafe_site",
-      "//chrome/browser/first_party_sets",
       "//chrome/browser/google",
       "//chrome/browser/metrics",
       "//chrome/browser/performance_manager/public/user_tuning",
@@ -236,7 +233,6 @@ source_set("unit_tests") {
       "system_logs/log_sources/crash_ids_source_unittest.cc",
       "system_logs/log_sources/family_info_log_source_unittest.cc",
       "system_logs/log_sources/performance_log_source_unittest.cc",
-      "system_logs/log_sources/related_website_sets_source_unittest.cc",
     ]
     deps += [
       "//components/feedback",
