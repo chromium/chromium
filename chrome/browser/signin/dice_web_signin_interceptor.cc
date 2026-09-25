@@ -1568,10 +1568,14 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
           .SetChromeSigninInterceptionUserChoice(
               account_info.gaia, ChromeSigninUserChoice::kSignin);
     }
-  }
 
-  enterprise_util::SetUserAcceptedAccountManagement(
-      new_profile, state_->intercepted_account_management_accepted_);
+    // Management consent recorded from the interception prompt only applies to
+    // newly created profiles. Existing profiles (such as during profile
+    // switches) preserve their pre-existing management state (b/531849282).
+    if (state_->intercepted_account_management_accepted_) {
+      enterprise_util::SetUserAcceptedAccountManagement(new_profile, true);
+    }
+  }
 
   // Work is done in this profile, the flow continues in the
   // DiceWebSigninInterceptor that is attached to the new profile.
