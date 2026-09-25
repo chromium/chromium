@@ -86,6 +86,10 @@ constexpr const char* kMinimalServices[] = {
 
     fuchsia::intl::PropertyProvider::Name_,
     fuchsia::logger::LogSink::Name_,
+    // Required by base::PlatformThread in every process that creates threads,
+    // to apply scheduler roles. A missing capability is fatal, see
+    // SetThreadRole() in base/threading/platform_thread_fuchsia.cc.
+    fidl::DiscoverableProtocolName<fuchsia_scheduler::RoleManager>,
     fuchsia::tracing::perfetto::ProducerConnector::Name_,
 };
 
@@ -99,7 +103,6 @@ constexpr const char* kGpuServices[] = {
     // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
     fuchsia::media::ProfileProvider::Name_,
     fuchsia::mediacodec::CodecFactory::Name_,
-    fidl::DiscoverableProtocolName<fuchsia_scheduler::RoleManager>,
     fuchsia::sysmem::Allocator::Name_,
     fuchsia::sysmem2::Allocator::Name_,
     "fuchsia.vulkan.loader.Loader",
@@ -129,7 +132,6 @@ constexpr const char* kRendererServices[] = {
     // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
     fuchsia::media::ProfileProvider::Name_,
     fuchsia::memorypressure::Provider::Name_,
-    fidl::DiscoverableProtocolName<fuchsia_scheduler::RoleManager>,
     fuchsia::sysmem::Allocator::Name_,
     fuchsia::sysmem2::Allocator::Name_,
     fuchsia::ui::composition::Allocator::Name_,
