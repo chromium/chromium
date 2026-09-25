@@ -54,11 +54,18 @@ class ZwpTextInputV3 {
 
   virtual void SetClient(ZwpTextInputV3Client* context) = 0;
   virtual void OnClientDestroyed(ZwpTextInputV3Client* context) = 0;
+  // Enables text input. Since enabling resets all text input state on the
+  // compositor side, the most recently requested surrounding text and cursor
+  // rectangle (if any) are sent together with the enable request.
   virtual void Enable(TextInputType type,
                       uint32_t flags,
                       bool should_do_learning) = 0;
   virtual void Disable() = 0;
   virtual void Reset() = 0;
+  // Clears the cached surrounding text and cursor rectangle that would
+  // otherwise be sent on the next Enable(). Should be called when the focused
+  // text input client changes, as the cached state is no longer valid.
+  virtual void ClearCachedState() = 0;
   virtual void SetCursorRect(const gfx::Rect& rect) = 0;
   virtual void SetSurroundingText(const std::string& text_with_preedit,
                                   const gfx::Range& preedit_range,
@@ -84,6 +91,7 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
               bool should_do_learning) override;
   void Disable() override;
   void Reset() override;
+  void ClearCachedState() override;
 
   void SetCursorRect(const gfx::Rect& rect) override;
   void SetSurroundingText(const std::string& text_with_preedit,
@@ -208,6 +216,13 @@ class ZwpTextInputV3Impl : public ZwpTextInputV3 {
 
   // Data that was last sent to IME and committed.
   ImeData committed_ime_data_;
+
+  // Most recently requested surrounding text and cursor rect. Unlike
+  // `pending_ime_data_` and `committed_ime_data_`, these survive Enable() and
+  // Disable() so that they can be re-sent along with the enable request, since
+  // text-input-v3 state is reset by the compositor on each enable.
+  std::optional<SurroundingText> latest_surrounding_text_;
+  std::optional<gfx::Rect> latest_cursor_rect_;
 };
 
 }  // namespace ui

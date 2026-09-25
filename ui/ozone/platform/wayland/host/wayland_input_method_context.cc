@@ -413,6 +413,12 @@ void WaylandInputMethodContext::UpdateFocus(
     TextInputClient::FocusReason reason) {
   attributes_ = new_client_attributes;
 
+  // Cached surrounding text and cursor rect belong to the previously focused
+  // text input client, so they must not be sent when re-enabling.
+  if (text_input_v3_) {
+    text_input_v3_->ClearCachedState();
+  }
+
   // This prevents unnecessarily hiding/showing the virtual keyboard.
   TextInputType new_type = new_client_attributes.input_type;
   bool skip_vk_update =

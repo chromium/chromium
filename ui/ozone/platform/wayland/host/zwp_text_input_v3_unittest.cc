@@ -444,11 +444,24 @@ TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnEnable) {
                                  TEXT_INPUT_FLAG_AUTOCORRECT_ON, true);
   VerifyAndClearExpectations();
 
-  // Enable should clear pending requests.
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+  // Enable should clear pending requests. The latest surrounding text and
+  // cursor rect are sent along with enable since enable resets all state, but
+  // the pending content type is replaced by the one passed to Enable().
+  PostToServerAndWait([kRect](wl::TestWaylandServerThread* server) {
     auto* zwp_text_input = server->text_input_manager_v3()->text_input();
     InSequence s;
-    ExpectEnableWithDefaultContentType(zwp_text_input);
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input,
+                SetContentType(ZWP_TEXT_INPUT_V3_CONTENT_HINT_NONE,
+                               ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_NORMAL))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input,
+                SetSurroundingText("surroundingtext", gfx::Range{11, 11}))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(kRect.x(), kRect.y(),
+                                               kRect.width(), kRect.height()))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
   });
   text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
   VerifyAndClearExpectations();
@@ -464,6 +477,140 @@ TEST_F(ZwpTextInputV3Test, PendingRequestsClearedOnEnable) {
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
     zwp_text_input_v3_send_done(zwp_text_input->resource(), 2);
   });
+  VerifyAndClearExpectations();
+}
+
+// Regression test for crbug.com/565066842: text-input-v3 state is reset on
+// each committed enable, so the surrounding text and cursor rect must be resent
+// along with enable after the window regains text input focus.
+TEST_F(ZwpTextInputV3Test, LatestStateSentOnReEnable) {
+  constexpr gfx::Rect kRect(50, 20, 1, 1);
+  constexpr std::string kText("surroundingtext");
+  constexpr gfx::Range kSelectionRange(3, 5);
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    ExpectEnableWithDefaultContentType(zwp_text_input);
+  });
+  text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
+  VerifyAndClearExpectations();
+
+  PostToServerAndWait([kRect, kText](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(kRect.x(), kRect.y(),
+                                               kRect.width(), kRect.height()))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(kText, gfx::Range{3, 5}))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(2);
+    zwp_text_input_v3_send_done(zwp_text_input->resource(), 1);
+  });
+  text_input_v3_->SetCursorRect(kRect);
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    zwp_text_input_v3_send_done(
+        server->text_input_manager_v3()->text_input()->resource(), 2);
+  });
+  text_input_v3_->SetSurroundingText(kText, gfx::Range::InvalidRange(),
+                                     kSelectionRange);
+  VerifyAndClearExpectations();
+
+  // Window loses and then regains text input focus. Both surrounding text and
+  // cursor rect should be sent in the same commit as enable.
+  PostToServerAndWait([kRect, kText](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input, Disable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input,
+                SetContentType(ZWP_TEXT_INPUT_V3_CONTENT_HINT_NONE,
+                               ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_NORMAL))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(kText, gfx::Range{3, 5}))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(kRect.x(), kRect.y(),
+                                               kRect.width(), kRect.height()))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  text_input_v3_->Disable();
+  text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
+  VerifyAndClearExpectations();
+
+  // Setting the same values again should be a no-op since they were already
+  // sent with enable.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(0);
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(0);
+    zwp_text_input_v3_send_done(zwp_text_input->resource(), 5);
+  });
+  text_input_v3_->SetCursorRect(kRect);
+  text_input_v3_->SetSurroundingText(kText, gfx::Range::InvalidRange(),
+                                     kSelectionRange);
+  VerifyAndClearExpectations();
+}
+
+// Surrounding text requested before the text input is enabled must be sent
+// along with enable, as enable invalidates previously sent state.
+TEST_F(ZwpTextInputV3Test, SurroundingTextSetBeforeEnableSentOnEnable) {
+  constexpr std::string kText("surroundingtext");
+
+  // Sent immediately (while disabled), but will be invalidated by enable.
+  PostToServerAndWait([kText](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(kText, gfx::Range{15, 15}))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  text_input_v3_->SetSurroundingText(kText, gfx::Range::InvalidRange(),
+                                     gfx::Range(15, 15));
+  VerifyAndClearExpectations();
+
+  PostToServerAndWait([kText](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input,
+                SetContentType(ZWP_TEXT_INPUT_V3_CONTENT_HINT_NONE,
+                               ZWP_TEXT_INPUT_V3_CONTENT_PURPOSE_NORMAL))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(kText, gfx::Range{15, 15}))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(0);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
+  VerifyAndClearExpectations();
+}
+
+TEST_F(ZwpTextInputV3Test, ClearCachedStateNotSentOnEnable) {
+  constexpr gfx::Rect kRect(50, 20, 1, 1);
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  text_input_v3_->SetSurroundingText("text", gfx::Range::InvalidRange(),
+                                     gfx::Range(4, 4));
+  // Not sent yet since done has not been received for the previous commit.
+  text_input_v3_->SetCursorRect(kRect);
+  VerifyAndClearExpectations();
+
+  text_input_v3_->ClearCachedState();
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    ExpectEnableWithDefaultContentType(zwp_text_input);
+    EXPECT_CALL(*zwp_text_input, SetSurroundingText(_, _)).Times(0);
+    EXPECT_CALL(*zwp_text_input, SetCursorRect(_, _, _, _)).Times(0);
+  });
+  text_input_v3_->Enable(TEXT_INPUT_TYPE_TEXT, TEXT_INPUT_FLAG_NONE, true);
   VerifyAndClearExpectations();
 }
 

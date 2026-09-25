@@ -178,6 +178,7 @@ void ZwpTextInputV3Impl::SetClient(ZwpTextInputV3Client* context) {
 void ZwpTextInputV3Impl::OnClientDestroyed(ZwpTextInputV3Client* context) {
   if (client_ == context) {
     client_ = nullptr;
+    ClearCachedState();
     Disable();
   }
 }
@@ -197,7 +198,32 @@ void ZwpTextInputV3Impl::Enable(ui::TextInputType type,
   zwp_text_input_v3_set_content_type(obj_.get(), content_type->content_hint,
                                      content_type->content_purpose);
   committed_ime_data_.content_type = std::move(content_type);
+
+  // Per the protocol, all state is reset by the compositor on each committed
+  // enable request, so any previously sent state is no longer valid. Resend the
+  // most recent surrounding text and cursor rectangle in the same commit, as
+  // they may not otherwise be requested again (e.g. when the window regains
+  // text input focus and the text is unchanged).
+  if (latest_surrounding_text_) {
+    zwp_text_input_v3_set_surrounding_text(
+        obj_.get(), latest_surrounding_text_->text.c_str(),
+        latest_surrounding_text_->cursor, latest_surrounding_text_->anchor);
+    committed_ime_data_.surrounding_text =
+        std::make_unique<SurroundingText>(*latest_surrounding_text_);
+  }
+  if (latest_cursor_rect_) {
+    zwp_text_input_v3_set_cursor_rectangle(
+        obj_.get(), latest_cursor_rect_->x(), latest_cursor_rect_->y(),
+        latest_cursor_rect_->width(), latest_cursor_rect_->height());
+    committed_ime_data_.cursor_rect =
+        std::make_unique<gfx::Rect>(*latest_cursor_rect_);
+  }
   Commit();
+}
+
+void ZwpTextInputV3Impl::ClearCachedState() {
+  latest_surrounding_text_.reset();
+  latest_cursor_rect_.reset();
 }
 
 void ZwpTextInputV3Impl::Disable() {
@@ -227,6 +253,7 @@ ZwpTextInputV3Impl::ContentType ZwpTextInputV3Impl::GetContentType(
 }
 
 void ZwpTextInputV3Impl::SetCursorRect(const gfx::Rect& rect) {
+  latest_cursor_rect_ = rect;
   if (committed_ime_data_.cursor_rect &&
       *committed_ime_data_.cursor_rect == rect) {
     // This is to avoid a loop in sending cursor rect and receiving pre-edit
@@ -287,6 +314,7 @@ void ZwpTextInputV3Impl::SetSurroundingText(
   auto surrounding_text = std::make_unique<SurroundingText>(
       std::move(text), cursor, anchor, text_with_preedit.length(),
       preedit_range.IsValid() ? preedit_range : selection_range);
+  latest_surrounding_text_ = *surrounding_text;
   if (committed_ime_data_.surrounding_text &&
       *committed_ime_data_.surrounding_text == *surrounding_text) {
     return;

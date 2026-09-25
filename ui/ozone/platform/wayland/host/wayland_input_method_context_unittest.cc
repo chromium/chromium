@@ -170,6 +170,7 @@ class MockZwpTextInputV3 : public ZwpTextInputV3 {
               (override));
   MOCK_METHOD(void, Disable, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
+  MOCK_METHOD(void, ClearCachedState, (), (override));
 
   MOCK_METHOD(void, SetCursorRect, (const gfx::Rect& rect), (override));
   MOCK_METHOD(void,
