@@ -180,6 +180,7 @@ But, the tests are built by {}.\
             ),
         },
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "test",
@@ -224,6 +225,7 @@ ci.builder(
     cores = 8,
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "remote",

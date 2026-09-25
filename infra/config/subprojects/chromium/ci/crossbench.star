@@ -73,6 +73,7 @@ ci.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
