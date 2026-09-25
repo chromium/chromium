@@ -451,6 +451,26 @@ TEST_F(OmniboxContextMenuControllerTest,
   EXPECT_EQ(
       controller()->GetIconForTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN),
       ui::ImageModel());
+
+  // Adding tool_config with IMAGE_CREATE resolves to kImageCreateIcon.
+  omnibox::ToolConfig image_gen_config;
+  image_gen_config.set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  image_gen_config.mutable_icon()->set_icon_id(
+      omnibox::IconResourceIds::IMAGE_CREATE);
+  state.tool_configs.push_back(image_gen_config);
+  controller()->OnGetInputState(state);
+
+  ui::ImageModel expected_image_gen_icon =
+      ui::ImageModel::FromVectorIcon(kImageCreateIcon, ui::kColorMenuIcon,
+                                     ui::SimpleMenuModel::kDefaultIconSize);
+  EXPECT_EQ(
+      controller()->GetIconForTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN),
+      expected_image_gen_icon);
+
+  // Unconfigured tool continues to return an empty ImageModel.
+  EXPECT_EQ(
+      controller()->GetIconForTool(omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE),
+      ui::ImageModel());
 }
 
 TEST_F(OmniboxContextMenuControllerTest, GetIconForTool_LegacyFallback) {

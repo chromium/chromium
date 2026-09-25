@@ -238,6 +238,10 @@ std::optional<ui::ImageModel> GetImageModelForIconResourceId(
 #endif
     case omnibox::IconResourceIds::PHOTO_PRINTS:
       return ui::ImageModel();
+    case omnibox::IconResourceIds::IMAGE_CREATE:
+      return ui::ImageModel::FromVectorIcon(
+          kImageCreateIcon, ui::kColorMenuIcon,
+          ui::SimpleMenuModel::kDefaultIconSize);
     default:
       return std::nullopt;
   }

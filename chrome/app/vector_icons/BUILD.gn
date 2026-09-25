@@ -170,6 +170,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "hourglass.icon",
     "hourglass_old.icon",
     "image.icon",
+    "image_create.icon",
     "incognito.icon",
     "incognito_circle_filled.icon",
     "incognito_old.icon",
