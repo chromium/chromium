@@ -111,7 +111,6 @@ class CBOR_EXPORT Value {
     MAP = 5,
     // TAG = 6, but not actually supported.
     SIMPLE_VALUE = 7,
-    NONE = -1,
     INVALID_UTF8 = -2,
   };
 
@@ -130,8 +129,10 @@ class CBOR_EXPORT Value {
   // tests since encoding may yield invalid CBOR data.
   static Value InvalidUTF8StringValueForTesting(std::string_view in_string);
 
+  // Use std::optional<Value> to represent an absent value.
+  Value() = delete;
+
   Value(Value&& that) noexcept;
-  Value() noexcept;  // A NONE value.
 
   explicit Value(SimpleValue in_simple);
   explicit Value(bool boolean_value);
@@ -171,7 +172,6 @@ class CBOR_EXPORT Value {
 
   // Returns true if the current object represents a given type.
   bool is_type(Type type) const { return type == type_; }
-  bool is_none() const { return type() == Type::NONE; }
   bool is_invalid_utf8() const { return type() == Type::INVALID_UTF8; }
   bool is_simple() const { return type() == Type::SIMPLE_VALUE; }
   bool is_bool() const {
@@ -202,6 +202,7 @@ class CBOR_EXPORT Value {
 
  private:
   friend class Reader;
+
   // This constructor allows INVALID_UTF8 values to be created, which only
   // |Reader| and InvalidUTF8StringValueForTesting() may do.
   Value(base::span<const uint8_t> in_bytes, Type type);
@@ -218,6 +219,9 @@ class CBOR_EXPORT Value {
   };
 
   void InternalMoveConstructFrom(Value&& that);
+
+  // Destroys the active union member without updating |type_|. Only valid
+  // immediately before InternalMoveConstructFrom() or destruction.
   void InternalCleanup();
 };
 

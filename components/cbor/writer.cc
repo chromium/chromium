@@ -86,8 +86,6 @@ std::optional<cbor::rust::MapKey> ConvertCppMapKeyToRust(
     return std::nullopt;
   }
   switch (key.type()) {
-    case Value::Type::NONE:
-      return std::nullopt;
     case Value::Type::UNSIGNED:
       return cbor::rust::MapKey::MakeInt(key.GetUnsigned());
     case Value::Type::NEGATIVE:
@@ -123,8 +121,6 @@ std::optional<cbor::rust::Value> ConvertCppValueToRust(
   }
 
   switch (node.type()) {
-    case Value::Type::NONE:
-      return std::nullopt;
     case Value::Type::INVALID_UTF8:
       if (!allow_invalid_utf8) {
         NOTREACHED() << constants::kUnsupportedMajorType;
@@ -254,10 +250,6 @@ bool Writer::EncodeCBOR(const Value& node,
     return false;
 
   switch (node.type()) {
-    // Default-constructed or moved-from Values have no CBOR representation.
-    case Value::Type::NONE:
-      return false;
-
     case Value::Type::INVALID_UTF8: {
       if (!allow_invalid_utf8) {
         NOTREACHED() << constants::kUnsupportedMajorType;

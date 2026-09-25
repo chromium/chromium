@@ -43,8 +43,10 @@ std::optional<SignedExchangeEnvelope> GenerateHeaderAndParse(
     std::string_view signature,
     const std::map<const char*, const char*>& response_map) {
   cbor::Value::MapValue response_cbor_map;
-  for (auto& pair : response_map)
-    response_cbor_map[CBORByteString(pair.first)] = CBORByteString(pair.second);
+  for (auto& pair : response_map) {
+    response_cbor_map.insert_or_assign(CBORByteString(pair.first),
+                                       CBORByteString(pair.second));
+  }
 
   DCHECK_EQ(version, SignedExchangeVersion::kB3);
   auto serialized =

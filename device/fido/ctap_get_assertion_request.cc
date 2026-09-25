@@ -297,21 +297,21 @@ CtapGetAssertionRequest::~CtapGetAssertionRequest() = default;
 std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
   cbor::Value::MapValue cbor_map;
-  cbor_map[cbor::Value(1)] = cbor::Value(request.rp_id);
-  cbor_map[cbor::Value(2)] = cbor::Value(request.client_data_hash);
+  cbor_map.emplace(1, request.rp_id);
+  cbor_map.emplace(2, request.client_data_hash);
 
   if (!request.allow_list.empty()) {
     cbor::Value::ArrayValue allow_list_array;
     for (const auto& descriptor : request.allow_list) {
       allow_list_array.push_back(AsCBOR(descriptor));
     }
-    cbor_map[cbor::Value(3)] = cbor::Value(std::move(allow_list_array));
+    cbor_map.emplace(3, std::move(allow_list_array));
   }
 
   cbor::Value::MapValue extensions;
 
   if (request.large_blob_key) {
-    extensions.emplace(kExtensionLargeBlobKey, cbor::Value(true));
+    extensions.emplace(kExtensionLargeBlobKey, true);
   }
 
   if (request.large_blob_extension_read) {
@@ -345,7 +345,7 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
 
   if (request.cross_device_fallback_url) {
     extensions.emplace(kExtensionCrossDeviceFallbackUrl,
-                       cbor::Value(*request.cross_device_fallback_url));
+                       *request.cross_device_fallback_url);
   }
 
   if (!request.prf_inputs.empty()) {
@@ -369,33 +369,31 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
   }
 
   if (!extensions.empty()) {
-    cbor_map[cbor::Value(4)] = cbor::Value(std::move(extensions));
+    cbor_map.emplace(4, std::move(extensions));
   }
 
   if (request.pin_auth) {
-    cbor_map[cbor::Value(6)] = cbor::Value(*request.pin_auth);
+    cbor_map.emplace(6, *request.pin_auth);
   }
 
   if (request.pin_protocol) {
-    cbor_map[cbor::Value(7)] =
-        cbor::Value(static_cast<uint8_t>(*request.pin_protocol));
+    cbor_map.emplace(7, static_cast<uint8_t>(*request.pin_protocol));
   }
 
   cbor::Value::MapValue option_map;
 
   // User presence is required by default.
   if (!request.user_presence_required) {
-    option_map[cbor::Value(kUserPresenceMapKey)] =
-        cbor::Value(request.user_presence_required);
+    option_map.emplace(kUserPresenceMapKey, request.user_presence_required);
   }
 
   // User verification is not required by default.
   if (request.user_verification == UserVerificationRequirement::kRequired) {
-    option_map[cbor::Value(kUserVerificationMapKey)] = cbor::Value(true);
+    option_map.emplace(kUserVerificationMapKey, true);
   }
 
   if (!option_map.empty()) {
-    cbor_map[cbor::Value(5)] = cbor::Value(std::move(option_map));
+    cbor_map.emplace(5, std::move(option_map));
   }
 
   return std::make_pair(CtapRequestCommand::kAuthenticatorGetAssertion,

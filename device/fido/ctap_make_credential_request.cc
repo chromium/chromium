@@ -314,22 +314,22 @@ CtapMakeCredentialRequest::~CtapMakeCredentialRequest() = default;
 std::pair<CtapRequestCommand, std::optional<cbor::Value>>
 AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
   cbor::Value::MapValue cbor_map;
-  cbor_map[cbor::Value(1)] = cbor::Value(request.client_data_hash);
-  cbor_map[cbor::Value(2)] = AsCBOR(request.rp);
-  cbor_map[cbor::Value(3)] = AsCBOR(request.user);
-  cbor_map[cbor::Value(4)] = AsCBOR(request.public_key_credential_params);
+  cbor_map.emplace(1, request.client_data_hash);
+  cbor_map.emplace(2, AsCBOR(request.rp));
+  cbor_map.emplace(3, AsCBOR(request.user));
+  cbor_map.emplace(4, AsCBOR(request.public_key_credential_params));
   if (!request.exclude_list.empty()) {
     cbor::Value::ArrayValue exclude_list_array;
     for (const auto& descriptor : request.exclude_list) {
       exclude_list_array.push_back(AsCBOR(descriptor));
     }
-    cbor_map[cbor::Value(5)] = cbor::Value(std::move(exclude_list_array));
+    cbor_map.emplace(5, std::move(exclude_list_array));
   }
 
   cbor::Value::MapValue extensions;
 
   if (request.hmac_secret) {
-    extensions[cbor::Value(kExtensionHmacSecret)] = cbor::Value(true);
+    extensions.emplace(kExtensionHmacSecret, true);
   }
 
   if (request.hmac_secret_mc) {
@@ -359,11 +359,11 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
   }
 
   if (request.large_blob_key) {
-    extensions[cbor::Value(kExtensionLargeBlobKey)] = cbor::Value(true);
+    extensions.emplace(kExtensionLargeBlobKey, true);
   }
 
   if (request.cmtg_key) {
-    extensions[cbor::Value(kExtensionCmtgKey)] = cbor::Value(true);
+    extensions.emplace(kExtensionCmtgKey, true);
   }
 
   if (request.cred_protect) {
@@ -380,33 +380,31 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
   }
 
   if (!extensions.empty()) {
-    cbor_map[cbor::Value(6)] = cbor::Value(std::move(extensions));
+    cbor_map.emplace(6, std::move(extensions));
   }
 
   if (request.pin_auth) {
-    cbor_map[cbor::Value(8)] = cbor::Value(*request.pin_auth);
+    cbor_map.emplace(8, *request.pin_auth);
   }
 
   if (request.pin_protocol) {
-    cbor_map[cbor::Value(9)] =
-        cbor::Value(static_cast<uint8_t>(*request.pin_protocol));
+    cbor_map.emplace(9, static_cast<uint8_t>(*request.pin_protocol));
   }
 
   cbor::Value::MapValue option_map;
 
   // Resident keys are not required by default.
   if (request.resident_key_required) {
-    option_map[cbor::Value(kResidentKeyMapKey)] =
-        cbor::Value(request.resident_key_required);
+    option_map.emplace(kResidentKeyMapKey, request.resident_key_required);
   }
 
   // User verification is not required by default.
   if (request.user_verification == UserVerificationRequirement::kRequired) {
-    option_map[cbor::Value(kUserVerificationMapKey)] = cbor::Value(true);
+    option_map.emplace(kUserVerificationMapKey, true);
   }
 
   if (!option_map.empty()) {
-    cbor_map[cbor::Value(7)] = cbor::Value(std::move(option_map));
+    cbor_map.emplace(7, std::move(option_map));
   }
 
   switch (request.attestation_preference) {

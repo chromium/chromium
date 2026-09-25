@@ -24,8 +24,6 @@ Value Value::InvalidUTF8StringValueForTesting(std::string_view in_string) {
   return Value(base::as_byte_span(in_string), Type::INVALID_UTF8);
 }
 
-Value::Value() noexcept : type_(Type::NONE) {}
-
 Value::Value(Value&& that) noexcept {
   InternalMoveConstructFrom(std::move(that));
 }
@@ -115,6 +113,13 @@ Value::Value(MapValue&& in_map) noexcept
     : type_(Type::MAP), map_value_(std::move(in_map)) {}
 
 Value& Value::operator=(Value&& that) noexcept {
+  // Required for correctness: `InternalCleanup()` destroys the active union
+  // member, so without this guard self-assignment would leave
+  // `InternalMoveConstructFrom()` reading from a destroyed object.
+  if (this == &that) {
+    return *this;
+  }
+
   InternalCleanup();
   InternalMoveConstructFrom(std::move(that));
 
@@ -127,8 +132,6 @@ Value::~Value() {
 
 Value Value::Clone() const {
   switch (type_) {
-    case Type::NONE:
-      return Value();
     case Type::INVALID_UTF8:
       return Value(bytestring_value_, Type::INVALID_UTF8);
     case Type::UNSIGNED:
@@ -229,8 +232,6 @@ void Value::InternalMoveConstructFrom(Value&& that) {
     case Type::SIMPLE_VALUE:
       simple_value_ = that.simple_value_;
       return;
-    case Type::NONE:
-      return;
   }
   NOTREACHED();
 }
@@ -250,13 +251,11 @@ void Value::InternalCleanup() {
     case Type::MAP:
       map_value_.~MapValue();
       break;
-    case Type::NONE:
     case Type::UNSIGNED:
     case Type::NEGATIVE:
     case Type::SIMPLE_VALUE:
       break;
   }
-  type_ = Type::NONE;
 }
 
 }  // namespace cbor

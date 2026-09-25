@@ -964,10 +964,8 @@ absl::StatusOr<ReleaseToken> ReleaseToken::Decode(absl::string_view encoded) {
   token.signature = std::string(signature.begin(), signature.end());
 
   // Parse the inner COSE_Encrypt0 structure.
-  std::vector<uint8_t> protected_header_encrypt, encrypted_payload;
-  cbor::Value unprotected_header;
   ABSL_ASSIGN_OR_RETURN(
-      std::tie(protected_header_encrypt, unprotected_header, encrypted_payload),
+      (auto [protected_header_encrypt, unprotected_header, encrypted_payload]),
       ParseCoseEncrypt0(*payload_sign));
 
   ABSL_RETURN_IF_ERROR(ParseProtectedHeader(protected_header_encrypt,

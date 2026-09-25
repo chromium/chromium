@@ -38,8 +38,6 @@ bool MatchCborValue(const Value& actual,
     return false;
   }
   switch (actual.type()) {
-    case Value::Type::NONE:
-      return true;
     case Value::Type::UNSIGNED:
     case Value::Type::NEGATIVE:
       if (actual.GetInteger() != expected.GetInteger()) {

@@ -933,7 +933,6 @@ static std::optional<cbor::Value> FixInvalidUTF8Value(
     case cbor::Value::Type::BYTE_STRING:
     case cbor::Value::Type::STRING:
     case cbor::Value::Type::SIMPLE_VALUE:
-    case cbor::Value::Type::NONE:
       return v.Clone();
 
     case cbor::Value::Type::ARRAY: {
@@ -1004,7 +1003,6 @@ static bool ContainsInvalidUTF8(const cbor::Value& v) {
     case cbor::Value::Type::BYTE_STRING:
     case cbor::Value::Type::STRING:
     case cbor::Value::Type::SIMPLE_VALUE:
-    case cbor::Value::Type::NONE:
       return false;
 
     case cbor::Value::Type::ARRAY: {

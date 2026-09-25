@@ -169,12 +169,9 @@ bool AttestationObject::IsAttestationCertificateInappropriatelyIdentifying() {
 
 cbor::Value AsCBOR(const AttestationObject& object) {
   cbor::Value::MapValue map;
-  map[cbor::Value(kFormatKey)] =
-      cbor::Value(object.attestation_statement().format_name());
-  map[cbor::Value(kAuthDataKey)] =
-      cbor::Value(object.authenticator_data().SerializeToByteArray());
-  map[cbor::Value(kAttestationStatementKey)] =
-      AsCBOR(object.attestation_statement());
+  map.emplace(kFormatKey, object.attestation_statement().format_name());
+  map.emplace(kAuthDataKey, object.authenticator_data().SerializeToByteArray());
+  map.emplace(kAttestationStatementKey, AsCBOR(object.attestation_statement()));
   return cbor::Value(std::move(map));
 }
 

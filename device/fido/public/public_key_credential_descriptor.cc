@@ -83,9 +83,9 @@ bool PublicKeyCredentialDescriptor::operator==(
 
 cbor::Value AsCBOR(const PublicKeyCredentialDescriptor& desc) {
   cbor::Value::MapValue cbor_descriptor_map;
-  cbor_descriptor_map[cbor::Value(kCredentialIdKey)] = cbor::Value(desc.id);
-  cbor_descriptor_map[cbor::Value(kCredentialTypeKey)] =
-      cbor::Value(CredentialTypeToString(desc.credential_type));
+  cbor_descriptor_map.emplace(kCredentialIdKey, desc.id);
+  cbor_descriptor_map.emplace(kCredentialTypeKey,
+                              CredentialTypeToString(desc.credential_type));
   // Transports are omitted from CBOR serialization. They aren't useful for
   // security keys to process. Some existing devices even refuse to parse them
   // (see https://crbug.com/1270757).

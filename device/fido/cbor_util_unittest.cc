@@ -14,8 +14,8 @@ namespace fido_cbor_util {
 
 TEST(FidoCborUtilTest, RedactValueAtPaths) {
   cbor::Value::MapValue map;
-  map[cbor::Value("secret")] = cbor::Value("password");
-  map[cbor::Value("public")] = cbor::Value("hello");
+  map.emplace("secret", "password");
+  map.emplace("public", "hello");
   cbor::Value val(std::move(map));
 
   cbor::Value redacted = RedactValueAtPaths(val, Path("secret"));

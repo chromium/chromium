@@ -92,13 +92,13 @@ std::vector<uint8_t> BuildEncodedResponseData(
     uint8_t status) {
   cbor::Value::MapValue cbor_map;
   cbor::Value::MapValue credential_map;
-  credential_map[cbor::Value(kCredentialIdKey)] = cbor::Value(credential_id);
-  cbor_map[cbor::Value(1)] = cbor::Value(credential_map);
-  cbor_map[cbor::Value(2)] = cbor::Value(auth_data);
-  cbor_map[cbor::Value(3)] = cbor::Value(signature);
+  credential_map.emplace(kCredentialIdKey, std::move(credential_id));
+  cbor_map.emplace(1, std::move(credential_map));
+  cbor_map.emplace(2, std::move(auth_data));
+  cbor_map.emplace(3, std::move(signature));
   cbor::Value::MapValue user_map;
-  user_map[cbor::Value(kEntitiyIdMapKey)] = cbor::Value(user_id);
-  cbor_map[cbor::Value(4)] = cbor::Value(user_map);
+  user_map.emplace(kEntitiyIdMapKey, std::move(user_id));
+  cbor_map.emplace(4, std::move(user_map));
   std::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(cbor_map)));
   DCHECK(cbor_bytes);

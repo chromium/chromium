@@ -184,12 +184,11 @@ class SignedExchangeCertFetcherTest : public testing::Test {
 
   static std::string CreateCertMessage(std::string_view cert_data) {
     cbor::Value::MapValue cbor_map;
-    cbor_map[cbor::Value("sct")] =
-        cbor::Value("SCT", cbor::Value::Type::BYTE_STRING);
-    cbor_map[cbor::Value("cert")] =
-        cbor::Value(cert_data, cbor::Value::Type::BYTE_STRING);
-    cbor_map[cbor::Value("ocsp")] =
-        cbor::Value("OCSP", cbor::Value::Type::BYTE_STRING);
+    cbor_map.emplace("sct", cbor::Value("SCT", cbor::Value::Type::BYTE_STRING));
+    cbor_map.emplace("cert",
+                     cbor::Value(cert_data, cbor::Value::Type::BYTE_STRING));
+    cbor_map.emplace("ocsp",
+                     cbor::Value("OCSP", cbor::Value::Type::BYTE_STRING));
 
     cbor::Value::ArrayValue cbor_array;
     cbor_array.push_back(cbor::Value("\U0001F4DC\u26D3"));

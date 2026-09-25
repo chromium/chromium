@@ -120,16 +120,14 @@ FidoAttestationStatement::~FidoAttestationStatement() = default;
 
 cbor::Value FidoAttestationStatement::AsCBOR() const {
   cbor::Value::MapValue attestation_statement_map;
-  attestation_statement_map[cbor::Value(kSignatureKey)] =
-      cbor::Value(signature_);
+  attestation_statement_map.emplace(kSignatureKey, signature_);
 
   std::vector<cbor::Value> certificate_array;
   for (const auto& cert : x509_certificates_) {
     certificate_array.push_back(cbor::Value(cert));
   }
 
-  attestation_statement_map[cbor::Value(kX509CertKey)] =
-      cbor::Value(std::move(certificate_array));
+  attestation_statement_map.emplace(kX509CertKey, std::move(certificate_array));
 
   return cbor::Value(std::move(attestation_statement_map));
 }
@@ -180,19 +178,18 @@ PackedAttestationStatement::~PackedAttestationStatement() = default;
 cbor::Value PackedAttestationStatement::AsCBOR() const {
   cbor::Value::MapValue attestation_statement_map;
   // alg
-  attestation_statement_map[cbor::Value(kAlgorithmKey)] =
-      cbor::Value(static_cast<int>(algorithm_));
+  attestation_statement_map.emplace(kAlgorithmKey,
+                                    static_cast<int>(algorithm_));
   // sig
-  attestation_statement_map[cbor::Value(kSignatureKey)] =
-      cbor::Value(signature_);
+  attestation_statement_map.emplace(kSignatureKey, signature_);
   // x5c (optional)
   if (!x509_certificates_.empty()) {
     std::vector<cbor::Value> certificate_array;
     for (const auto& cert : x509_certificates_) {
       certificate_array.push_back(cbor::Value(cert));
     }
-    attestation_statement_map[cbor::Value(kX509CertKey)] =
-        cbor::Value(std::move(certificate_array));
+    attestation_statement_map.emplace(kX509CertKey,
+                                      std::move(certificate_array));
   }
   return cbor::Value(std::move(attestation_statement_map));
 }
