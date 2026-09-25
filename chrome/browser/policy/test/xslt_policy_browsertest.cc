@@ -197,8 +197,10 @@ IN_PROC_BROWSER_TEST_P(XSLTPolicyBrowserTest, PolicyIsFollowed) {
           const p = new XSLTProcessor();
           p.importStylesheet(xsl);
           const doc = p.transformToDocument(xml);
-          window.domAutomationController.send(
-              doc.documentElement.textContent.includes('This site uses XSLT'));
+          const banner = doc ? doc.querySelector('xslt-warning-banner') : null;
+          const hasBanner = banner && banner.shadowRoot &&
+              banner.shadowRoot.textContent.includes('This site uses XSLT');
+          window.domAutomationController.send(Boolean(hasBanner));
         )");
     std::string banner_message;
     EXPECT_TRUE(banner_queue.WaitForMessage(&banner_message));

@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/transform_source.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -168,10 +169,10 @@ namespace {
 // The banner lives in the transformed document, whose stylesheets are not
 // under our control, so everything is styled inline.
 constexpr char kBannerStyle[] =
-    "background-color: #d9534f; color: white; padding: 12px 44px; "
-    "margin-bottom: 20px; font-size: 16px; font-weight: bold; "
-    "text-align: center; font-family: sans-serif; position: relative; "
-    "z-index: 2147483647;";
+    "display: block; background-color: #d9534f; color: white; "
+    "padding: 12px 44px; margin-bottom: 20px; font-size: 16px; "
+    "font-weight: bold; text-align: center; font-family: sans-serif; "
+    "position: relative; z-index: 2147483647; line-height: normal;";
 constexpr char kLinkStyle[] = "color: white; text-decoration: underline;";
 constexpr char kCloseButtonStyle[] =
     "position: absolute; top: 6px; right: 8px; background: transparent; "
@@ -288,7 +289,7 @@ struct BannerLink {
 // than by Locale::QueryString(). A translation may place the placeholders in
 // any order, or leave one out.
 static void AppendLocalizedBannerText(Document& document,
-                                      Element* banner,
+                                      ContainerNode* banner_container,
                                       const String& message,
                                       const BannerLink& link1,
                                       const BannerLink& link2) {
@@ -301,21 +302,25 @@ static void AppendLocalizedBannerText(Document& document,
       break;
     }
     if (position > text_start) {
-      banner->appendChild(document.createTextNode(
+      banner_container->appendChild(document.createTextNode(
           message.substr(text_start, position - text_start)));
     }
     const BannerLink& link = position == position1 ? link1 : link2;
-    banner->appendChild(CreateBannerLink(document, link.href, link.text));
+    banner_container->appendChild(
+        CreateBannerLink(document, link.href, link.text));
     text_start = position + 2;
   }
   if (text_start < message.length()) {
-    banner->appendChild(document.createTextNode(message.substr(text_start)));
+    banner_container->appendChild(
+        document.createTextNode(message.substr(text_start)));
   }
 }
 
 // Appends the "Never show this warning" checkbox and the close button. The
 // checkbox state is only acted on when the close button is clicked.
-static void AppendDismissControls(Document& document, Element* banner) {
+static void AppendDismissControls(Document& document,
+                                  ContainerNode* banner_container,
+                                  Element* banner) {
   auto* checkbox = To<HTMLInputElement>(document.CreateRawElement(
       html_names::kInputTag, CreateElementFlags::ByCreateElement()));
   checkbox->setAttribute(html_names::kTypeAttr, AtomicString("checkbox"));
@@ -331,7 +336,7 @@ static void AppendDismissControls(Document& document, Element* banner) {
   label->appendChild(
       document.createTextNode(Locale::DefaultLocale().QueryString(
           IDS_XSLT_DEPRECATION_BANNER_NEVER_SHOW_AGAIN)));
-  banner->appendChild(label);
+  banner_container->appendChild(label);
 
   Element* close_button = document.CreateRawElement(
       html_names::kButtonTag, CreateElementFlags::ByCreateElement());
@@ -344,16 +349,14 @@ static void AppendDismissControls(Document& document, Element* banner) {
   // This keeps the close button working when a page clones the banner, e.g.
   // via importNode() on a transformToDocument() result. Note that this will not
   // pass CSP/trusted types, so it's not a perfect solution.
-  close_button->setAttribute(
-      html_names::kOnclickAttr,
-      AtomicString("this.parentElement.style.setProperty('display','none',"
-                   "'important')"));
+  close_button->setAttribute(html_names::kOnclickAttr,
+                             AtomicString("this.getRootNode().host.remove();"));
   // U+00D7 MULTIPLICATION SIGN.
   close_button->appendChild(document.createTextNode(String(u"\u00D7")));
   close_button->addEventListener(
       event_type_names::kClick,
       MakeGarbageCollected<BannerCloseListener>(banner, checkbox_state));
-  banner->appendChild(close_button);
+  banner_container->appendChild(close_button);
 }
 
 template <typename Callback>
@@ -367,10 +370,18 @@ static void CreateAndAppendBanner(Document& document, Callback build_banner) {
   }
 
   Element* banner = document.CreateRawElement(
-      html_names::kDivTag, CreateElementFlags::ByCreateElement());
+      QualifiedName(g_null_atom, AtomicString("xslt-warning-banner"),
+                    html_names::xhtmlNamespaceURI),
+      CreateElementFlags::ByCreateElement());
+  banner->SetCustomElementState(CustomElementState::kUndefined);
   banner->setAttribute(html_names::kStyleAttr, AtomicString(kBannerStyle));
-  build_banner(banner);
-  AppendDismissControls(document, banner);
+  ShadowRoot& shadow_root = banner->AttachShadowRootInternal(
+      ShadowRootMode::kOpen, FocusDelegation::kNone, SlotAssignmentMode::kNamed,
+      CustomElementRegistryAssignment::Inherit(),
+      /*serializable=*/false, /*clonable=*/true,
+      /*reference_target=*/g_null_atom);
+  build_banner(&shadow_root);
+  AppendDismissControls(document, &shadow_root, banner);
   target->insertBefore(banner, target->firstChild());
 }
 
@@ -493,7 +504,7 @@ static void InjectXSLTWarningBanner(bool is_cap_alert_xslt,
         locale.QueryString(IDS_XSLT_DEPRECATION_BANNER_CAP_ALERT_REMOVAL_LINK)};
     String message =
         locale.QueryString(IDS_XSLT_DEPRECATION_BANNER_CAP_ALERT_TEXT);
-    CreateAndAppendBanner(document, [&](Element* banner) {
+    CreateAndAppendBanner(document, [&](ContainerNode* banner) {
       AppendLocalizedBannerText(document, banner, message, removal_link,
                                 extension_link);
     });
@@ -502,7 +513,7 @@ static void InjectXSLTWarningBanner(bool is_cap_alert_xslt,
         "https://chromestatus.com/feature/4709671889534976",
         locale.QueryString(IDS_XSLT_DEPRECATION_BANNER_REMOVAL_LINK)};
     String message = locale.QueryString(IDS_XSLT_DEPRECATION_BANNER_TEXT);
-    CreateAndAppendBanner(document, [&](Element* banner) {
+    CreateAndAppendBanner(document, [&](ContainerNode* banner) {
       AppendLocalizedBannerText(document, banner, message, removal_link,
                                 extension_link);
     });

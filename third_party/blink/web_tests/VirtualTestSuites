@@ -4798,9 +4798,11 @@
       "fast/parser/xml-cap-alert-xslt-use-counter.html",
       "fast/parser/xml-cap-alert-xslt-enabled.html",
       "fast/parser/xml-xslt-warning-banner.html",
-      "fast/parser/xml-xslt-warning-banner-polyfill.html"
+      "fast/parser/xml-xslt-warning-banner-polyfill.html",
+      "fast/parser/xml-xslt-warning-banner-appearance.html"
     ],
     "exclusive_tests": [
+      "fast/parser/xml-xslt-warning-banner-appearance.html",
       "http/tests/xsl/xslt/xsltpi-issue.js",
       "http/tests/xsl/xslt/xsltprocessor-issue.js",
       "http/tests/xsl/xslt/css-no-cache-revalidation.html",

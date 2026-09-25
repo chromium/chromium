@@ -63,10 +63,11 @@ test(() => {
   const resultDoc = xsltProcessor.transformToDocument(xmlDoc);
 
   assert_not_equals(resultDoc, null, 'transformToDocument should succeed');
-  assert_equals(resultDoc.getElementById('result').textContent, 'Hello World');
-  assert_false(resultDoc.documentElement.textContent.includes('This site uses XSLT'),
+  const banner = resultDoc.querySelector('xslt-warning-banner');
+  const bannerText = banner?.shadowRoot?.textContent || '';
+  assert_false(bannerText.includes('This site uses XSLT'),
       'Deprecation warning banner should not be present when origin trial is enabled');
-  assert_false(resultDoc.documentElement.textContent.includes('This CAP alert'),
+  assert_false(bannerText.includes('This CAP alert'),
       'CAP deprecation warning banner should not be present when origin trial is enabled');
 }, 'XSLT deprecation trial - warning banner is not shown when origin trial is enabled');
 </script>

@@ -35,7 +35,8 @@ promise_test(async () => {
   }
 
   // Warning banner should be present if and only if EnableXSLTForCAPAlerts is enabled and document was transformed.
-  const capHasBanner = capDoc.documentElement.textContent.includes("technology called XSLT");
+  const capBanner = capDoc.querySelector('xslt-warning-banner');
+  const capHasBanner = Boolean(capBanner?.shadowRoot?.textContent.includes("technology called XSLT"));
   if (expectCapTransformed && capAlertXsltEnabled) {
     assert_true(capHasBanner, "CAP Alert transformed page should contain the deprecation warning banner");
   } else {
@@ -51,7 +52,8 @@ promise_test(async () => {
   } else {
     assert_equals(nonCapTransformed, null, "Non-CAP XML document should not be transformed via XSLT");
   }
-  const nonCapHasBanner = nonCapDoc.documentElement.textContent.includes("technology called XSLT");
+  const nonCapBanner = nonCapDoc.querySelector('xslt-warning-banner');
+  const nonCapHasBanner = Boolean(nonCapBanner?.shadowRoot?.textContent.includes("technology called XSLT"));
   assert_false(nonCapHasBanner, "Non-CAP document should never contain the CAP deprecation warning banner");
 }, "XSLT processing and banner display for CAP alert and non-CAP XML documents");
 </script>

@@ -24,7 +24,8 @@ async function bannerText(src) {
   assert_not_equals(doc, null, `contentDocument for ${src} should exist`);
   assert_not_equals(doc.getElementById('transformed'), null,
       `${src} should have been transformed by XSLT`);
-  return doc.documentElement.textContent;
+  const banner = doc.querySelector('xslt-warning-banner');
+  return banner && banner.shadowRoot ? banner.shadowRoot.textContent : "";
 }
 
 // Sources whose transform source contains an XHTML <script src> at most two

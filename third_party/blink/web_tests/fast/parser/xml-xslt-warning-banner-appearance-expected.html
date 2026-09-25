@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://chromestatus.com/feature/4709671889534976">
+<script>
+function waitForBanner(iframe) {
+  function check() {
+    try {
+      const doc = iframe.contentDocument;
+      if (doc && doc.querySelector('xslt-warning-banner') && doc.querySelector('span')) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            document.documentElement.classList.remove('reftest-wait');
+          });
+        });
+        return;
+      }
+    } catch (e) {}
+    setTimeout(check, 20);
+  }
+  iframe.addEventListener('load', () => {
+    setTimeout(check, 20);
+  });
+  check();
+}
+window.onload = () => {
+  waitForBanner(document.querySelector('iframe'));
+};
+</script>
+
+<style>
+iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+</style>
+<iframe src="resources/xslt-page-styles-ref.xml"></iframe>
