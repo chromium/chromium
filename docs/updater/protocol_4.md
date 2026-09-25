@@ -366,6 +366,7 @@ is running within. It has the following members:
      operating system family name should be transmitted in a canonical form.
      Formatting varies across implementations. Default: "". Known values:
      *   "android" or "Android": Android.
+     *   "Android Desktop": Android running in desktop mode.
      *   "chromeos" or "ChromeOS" or "Chrome OS": Chrome OS.
      *   "chromiumos" or "ChromiumOS" or "Chromium OS": Chromium OS.
      *   "dragonfly": DragonFly BSD.
