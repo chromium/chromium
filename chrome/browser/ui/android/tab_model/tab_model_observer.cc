@@ -37,9 +37,6 @@ void TabModelObserver::OnTabCloseCommitted(
     bool can_restore,
     TabModel::TabClosingSource source) {}
 
-void TabModelObserver::WillAddTab(TabAndroid* tab,
-                                  TabModel::TabLaunchType type) {}
-
 void TabModelObserver::DidAddTab(TabAndroid* tab,
                                  TabModel::TabLaunchType type) {}
 

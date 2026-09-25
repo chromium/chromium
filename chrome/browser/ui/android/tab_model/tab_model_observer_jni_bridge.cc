@@ -116,15 +116,6 @@ void TabModelObserverJniBridge::OnTabCloseCommitted(
   }
 }
 
-void TabModelObserverJniBridge::WillAddTab(JNIEnv* env,
-                                           TabAndroid* tab,
-                                           int type) {
-  CHECK(tab);
-  for (auto& observer : model_observers_) {
-    observer.WillAddTab(tab, static_cast<TabModel::TabLaunchType>(type));
-  }
-}
-
 void TabModelObserverJniBridge::DidAddTab(JNIEnv* env,
                                           TabAndroid* tab,
                                           int type,

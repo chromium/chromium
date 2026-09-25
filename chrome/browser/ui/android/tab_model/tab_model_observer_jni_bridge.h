@@ -67,8 +67,6 @@ class TabModelObserverJniBridge {
                            bool can_restore,
                            int source);
 
-  void WillAddTab(JNIEnv* env, TabAndroid* tab, int type);
-
   void DidAddTab(JNIEnv* env, TabAndroid* tab, int type, int index);
 
   void DidMoveTab(JNIEnv* env, TabAndroid* tab, int new_index, int cur_index);

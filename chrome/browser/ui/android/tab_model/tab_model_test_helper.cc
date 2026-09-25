@@ -790,8 +790,6 @@ TabAndroid* OwningTestTabModel::AddTabFromWebContents(
   std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
       GetProfile(), next_tab_id_++, std::move(web_contents));
   TabAndroid* raw_tab = tab.get();
-
-  observer_list_.Notify(&TabModelObserver::WillAddTab, raw_tab, launch_type);
   owned_tabs_.insert(owned_tabs_.begin() + index, std::move(tab));
   observer_list_.Notify(&TabModelObserver::DidAddTab, raw_tab, launch_type);
 

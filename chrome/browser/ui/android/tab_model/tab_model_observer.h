@@ -58,9 +58,6 @@ class TabModelObserver {
                                    bool can_restore,
                                    TabModel::TabClosingSource source);
 
-  // Called before a |tab| is added to the TabModel.
-  virtual void WillAddTab(TabAndroid* tab, TabModel::TabLaunchType type);
-
   // Called after a |tab| has been added to the TabModel.
   virtual void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type);
 

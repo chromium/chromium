@@ -113,13 +113,6 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void willAddTab(Tab tab, @TabLaunchType int type) {
-        assert mNativeTabModelObserverJniBridge != 0;
-        assert tab.isInitialized();
-        TabModelObserverJniBridgeJni.get().willAddTab(mNativeTabModelObserverJniBridge, tab, type);
-    }
-
-    @Override
     public final void didAddTab(
             Tab tab,
             @TabLaunchType int type,
@@ -332,9 +325,6 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 boolean isAllTabs,
                 boolean canRestore,
                 @TabClosingSource int closingSource);
-
-        void willAddTab(
-                long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab, int type);
 
         void didAddTab(
                 long nativeTabModelObserverJniBridge,
