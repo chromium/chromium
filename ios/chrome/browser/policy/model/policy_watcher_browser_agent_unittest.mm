@@ -4,10 +4,16 @@
 
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
 
+#import <vector>
+
 #import "base/apple/backup_util.h"
 #import "base/apple/foundation_util.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/files/scoped_temp_dir.h"
 #import "base/memory/raw_ptr.h"
 #import "base/path_service.h"
+#import "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
 #import "components/policy/core/common/policy_pref_names.h"
@@ -83,6 +89,7 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
   }
 
   void TearDown() override {
+    PolicyWatcherBrowserAgent::SetAppGroupPathsForTesting(nullptr);
     @autoreleasepool {
       [scene_state_ shutdown];
       scene_state_ = nil;
@@ -439,33 +446,40 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
 }
 
 // Tests that disabling the backup-allowed preference marks the app container
-// as excluded from backup, and enabling the preference clears this exclusion.
+// directories as excluded from backup, and enabling the preference clears this
+// exclusion.
 TEST_F(PolicyWatcherBrowserAgentTest, BackupPreventionChanged) {
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent()->Initialize(mockHandler);
-  base::FilePath storage_dir = base::apple::GetUserLibraryPath();
+  base::FilePath library_dir = base::apple::GetUserLibraryPath();
+  base::FilePath documents_dir = base::apple::GetUserDocumentPath();
 
   // Ensure that backups are allowed initially.
-  ASSERT_TRUE(base::apple::ClearBackupExclusion(storage_dir));
+  ASSERT_TRUE(base::apple::ClearBackupExclusion(library_dir));
+  ASSERT_TRUE(base::apple::ClearBackupExclusion(documents_dir));
 
   // Disallow backups.
   profile_->GetPrefs()->SetBoolean(prefs::kAllowChromeDataInBackups, false);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(base::apple::GetBackupExclusion(storage_dir));
+  EXPECT_TRUE(base::apple::GetBackupExclusion(library_dir));
+  EXPECT_TRUE(base::apple::GetBackupExclusion(documents_dir));
 
   // Allow backups.
   profile_->GetPrefs()->SetBoolean(prefs::kAllowChromeDataInBackups, true);
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(base::apple::GetBackupExclusion(storage_dir));
+  EXPECT_FALSE(base::apple::GetBackupExclusion(library_dir));
+  EXPECT_FALSE(base::apple::GetBackupExclusion(documents_dir));
 }
 
 // Tests that disabling the backup-allowed preference marks the app container
 // as excluded from backup at startup.
 TEST_F(PolicyWatcherBrowserAgentTest, BackupDisallowedAtColdStart) {
-  base::FilePath storage_dir = base::apple::GetUserLibraryPath();
+  base::FilePath library_dir = base::apple::GetUserLibraryPath();
+  base::FilePath documents_dir = base::apple::GetUserDocumentPath();
 
   // Ensure that backups are allowed initially.
-  ASSERT_TRUE(base::apple::ClearBackupExclusion(storage_dir));
+  ASSERT_TRUE(base::apple::ClearBackupExclusion(library_dir));
+  ASSERT_TRUE(base::apple::ClearBackupExclusion(documents_dir));
 
   // Disallow backups
   profile_->GetPrefs()->SetBoolean(prefs::kAllowChromeDataInBackups, false);
@@ -473,16 +487,19 @@ TEST_F(PolicyWatcherBrowserAgentTest, BackupDisallowedAtColdStart) {
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent()->Initialize(mockHandler);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(base::apple::GetBackupExclusion(storage_dir));
+  EXPECT_TRUE(base::apple::GetBackupExclusion(library_dir));
+  EXPECT_TRUE(base::apple::GetBackupExclusion(documents_dir));
 }
 
 // Tests that enabling the backup-allowed preference marks the app container
 // as no longer excluded from backup at startup.
 TEST_F(PolicyWatcherBrowserAgentTest, BackupAllowedAtColdStart) {
-  base::FilePath storage_dir = base::apple::GetUserLibraryPath();
+  base::FilePath library_dir = base::apple::GetUserLibraryPath();
+  base::FilePath documents_dir = base::apple::GetUserDocumentPath();
 
   // Ensure that backups are disallowed initially.
-  ASSERT_TRUE(base::apple::SetBackupExclusion(storage_dir));
+  ASSERT_TRUE(base::apple::SetBackupExclusion(library_dir));
+  ASSERT_TRUE(base::apple::SetBackupExclusion(documents_dir));
 
   // Allow backups
   profile_->GetPrefs()->SetBoolean(prefs::kAllowChromeDataInBackups, true);
@@ -490,5 +507,44 @@ TEST_F(PolicyWatcherBrowserAgentTest, BackupAllowedAtColdStart) {
   id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
   agent()->Initialize(mockHandler);
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(base::apple::GetBackupExclusion(storage_dir));
+  EXPECT_FALSE(base::apple::GetBackupExclusion(library_dir));
+  EXPECT_FALSE(base::apple::GetBackupExclusion(documents_dir));
+}
+
+// Tests that app group container directories are excluded from backup when
+// backups are disallowed and un-excluded when backups are allowed, while
+// non-existent paths are skipped.
+TEST_F(PolicyWatcherBrowserAgentTest, AppGroupContainerBackupExclusion) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath existing_app_group_dir =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("AppGroup"));
+  ASSERT_TRUE(base::CreateDirectory(existing_app_group_dir));
+
+  base::FilePath non_existent_app_group_dir =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("NonExistentGroup"));
+
+  std::vector<base::FilePath> test_paths = {existing_app_group_dir,
+                                            non_existent_app_group_dir};
+  PolicyWatcherBrowserAgent::SetAppGroupPathsForTesting(&test_paths);
+
+  // Ensure that backups are allowed initially.
+  ASSERT_TRUE(base::apple::ClearBackupExclusion(existing_app_group_dir));
+
+  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
+  agent()->Initialize(mockHandler);
+
+  // Disallow backups.
+  profile_->GetPrefs()->SetBoolean(prefs::kAllowChromeDataInBackups, false);
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_TRUE(base::apple::GetBackupExclusion(existing_app_group_dir));
+  EXPECT_FALSE(base::PathExists(non_existent_app_group_dir));
+
+  // Allow backups.
+  profile_->GetPrefs()->SetBoolean(prefs::kAllowChromeDataInBackups, true);
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_FALSE(base::apple::GetBackupExclusion(existing_app_group_dir));
+  EXPECT_FALSE(base::PathExists(non_existent_app_group_dir));
+
+  PolicyWatcherBrowserAgent::SetAppGroupPathsForTesting(nullptr);
 }

@@ -240,6 +240,7 @@ source_set("browser_agent") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/common/app_group",
     "//ios/web/public/thread",
   ]
 }

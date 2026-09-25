@@ -6,9 +6,14 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+#import <vector>
+
 #import "base/apple/backup_util.h"
 #import "base/apple/foundation_util.h"
 #import "base/barrier_closure.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
@@ -33,7 +38,12 @@
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/web/public/thread/web_task_traits.h"
+
+namespace {
+const std::vector<base::FilePath>* g_app_group_paths_for_testing = nullptr;
+}  // namespace
 
 PolicyWatcherBrowserAgent::PolicyWatcherBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
@@ -43,6 +53,12 @@ PolicyWatcherBrowserAgent::PolicyWatcherBrowserAgent(Browser* browser)
 }
 
 PolicyWatcherBrowserAgent::~PolicyWatcherBrowserAgent() = default;
+
+// static
+void PolicyWatcherBrowserAgent::SetAppGroupPathsForTesting(
+    const std::vector<base::FilePath>* paths) {
+  g_app_group_paths_for_testing = paths;
+}
 
 void PolicyWatcherBrowserAgent::SignInUIDismissed() {
   // Do nothing if the sign out is still in progress.
@@ -157,20 +173,50 @@ void PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion() {
   bool backup_allowed = browser_->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kAllowChromeDataInBackups);
   // TODO(crbug.com/40826035): If multiple profiles are supported on iOS, update
-  // this logic to work with multiple profiles having possibly-possibly
-  // conflicting preference values.
-  base::FilePath storage_dir = base::apple::GetUserLibraryPath();
-  if (backup_allowed) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(base::IgnoreResult(&base::apple::ClearBackupExclusion),
-                       std::move(storage_dir)));
-  } else {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(base::IgnoreResult(&base::apple::SetBackupExclusion),
-                       std::move(storage_dir)));
+  // this logic to work with multiple profiles having possibly conflicting
+  // preference values.
+  std::optional<std::vector<base::FilePath>> test_app_group_paths;
+  if (g_app_group_paths_for_testing) {
+    test_app_group_paths = *g_app_group_paths_for_testing;
   }
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(
+          [](bool backup_allowed,
+             std::optional<std::vector<base::FilePath>> test_app_group_paths) {
+            std::vector<base::FilePath> paths = {
+                base::apple::GetUserLibraryPath(),
+                base::apple::GetUserDocumentPath(),
+            };
+            if (test_app_group_paths.has_value()) {
+              paths.insert(paths.end(), test_app_group_paths->begin(),
+                           test_app_group_paths->end());
+            } else {
+              for (NSString* group_id : {app_group::ApplicationGroup(),
+                                         app_group::CommonApplicationGroup()}) {
+                if (group_id.length) {
+                  NSURL* group_url = [[NSFileManager defaultManager]
+                      containerURLForSecurityApplicationGroupIdentifier:
+                          group_id];
+                  if (group_url) {
+                    paths.push_back(base::apple::NSURLToFilePath(group_url));
+                  }
+                }
+              }
+            }
+            for (const auto& path : paths) {
+              if (!base::PathExists(path)) {
+                continue;
+              }
+              if (backup_allowed) {
+                base::apple::ClearBackupExclusion(path);
+              } else {
+                base::apple::SetBackupExclusion(path);
+              }
+            }
+          },
+          backup_allowed, std::move(test_app_group_paths)));
 }
 
 void PolicyWatcherBrowserAgent::AddObserver(

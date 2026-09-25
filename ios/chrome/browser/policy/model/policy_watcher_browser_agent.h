@@ -7,6 +7,8 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
+#import <vector>
+
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
@@ -14,6 +16,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer.h"
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace signin {
 class IdentityManager;
@@ -45,6 +51,11 @@ class PolicyWatcherBrowserAgent
   // has changed before the BrowserAgent start the observation. `handler` is
   // used to send UI commands when the SignOut is done.
   void Initialize(id<PolicyChangeCommands> handler);
+
+  // Sets custom app group paths to be used instead of NSFileManager container
+  // URLs in tests. Pass `nullptr` to reset.
+  static void SetAppGroupPathsForTesting(
+      const std::vector<base::FilePath>* paths);
 
  private:
   friend class BrowserUserData<PolicyWatcherBrowserAgent>;
