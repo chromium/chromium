@@ -141,4 +141,15 @@ TEST_F(ClientReportUtilTest, FillInterstitialInteractionsOfReport) {
                                        kExpectedProceed);
 }
 
+TEST_F(ClientReportUtilTest,
+       GetWarningUXTypeFromSBThreatType_SuspiciousSiteWarning) {
+  EXPECT_EQ(client_report_utils::GetWarningUXTypeFromSBThreatType(
+                SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE),
+            ClientSafeBrowsingReportRequest::WarningShownInfo::
+                SUSPICIOUS_SITE_WARNING);
+  EXPECT_EQ(client_report_utils::GetReportTypeFromSBThreatType(
+                SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE),
+            ClientSafeBrowsingReportRequest::WARNING_SHOWN);
+}
+
 }  // namespace safe_browsing

@@ -16,6 +16,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h"
+#include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/android/modal_dialog_wrapper.h"
@@ -59,8 +60,9 @@ class SuspiciousSiteControllerAndroid
 
   // Displays or stages the suspicious site warning dialog for the given
   // navigation.
-  static void ShowForWebContents(content::WebContents* web_contents,
-                                 int64_t navigation_id);
+  static void ShowForWebContents(
+      content::WebContents* web_contents,
+      const security_interstitials::UnsafeResource& resource);
 
   // WebContentsObserver overrides:
   void DidFinishNavigation(
@@ -134,6 +136,11 @@ class SuspiciousSiteControllerAndroid
 
   // Tracker for async history queries.
   base::CancelableTaskTracker history_task_tracker_;
+
+  // The UnsafeResource that triggered the suspicious site warning. This is
+  // std::nullopt when the controller is first created, before
+  // ShowForWebContents() is called for a specific navigation.
+  std::optional<security_interstitials::UnsafeResource> resource_;
 
   // Navigation ID of the main frame navigation that triggered the suspicious
   // site warning. This is std::nullopt when the controller is first created,

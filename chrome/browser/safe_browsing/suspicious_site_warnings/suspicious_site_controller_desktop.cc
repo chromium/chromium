@@ -48,10 +48,10 @@ base::OnceClosure* GetDestroyedCallback() {
 
 }  // namespace
 
-void ShowSuspiciousSiteWarning(content::WebContents* web_contents,
-                               int64_t navigation_id) {
-  SuspiciousSiteControllerDesktop::ShowForWebContents(web_contents,
-                                                      navigation_id);
+void ShowSuspiciousSiteWarning(
+    content::WebContents* web_contents,
+    const security_interstitials::UnsafeResource& resource) {
+  SuspiciousSiteControllerDesktop::ShowForWebContents(web_contents, resource);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SuspiciousSiteControllerDesktop);
@@ -87,13 +87,14 @@ SuspiciousSiteControllerDesktop::~SuspiciousSiteControllerDesktop() {
 // static
 void SuspiciousSiteControllerDesktop::ShowForWebContents(
     content::WebContents* web_contents,
-    int64_t navigation_id) {
+    const security_interstitials::UnsafeResource& resource) {
   if (FromWebContents(web_contents)) {
     web_contents->RemoveUserData(UserDataKey());
   }
   CreateForWebContents(web_contents);
   auto* controller = FromWebContents(web_contents);
-  controller->navigation_id_ = navigation_id;
+  controller->resource_ = resource;
+  controller->navigation_id_ = resource.navigation_id;
   controller->is_suspended_ = true;
 
   auto* tracker = AsyncCheckTracker::FromWebContents(web_contents);
@@ -232,6 +233,8 @@ void SuspiciousSiteControllerDesktop::ShowBubble() {
   ShowSuspiciousSiteBubble(web_contents());
 
   if (!has_shown_) {
+    sb_service->ui_manager()->CreateAndSendClientSafeBrowsingWarningShownReport(
+        resource_.value());
     LogUserInteraction(UserInteraction::kShown);
     has_shown_ = true;
   }

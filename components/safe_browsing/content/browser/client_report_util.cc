@@ -56,6 +56,8 @@ CSBRR::ReportType GetReportTypeFromSBThreatType(SBThreatType threat_type) {
       return CSBRR::URL_PASSWORD_PROTECTION_PHISHING;
     case SB_THREAT_TYPE_SUSPICIOUS_SITE:
       return CSBRR::URL_SUSPICIOUS;
+    case SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
+      return CSBRR::WARNING_SHOWN;
     case SB_THREAT_TYPE_BILLING:
       return CSBRR::BILLING;
     case SB_THREAT_TYPE_APK_DOWNLOAD:
@@ -75,7 +77,6 @@ CSBRR::ReportType GetReportTypeFromSBThreatType(SBThreatType threat_type) {
     case DEPRECATED_SB_THREAT_TYPE_BLOCKED_AD_POPUP:
     case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
     case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
-    case SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
       // Gated by SafeBrowsingBlockingPage::ShouldReportThreatDetails.
       NOTREACHED() << "We should not send report for threat type: "
                    << static_cast<int>(threat_type);
@@ -97,6 +98,8 @@ CSBRR::WarningShownInfo::WarningUXType GetWarningUXTypeFromSBThreatType(
       return CSBRR::WarningShownInfo::CLIENT_SIDE_PHISHING_INTERSTITIAL;
     case SB_THREAT_TYPE_BILLING:
       return CSBRR::WarningShownInfo::BILLING_INTERSTITIAL;
+    case SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
+      return CSBRR::WarningShownInfo::SUSPICIOUS_SITE_WARNING;
     case SB_THREAT_TYPE_AD_SAMPLE:
     case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
     case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
@@ -119,7 +122,6 @@ CSBRR::WarningShownInfo::WarningUXType GetWarningUXTypeFromSBThreatType(
     case DEPRECATED_SB_THREAT_TYPE_BLOCKED_AD_POPUP:
     case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
     case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
-    case SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
       NOTREACHED() << "We should not send report for threat type: "
                    << static_cast<int>(threat_type);
   }

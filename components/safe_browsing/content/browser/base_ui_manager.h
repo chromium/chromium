@@ -103,6 +103,11 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
       std::unique_ptr<ClientSafeBrowsingReportRequest> report,
       content::WebContents* web_contents);
 
+  // BaseUIManager does not send ClientSafeBrowsingReport. Subclasses should
+  // implement the reporting logic themselves if needed.
+  virtual void CreateAndSendClientSafeBrowsingWarningShownReport(
+      const UnsafeResource& resource);
+
   // A convenience wrapper method for IsUrlAllowlistedOrPendingForWebContents.
   virtual bool IsAllowlisted(
       const GURL& url,
@@ -225,11 +230,6 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
 
   // Ensures that |web_contents| has its allowlist set in its userdata
   static void EnsureAllowlistCreated(content::WebContents* web_contents);
-
-  // BaseUIManager does not send ClientSafeBrowsingReport. Subclasses should
-  // implement the reporting logic themselves if needed.
-  virtual void CreateAndSendClientSafeBrowsingWarningShownReport(
-      const UnsafeResource& resource);
 
  private:
   friend class base::RefCountedThreadSafe<BaseUIManager>;

@@ -261,7 +261,7 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   MOCK_METHOD1(NotifySuspiciousSiteDetected,
                void(const base::RepeatingCallback<content::WebContents*()>&));
   MOCK_METHOD2(ShowSuspiciousSiteWarning,
-               void(int64_t,
+               void(const security_interstitials::UnsafeResource&,
                     const base::RepeatingCallback<content::WebContents*()>&));
   MOCK_METHOD0(GetUIManager, BaseUIManager*());
   MOCK_METHOD2(SendUrlRealTimeAndHashRealTimeDiscrepancyReport,
@@ -1195,7 +1195,19 @@ TEST_F(SafeBrowsingUrlCheckerTest,
           /*has_post_commit_interstitial_skipped=*/false,
           SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck))
       .Times(1);
-  EXPECT_CALL(*url_checker_delegate_, ShowSuspiciousSiteWarning(123, _))
+  EXPECT_CALL(
+      *url_checker_delegate_,
+      ShowSuspiciousSiteWarning(
+          ::testing::AllOf(
+              ::testing::Field(&security_interstitials::UnsafeResource::url,
+                               url),
+              ::testing::Field(
+                  &security_interstitials::UnsafeResource::threat_type,
+                  SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE),
+              ::testing::Field(
+                  &security_interstitials::UnsafeResource::navigation_id,
+                  std::optional<int64_t>(123))),
+          _))
       .Times(1);
   EXPECT_CALL(*url_checker_delegate_, NotifySuspiciousSiteDetected(_)).Times(0);
   EXPECT_CALL(*url_checker_delegate_,

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_SUSPICIOUS_SITE_WARNINGS_SUSPICIOUS_SITE_UI_H_
 #define CHROME_BROWSER_SAFE_BROWSING_SUSPICIOUS_SITE_WARNINGS_SUSPICIOUS_SITE_UI_H_
 
-#include <stdint.h>
+#include "components/security_interstitials/core/unsafe_resource.h"
 
 namespace content {
 class WebContents;
@@ -13,10 +13,11 @@ class WebContents;
 
 namespace safe_browsing {
 
-// Shows the suspicious site warning for |web_contents| and |navigation_id|.
+// Shows the suspicious site warning for |web_contents| and |resource|.
 // Implemented by platform-specific controllers.
-void ShowSuspiciousSiteWarning(content::WebContents* web_contents,
-                               int64_t navigation_id);
+void ShowSuspiciousSiteWarning(
+    content::WebContents* web_contents,
+    const security_interstitials::UnsafeResource& resource);
 
 // Shows the suspicious site warning bubble for |web_contents|. Implemented in
 // platform-specific UI files.

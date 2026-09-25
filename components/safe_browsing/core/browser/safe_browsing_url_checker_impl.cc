@@ -322,7 +322,10 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
 
     if (threat_type == SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE &&
         navigation_id_.has_value()) {
-      url_checker_delegate_->ShowSuspiciousSiteWarning(navigation_id_.value(),
+      UnsafeResource resource =
+          MakeUnsafeResource(url, threat_type, threat_source.value(),
+                             std::move(rt_lookup_response), performed_check);
+      url_checker_delegate_->ShowSuspiciousSiteWarning(resource,
                                                        web_contents_getter_);
     }
 

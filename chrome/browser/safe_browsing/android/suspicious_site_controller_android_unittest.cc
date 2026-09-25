@@ -26,6 +26,7 @@
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -92,6 +93,9 @@ class SuspiciousSiteControllerAndroidTest
   void SetUp() override {
     sb_service_ =
         base::MakeRefCounted<safe_browsing::TestSafeBrowsingService>();
+    test_ui_manager_ =
+        base::MakeRefCounted<safe_browsing::TestSafeBrowsingUIManager>();
+    sb_service_->SetUIManager(test_ui_manager_.get());
     sb_service_->Initialize();
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
         sb_service_.get());
@@ -101,12 +105,32 @@ class SuspiciousSiteControllerAndroidTest
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
     sb_service_.reset();
+    test_ui_manager_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  SuspiciousSiteControllerAndroid* MakeController() {
+  TestSafeBrowsingUIManager* test_ui_manager() {
+    return test_ui_manager_.get();
+  }
+
+  SuspiciousSiteControllerAndroid* MakeController(int64_t navigation_id = 1) {
+    security_interstitials::UnsafeResource resource;
+    resource.url = web_contents()->GetLastCommittedURL().is_valid()
+                       ? web_contents()->GetLastCommittedURL()
+                       : GURL("https://suspicious.example.com");
+    resource.threat_type =
+        SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE;
+    resource.threat_source = safe_browsing::ThreatSource::URL_REAL_TIME_CHECK;
+    resource.is_async_check = true;
+    resource.navigation_id = navigation_id;
+    resource.rfh_locator =
+        security_interstitials::UnsafeResourceLocator::CreateForFrameTreeNodeId(
+            web_contents()
+                ->GetPrimaryMainFrame()
+                ->GetFrameTreeNodeId()
+                .value());
     SuspiciousSiteControllerAndroid::ShowForWebContents(web_contents(),
-                                                        /*navigation_id=*/1);
+                                                        resource);
     return SuspiciousSiteControllerAndroid::FromWebContents(web_contents());
   }
 
@@ -125,7 +149,8 @@ class SuspiciousSiteControllerAndroidTest
   }
 
  private:
-  scoped_refptr<SafeBrowsingService> sb_service_;
+  scoped_refptr<TestSafeBrowsingService> sb_service_;
+  scoped_refptr<safe_browsing::TestSafeBrowsingUIManager> test_ui_manager_;
 };
 
 TEST_F(SuspiciousSiteControllerAndroidTest, HandleBackNavigation) {
@@ -427,10 +452,8 @@ TEST_F(SuspiciousSiteControllerAndroidTest,
 
   GURL url2("https://suspicious2.com");
   NavigateAndCommit(url2);
-  SuspiciousSiteControllerAndroid::ShowForWebContents(web_contents(),
-                                                      /*navigation_id=*/2);
-  auto* controller2 =
-      SuspiciousSiteControllerAndroid::FromWebContents(web_contents());
+  SuspiciousSiteControllerAndroid* controller2 =
+      MakeController(/*navigation_id=*/2);
   controller2->ShowDialog();
 
   // Old URL is removed from AllowlistUrlSet, and new URL is added.
@@ -790,6 +813,43 @@ TEST_F(SuspiciousSiteControllerAndroidTest,
 
   // Dialog show is posted to UI thread; wait for callback.
   run_loop.Run();
+}
+
+TEST_F(SuspiciousSiteControllerAndroidTest,
+       SendsWarningShownCSBRROnShowDialog) {
+  SetSafeBrowsingState(profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  NavigateAndCommit(GURL("https://suspicious.example.com/path"));
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+
+  SuspiciousSiteControllerAndroid* controller = MakeController();
+  SetNavigationCommitted(controller, true);
+  controller->ShowDialog();
+
+  std::list<std::string>* details = test_ui_manager()->GetThreatDetails();
+  ASSERT_EQ(details->size(), 1u);
+
+  ClientSafeBrowsingReportRequest report;
+  ASSERT_TRUE(report.ParseFromString(details->front()));
+  EXPECT_EQ(report.type(), ClientSafeBrowsingReportRequest::WARNING_SHOWN);
+  EXPECT_EQ(report.url(), "https://suspicious.example.com/path");
+  EXPECT_EQ(report.page_url(), "https://suspicious.example.com/path");
+  EXPECT_EQ(report.url_request_destination(),
+            ClientSafeBrowsingReportRequest::DOCUMENT);
+  EXPECT_EQ(report.client_properties().url_api_type(),
+            ClientSafeBrowsingReportRequest::REAL_TIME);
+  EXPECT_TRUE(report.client_properties().is_async_check());
+  EXPECT_EQ(report.warning_shown_info().warning_type(),
+            ClientSafeBrowsingReportRequest::WarningShownInfo::
+                SUSPICIOUS_SITE_WARNING);
+
+  // Subsequent ShowDialog() calls for the same warning should not send
+  // duplicate CSBRR reports.
+  controller->ShowDialog();
+  EXPECT_EQ(details->size(), 1u);
 }
 
 }  // namespace safe_browsing

@@ -57,8 +57,23 @@ class SuspiciousSiteControllerDesktopTest
   }
 
   SuspiciousSiteControllerDesktop* MakeController(int64_t navigation_id = 1) {
+    security_interstitials::UnsafeResource resource;
+    resource.url = web_contents()->GetLastCommittedURL().is_valid()
+                       ? web_contents()->GetLastCommittedURL()
+                       : GURL("https://suspicious.example.com");
+    resource.threat_type =
+        SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE;
+    resource.threat_source = safe_browsing::ThreatSource::URL_REAL_TIME_CHECK;
+    resource.is_async_check = true;
+    resource.navigation_id = navigation_id;
+    resource.rfh_locator =
+        security_interstitials::UnsafeResourceLocator::CreateForFrameTreeNodeId(
+            web_contents()
+                ->GetPrimaryMainFrame()
+                ->GetFrameTreeNodeId()
+                .value());
     SuspiciousSiteControllerDesktop::ShowForWebContents(web_contents(),
-                                                        navigation_id);
+                                                        resource);
     return SuspiciousSiteControllerDesktop::FromWebContents(web_contents());
   }
 
@@ -72,6 +87,10 @@ class SuspiciousSiteControllerDesktopTest
 
   bool IsDismissed(SuspiciousSiteControllerDesktop* controller) {
     return controller->is_dismissed_;
+  }
+
+  TestSafeBrowsingUIManager* test_ui_manager() {
+    return test_ui_manager_.get();
   }
 
  private:
@@ -338,6 +357,39 @@ TEST_F(SuspiciousSiteControllerDesktopTest, OnVisibilityChangedAfterDismissed) {
       base::BindOnce([](bool* shown) { *shown = true; }, &shown));
   web_contents()->WasShown();
   EXPECT_FALSE(shown);
+}
+
+TEST_F(SuspiciousSiteControllerDesktopTest,
+       SendsWarningShownCSBRROnShowBubble) {
+  SetSafeBrowsingState(profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  NavigateAndCommit(GURL("https://suspicious.example.com/path"));
+
+  SuspiciousSiteControllerDesktop* controller = MakeController();
+  ASSERT_NE(controller, nullptr);
+  controller->ShowBubble();
+
+  std::list<std::string>* details = test_ui_manager()->GetThreatDetails();
+  ASSERT_EQ(details->size(), 1u);
+
+  ClientSafeBrowsingReportRequest report;
+  ASSERT_TRUE(report.ParseFromString(details->front()));
+  EXPECT_EQ(report.type(), ClientSafeBrowsingReportRequest::WARNING_SHOWN);
+  EXPECT_EQ(report.url(), "https://suspicious.example.com/path");
+  EXPECT_EQ(report.page_url(), "https://suspicious.example.com/path");
+  EXPECT_EQ(report.url_request_destination(),
+            ClientSafeBrowsingReportRequest::DOCUMENT);
+  EXPECT_EQ(report.client_properties().url_api_type(),
+            ClientSafeBrowsingReportRequest::REAL_TIME);
+  EXPECT_TRUE(report.client_properties().is_async_check());
+  EXPECT_EQ(report.warning_shown_info().warning_type(),
+            ClientSafeBrowsingReportRequest::WarningShownInfo::
+                SUSPICIOUS_SITE_WARNING);
+
+  // Subsequent ShowBubble() calls for the same warning should not send
+  // duplicate CSBRR reports.
+  controller->ShowBubble();
+  EXPECT_EQ(details->size(), 1u);
 }
 
 }  // namespace safe_browsing

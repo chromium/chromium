@@ -94,7 +94,7 @@ class UrlCheckerDelegate
   // Displays the suspicious site warning and lets the user decide to continue
   // or not.
   virtual void ShowSuspiciousSiteWarning(
-      int64_t navigation_id,
+      const security_interstitials::UnsafeResource& resource,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) = 0;
 

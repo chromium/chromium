@@ -2294,6 +2294,7 @@ message ClientSafeBrowsingReportRequest {
       UWS_INTERSTITIAL = 4;
       BILLING_INTERSTITIAL = 5;
       BINARY_MALWARE_DOWNLOAD_WARNING = 6;
+      SUSPICIOUS_SITE_WARNING = 7;
     }
     optional WarningUXType warning_type = 1;
 

@@ -64,7 +64,7 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   MOCK_METHOD1(NotifySuspiciousSiteDetected,
                void(const base::RepeatingCallback<content::WebContents*()>&));
   MOCK_METHOD2(ShowSuspiciousSiteWarning,
-               void(int64_t,
+               void(const security_interstitials::UnsafeResource&,
                     const base::RepeatingCallback<content::WebContents*()>&));
   MOCK_METHOD0(GetUIManager, BaseUIManager*());
   MOCK_METHOD0(GetThreatTypes, const SBThreatTypeSet&());

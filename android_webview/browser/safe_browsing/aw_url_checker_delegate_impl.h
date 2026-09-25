@@ -71,7 +71,7 @@ class AwUrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) override;
   void ShowSuspiciousSiteWarning(
-      int64_t navigation_id,
+      const security_interstitials::UnsafeResource& resource,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) override;
   bool AreSuspiciousSiteWarningsAllowed(

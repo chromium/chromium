@@ -155,6 +155,11 @@ class SafeBrowsingUIManager : public BaseUIManager {
       std::unique_ptr<ClientSafeBrowsingReportRequest> report,
       content::WebContents* web_contents) override;
 
+  // Creates a safe browsing report for the given resource and calls
+  // MaybeSendClientSafeBrowsingWarningShownReport.
+  void CreateAndSendClientSafeBrowsingWarningShownReport(
+      const UnsafeResource& resource) override;
+
   // Creates the allowlist URL set for tests that create a blocking page
   // themselves and then simulate OnBlockingPageDone(). OnBlockingPageDone()
   // expects the allowlist to exist, but the tests don't necessarily call
@@ -185,11 +190,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
  protected:
   ~SafeBrowsingUIManager() override;
-
-  // Creates a safe browsing report for the given resource and calls
-  // MaybeSendClientSafeBrowsingWarningShownReport.
-  void CreateAndSendClientSafeBrowsingWarningShownReport(
-      const UnsafeResource& resource) override;
 
   // Helper method to ensure client safe browsing reports are only sent when the
   // user has opted in to extended reporting and is not currently in incognito

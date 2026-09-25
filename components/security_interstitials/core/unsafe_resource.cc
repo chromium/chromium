@@ -63,6 +63,9 @@ bool UnsafeResource::IsMainPageLoadPendingWithSyncCheck(
     case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
     // Suspicious site collection happens in the background
     case SB_THREAT_TYPE_SUSPICIOUS_SITE:
+    // Suspicious site warnings are shown after the page load commits, so the
+    // main frame load is not pending when the warning is displayed.
+    case SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE:
       return false;
 
     default:
