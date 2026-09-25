@@ -60,14 +60,17 @@ class UpdateServiceInternalProxyMojoImpl
 
   SEQUENCE_CHECKER(sequence_checker_);
   const UpdaterScope scope_;
+#if BUILDFLAG(IS_WIN)
+  // Declared before `connection_` and `remote_` so that the COM activation
+  // reference is released only after the Mojo channel is torn down. Do not
+  // reorder.
+  Microsoft::WRL::ComPtr<IUnknown> server_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+#endif  // BUILDFLAG(IS_WIN)
   std::unique_ptr<mojo::IsolatedConnection> connection_
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<mojom::UpdateServiceInternal> remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-#if BUILDFLAG(IS_WIN)
-  Microsoft::WRL::ComPtr<IUnknown> server_;
-#endif  // BUILDFLAG(IS_WIN)
 
   base::WeakPtrFactory<UpdateServiceInternalProxyMojoImpl> weak_factory_{this};
 };

@@ -93,15 +93,26 @@ void UpdateServiceInternalProxyMojoImpl::EnsureConnecting() {
       base::BindOnce(&ConnectMojo, scope_, /*internal=*/true,
                      base::Time::Now() + kConnectionTimeout,
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
-                         &UpdateServiceInternalProxyMojoImpl::OnConnected, this,
+                         &UpdateServiceInternalProxyMojoImpl::OnConnected,
+                         weak_factory_.GetWeakPtr(),
                          remote_.BindNewPipeAndPassReceiver()))));
 }
 
 void UpdateServiceInternalProxyMojoImpl::OnDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  connection_.reset();
-  remote_.reset();
+  weak_factory_.InvalidateWeakPtrs();
+  // See comment in `UpdateServiceProxyMojoImpl::OnDisconnected`.
+#if BUILDFLAG(IS_WIN)
+  Microsoft::WRL::ComPtr<IUnknown> server = std::move(server_);
+#endif  // BUILDFLAG(IS_WIN)
+  std::unique_ptr<mojo::IsolatedConnection> connection = std::move(connection_);
+  mojo::Remote<mojom::UpdateServiceInternal> remote = std::move(remote_);
+  remote.reset();
+  connection.reset();
+#if BUILDFLAG(IS_WIN)
+  server.Reset();
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -115,6 +126,11 @@ void UpdateServiceInternalProxyMojoImpl::OnConnected(
     std::optional<mojo::PlatformChannelEndpoint> endpoint) {
 #endif  // BUILDFLAG(IS_WIN)
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!remote_.is_bound()) {
+    LOG(ERROR) << "Remote was reset during connection initialization.";
+    return;
+  }
+
   if (!endpoint) {
     VLOG(2) << "No endpoint received.";
     remote_.reset();
@@ -136,7 +152,7 @@ void UpdateServiceInternalProxyMojoImpl::OnConnected(
   connection_ = std::move(connection);
 
 #if BUILDFLAG(IS_WIN)
-  server_ = server;
+  server_ = std::move(server);
 #endif  // BUILDFLAG(IS_WIN)
 
   // A weak pointer is used here to prevent remote_ from forming a reference

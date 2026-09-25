@@ -8,6 +8,7 @@
 
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -131,6 +132,7 @@ void ConnectMojoImpl(
     bool is_internal_service,
     int tries,
     base::Time deadline,
+    Microsoft::WRL::ComPtr<IUnknown> server,
     base::OnceCallback<void(std::optional<mojo::PlatformChannelEndpoint>,
                             Microsoft::WRL::ComPtr<IUnknown>)>
         connected_callback) {
@@ -142,15 +144,26 @@ void ConnectMojoImpl(
     return;
   }
 
-  Microsoft::WRL::ComPtr<IUnknown> server;
   auto endpoint = [&]() -> std::optional<mojo::PlatformChannelEndpoint> {
-    Microsoft::WRL::ComPtr<IUnknown> result =
-        DialUpdateService(scope, is_internal_service);
-    if (!result) {
-      return std::nullopt;
+    // Dial once per connect sequence and hold the reference across retries.
+    // Releasing it between attempts can drop the server's WRL module object
+    // count to zero, at which point the `Module<OutOfProc>` release notifier
+    // calls `AppServerWin::Stop`, which revokes the class objects and shuts
+    // the server down; re-dialing then activates yet another server process.
+    // For user installs, COM launches a new server process once the class
+    // objects are revoked. For system installs, the server runs as a Windows
+    // service, and `AppServerWin::Stop` first reports `SERVICE_STOP_PENDING`
+    // so that the SCM hands new activations to a fresh service process. Since
+    // the reference is never re-acquired, a server that dies while a client is
+    // connecting fails this sequence; the proxy reconnects from scratch on
+    // the next RPC.
+    if (!server) {
+      server = DialUpdateService(scope, is_internal_service);
+      if (!server) {
+        return std::nullopt;
+      }
     }
 
-    server = result;
     const mojo::NamedPlatformChannel::ServerName server_name =
         is_internal_service ? GetUpdateServiceInternalServerName(scope)
                             : GetUpdateServiceServerName(scope);
@@ -170,22 +183,39 @@ void ConnectMojoImpl(
   }();
 
   if (endpoint) {
-    std::move(connected_callback).Run(std::move(endpoint), server);
+    std::move(connected_callback).Run(std::move(endpoint), std::move(server));
     return;
   }
 
-  if (tries >= 1) {
-    VLOG(1) << "Failed to connect to remote mojo service, is_internal_service: "
+  // `server` is still null only if `CoCreateInstance` failed, and every earlier
+  // attempt must have failed the same way, so `tries` counts failed dials. A
+  // failed dial is not waiting for a server that is already starting, so the
+  // time-bounded wait below does not apply; keep the previous limit of two
+  // attempts.
+  constexpr int kMaxDialAttempts = 2;
+  if (!server && tries + 1 >= kMaxDialAttempts) {
+    VLOG(1) << "Failed to activate remote mojo service, is_internal_service: "
             << is_internal_service << ", scope: " << scope;
     std::move(connected_callback).Run(std::nullopt, {});
     return;
   }
 
+  // Keep retrying until `deadline`, which is clamped in `ConnectMojo`. A retry
+  // does not relaunch anything; it only waits for the server that is already
+  // starting to publish its pipe, so back off linearly up to a cap.
+  constexpr base::TimeDelta kRetryBackoffStep = base::Milliseconds(200);
+  constexpr base::TimeDelta kMaxRetryBackoff = base::Seconds(1);
+  const base::TimeDelta delay =
+      std::min(kRetryBackoffStep * (tries + 1), kMaxRetryBackoff);
+  VLOG(2) << "Failed to connect to remote mojo service, is_internal_service: "
+          << is_internal_service << ", scope: " << scope << ", retrying in "
+          << delay;
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ConnectMojoImpl, scope, is_internal_service, tries + 1,
-                     deadline, std::move(connected_callback)),
-      base::Milliseconds(200 * tries));
+                     deadline, std::move(server),
+                     std::move(connected_callback)),
+      delay);
 }
 
 }  // namespace
@@ -220,8 +250,14 @@ void ConnectMojo(
     base::OnceCallback<void(std::optional<mojo::PlatformChannelEndpoint>,
                             Microsoft::WRL::ComPtr<IUnknown>)>
         connected_callback) {
-  ConnectMojoImpl(scope, is_internal_service, /*tries=*/0, deadline,
-                  std::move(connected_callback));
+  // Bound the whole connect sequence, not each attempt. Giving up releases
+  // the activation reference, which can shut down a server that is still
+  // starting, so wait long enough for a slow server to publish its pipe, but
+  // not for the caller's full `deadline`.
+  constexpr base::TimeDelta kMaxConnectDuration = base::Seconds(30);
+  ConnectMojoImpl(scope, is_internal_service, /*tries=*/0,
+                  std::min(deadline, base::Time::Now() + kMaxConnectDuration),
+                  /*server=*/{}, std::move(connected_callback));
 }
 
 }  // namespace updater

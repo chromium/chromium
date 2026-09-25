@@ -421,7 +421,7 @@ void UpdateServiceProxyMojoImpl::OnConnected(
   connection_ = std::move(connection);
 
 #if BUILDFLAG(IS_WIN)
-  server_ = server;
+  server_ = std::move(server);
 #endif  // BUILDFLAG(IS_WIN)
 
   // A weak pointer is used here to prevent remote_ from forming a reference
@@ -433,8 +433,22 @@ void UpdateServiceProxyMojoImpl::OnConnected(
 void UpdateServiceProxyMojoImpl::OnDisconnected() {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  connection_.reset();
-  remote_.reset();
+  weak_factory_.InvalidateWeakPtrs();
+  // Move members to locals before `remote.reset()`: destroying pending reply
+  // callbacks inside `remote.reset()` synchronously invokes default handlers
+  // that may re-enter `EnsureConnecting()` or drop the last reference to
+  // `this`.
+#if BUILDFLAG(IS_WIN)
+  Microsoft::WRL::ComPtr<IUnknown> server = std::move(server_);
+#endif  // BUILDFLAG(IS_WIN)
+  std::unique_ptr<mojo::IsolatedConnection> connection = std::move(connection_);
+  mojo::Remote<mojom::UpdateService> remote = std::move(remote_);
+  // Same teardown order as member destruction; see the header.
+  remote.reset();
+  connection.reset();
+#if BUILDFLAG(IS_WIN)
+  server.Reset();
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 UpdateServiceProxyMojoImpl::~UpdateServiceProxyMojoImpl() {
