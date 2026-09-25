@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_MAHI_TAB_HELPER_H_
 #define CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_MAHI_TAB_HELPER_H_
 
+#include <memory>
+
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
 class RenderWidgetHost;
@@ -16,17 +17,16 @@ class WebContents;
 namespace mahi {
 
 // Tab helper to observer the focused tab changes on browser side.
-class MahiTabHelper : public content::WebContentsUserData<MahiTabHelper>,
-                      public content::WebContentsObserver {
+class MahiTabHelper : public content::WebContentsObserver {
  public:
-  // Creates MahiTabHelper and attaches it the `web_contents` if mahi is
-  // enabled.
-  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+  // Creates MahiTabHelper if mahi is enabled.
+  static std::unique_ptr<MahiTabHelper> MaybeCreate(
+      content::WebContents* web_contents);
 
   MahiTabHelper(const MahiTabHelper&) = delete;
   MahiTabHelper& operator=(const MahiTabHelper&) = delete;
 
-  ~MahiTabHelper() override = default;
+  ~MahiTabHelper() override;
 
   // content::WebContentObserver:
   void OnWebContentsFocused(
@@ -37,17 +37,11 @@ class MahiTabHelper : public content::WebContentsUserData<MahiTabHelper>,
   void WebContentsDestroyed() override;
 
  private:
-  friend class content::WebContentsUserData<MahiTabHelper>;
-
-  // The only constructor is private because it will only be called by the
-  // WebContentsUserData.
   explicit MahiTabHelper(content::WebContents* web_contents);
 
   // Boolean to indicate if this web contents get focused. Only one web content
   // can get focused at the same time.
   bool focused_ = false;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace mahi

@@ -240,6 +240,9 @@ class GoogleOneOfferIphTabHelper;
 namespace ash {
 class CrosIsolatedWebAppEnabler;
 }  // namespace ash
+namespace mahi {
+class MahiTabHelper;
+}  // namespace mahi
 namespace web_app {
 class ProtocolHandlerPickerCoordinator;
 }  // namespace web_app
@@ -752,6 +755,7 @@ class TabFeatures {
   std::unique_ptr<ash::CrosIsolatedWebAppEnabler>
       cros_isolated_web_app_enabler_;
   std::unique_ptr<GeminiAppTabHelper> gemini_app_tab_helper_;
+  std::unique_ptr<mahi::MahiTabHelper> mahi_tab_helper_;
 #endif
 
 #if BUILDFLAG(ENABLE_RLZ)

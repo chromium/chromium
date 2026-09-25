@@ -18,6 +18,7 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 namespace mahi {
@@ -66,41 +67,41 @@ TEST_F(MahiTabHelperTest, FocusedTabLoadComplete) {
   // Don't get notifications from unfocused tab.
   EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusedPageLoadComplete(_))
       .Times(0);
-  MahiTabHelper::CreateForWebContents(web_contents());
-  EXPECT_NE(nullptr, MahiTabHelper::FromWebContents(web_contents()));
+  std::unique_ptr<MahiTabHelper> tab_helper =
+      MahiTabHelper::MaybeCreate(web_contents());
+  ASSERT_NE(nullptr, tab_helper);
   NavigateAndCommit(GURL("https://example1.com"));
 
   // When a tab gets focus, notification will be received from navigation.
   EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusedPageLoadComplete(_))
       .Times(2);
-  MahiTabHelper::FromWebContents(web_contents())->OnWebContentsFocused(nullptr);
+  tab_helper->OnWebContentsFocused(nullptr);
   NavigateAndCommit(GURL("https://example2.com"));
 
   // After losing focus, the tab's notification will no longer be received.
   EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusedPageLoadComplete(_))
       .Times(0);
-  MahiTabHelper::FromWebContents(web_contents())
-      ->OnWebContentsLostFocus(nullptr);
+  tab_helper->OnWebContentsLostFocus(nullptr);
   NavigateAndCommit(GURL("https://example3.com"));
 }
 
 TEST_F(MahiTabHelperTest, TabSwitch) {
-  MahiTabHelper::CreateForWebContents(web_contents());
+  std::unique_ptr<MahiTabHelper> tab_helper =
+      MahiTabHelper::MaybeCreate(web_contents());
+  ASSERT_NE(nullptr, tab_helper);
   NavigateAndCommit(GURL("https://example1.com"));
 
   content::WebContents* web_contents2 =
       tab_activity_simulator_.AddWebContentsAndNavigate(
           tab_strip_model_, GURL("https://example2.com"));
-
-  EXPECT_NE(nullptr, MahiTabHelper::FromWebContents(web_contents()));
-  EXPECT_NE(nullptr, MahiTabHelper::FromWebContents(web_contents2));
+  EXPECT_NE(nullptr, web_contents2);
 
   // Switch back to a previous loaded tab.
   EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusedPageLoadComplete(_))
       .Times(1);
   // Change active tab with `browser()->tab_strip_model()->ActivateTabAt()` or
   // `AddPage()` will not trigger focus events. Fire it manually instead.
-  MahiTabHelper::FromWebContents(web_contents())->OnWebContentsFocused(nullptr);
+  tab_helper->OnWebContentsFocused(nullptr);
 }
 
 }  // namespace mahi

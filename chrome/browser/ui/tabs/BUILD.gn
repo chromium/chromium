@@ -690,6 +690,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/apps/app_service",
         "//chrome/browser/ash/growth",
+        "//chrome/browser/ash/mahi/web_contents",
         "//chrome/browser/chromeos/gemini_app",
         "//chrome/browser/ui/ash/google_one",
         "//chrome/browser/ui/views/web_apps:protocol_handler_picker_coordinator",

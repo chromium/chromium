@@ -182,6 +182,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
 #include "chrome/browser/ash/growth/campaigns_manager_session_tab_helper.h"
+#include "chrome/browser/ash/mahi/web_contents/mahi_tab_helper.h"
 #include "chrome/browser/chromeos/gemini_app/gemini_app_tab_helper.h"
 #include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.h"
@@ -728,6 +729,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   cros_isolated_web_app_enabler_ =
       std::make_unique<ash::CrosIsolatedWebAppEnabler>(tab.GetContents());
   gemini_app_tab_helper_ = GeminiAppTabHelper::MaybeCreate(tab.GetContents());
+  mahi_tab_helper_ = mahi::MahiTabHelper::MaybeCreate(tab.GetContents());
 #endif
 
   // The controller is created for all tabs but only affects back button
@@ -1038,6 +1040,7 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   cros_isolated_web_app_enabler_ =
       std::make_unique<ash::CrosIsolatedWebAppEnabler>(new_contents);
   gemini_app_tab_helper_ = GeminiAppTabHelper::MaybeCreate(new_contents);
+  mahi_tab_helper_ = mahi::MahiTabHelper::MaybeCreate(new_contents);
 #endif
 
 #if BUILDFLAG(ENABLE_RLZ)

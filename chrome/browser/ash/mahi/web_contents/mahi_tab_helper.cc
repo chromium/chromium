@@ -4,25 +4,34 @@
 
 #include "chrome/browser/ash/mahi/web_contents/mahi_tab_helper.h"
 
+#include <memory>
 #include <string_view>
 
+#include "base/memory/ptr_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "content/public/browser/web_contents.h"
 
 namespace mahi {
 
 // static
-void MahiTabHelper::MaybeCreateForWebContents(
+std::unique_ptr<MahiTabHelper> MahiTabHelper::MaybeCreate(
     content::WebContents* web_contents) {
   if (!chromeos::features::IsMahiEnabled()) {
-    return;
+    return nullptr;
   }
-  MahiTabHelper::CreateForWebContents(web_contents);
+  return base::WrapUnique(new MahiTabHelper(web_contents));
 }
 
 MahiTabHelper::MahiTabHelper(content::WebContents* web_contents)
-    : content::WebContentsUserData<MahiTabHelper>(*web_contents),
-      content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
+
+MahiTabHelper::~MahiTabHelper() {
+  if (web_contents()) {
+    chromeos::MahiWebContentsManager::Get()->WebContentsDestroyed(
+        web_contents());
+  }
+}
 
 void MahiTabHelper::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
@@ -56,8 +65,7 @@ void MahiTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
 
 void MahiTabHelper::WebContentsDestroyed() {
   chromeos::MahiWebContentsManager::Get()->WebContentsDestroyed(web_contents());
+  Observe(nullptr);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MahiTabHelper);
 
 }  // namespace mahi
