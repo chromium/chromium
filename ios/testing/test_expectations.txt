@@ -167,6 +167,7 @@ crbug.com/497637049 [ iPad Device ] PictureInPictureTestCase/testDefaultBrowserS
 
 # Gardening suppression 2026-09-24
 crbug.com/565776423 [ Device ] DownloadManagerTestCase/testDownloadWarnProceedWhenDownloadProtectionEnabled [ Pass Failure ]
+crbug.com/565777195 [ iPad ] TabGroupsTestCase/testCreateGroupFromTabInAnotherWindow [ Pass Failure ]
 crbug.com/565748739 GeminiEGTest/testVisualRichFRECarouselNavigation [ Pass Failure ]
 # Deterministic on iPad devices; on simulators only iPad Pro (12.9-inch) (6th
 # generation) (`iPad14`) is affected.
