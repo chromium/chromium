@@ -32,8 +32,8 @@ public class NeverTranslateListFragment extends LanguageItemListFragment {
     }
 
     @Override
-    protected @LanguagesManager.LanguageListType int getPotentialLanguageType() {
-        return LanguagesManager.LanguageListType.NEVER_LANGUAGES;
+    protected Class<? extends SelectLanguageFragment> getLanguagePickerClass() {
+        return SelectLanguageFragment.NeverTranslateLanguagePickerFragment.class;
     }
 
     @Override

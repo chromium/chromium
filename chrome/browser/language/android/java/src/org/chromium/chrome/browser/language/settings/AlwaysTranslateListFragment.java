@@ -31,8 +31,8 @@ public class AlwaysTranslateListFragment extends LanguageItemListFragment {
     }
 
     @Override
-    protected @LanguagesManager.LanguageListType int getPotentialLanguageType() {
-        return LanguagesManager.LanguageListType.ALWAYS_LANGUAGES;
+    protected Class<? extends SelectLanguageFragment> getLanguagePickerClass() {
+        return SelectLanguageFragment.AlwaysTranslateLanguagePickerFragment.class;
     }
 
     @Override

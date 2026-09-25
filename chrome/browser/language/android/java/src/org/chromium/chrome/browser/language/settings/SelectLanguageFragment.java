@@ -49,26 +49,78 @@ import java.util.Locale;
 /**
  * Fragment with a {@link RecyclerView} containing a list of languages that users may add to their
  * accept languages. There is a {@link SearchView} on its Actionbar to make a quick lookup.
+ *
+ * <p>There is one subclass per kind of selection, nested below. To add one: subclass this, return
+ * the list to offer from {@link #getLanguageListType}, and add it to {@link #ALL_PICKERS}.
  */
 @NullMarked
-public class SelectLanguageFragment extends Fragment
+public abstract class SelectLanguageFragment extends Fragment
         implements ProfileDependentSetting,
                 SettingsFragment,
                 EmbeddableSettingsPage,
                 SearchViewProvider {
     // Intent key to pass selected language code from SelectLanguageFragment.
     static final String KEY_SELECTED_LANGUAGE = "SelectLanguageFragment.SelectedLanguage";
-    // Intent key to receive type of languages to populate fragment with.
-    public static final String KEY_POTENTIAL_LANGUAGES =
-            "SelectLanguageFragment.PotentialLanguages";
 
     static final String FRAGMENT_RESULT_TAG = "SelectLanguageFragment";
 
+    /** Picks the app language, for {@link LanguageSettings}. */
+    public static class AppLanguagePickerFragment extends SelectLanguageFragment {
+        @Override
+        protected @LanguagesManager.LanguageListType int getLanguageListType() {
+            return LanguagesManager.LanguageListType.UI_LANGUAGES;
+        }
+    }
+
+    /** Picks a language to add to the accept languages, for {@link LanguageSettings}. */
+    public static class ContentLanguagePickerFragment extends SelectLanguageFragment {
+        @Override
+        protected @LanguagesManager.LanguageListType int getLanguageListType() {
+            return LanguagesManager.LanguageListType.ACCEPT_LANGUAGES;
+        }
+    }
+
+    /** Picks the language to translate into, for {@link LanguageSettings}. */
+    public static class TranslateTargetLanguagePickerFragment extends SelectLanguageFragment {
+        @Override
+        protected @LanguagesManager.LanguageListType int getLanguageListType() {
+            return LanguagesManager.LanguageListType.TARGET_LANGUAGES;
+        }
+    }
+
+    /** Picks a language to always translate, for {@link AlwaysTranslateListFragment}. */
+    public static class AlwaysTranslateLanguagePickerFragment extends SelectLanguageFragment {
+        @Override
+        protected @LanguagesManager.LanguageListType int getLanguageListType() {
+            return LanguagesManager.LanguageListType.ALWAYS_LANGUAGES;
+        }
+    }
+
+    /** Picks a language to never translate, for {@link NeverTranslateListFragment}. */
+    public static class NeverTranslateLanguagePickerFragment extends SelectLanguageFragment {
+        @Override
+        protected @LanguagesManager.LanguageListType int getLanguageListType() {
+            return LanguagesManager.LanguageListType.NEVER_LANGUAGES;
+        }
+    }
+
+    /** Every picker. Kept next to the subclasses so that a new one is hard to miss. */
+    public static final List<Class<? extends SelectLanguageFragment>> ALL_PICKERS =
+            List.of(
+                    AppLanguagePickerFragment.class,
+                    ContentLanguagePickerFragment.class,
+                    TranslateTargetLanguagePickerFragment.class,
+                    AlwaysTranslateLanguagePickerFragment.class,
+                    NeverTranslateLanguagePickerFragment.class);
+
     /** A host to launch SelectLanguageFragment and receive the result. */
     interface Launcher {
-        /** Launches SelectLanguageFragment. */
+        /** Launches the picker for a language to add to the accept languages. */
         void launchAddLanguage();
     }
+
+    /** Which languages to offer. */
+    protected abstract @LanguagesManager.LanguageListType int getLanguageListType();
 
     private class LanguageSearchListAdapter extends LanguageListBaseAdapter {
         LanguageSearchListAdapter(Context context, Profile profile) {
@@ -157,15 +209,10 @@ public class SelectLanguageFragment extends Fragment
         mRecyclerView.addItemDecoration(
                 new DividerItemDecoration(activity, layoutManager.getOrientation()));
 
-        @LanguagesManager.LanguageListType
-        int languageOption =
-                getArguments()
-                        .getShort(
-                                KEY_POTENTIAL_LANGUAGES,
-                                (short) LanguagesManager.LanguageListType.ACCEPT_LANGUAGES);
         assumeNonNull(mProfile);
         mFilteredLanguages =
-                LanguagesManager.getForProfile(mProfile).getPotentialLanguages(languageOption);
+                LanguagesManager.getForProfile(mProfile)
+                        .getPotentialLanguages(getLanguageListType());
         mItemClickListener =
                 item -> {
                     if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {

@@ -419,7 +419,8 @@ public class MultiColumnTitleUpdaterTest {
         }
     }
 
-    public static class TestSelectLanguageFragment extends SelectLanguageFragment {
+    public static class TestSelectLanguageFragment
+            extends SelectLanguageFragment.ContentLanguagePickerFragment {
         private @Nullable SearchView mSearchView;
 
         @Override

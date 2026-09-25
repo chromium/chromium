@@ -41,6 +41,7 @@ chromium-metrics-reviews@google.com.
   <int value="-2054907175" label="GroupedWebsitesSettings"/>
   <int value="-2049922448" label="NeverTranslateListFragment"/>
   <int value="-2037155894" label="AutofillShoppingFragment"/>
+  <int value="-2030678569" label="AppLanguagePickerFragment"/>
   <int value="-1989639959" label="(Obsolete) AdMeasurementFragment"/>
   <int value="-1897035940" label="ThemeSettingsFragment"/>
   <int value="-1806481374" label="ConfirmImportantSitesDialogFragment"/>
@@ -84,6 +85,8 @@ chromium-metrics-reviews@google.com.
   <int value="-67456740" label="MainSettings"/>
   <int value="-45144853" label="DownloadSettings"/>
   <int value="-27162861" label="(Obsolete) FledgeFragment"/>
+  <int value="2516405" label="TranslateTargetLanguagePickerFragment"/>
+  <int value="6178351" label="ContentLanguagePickerFragment"/>
   <int value="19814032" label="(Renamed) ClearBrowsingDataFragmentAdvanced"/>
   <int value="51577713" label="AccessibilitySettings"/>
   <int value="91451948" label="ContextualSearchSettingsFragment"/>
@@ -93,6 +96,7 @@ chromium-metrics-reviews@google.com.
   <int value="217285687" label="AppearanceSettingsFragment"/>
   <int value="323758419" label="(Obsolete) TrackingProtectionSettings"/>
   <int value="351534386" label="SiteSearchSettings"/>
+  <int value="358606168" label="NeverTranslateLanguagePickerFragment"/>
   <int value="383093746" label="(Obsolete) PrivacySandboxSettingsFragment"/>
   <int value="406265787" label="LanguageSettings"/>
   <int value="436870314" label="SiteSettings"/>
@@ -120,6 +124,7 @@ chromium-metrics-reviews@google.com.
   <int value="1015549581" label="AlwaysTranslateListFragment"/>
   <int value="1068718433" label="RecentSearchesFragment"/>
   <int value="1118292269" label="(Obsolete) HomeModulesConfigSettings"/>
+  <int value="1192397109" label="AlwaysTranslateLanguagePickerFragment"/>
   <int value="1287752848" label="BookmarkBarSettingsFragment"/>
   <int value="1322563897" label="(Obsolete) TopicsManageFragment"/>
   <int value="1370078648" label="AdaptiveToolbarSettingsFragment"/>
@@ -131,7 +136,7 @@ chromium-metrics-reviews@google.com.
   <int value="1603955025" label="SafetyHubPermissionsFragment"/>
   <int value="1624624514" label="FinancialAccountsManagementFragment"/>
   <int value="1667127067" label="(Obsolete) HomeOfTransactionsFragment"/>
-  <int value="1676521220" label="SelectLanguageFragment"/>
+  <int value="1676521220" label="(Obsolete) SelectLanguageFragment"/>
   <int value="1764379105" label="TabsSettings"/>
   <int value="1810785089" label="GlicActorLoginPermissionsFragment"/>
   <int value="1837742646" label="AutofillBuyNowPayLaterFragment"/>

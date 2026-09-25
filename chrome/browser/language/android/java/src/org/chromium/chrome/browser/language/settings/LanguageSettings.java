@@ -180,7 +180,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         appLanguagePreference.useLanguageItemForTitle(true);
         setSelectLanguageLauncher(
                 appLanguagePreference,
-                LanguagesManager.LanguageListType.UI_LANGUAGES,
+                SelectLanguageFragment.AppLanguagePickerFragment.class,
                 REQUEST_CODE_CHANGE_APP_LANGUAGE,
                 LanguagesManager.LanguageSettingsPageType.CHANGE_CHROME_LANGUAGE);
 
@@ -214,7 +214,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                 getProfile(), TranslateBridge.getTargetLanguageForChromium(getProfile()));
         setSelectLanguageLauncher(
                 targetLanguagePreference,
-                LanguagesManager.LanguageListType.TARGET_LANGUAGES,
+                SelectLanguageFragment.TranslateTargetLanguagePickerFragment.class,
                 REQUEST_CODE_CHANGE_TARGET_LANGUAGE,
                 LanguagesManager.LanguageSettingsPageType.CHANGE_TARGET_LANGUAGE);
         mPrefChangeRegistrar.addObserver(
@@ -352,7 +352,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         LanguagesManager.recordImpression(
                 LanguagesManager.LanguageSettingsPageType.CONTENT_LANGUAGE_ADD_LANGUAGE);
         launchSelectLanguage(
-                LanguagesManager.LanguageListType.ACCEPT_LANGUAGES,
+                SelectLanguageFragment.ContentLanguagePickerFragment.class,
                 REQUEST_CODE_ADD_ACCEPT_LANGUAGE);
     }
 
@@ -371,13 +371,13 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
      * Set preference's OnPreferenceClickListener to launch the Select Language Fragment.
      *
      * @param preference The Preference to set listener on.
-     * @param languageListType The language options code to filter selectable languages.
+     * @param picker The picker to launch, which determines the selectable languages.
      * @param requestCode The code to return from the select language fragment with.
      * @param pageType The LanguageSettingsPageType to record impression for.
      */
     private void setSelectLanguageLauncher(
             Preference preference,
-            @LanguagesManager.LanguageListType int languageListType,
+            Class<? extends SelectLanguageFragment> picker,
             int requestCode,
             @LanguagesManager.LanguageSettingsPageType int pageType) {
         preference.setOnPreferenceClickListener(
@@ -385,29 +385,25 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
                         LanguagesManager.recordImpression(pageType);
-                        launchSelectLanguage(languageListType, requestCode);
+                        launchSelectLanguage(picker, requestCode);
                         return true;
                     }
                 });
     }
 
     /**
-     * Launch the SelectLanguageFragment with launch and request codes to select a single language.
+     * Launch a SelectLanguageFragment with launch and request codes to select a single language.
      *
-     * @param languageListType The language options code to filter selectable languages.
+     * @param picker The picker to launch, which determines the selectable languages.
      * @param requestCode The code to return from the select language fragment with.
      */
     private void launchSelectLanguage(
-            @LanguagesManager.LanguageListType int languageListType, final int requestCode) {
-        Bundle args = new Bundle();
-        args.putShort(SelectLanguageFragment.KEY_POTENTIAL_LANGUAGES, (short) languageListType);
-
+            Class<? extends SelectLanguageFragment> picker, final int requestCode) {
         if (!ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
             // Use an Intent with extra. Return value is received via onActivityResult.
             Intent intent =
                     SettingsNavigationFactory.createSettingsNavigation()
-                            .createSettingsIntent(
-                                    getActivity(), SelectLanguageFragment.class, args);
+                            .createSettingsIntent(getActivity(), picker, /* fragmentArgs= */ null);
             startActivityForResult(intent, requestCode);
             return;
         }
@@ -433,8 +429,8 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(
                         getActivity(),
-                        SelectLanguageFragment.class,
-                        args,
+                        picker,
+                        /* fragmentArgs= */ null,
                         /* addToBackStack= */ true);
     }
 
