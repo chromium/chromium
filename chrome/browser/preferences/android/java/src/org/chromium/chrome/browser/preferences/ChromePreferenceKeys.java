@@ -700,13 +700,6 @@ public final class ChromePreferenceKeys {
     public static final String PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP =
             "Chrome.PageInsightsHub.PageInsightsHubLastOpenedTimestamp";
 
-    /**
-     * Indicates the number of times Privacy Notice of Page Insights Hub was opened by user till now
-     * . The privacy notice is not shown after it has been shown 3 times.
-     */
-    public static final String PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT =
-            "Chrome.PageInsightsHub.NumberOfTimesPageInsightsHubOpenedByUser";
-
     /** Whether NTP magic stack cards are enabled (if false, no cards can show). */
     public static final String HOME_MODULE_CARDS_ENABLED = "Chrome.HomeModules.Enabled";
 
@@ -1303,7 +1296,6 @@ public final class ChromePreferenceKeys {
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PIH_PRIVACY_NOTICE_CLOSED,
                 PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP,
-                PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT,
                 POLICY_USER_FEEDBACK_ALLOWED,
                 PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                 PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS,
