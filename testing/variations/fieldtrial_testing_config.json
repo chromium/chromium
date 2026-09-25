@@ -5275,6 +5275,8 @@
                     "params": {
                         "ContextualCueingV2EduClassifierThreshold": "0.6",
                         "ContextualCueingV2EnablePrivateInsightsLogging": "true",
+                        "ContextualCueingV2MultiSourceAnnotationTimeout": "300s",
+                        "MinDaysSinceLastInvocation": "2",
                         "fcp_population_name_contextual_cues": "chrome/private_insights/contextual_cues",
                         "fcp_server_uri": "https://federatedcompute-pa.googleapis.com/",
                         "fcp_use_attestation_transparency_verifier": "true",
@@ -5282,6 +5284,8 @@
                     },
                     "enable_features": [
                         "ContextualCueingV2",
+                        "ContextualCueingV2MultiSource",
+                        "GlicContextualCueV2ActiveUserBackoff",
                         "GlicContextualCueingV2AutoSubmit",
                         "PrivateInsightsFeature"
                     ]
