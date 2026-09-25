@@ -32,6 +32,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/test/compositor_frame_helpers.h"
+#include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -94,6 +97,7 @@
 #include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/url_request/url_request_failed_job.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
@@ -25379,6 +25383,140 @@ IN_PROC_BROWSER_TEST_P(
     ReloadReplacesInitialEntryAfterCanceledNavigation_BypassingCache) {
   RunReloadReplacesInitialEntryAfterCanceledNavigationTest(
       shell(), embedded_test_server(), ReloadType::BYPASSING_CACHE);
+}
+
+namespace {
+
+// Builds a CompositorFrame that CompositorFrame::HasVisuallyNonEmptyContent()
+// reports as non-empty (two SolidColorDrawQuads, rather than the single
+// background quad a blank document submits).
+viz::CompositorFrame MakeVisuallyNonEmptyCompositorFrame() {
+  constexpr gfx::Rect kOutputRect(0, 0, 100, 100);
+  return viz::CompositorFrameBuilder()
+      .AddRenderPass(
+          viz::RenderPassBuilder(kOutputRect)
+              .AddSolidColorQuad(kOutputRect, SkColors::kWhite)
+              .AddSolidColorQuad(gfx::Rect(0, 0, 10, 10), SkColors::kRed))
+      .Build();
+}
+
+// Leaves `contents` on an unmodified blank tab with a renderer-initiated
+// pending URL visible in place of about:blank.
+void StartPendingRendererInitiatedNavigationInNewTab(WebContentsImpl* contents,
+                                                     const GURL& url) {
+  NavigationController::LoadURLParams params(url);
+  params.is_renderer_initiated = true;
+  params.initiator_origin = url::Origin::Create(url);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  TestNavigationManager nav_manager(contents, url);
+  contents->GetController().LoadURLWithParams(params);
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+
+  NavigationControllerImpl& controller = contents->GetController();
+  ASSERT_TRUE(controller.IsUnmodifiedBlankTab());
+  ASSERT_TRUE(controller.GetPendingEntry());
+  ASSERT_TRUE(controller.GetPendingEntry()->is_renderer_initiated());
+  ASSERT_EQ(controller.GetPendingEntry(), controller.GetVisibleEntry());
+  ASSERT_EQ(url, controller.GetVisibleEntry()->GetURL());
+}
+
+}  // namespace
+
+// The tests below submit CompositorFrames directly, which keeps them focused on
+// the browser and Viz plumbing and lets them cover frame sink lifetimes that a
+// non-compromised renderer cannot produce on demand. The attack itself is
+// covered end to end by the
+// NonEmptyCompositorFrameInInitialEmptyDocumentClearsPendingURL test in
+// SecurityExploitBrowserTest.
+
+// Verifies that a renderer cannot disarm the detection by asking for a new
+// CompositorFrameSink before drawing, which destroys the old
+// CompositorFrameSinkSupport in Viz. See https://crbug.com/40055319.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    VisuallyNonEmptyCompositorFrameAfterRecreatingFrameSinkRevertsPendingURL) {
+  Shell* new_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL(), nullptr, gfx::Size(100, 100));
+  WebContentsImpl* new_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+  NavigationControllerImpl& controller = new_contents->GetController();
+
+  ASSERT_NO_FATAL_FAILURE(StartPendingRendererInitiatedNavigationInNewTab(
+      new_contents, embedded_test_server()->GetURL("/title1.html")));
+
+  // Recreate the CompositorFrameSink, as a renderer recovering from context
+  // loss would.
+  RenderWidgetHostImpl* rwh =
+      new_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  viz::FakeCompositorFrameSinkClient sink_client;
+  mojo::Remote<viz::mojom::CompositorFrameSink> compositor_frame_sink;
+  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
+  std::ignore = rir_client.InitWithNewPipeAndPassReceiver();
+  rwh->CreateFrameSink(compositor_frame_sink.BindNewPipeAndPassReceiver(),
+                       sink_client.BindInterfaceRemote(),
+                       std::move(rir_client));
+  EXPECT_TRUE(controller.IsUnmodifiedBlankTab());
+
+  viz::LocalSurfaceId local_surface_id =
+      rwh->GetView()->GetLocalSurfaceId().is_valid()
+          ? rwh->GetView()->GetLocalSurfaceId()
+          : viz::LocalSurfaceId(1, 1, base::UnguessableToken::Create());
+  compositor_frame_sink->SubmitCompositorFrame(
+      local_surface_id, MakeVisuallyNonEmptyCompositorFrame(), std::nullopt, 0);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return new_contents->HasAccessedInitialDocument(); }));
+  EXPECT_TRUE(controller.GetVisibleEntry()->IsInitialEntry());
+  EXPECT_EQ(GURL::EmptyGURL(), controller.GetVisibleEntry()->GetURL());
+}
+
+// Verifies that a renderer cannot suppress the notification by closing its
+// CompositorFrameSink pipe immediately after submitting a spoofed frame. The
+// surface has already activated and is still drawn, so the browser must still
+// be told. This test prevents a bypass found in an earlier
+// CompositorFrameSinkSupport-based approach. See https://crbug.com/40055319.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    VisuallyNonEmptyCompositorFrameThenClosedSinkRevertsPendingURL) {
+  Shell* new_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL(), nullptr, gfx::Size(100, 100));
+  WebContentsImpl* new_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+  NavigationControllerImpl& controller = new_contents->GetController();
+
+  ASSERT_NO_FATAL_FAILURE(StartPendingRendererInitiatedNavigationInNewTab(
+      new_contents, embedded_test_server()->GetURL("/title1.html")));
+
+  RenderWidgetHostImpl* rwh =
+      new_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  // Held in an optional so the test can close the client pipe along with the
+  // sink, as a renderer tearing down its CompositorFrameSink would.
+  std::optional<viz::FakeCompositorFrameSinkClient> sink_client;
+  sink_client.emplace();
+  mojo::Remote<viz::mojom::CompositorFrameSink> compositor_frame_sink;
+  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client;
+  std::ignore = rir_client.InitWithNewPipeAndPassReceiver();
+  rwh->CreateFrameSink(compositor_frame_sink.BindNewPipeAndPassReceiver(),
+                       sink_client->BindInterfaceRemote(),
+                       std::move(rir_client));
+
+  viz::LocalSurfaceId local_surface_id =
+      rwh->GetView()->GetLocalSurfaceId().is_valid()
+          ? rwh->GetView()->GetLocalSurfaceId()
+          : viz::LocalSurfaceId(1, 1, base::UnguessableToken::Create());
+  compositor_frame_sink->SubmitCompositorFrame(
+      local_surface_id, MakeVisuallyNonEmptyCompositorFrame(), std::nullopt, 0);
+
+  // Tear down the sink right after submitting, without ever drawing again.
+  compositor_frame_sink.reset();
+  sink_client.reset();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return new_contents->HasAccessedInitialDocument(); }));
+  EXPECT_TRUE(controller.GetVisibleEntry()->IsInitialEntry());
+  EXPECT_EQ(GURL::EmptyGURL(), controller.GetVisibleEntry()->GetURL());
 }
 
 }  // namespace content

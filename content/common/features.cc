@@ -156,6 +156,12 @@ BASE_FEATURE(kCancelCompositionWhenWindowLosesFocus,
 // This should avoid a possible stall due to frames not being presented.
 BASE_FEATURE(kCDPScreenshotNewSurface, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Killswitch for treating a visually non-empty CompositorFrame in an initial
+// empty document as an access to that document, which stops the omnibox from
+// showing a renderer-initiated pending URL. See https://crbug.com/40055319.
+BASE_FEATURE(kClearPendingUrlOnNonEmptyCompositorFrame,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, code cache does not use a browsing_data filter for deletions.
 BASE_FEATURE(kCodeCacheDeletionWithoutFilter, base::FEATURE_ENABLED_BY_DEFAULT);
 

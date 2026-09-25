@@ -14,6 +14,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -1009,7 +1010,65 @@ void FrameTree::Init(SiteInstanceImpl* main_frame_site_instance,
 void FrameTree::DidAccessInitialMainDocument() {
   OPTIONAL_TRACE_EVENT0("content", "FrameTree::DidAccessInitialDocument");
   has_accessed_initial_main_document_ = true;
+  // The Viz non-empty CompositorFrame notification is intentionally left armed
+  // so that subsequent draws into a scripted about:blank document populate the
+  // false bucket of
+  // Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess as a
+  // baseline.
   controller().DidAccessInitialMainDocument();
+}
+
+void FrameTree::OnFirstVisuallyNonEmptyCompositorFrame(
+    RenderWidgetHostImpl* widget) {
+  // `widget` was armed when it became the initial main frame's widget, so
+  // re-check that it still is: a CompositorFrame from a subframe or from a
+  // widget that has since been replaced says nothing about the initial empty
+  // document.
+  RenderFrameHostImpl* root_rfh = root()->current_frame_host();
+  if (!root_rfh || root_rfh->GetRenderWidgetHost() != widget) {
+    return;
+  }
+
+  // Almost always false, because an honest renderer that draws into the initial
+  // empty document has already sent DidAccessInitialMainDocument() first (and
+  // cross-document navigations away from the initial empty document cancel the
+  // notification in RenderWidgetHostImpl::DidNavigate()).
+  const bool is_unmodified_blank_tab = controller().IsUnmodifiedBlankTab();
+
+  // Record a histogram to distinguish legitimate false cases (e.g., when a page
+  // draws into an about:blank popup after DidAccessInitialMainDocument()) from
+  // any cases where this call could actually reset the address bar. Note that
+  // cross-document navigations cancel the notification at commit time, so
+  // normal paints after navigations in new tabs do not record a sample. A
+  // non-trivial true rate means CompositorFrame::HasVisuallyNonEmptyContent()
+  // is reporting ordinary blank tabs as non-empty (e.g., false positives),
+  // since actual spoof attempts should be vanishingly rare. Recorded even when
+  // the killswitch below is off, so the rate stays measurable after a
+  // killswitch pull.
+  base::UmaHistogramBoolean(
+      "Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess",
+      is_unmodified_blank_tab);
+
+  if (!is_unmodified_blank_tab) {
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kClearPendingUrlOnNonEmptyCompositorFrame)) {
+    return;
+  }
+
+  // The renderer drew content into the initial empty document, so treat the
+  // document as accessed even though the renderer never sent the untrusted
+  // DidAccessInitialMainDocument IPC. This stops a renderer-initiated pending
+  // URL from being shown over renderer-controlled pixels.
+  //
+  // A pending URL from an in-flight browser-initiated navigation keeps showing,
+  // since GetVisibleEntry() does not depend on IsUnmodifiedBlankTab() for it.
+  // A browser-initiated pending URL left visible by an aborted navigation is
+  // discarded, though, like any other access to the initial empty document
+  // (see https://crbug.com/40079181).
+  DidAccessInitialMainDocument();
 }
 
 void FrameTree::NodeLoadingStateChanged(

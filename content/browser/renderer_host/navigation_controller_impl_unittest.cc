@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/browser_url_handler_impl.h"
@@ -31,9 +32,11 @@
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_view_host.h"
@@ -3206,6 +3209,221 @@ TEST_F(NavigationControllerTest, ShowRendererURLAfterFailUntilModified) {
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
   EXPECT_TRUE(controller.GetVisibleEntry()->IsInitialEntry());
   EXPECT_EQ(url, controller.GetPendingEntry()->GetURL());
+}
+
+// Tests that a visually non-empty CompositorFrame detected by Viz (rather than
+// reported by the untrusted DidAccessInitialMainDocument IPC) discards the
+// pending URL and reverts the visible entry to the initial blank entry,
+// preventing a URL spoof. See https://crbug.com/40055319.
+TEST_F(NavigationControllerTest,
+       VisuallyNonEmptyCompositorFrameRevertsPendingURL) {
+  base::HistogramTester histogram_tester;
+  NavigationControllerImpl& controller = controller_impl();
+
+  const GURL url("http://foo");
+  auto navigation =
+      NavigationSimulator::CreateRendererInitiated(url, main_test_rfh());
+  navigation->Start();
+
+  EXPECT_EQ(url, controller.GetVisibleEntry()->GetURL());
+  EXPECT_TRUE(controller.GetPendingEntry()->is_renderer_initiated());
+  EXPECT_TRUE(controller.IsUnmodifiedBlankTab());
+  EXPECT_FALSE(contents()->HasAccessedInitialDocument());
+
+  // Simulate Viz reporting a non-empty CompositorFrame for the main frame's
+  // widget, without the renderer sending DidAccessInitialMainDocument.
+  main_test_rfh()
+      ->GetRenderWidgetHost()
+      ->OnFirstVisuallyNonEmptyCompositorFrame();
+
+  EXPECT_TRUE(contents()->HasAccessedInitialDocument());
+  EXPECT_TRUE(controller.GetVisibleEntry()->IsInitialEntry());
+  EXPECT_NE(controller.GetPendingEntry(), controller.GetVisibleEntry());
+  EXPECT_EQ(GURL::EmptyGURL(), controller.GetVisibleEntry()->GetURL());
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess", true,
+      1);
+}
+
+// Tests that a visually non-empty CompositorFrame also reverts the pending URL
+// that is preserved after a renderer-initiated navigation fails on a blank tab.
+TEST_F(NavigationControllerTest,
+       VisuallyNonEmptyCompositorFrameAfterFailRevertsPendingURL) {
+  base::HistogramTester histogram_tester;
+  NavigationControllerImpl& controller = controller_impl();
+
+  const GURL url("http://foo");
+  auto navigation =
+      NavigationSimulator::CreateRendererInitiated(url, main_test_rfh());
+  navigation->Start();
+
+  // The pending URL stays visible after the navigation aborts, as long as the
+  // blank tab is unmodified.
+  navigation->Fail(net::ERR_FAILED);
+  EXPECT_EQ(url, controller.GetVisibleEntry()->GetURL());
+  EXPECT_FALSE(contents()->HasAccessedInitialDocument());
+
+  main_test_rfh()
+      ->GetRenderWidgetHost()
+      ->OnFirstVisuallyNonEmptyCompositorFrame();
+
+  EXPECT_TRUE(contents()->HasAccessedInitialDocument());
+  EXPECT_TRUE(controller.GetVisibleEntry()->IsInitialEntry());
+  EXPECT_NE(controller.GetPendingEntry(), controller.GetVisibleEntry());
+  EXPECT_EQ(GURL::EmptyGURL(), controller.GetVisibleEntry()->GetURL());
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess", true,
+      1);
+}
+
+// Tests the draw-then-navigate spoof: a renderer draws content into the
+// initial empty document before starting a slow renderer-initiated navigation,
+// so that there is no pending URL to remove at that time. The subsequent
+// pending URL must still be suppressed.
+TEST_F(NavigationControllerTest,
+       VisuallyNonEmptyCompositorFrameWithoutPendingEntry) {
+  base::HistogramTester histogram_tester;
+  NavigationControllerImpl& controller = controller_impl();
+
+  ASSERT_TRUE(controller.IsUnmodifiedBlankTab());
+  ASSERT_FALSE(controller.GetPendingEntry());
+
+  main_test_rfh()
+      ->GetRenderWidgetHost()
+      ->OnFirstVisuallyNonEmptyCompositorFrame();
+
+  EXPECT_TRUE(contents()->HasAccessedInitialDocument());
+  EXPECT_FALSE(controller.IsUnmodifiedBlankTab());
+  EXPECT_TRUE(controller.GetVisibleEntry()->IsInitialEntry());
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess", true,
+      1);
+
+  // The pending URL of a navigation started after the CompositorFrame is not
+  // shown over the content the renderer already drew.
+  const GURL url("http://foo");
+  auto navigation =
+      NavigationSimulator::CreateRendererInitiated(url, main_test_rfh());
+  navigation->Start();
+
+  EXPECT_EQ(url, controller.GetPendingEntry()->GetURL());
+  EXPECT_TRUE(controller.GetVisibleEntry()->IsInitialEntry());
+  EXPECT_EQ(GURL::EmptyGURL(), controller.GetVisibleEntry()->GetURL());
+}
+
+// Tests that a non-empty CompositorFrame is not counted as true in the
+// histogram once the renderer has already reported accessing the initial empty
+// document. This is what a page that opens an about:blank popup and writes
+// content into it does, which is legitimate and common, and is the main
+// population of the histogram's false bucket.
+TEST_F(NavigationControllerTest,
+       VisuallyNonEmptyCompositorFrameAfterReportedAccess) {
+  base::HistogramTester histogram_tester;
+  NavigationControllerImpl& controller = controller_impl();
+
+  ASSERT_TRUE(controller.IsUnmodifiedBlankTab());
+  main_test_rfh()->DidAccessInitialMainDocument();
+  ASSERT_FALSE(controller.IsUnmodifiedBlankTab());
+
+  main_test_rfh()
+      ->GetRenderWidgetHost()
+      ->OnFirstVisuallyNonEmptyCompositorFrame();
+
+  EXPECT_TRUE(controller.GetVisibleEntry()->IsInitialEntry());
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess",
+      false, 1);
+}
+
+// Tests that a visually non-empty CompositorFrame also discards a pending URL
+// that was preserved after a browser-initiated navigation aborted on a blank
+// tab, in the same way that an access reported by the renderer would. See
+// https://crbug.com/40079181.
+TEST_F(NavigationControllerTest,
+       VisuallyNonEmptyCompositorFrameAfterBrowserInitiatedAbort) {
+  base::HistogramTester histogram_tester;
+  NavigationControllerImpl& controller = controller_impl();
+
+  const GURL url("http://foo");
+  auto navigation =
+      NavigationSimulatorImpl::CreateBrowserInitiated(url, contents());
+  NavigationController::LoadURLParams load_url_params(url);
+  load_url_params.transition_type = ui::PAGE_TRANSITION_TYPED;
+  load_url_params.is_renderer_initiated = false;
+  navigation->SetLoadURLParams(&load_url_params);
+  navigation->Start();
+  ASSERT_FALSE(controller.GetPendingEntry()->is_renderer_initiated());
+
+  // Suppose it aborts before committing, as a 204 or download or a stop would.
+  // The URL remains visible while the blank tab is unmodified.
+  main_test_rfh()->frame_tree_node()->navigator().CancelNavigation(
+      main_test_rfh()->frame_tree_node(),
+      NavigationDiscardReason::kExplicitCancellation);
+  ASSERT_TRUE(controller.IsUnmodifiedBlankTab());
+  ASSERT_EQ(url, controller.GetVisibleEntry()->GetURL());
+
+  main_test_rfh()
+      ->GetRenderWidgetHost()
+      ->OnFirstVisuallyNonEmptyCompositorFrame();
+
+  EXPECT_TRUE(contents()->HasAccessedInitialDocument());
+  EXPECT_TRUE(controller.GetVisibleEntry()->IsInitialEntry());
+  EXPECT_FALSE(controller.GetPendingEntry());
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess", true,
+      1);
+}
+
+// Tests that the killswitch suppresses the behavior change while still
+// recording the metric used to judge whether the killswitch is needed.
+TEST_F(NavigationControllerTest,
+       VisuallyNonEmptyCompositorFrameWithFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kClearPendingUrlOnNonEmptyCompositorFrame);
+  base::HistogramTester histogram_tester;
+  NavigationControllerImpl& controller = controller_impl();
+
+  const GURL url("http://foo");
+  auto navigation =
+      NavigationSimulator::CreateRendererInitiated(url, main_test_rfh());
+  navigation->Start();
+  EXPECT_EQ(url, controller.GetVisibleEntry()->GetURL());
+
+  main_test_rfh()
+      ->GetRenderWidgetHost()
+      ->OnFirstVisuallyNonEmptyCompositorFrame();
+
+  EXPECT_FALSE(contents()->HasAccessedInitialDocument());
+  EXPECT_EQ(url, controller.GetVisibleEntry()->GetURL());
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess", true,
+      1);
+}
+
+// Tests a fallback case: the tab has already left the initial empty document
+// by the time it draws, but the callback is not cancelled before it is
+// invoked. The notification has no effect on behavior, but still records false
+// in the histogram.
+TEST_F(NavigationControllerTest,
+       VisuallyNonEmptyCompositorFrameAfterCommitIsNoOp) {
+  base::HistogramTester histogram_tester;
+  NavigationControllerImpl& controller = controller_impl();
+
+  const GURL url("http://foo");
+  NavigationSimulator::NavigateAndCommitFromDocument(url, main_test_rfh());
+  EXPECT_FALSE(controller.IsUnmodifiedBlankTab());
+
+  // Simulate a callback that was not cancelled by the navigation commit.
+  main_test_rfh()
+      ->GetRenderWidgetHost()
+      ->OnFirstVisuallyNonEmptyCompositorFrame();
+
+  EXPECT_FALSE(contents()->HasAccessedInitialDocument());
+  EXPECT_EQ(url, controller.GetVisibleEntry()->GetURL());
+  histogram_tester.ExpectUniqueSample(
+      "Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess",
+      false, 1);
 }
 
 // Tests that the URLs for renderer-initiated navigations in new tabs are

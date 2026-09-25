@@ -1513,6 +1513,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess"
+    enum="Boolean" expires_after="2027-06-30">
+  <owner>creis@chromium.org</owner>
+  <owner>navigation-dev@chromium.org</owner>
+  <summary>
+    Records whether a visually non-empty CompositorFrame reported by Viz for a
+    main frame's widget arrived while the tab was still on an unmodified initial
+    empty document. Recorded at most once per tab, when Viz reports the first
+    non-empty frame for the widget that was created for the tab's initial empty
+    document. Not recorded for prerendered pages, fenced frames, or guests.
+
+    True means the CompositorFrame was treated as an access to the initial empty
+    document, so a renderer-initiated pending URL (or a pending URL left over
+    from an aborted browser-initiated navigation) stopped being shown in the
+    omnibox.
+
+    False means the CompositorFrame told us nothing new because the renderer had
+    already reported accessing the initial empty document (or navigated it
+    same-document). This covers a page that opens an about:blank popup and draws
+    into it without navigating, which is legitimate and common: such a page must
+    run script in the popup, which always reports the access before anything can
+    be drawn. Cross-document navigations away from the initial empty document
+    cancel the notification at commit time and do not record a sample.
+
+    A non-trivial true rate indicates that
+    CompositorFrame::HasVisuallyNonEmptyContent() may be misclassifying ordinary
+    blank tabs, and is a signal to potentially disable
+    features::kClearPendingUrlOnNonEmptyCompositorFrame. See
+    https://crbug.com/40055319.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.InitiatorType.All" enum="NavigationInitiatorType"
     expires_after="2027-02-07">
   <owner>robertlin@chromium.org</owner>

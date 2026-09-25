@@ -72,7 +72,10 @@
 #include "content/browser/renderer_host/display_feature.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/input/fling_scheduler.h"
+#include "content/browser/renderer_host/navigation_controller_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -1653,6 +1656,19 @@ void RenderWidgetHostImpl::DidNavigate() {
   visual_properties_ack_pending_ = false;
   if (view_) {
     view_->DidNavigate();
+
+    // A committed cross-document navigation means the frame is no longer on the
+    // initial empty document, so a non-empty CompositorFrame reported from here
+    // on would be a no-op. Cancelling here drops the callback on the UI thread
+    // so that Viz does not report the first non-empty CompositorFrame of the
+    // newly committed document and record a false sample in
+    // Navigation.InitialDocument.NonEmptyCompositorFrameTreatedAsAccess for
+    // every same-widget navigation.
+    //
+    // This does not run for same-document navigations, which also leave the
+    // initial empty document. That is fine: a same-document navigation requires
+    // script, which already reports the access over the renderer's own IPC.
+    CancelNonEmptyCompositorFrameNotification();
   }
 }
 
@@ -4153,6 +4169,14 @@ void RenderWidgetHostImpl::MaybeDispatchBufferedFrameSinkRequest() {
     return;
   }
 
+  // Arm before the CreateCompositorFrameSink() call in
+  // `create_frame_sink_callback_` below. Both messages travel on the browser's
+  // ordered pipe to Viz, so Viz is guaranteed to be watching before it can
+  // process any CompositorFrame from the renderer. Arming only here, rather
+  // than on every call, keeps the request tied to the one moment a frame sink
+  // is actually created for this widget.
+  MaybeRequestNonEmptyCompositorFrameNotification();
+
   if (compositor_metric_recorder_) {
     compositor_metric_recorder_->DidRequestFrameSink();
   }
@@ -4160,6 +4184,61 @@ void RenderWidgetHostImpl::MaybeDispatchBufferedFrameSinkRequest() {
   std::move(create_frame_sink_callback_)
       .Run(delegate_->GetCompositorFrameSinkGroupingId(),
            view_->GetFrameSinkId());
+}
+
+void RenderWidgetHostImpl::MaybeRequestNonEmptyCompositorFrameNotification() {
+  if (!ShouldRequestNonEmptyCompositorFrameNotification()) {
+    return;
+  }
+  viz::HostFrameSinkManager* manager = GetHostFrameSinkManager();
+  // A view that is pending destruction never registers its FrameSinkId, and
+  // requesting a notification for an unregistered FrameSinkId is not allowed.
+  if (!manager || !manager->IsFrameSinkIdRegistered(view_->GetFrameSinkId())) {
+    return;
+  }
+
+  // Re-arming for the same FrameSinkId is harmless, so there is no state to
+  // track across view replacement or FrameSinkId ownership changes: the request
+  // is keyed by FrameSinkId in both the browser and Viz, and is only ever
+  // dropped, never run, when the frame sink goes away.
+  manager->RequestNonEmptyFrameNotification(
+      view_->GetFrameSinkId(),
+      base::BindOnce(
+          &RenderWidgetHostImpl::OnFirstVisuallyNonEmptyCompositorFrame,
+          weak_factory_.GetWeakPtr()));
+}
+
+void RenderWidgetHostImpl::CancelNonEmptyCompositorFrameNotification() {
+  if (viz::HostFrameSinkManager* manager = GetHostFrameSinkManager()) {
+    manager->CancelNonEmptyFrameNotification(view_->GetFrameSinkId());
+  }
+}
+
+bool RenderWidgetHostImpl::ShouldRequestNonEmptyCompositorFrameNotification()
+    const {
+  // Only a primary FrameTree has an address bar that a pending URL could be
+  // spoofed in. Prerendered pages, fenced frames, and MPArch guests have their
+  // own NavigationController where IsUnmodifiedBlankTab() is initially true,
+  // but nothing there is shown to the user as a URL. (Inner WebContents, such
+  // as non-MPArch guests, do have a primary FrameTree of their own, where this
+  // is a harmless no-op.)
+  if (!frame_tree_ || !frame_tree_->is_primary()) {
+    return false;
+  }
+  // The notification only matters for the main frame's widget while the tab is
+  // still showing an unmodified initial empty document. A speculative main
+  // frame's widget is hidden until its navigation commits, so it does not
+  // create a frame sink (and thus cannot be armed) until it is already the
+  // current main frame, including after an early RenderFrameHost swap.
+  RenderFrameHostImpl* root_rfh = frame_tree_->root()->current_frame_host();
+  return root_rfh && root_rfh->GetRenderWidgetHost() == this &&
+         frame_tree_->controller().IsUnmodifiedBlankTab();
+}
+
+void RenderWidgetHostImpl::OnFirstVisuallyNonEmptyCompositorFrame() {
+  if (frame_tree_) {
+    frame_tree_->OnFirstVisuallyNonEmptyCompositorFrame(this);
+  }
 }
 
 void RenderWidgetHostImpl::RegisterRenderFrameMetadataObserver(

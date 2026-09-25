@@ -53,6 +53,7 @@ class RenderViewHostDelegate;
 class RenderViewHostImpl;
 class RenderFrameHostManager;
 class RenderWidgetHostDelegate;
+class RenderWidgetHostImpl;
 class SiteInstance;
 class SiteInstanceGroup;
 
@@ -584,6 +585,14 @@ class CONTENT_EXPORT FrameTree {
   // Another page accessed the initial empty main document, which means it
   // is no longer safe to display a pending URL without risking a URL spoof.
   void DidAccessInitialMainDocument();
+
+  // Called when Viz reports that `widget` activated a CompositorFrame with
+  // visually non-empty content. If `widget` is still the main frame's widget
+  // and the tab is still an unmodified blank tab, this is treated as an access
+  // to the initial empty document, since a compromised renderer can draw
+  // without ever sending the DidAccessInitialMainDocument IPC.
+  // See https://crbug.com/40055319.
+  void OnFirstVisuallyNonEmptyCompositorFrame(RenderWidgetHostImpl* widget);
 
   bool has_accessed_initial_main_document() const {
     return has_accessed_initial_main_document_;
