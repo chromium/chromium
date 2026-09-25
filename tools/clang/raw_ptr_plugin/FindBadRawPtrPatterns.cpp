@@ -408,11 +408,11 @@ class SpanFieldMatcher : public MatchFinder::MatchCallback {
     auto container_of_span_type =
         qualType(hasCanonicalType(anyOf(
                      qualType(hasDeclaration(classTemplateSpecializationDecl(
-                         container_methods, template_arguments))),
+                         template_arguments, container_methods))),
                      qualType(type(templateSpecializationType(
+                         template_arguments,
                          hasDeclaration(classTemplateDecl(
-                             has(cxxRecordDecl(container_methods)))),
-                         template_arguments))))))
+                             has(cxxRecordDecl(container_methods))))))))))
             .bind("container_type");
 
     auto field_decl_matcher =

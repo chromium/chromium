@@ -25,30 +25,31 @@ bool FilterFile::ContainsLine(llvm::StringRef line) const {
 }
 
 bool FilterFile::ContainsSubstringOf(llvm::StringRef string_to_match) const {
-  if (!inclusion_substring_regex_.has_value()) {
-    std::vector<std::string> regex_escaped_inclusion_file_lines;
-    std::vector<std::string> regex_escaped_exclusion_file_lines;
-    regex_escaped_inclusion_file_lines.reserve(file_lines_.size());
-    for (const llvm::StringRef& file_line : file_lines_.keys()) {
-      if (file_line.starts_with("!")) {
-        regex_escaped_exclusion_file_lines.push_back(
-            llvm::Regex::escape(file_line.substr(1)));
-      } else {
-        regex_escaped_inclusion_file_lines.push_back(
-            llvm::Regex::escape(file_line));
-      }
-    }
-    std::string inclusion_substring_regex_pattern =
-        llvm::join(regex_escaped_inclusion_file_lines.begin(),
-                   regex_escaped_inclusion_file_lines.end(), "|");
-    inclusion_substring_regex_.emplace(inclusion_substring_regex_pattern);
-    std::string exclusion_substring_regex_pattern =
-        llvm::join(regex_escaped_exclusion_file_lines.begin(),
-                   regex_escaped_exclusion_file_lines.end(), "|");
-    exclusion_substring_regex_.emplace(exclusion_substring_regex_pattern);
+  auto [it, inserted] =
+      contains_substring_of_cache_.try_emplace(string_to_match, false);
+  if (inserted) {
+    it->second = ContainsSubstringOfUncached(string_to_match);
   }
-  return inclusion_substring_regex_->match(string_to_match) &&
-         !exclusion_substring_regex_->match(string_to_match);
+  return it->second;
+}
+
+bool FilterFile::ContainsSubstringOfUncached(
+    llvm::StringRef string_to_match) const {
+  // Lines starting with "!" are exclusions.
+  bool included = false;
+  for (const llvm::StringRef& file_line : file_lines_.keys()) {
+    if (file_line.empty() || file_line == "!") {
+      continue;
+    }
+    if (file_line.starts_with("!")) {
+      if (string_to_match.contains(file_line.substr(1))) {
+        return false;
+      }
+    } else if (!included && string_to_match.contains(file_line)) {
+      included = true;
+    }
+  }
+  return included;
 }
 
 void FilterFile::ParseInputFile(const std::string& filepath,
@@ -91,17 +92,43 @@ void FilterFile::ParseInputFile(const std::string& filepath,
   }
 }
 
-clang::ast_matchers::internal::Matcher<clang::Decl> ImplicitFieldDeclaration() {
-  auto implicit_class_specialization_matcher =
-      classTemplateSpecializationDecl(isImplicitClassTemplateSpecialization());
-  auto implicit_function_specialization_matcher =
-      functionDecl(isImplicitFunctionTemplateSpecialization());
-  auto implicit_field_decl_matcher = fieldDecl(hasParent(cxxRecordDecl(anyOf(
-      isLambda(), implicit_class_specialization_matcher,
-      hasAncestor(decl(anyOf(implicit_class_specialization_matcher,
-                             implicit_function_specialization_matcher)))))));
+namespace {
 
-  return implicit_field_decl_matcher;
+// Matches fields of lambdas, and fields of records that are in, or are nested
+// in, an implicit class or function template specialization.
+//
+// Walks up the DeclContexts instead of using hasParent() / hasAncestor()
+// because it's much faster and uses much less memory.
+AST_MATCHER(clang::FieldDecl, isImplicitFieldDeclaration) {
+  const auto* record = llvm::dyn_cast<clang::CXXRecordDecl>(Node.getParent());
+  if (!record) {
+    return false;
+  }
+  if (record->isLambda()) {
+    return true;
+  }
+  for (const clang::DeclContext* context = record; context;
+       context = context->getParent()) {
+    if (const auto* specialization =
+            llvm::dyn_cast<clang::ClassTemplateSpecializationDecl>(context)) {
+      if (!specialization->isExplicitSpecialization()) {
+        return true;
+      }
+    } else if (const auto* function =
+                   llvm::dyn_cast<clang::FunctionDecl>(context)) {
+      if (function->getTemplateSpecializationKind() ==
+          clang::TSK_ImplicitInstantiation) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
+clang::ast_matchers::internal::Matcher<clang::Decl> ImplicitFieldDeclaration() {
+  return fieldDecl(isImplicitFieldDeclaration());
 }
 
 clang::ast_matchers::internal::Matcher<clang::QualType> StackAllocatedQualType(
@@ -232,8 +259,8 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
   // - non-reference types
   // - fields matching criteria elaborated in PtrAndRefExclusions
   auto field_decl_matcher =
-      fieldDecl(allOf(has(referenceTypeLoc().bind("affectedFieldDeclType")),
-                      hasType(supported_ref_types_matcher),
+      fieldDecl(allOf(hasType(supported_ref_types_matcher),
+                      has(referenceTypeLoc().bind("affectedFieldDeclType")),
                       unless(PtrAndRefExclusions(options))))
           .bind("affectedFieldDecl");
 

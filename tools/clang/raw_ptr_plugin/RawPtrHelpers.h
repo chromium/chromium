@@ -12,6 +12,7 @@
 #include "Util.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/ASTMatchersMacros.h"
+#include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringSet.h"
 #include "llvm/Support/CommandLine.h"
 
@@ -49,20 +50,13 @@ class FilterFile {
 
  private:
   void ParseInputFile(const std::string& filepath, const std::string& arg_name);
+  bool ContainsSubstringOfUncached(llvm::StringRef string_to_match) const;
 
   // Stores all file lines (after stripping comments and blank lines).
   llvm::StringSet<> file_lines_;
 
-  // |file_lines_| is partitioned based on whether the line starts with a !
-  // (exclusion line) or not (inclusion line). Inclusion lines specify things to
-  // be matched by the filter. The exclusion lines specify what to force exclude
-  // from the filter. Lazily-constructed regex that matches strings that contain
-  // any of the inclusion lines in |file_lines_|.
-  mutable std::optional<llvm::Regex> inclusion_substring_regex_;
-
-  // Lazily-constructed regex that matches strings that contain any of the
-  // exclusion lines in |file_lines_|.
-  mutable std::optional<llvm::Regex> exclusion_substring_regex_;
+  // Cache for  of ContainsSubstringOf().
+  mutable llvm::StringMap<bool> contains_substring_of_cache_;
 };
 
 // Represents an exclusion rules for raw pointers/references errors.

@@ -1,0 +1,58 @@
+raw_ptr_fields_implicit.cpp:57:59: warning: reference cannot be bound to dereferenced null pointer in well-defined C++ code; comparison may be assumed to always evaluate to true [-Wtautological-undefined-compare]
+  auto lambda = [ptr, &ref]() { return ptr != nullptr && &ref != nullptr; };
+                                                          ^~~    ~~~~~~~
+raw_ptr_fields_implicit.cpp:68:59: warning: reference cannot be bound to dereferenced null pointer in well-defined C++ code; comparison may be assumed to always evaluate to true [-Wtautological-undefined-compare]
+  auto lambda = [ptr, &ref]() { return ptr != nullptr && &ref != nullptr; };
+                                                          ^~~    ~~~~~~~
+raw_ptr_fields_implicit.cpp:57:59: warning: reference cannot be bound to dereferenced null pointer in well-defined C++ code; comparison may be assumed to always evaluate to true [-Wtautological-undefined-compare]
+  auto lambda = [ptr, &ref]() { return ptr != nullptr && &ref != nullptr; };
+                                                          ^~~    ~~~~~~~
+raw_ptr_fields_implicit.cpp:57:31: note: while substituting into a lambda expression here
+  auto lambda = [ptr, &ref]() { return ptr != nullptr && &ref != nullptr; };
+                              ^
+raw_ptr_fields_implicit.cpp:80:3: note: in instantiation of function template specialization 'FunctionTemplate<int>' requested here
+  FunctionTemplate(int_ptr, some_class);
+  ^
+raw_ptr_fields_implicit.cpp:57:59: warning: reference cannot be bound to dereferenced null pointer in well-defined C++ code; comparison may be assumed to always evaluate to true [-Wtautological-undefined-compare]
+  auto lambda = [ptr, &ref]() { return ptr != nullptr && &ref != nullptr; };
+                                                          ^~~    ~~~~~~~
+raw_ptr_fields_implicit.cpp:57:31: note: while substituting into a lambda expression here
+  auto lambda = [ptr, &ref]() { return ptr != nullptr && &ref != nullptr; };
+                              ^
+raw_ptr_fields_implicit.cpp:81:3: note: in instantiation of function template specialization 'FunctionTemplate<char>' requested here
+  FunctionTemplate(char_ptr, some_class);
+  ^
+raw_ptr_fields_implicit.cpp:14:14: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass* ptr_field;
+             ^
+raw_ptr_fields_implicit.cpp:16:14: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  SomeClass& ref_field;
+             ^
+raw_ptr_fields_implicit.cpp:20:16: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+    SomeClass* nested_ptr_field;
+               ^
+raw_ptr_fields_implicit.cpp:22:16: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+    SomeClass& nested_ref_field;
+               ^
+raw_ptr_fields_implicit.cpp:26:10: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+      T* nested_more_ptr_field;
+         ^
+raw_ptr_fields_implicit.cpp:35:14: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass* ptr_field;
+             ^
+raw_ptr_fields_implicit.cpp:37:14: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  SomeClass& ref_field;
+             ^
+raw_ptr_fields_implicit.cpp:41:16: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+    SomeClass* nested_ptr_field;
+               ^
+raw_ptr_fields_implicit.cpp:49:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+    T* local_ptr_field;
+       ^
+raw_ptr_fields_implicit.cpp:51:16: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+    SomeClass& local_ref_field;
+               ^
+raw_ptr_fields_implicit.cpp:64:16: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+    SomeClass* local_ptr_field;
+               ^
+4 warnings and 11 errors generated.
