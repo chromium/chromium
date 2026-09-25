@@ -554,6 +554,7 @@ void BrowserActions::InitializeSidePanelActions() {
               features::IsRoundedIconsEnabled() ? kMenuBookIcon
                                                 : kMenuBookChromeRefreshOldIcon,
               ui::kColorIcon))
+          .SetAccelerator(reading_mode_accelerator)
           .Build());
 
   if (lens::features::IsLensOverlayEnabled()) {
@@ -1064,6 +1065,7 @@ void BrowserActions::InitializeChromeMenuActions() {
               actions::kActionItemPinnableKey,
               static_cast<std::underlying_type_t<actions::ActionPinnableState>>(
                   actions::ActionPinnableState::kNotPinnable))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_TAB_SEARCH))
           .Build());
 
   root_action_item_->AddChild(
@@ -1308,6 +1310,8 @@ void BrowserActions::InitializeChromeMenuActions() {
             kActionTaskManagerAppMenu, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
             vector_icons::kTableChartIcon,
             /*is_pinnable=*/false)
+            .SetAccelerator(
+                GetAcceleratorForCommandId(IDC_TASK_MANAGER_SHORTCUT))
             .Build());
     root_action_item_->AddChild(
         ChromeMenuAction(
@@ -1363,6 +1367,7 @@ void BrowserActions::InitializeChromeMenuActions() {
           kActionDevTools, IDS_DEV_TOOLS, IDS_DEV_TOOLS,
           features::IsRoundedIconsEnabled() ? kCodeIcon
                                             : kDeveloperToolsOldIcon)
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_DEV_TOOLS))
           .Build());
 
   if (send_tab_to_self::SendTabToSelfToolbarIconController::CanShowOnBrowser(
@@ -1447,6 +1452,7 @@ void BrowserActions::InitializeChromeMenuActions() {
               l10n_util::GetStringUTF16(IDS_BOOKMARK_THIS_TAB)))
           .SetImage(ui::ImageModel::FromVectorIcon(omnibox::kStarIcon,
                                                    ui::kColorIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_BOOKMARK_THIS_TAB))
           .Build());
 
   root_action_item_->AddChild(
@@ -3225,6 +3231,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               l10n_util::GetStringUTF16(IDS_BOOKMARK_ALL_TABS)))
           .SetImage(
               ui::ImageModel::FromVectorIcon(kHotelClassIcon, ui::kColorIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_BOOKMARK_ALL_TABS))
           .Build());
 
   root_action_item_->AddChild(
@@ -3312,6 +3319,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kLibraryAddIcon
                                                 : kCreateNewTabGroupOldIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_CREATE_NEW_TAB_GROUP))
           .Build());
 
   root_action_item_->AddChild(
@@ -4313,6 +4321,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               features::IsRoundedIconsEnabled() ? kBookmarkManagerIcon
                                                 : kBookmarksManagerOldIcon,
               ui::kColorIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_SHOW_BOOKMARK_MANAGER))
           .Build());
 
   root_action_item_->AddChild(
