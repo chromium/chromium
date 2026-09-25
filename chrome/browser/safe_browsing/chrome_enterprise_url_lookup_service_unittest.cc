@@ -597,6 +597,12 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
       GURL("chrome://newtab/")));
   EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
+      GURL("chrome://omnibox-popup.top-chrome/omnibox_popup_aim.html")));
+  EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
+      GURL("chrome://omnibox-popup.top-chrome/")));
+  EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
+      GURL("https://www.google.com/search/warmup.html")));
+  EXPECT_FALSE(enterprise_rt_service()->ShouldOverrideKnownSafeUrlDecision(
       GURL("http://example.com/")));
 }
 
