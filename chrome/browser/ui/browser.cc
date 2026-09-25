@@ -344,6 +344,11 @@ Browser::Browser(BrowserWindowCreateParams params)
         "Browser.WindowCount.Incognito",
         ProfileBrowserCollection::GetForProfile(profile_)
             ->GetOffTheRecordBrowserCount());
+  } else if (profile_->IsEnterpriseIsolatedModeProfile()) {
+    base::UmaHistogramCounts100(
+        "Browser.WindowCount.EnterpriseIsolated",
+        ProfileBrowserCollection::GetForProfile(profile_)
+            ->GetOffTheRecordBrowserCount());
   }
 }
 

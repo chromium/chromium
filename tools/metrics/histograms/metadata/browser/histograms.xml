@@ -1319,6 +1319,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.WindowCount.EnterpriseIsolated" units="units"
+    expires_after="2027-03-21">
+  <owner>szpotekagata@google.com</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Number of open isolated mode windows at the same time. Recorded when a new
+    isolated window is created. Please note that this metric double counts the
+    lower numbers, meaning that if user opens three windows (without closing any
+    in between), then buckets 1, 2, and 3 will all be incremented in turn.
+  </summary>
+</histogram>
+
 <histogram name="Browser.WindowCount.Guest" units="units"
     expires_after="2027-02-07">
   <owner>rhalavati@chromium.org</owner>
