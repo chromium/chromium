@@ -279,6 +279,9 @@ public class FullscreenTestUtils {
         }
 
         View view = tab.getContentView();
+        if (view == null || view.getRootWindowInsets() == null) {
+            return false;
+        }
         WindowInsetsCompat windowInsets =
                 WindowInsetsCompat.toWindowInsetsCompat(view.getRootWindowInsets(), view);
         return !windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
@@ -287,6 +290,9 @@ public class FullscreenTestUtils {
 
     private static boolean isHideNavigationSet(final Tab tab, final boolean state) {
         View view = tab.getContentView();
+        if (view == null || view.getRootWindowInsets() == null) {
+            return false;
+        }
         WindowInsetsCompat windowInsets =
                 WindowInsetsCompat.toWindowInsetsCompat(view.getRootWindowInsets(), view);
         return !windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars()) == state;

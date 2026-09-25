@@ -138,12 +138,16 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
 
     @Override
     boolean isStatusBarHidden(View contentView) {
-        return !getWindowInsets(contentView).isVisible(WindowInsetsCompat.Type.statusBars());
+        WindowInsetsCompat windowInsets = getWindowInsets(contentView);
+        return windowInsets != null
+                && !windowInsets.isVisible(WindowInsetsCompat.Type.statusBars());
     }
 
     @Override
     boolean isNavigationBarHidden(View contentView) {
-        return !getWindowInsets(contentView).isVisible(WindowInsetsCompat.Type.navigationBars());
+        WindowInsetsCompat windowInsets = getWindowInsets(contentView);
+        return windowInsets != null
+                && !windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars());
     }
 
     @Override
@@ -222,9 +226,10 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
                         + getSystemUiVisibility(contentView));
     }
 
-    private WindowInsetsCompat getWindowInsets(View contentView) {
-        return WindowInsetsCompat.toWindowInsetsCompat(
-                contentView.getRootWindowInsets(), contentView);
+    private @Nullable WindowInsetsCompat getWindowInsets(View contentView) {
+        WindowInsets rootWindowInsets = contentView.getRootWindowInsets();
+        if (rootWindowInsets == null) return null;
+        return WindowInsetsCompat.toWindowInsetsCompat(rootWindowInsets, contentView);
     }
 
     private WindowInsetsControllerCompat getWindowInsetsController() {
@@ -235,8 +240,10 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
     private String getSystemUiVisibility(View contentView) {
         boolean statusBarVisibility = !isStatusBarHidden(contentView);
         boolean navBarVisibility = !isNavigationBarHidden(contentView);
+        WindowInsetsCompat windowInsets = getWindowInsets(contentView);
         boolean systemBarVisibility =
-                getWindowInsets(contentView).isVisible(WindowInsetsCompat.Type.systemBars());
+                windowInsets != null
+                        && windowInsets.isVisible(WindowInsetsCompat.Type.systemBars());
         boolean decorViewFitsWindow = isLayoutFullscreen(contentView);
         boolean transientBars =
                 getWindowInsetsController().getSystemBarsBehavior()

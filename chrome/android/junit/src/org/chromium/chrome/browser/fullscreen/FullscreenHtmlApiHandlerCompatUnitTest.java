@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
+import android.os.Looper;
 import android.os.OutcomeReceiver;
 import android.view.View.OnLayoutChangeListener;
 
@@ -687,6 +688,63 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mFullscreenHtmlApiHandlerCompat.onExitFullscreen(mTab);
         mMultiWindowModeStateDispatcher.dispatchMultiWindowModeChanged(true);
 
+        assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
+    }
+
+    @Test
+    public void testNullRootWindowInsetsDoesNotCrash() {
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mContentView).when(mTab).getContentView();
+        doReturn(true).when(mTab).isUserInteractable();
+        doReturn(null).when(mContentView).getRootWindowInsets();
+        mAreControlsHidden.set(true);
+
+        mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
+
+        assertFalse(mFullscreenHtmlApiHandlerCompat.isStatusBarHidden(mContentView));
+        assertFalse(mFullscreenHtmlApiHandlerCompat.isNavigationBarHidden(mContentView));
+
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
+
+        ArgumentCaptor<OnLayoutChangeListener> arg =
+                ArgumentCaptor.forClass(OnLayoutChangeListener.class);
+        verify(mContentView).addOnLayoutChangeListener(arg.capture());
+        arg.getValue().onLayoutChange(mContentView, 0, 0, 100, 100, 0, 0, 10, 10);
+
+        // Process MSG_ID_SET_VISIBILITY_FOR_SYSTEM_BARS while getRootWindowInsets() is null.
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertTrue(mFullscreenHtmlApiHandlerCompat.getPersistentFullscreenMode());
+    }
+
+    @Test
+    @Config(
+            shadows = {FullscreenShadowActivity.class},
+            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testExitFullscreenWhenActiveTabClearedBeforeTabExit() {
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mContentView).when(mTab).getContentView();
+        doReturn(true).when(mTab).isUserInteractable();
+        doReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets())
+                .when(mContentView)
+                .getRootWindowInsets();
+        mAreControlsHidden.set(true);
+
+        mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
+        FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
+        mFullscreenHtmlApiHandlerCompat.addObserver(observer);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
+
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
+        assertTrue(mFullscreenHtmlApiHandlerCompat.getPersistentFullscreenMode());
+
+        // Simulate ActivityTabTabObserver clearing mTab when the last tab in a window is closed
+        // before Tab/WebContents destruction invokes onExitFullscreen(mTab).
+        mFullscreenHtmlApiHandlerCompat.setTabForTesting(null);
+        mFullscreenHtmlApiHandlerCompat.onExitFullscreen(mTab);
+
+        assertFalse(mFullscreenHtmlApiHandlerCompat.getPersistentFullscreenMode());
+        verify(observer, times(1)).onExitFullscreen(mTab);
         assertEqualNumberOfEnterAndExitActivityFullscreenMode(1);
     }
 }

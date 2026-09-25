@@ -325,6 +325,13 @@ public abstract class FullscreenHtmlApiHandlerBase
                     }
 
                     @Override
+                    public void onDestroyed(Tab tab) {
+                        if (tab == mTabInFullscreen) {
+                            mFullscreenManagerDelegate.onExitFullscreen(tab);
+                        }
+                    }
+
+                    @Override
                     public void onDidFinishNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
                         if (!navigation.isSameDocument() && tab == modelSelector.getCurrentTab()) {
@@ -495,7 +502,7 @@ public abstract class FullscreenHtmlApiHandlerBase
 
     @Override
     public void onExitFullscreen(Tab tab) {
-        if (tab != mTab) return;
+        if (tab != mTab && tab != mTabInFullscreen) return;
         setEnterFullscreenRunnable(tab, null);
         boolean wasInPersistentFullscreenMode = getPersistentFullscreenMode();
         exitPersistentFullscreenMode();
@@ -960,6 +967,7 @@ public abstract class FullscreenHtmlApiHandlerBase
     public void destroy() {
         mTab = null;
         setContentView(null);
+        mHandler.removeCallbacksAndMessages(null);
         if (mActiveTabObserver != null) mActiveTabObserver.destroy();
         if (mTabFullscreenObserver != null) mTabFullscreenObserver.destroy();
         mObservers.clear();
