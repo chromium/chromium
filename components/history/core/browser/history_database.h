@@ -293,7 +293,8 @@ class HistoryDatabase : public DownloadDatabase,
   bool DropAndroidUrlsTable();
 #endif
 
-  // ---------------------------------------------------------------------------
+  // Reports metrics related to clusters.
+  void ReportClusterDatabaseMetrics();
 
   sql::Database db_;
   sql::MetaTable meta_table_;

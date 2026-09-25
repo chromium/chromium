@@ -1101,6 +1101,42 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="History.Clusters.MaxClusterLabelDuplicates" units="clusters"
+    expires_after="2027-09-24">
+  <owner>fdoray@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>1457319</component>
+  <summary>
+    Maximum number of clusters sharing the exact same label in the History DB.
+    Logged on initialization of the History DB when
+    HistoryReportClusterDatabaseMetrics is enabled.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.NumClusters" units="clusters"
+    expires_after="2027-09-24">
+  <owner>fdoray@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>1457319</component>
+  <summary>
+    Number of rows in the clusters table in the History DB. Logged on
+    initialization of the History DB when HistoryReportClusterDatabaseMetrics is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.NumOrphanClusters" units="clusters"
+    expires_after="2027-09-24">
+  <owner>fdoray@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>1457319</component>
+  <summary>
+    Number of rows in the clusters table that have no corresponding rows in
+    clusters_and_visits. Logged on initialization of the History DB when
+    HistoryReportClusterDatabaseMetrics is enabled.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.ProcessClustersDuration" units="ms"
     expires_after="2024-11-03">
   <owner>olivierli@chromium.org</owner>

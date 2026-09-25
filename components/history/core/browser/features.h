@@ -88,6 +88,11 @@ BASE_DECLARE_FEATURE(kHistoryDatabaseWriteAheadLogging);
 COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kDeferHistoryBackendInit);
 
+// If enabled, reports database metrics related to history clusters. Disabled
+// by default so that not all clients pay the cost of computing the metrics.
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kHistoryReportClusterDatabaseMetrics);
+
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_FEATURES_H_

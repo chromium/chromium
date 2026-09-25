@@ -156,4 +156,9 @@ BASE_FEATURE(kHistoryDatabaseWriteAheadLogging,
 // Defers HistoryBackend initialization to after startup or until it is needed.
 BASE_FEATURE(kDeferHistoryBackendInit, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, reports database metrics related to history clusters. Disabled
+// by default so that not all clients pay the cost of computing the metrics.
+BASE_FEATURE(kHistoryReportClusterDatabaseMetrics,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace history

@@ -203,6 +203,10 @@ void HistoryDatabase::ComputeDatabaseMetrics(
   base::UmaHistogramCounts1M("History.VisitedLinkTableCount",
                              visited_link_count.ColumnInt(0));
 
+  if (base::FeatureList::IsEnabled(kHistoryReportClusterDatabaseMetrics)) {
+    ReportClusterDatabaseMetrics();
+  }
+
   // Compute metrics about foreign visits (i.e. visits coming from other
   // devices) in the DB.
   sql::Statement foreign_visits_sql(db_.GetUniqueStatement(
@@ -307,6 +311,43 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     base::UmaHistogramCounts1M("History.MonthlyURLCount", month_url_count);
     base::UmaHistogramCounts10000("History.MonthlyHostCount",
                                   static_cast<int>(month_hosts.size()));
+  }
+}
+
+void HistoryDatabase::ReportClusterDatabaseMetrics() {
+  sql::Statement cluster_count(
+      db_.GetUniqueStatement("SELECT count(*) FROM clusters"));
+  if (!cluster_count.Step()) {
+    return;
+  }
+
+  int num_clusters = cluster_count.ColumnInt(0);
+  base::UmaHistogramCounts10M("History.Clusters.NumClusters", num_clusters);
+
+  if (num_clusters == 0) {
+    base::UmaHistogramCounts10M("History.Clusters.NumOrphanClusters", 0);
+    base::UmaHistogramCounts10M("History.Clusters.MaxClusterLabelDuplicates",
+                                0);
+    return;
+  }
+
+  sql::Statement orphan_cluster_count(
+      db_.GetUniqueStatement("SELECT count(*) FROM clusters c "
+                             "WHERE NOT EXISTS ("
+                             "SELECT 1 FROM clusters_and_visits cv "
+                             "WHERE cv.cluster_id = c.cluster_id"
+                             ")"));
+  if (orphan_cluster_count.Step()) {
+    base::UmaHistogramCounts10M("History.Clusters.NumOrphanClusters",
+                                orphan_cluster_count.ColumnInt(0));
+  }
+
+  sql::Statement max_cluster_label_duplicates(
+      db_.GetUniqueStatement("SELECT count(*) FROM clusters GROUP BY label "
+                             "ORDER BY count(*) DESC LIMIT 1"));
+  if (max_cluster_label_duplicates.Step()) {
+    base::UmaHistogramCounts10M("History.Clusters.MaxClusterLabelDuplicates",
+                                max_cluster_label_duplicates.ColumnInt(0));
   }
 }
 

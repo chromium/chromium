@@ -8,10 +8,15 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/history/core/test/visit_annotations_test_utils.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "sql/init_status.h"
@@ -48,6 +53,73 @@ TEST(HistoryDatabaseTest, DropBookmarks) {
       ++num_urls;
     }
     ASSERT_EQ(5, num_urls);
+  }
+}
+
+TEST(HistoryDatabaseTest, ComputeDatabaseMetrics) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath db_file =
+      temp_dir.GetPath().AppendASCII("ComputeDatabaseMetrics.db");
+  sql::Database::Delete(db_file);
+
+  TestHistoryDatabase history_db;
+  ASSERT_EQ(sql::INIT_OK, history_db.Init(db_file));
+
+  // By default, kHistoryReportClusterDatabaseMetrics is disabled.
+  {
+    base::HistogramTester histogram_tester;
+    history_db.ComputeDatabaseMetrics(db_file);
+    histogram_tester.ExpectTotalCount("History.Clusters.NumClusters", 0);
+    histogram_tester.ExpectTotalCount("History.Clusters.NumOrphanClusters", 0);
+    histogram_tester.ExpectTotalCount(
+        "History.Clusters.MaxClusterLabelDuplicates", 0);
+  }
+
+  // Enable kHistoryReportClusterDatabaseMetrics.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kHistoryReportClusterDatabaseMetrics);
+
+  // Initially: 0 clusters in DB.
+  {
+    base::HistogramTester histogram_tester;
+    history_db.ComputeDatabaseMetrics(db_file);
+    histogram_tester.ExpectUniqueSample("History.Clusters.NumClusters", 0, 1);
+    histogram_tester.ExpectUniqueSample("History.Clusters.NumOrphanClusters", 0,
+                                        1);
+    histogram_tester.ExpectUniqueSample(
+        "History.Clusters.MaxClusterLabelDuplicates", 0, 1);
+  }
+
+  // Add 1 cluster with visits and label "google.com".
+  Cluster cluster1 = CreateCluster({1});
+  cluster1.label = u"google.com";
+  history_db.AddClusters({cluster1});
+
+  // Add 2 orphan clusters with label "google.com".
+  ClusterId orphan_id1 =
+      history_db.ReserveNextClusterId(/*originator_cache_guid=*/"",
+                                      /*originator_cluster_id=*/ClusterId(0));
+  ClusterId orphan_id2 =
+      history_db.ReserveNextClusterId(/*originator_cache_guid=*/"",
+                                      /*originator_cluster_id=*/ClusterId(0));
+  ASSERT_TRUE(history_db.GetDBForTesting().Execute(
+      "UPDATE clusters SET label='google.com' WHERE cluster_id IN (" +
+      base::NumberToString(orphan_id1.value()) + ", " +
+      base::NumberToString(orphan_id2.value()) + ")"));
+
+  {
+    base::HistogramTester histogram_tester;
+    history_db.ComputeDatabaseMetrics(db_file);
+
+    // Total clusters: 3.
+    histogram_tester.ExpectUniqueSample("History.Clusters.NumClusters", 3, 1);
+    // Orphan clusters: 2.
+    histogram_tester.ExpectUniqueSample("History.Clusters.NumOrphanClusters", 2,
+                                        1);
+    // Max label duplicates: 3 (all 3 share "google.com").
+    histogram_tester.ExpectUniqueSample(
+        "History.Clusters.MaxClusterLabelDuplicates", 3, 1);
   }
 }
 
