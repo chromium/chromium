@@ -28,12 +28,15 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "url/gurl.h"
 
 #if defined(USE_AURA)
@@ -84,6 +87,7 @@ class UnboundedElementBrowserTestBase : public ContentBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
+    IsolateAllSitesForTesting(command_line);
     command_line->AppendSwitchASCII(
         switches::kTouchEventFeatureDetection,
         switches::kTouchEventFeatureDetectionEnabled);
@@ -91,6 +95,8 @@ class UnboundedElementBrowserTestBase : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -1147,6 +1153,201 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, IframeInputEventRouting) {
   // matching the simulation.
   EXPECT_EQ(130, EvalJs(iframe, "window.__mouse_x"));
   EXPECT_EQ(130, EvalJs(iframe, "window.__mouse_y"));
+}
+
+// Disabled on Android because multi-window input event routing is not
+// supported.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SubframeInputEventRouting DISABLED_SubframeInputEventRouting
+#else
+#define MAYBE_SubframeInputEventRouting SubframeInputEventRouting
+#endif
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       MAYBE_SubframeInputEventRouting) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/unbounded_subframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHost* iframe = ChildFrameAt(primary_main_frame_host(), 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  WaitForHitTestData(iframe);
+
+  RenderWidgetHostViewBase* child_view =
+      static_cast<RenderFrameHostImpl*>(iframe)
+          ->GetRenderWidgetHost()
+          ->GetView();
+  ASSERT_TRUE(child_view);
+  EXPECT_TRUE(child_view->IsRenderWidgetHostViewChildFrame());
+
+  EXPECT_TRUE(ExecJs(iframe, "window.openUnbounded()"));
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  MainThreadFrameObserver frame_observer(iframe->GetRenderWidgetHost());
+  frame_observer.Wait();
+
+  EXPECT_EQ(window->GetTargetView(), child_view);
+
+  RenderWidgetHostViewBase* root_view = static_cast<RenderWidgetHostViewBase*>(
+      primary_main_frame_host()->GetRenderWidgetHost()->GetView());
+  gfx::Point root_origin = root_view->GetViewBounds().origin();
+
+  double btn_center_x =
+      EvalJs(iframe,
+             "(() => {"
+             "  const r = "
+             "document.getElementById('flyout_btn').getBoundingClientRect();"
+             "  return r.left + r.width / 2;"
+             "})()")
+          .ExtractDouble();
+  double btn_center_y =
+      EvalJs(iframe,
+             "(() => {"
+             "  const r = "
+             "document.getElementById('flyout_btn').getBoundingClientRect();"
+             "  return r.top + r.height / 2;"
+             "})()")
+          .ExtractDouble();
+
+  gfx::PointF btn_center_in_child(btn_center_x, btn_center_y);
+  gfx::PointF btn_center_in_root =
+      child_view->TransformPointToRootCoordSpaceF(btn_center_in_child);
+  gfx::Point screen_point = gfx::ToRoundedPoint(
+      gfx::PointF(root_origin) + btn_center_in_root.OffsetFromOrigin());
+
+  // Route mouse move to the unbounded surface window.
+  blink::WebMouseEvent move_event = blink::SyntheticWebMouseEventBuilder::Build(
+      blink::WebInputEvent::Type::kMouseMove, screen_point.x(),
+      screen_point.y(), 0);
+  move_event.button = blink::WebMouseEvent::Button::kNoButton;
+  move_event.SetPositionInScreen(screen_point.x(), screen_point.y());
+  window->RouteMouseEvent(move_event);
+  RunUntilInputProcessed(iframe->GetRenderWidgetHost());
+
+  EXPECT_EQ(btn_center_x, EvalJs(iframe, "window.__mouse_x").ExtractDouble());
+  EXPECT_EQ(btn_center_y, EvalJs(iframe, "window.__mouse_y").ExtractDouble());
+
+  // Route mouse click to the unbounded surface window.
+  blink::WebMouseEvent down_event = blink::SyntheticWebMouseEventBuilder::Build(
+      blink::WebInputEvent::Type::kMouseDown, screen_point.x(),
+      screen_point.y(), blink::WebInputEvent::kLeftButtonDown);
+  down_event.button = blink::WebMouseEvent::Button::kLeft;
+  down_event.click_count = 1;
+  down_event.SetPositionInScreen(screen_point.x(), screen_point.y());
+  window->RouteMouseEvent(down_event);
+
+  blink::WebMouseEvent up_event = blink::SyntheticWebMouseEventBuilder::Build(
+      blink::WebInputEvent::Type::kMouseUp, screen_point.x(), screen_point.y(),
+      0);
+  up_event.button = blink::WebMouseEvent::Button::kLeft;
+  up_event.click_count = 1;
+  up_event.SetPositionInScreen(screen_point.x(), screen_point.y());
+  window->RouteMouseEvent(up_event);
+  RunUntilInputProcessed(iframe->GetRenderWidgetHost());
+
+  EXPECT_TRUE(EvalJs(iframe, "window.__clicked").ExtractBool());
+}
+
+// Verifies that when an unbounded element is positioned outside the subframe's
+// `DocumentRect()` (because `overflow: hidden` clamps `DocumentRect()` to the
+// 100x100 viewport), hit tests with `HitTestRequest::kIgnoreClipping` (such as
+// mouse moves during active mouse capture) still use `InfiniteIntRect()` and
+// reach the unbounded element.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SubframeInputEventRoutingIgnoreClipping \
+  DISABLED_SubframeInputEventRoutingIgnoreClipping
+#else
+#define MAYBE_SubframeInputEventRoutingIgnoreClipping \
+  SubframeInputEventRoutingIgnoreClipping
+#endif
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       MAYBE_SubframeInputEventRoutingIgnoreClipping) {
+  GURL url(embedded_test_server()->GetURL(
+      "a.com", GetParam() ? "/unbounded_subframe.html"
+                          : "/unbounded_subframe.html?same_origin"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHost* iframe = ChildFrameAt(primary_main_frame_host(), 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  WaitForHitTestData(iframe);
+
+  // Clamp the iframe's `DocumentRect()` to its 100x100 viewport so the
+  // unbounded element at (120, 120) lies outside `DocumentRect()`.
+  EXPECT_TRUE(ExecJs(
+      iframe,
+      "document.documentElement.style.cssText = 'width:100%; height:100%; "
+      "overflow:hidden;';"
+      "document.body.style.cssText = 'margin:0; width:100%; height:100%; "
+      "overflow:hidden;';"));
+
+  RenderWidgetHostViewBase* child_view =
+      static_cast<RenderFrameHostImpl*>(iframe)
+          ->GetRenderWidgetHost()
+          ->GetView();
+  ASSERT_TRUE(child_view);
+
+  EXPECT_TRUE(ExecJs(iframe, "window.openUnbounded()"));
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  MainThreadFrameObserver frame_observer(iframe->GetRenderWidgetHost());
+  frame_observer.Wait();
+
+  gfx::Rect popup_bounds = window->GetBounds();
+  gfx::Point screen_point = popup_bounds.CenterPoint();
+
+  double btn_center_x =
+      EvalJs(iframe,
+             "(() => {"
+             "  const r = "
+             "document.getElementById('flyout_btn').getBoundingClientRect();"
+             "  return r.left + r.width / 2;"
+             "})()")
+          .ExtractDouble();
+  double btn_center_y =
+      EvalJs(iframe,
+             "(() => {"
+             "  const r = "
+             "document.getElementById('flyout_btn').getBoundingClientRect();"
+             "  return r.top + r.height / 2;"
+             "})()")
+          .ExtractDouble();
+
+  // Press left mouse button down to initiate mouse capture, then send a
+  // dragged mouse move (`kLeftButtonDown`), which triggers hit testing with
+  // `HitTestRequest::kIgnoreClipping`.
+  blink::WebMouseEvent down_event = blink::SyntheticWebMouseEventBuilder::Build(
+      blink::WebInputEvent::Type::kMouseDown, screen_point.x(),
+      screen_point.y(), blink::WebInputEvent::kLeftButtonDown);
+  down_event.button = blink::WebMouseEvent::Button::kLeft;
+  down_event.click_count = 1;
+  down_event.SetPositionInScreen(screen_point.x(), screen_point.y());
+  window->RouteMouseEvent(down_event);
+
+  blink::WebMouseEvent drag_event = blink::SyntheticWebMouseEventBuilder::Build(
+      blink::WebInputEvent::Type::kMouseMove, screen_point.x() + 5,
+      screen_point.y() + 5, blink::WebInputEvent::kLeftButtonDown);
+  drag_event.button = blink::WebMouseEvent::Button::kLeft;
+  drag_event.SetPositionInScreen(screen_point.x() + 5, screen_point.y() + 5);
+  window->RouteMouseEvent(drag_event);
+  RunUntilInputProcessed(iframe->GetRenderWidgetHost());
+
+  EXPECT_EQ(btn_center_x + 5,
+            EvalJs(iframe, "window.__mouse_x").ExtractDouble());
+  EXPECT_EQ(btn_center_y + 5,
+            EvalJs(iframe, "window.__mouse_y").ExtractDouble());
+
+  blink::WebMouseEvent up_event = blink::SyntheticWebMouseEventBuilder::Build(
+      blink::WebInputEvent::Type::kMouseUp, screen_point.x() + 5,
+      screen_point.y() + 5, 0);
+  up_event.button = blink::WebMouseEvent::Button::kLeft;
+  up_event.click_count = 1;
+  up_event.SetPositionInScreen(screen_point.x() + 5, screen_point.y() + 5);
+  window->RouteMouseEvent(up_event);
+  RunUntilInputProcessed(iframe->GetRenderWidgetHost());
+
+  EXPECT_TRUE(EvalJs(iframe, "window.__clicked").ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, DynamicBoundsSync) {

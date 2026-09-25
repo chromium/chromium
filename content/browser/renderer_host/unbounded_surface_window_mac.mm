@@ -107,39 +107,14 @@
 
 namespace content {
 
-namespace {
-
-template <typename T>
-RenderWidgetHostViewMac* TranslateCoordinatesToRoot(
-    RenderWidgetHostViewMac* parent_view,
-    T& web_event) {
-  if (!parent_view) {
-    return nullptr;
-  }
-  auto* root_view =
-      static_cast<RenderWidgetHostViewMac*>(parent_view->GetRootView());
-  if (!root_view) {
-    return nullptr;
-  }
-
-  gfx::Point root_origin = root_view->GetViewBounds().origin();
-  gfx::PointF root_point = web_event.PositionInScreen() -
-                           gfx::Vector2dF(root_origin.x(), root_origin.y());
-  web_event.SetPositionInWidget(root_point.x(), root_point.y());
-
-  return root_view;
-}
-
-}  // namespace
-
 UnboundedSurfaceWindowMac::UnboundedSurfaceWindowMac(
     RenderWidgetHostViewMac* parent_view,
     mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
     mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
     const gfx::Rect& bounds_in_screen,
     base::WeakPtr<RenderWidgetHostViewBase> subframe_view)
-    : parent_view_(parent_view),
-      subframe_view_(std::move(subframe_view)),
+    : UnboundedSurfaceWindow(parent_view ? parent_view->GetWeakPtr() : nullptr,
+                             std::move(subframe_view)),
       frame_sink_id_(content::AllocateFrameSinkId()) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kUnboundedElement),
         base::NotFatalUntil::M152);
@@ -292,8 +267,11 @@ void UnboundedSurfaceWindowMac::InitWindow(const gfx::Rect& bounds_in_screen) {
       bounds_in_screen.size(), cc::DeadlinePolicy::UseDefaultDeadline(),
       /*stretch_content_to_fill_bounds=*/false);
 
-  if (parent_view_ && parent_view_->GetInProcessNSView()) {
-    if (NSWindow* parent_window = [parent_view_->GetInProcessNSView() window]) {
+  auto* parent_view_mac =
+      static_cast<RenderWidgetHostViewMac*>(parent_view_.get());
+  if (parent_view_mac && parent_view_mac->GetInProcessNSView()) {
+    if (NSWindow* parent_window =
+            [parent_view_mac->GetInProcessNSView() window]) {
       [parent_window addChildWindow:window_ ordered:NSWindowAbove];
       [window_ setLevel:[parent_window level] + 1];
     }
@@ -409,30 +387,30 @@ void UnboundedSurfaceWindowMac::EnsureSurfaceSynchronizedForWebTest() {
   }
 }
 
-RenderWidgetHostViewBase* UnboundedSurfaceWindowMac::GetParentView() const {
-  return parent_view_;
-}
-
 void UnboundedSurfaceWindowMac::RouteMouseEvent(NSEvent* ns_event) {
   blink::WebMouseEvent web_event =
       input::WebMouseEventBuilder::Build(ns_event, window_.contentView);
-  RenderWidgetHostViewMac* root_view =
-      TranslateCoordinatesToRoot(parent_view_, web_event);
-  if (!root_view) {
+  RenderWidgetHostViewBase* target_view = GetTargetView();
+  if (!target_view || !target_view->host()) {
     return;
   }
-  root_view->RouteOrProcessMouseEvent(web_event);
+  if (!TransformEventCoordinatesToView(target_view, web_event)) {
+    return;
+  }
+  target_view->ProcessMouseEvent(web_event, ui::LatencyInfo());
 }
 
 void UnboundedSurfaceWindowMac::RouteWheelEvent(NSEvent* ns_event) {
   blink::WebMouseWheelEvent web_event =
       input::WebMouseWheelEventBuilder::Build(ns_event, window_.contentView);
-  RenderWidgetHostViewMac* root_view =
-      TranslateCoordinatesToRoot(parent_view_, web_event);
-  if (!root_view) {
+  RenderWidgetHostViewBase* target_view = GetTargetView();
+  if (!target_view || !target_view->host()) {
     return;
   }
-  root_view->RouteOrProcessWheelEvent(web_event);
+  if (!TransformEventCoordinatesToView(target_view, web_event)) {
+    return;
+  }
+  target_view->ProcessMouseWheelEvent(web_event, ui::LatencyInfo());
 }
 
 void UnboundedSurfaceWindowMac::RouteKeyboardEvent(NSEvent* ns_event) {
@@ -445,8 +423,9 @@ void UnboundedSurfaceWindowMac::RouteKeyboardEvent(NSEvent* ns_event) {
     return;
   }
 
-  if (parent_view_ && parent_view_->host()) {
-    parent_view_->host()->ForwardKeyboardEvent(web_event);
+  RenderWidgetHostViewBase* target_view = GetTargetView();
+  if (target_view && target_view->host()) {
+    target_view->host()->ForwardKeyboardEvent(web_event);
   }
 }
 

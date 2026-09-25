@@ -80,6 +80,13 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
 
   LocalFrame* subframe =
       event_handling_util::SubframeForTargetNode(wheel_target_.Get());
+  if (!subframe) {
+    if (auto unbounded_result =
+            event_handling_util::SubframeForActiveUnboundedElement(
+                frame_, event.PositionInRootFrame())) {
+      subframe = unbounded_result->frame;
+    }
+  }
   if (subframe) {
     return subframe->GetEventHandler().HandleWheelEvent(event);
   }

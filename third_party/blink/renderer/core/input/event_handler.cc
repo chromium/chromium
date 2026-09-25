@@ -896,8 +896,14 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   if (subframe) {
     WebInputEventResult result = PassMousePressEventToSubframe(mev, subframe);
     if (mouse_event_manager_->MousePressed()) {
-      capturing_mouse_events_element_ = mev.InnerElement();
-      capturing_subframe_element_ = mev.InnerElement();
+      if (RuntimeEnabledFeatures::SubframeMouseCaptureOwnerEnabled()) {
+        Element* subframe_owner = subframe->DeprecatedLocalOwner();
+        capturing_mouse_events_element_ =
+            subframe_owner ? subframe_owner : mev.InnerElement();
+      } else {
+        capturing_mouse_events_element_ = mev.InnerElement();
+      }
+      capturing_subframe_element_ = capturing_mouse_events_element_;
     }
 
     mouse_event_manager_->InvalidateClick();

@@ -211,8 +211,8 @@ std::optional<UnboundedSubframeHitTestResult> SubframeForActiveUnboundedElement(
     return std::nullopt;
   }
   Node* inner_node = subframe_result.InnerNode();
-  if (!inner_node || (inner_node != active_element &&
-                      !inner_node->IsDescendantOf(active_element))) {
+  if (!inner_node || !FlatTreeTraversal::ContainsIncludingPseudoElement(
+                         *active_element, *inner_node)) {
     return std::nullopt;
   }
   return UnboundedSubframeHitTestResult{

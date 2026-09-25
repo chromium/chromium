@@ -72,8 +72,6 @@ class UnboundedSurfaceWindowMac : public UnboundedSurfaceWindow,
   // blink::mojom::UnboundedSurfaceHost overrides:
   void UpdateBounds(const gfx::Rect& bounds) override;
 
-  RenderWidgetHostViewBase* GetParentView() const override;
-
   // Event Routing:
   using UnboundedSurfaceWindow::RouteMouseEvent;
   using UnboundedSurfaceWindow::RouteMouseWheelEvent;
@@ -106,8 +104,6 @@ class UnboundedSurfaceWindowMac : public UnboundedSurfaceWindow,
   void InitWindow(const gfx::Rect& bounds_in_screen);
   void OnConnectionError();
 
-  raw_ptr<RenderWidgetHostViewMac> parent_view_;
-  base::WeakPtr<RenderWidgetHostViewBase> subframe_view_;
   viz::FrameSinkId frame_sink_id_;
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
   mojo::AssociatedReceiver<blink::mojom::UnboundedSurfaceHost> receiver_{this};

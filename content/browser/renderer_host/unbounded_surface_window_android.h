@@ -56,7 +56,6 @@ class UnboundedSurfaceWindowAndroid : public UnboundedSurfaceWindow,
       mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client)
       override;
 
-  RenderWidgetHostViewBase* GetParentView() const override;
   gfx::Rect GetBounds() const override;
   void CopyFromSurface(
       const gfx::Rect& src_subrect,
@@ -97,8 +96,6 @@ class UnboundedSurfaceWindowAndroid : public UnboundedSurfaceWindow,
   bool InitWindow(const gfx::Rect& bounds_in_dips);
   void OnConnectionError();
 
-  base::WeakPtr<RenderWidgetHostViewAndroid> parent_view_;
-  base::WeakPtr<RenderWidgetHostViewBase> subframe_view_;
   viz::FrameSinkId root_frame_sink_id_;
   viz::FrameSinkId client_frame_sink_id_;
   viz::ParentLocalSurfaceIdAllocator root_local_surface_id_allocator_;

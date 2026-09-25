@@ -6111,6 +6111,12 @@
       name: "SubApps",
       status: "stable",
     },
+    // Killswitch to guard capturing the subframe owner element instead of the
+    // inner element on mouse press.
+    {
+      name: "SubframeMouseCaptureOwner",
+      status: "stable",
+    },
     // 'pointercancel' and boundary leave ('pointerout' and 'pointerleave')
     // events would now fire after a mouse drag start, matching the spec's
     // definition of "pointer stream suppression". See:

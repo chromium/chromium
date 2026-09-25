@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_UNBOUNDED_SURFACE_WINDOW_H_
 #define CONTENT_BROWSER_RENDERER_HOST_UNBOUNDED_SURFACE_WINDOW_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -17,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "third_party/blink/public/mojom/unbounded_element/unbounded_element.mojom.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -32,12 +35,13 @@ class RenderWidgetHostViewBase;
 class CONTENT_EXPORT UnboundedSurfaceWindow
     : public blink::mojom::UnboundedSurfaceHost {
  public:
-  UnboundedSurfaceWindow();
+  UnboundedSurfaceWindow(base::WeakPtr<RenderWidgetHostViewBase> parent_view,
+                         base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
   ~UnboundedSurfaceWindow() override;
 
   virtual bool IsValid() const = 0;
   virtual gfx::NativeWindow GetNativeWindow() const = 0;
-  virtual RenderWidgetHostViewBase* GetParentView() const = 0;
+  RenderWidgetHostViewBase* GetTargetView() const;
 
   // Shared lifecycle and dismissal logic.
   // To initiate the dismissal of this window, call Dismiss().
@@ -46,6 +50,18 @@ class CONTENT_EXPORT UnboundedSurfaceWindow
   virtual void SetBounds(const gfx::Rect& bounds_in_screen) = 0;
   virtual viz::FrameSinkId GetFrameSinkId() const = 0;
   virtual viz::LocalSurfaceId GetLocalSurfaceId() const = 0;
+
+  // Transforms a point in screen coordinates into the coordinate space of
+  // `target_view`. Returns std::nullopt if the root view cannot be determined.
+  static std::optional<gfx::PointF> TransformScreenPointToViewCoordSpace(
+      RenderWidgetHostViewBase* target_view,
+      const gfx::PointF& screen_point);
+
+  // Transforms `web_event`'s screen position into `target_view`'s coordinate
+  // space and updates its widget position. Returns true on success.
+  static bool TransformEventCoordinatesToView(
+      RenderWidgetHostViewBase* target_view,
+      blink::WebMouseEvent& web_event);
 
   virtual void RouteMouseEvent(const blink::WebMouseEvent& event);
   virtual void RouteMouseWheelEvent(const blink::WebMouseWheelEvent& event);
@@ -79,12 +95,17 @@ class CONTENT_EXPORT UnboundedSurfaceWindow
   // triggers deletion of this object via the parent view.
   virtual void TeardownAndDestroy() = 0;
 
+  base::WeakPtr<RenderWidgetHostViewBase> parent_view_;
+  base::WeakPtr<RenderWidgetHostViewBase> subframe_view_;
   bool dismiss_pending_ = false;
   mojo::AssociatedRemote<blink::mojom::UnboundedSurfaceClient> client_remote_;
 
  private:
   // Destroys the surface, ending the window's lifetime.
   void DestroyInternal();
+
+  template <typename EventType>
+  RenderWidgetHostViewBase* PrepareEventForTargetView(EventType& web_event);
 
   base::OneShotTimer dismiss_fallback_timer_;
 };

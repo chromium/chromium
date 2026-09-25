@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Unbounded Subframe Repro</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #test_iframe {
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      width: 100px;
+      height: 100px;
+      border: 0;
+    }
+    #open_btn {
+      width: 80px;
+      height: 30px;
+      margin: 10px;
+    }
+    #child {
+      position: absolute;
+      top: 120px;
+      left: 120px;
+      width: 50px;
+      height: 50px;
+    }
+    #flyout_btn {
+      width: 50px;
+      height: 50px;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const isChild = window.top !== window || location.search.includes('child');
+    if (!isChild) {
+      const iframe = document.createElement('iframe');
+      iframe.id = 'test_iframe';
+      if (location.search.includes('same_origin') ||
+          location.pathname.startsWith('/cross-site/')) {
+        iframe.src = location.pathname + '?child';
+      } else if (location.hostname) {
+        iframe.src = '/cross-site/b.com' + location.pathname + '?child';
+      } else {
+        iframe.src = location.pathname + '?child';
+      }
+      document.body.appendChild(iframe);
+      const occluder = document.createElement('div');
+      occluder.id = 'background_occluder';
+      occluder.style.cssText =
+          'position:absolute; top:160px; left:160px; width:300px; height:300px; background:white;';
+      document.body.appendChild(occluder);
+    } else {
+      document.body.innerHTML = `
+        <button id="open_btn">Open</button>
+        <div id="child" unbounded>
+          <button id="flyout_btn">Item</button>
+        </div>
+      `;
+      window.__clicked = false;
+      window.__mouse_x = -1;
+      window.__mouse_y = -1;
+      const openBtn = document.getElementById('open_btn');
+      const child = document.getElementById('child');
+      const flyoutBtn = document.getElementById('flyout_btn');
+
+      window.openUnbounded = () => {
+        return child.showUnboundedElement();
+      };
+
+      openBtn.addEventListener('click', () => {
+        window.openUnbounded();
+      });
+
+      flyoutBtn.addEventListener('click', () => {
+        window.__clicked = true;
+      });
+      flyoutBtn.addEventListener('mousemove', (e) => {
+        window.__mouse_x = e.clientX;
+        window.__mouse_y = e.clientY;
+      });
+    }
+  </script>
+</body>
+</html>

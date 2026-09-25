@@ -56,8 +56,8 @@ UnboundedSurfaceWindowAndroid::UnboundedSurfaceWindowAndroid(
     mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
     mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
     base::WeakPtr<RenderWidgetHostViewBase> subframe_view)
-    : parent_view_(parent_view ? parent_view->GetWeakPtrAndroid() : nullptr),
-      subframe_view_(std::move(subframe_view)) {
+    : UnboundedSurfaceWindow(parent_view ? parent_view->GetWeakPtr() : nullptr,
+                             std::move(subframe_view)) {
   if (host.is_valid() && client.is_valid()) {
     receiver_.Bind(std::move(host));
     receiver_.set_disconnect_handler(
@@ -147,10 +147,6 @@ void UnboundedSurfaceWindowAndroid::GetCompositorFrameSink(
   GetHostFrameSinkManager()->CreateCompositorFrameSink(
       client_frame_sink_id_, std::move(sink), std::move(client),
       /*render_input_router_config=*/nullptr);
-}
-
-RenderWidgetHostViewBase* UnboundedSurfaceWindowAndroid::GetParentView() const {
-  return parent_view_.get();
 }
 
 gfx::Rect UnboundedSurfaceWindowAndroid::GetBounds() const {
