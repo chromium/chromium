@@ -128,6 +128,7 @@ if (is_android) {
       "//chrome/browser/first_run/android:java",
       "//chrome/browser/flags:java",
       "//chrome/browser/fullscreen/android:java",
+      "//chrome/browser/glic:context_menu_utils_java",
       "//chrome/browser/glic:public_java",
       "//chrome/browser/glic/android:common_java",
       "//chrome/browser/glic/android:java",

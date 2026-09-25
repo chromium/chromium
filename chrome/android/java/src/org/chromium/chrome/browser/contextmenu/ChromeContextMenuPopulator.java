@@ -37,7 +37,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -56,7 +55,7 @@ import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicContextMenuUtils;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceHandler;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -83,13 +82,11 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.lens.LensOverlayCoordinator;
 import org.chromium.chrome.browser.ui.lens.LensOverlayInvocationSource;
 import org.chromium.chrome.browser.ui.lens.LensOverlayTabHelper;
-import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -140,14 +137,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private static final String UMA_CONTEXTUAL_CUSTOM_ACTION_TYPE_SELECTED =
             "CustomTabs.ContextMenu.SelectedContextualCustomActionType";
     private static @Nullable Boolean sIsDefaultBrowserForTesting;
-
-    // Feature params on ClankGlicContextMenu gating each context-menu entry
-    // point, so every entry shares the same feature (and experiment).
-    @VisibleForTesting static final String PARAM_SHOW_ASK_GEMINI_ON_LINK = "show_on_link";
-    @VisibleForTesting static final String PARAM_SHOW_ASK_GEMINI_ON_PAGE = "show_on_page";
-
-    @VisibleForTesting
-    static final String PARAM_SHOW_ASK_GEMINI_ON_IMAGE_MOBILE = "show_on_image_mobile";
 
     private final Context mContext;
     private final ContextMenuItemDelegate mItemDelegate;
@@ -512,41 +501,19 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 mContext, getProfile(), mItemDelegate.getWebContents());
     }
 
-    private boolean isGlicContextMenuEligible(String paramName, boolean defaultValue) {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU, paramName, defaultValue)
-                && !DeviceInfo.isAutomotive()
-                && !mItemDelegate.isIncognito()
-                && GlicEnabling.isEnabledForProfile(getProfile());
-    }
-
     @VisibleForTesting
     boolean shouldShowAskGeminiForLink() {
-        // Enable on desktop if side panel is enabled, and enable on mobile if
-        // bottom sheet is enabled.
-        return isGlicContextMenuEligible(PARAM_SHOW_ASK_GEMINI_ON_LINK, true)
-                && (AndroidSidePanelEnabledFn.isEnabled()
-                        || TabBottomSheetUtils.isTabBottomSheetEnabled());
+        return GlicContextMenuUtils.shouldShowAskGeminiForLink(getProfile());
     }
 
     @VisibleForTesting
     boolean shouldShowAskGeminiForPage() {
-        // The empty-space (page) entry point is desktop Android only, where
-        // Glic is presented in the side panel.
-        return isGlicContextMenuEligible(PARAM_SHOW_ASK_GEMINI_ON_PAGE, false)
-                && AndroidSidePanelEnabledFn.isEnabled();
+        return GlicContextMenuUtils.shouldShowAskGeminiForPage(getProfile());
     }
 
     @VisibleForTesting
     boolean shouldShowAskGeminiForImage() {
-        // The mobile image "Ask Gemini" entry point is mobile-only,
-        // where Glic is presented in the bottom sheet. It requires the native
-        // GlicShareImage feature, otherwise invoking it would crash (the
-        // native share-image handler is gated on that feature).
-        return isGlicContextMenuEligible(PARAM_SHOW_ASK_GEMINI_ON_IMAGE_MOBILE, false)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_SHARE_IMAGE)
-                && TabBottomSheetUtils.isTabBottomSheetEnabled();
+        return GlicContextMenuUtils.shouldShowAskGeminiForImage(getProfile());
     }
 
     @Override

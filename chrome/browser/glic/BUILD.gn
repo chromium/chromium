@@ -244,6 +244,20 @@ if (is_android) {
     srcjar_deps = [ ":glic_pref_names_srcjar" ]
   }
 
+  android_library("context_menu_utils_java") {
+    sources = [ "public/android/java/src/org/chromium/chrome/browser/glic/GlicContextMenuUtils.java" ]
+    deps = [
+      ":public_java",
+      "//base:build_info_java",
+      "//build/android:build_java",
+      "//chrome/browser/context_sharing/tab_bottom_sheet/android:java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/ui/side_panel/android:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
+
   android_library("metrics_java") {
     sources =
         [ "android/java/src/org/chromium/chrome/browser/glic/GlicMetrics.java" ]
