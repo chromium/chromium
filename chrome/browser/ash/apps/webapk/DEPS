@@ -5,7 +5,6 @@ include_rules = [
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/apps",
   "+chrome/browser/ash/arc",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/web_applications/model/web_app_icon_types.h",
   "+chrome/browser/web_applications/web_app_filter.h",
@@ -16,3 +15,10 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_utils.h",
   "+components/webapk",
 ]
+
+specific_include_rules = {
+  # Only tests need //chrome/browser/policy.
+  "webapk_policy_browsertest\\.cc": [
+    "+chrome/browser/policy/policy_test_utils.h",
+  ],
+}

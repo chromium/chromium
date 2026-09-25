@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/forced_extensions",
   "+chrome/browser/extensions/policy_handlers.h",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/keyboard",
   "+chrome/browser/ui/ash/login",
@@ -30,6 +29,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only tests need //chrome/browser/policy.
+  "kiosk_enterprise_input_api_browsertest\\.cc": [
+    "+chrome/browser/policy/extension_force_install_mixin.h",
+  ],
   "kiosk_launch_controller_unittest\\.cc": [
     "+chrome/browser/browser_process_platform_part.h",
   ]

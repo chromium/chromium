@@ -15,13 +15,16 @@ include_rules = [
   "+chrome/browser/ash/policy/affiliation",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/chromeos/reporting",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles/profile.h",
   "+chrome/common",
   "+chrome/test",
 ]
 
 specific_include_rules = {
+  # Only tests need //chrome/browser/policy.
+  "network_bandwidth_sampler_ash_browsertest\\.cc": [
+    "+chrome/browser/policy/dm_token_utils.h",
+  ],
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/browser_process.h",
   ],

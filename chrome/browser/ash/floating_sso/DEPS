@@ -15,8 +15,14 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/floating_workspace",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/sync/data_type_store_service_factory.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need //chrome/browser/policy.
+  "floating_sso_browsertest\\.cc": [
+    "+chrome/browser/policy/policy_test_utils.h",
+  ],
+}

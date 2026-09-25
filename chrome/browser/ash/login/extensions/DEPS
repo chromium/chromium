@@ -20,8 +20,14 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/chrome_extension_system_factory.h",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/common/chrome_paths.h",
   "+chrome/browser/ash/extensions/authentication_screen_extensions_external_loader.h",
 ]
+
+specific_include_rules = {
+  # Only tests need //chrome/browser/policy.
+  "login_screen_extensions_.*_browsertest\\.cc": [
+    "+chrome/browser/policy/extension_force_install_mixin.h",
+  ],
+}

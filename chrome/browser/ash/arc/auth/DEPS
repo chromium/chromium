@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash/account_manager",
@@ -29,6 +28,7 @@ specific_include_rules = {
     "+chrome/browser/ash/test",
   ],
   "arc_auth_service_browsertest\\.cc": [
+    "+chrome/browser/policy/profile_policy_connector.h",
     "+chrome/browser/global_features.h",
     "+chrome/browser/ash/login/test/device_state_mixin.h",
     "+chrome/browser/ash/login/test/login_manager_mixin.h",

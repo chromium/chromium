@@ -17,10 +17,17 @@ include_rules = [
   "+chrome/browser/chromeos/extensions/odfs_config_private",
   "+chrome/browser/chromeos/upload_office_to_cloud",
   "+chrome/browser/extensions/extension_service.h",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/common",
 ]
+
+specific_include_rules = {
+  # Only tests need //chrome/browser/policy.
+  "one_drive_pref_observer_browsertest\\.cc": [
+    "+chrome/browser/policy/policy_test_utils.h",
+    "+chrome/browser/policy/profile_policy_connector.h",
+  ],
+}

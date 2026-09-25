@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/extension_service_test_base.h",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/web_applications/test",
@@ -43,6 +42,7 @@ specific_include_rules = {
     "+chrome/browser/signin",
   ],
   "arc_app_unittest\\.cc": [
+    "+chrome/browser/policy/profile_policy_connector.h",
     "+chrome/browser/sync",
     "+chrome/browser/apps/app_service",
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
