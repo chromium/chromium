@@ -12,7 +12,6 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -499,8 +498,6 @@ bool GbmSurfaceFactory::IsFormatSupportedForTexturing(
           GbmDeviceAndFile(std::move(dev_path_file), std::move(device)));
     }
     gbm_devices_initialized_ = true;
-    base::UmaHistogramCounts100("Ozone.Drm.GbmDeviceCount",
-                                gbm_devices_.size());
   }
 
   for (const auto& device_and_file : gbm_devices_) {
