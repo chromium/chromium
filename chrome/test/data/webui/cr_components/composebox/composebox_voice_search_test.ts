@@ -19,7 +19,7 @@ import {FakeMediaQueryList} from 'chrome://webui-test/fake_media_query_list.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle, disableTransitionsRecursively, installMock, MockSpeechRecognition, mockSpeechRecognition} from './composebox_test_utils.js';
 import type {MockComposebox, MockComposeboxVoiceSearch} from './composebox_test_utils.js';
@@ -923,6 +923,72 @@ suite('ComposeboxVoiceSearch', () => {
     assertTrue(stoppedEventFired, 'Event should fire on outside pointerdown');
     assertFalse(
         mockSpeechRecognition.voiceSearchInProgress, 'Engine should stop');
+  });
+
+  test('Stops voice search on Escape key', async () => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    await createComposeboxElement();
+
+    const voiceSearchElement = await openVoiceSearchUI();
+    assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+
+    const speechRes = createResults(1);
+    Object.assign(
+        speechRes.results[0]![0]!, {confidence: 1, transcript: 'hello world'});
+    mockSpeechRecognition.onresult!(speechRes);
+    await microtasksFinished();
+
+    const stoppedEventPromise =
+        eventToPromise('recording-stopped', voiceSearchElement);
+
+    const escapeEvent = new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    document.dispatchEvent(escapeEvent);
+    const stoppedEvent = await stoppedEventPromise;
+
+    assertEquals('hello world', (stoppedEvent as CustomEvent<string>).detail);
+    assertFalse(
+        mockSpeechRecognition.voiceSearchInProgress, 'Engine should stop');
+    assertTrue(
+        escapeEvent.defaultPrevented, 'Escape event should be prevented');
+  });
+
+  test('Cancels voice search on Escape key when error is showing', async () => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    await createComposeboxElement();
+
+    const voiceSearchElement = await openVoiceSearchUI();
+    assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+
+    const errorEventPromise =
+        eventToPromise('voice-search-error', voiceSearchElement);
+    mockSpeechRecognition.onerror!
+        ({error: 'network'} as SpeechRecognitionErrorEvent);
+    await errorEventPromise;
+    await voiceSearchElement.updateComplete;
+
+    const cancelEventPromise =
+        eventToPromise('voice-search-cancel', voiceSearchElement);
+
+    const escapeEvent = new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+    document.dispatchEvent(escapeEvent);
+    await cancelEventPromise;
+
+    assertTrue(
+        escapeEvent.defaultPrevented, 'Escape event should be prevented');
   });
 
   test('Does not stop voice search on pointerdown inside composebox', async () => {
