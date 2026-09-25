@@ -10966,6 +10966,27 @@
             ]
         }
     ],
+    "IcuNormalizerMigration": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260924",
+                    "enable_features": [
+                        "UseIcu4xNormalizer"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdbSqliteOnDiskRollout": [
         {
             "platforms": [
