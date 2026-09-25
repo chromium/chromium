@@ -128,7 +128,7 @@ class MODULES_EXPORT IDBKey {
   int Compare(const IDBKey* other) const;
   bool IsLessThan(const IDBKey* other) const;
   bool IsEqual(const IDBKey* other) const;
-  size_t SizeEstimate() const { return size_estimate_; }
+  size_t SizeEstimate() const;
 
   v8::Local<v8::Value> ToV8(ScriptState*) const;
 
@@ -157,11 +157,6 @@ class MODULES_EXPORT IDBKey {
   scoped_refptr<base::RefCountedData<Vector<char>>> binary_;
   const String string_;
   const double number_ = 0;
-
-  // Initialized in IDBKey constructors based on key type and value size (see
-  // idb_key.cc).  Returned via SizeEstimate() and used in IndexedDB code to
-  // verify that a given key is small enough to pass over IPC.
-  size_t size_estimate_;
 };
 
 // An index id, and corresponding set of keys to insert.

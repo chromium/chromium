@@ -83,40 +83,29 @@ std::unique_ptr<IDBKey> IDBKey::Clone(const IDBKey* rkey) {
   NOTREACHED();
 }
 
-IDBKey::IDBKey()
-    : type_(mojom::IDBKeyType::Invalid), size_estimate_(kIDBKeyOverheadSize) {}
+IDBKey::IDBKey() : type_(mojom::IDBKeyType::Invalid) {}
 
 // Must be Invalid or None.
-IDBKey::IDBKey(mojom::IDBKeyType type)
-    : type_(type), size_estimate_(kIDBKeyOverheadSize) {
+IDBKey::IDBKey(mojom::IDBKeyType type) : type_(type) {
   DCHECK(type_ == mojom::IDBKeyType::Invalid ||
          type_ == mojom::IDBKeyType::None);
 }
 
 // Must be Number or Date.
 IDBKey::IDBKey(mojom::IDBKeyType type, double number)
-    : type_(type),
-      number_(number),
-      size_estimate_(kIDBKeyOverheadSize + sizeof(number_)) {
+    : type_(type), number_(number) {
   DCHECK(type_ == mojom::IDBKeyType::Number ||
          type_ == mojom::IDBKeyType::Date);
 }
 
 IDBKey::IDBKey(const String& value)
-    : type_(mojom::IDBKeyType::String),
-      string_(value),
-      size_estimate_(kIDBKeyOverheadSize + (string_.length() * sizeof(UChar))) {
-}
+    : type_(mojom::IDBKeyType::String), string_(value) {}
 
 IDBKey::IDBKey(scoped_refptr<base::RefCountedData<Vector<char>>> value)
-    : type_(mojom::IDBKeyType::Binary),
-      binary_(std::move(value)),
-      size_estimate_(kIDBKeyOverheadSize + binary_->data.size()) {}
+    : type_(mojom::IDBKeyType::Binary), binary_(std::move(value)) {}
 
 IDBKey::IDBKey(KeyArray key_array)
-    : type_(mojom::IDBKeyType::Array),
-      array_(std::move(key_array)),
-      size_estimate_(kIDBKeyOverheadSize + CalculateIDBKeyArraySize(array_)) {}
+    : type_(mojom::IDBKeyType::Array), array_(std::move(key_array)) {}
 
 IDBKey::~IDBKey() = default;
 
@@ -231,6 +220,26 @@ bool IDBKey::IsEqual(const IDBKey* other) const {
     return false;
 
   return !Compare(other);
+}
+
+size_t IDBKey::SizeEstimate() const {
+  switch (type_) {
+    case mojom::IDBKeyType::Array:
+      return kIDBKeyOverheadSize + CalculateIDBKeyArraySize(array_);
+    case mojom::IDBKeyType::Binary:
+      return kIDBKeyOverheadSize + binary_->data.size();
+    case mojom::IDBKeyType::String:
+      return kIDBKeyOverheadSize + (string_.length() * sizeof(UChar));
+    case mojom::IDBKeyType::Date:
+    case mojom::IDBKeyType::Number:
+      return kIDBKeyOverheadSize + sizeof(number_);
+    case mojom::IDBKeyType::Invalid:
+    case mojom::IDBKeyType::None:
+      return kIDBKeyOverheadSize;
+    case mojom::IDBKeyType::Min:
+      break;
+  }
+  NOTREACHED();
 }
 
 // static
