@@ -10,6 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -393,6 +395,16 @@ TEST_F(InputProtectionInteractiveUiTest, TabKeyTraversalAllowedWhileOccluded) {
       ActivateSurface(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
       KeyPressAndRelease(kPrimaryButtonId, ui::VKEY_TAB),
       CheckViewProperty(kSecondaryButtonId, &View::HasFocus, true));
+}
+
+// Verifies that assistive technology (accessibility mode) bypasses input
+// protection restrictions.
+TEST_F(InputProtectionInteractiveUiTest,
+       AccessibilityModeBypassesInputProtection) {
+  ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  RunTestSequence(
+      TriggerAotPopAwayAttack(kPrimaryButtonId),
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()));
 }
 
 // Verifies that gesture taps targeting a protected view during cooldown
