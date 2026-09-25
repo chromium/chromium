@@ -2253,7 +2253,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.trigger =
         EventConfig("tab_switcher_xr_iph_trigger", Comparator(LESS_THAN, 3),
                     kMaxStoragePeriod, kMaxStoragePeriod);
-    config.used = EventConfig("tab_switcher_xr_iph_used", kAlwaysTrue,
+    config.used = EventConfig("tab_switcher_xr_iph_used", Comparator(EQUAL, 0),
                               kMaxStoragePeriod, kMaxStoragePeriod);
     config.snooze_params.snooze_interval = 1;
     config.snooze_params.max_limit = 3;
