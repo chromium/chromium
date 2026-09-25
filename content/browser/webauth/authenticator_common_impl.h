@@ -301,7 +301,11 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   // Signals to the request delegate that the request has failed for |reason|.
   // The request delegate decides whether to present the user with a visual
   // error before the request is finally resolved with |status|.
+  // `authenticator_type` is the type of the authenticator that produced the
+  // failure, or `std::nullopt` if the failure is not attributable to a specific
+  // authenticator (e.g. a timeout).
   void SignalFailureToRequestDelegate(
+      std::optional<device::AuthenticatorType> authenticator_type,
       AuthenticatorRequestClientDelegate::InterestingFailureReason reason,
       blink::mojom::AuthenticatorStatus status);
 

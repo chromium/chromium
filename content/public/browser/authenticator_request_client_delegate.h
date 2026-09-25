@@ -172,6 +172,14 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       device::FidoRequestType request_type,
       device::AuthenticatorType authenticator_type);
 
+  // Called when the request fails for `reason`, right before
+  // `DoesBlockRequestOnFailure`. `authenticator_type` is the type of the
+  // authenticator whose response caused the failure, or `std::nullopt` if the
+  // failure is not attributable to a specific authenticator (e.g. a timeout).
+  virtual void OnTransactionFailed(
+      std::optional<device::AuthenticatorType> authenticator_type,
+      InterestingFailureReason reason);
+
   // Supplies callbacks that the embedder can invoke to initiate certain
   // actions, namely: cancel the request, report no immediate mechanisms, start
   // the request over, preselect an account, dispatch request to connected

@@ -3339,6 +3339,10 @@ TEST_F(AuthenticatorImplRequestDelegateTest, FailureReasonForTimeout) {
   auto mock_delegate = std::make_unique<
       ::testing::NiceMock<MockAuthenticatorRequestDelegateObserver>>(
       failure_reason_future.GetCallback());
+  EXPECT_CALL(*mock_delegate,
+              OnTransactionFailed(std::optional<device::AuthenticatorType>(),
+                                  AuthenticatorRequestClientDelegate::
+                                      InterestingFailureReason::kTimeout));
   auto authenticator = ConnectToFakeAuthenticator(std::move(mock_delegate));
 
   TestGetCredentialFuture future;
@@ -3394,6 +3398,11 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
   auto mock_delegate = std::make_unique<
       ::testing::NiceMock<MockAuthenticatorRequestDelegateObserver>>(
       failure_reason_future.GetCallback());
+  EXPECT_CALL(
+      *mock_delegate,
+      OnTransactionFailed(std::optional(device::AuthenticatorType::kOther),
+                          AuthenticatorRequestClientDelegate::
+                              InterestingFailureReason::kKeyNotRegistered));
   auto authenticator = ConnectToFakeAuthenticator(std::move(mock_delegate));
 
   TestGetCredentialFuture future;

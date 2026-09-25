@@ -24,6 +24,7 @@
 #include "chrome/browser/webauthn/password_credential_fetcher.h"
 #include "chrome/browser/webauthn/password_credential_ui_controller.h"
 #include "chrome/browser/webauthn/ui_readiness_barrier.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
@@ -98,6 +99,33 @@ class ChromeAuthenticatorRequestDelegate
     virtual void PreStartOver() {}
   };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(SigninHybridPasskeyOutcome)
+  enum class HybridPasskeyOutcome {
+    kSuccess = 0,
+    kCancelledAfterBleAdvertReceived = 1,
+    kCancelledAfterPhoneConnected = 2,
+    kCancelledWhileWaitingForPhone = 3,
+    kFailedAfterBleAdvertReceived = 4,
+    kFailedAfterPhoneConnected = 5,
+    kFailedWhileWaitingForPhone = 6,
+    kCancelledOrNoPasskeysOnPhone = 7,
+    kHybridTransportError = 8,
+    kFailedTimeout = 9,
+    kOtherAuthenticatorUsed = 10,
+    kMaxValue = kOtherAuthenticatorUsed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninHybridPasskeyOutcome)
+
+  enum class HybridPasskeySessionStage {
+    kBLEAdvertReceived,
+    kPhoneConnected,
+    kPhoneReady,
+  };
+#endif
+
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
   // The |render_frame_host| must outlive this instance.
   explicit ChromeAuthenticatorRequestDelegate(
@@ -147,6 +175,9 @@ class ChromeAuthenticatorRequestDelegate
   void OnTransactionSuccessful(RequestSource request_source,
                                device::FidoRequestType,
                                device::AuthenticatorType) override;
+  void OnTransactionFailed(
+      std::optional<device::AuthenticatorType> authenticator_type,
+      InterestingFailureReason reason) override;
   void ConfigureDiscoveries(
       const url::Origin& origin,
       const std::string& rp_id,
@@ -212,6 +243,12 @@ class ChromeAuthenticatorRequestDelegate
       std::unique_ptr<PasswordCredentialUIController> controller);
   void SetPasswordFetcherForTesting(
       std::unique_ptr<PasswordCredentialFetcher> fetcher);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void OnCableEventForTesting(device::cablev2::Event event) {
+    OnCableEvent(event);
+  }
+#endif
 
   // GetRenderFrameHost returns a pointer to the RenderFrameHost that was given
   // to the constructor.
@@ -339,6 +376,35 @@ class ChromeAuthenticatorRequestDelegate
   std::unique_ptr<PasswordCredentialFetcher> password_fetcher_;
 
   std::unique_ptr<UiReadinessBarrier> barrier_;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  enum class HybridPasskeyTerminationReason {
+    kUserCancelled,
+    kOtherFailure,
+  };
+
+  // Updates `hybrid_passkey_stage_` as caBLEv2 connection events arrive.
+  void SetHybridPasskeyStageFromCableEvent(device::cablev2::Event event);
+
+  // Records `Signin.HybridPasskey.Outcome` if this is a Chrome sign-in request
+  // and a hybrid session stage was reached (`hybrid_passkey_stage_` is set),
+  // then resets `hybrid_passkey_stage_` so only one outcome is emitted per
+  // attempt.
+  //
+  // This overload is used when the request ends without a response from the
+  // phone (desktop UI cancellation or teardown).
+  void MaybeRecordHybridPasskeyOutcome(
+      HybridPasskeyTerminationReason termination_reason);
+  void MaybeRecordHybridPasskeyOutcome(HybridPasskeyOutcome outcome);
+  // Maps a failure `reason` to an outcome. Only called for failures from the
+  // phone or not attributable to any authenticator (e.g. a timeout). Results
+  // from other authenticators (e.g. a security key tapped after scanning the QR
+  // code) are recorded as `kOtherAuthenticatorUsed` instead.
+  void MaybeRecordHybridPasskeyOutcome(InterestingFailureReason reason);
+
+  bool is_chrome_signin_request_ = false;
+  std::optional<HybridPasskeySessionStage> hybrid_passkey_stage_;
+#endif
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};

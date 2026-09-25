@@ -1318,6 +1318,25 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failure"/>
 </enum>
 
+<!-- LINT.IfChange(SigninHybridPasskeyOutcome) -->
+
+<enum name="SigninHybridPasskeyOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Cancelled on desktop after BLE advert received"/>
+  <int value="2" label="Cancelled on desktop after phone connected to tunnel"/>
+  <int value="3" label="Cancelled on desktop while waiting for phone"/>
+  <int value="4" label="Failed after BLE advert received"/>
+  <int value="5" label="Failed after phone connected to tunnel"/>
+  <int value="6" label="Failed while waiting for phone"/>
+  <int value="7" label="Cancelled or no passkeys on phone"/>
+  <int value="8" label="Hybrid transport error"/>
+  <int value="9" label="Timed out"/>
+  <int value="10"
+      label="Another authenticator (not the phone) succeeded or failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/chrome_authenticator_request_delegate.h:SigninHybridPasskeyOutcome) -->
+
 <enum name="SigninInterceptFREDialogEvent">
   <int value="0" label="FRE started"/>
   <int value="1" label="Sync confirmation shown"/>

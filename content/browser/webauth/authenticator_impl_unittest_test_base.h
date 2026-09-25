@@ -271,6 +271,11 @@ class MockAuthenticatorRequestDelegateObserver
                bool(const device::FidoAuthenticator&));
   MOCK_METHOD1(FidoAuthenticatorAdded, void(const device::FidoAuthenticator&));
   MOCK_METHOD1(FidoAuthenticatorRemoved, void(std::string_view));
+  MOCK_METHOD(void,
+              OnTransactionFailed,
+              (std::optional<device::AuthenticatorType>,
+               InterestingFailureReason),
+              (override));
 
  private:
   InterestingFailureReasonCallback failure_reasons_callback_;

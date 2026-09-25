@@ -52,6 +52,10 @@ void AuthenticatorRequestClientDelegate::OnTransactionSuccessful(
     device::FidoRequestType request_type,
     device::AuthenticatorType authenticator_type) {}
 
+void AuthenticatorRequestClientDelegate::OnTransactionFailed(
+    std::optional<device::AuthenticatorType> authenticator_type,
+    InterestingFailureReason reason) {}
+
 void AuthenticatorRequestClientDelegate::RegisterActionCallbacks(
     base::OnceClosure cancel_callback,
     base::OnceClosure immediate_not_found_callback,
