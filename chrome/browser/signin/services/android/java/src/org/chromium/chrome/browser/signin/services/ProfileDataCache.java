@@ -280,41 +280,29 @@ public class ProfileDataCache
     }
 
     /**
-     * Returns cached {@link DisplayableProfileData} for the given account ID, or null if missing.
-     *
-     * <p>Method is synchronous and does not trigger any account info fetches. First it checks if
-     * the {@link DisplayableProfileData} is in the cache, then it updates the cache if the account
-     * is missing.
-     *
-     * @param accountId The account ID for which to get the profile data.
-     * @return The {@link DisplayableProfileData} for the given account ID, or null if not found.
-     */
-    public @Nullable DisplayableProfileData tryGetById(CoreAccountId accountId) {
-        if (!mAccountsCache.isLoaded() || !mAccountsCache.contains(accountId)) {
-            updateCache();
-        }
-
-        return mAccountsCache.getByAccountId(accountId);
-    }
-
-    /**
      * Returns cached {@link DisplayableProfileData} for the given account ID.
      *
      * <p>Method is synchronous and does not trigger any account info fetches. First it checks if
-     * the {@link DisplayableProfileData} is in the cache, then it updates the cache if the account
-     * is missing. Throws an {@link IllegalArgumentException} if the account still cannot be found.
+     * the {@link DisplayableProfileData} is in the cache. If the cache hasn't been populated yet,
+     * or doesn't know the account, the cache is refreshed from the current source of accounts. If
+     * the account still cannot be found afterwards, an {@link IllegalArgumentException} is thrown -
+     * this means data for this account is not available.
      *
      * @param accountId The account ID for which to get the profile data.
      * @throws IllegalArgumentException if the account is not found.
      * @return The {@link DisplayableProfileData} for the given account ID.
      */
     public DisplayableProfileData getById(CoreAccountId accountId) {
-        var profileData = tryGetById(accountId);
-        if (profileData != null) {
-            return profileData;
+        if (!mAccountsCache.isLoaded() || !mAccountsCache.contains(accountId)) {
+            updateCache();
         }
 
-        throw new IllegalArgumentException("Account not found");
+        var profileData = mAccountsCache.getByAccountId(accountId);
+        if (profileData == null) {
+            throw new IllegalArgumentException("Account not found");
+        }
+
+        return profileData;
     }
 
     /**
