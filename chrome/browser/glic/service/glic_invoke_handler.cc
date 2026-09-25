@@ -355,8 +355,7 @@ void GlicInvokeHandler::Invoke() {
   }
 
   if (options_.additional_context.has_value() &&
-      options_.additional_context->policy_check == PolicyCheck::kClipboard &&
-      IsTabTarget()) {
+      options_.additional_context->policy_check == PolicyCheck::kClipboard) {
     tasks.push_back(std::make_unique<PastePolicyTask>(
         &*instance_, options_,
         base::BindOnce(&GlicInvokeHandler::OnError,
