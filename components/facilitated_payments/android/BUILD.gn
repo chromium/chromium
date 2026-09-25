@@ -37,6 +37,7 @@ source_set("unit_tests") {
   deps = [
     ":android",
     ":test_support",
+    "//components/facilitated_payments/content/browser",
     "//components/facilitated_payments/core/browser",
     "//components/facilitated_payments/core/utils",
     "//components/signin/public/identity_manager:test_support",

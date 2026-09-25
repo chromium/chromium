@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/facilitated_payments/android/java/jni_headers/AccountLinkingResult_jni.h"
@@ -35,12 +36,28 @@ LazyInitFacilitatedPaymentsApiClient(
              : nullptr;
 }
 
+std::unique_ptr<FacilitatedPaymentsApiClient>
+LazyInitFacilitatedPaymentsApiClientForWebContents(
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents || !web_contents->GetPrimaryMainFrame()) {
+    return nullptr;
+  }
+  return std::make_unique<FacilitatedPaymentsApiClientAndroid>(
+      web_contents->GetPrimaryMainFrame());
+}
+
 // Declared in the cross-platform header
 // `facilitated_payments_api_client_factory.h`.
 FacilitatedPaymentsApiClientCreator GetFacilitatedPaymentsApiClientCreator(
     content::GlobalRenderFrameHostId render_frame_host_id) {
   return base::BindRepeating(&LazyInitFacilitatedPaymentsApiClient,
                              render_frame_host_id);
+}
+
+FacilitatedPaymentsApiClientCreator GetFacilitatedPaymentsApiClientCreator(
+    base::WeakPtr<content::WebContents> web_contents) {
+  return base::BindRepeating(
+      &LazyInitFacilitatedPaymentsApiClientForWebContents, web_contents);
 }
 
 FacilitatedPaymentsApiClientAndroid::FacilitatedPaymentsApiClientAndroid(

@@ -134,7 +134,8 @@ class PixAccountLinkingManagerTest : public testing::Test {
   }
 
   std::unique_ptr<MockFacilitatedPaymentsApiClient> api_client_;
-  raw_ptr<MockFacilitatedPaymentsApiClient> api_client_ptr_ = nullptr;
+  raw_ptr<MockFacilitatedPaymentsApiClient, DisableDanglingPtrDetection>
+      api_client_ptr_ = nullptr;
 
   std::unique_ptr<PrefService> pref_service_;
   std::unique_ptr<autofill::TestPaymentsDataManager> payments_data_manager_;
@@ -1108,6 +1109,31 @@ TEST_F(
       "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
       /*sample=*/AccountLinkingFlowExitedReason::kMaxStrikes,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       MaybeShowPixAccountLinkingPrompt_RecreatesApiClientAcrossFlows) {
+  int api_client_creation_count = 0;
+  auto manager = std::make_unique<PixAccountLinkingManager>(
+      &client(),
+      base::BindRepeating(
+          [](int* count) -> std::unique_ptr<FacilitatedPaymentsApiClient> {
+            ++(*count);
+            auto client = std::make_unique<MockFacilitatedPaymentsApiClient>();
+            ON_CALL(*client, GetClientToken(testing::_))
+                .WillByDefault(
+                    [](base::OnceCallback<void(std::vector<uint8_t>)> cb) {
+                      std::move(cb).Run(std::vector<uint8_t>{1, 2, 3});
+                    });
+            return client;
+          },
+          &api_client_creation_count));
+
+  manager->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  EXPECT_EQ(api_client_creation_count, 1);
+
+  manager->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  EXPECT_EQ(api_client_creation_count, 2);
 }
 
 }  // namespace payments::facilitated

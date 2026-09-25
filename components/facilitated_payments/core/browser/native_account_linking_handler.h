@@ -57,6 +57,9 @@ class NativeAccountLinkingHandler {
   // scrim).
   virtual void OnDismissed();
 
+  // Resets the handler state, including the cached API client and action token.
+  void Reset();
+
   // Dismisses the prompt UI.
   virtual void DismissPrompt();
 
