@@ -30,6 +30,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/auth.h"
+#include "net/http/http_status_code.h"
 #include "net/log/net_log.h"
 #include "net/log/test_net_log.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -168,11 +169,16 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
       std::string_view realm = "",
       int64_t navigation_id = kTestNavigationId,
       const GURL& destination_url = GURL("https://target.example.com/test")) {
-    base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-    bool handled = error_service_->InterceptProxyAuthChallenge(
+    auto interception = error_service_->EvaluateProxyAuthChallenge(
         CreateProxyAuthChallengeInfo("proxy.example.com", realm),
-        destination_url, nullptr, navigation_id, future.GetCallback());
-    EXPECT_TRUE(handled);
+        destination_url, nullptr, navigation_id);
+    EXPECT_TRUE(interception.has_value());
+    if (!interception) {
+      return std::nullopt;
+    }
+    base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+    error_service_->ResolveProxyAuthChallenge(*std::move(interception),
+                                              future.GetCallback());
     return future.Get();
   }
 
@@ -197,20 +203,55 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
 };
 
 TEST_F(EnterpriseProxyErrorServiceTest, NotApplicableWhenNoManagedProxy) {
-  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-  bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("unmanaged.example.com"),
-      GURL("https://target.example.com/test"), nullptr, kTestNavigationId,
-      future.GetCallback());
-
-  EXPECT_FALSE(handled);
-  EXPECT_FALSE(future.IsReady());
+  // Declining involves no callback at all, so there is nothing the caller
+  // could fail to reclaim.
+  EXPECT_FALSE(error_service_
+                   ->EvaluateProxyAuthChallenge(
+                       CreateProxyAuthChallengeInfo("unmanaged.example.com"),
+                       GURL("https://target.example.com/test"), nullptr,
+                       kTestNavigationId)
+                   .has_value());
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, NoCredentialsNeeded_ReturnsNullopt) {
   SetupManagedDomainWithProxy("proxy.example.com", /*with_auth=*/false);
   std::optional<net::AuthCredentials> credentials = InterceptChallenge();
   EXPECT_FALSE(credentials.has_value());
+}
+
+// A route that matched but cannot authenticate is an error, not a silent
+// cancellation. Without the recorded error data the navigation would commit the
+// proxy's raw 407 body, leaving the user with nothing actionable.
+TEST_F(EnterpriseProxyErrorServiceTest,
+       NoCredentialsNeeded_RecordsGenericError) {
+  SetupManagedDomainWithProxy("proxy.example.com", /*with_auth=*/false);
+
+  EXPECT_FALSE(InterceptChallenge().has_value());
+
+  std::optional<EnterpriseProxyErrorData> error_data =
+      error_service_->TakeDisguisedError(kTestNavigationId);
+  ASSERT_TRUE(error_data.has_value());
+  EXPECT_EQ(EnterpriseProxyErrorData::ErrorCategory::kOther,
+            error_data->error_category());
+  // There is no disguised error code to report, so the challenge's own status
+  // is used rather than the unparsed realm (which would be 0).
+  EXPECT_EQ(net::HTTP_PROXY_AUTHENTICATION_REQUIRED, error_data->error_code());
+  EXPECT_EQ(GURL("https://target.example.com/test"),
+            error_data->destination_url());
+}
+
+// Subresources and background requests have no navigation to attach an error
+// page to, so they must still fail closed but record nothing.
+TEST_F(EnterpriseProxyErrorServiceTest,
+       NoCredentialsNeeded_NoErrorPageWithoutNavigation) {
+  SetupManagedDomainWithProxy("proxy.example.com", /*with_auth=*/false);
+
+  EXPECT_FALSE(
+      InterceptChallenge(/*realm=*/"", /*navigation_id=*/0).has_value());
+
+  EXPECT_FALSE(error_service_->TakeDisguisedError(0).has_value());
+  EXPECT_FALSE(
+      error_service_->TakeDisguisedError(kTestNavigationId).has_value());
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, ValidAuthChallenge_FetchesCredentials) {
@@ -235,16 +276,18 @@ TEST_F(EnterpriseProxyErrorServiceTest, CredentialFetchFailure_ReturnsNullopt) {
   SetupManagedDomainWithProxy("proxy.example.com");
   identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
 
-  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-  bool handled = error_service_->InterceptProxyAuthChallenge(
+  auto interception = error_service_->EvaluateProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
-      GURL("https://target.example.com/test"), nullptr, kTestNavigationId,
-      future.GetCallback());
+      GURL("https://target.example.com/test"), nullptr, kTestNavigationId);
+  ASSERT_TRUE(interception.has_value());
+
+  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+  error_service_->ResolveProxyAuthChallenge(*std::move(interception),
+                                            future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromServiceUnavailable("error"));
 
-  EXPECT_TRUE(handled);
   EXPECT_FALSE(future.Get().has_value());
 
   std::optional<EnterpriseProxyErrorData> error_data =
@@ -306,14 +349,16 @@ TEST_F(EnterpriseProxyErrorServiceTest,
   SetupManagedDomainWithProxy("proxy.example.com");
   identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
 
-  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-  bool handled = error_service_->InterceptProxyAuthChallenge(
+  auto interception = error_service_->EvaluateProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
-      GURL("https://target.example.com/test"), nullptr, kTestNavigationId,
-      future.GetCallback());
+      GURL("https://target.example.com/test"), nullptr, kTestNavigationId);
+  ASSERT_TRUE(interception.has_value());
+
+  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+  error_service_->ResolveProxyAuthChallenge(*std::move(interception),
+                                            future.GetCallback());
   TriggerInvalidGaiaCredentials();
 
-  EXPECT_TRUE(handled);
   EXPECT_FALSE(future.Get().has_value());
 
   std::optional<EnterpriseProxyErrorData> error_data =
@@ -321,6 +366,33 @@ TEST_F(EnterpriseProxyErrorServiceTest,
   ASSERT_TRUE(error_data.has_value());
   EXPECT_EQ(error_data->error_category(),
             EnterpriseProxyErrorData::ErrorCategory::kAuthentication);
+}
+
+// The production teardown sequence: KeyedService runs every Shutdown() before
+// any destructor, so EnterpriseProxyService::Shutdown() flushes its pending
+// requests while the error service is still alive and able to answer. This is
+// what keeps the weakly-bound continuation from dropping `callback`.
+TEST_F(EnterpriseProxyErrorServiceTest,
+       ProxyServiceShutdownRunsPendingCallback) {
+  SetupManagedDomainWithProxy("proxy.example.com");
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  auto interception = error_service_->EvaluateProxyAuthChallenge(
+      CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
+      GURL("https://target.example.com/test"), nullptr, kTestNavigationId);
+  ASSERT_TRUE(interception.has_value());
+
+  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+  error_service_->ResolveProxyAuthChallenge(*std::move(interception),
+                                            future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+
+  // Shutdown phase: both services are shut down, neither is destroyed yet.
+  error_service_->Shutdown();
+  proxy_service_->Shutdown();
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().has_value());
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, RemoveDisguisedError_CleansUpMap) {

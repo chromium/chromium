@@ -143,9 +143,16 @@ bool HttpAuthCoordinator::Flow::ForwardToEnterpriseProxy(
     }
   }
 
-  auto callback = base::BindOnce(&Flow::OnCredentials, GetWeakPtr());
-  return error_service->InterceptProxyAuthChallenge(
-      auth_info_, url_, response_headers_, navigation_id, std::move(callback));
+  auto interception = error_service->EvaluateProxyAuthChallenge(
+      auth_info_, url_, response_headers_, navigation_id);
+  if (!interception) {
+    return false;
+  }
+
+  error_service->ResolveProxyAuthChallenge(
+      *std::move(interception),
+      base::BindOnce(&Flow::OnCredentials, GetWeakPtr()));
+  return true;
 }
 
 bool HttpAuthCoordinator::Flow::ForwardToExtension(

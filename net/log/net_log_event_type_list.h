@@ -5471,15 +5471,14 @@ EVENT_TYPE(ENTERPRISE_PROXY_NETWORK_PAUSE)
 EVENT_TYPE(ENTERPRISE_PROXY_AUTH_CHALLENGE_RECEIVED)
 
 // This event is logged when EnterpriseProxyService resolves an HTTP 407
-// challenge.
+// challenge. This happens either synchronously, when the challenge is
+// classified, or later, when the credential fetch that a classification
+// started completes. Shares a source with
+// ENTERPRISE_PROXY_AUTH_CHALLENGE_RECEIVED.
 //   {
-//      "decision": <string: "token_acquired", "disguised_error",
-//                   "no_credentials_needed", "sign_in_required", "failed">,
+//      "decision": <string>,
 //      "has_credentials": <bool>,
-//      "failure_reason": <optional string: "unmanaged_user",
-//                         "unsupported_scope", "transient_error",
-//                         "auth_error", "canceled", "service_shutdown",
-//                         "no_primary_account", "invalid_credentials">,
+//      "failure_reason": <optional string>,
 //   }
 EVENT_TYPE(ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED)
 

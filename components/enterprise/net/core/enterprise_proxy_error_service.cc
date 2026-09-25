@@ -6,18 +6,41 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/http/http_status_code.h"
 #include "net/log/net_log_event_type.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace enterprise_net {
+
+EnterpriseProxyErrorService::PendingInterception::PendingInterception(
+    PendingInterception&&) = default;
+EnterpriseProxyErrorService::PendingInterception&
+EnterpriseProxyErrorService::PendingInterception::operator=(
+    PendingInterception&&) = default;
+EnterpriseProxyErrorService::PendingInterception::~PendingInterception() =
+    default;
+
+EnterpriseProxyErrorService::PendingInterception::PendingInterception(
+    EnterpriseProxyService::ProxyAuthChallengeMatch match,
+    int64_t navigation_id,
+    GURL destination_url,
+    GURL proxy_url,
+    int error_code)
+    : match_(std::move(match)),
+      navigation_id_(navigation_id),
+      destination_url_(std::move(destination_url)),
+      proxy_url_(std::move(proxy_url)),
+      error_code_(error_code) {}
 
 EnterpriseProxyErrorService::EnterpriseProxyErrorService(
     EnterpriseProxyService* enterprise_proxy_service)
@@ -121,15 +144,22 @@ base::DictValue EnterpriseProxyErrorService::GetErrorPageParams(
   return params;
 }
 
-bool EnterpriseProxyErrorService::InterceptProxyAuthChallenge(
+std::optional<EnterpriseProxyErrorService::PendingInterception>
+EnterpriseProxyErrorService::EvaluateProxyAuthChallenge(
     const net::AuthChallengeInfo& auth_info,
     const GURL& destination_url,
     const scoped_refptr<net::HttpResponseHeaders>& response_headers,
-    int64_t navigation_id,
-    base::OnceCallback<void(const std::optional<net::AuthCredentials>&)>
-        callback) {
-  bool is_handled = true;
-  GURL proxy_url = auth_info.challenger.GetURL();
+    int64_t navigation_id) {
+  using Decision = EnterpriseProxyService::ProxyAuthChallengeMatch::Decision;
+
+  EnterpriseProxyService::ProxyAuthChallengeMatch match =
+      enterprise_proxy_service_->ClassifyProxyAuthChallenge(
+          auth_info, destination_url, response_headers);
+
+  if (match.decision == Decision::kNotApplicable) {
+    return std::nullopt;
+  }
+
   int error_code = 0;
   std::optional<int> forced_error_code = GetForcedDisguisedErrorCode();
   if (forced_error_code.has_value()) {
@@ -137,15 +167,72 @@ bool EnterpriseProxyErrorService::InterceptProxyAuthChallenge(
   } else {
     base::StringToInt(auth_info.realm, &error_code);
   }
-  auto eps_callback = base::BindOnce(
-      &EnterpriseProxyErrorService::OnProxyAuthChallengeResult,
-      weak_ptr_factory_.GetWeakPtr(), &is_handled, navigation_id,
-      destination_url, std::move(proxy_url), error_code, std::move(callback));
 
-  enterprise_proxy_service_->HandleProxyAuthChallenge(
-      auth_info, destination_url, response_headers, std::move(eps_callback));
+  return PendingInterception(std::move(match), navigation_id, destination_url,
+                             auth_info.challenger.GetURL(), error_code);
+}
 
-  return is_handled;
+void EnterpriseProxyErrorService::ResolveProxyAuthChallenge(
+    PendingInterception interception,
+    ProxyAuthCredentialsCallback callback) {
+  using Decision = EnterpriseProxyService::ProxyAuthChallengeMatch::Decision;
+
+  // With no callback nobody is waiting on this challenge, so neither the
+  // credential fetch nor the error-page bookkeeping would have a consumer.
+  // Drop the interception rather than doing work for no one.
+  if (!callback) {
+    return;
+  }
+
+  switch (interception.match_.decision) {
+    case Decision::kNotApplicable:
+      // EvaluateProxyAuthChallenge() never mints an interception for this.
+      NOTREACHED();
+
+    case Decision::kNoCredentialsNeeded:
+      // A PvD route matched, so this proxy is ours, but that route is not
+      // configured to authenticate against it -- and the challenge is not a
+      // disguised error either. Either the proxy should not have challenged, or
+      // the policy is misconfigured; both are error cases.
+      //
+      // Fail closed with a generic error page. Silently cancelling auth would
+      // surface the proxy's raw 407 body, and falling through to a login prompt
+      // would ask the user for credentials that cannot possibly satisfy an
+      // enterprise proxy. `error_code` is the challenge's own status rather
+      // than a disguised one, since there is no disguised error to report.
+      MaybeRecordErrorForNavigation(
+          interception.navigation_id_, interception.destination_url_,
+          interception.proxy_url_, net::HTTP_PROXY_AUTHENTICATION_REQUIRED,
+          EnterpriseProxyErrorData::ErrorCategory::kOther,
+          interception.match_.net_log);
+      std::move(callback).Run(std::nullopt);
+      return;
+
+    case Decision::kDisguisedError:
+      MaybeRecordErrorForNavigation(
+          interception.navigation_id_, interception.destination_url_,
+          interception.proxy_url_, interception.error_code_,
+          (interception.error_code_ == 403)
+              ? EnterpriseProxyErrorData::ErrorCategory::kAuthorization
+              : EnterpriseProxyErrorData::ErrorCategory::kOther,
+          interception.match_.net_log);
+      std::move(callback).Run(std::nullopt);
+      return;
+
+    case Decision::kNeedsCredentials:
+      // FetchProxyAuthCredentials() guarantees its callback runs exactly once.
+      // The continuation is weakly bound to `this`, so `callback` is dropped if
+      // this service dies first -- see OnProxyAuthCredentialsFetched() for why
+      // KeyedService teardown makes that unreachable in production.
+      enterprise_proxy_service_->FetchProxyAuthCredentials(
+          std::move(interception.match_),
+          base::BindOnce(
+              &EnterpriseProxyErrorService::OnProxyAuthCredentialsFetched,
+              weak_ptr_factory_.GetWeakPtr(), interception.navigation_id_,
+              interception.destination_url_, interception.proxy_url_,
+              interception.error_code_, std::move(callback)));
+      return;
+  }
 }
 
 void EnterpriseProxyErrorService::RecordErrorCodeHistogram(
@@ -170,50 +257,38 @@ void EnterpriseProxyErrorService::MaybeRecordErrorForNavigation(
                        net_log);
 }
 
-void EnterpriseProxyErrorService::OnProxyAuthChallengeResult(
-    bool* handled_flag,
+// Weakly bound, so `callback` is dropped if this service is destroyed while a
+// fetch is still in flight. That window is unreachable in production:
+// KeyedService teardown runs every Shutdown() before any destructor, and
+// EnterpriseProxyService::Shutdown() flushes its pending requests, which runs
+// this continuation while this service is still alive. Tests that destroy the
+// services directly, without that Shutdown(), can still observe the drop.
+void EnterpriseProxyErrorService::OnProxyAuthCredentialsFetched(
     int64_t navigation_id,
     const GURL& destination_url,
     const GURL& proxy_url,
     int error_code,
-    base::OnceCallback<void(const std::optional<net::AuthCredentials>&)>
-        coord_callback,
-    EnterpriseProxyService::ProxyAuthChallengeResult result,
+    ProxyAuthCredentialsCallback callback,
+    EnterpriseProxyService::CredentialFetchOutcome outcome,
     const std::optional<net::AuthCredentials>& credentials,
     const net::NetLogWithSource& net_log) {
-  switch (result) {
-    case EnterpriseProxyService::ProxyAuthChallengeResult::kNotApplicable:
-      *handled_flag = false;
+  switch (outcome) {
+    case EnterpriseProxyService::CredentialFetchOutcome::kSuccess:
+      std::move(callback).Run(credentials);
       return;
-    case EnterpriseProxyService::ProxyAuthChallengeResult::kDisguisedError: {
-      EnterpriseProxyErrorData::ErrorCategory category =
-          (error_code == 403)
-              ? EnterpriseProxyErrorData::ErrorCategory::kAuthorization
-              : EnterpriseProxyErrorData::ErrorCategory::kOther;
-      MaybeRecordErrorForNavigation(navigation_id, destination_url, proxy_url,
-                                    error_code, category, net_log);
-      std::move(coord_callback).Run(std::nullopt);
-      return;
-    }
-    case EnterpriseProxyService::ProxyAuthChallengeResult::kSignInRequired:
+
+    case EnterpriseProxyService::CredentialFetchOutcome::kSignInRequired:
       MaybeRecordErrorForNavigation(
           navigation_id, destination_url, proxy_url, error_code,
           EnterpriseProxyErrorData::ErrorCategory::kAuthentication, net_log);
-      std::move(coord_callback).Run(std::nullopt);
+      std::move(callback).Run(std::nullopt);
       return;
-    case EnterpriseProxyService::ProxyAuthChallengeResult::
-        kCredentialFetchFailure:
+
+    case EnterpriseProxyService::CredentialFetchOutcome::kFailure:
       MaybeRecordErrorForNavigation(
           navigation_id, destination_url, proxy_url, error_code,
           EnterpriseProxyErrorData::ErrorCategory::kOther, net_log);
-      std::move(coord_callback).Run(std::nullopt);
-      return;
-    case EnterpriseProxyService::ProxyAuthChallengeResult::kNoCredentialsNeeded:
-      std::move(coord_callback).Run(std::nullopt);
-      return;
-    case EnterpriseProxyService::ProxyAuthChallengeResult::
-        kCredentialFetchSuccess:
-      std::move(coord_callback).Run(credentials);
+      std::move(callback).Run(std::nullopt);
       return;
   }
 }

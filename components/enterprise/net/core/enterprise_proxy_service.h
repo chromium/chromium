@@ -70,29 +70,70 @@ class EnterpriseProxyService
   using GetURLLoaderFactoryCallback =
       base::RepeatingCallback<scoped_refptr<network::SharedURLLoaderFactory>()>;
 
-  // LINT.IfChange(ProxyAuthChallengeResult)
-  enum class ProxyAuthChallengeResult {
-    // No applicable rule for the destination URL & proxy pair
-    kNotApplicable = 0,
-    // The response contains a disguised error from the proxy
-    kDisguisedError,
-    // A matching rule explicitly specifies no auth or non-bearer auth
-    kNoCredentialsNeeded,
-    // Token fetch succeeded and credentials have been returned
-    kCredentialFetchSuccess,
-    // Token fetch failed
-    kCredentialFetchFailure,
-    // Token fetch failed because no primary account exists or credentials are
-    // invalid
-    kSignInRequired,
+  // Outcome of the asynchronous credential fetch. Exists only for a
+  // `kNeedsCredentials` match; every other decision is terminal on its own and
+  // never produces one of these.
+  //
+  // LINT.IfChange(CredentialFetchOutcome)
+  enum class CredentialFetchOutcome {
+    // A token was acquired and credentials are attached.
+    kSuccess = 0,
+    // The token fetch failed for a reason the user cannot act on.
+    kFailure = 1,
+    // The token fetch failed because there is no primary account, or the
+    // account's credentials are invalid. Distinct from `kFailure` because the
+    // user can fix it by signing in.
+    kSignInRequired = 2,
     kMaxValue = kSignInRequired,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:EnterpriseProxyAuthChallengeResult)
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:EnterpriseProxyAuthCredentialFetchOutcome)
 
   using ProxyAuthChallengeCallback =
-      base::OnceCallback<void(ProxyAuthChallengeResult,
+      base::OnceCallback<void(CredentialFetchOutcome,
                               const std::optional<net::AuthCredentials>&,
                               const net::NetLogWithSource&)>;
+
+  // Outcome of synchronously classifying a 407 Proxy Authentication challenge
+  // against the managed dynamic routes. Produced by
+  // `ClassifyProxyAuthChallenge()`.
+  struct ProxyAuthChallengeMatch {
+    // LINT.IfChange(ProxyAuthChallengeDecision)
+    enum class Decision {
+      // No applicable rule for the destination URL & proxy pair. The challenge
+      // is none of this service's business and the caller should fall back to
+      // its default auth handling.
+      kNotApplicable = 0,
+      // A matching rule explicitly specifies no auth or non-bearer auth.
+      kNoCredentialsNeeded = 1,
+      // The response contains a disguised error from the proxy.
+      kDisguisedError = 2,
+      // A bearer token is required. This is the only non-terminal decision:
+      // the caller must hand the match to `FetchProxyAuthCredentials()`, which
+      // produces the `CredentialFetchOutcome`. Note that a missing or rejected
+      // account is not detectable here, and surfaces as
+      // `CredentialFetchOutcome::kSignInRequired` instead.
+      kNeedsCredentials = 3,
+      kMaxValue = kNeedsCredentials,
+    };
+    // LINT.ThenChange(//tools/metrics/histograms/enums.xml:EnterpriseProxyAuthChallengeDecision)
+
+    ProxyAuthChallengeMatch();
+    ProxyAuthChallengeMatch(const ProxyAuthChallengeMatch&);
+    ProxyAuthChallengeMatch& operator=(const ProxyAuthChallengeMatch&);
+    ProxyAuthChallengeMatch(ProxyAuthChallengeMatch&&);
+    ProxyAuthChallengeMatch& operator=(ProxyAuthChallengeMatch&&);
+    ~ProxyAuthChallengeMatch();
+
+    Decision decision = Decision::kNotApplicable;
+
+    // Set if and only if `decision` is `kNeedsCredentials`.
+    std::optional<ProvisioningDomainProxyConfig::ProxyEndpoint> endpoint;
+
+    // NetLog source scoped to this challenge. Carried through to
+    // `FetchProxyAuthCredentials()` so that the RECEIVED and RESOLVED events
+    // share a source ID.
+    net::NetLogWithSource net_log;
+  };
 
   EnterpriseProxyService(
       PrefService* pref_service,
@@ -133,15 +174,32 @@ class EnterpriseProxyService
   // managed Provisioning Domains and active fetch states.
   virtual base::DictValue GetDebugInfo() const;
 
-  // Evaluates a 407 Proxy Authentication challenge against managed dynamic
-  // routes and initiates credential fetching if applicable.
+  // Classifies a 407 Proxy Authentication challenge against the managed
+  // dynamic routes.
+  //
+  // Emits the ENTERPRISE_PROXY_AUTH_CHALLENGE_RECEIVED NetLog event, and for
+  // every terminal decision also emits ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED
+  // and the result histogram. `kNeedsCredentials` is the sole non-terminal
+  // decision; callers that receive it must pass the match to
+  // `FetchProxyAuthCredentials()`, which records the terminal result. Dropping
+  // a `kNeedsCredentials` match on the floor loses one histogram sample and
+  // leaves an unterminated NetLog source, but is otherwise safe.
+  //
   // Note that in-flight auth requests will not adjust for any config changes
-  // that occurred after endpoint-matching is finished.
-  virtual void HandleProxyAuthChallenge(
+  // that occur after classification is finished.
+  [[nodiscard]] virtual ProxyAuthChallengeMatch ClassifyProxyAuthChallenge(
       const net::AuthChallengeInfo& auth_info,
       const GURL& destination_url,
-      const scoped_refptr<net::HttpResponseHeaders>& response_headers,
-      ProxyAuthChallengeCallback callback);
+      const scoped_refptr<net::HttpResponseHeaders>& response_headers);
+
+  // Fetches credentials for a `kNeedsCredentials` `match`. Takes ownership of
+  // `callback` and guarantees it runs exactly once, including if this service
+  // is shut down or destroyed while the fetch is in flight (in which case the
+  // outcome is `CredentialFetchOutcome::kFailure`).
+  //
+  // A null `callback` is a no-op: no fetch is started and `match` is discarded.
+  virtual void FetchProxyAuthCredentials(ProxyAuthChallengeMatch match,
+                                         ProxyAuthChallengeCallback callback);
 
  protected:
   // Protected constructor for test doubles (e.g. MockEnterpriseProxyService).
@@ -189,13 +247,6 @@ class EnterpriseProxyService
   // parameters to be used as the Basic Auth username.
   std::string BuildBasicAuthUsername(
       const std::vector<ProxyExtraHeader>& proxy_headers) const;
-
-  void RecordResultAndRunAuthCallback(
-      ProxyAuthChallengeCallback callback,
-      ProxyAuthChallengeResult result,
-      const std::optional<net::AuthCredentials>& credentials,
-      const net::NetLogWithSource& challenge_net_log,
-      std::optional<std::string_view> failure_reason = std::nullopt);
 
   void OnProxyAuthTokenFetched(PendingAuthRequest* request,
                                AccessTokenResult token_result);

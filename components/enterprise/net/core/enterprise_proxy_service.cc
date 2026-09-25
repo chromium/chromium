@@ -41,22 +41,30 @@ constexpr std::string_view kDisguisedErrorCodes[] = {
     "403", "500", "502", "503", "504",
 };
 
-std::string_view ProxyAuthChallengeResultToString(
-    EnterpriseProxyService::ProxyAuthChallengeResult result) {
-  switch (result) {
-    case EnterpriseProxyService::ProxyAuthChallengeResult::kNotApplicable:
+std::string_view DecisionToString(
+    EnterpriseProxyService::ProxyAuthChallengeMatch::Decision decision) {
+  using Decision = EnterpriseProxyService::ProxyAuthChallengeMatch::Decision;
+  switch (decision) {
+    case Decision::kNotApplicable:
       return "not_applicable";
-    case EnterpriseProxyService::ProxyAuthChallengeResult::kDisguisedError:
-      return "disguised_error";
-    case EnterpriseProxyService::ProxyAuthChallengeResult::kNoCredentialsNeeded:
+    case Decision::kNoCredentialsNeeded:
       return "no_credentials_needed";
-    case EnterpriseProxyService::ProxyAuthChallengeResult::
-        kCredentialFetchSuccess:
+    case Decision::kDisguisedError:
+      return "disguised_error";
+    case Decision::kNeedsCredentials:
+      return "needs_credentials";
+  }
+}
+
+std::string_view OutcomeToString(
+    EnterpriseProxyService::CredentialFetchOutcome outcome) {
+  using Outcome = EnterpriseProxyService::CredentialFetchOutcome;
+  switch (outcome) {
+    case Outcome::kSuccess:
       return "token_acquired";
-    case EnterpriseProxyService::ProxyAuthChallengeResult::
-        kCredentialFetchFailure:
+    case Outcome::kFailure:
       return "failed";
-    case EnterpriseProxyService::ProxyAuthChallengeResult::kSignInRequired:
+    case Outcome::kSignInRequired:
       return "sign_in_required";
   }
 }
@@ -112,7 +120,65 @@ const base::DictValue* FindMatchingCachedConfig(
   return cached_configs_dict->FindDict(policy_hash);
 }
 
+// Emits the NetLog event that closes out a challenge. Only terminal states do
+// this: `kNeedsCredentials` is still in flight, and the fetch closes it later.
+void RecordResolved(std::string_view decision,
+                    const std::optional<net::AuthCredentials>& credentials,
+                    const net::NetLogWithSource& challenge_net_log,
+                    std::optional<std::string_view> failure_reason) {
+  challenge_net_log.AddEvent(
+      net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED, [&] {
+        base::DictValue dict;
+        dict.Set("decision", decision);
+        dict.Set("has_credentials", credentials.has_value());
+        if (failure_reason.has_value()) {
+          dict.Set("failure_reason", *failure_reason);
+        }
+        return dict;
+      });
+}
+
+// Records the classification stage. Every decision is recorded, including
+// `kNeedsCredentials`, so this histogram is the denominator for the fetch
+// histogram below and the two together read as a funnel.
+void RecordDecision(
+    EnterpriseProxyService::ProxyAuthChallengeMatch::Decision decision) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.SecureGateway.ProxyAuthChallengeDecision", decision);
+}
+
+// Records the fetch stage and closes the NetLog source, then runs `callback`.
+// Recording happens first so the event is emitted even if the callback tears
+// down state.
+void RecordOutcomeAndRun(
+    EnterpriseProxyService::ProxyAuthChallengeCallback callback,
+    EnterpriseProxyService::CredentialFetchOutcome outcome,
+    const std::optional<net::AuthCredentials>& credentials,
+    const net::NetLogWithSource& challenge_net_log,
+    std::optional<std::string_view> failure_reason = std::nullopt) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.SecureGateway.ProxyAuthCredentialFetchOutcome", outcome);
+  RecordResolved(OutcomeToString(outcome), credentials, challenge_net_log,
+                 failure_reason);
+  std::move(callback).Run(outcome, credentials, challenge_net_log);
+}
+
 }  // namespace
+
+EnterpriseProxyService::ProxyAuthChallengeMatch::ProxyAuthChallengeMatch() =
+    default;
+EnterpriseProxyService::ProxyAuthChallengeMatch::ProxyAuthChallengeMatch(
+    const ProxyAuthChallengeMatch&) = default;
+EnterpriseProxyService::ProxyAuthChallengeMatch&
+EnterpriseProxyService::ProxyAuthChallengeMatch::operator=(
+    const ProxyAuthChallengeMatch&) = default;
+EnterpriseProxyService::ProxyAuthChallengeMatch::ProxyAuthChallengeMatch(
+    ProxyAuthChallengeMatch&&) = default;
+EnterpriseProxyService::ProxyAuthChallengeMatch&
+EnterpriseProxyService::ProxyAuthChallengeMatch::operator=(
+    ProxyAuthChallengeMatch&&) = default;
+EnterpriseProxyService::ProxyAuthChallengeMatch::~ProxyAuthChallengeMatch() =
+    default;
 
 struct EnterpriseProxyService::PendingAuthRequest {
   struct CallbackWithNetLog {
@@ -127,10 +193,27 @@ struct EnterpriseProxyService::PendingAuthRequest {
       : proxy_endpoint(proxy_endpoint) {
     callbacks.push_back({std::move(callback), std::move(net_log)});
   }
-  ~PendingAuthRequest() = default;
+
+  // Guarantees that every callback this request owns runs exactly once. A
+  // request that is resolved normally has already moved its callbacks out, so
+  // this only fires for requests destroyed with a fetch still in flight (i.e.
+  // Shutdown(), or destruction of the service without Shutdown()).
+  ~PendingAuthRequest() {
+    for (auto& [callback, net_log] : callbacks) {
+      if (!callback) {
+        continue;
+      }
+      RecordOutcomeAndRun(std::move(callback), CredentialFetchOutcome::kFailure,
+                          std::nullopt, net_log, destruction_failure_reason);
+    }
+  }
 
   std::vector<CallbackWithNetLog> callbacks;
   ProvisioningDomainProxyConfig::ProxyEndpoint proxy_endpoint;
+
+  // NetLog `failure_reason` reported if this request is destroyed before it
+  // resolves. Overridden by Shutdown() to distinguish orderly teardown.
+  std::string_view destruction_failure_reason = "request_destroyed";
 };
 
 EnterpriseProxyService::EnterpriseProxyService() = default;
@@ -220,35 +303,17 @@ EnterpriseProxyService::GetDynamicRoutingConfig() const {
   return merged_config;
 }
 
-void EnterpriseProxyService::RecordResultAndRunAuthCallback(
-    ProxyAuthChallengeCallback callback,
-    EnterpriseProxyService::ProxyAuthChallengeResult result,
-    const std::optional<net::AuthCredentials>& credentials,
-    const net::NetLogWithSource& challenge_net_log,
-    std::optional<std::string_view> failure_reason) {
-  base::UmaHistogramEnumeration(
-      "Enterprise.SecureGateway.ProxyAuthChallengeResult", result);
-  std::move(callback).Run(result, credentials, challenge_net_log);
-  challenge_net_log.AddEvent(
-      net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED, [&] {
-        base::DictValue dict;
-        dict.Set("decision", ProxyAuthChallengeResultToString(result));
-        dict.Set("has_credentials", credentials.has_value());
-        if (failure_reason.has_value()) {
-          dict.Set("failure_reason", *failure_reason);
-        }
-        return dict;
-      });
-}
-
-void EnterpriseProxyService::HandleProxyAuthChallenge(
+EnterpriseProxyService::ProxyAuthChallengeMatch
+EnterpriseProxyService::ClassifyProxyAuthChallenge(
     const net::AuthChallengeInfo& auth_info,
     const GURL& destination_url,
-    const scoped_refptr<net::HttpResponseHeaders>& response_headers,
-    ProxyAuthChallengeCallback callback) {
-  net::NetLogWithSource challenge_net_log = net::NetLogWithSource::Make(
+    const scoped_refptr<net::HttpResponseHeaders>& response_headers) {
+  using Decision = ProxyAuthChallengeMatch::Decision;
+
+  ProxyAuthChallengeMatch match;
+  match.net_log = net::NetLogWithSource::Make(
       net_log_.net_log(), net::NetLogSourceType::ENTERPRISE_PROXY_SERVICE);
-  challenge_net_log.AddEvent(
+  match.net_log.AddEvent(
       net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RECEIVED, [&] {
         return base::DictValue()
             .Set("proxy_url", auth_info.challenger.Serialize())
@@ -258,11 +323,21 @@ void EnterpriseProxyService::HandleProxyAuthChallenge(
             .Set("is_proxy", auth_info.is_proxy);
       });
 
+  // Records a terminal decision on `match`. `kNeedsCredentials` records its
+  // histogram sample separately below, but must not emit RESOLVED: the
+  // challenge is still in flight until FetchProxyAuthCredentials() closes it.
+  auto terminal = [&match](Decision decision,
+                           std::optional<std::string_view> failure_reason =
+                               std::nullopt) {
+    match.decision = decision;
+    RecordDecision(decision);
+    RecordResolved(DecisionToString(decision), std::nullopt, match.net_log,
+                   failure_reason);
+    return std::move(match);
+  };
+
   if (!auth_info.is_proxy) {
-    RecordResultAndRunAuthCallback(std::move(callback),
-                                   ProxyAuthChallengeResult::kNotApplicable,
-                                   std::nullopt, challenge_net_log);
-    return;
+    return terminal(Decision::kNotApplicable);
   }
 
   net::ProxyChain proxy_chain = net::ProxyChain::FromSchemeHostAndPort(
@@ -273,75 +348,110 @@ void EnterpriseProxyService::HandleProxyAuthChallenge(
       FindMatchingProxyEndpoint(destination_url, proxy_chain);
 
   if (!matched_proxy.has_value()) {
-    RecordResultAndRunAuthCallback(std::move(callback),
-                                   ProxyAuthChallengeResult::kNotApplicable,
-                                   std::nullopt, challenge_net_log);
-    return;
+    return terminal(Decision::kNotApplicable);
   }
 
-  // If a matching route specifies a proxy endpoint with no auth config, return
-  // true for challenge handling but no credentials.
-  // TODO(crbug.com/542666426): This path also applies to PvD routes with
-  // invalid auth config types. We should correct this behaviour and make a
-  // distinction between the two.
-  if (!matched_proxy->auth.has_value() ||
-      matched_proxy->auth->type != AuthType::kProfileBearerToken) {
-    RecordResultAndRunAuthCallback(
-        std::move(callback), ProxyAuthChallengeResult::kNoCredentialsNeeded,
-        std::nullopt, challenge_net_log);
-    return;
+  // A matching route exists, so the challenge is ours, but the route gives us
+  // no usable way to authenticate. Both sub-cases below are reported as
+  // `kNoCredentialsNeeded` and fail closed identically; they differ only in the
+  // NetLog reason, because they point at different misconfigurations.
+  if (!matched_proxy->auth.has_value()) {
+    // The PvD response advertised no auth block for this proxy at all, yet the
+    // proxy issued a challenge. The proxy and its own PvD config disagree.
+    return terminal(Decision::kNoCredentialsNeeded,
+                    "no_auth_config_advertised");
   }
 
-  if (ShouldForceSignInRequired()) {
-    RecordResultAndRunAuthCallback(
-        std::move(callback), ProxyAuthChallengeResult::kSignInRequired,
-        std::nullopt, challenge_net_log, "forced_sign_in_required");
-    return;
+  if (matched_proxy->auth->type != AuthType::kProfileBearerToken) {
+    // An auth block exists but does not ask for a bearer token, so there is
+    // nothing for us to fetch.
+    //
+    // TODO(crbug.com/542666426): This cannot currently distinguish an explicit
+    // "none" from a type string this client failed to recognize, because
+    // ParseAuthType() maps every unrecognized value to AuthType::kNone. Telling
+    // a deliberate no-auth route apart from a policy typo requires preserving
+    // the parse failure in ProxyAuthConfig first.
+    return terminal(Decision::kNoCredentialsNeeded,
+                    "auth_type_not_bearer_token");
   }
 
   if (GetForcedDisguisedErrorCode().has_value() ||
       IsDisguisedErrorRealm(auth_info.realm)) {
-    RecordResultAndRunAuthCallback(std::move(callback),
-                                   ProxyAuthChallengeResult::kDisguisedError,
-                                   std::nullopt, challenge_net_log);
+    return terminal(Decision::kDisguisedError);
+  }
+
+  match.decision = Decision::kNeedsCredentials;
+  RecordDecision(Decision::kNeedsCredentials);
+  match.endpoint = std::move(matched_proxy);
+  return match;
+}
+
+void EnterpriseProxyService::FetchProxyAuthCredentials(
+    ProxyAuthChallengeMatch match,
+    ProxyAuthChallengeCallback callback) {
+  CHECK(match.decision == ProxyAuthChallengeMatch::Decision::kNeedsCredentials);
+  CHECK(match.endpoint.has_value());
+
+  // With no callback there is nobody to deliver a result to, so there is no
+  // work worth starting. This leaves `match` exactly as if the caller had
+  // dropped it: one missing histogram sample and an unterminated NetLog source,
+  // which ClassifyProxyAuthChallenge() already documents as safe.
+  if (!callback) {
     return;
   }
+
+  // Simulate the identity layer reporting an unusable account. This sits here,
+  // after the null-callback check, rather than in ClassifyProxyAuthChallenge(),
+  // so that a forced sign-in travels the same path as a real one: there is no
+  // way to know before the fetch that an account is missing or rejected, so a
+  // synchronous verdict would exercise code that production never reaches.
+  if (ShouldForceSignInRequired()) {
+    RecordOutcomeAndRun(std::move(callback),
+                        CredentialFetchOutcome::kSignInRequired, std::nullopt,
+                        match.net_log, "forced_sign_in_required");
+    return;
+  }
+
+  const auto& challenger = match.endpoint->proxy_chain.First().host_port_pair();
 
   // Deduplicate concurrent auth requests for the same challenger host/port.
   for (const auto& req : pending_auth_requests_) {
     const auto& host_port =
         req->proxy_endpoint.proxy_chain.First().host_port_pair();
-    if (host_port.host() == auth_info.challenger.host() &&
-        host_port.port() == auth_info.challenger.port()) {
-      req->callbacks.push_back({std::move(callback), challenge_net_log});
+    if (host_port.host() == challenger.host() &&
+        host_port.port() == challenger.port()) {
+      req->callbacks.push_back({std::move(callback), match.net_log});
       return;
     }
   }
 
   auto request = std::make_unique<PendingAuthRequest>(
-      std::move(callback), challenge_net_log, *matched_proxy);
+      std::move(callback), match.net_log, *match.endpoint);
   PendingAuthRequest* request_ptr = request.get();
   pending_auth_requests_.push_back(std::move(request));
 
-  const net::ProxyServer& proxy_server = matched_proxy->proxy_chain.First();
-  GURL proxy_url(
-      base::StrCat({"https://", proxy_server.host_port_pair().ToString()}));
+  GURL proxy_url(base::StrCat({"https://", challenger.ToString()}));
 
   auth_service_->FetchAccessToken(
-      matched_proxy->auth->scope, proxy_url,
+      match.endpoint->auth->scope, proxy_url,
       base::BindOnce(&EnterpriseProxyService::OnProxyAuthTokenFetched,
                      weak_ptr_factory_.GetWeakPtr(), request_ptr));
 }
 
 void EnterpriseProxyService::Shutdown() {
+  // Destroying the requests flushes their callbacks with
+  // `CredentialFetchOutcome::kFailure`; tag them first so NetLog distinguishes
+  // an orderly shutdown from other teardown.
   for (auto& request : pending_auth_requests_) {
-    for (auto& [cb, req_net_log] : request->callbacks) {
-      RecordResultAndRunAuthCallback(
-          std::move(cb), ProxyAuthChallengeResult::kCredentialFetchFailure,
-          std::nullopt, req_net_log, "service_shutdown");
-    }
+    request->destruction_failure_reason = "service_shutdown";
   }
   pending_auth_requests_.clear();
+
+  // No pending request can be resolved after this point, so drop any
+  // outstanding token-fetch callbacks rather than letting them run against a
+  // shut-down service with a stale PendingAuthRequest pointer.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   pref_change_registrar_.RemoveAll();
   if (!refreshing_managers_.empty()) {
     // Close any open network pause event if refreshes were in progress.
@@ -504,32 +614,29 @@ std::string EnterpriseProxyService::BuildBasicAuthUsername(
 void EnterpriseProxyService::OnProxyAuthTokenFetched(
     PendingAuthRequest* request,
     AccessTokenResult token_result) {
-  std::unique_ptr<PendingAuthRequest> owned_request;
   auto it =
       std::find_if(pending_auth_requests_.begin(), pending_auth_requests_.end(),
                    [request](const std::unique_ptr<PendingAuthRequest>& r) {
                      return r.get() == request;
                    });
-  if (it != pending_auth_requests_.end()) {
-    owned_request = std::move(*it);
-    pending_auth_requests_.erase(it);
-  }
-
-  if (!owned_request) {
-    return;
-  }
+  // A request only leaves `pending_auth_requests_` here or during teardown,
+  // and teardown invalidates the weak pointer bound to this callback, so the
+  // request must still be present.
+  CHECK(it != pending_auth_requests_.end());
+  std::unique_ptr<PendingAuthRequest> owned_request = std::move(*it);
+  pending_auth_requests_.erase(it);
 
   if (!token_result.has_value()) {
-    ProxyAuthChallengeResult result =
+    CredentialFetchOutcome outcome =
         (token_result.error() == TokenFetchError::kNoPrimaryAccount ||
          token_result.error() == TokenFetchError::kInvalidCredentials)
-            ? ProxyAuthChallengeResult::kSignInRequired
-            : ProxyAuthChallengeResult::kCredentialFetchFailure;
+            ? CredentialFetchOutcome::kSignInRequired
+            : CredentialFetchOutcome::kFailure;
     std::string_view failure_reason =
         TokenFetchErrorToString(token_result.error());
     for (auto& [cb, req_net_log] : owned_request->callbacks) {
-      RecordResultAndRunAuthCallback(std::move(cb), result, std::nullopt,
-                                     req_net_log, failure_reason);
+      RecordOutcomeAndRun(std::move(cb), outcome, std::nullopt, req_net_log,
+                          failure_reason);
     }
     return;
   }
@@ -542,9 +649,8 @@ void EnterpriseProxyService::OnProxyAuthTokenFetched(
   net::AuthCredentials credentials(base::UTF8ToUTF16(username),
                                    base::UTF8ToUTF16(password));
   for (auto& [cb, req_net_log] : owned_request->callbacks) {
-    RecordResultAndRunAuthCallback(
-        std::move(cb), ProxyAuthChallengeResult::kCredentialFetchSuccess,
-        credentials, req_net_log);
+    RecordOutcomeAndRun(std::move(cb), CredentialFetchOutcome::kSuccess,
+                        credentials, req_net_log);
   }
 }
 

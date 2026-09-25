@@ -3750,18 +3750,26 @@ shown properly on the user-facing crash UI.
 
 <!-- LINT.ThenChange(//components/enterprise/net/core/provisioning_domain_fetcher.h:ProvisioningDomainFetchResult) -->
 
-<!-- LINT.IfChange(EnterpriseProxyAuthChallengeResult) -->
+<!-- LINT.IfChange(EnterpriseProxyAuthChallengeDecision) -->
 
-<enum name="EnterpriseProxyAuthChallengeResult">
+<enum name="EnterpriseProxyAuthChallengeDecision">
   <int value="0" label="Not applicable"/>
-  <int value="1" label="Disguised error"/>
-  <int value="2" label="No credentials needed"/>
-  <int value="3" label="Credential fetch success"/>
-  <int value="4" label="Credential fetch failure"/>
-  <int value="5" label="Sign-in required"/>
+  <int value="1" label="No credentials needed"/>
+  <int value="2" label="Disguised error"/>
+  <int value="3" label="Needs credentials"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/enterprise/net/core/enterprise_proxy_service.h:ProxyAuthChallengeResult) -->
+<!-- LINT.ThenChange(//components/enterprise/net/core/enterprise_proxy_service.h:ProxyAuthChallengeDecision) -->
+
+<!-- LINT.IfChange(EnterpriseProxyAuthCredentialFetchOutcome) -->
+
+<enum name="EnterpriseProxyAuthCredentialFetchOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+  <int value="2" label="Sign-in required"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/enterprise/net/core/enterprise_proxy_service.h:CredentialFetchOutcome) -->
 
 <enum name="ExtensionInProgressRequestState">
   <int value="0" label="In progress"/>
