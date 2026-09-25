@@ -146,12 +146,16 @@ def _CheckStringConstantsSorted(input_api, output_api, lines,
       return [output_api.PresubmitError(message)]
   return []
 
-def _CheckNoComparatorAny(input_api, output_api):
-  """Checks that no code uses Comparator(ANY, ...) directly."""
-  results = []
-  pattern = input_api.re.compile(
-      r'\b(?:feature_engagement::)?Comparator\s*\(\s*(?:feature_engagement::)?ANY\b')
+_COMPARATOR_ANY_CALL_PATTERN = r'\bComparator\s*\(\s*ANY\b'
 
+_ANY_COMPARATOR_PATTERN = (
+    r'\b(?:'
+    r'kAlwaysTrue|kAlwaysAvailable|kNoRestrictions?'
+    r'|Comparator\s*\(\s*(?:ANY\b[^)]*)?\)'
+    r')'
+)
+
+def _IterAffectedCppFiles(input_api):
   for f in input_api.AffectedFiles():
     local_path = f.LocalPath()
     if not local_path.endswith(('.cc', '.h', '.mm', '.cpp')):
@@ -166,6 +170,57 @@ def _CheckNoComparatorAny(input_api, output_api):
         'components/feature_engagement/public/configuration.h'):
       continue
 
+    yield f
+
+def _IterChangedStatements(input_api, affected_file):
+  stmt_line = None
+  stmt_parts = []
+  for line_num, line in affected_file.ChangedContents():
+    code = line.split('//', 1)[0]
+    code = input_api.re.sub(r'/\*.*?\*/', '', code).strip()
+    if not code:
+      continue
+    if stmt_line is None:
+      stmt_line = line_num
+    stmt_parts.append(code)
+    joined = ' '.join(stmt_parts)
+    if ';' in code or (joined.count('(') > 0 and
+                       joined.count('(') == joined.count(')')):
+      yield stmt_line, joined
+      stmt_line = None
+      stmt_parts = []
+  if stmt_parts:
+    yield stmt_line, ' '.join(stmt_parts)
+
+def _ExtractEventConfigs(input_api, text):
+  pattern = input_api.re.compile(r'\bEventConfig\s*\(')
+  for match in pattern.finditer(text):
+    prefix = text[:match.start()]
+    depth = 1
+    i = match.end()
+    arg_start = i
+    args = []
+    while i < len(text) and depth > 0:
+      if text[i] == '(':
+        depth += 1
+      elif text[i] == ')':
+        depth -= 1
+        if depth == 0:
+          args.append(text[arg_start:i].strip())
+      elif text[i] == ',' and depth == 1:
+        args.append(text[arg_start:i].strip())
+        arg_start = i + 1
+      i += 1
+    if len(args) == 4:
+      yield prefix, args
+
+def _CheckNoComparatorAny(input_api, output_api):
+  """Checks that no code uses Comparator(ANY, ...) directly."""
+  results = []
+  pattern = input_api.re.compile(_COMPARATOR_ANY_CALL_PATTERN)
+
+  for f in _IterAffectedCppFiles(input_api):
+    local_path = f.LocalPath()
     for line_num, line in f.ChangedContents():
       if pattern.search(line):
         message = (
