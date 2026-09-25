@@ -396,7 +396,9 @@ public class VerticalTabListCoordinator {
                                                 R.layout.vertical_tab_pinned_item_hidden,
                                                 parent,
                                                 /* attachToRoot= */ false),
-                TabVerticalViewBinder::bindPinnedTab);
+                // The placeholder is never shown, so no property needs to be bound to it. It must
+                // stay GONE for the lifetime of the view.
+                (model, view, propertyKey) -> {});
 
         adapter.registerType(
                 UiType.TAB_GROUP,
@@ -650,13 +652,17 @@ public class VerticalTabListCoordinator {
 
         pinnedTabsAdapter.registerType(
                 UiType.PINNED_TAB,
-                parent ->
-                        (ViewGroup)
-                                LayoutInflater.from(activity)
-                                        .inflate(
-                                                R.layout.vertical_tab_pinned_item,
-                                                parent,
-                                                /* attachToRoot= */ false),
+                parent -> {
+                    VerticalTabItemLayout view =
+                            (VerticalTabItemLayout)
+                                    LayoutInflater.from(activity)
+                                            .inflate(
+                                                    R.layout.vertical_tab_item,
+                                                    parent,
+                                                    /* attachToRoot= */ false);
+                    view.configureAsPinnedTab();
+                    return view;
+                },
                 TabVerticalViewBinder::bindPinnedTab);
 
         pinnedTabsRecyclerView.setAdapter(pinnedTabsAdapter);

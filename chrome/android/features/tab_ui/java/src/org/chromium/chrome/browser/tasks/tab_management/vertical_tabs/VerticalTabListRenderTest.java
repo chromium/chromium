@@ -203,6 +203,15 @@ public class VerticalTabListRenderTest {
         return (VerticalTabItemLayout) inflateAndAttachView(R.layout.vertical_tab_item);
     }
 
+    /** Mirrors the pinned tab view factory: inflate the shared row and switch it to pinned mode. */
+    private VerticalTabItemLayout inflateAndAttachPinnedTabItemView(int contentWidthPx) {
+        VerticalTabItemLayout view =
+                (VerticalTabItemLayout)
+                        inflateAndAttachView(R.layout.vertical_tab_item, contentWidthPx);
+        view.configureAsPinnedTab();
+        return view;
+    }
+
     private ViewGroup inflateAndAttachView(int layoutResId) {
         return inflateAndAttachView(layoutResId, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
@@ -595,12 +604,10 @@ public class VerticalTabListRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPinnedTab_GlicIndicator_Active() throws IOException {
-        ViewGroup[] view = new ViewGroup[1];
+        VerticalTabItemLayout[] view = new VerticalTabItemLayout[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    view[0] =
-                            inflateAndAttachView(
-                                    R.layout.vertical_tab_pinned_item, mPinnedItemWidthPx);
+                    view[0] = inflateAndAttachPinnedTabItemView(mPinnedItemWidthPx);
                     PropertyModel model =
                             createTabListItemModelBuilder(
                                             (mIsIncognito ? "Incognito " : "") + "Pinned Tab",
@@ -1585,12 +1592,10 @@ public class VerticalTabListRenderTest {
             boolean isHovered,
             String goldenName)
             throws IOException {
-        ViewGroup[] view = new ViewGroup[1];
+        VerticalTabItemLayout[] view = new VerticalTabItemLayout[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    view[0] =
-                            inflateAndAttachView(
-                                    R.layout.vertical_tab_pinned_item, mPinnedItemWidthPx);
+                    view[0] = inflateAndAttachPinnedTabItemView(mPinnedItemWidthPx);
                     PropertyModel model =
                             createTabListItemModelBuilder(
                                             (mIsIncognito ? "Incognito " : "") + title,
@@ -1623,12 +1628,10 @@ public class VerticalTabListRenderTest {
 
     private void testPinnedTabMultiSelected(String title, boolean isHovered, String goldenName)
             throws IOException {
-        ViewGroup[] view = new ViewGroup[1];
+        VerticalTabItemLayout[] view = new VerticalTabItemLayout[1];
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    view[0] =
-                            inflateAndAttachView(
-                                    R.layout.vertical_tab_pinned_item, mPinnedItemWidthPx);
+                    view[0] = inflateAndAttachPinnedTabItemView(mPinnedItemWidthPx);
                     PropertyModel model =
                             createTabListItemModelBuilder(
                                             (mIsIncognito ? "Incognito " : "") + title,
@@ -1888,7 +1891,12 @@ public class VerticalTabListRenderTest {
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(pinnedTabsModel);
         adapter.registerType(
                 UiType.PINNED_TAB,
-                parent -> inflateView(R.layout.vertical_tab_pinned_item, parent),
+                parent -> {
+                    VerticalTabItemLayout view =
+                            (VerticalTabItemLayout) inflateView(R.layout.vertical_tab_item, parent);
+                    view.configureAsPinnedTab();
+                    return view;
+                },
                 TabVerticalViewBinder::bindPinnedTab);
         return adapter;
     }

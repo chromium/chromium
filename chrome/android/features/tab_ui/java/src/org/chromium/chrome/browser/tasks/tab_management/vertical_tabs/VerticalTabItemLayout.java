@@ -41,8 +41,15 @@ public class VerticalTabItemLayout extends ConstraintLayout {
     private static final float ACTUATION_SPINNER_ROTATION_DEGREES = 360f;
     private static final long ACTUATION_SPINNER_DURATION_MS = 2000L;
 
-    private @Nullable TextView mTitleView;
-    private @Nullable ImageView mActionButton;
+    private TextView mTitleView;
+    private ImageView mActionButton;
+    private View mAiIndicator;
+    private View mFaviconContainer;
+    private ImageView mFaviconView;
+    private ImageView mAlertIndicator;
+    private ImageView mActuationSpinner;
+    private CircularProgressIndicator mLoadingSpinner;
+    private boolean mIsPinned;
 
     public VerticalTabItemLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -52,27 +59,42 @@ public class VerticalTabItemLayout extends ConstraintLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mTitleView = findViewById(R.id.tab_title);
+        assert mTitleView != null;
+
         mActionButton = findViewById(R.id.action_button);
+        assert mActionButton != null;
+
+        mAiIndicator = findViewById(R.id.ai_indicator);
+        assert mAiIndicator != null;
+
+        mFaviconContainer = findViewById(R.id.favicon_container);
+        assert mFaviconContainer != null;
+
+        mFaviconView = findViewById(R.id.tab_favicon);
+        assert mFaviconView != null;
+
+        mAlertIndicator = findViewById(R.id.alert_indicator_icon);
+        assert mAlertIndicator != null;
+
+        mActuationSpinner = findViewById(R.id.actuation_spinner);
+        assert mActuationSpinner != null;
+
+        mLoadingSpinner = findViewById(R.id.tab_loading_spinner);
+        assert mLoadingSpinner != null;
     }
 
-    @Nullable TextView getTitleView() {
+    TextView getTitleView() {
         return mTitleView;
     }
 
-    @Nullable ImageView getActionButton() {
+    ImageView getActionButton() {
         return mActionButton;
     }
 
     /**
      * Updates constraints, visibility, colors, touch delegate, and animations for the row's icon
-     * views.
+     * views. Icons priority when rail is collapsed: action > tab alert > loading > favicon
      *
-     * <p>TODO(crbug.com/542280452): Once pinned tab rows inflate {@code vertical_tab_item.xml} as
-     * well, make this an instance method that reads the cached child views instead of resolving
-     * them per call, and drop the {@code root} parameter.
-     *
-     * @param root The row container. Children are resolved by id so that rows which are not yet a
-     *     {@link VerticalTabItemLayout} (currently only pinned tab rows) keep working.
      * @param isCompact Whether the row is in compact mode.
      * @param showActionButton Whether the action button should be visible.
      * @param showAlertIndicator Whether the alert indicator should be visible.
@@ -81,8 +103,7 @@ public class VerticalTabItemLayout extends ConstraintLayout {
      * @param loadingSpinnerColor The color tint for the loading spinner.
      * @param showFavicon Whether the website favicon should be visible.
      */
-    static void updateIconDisplay(
-            ViewGroup root,
+    void updateIconDisplay(
             boolean isCompact,
             boolean showActionButton,
             boolean showAlertIndicator,
@@ -90,42 +111,34 @@ public class VerticalTabItemLayout extends ConstraintLayout {
             boolean showLoading,
             @ColorInt int loadingSpinnerColor,
             boolean showFavicon) {
-        View actionButton = root.findViewById(R.id.action_button);
-        if (actionButton != null) {
-            updateChildConstraints(
-                    actionButton,
-                    isCompact,
-                    LayoutParams.UNSET,
-                    LayoutParams.UNSET,
-                    LayoutParams.PARENT_ID,
-                    /* marginStartDimenId= */ 0,
-                    /* marginEndDimenId= */ 0);
-            actionButton.setVisibility(showActionButton ? View.VISIBLE : View.GONE);
-            updateActionButtonTouchDelegate(root, actionButton, showActionButton);
-        }
+        // Action Button
+        updateChildConstraints(
+                mActionButton,
+                isCompact,
+                LayoutParams.UNSET,
+                LayoutParams.UNSET,
+                LayoutParams.PARENT_ID,
+                /* marginStartDimenId= */ 0,
+                /* marginEndDimenId= */ 0);
+        mActionButton.setVisibility(showActionButton ? View.VISIBLE : View.GONE);
+        updateActionButtonTouchDelegate(showActionButton);
 
-        ImageView alertIndicator = root.findViewById(R.id.alert_indicator_icon);
-        if (alertIndicator != null) {
-            updateChildConstraints(
-                    alertIndicator,
-                    isCompact,
-                    LayoutParams.UNSET,
-                    R.id.action_button,
-                    LayoutParams.UNSET,
-                    /* marginStartDimenId= */ 0,
-                    /* marginEndDimenId= */ R.dimen.vertical_tab_item_alert_indicator_margin_end);
-            alertIndicator.setVisibility(showAlertIndicator ? View.VISIBLE : View.GONE);
+        // Tab Alert Indicator and Actuation Spinner
+        updateChildConstraints(
+                mAlertIndicator,
+                isCompact,
+                LayoutParams.UNSET,
+                R.id.action_button,
+                LayoutParams.UNSET,
+                /* marginStartDimenId= */ 0,
+                /* marginEndDimenId= */ R.dimen.vertical_tab_item_alert_indicator_margin_end);
+        mAlertIndicator.setVisibility(showAlertIndicator ? View.VISIBLE : View.GONE);
+        updateActorSpinnerAnimation(mActuationSpinner, isDynamicActorAlert);
 
-            ImageView actuationSpinner = root.findViewById(R.id.actuation_spinner);
-            if (actuationSpinner != null) {
-                updateActorSpinnerAnimation(actuationSpinner, isDynamicActorAlert);
-            }
-        }
-
-        View faviconContainer = root.findViewById(R.id.favicon_container);
-        if (faviconContainer != null && (showLoading || showFavicon)) {
+        // Favicon container constraints (loading spinner or tab favicon)
+        if (showLoading || showFavicon) {
             updateChildConstraints(
-                    faviconContainer,
+                    mFaviconContainer,
                     isCompact,
                     LayoutParams.PARENT_ID,
                     LayoutParams.UNSET,
@@ -134,42 +147,96 @@ public class VerticalTabItemLayout extends ConstraintLayout {
                     /* marginEndDimenId= */ 0);
         }
 
-        CircularProgressIndicator loadingSpinner = root.findViewById(R.id.tab_loading_spinner);
-        if (loadingSpinner != null) {
-            if (showLoading) {
-                loadingSpinner.setIndicatorColor(loadingSpinnerColor);
-                loadingSpinner.show();
-            } else {
-                loadingSpinner.setVisibility(View.GONE);
-            }
+        // Loading Spinner
+        if (showLoading) {
+            mLoadingSpinner.setIndicatorColor(loadingSpinnerColor);
+            mLoadingSpinner.show();
+        } else {
+            mLoadingSpinner.setVisibility(View.GONE);
         }
 
-        ImageView faviconView = root.findViewById(R.id.tab_favicon);
-        if (faviconView != null) {
-            faviconView.setVisibility(showFavicon ? View.VISIBLE : View.GONE);
+        // Favicon
+        mFaviconView.setVisibility(showFavicon ? View.VISIBLE : View.GONE);
+    }
+
+    boolean isPinned() {
+        return mIsPinned;
+    }
+
+    /**
+     * Configures this item for pinned tab display, reproducing the layout that pinned rows had
+     * before they shared {@code vertical_tab_item.xml}: the pinned background, pinned height and
+     * bottom margin, no row padding, no title or close button, an inset AI indicator, and a
+     * centered favicon.
+     *
+     * <p>This is one-way: a configured row can never go back to standard tab display. Call it once,
+     * when the pinned row's view is created. That is safe because pinned rows have their own view
+     * type and their own {@code RecyclerView}, so they are never recycled into the standard tab
+     * list.
+     *
+     * <p>{@link TabVerticalViewBinder} independently derives pinned display from the model, so it
+     * also hides the close button and keeps the favicon centered on every bind. This method only
+     * has to cover the state before the first bind, and the properties the binder never touches
+     * (background, padding, title, AI indicator margin).
+     */
+    void configureAsPinnedTab() {
+        if (mIsPinned) return;
+        mIsPinned = true;
+
+        setBackgroundResource(R.drawable.vertical_tab_pinned_item_background);
+        setPadding(0, 0, 0, 0);
+        ViewGroup.LayoutParams rootParams = getLayoutParams();
+        if (rootParams != null) {
+            rootParams.height = TabVerticalViewBinder.getPinnedItemHeight(getContext());
+            if (rootParams instanceof ViewGroup.MarginLayoutParams marginParams) {
+                marginParams.bottomMargin =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.vertical_tab_pinned_item_margin_bottom);
+            }
+            setLayoutParams(rootParams);
         }
+        mTitleView.setVisibility(View.GONE);
+        mActionButton.setVisibility(View.GONE);
+
+        if (mAiIndicator.getLayoutParams() instanceof LayoutParams aiParams) {
+            aiParams.setMarginStart(
+                    getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.vertical_tab_pinned_item_ai_indicator_margin_start));
+            mAiIndicator.setLayoutParams(aiParams);
+        }
+
+        // Pinned rows are always icon-only, so the favicon stays centered regardless of which
+        // properties have been bound so far.
+        applyConstraints(
+                mFaviconContainer,
+                LayoutParams.PARENT_ID,
+                LayoutParams.UNSET,
+                LayoutParams.PARENT_ID,
+                /* marginStartDimenId= */ 0,
+                /* marginEndDimenId= */ 0);
     }
 
     /** Expands the touch target of the action button via a {@link TouchDelegate}. */
-    private static void updateActionButtonTouchDelegate(
-            ViewGroup root, View actionButton, boolean actionWanted) {
+    private void updateActionButtonTouchDelegate(boolean actionWanted) {
         if (!actionWanted) {
-            root.setTouchDelegate(null);
+            setTouchDelegate(null);
             return;
         }
 
-        root.post(
+        post(
                 () -> {
-                    if (!actionButton.isAttachedToWindow()
-                            || actionButton.getVisibility() != View.VISIBLE) {
-                        root.setTouchDelegate(null);
+                    if (!mActionButton.isAttachedToWindow()
+                            || mActionButton.getVisibility() != View.VISIBLE) {
+                        setTouchDelegate(null);
                         return;
                     }
 
                     Rect rect = new Rect();
-                    actionButton.getHitRect(rect);
-                    Resources res = root.getResources();
-                    boolean isTablet = VerticalTabUtils.isTablet(root.getContext());
+                    mActionButton.getHitRect(rect);
+                    Resources res = getResources();
+                    boolean isTablet = VerticalTabUtils.isTablet(getContext());
                     @DimenRes
                     int widthRes =
                             isTablet
@@ -193,7 +260,7 @@ public class VerticalTabItemLayout extends ConstraintLayout {
                         rect.top -= deltaY;
                         rect.bottom += deltaY;
                     }
-                    root.setTouchDelegate(new TouchDelegate(rect, actionButton));
+                    setTouchDelegate(new TouchDelegate(rect, mActionButton));
                 });
     }
 

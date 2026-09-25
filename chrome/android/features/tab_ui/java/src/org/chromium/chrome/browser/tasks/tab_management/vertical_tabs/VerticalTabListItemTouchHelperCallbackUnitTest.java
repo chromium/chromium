@@ -2840,7 +2840,6 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     @Test
     public void testCollapseAndRestoreDraggedItem_PinnedTab_RestoresVisibilityAndDimensions() {
         View pinnedView = new View(ApplicationProvider.getApplicationContext());
-        pinnedView.setId(R.id.pinned_tab_item_container);
         pinnedView.setLayoutParams(new RecyclerView.LayoutParams(42, 32));
         pinnedView.setAlpha(1.0f);
 

@@ -61,7 +61,9 @@ class TabVerticalViewBinder {
         return VerticalTabUtils.isTablet(context);
     }
 
+    // ---------------------------------------------------------------------------------------------
     // Public Entry-Point Binders
+    // ---------------------------------------------------------------------------------------------
 
     /**
      * Binds PropertyModel properties of a standard tab item to the row's ViewGroup elements.
@@ -71,8 +73,7 @@ class TabVerticalViewBinder {
      * @param propertyKey the specific property key to bind, or null to bind all properties.
      */
     static void bindTab(PropertyModel model, VerticalTabItemLayout view, PropertyKey propertyKey) {
-
-        bindCommonProperties(model, view, propertyKey);
+        bindTabCommonProperties(model, view, propertyKey);
 
         if (TabProperties.TITLE == propertyKey) {
             updateTitle(R.id.tab_title, model, view);
@@ -81,22 +82,15 @@ class TabVerticalViewBinder {
                 || TabProperties.IS_MULTI_SELECTED == propertyKey
                 || TabProperties.IS_INCOGNITO == propertyKey) {
             updateRegularColors(model, view);
-            updateIcons(model, view);
             updateParentPadding(model, view, /* isHeader= */ false);
         } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
-            View actionButton = view.getActionButton();
-            if (actionButton != null) {
-                TabListViewBinderUtils.bindActionButton(
-                        model, actionButton, model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
-            }
+            TabListViewBinderUtils.bindActionButton(
+                    model, view.getActionButton(), model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
             updateIcons(model, view);
         } else if (TabProperties.TAB_GROUP_ID == propertyKey) {
             updateChildRowPadding(model, view);
         } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
-            int itemHeight = getTabItemHeight(view.getContext());
-            updateTabItemSize(model, view, ViewGroup.LayoutParams.MATCH_PARENT, itemHeight);
             updateTitle(R.id.tab_title, model, view);
-            updateChildRowPadding(model, view);
             updateParentPadding(model, view, /* isHeader= */ false);
             updateIcons(model, view);
         }
@@ -106,18 +100,15 @@ class TabVerticalViewBinder {
      * Binds PropertyModel properties of a compact, icon-only pinned tab row to the view elements.
      *
      * @param model the model containing the tab properties.
-     * @param view the root ViewGroup representing the pinned tab row item.
+     * @param view the root VerticalTabItemLayout representing the pinned tab row item. It must
+     *     already have been switched to pinned display by {@link
+     *     VerticalTabItemLayout#configureAsPinnedTab()}, which the view factory that creates pinned
+     *     rows does once per view.
      * @param propertyKey the specific property key to bind, or null to bind all properties.
      */
-    static void bindPinnedTab(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
-        if (view.getId() == R.id.hidden_pinned_tab) {
-            return;
-        }
-        bindCommonProperties(model, view, propertyKey);
-
-        int pinnedHeight = getPinnedItemHeight(view.getContext());
-        int expandedWidth = ViewGroup.LayoutParams.MATCH_PARENT;
-        updateTabItemSize(model, view, expandedWidth, pinnedHeight);
+    static void bindPinnedTab(
+            PropertyModel model, VerticalTabItemLayout view, @Nullable PropertyKey propertyKey) {
+        bindTabCommonProperties(model, view, propertyKey);
 
         if (TabProperties.TITLE == propertyKey || TabProperties.IS_PINNED == propertyKey) {
             updateContentDescription(model, view);
@@ -125,9 +116,6 @@ class TabVerticalViewBinder {
                 || TabProperties.IS_MULTI_SELECTED == propertyKey
                 || TabProperties.IS_INCOGNITO == propertyKey) {
             updatePinnedColors(model, view);
-        } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
-            updateTabItemSize(model, view, expandedWidth, pinnedHeight);
-            updateChildRowPadding(model, view);
         }
     }
 
@@ -167,6 +155,10 @@ class TabVerticalViewBinder {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // Tab Dimension Helpers
+    // ---------------------------------------------------------------------------------------------
+
     static int getTabItemHeight(Context context) {
         return context.getResources()
                 .getDimensionPixelSize(
@@ -191,13 +183,21 @@ class TabVerticalViewBinder {
                                 : R.dimen.vertical_tab_pinned_item_min_width);
     }
 
+    /** Returns the tab height for the row type. */
+    private static int getRowHeight(VerticalTabItemLayout view) {
+        Context context = view.getContext();
+        return view.isPinned() ? getPinnedItemHeight(context) : getTabItemHeight(context);
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // Common Property Binding Helpers
+    // ---------------------------------------------------------------------------------------------
 
     /**
-     * Binds common property keys shared by all tab row views, preventing duplicate routing logic.
+     * Binds property keys shared by every row type, including tab group headers.
      *
      * @param model the model containing the tab properties.
-     * @param view the root ViewGroup representing the tab row item.
+     * @param view the root ViewGroup representing the row item.
      * @param propertyKey the specific property key to bind.
      */
     private static void bindCommonProperties(
@@ -214,11 +214,7 @@ class TabVerticalViewBinder {
         // RecyclerView's onInterceptTouchEvent.
         view.setOnContextClickListener(v -> true);
 
-        if (TabProperties.FAVICON_FETCHER == propertyKey) {
-            updateFaviconImage(model, view);
-        } else if (TabProperties.IS_LOADING == propertyKey) {
-            updateIcons(model, view);
-        } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
+        if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
             setNullableClickListener(model.get(TabProperties.TAB_CLICK_LISTENER), view, model);
         } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
             TabListViewBinderUtils.setNullableLongClickListener(
@@ -226,16 +222,10 @@ class TabVerticalViewBinder {
         } else if (TabProperties.TAB_CONTEXT_CLICK_LISTENER == propertyKey) {
             TabListViewBinderUtils.setNullableContextClickListener(
                     model.get(TabProperties.TAB_CONTEXT_CLICK_LISTENER), view, model);
-        } else if (TabProperties.ALERT_STATE == propertyKey) {
-            updateTabAlertIndicator(model, view);
-            updateIcons(model, view);
-            updateContentDescription(model, view);
         } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
             updateContentDescription(model, view);
         } else if (TabProperties.ACCESSIBILITY_DELEGATE == propertyKey) {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
-        } else if (TabProperties.IS_GLIC_ACTIVE == propertyKey) {
-            updateGlicIndicatorBar(model, view);
         } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
             View button = view.findViewById(R.id.action_button);
             if (button == null) button = view.findViewById(R.id.menu_button);
@@ -244,6 +234,38 @@ class TabVerticalViewBinder {
             }
         }
     }
+
+    /**
+     * Binds property keys shared by the standard and pinned tabs, on top of {@link
+     * #bindCommonProperties}.
+     *
+     * @param model the model containing the tab properties.
+     * @param view the root VerticalTabItemLayout representing the tab item.
+     * @param propertyKey the specific property key to bind.
+     */
+    private static void bindTabCommonProperties(
+            PropertyModel model, VerticalTabItemLayout view, @Nullable PropertyKey propertyKey) {
+        bindCommonProperties(model, view, propertyKey);
+
+        if (TabProperties.FAVICON_FETCHER == propertyKey) {
+            updateFaviconImage(model, view);
+        } else if (TabProperties.IS_LOADING == propertyKey) {
+            updateIcons(model, view);
+        } else if (TabProperties.ALERT_STATE == propertyKey) {
+            updateTabAlertIndicator(model, view);
+            updateIcons(model, view);
+            updateContentDescription(model, view);
+        } else if (TabProperties.IS_GLIC_ACTIVE == propertyKey) {
+            updateGlicIndicatorBar(model, view);
+        } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
+            updateTabItemSize(model, view, ViewGroup.LayoutParams.MATCH_PARENT, getRowHeight(view));
+            updateChildRowPadding(model, view);
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Click Listener Helpers
+    // ---------------------------------------------------------------------------------------------
 
     @SuppressLint("ClickableViewAccessibility")
     private static void setNullableClickListener(
@@ -269,10 +291,11 @@ class TabVerticalViewBinder {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
     // Icon Update Helpers.
-    // Icons priority when rail is collapsed: action > tab alert > loading > favicon
+    // ---------------------------------------------------------------------------------------------
 
-    private static void updateFaviconImage(PropertyModel model, ViewGroup view) {
+    private static void updateFaviconImage(PropertyModel model, VerticalTabItemLayout view) {
         @Nullable ImageView faviconView = view.findViewById(R.id.tab_favicon);
         if (faviconView == null) return;
 
@@ -280,14 +303,15 @@ class TabVerticalViewBinder {
         updateIcons(model, view);
     }
 
-    private static void updateIcons(PropertyModel model, ViewGroup view) {
+    private static void updateIcons(PropertyModel model, VerticalTabItemLayout view) {
         updateIcons(model, view, view.isHovered());
     }
 
-    private static void updateIcons(PropertyModel model, ViewGroup view, boolean isHovered) {
+    private static void updateIcons(
+            PropertyModel model, VerticalTabItemLayout view, boolean isHovered) {
         boolean isRailCollapsed =
                 model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
-        boolean isPinned = TabProperties.isPinnedTab(model);
+        boolean isPinned = isPinned(model, view);
         boolean isIconCompact = isRailCollapsed || isPinned;
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
 
@@ -299,9 +323,10 @@ class TabVerticalViewBinder {
         // 1. Resolve independent "wanted" states
         TabActionButtonData actionData = model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
         // Close button is always visible on touch devices, but only visible on select/hover on
-        // desktop.
+        // desktop. Pinned tabs never show a close button.
         boolean actionWanted =
-                actionButton != null
+                !isPinned
+                        && actionButton != null
                         && actionData != null
                         && (isIconCompact
                                 ? (isSelected && (!DeviceInfo.isDesktop() || isHovered))
@@ -337,8 +362,7 @@ class TabVerticalViewBinder {
                 loadingWanted
                         ? getLoadingSpinnerColor(model, view.getContext())
                         : Color.TRANSPARENT;
-        VerticalTabItemLayout.updateIconDisplay(
-                view,
+        view.updateIconDisplay(
                 isIconCompact,
                 /* showActionButton= */ actionWanted,
                 /* showAlertIndicator= */ alertWanted,
@@ -445,7 +469,9 @@ class TabVerticalViewBinder {
      *     multi-selected.
      */
     private static void updateSelectionAndBackground(
-            PropertyModel model, ViewGroup view, @Nullable ColorStateList defaultBgColor) {
+            PropertyModel model,
+            VerticalTabItemLayout view,
+            @Nullable ColorStateList defaultBgColor) {
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
         boolean isMultiSelected = model.get(TabProperties.IS_MULTI_SELECTED);
         boolean isIncognito = isIncognito(model);
@@ -489,16 +515,9 @@ class TabVerticalViewBinder {
         boolean isIncognito = isIncognito(model);
         Context context = view.getContext();
 
-        TextView titleView = view.getTitleView();
-        if (titleView != null) {
-            titleView.setTextColor(getTextColor(context, isSelected, isIncognito));
-        }
-
-        @Nullable ImageView actionButton = view.getActionButton();
-        if (actionButton != null) {
-            ImageViewCompat.setImageTintList(
-                    actionButton, getActionButtonTintList(context, isSelected, isIncognito));
-        }
+        view.getTitleView().setTextColor(getTextColor(context, isSelected, isIncognito));
+        ImageViewCompat.setImageTintList(
+                view.getActionButton(), getActionButtonTintList(context, isSelected, isIncognito));
     }
 
     /**
@@ -511,9 +530,9 @@ class TabVerticalViewBinder {
      * without dynamic colors, and selected pinned tabs use the dark surface background tint.
      *
      * @param model the model containing the tab properties.
-     * @param view the root ViewGroup representing the pinned tab row item.
+     * @param view the root VerticalTabItemLayout representing the pinned tab row item.
      */
-    private static void updatePinnedColors(PropertyModel model, ViewGroup view) {
+    private static void updatePinnedColors(PropertyModel model, VerticalTabItemLayout view) {
         boolean isIncognito = isIncognito(model);
         @Nullable ColorStateList defaultBackgroundColor =
                 isIncognito
@@ -647,7 +666,7 @@ class TabVerticalViewBinder {
                         : null;
         if (TextUtils.isEmpty(contentDescriptionString) && model.containsKey(TabProperties.TITLE)) {
             String title = model.get(TabProperties.TITLE);
-            boolean isPinned = TabProperties.isPinnedTab(model);
+            boolean isPinned = isPinned(model, view);
             @TabAlert
             int alertState =
                     model.containsKey(TabProperties.ALERT_STATE)
@@ -696,7 +715,7 @@ class TabVerticalViewBinder {
         boolean isRailCollapsed =
                 model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
 
-        boolean isPinned = TabProperties.isPinnedTab(model);
+        boolean isPinned = isPinned(model, view);
         Context context = view.getContext();
         boolean isTablet = isTablet(context);
 
@@ -928,10 +947,12 @@ class TabVerticalViewBinder {
      * @param defaultBackgroundColor the background tint list to restore on hover exit.
      */
     private static void setupTabHoverListener(
-            PropertyModel model, ViewGroup view, @Nullable ColorStateList defaultBackgroundColor) {
-        @Nullable ImageView actionButton = view.findViewById(R.id.action_button);
+            PropertyModel model,
+            VerticalTabItemLayout view,
+            @Nullable ColorStateList defaultBackgroundColor) {
+        ImageView actionButton = view.isPinned() ? null : view.getActionButton();
         int tabId = model.get(TabProperties.TAB_ID);
-        @Nullable TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
+        TabHoverListener listener = model.get(TabProperties.TAB_HOVER_LISTENER);
 
         VerticalTabHoverController.setupTabHover(
                 listener,
@@ -977,5 +998,10 @@ class TabVerticalViewBinder {
         if (menuButton != null) {
             menuButton.setVisibility(!isRailCollapsed && isHovered ? View.VISIBLE : View.GONE);
         }
+    }
+
+    private static boolean isPinned(PropertyModel model, View view) {
+        return (view instanceof VerticalTabItemLayout itemLayout && itemLayout.isPinned())
+                || TabProperties.isPinnedTab(model);
     }
 }
