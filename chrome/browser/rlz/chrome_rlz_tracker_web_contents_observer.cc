@@ -4,28 +4,33 @@
 
 #include "chrome/browser/rlz/chrome_rlz_tracker_web_contents_observer.h"
 
+#include <memory>
+
+#include "base/memory/ptr_util.h"
 #include "components/google/core/common/google_util.h"
 #include "components/rlz/rlz_tracker.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 
 ChromeRLZTrackerWebContentsObserver::ChromeRLZTrackerWebContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<ChromeRLZTrackerWebContentsObserver>(
-          *web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 ChromeRLZTrackerWebContentsObserver::~ChromeRLZTrackerWebContentsObserver() =
     default;
 
 // static
-void ChromeRLZTrackerWebContentsObserver::CreateForWebContentsIfNeeded(
+std::unique_ptr<ChromeRLZTrackerWebContentsObserver>
+ChromeRLZTrackerWebContentsObserver::MaybeCreate(
     content::WebContents* web_contents) {
   if (rlz::RLZTracker::ShouldRecordChromeHomePageSearch()) {
-    CreateForWebContents(web_contents);
+    return base::WrapUnique(
+        new ChromeRLZTrackerWebContentsObserver(web_contents));
   }
+  return nullptr;
 }
 
 void ChromeRLZTrackerWebContentsObserver::NavigationEntryCommitted(
@@ -34,9 +39,9 @@ void ChromeRLZTrackerWebContentsObserver::NavigationEntryCommitted(
     return;
   }
 
-  // Remove the observer if we have recorded the search in other web contents.
+  // Stop observing if we have recorded the search in other web contents.
   if (!rlz::RLZTracker::ShouldRecordChromeHomePageSearch()) {
-    web_contents()->RemoveUserData(UserDataKey());
+    Observe(nullptr);
     return;
   }
 
@@ -62,10 +67,8 @@ void ChromeRLZTrackerWebContentsObserver::NavigationEntryCommitted(
           ui::PAGE_TRANSITION_HOME_PAGE) != 0)) {
       rlz::RLZTracker::RecordChromeHomePageSearch();
 
-      // Remove the observer since we only need to record the search once.
-      web_contents()->RemoveUserData(UserDataKey());
+      // Stop observing since we only need to record the search once.
+      Observe(nullptr);
     }
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeRLZTrackerWebContentsObserver);

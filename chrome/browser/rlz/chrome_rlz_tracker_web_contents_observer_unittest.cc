@@ -7,6 +7,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/rlz/mock_rlz_tracker_delegate.h"
 #include "components/rlz/rlz_tracker.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 
 using ::testing::_;
@@ -40,11 +41,10 @@ TEST_F(ChromeRLZTrackerWebContentsObserverTest, PerformHomepageSearch) {
   EXPECT_CALL(*delegate(), GetBrand(_)).WillRepeatedly(Return(true));
   EXPECT_CALL(*delegate(), IsBrandOrganic(_)).WillRepeatedly(Return(false));
 
-  ChromeRLZTrackerWebContentsObserver::CreateForWebContentsIfNeeded(
-      web_contents());
-  ChromeRLZTrackerWebContentsObserver* observer =
-      ChromeRLZTrackerWebContentsObserver::FromWebContents(web_contents());
-  EXPECT_TRUE(observer);
+  std::unique_ptr<ChromeRLZTrackerWebContentsObserver> observer =
+      ChromeRLZTrackerWebContentsObserver::MaybeCreate(web_contents());
+  ASSERT_TRUE(observer);
+  EXPECT_NE(nullptr, observer->web_contents());
 
   // Search callback is not run for an invalid navigation.
   EXPECT_CALL(*delegate(), RunHomepageSearchCallback()).Times(0);
@@ -59,19 +59,15 @@ TEST_F(ChromeRLZTrackerWebContentsObserverTest, PerformHomepageSearch) {
   NavigateAndCommit(GURL("https://www.google.com/search?q=test"));
   task_environment()->RunUntilIdle();
 
-  // Observer has been removed after a valid search.
-  observer =
-      ChromeRLZTrackerWebContentsObserver::FromWebContents(web_contents());
-  EXPECT_FALSE(observer);
+  // Observer stops observing after a valid search.
+  EXPECT_EQ(nullptr, observer->web_contents());
 }
 
 TEST_F(ChromeRLZTrackerWebContentsObserverTest,
        NotCreateObserverForEmptyBrand) {
   EXPECT_CALL(*delegate(), GetBrand(_)).WillRepeatedly(Return(false));
-  ChromeRLZTrackerWebContentsObserver::CreateForWebContentsIfNeeded(
-      web_contents());
-  ChromeRLZTrackerWebContentsObserver* observer =
-      ChromeRLZTrackerWebContentsObserver::FromWebContents(web_contents());
+  std::unique_ptr<ChromeRLZTrackerWebContentsObserver> observer =
+      ChromeRLZTrackerWebContentsObserver::MaybeCreate(web_contents());
   EXPECT_FALSE(observer);
 }
 
@@ -80,10 +76,8 @@ TEST_F(ChromeRLZTrackerWebContentsObserverTest,
   EXPECT_CALL(*delegate(), GetBrand(_)).WillRepeatedly(Return(true));
   EXPECT_CALL(*delegate(), IsBrandOrganic(_)).WillRepeatedly(Return(true));
 
-  ChromeRLZTrackerWebContentsObserver::CreateForWebContentsIfNeeded(
-      web_contents());
-  ChromeRLZTrackerWebContentsObserver* observer =
-      ChromeRLZTrackerWebContentsObserver::FromWebContents(web_contents());
+  std::unique_ptr<ChromeRLZTrackerWebContentsObserver> observer =
+      ChromeRLZTrackerWebContentsObserver::MaybeCreate(web_contents());
   EXPECT_FALSE(observer);
 }
 
@@ -93,10 +87,8 @@ TEST_F(ChromeRLZTrackerWebContentsObserverTest,
   EXPECT_CALL(*delegate(), IsBrandOrganic(_)).WillRepeatedly(Return(false));
   rlz::RLZTracker::SetRlzChromeHomePageSearchRecordedForTesting(true);
 
-  ChromeRLZTrackerWebContentsObserver::CreateForWebContentsIfNeeded(
-      web_contents());
-  ChromeRLZTrackerWebContentsObserver* observer =
-      ChromeRLZTrackerWebContentsObserver::FromWebContents(web_contents());
+  std::unique_ptr<ChromeRLZTrackerWebContentsObserver> observer =
+      ChromeRLZTrackerWebContentsObserver::MaybeCreate(web_contents());
   EXPECT_FALSE(observer);
 }
 
@@ -105,20 +97,17 @@ TEST_F(ChromeRLZTrackerWebContentsObserverTest,
   EXPECT_CALL(*delegate(), GetBrand(_)).WillRepeatedly(Return(true));
   EXPECT_CALL(*delegate(), IsBrandOrganic(_)).WillRepeatedly(Return(false));
 
-  ChromeRLZTrackerWebContentsObserver::CreateForWebContentsIfNeeded(
-      web_contents());
-  ChromeRLZTrackerWebContentsObserver* observer =
-      ChromeRLZTrackerWebContentsObserver::FromWebContents(web_contents());
-  EXPECT_TRUE(observer);
+  std::unique_ptr<ChromeRLZTrackerWebContentsObserver> observer =
+      ChromeRLZTrackerWebContentsObserver::MaybeCreate(web_contents());
+  ASSERT_TRUE(observer);
+  EXPECT_NE(nullptr, observer->web_contents());
 
   // Simulate that the search has been performed in other web contents.
   rlz::RLZTracker::SetRlzChromeHomePageSearchRecordedForTesting(true);
 
-  // Navigating the web contents will remove the observer.
+  // Navigating the web contents will stop the observer.
   EXPECT_CALL(*delegate(), RunHomepageSearchCallback()).Times(0);
   NavigateAndCommit(GURL("https://www.google.com/search?q=test"));
   task_environment()->RunUntilIdle();
-  observer =
-      ChromeRLZTrackerWebContentsObserver::FromWebContents(web_contents());
-  EXPECT_FALSE(observer);
+  EXPECT_EQ(nullptr, observer->web_contents());
 }

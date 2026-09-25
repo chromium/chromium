@@ -32,6 +32,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/buildflags.h"
+#include "rlz/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 class AskBeforeHttpDialogController;
@@ -242,6 +243,10 @@ class CrosIsolatedWebAppEnabler;
 namespace web_app {
 class ProtocolHandlerPickerCoordinator;
 }  // namespace web_app
+#endif
+
+#if BUILDFLAG(ENABLE_RLZ)
+class ChromeRLZTrackerWebContentsObserver;
 #endif
 
 namespace indigo {
@@ -747,6 +752,11 @@ class TabFeatures {
   std::unique_ptr<ash::CrosIsolatedWebAppEnabler>
       cros_isolated_web_app_enabler_;
   std::unique_ptr<GeminiAppTabHelper> gemini_app_tab_helper_;
+#endif
+
+#if BUILDFLAG(ENABLE_RLZ)
+  std::unique_ptr<ChromeRLZTrackerWebContentsObserver>
+      chrome_rlz_tracker_web_contents_observer_;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

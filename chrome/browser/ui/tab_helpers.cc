@@ -245,10 +245,6 @@
 #include "chrome/browser/compose/chrome_compose_client.h"
 #endif
 
-#if BUILDFLAG(ENABLE_RLZ)
-#include "chrome/browser/rlz/chrome_rlz_tracker_web_contents_observer.h"
-#endif
-
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
@@ -383,10 +379,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 #endif
   }
   CreateSubresourceFilterWebContentsHelper(web_contents);
-#if BUILDFLAG(ENABLE_RLZ)
-  ChromeRLZTrackerWebContentsObserver::CreateForWebContentsIfNeeded(
-      web_contents);
-#endif
   ChromeTranslateClient::CreateForWebContents(web_contents);
 #if BUILDFLAG(IS_ANDROID)
   // Register LanguagePersistedTabDataAndroid for non-incognito tabs to

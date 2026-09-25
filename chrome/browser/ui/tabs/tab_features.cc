@@ -199,6 +199,10 @@
 #include "chrome/browser/font_prewarmer_tab_helper.h"
 #endif
 
+#if BUILDFLAG(ENABLE_RLZ)
+#include "chrome/browser/rlz/chrome_rlz_tracker_web_contents_observer.h"
+#endif
+
 namespace tabs {
 
 TabFeatures::TabFeatures() = default;
@@ -790,6 +794,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   window_management_content_setting_observer_ =
       std::make_unique<web_app::WindowManagementContentSettingObserver>(
           tab.GetContents());
+
+#if BUILDFLAG(ENABLE_RLZ)
+  chrome_rlz_tracker_web_contents_observer_ =
+      ChromeRLZTrackerWebContentsObserver::MaybeCreate(tab.GetContents());
+#endif
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1029,6 +1038,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   cros_isolated_web_app_enabler_ =
       std::make_unique<ash::CrosIsolatedWebAppEnabler>(new_contents);
   gemini_app_tab_helper_ = GeminiAppTabHelper::MaybeCreate(new_contents);
+#endif
+
+#if BUILDFLAG(ENABLE_RLZ)
+  chrome_rlz_tracker_web_contents_observer_ =
+      ChromeRLZTrackerWebContentsObserver::MaybeCreate(new_contents);
 #endif
 }
 

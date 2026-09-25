@@ -5,6 +5,7 @@
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 import("//chrome/common/features.gni")
+import("//rlz/buildflags/buildflags.gni")
 
 # This is the public interface for tabs in a desktop browser. Most features in
 # //chrome/browser depend on this interface, and thus to prevent circular
@@ -21,6 +22,7 @@ source_set("tabs_public") {
     "//chrome/common:buildflags",
     "//components/tab_groups",
     "//components/tabs:public",
+    "//rlz/buildflags",
   ]
   deps = [
     "//content/public/browser",
@@ -693,6 +695,10 @@ if (!is_android) {
         "//chrome/browser/ui/views/web_apps:protocol_handler_picker_coordinator",
         "//chromeos/ash/experiences/isolated_web_app",
       ]
+    }
+
+    if (enable_rlz) {
+      deps += [ "//chrome/browser/rlz" ]
     }
   }
 

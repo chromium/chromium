@@ -1064,7 +1064,6 @@ source_set("tab_helpers_impl") {
     "//media",
     "//pdf:buildflags",
     "//printing/buildflags",
-    "//rlz/buildflags",
     "//ui/accessibility:ax_base",
   ]
 
@@ -1143,10 +1142,6 @@ source_set("tab_helpers_impl") {
 
   if (enable_compose) {
     deps += [ "//chrome/browser/compose" ]
-  }
-
-  if (enable_rlz) {
-    deps += [ "//chrome/browser/rlz" ]
   }
 
   if (safe_browsing_mode > 0) {
