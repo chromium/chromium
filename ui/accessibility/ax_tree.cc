@@ -2675,8 +2675,12 @@ AXNode* AXTree::GetUnignoredAncestorFromId(AXNodeID node_id) const {
 AXNodeID AXTree::GetNextNegativeInternalNodeId() {
   AXNodeID return_value = next_negative_internal_node_id_;
   next_negative_internal_node_id_--;
-  if (next_negative_internal_node_id_ > 0)
-    next_negative_internal_node_id_ = -1;
+  if (next_negative_internal_node_id_ < kLastGeneratedBrowserNodeID ||
+      next_negative_internal_node_id_ > kFirstGeneratedBrowserNodeID) {
+    next_negative_internal_node_id_ = kFirstGeneratedBrowserNodeID;
+  }
+  // Fail on already-claimed node ID.
+  CHECK(!GetFromId(return_value));
   return return_value;
 }
 

@@ -1847,7 +1847,10 @@ void BrowserAccessibilityManager::OnNodeCreated(AXTree* tree, AXNode* node) {
   DCHECK(tree->GetFromId(node->id()) || node->IsGenerated())
       << "Node must be in AXTree's map, unless it's an ExtraMacNode.";
 
-  id_wrapper_map_[node->id()] = CreateBrowserAccessibility(node);
+  auto [iter, inserted] = id_wrapper_map_.try_emplace(node->id(), nullptr);
+  CHECK(inserted) << "Attempted to overwrite existing wrapper for node ID: "
+                  << node->id();
+  iter->second = CreateBrowserAccessibility(node);
 
   if (node->HasIntAttribute(ax::mojom::IntAttribute::kPopupForId)) {
     popup_root_ids_.insert(node->id());
