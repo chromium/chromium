@@ -38,9 +38,7 @@ public class DefaultResizingStrategy implements ResizingStrategy {
         mHalfHeightPx = halfHeightPx;
         mFullHeightPx = fullHeightPx;
         updateLockState();
-        if (mResizeLock != null) {
-            mHelper.updatePlaceholderHeight((int) offsetPx);
-        }
+        mHelper.updatePlaceholderHeight((int) offsetPx);
     }
 
     @Override
