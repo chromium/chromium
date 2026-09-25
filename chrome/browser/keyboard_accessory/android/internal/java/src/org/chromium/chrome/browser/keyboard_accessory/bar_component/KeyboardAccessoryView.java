@@ -13,8 +13,10 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateInterpolator;
@@ -185,7 +187,31 @@ class KeyboardAccessoryView extends LinearLayout {
     }
 
     @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent motionEvent) {
+        if (motionEvent.getAction() == MotionEvent.ACTION_SCROLL
+                && motionEvent.isFromSource(InputDevice.SOURCE_CLASS_POINTER)) {
+            return onGenericMotionEvent(motionEvent);
+        }
+        return super.dispatchGenericMotionEvent(motionEvent);
+    }
+
+    @Override
     public boolean onGenericMotionEvent(MotionEvent motionEvent) {
+        if (motionEvent.getAction() != MotionEvent.ACTION_SCROLL
+                || !motionEvent.isFromSource(InputDevice.SOURCE_CLASS_POINTER)) {
+            return true;
+        }
+        float vScroll = motionEvent.getAxisValue(MotionEvent.AXIS_VSCROLL);
+        float hScroll = motionEvent.getAxisValue(MotionEvent.AXIS_HSCROLL);
+        if (vScroll == 0 && hScroll == 0) {
+            return true;
+        }
+        int rtlFactor = isLayoutRtl() ? -1 : 1;
+        float scrollAmount = hScroll == 0 ? vScroll : hScroll;
+        float scrollStep = ViewConfiguration.get(getContext()).getScaledHorizontalScrollFactor();
+        int scrollPixels = Math.round(-scrollAmount * scrollStep * rtlFactor);
+        mBarItemsView.scrollBy(scrollPixels, 0);
+
         return true; // Accessory view is a sink for all events. Touch/Click is handled earlier.
     }
 
