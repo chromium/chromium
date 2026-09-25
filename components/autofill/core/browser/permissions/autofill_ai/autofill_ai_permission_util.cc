@@ -12,13 +12,11 @@
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/containers/flat_set.h"
 #include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -42,7 +40,6 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync/base/account_pref_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -415,30 +412,10 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   NOTREACHED();
 }
 
-// Returns the set of eligible subscription tiers configured by feature
-// parameters for Ambient Autofill.
-base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
-  const std::string tier_list =
-      features::kAutofillAmbientAutofillEligibleTiers.Get();
-  const std::vector<std::string_view> tier_pieces = base::SplitStringPiece(
-      tier_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::flat_set<int32_t> eligible_tiers;
-  eligible_tiers.reserve(tier_pieces.size());
-  for (std::string_view piece : tier_pieces) {
-    int32_t tier_id = 0;
-    if (base::StringToInt(piece, &tier_id)) {
-      eligible_tiers.insert(tier_id);
-    }
-  }
-  return eligible_tiers;
-}
-
 // Checks whether all requirements for `IdentityManager` state are
 // met.
 [[nodiscard]] bool SatisfiesAccountRequirements(
     const IdentityManager* identity_manager,
-    const subscription_eligibility::SubscriptionEligibilityService*
-        subscription_service,
     bool has_entity_data_saved,
     AutofillAiAction action,
     std::optional<EntityType> entity_type,
@@ -500,16 +477,6 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
       }
       break;
     }
-    case AutofillAiAction::kAmbientAutofill:
-    case AutofillAiAction::kShowAmbientAutofillInSettings:
-    case AutofillAiAction::kTypeSupportsAmbientAutofillData: {
-      if (!IsSubscriptionTierEligibleForAmbientAutofill(subscription_service)) {
-        MaybeOutputReason(debug_message,
-                          "User subscription tier is not eligible.");
-        return false;
-      }
-      break;
-    }
     case AutofillAiAction::kOptIn: {
       if (!GetAccountGaiaIdHash(identity_manager).has_value()) {
         return false;
@@ -517,6 +484,7 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
       break;
     }
     case AutofillAiAction::kAddLocalEntityInstanceInSettings:
+    case AutofillAiAction::kAmbientAutofill:
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kFilling:
@@ -525,6 +493,8 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
     case AutofillAiAction::kLogToMqls:
     case AutofillAiAction::kEnableOrDisable:
     case AutofillAiAction::kServerClassificationModel:
+    case AutofillAiAction::kShowAmbientAutofillInSettings:
+    case AutofillAiAction::kTypeSupportsAmbientAutofillData:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
     case AutofillAiAction::kWalletDataSharingPromotion:
       break;
@@ -693,7 +663,6 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
       client.GetIdentityManager(), client.GetSyncService(),
       client.IsWalletPublicPassStorageEnabled(), client.IsOffTheRecord(),
       client.GetVariationConfigCountryCode(),
-      client.GetSubscriptionEligibilityService(),
       client.GetPersonalContextEligibilityState(), action, entity_type,
       debug_message);
 }
@@ -709,8 +678,6 @@ bool MayPerformAutofillAiAction(
     bool is_wallet_public_pass_storage_enabled,
     bool is_off_the_record,
     const GeoIpCountryCode& country_code,
-    const subscription_eligibility::SubscriptionEligibilityService*
-        subscription_service,
     personal_context::PersonalContextEligibilityState
         personal_context_eligibility_state,
     AutofillAiAction action,
@@ -737,9 +704,8 @@ bool MayPerformAutofillAiAction(
     return false;
   }
 
-  if (!SatisfiesAccountRequirements(identity_manager, subscription_service,
-                                    has_entity_data_saved, action, entity_type,
-                                    debug_message)) {
+  if (!SatisfiesAccountRequirements(identity_manager, has_entity_data_saved,
+                                    action, entity_type, debug_message)) {
     return false;
   }
 
@@ -820,7 +786,6 @@ bool SetAutofillAiOptInStatus(AutofillClient& client,
       client.GetIdentityManager(), client.GetSyncService(),
       client.IsWalletPublicPassStorageEnabled(), client.IsOffTheRecord(),
       client.GetVariationConfigCountryCode(),
-      client.GetSubscriptionEligibilityService(),
       client.GetPersonalContextEligibilityState(), opt_in_status);
 }
 
@@ -835,8 +800,6 @@ bool SetAutofillAiOptInStatus(
     bool is_wallet_public_pass_storage_enabled,
     bool is_off_the_record,
     const GeoIpCountryCode& country_code,
-    const subscription_eligibility::SubscriptionEligibilityService*
-        subscription_service,
     personal_context::PersonalContextEligibilityState
         personal_context_eligibility_state,
     AutofillAiOptInStatus opt_in_status) {
@@ -846,8 +809,8 @@ bool SetAutofillAiOptInStatus(
 #endif
           prefs, edm, identity_manager, sync_service,
           is_wallet_public_pass_storage_enabled, is_off_the_record,
-          country_code, subscription_service,
-          personal_context_eligibility_state, AutofillAiAction::kOptIn)) {
+          country_code, personal_context_eligibility_state,
+          AutofillAiAction::kOptIn)) {
     return false;
   }
 
@@ -935,14 +898,6 @@ bool IsAutofillAiDefaultAvailabilityEnabled() {
 #else
   return true;
 #endif
-}
-
-[[nodiscard]] bool IsSubscriptionTierEligibleForAmbientAutofill(
-    const subscription_eligibility::SubscriptionEligibilityService*
-        subscription_eligibility_service) {
-  return subscription_eligibility_service &&
-         GetAutofillAmbientAutofillEligibleTiers().contains(
-             subscription_eligibility_service->GetAiSubscriptionTier());
 }
 
 DenseSet<EntityType> GetAutofillAmbientAutofillSupportedEntityTypes() {

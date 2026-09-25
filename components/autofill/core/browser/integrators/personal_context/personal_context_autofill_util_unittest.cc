@@ -53,8 +53,7 @@ class PersonalContextAutofillUtilTest : public testing::Test {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
         {features::kAutofillAiAvailableByDefault, {}},
 #endif
-        {features::kAutofillAmbientAutofill,
-         {{"ambient_autofill_eligible_tiers", "1"}}},
+        {features::kAutofillAmbientAutofill, {}},
     };
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,

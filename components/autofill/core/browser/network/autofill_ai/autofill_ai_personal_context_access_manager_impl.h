@@ -28,7 +28,6 @@
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -55,7 +54,6 @@ namespace autofill {
 class AutofillAiPersonalContextAccessManagerImpl
     : public AutofillAiPersonalContextAccessManager,
       public personal_context::PersonalContextEligibilityService::Observer,
-      public subscription_eligibility::SubscriptionEligibilityService::Observer,
       public EntitySuppressionManager::Observer {
  public:
   // Represents the type of personal context network request sent to the server.
@@ -72,8 +70,6 @@ class AutofillAiPersonalContextAccessManagerImpl
       personal_context::PersonalContextService* personal_context_service,
       personal_context::PersonalContextEligibilityService*
           personal_context_eligibility_service,
-      subscription_eligibility::SubscriptionEligibilityService*
-          subscription_eligibility_service,
       PrefService* pref_service,
       syncer::DeviceInfoSyncService* device_info_sync_service,
       EntitySuppressionManager* suppression_manager);
@@ -100,9 +96,6 @@ class AutofillAiPersonalContextAccessManagerImpl
   // personal_context::PersonalContextEligibilityService::Observer:
   void OnEligibilityStateChanged(
       personal_context::PersonalContextEligibilityState new_state) override;
-
-  // subscription_eligibility::SubscriptionEligibilityService::Observer:
-  void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
 
   // EntitySuppressionManager::Observer:
   void OnEntitySuppressionsChanged() override;
@@ -207,8 +200,8 @@ class AutofillAiPersonalContextAccessManagerImpl
   void LogPrefetchTotalLatency(EntityType type);
 
   // Computes the non-eligibility reason specific to personal context in
-  // Autofill AI (e.g. G1 subscription status) and logs it to UMA if the reason
-  // has changed and the startup delay has elapsed.
+  // Autofill AI and logs it to UMA if the reason has changed and the startup
+  // delay has elapsed.
   void ComputeAndMaybeLogNonEligibilityReason();
 
   // Indicates whether `kNonEligibilityLoggingDelayOnStartup` has elapsed,
@@ -271,11 +264,6 @@ class AutofillAiPersonalContextAccessManagerImpl
       personal_context::PersonalContextEligibilityService,
       personal_context::PersonalContextEligibilityService::Observer>
       eligibility_service_observation_{this};
-
-  base::ScopedObservation<
-      subscription_eligibility::SubscriptionEligibilityService,
-      subscription_eligibility::SubscriptionEligibilityService::Observer>
-      subscription_eligibility_observation_{this};
 
   base::ScopedObservation<EntitySuppressionManager,
                           EntitySuppressionManager::Observer>

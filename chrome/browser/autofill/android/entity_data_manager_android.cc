@@ -207,8 +207,7 @@ bool EntityDataManagerAndroid::SetAutofillAiOptInStatus(
       google_groups_manager_, prefs_, &entity_data_manager(), identity_manager_,
       sync_service_, is_wallet_public_pass_storage_enabled, is_off_the_record_,
       entity_data_manager_->GetVariationCountryCode(),
-      subscription_eligibility_service_, personal_context_eligibility_state,
-      opt_in_status);
+      personal_context_eligibility_state, opt_in_status);
 }
 
 std::optional<EntityInstanceAndroid>
@@ -531,8 +530,7 @@ bool EntityDataManagerAndroid::RunMayPerformAutofillAiAction(
       google_groups_manager_, prefs_, &entity_data_manager(), identity_manager_,
       sync_service_, IsWalletPublicPassStorageEnabledHelper(),
       is_off_the_record_, entity_data_manager_->GetVariationCountryCode(),
-      subscription_eligibility_service_, personal_context_eligibility_state,
-      action, entity_type);
+      personal_context_eligibility_state, action, entity_type);
 }
 
 // Returns true if the `entity_type` supports wallet storage.

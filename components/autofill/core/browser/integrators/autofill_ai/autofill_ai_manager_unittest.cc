@@ -60,7 +60,6 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/wallet/core/common/wallet_features.h"
@@ -330,10 +329,7 @@ TEST_F(AutofillAiManagerTest, OnAfterLoadedServerPredictions_TriggersFetch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAutofillAmbientAutofill,
-      {{"ambient_autofill_eligible_tiers", "1"},
-       {"ambient_autofill_supported_entity_types", "Passport"}});
-  autofill_client().GetPrefs()->SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+      {{"ambient_autofill_supported_entity_types", "Passport"}});
   auto form_structure = std::make_unique<FormStructure>(
       test::GetFormData({.fields = {{.role = PASSPORT_NUMBER}}}));
   AddPredictionsToFormStructure(*form_structure, {{PASSPORT_NUMBER}});
@@ -354,10 +350,7 @@ TEST_F(AutofillAiManagerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAutofillAmbientAutofill,
-      {{"ambient_autofill_eligible_tiers", "1"},
-       {"ambient_autofill_supported_entity_types", "Passport"}});
-  autofill_client().GetPrefs()->SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+      {{"ambient_autofill_supported_entity_types", "Passport"}});
   autofill_client().set_personal_context_eligibility_state(
       personal_context::PersonalContextEligibilityState::kDisabledNotEligible);
 
@@ -379,15 +372,12 @@ TEST_F(AutofillAiManagerTest,
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{features::kAutofillAmbientAutofill,
-        {{"ambient_autofill_eligible_tiers", "1"},
-         {"ambient_autofill_supported_entity_types",
+        {{"ambient_autofill_supported_entity_types",
           "Passport,Flight Reservation"}}},
        {features::debug::kAutofillAiForceOptIn, {}},
        {features::kAutofillAiWithDataSchema, {}},
        {features::kAutofillAiWalletFlightReservation, {}}},
       /*disabled_features=*/{});
-  autofill_client().GetPrefs()->SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
   autofill_client().GetEntityDataManager()->SetReauthAvailability(false);
 
   // PASSPORT_NUMBER is a SPII type.
@@ -2761,10 +2751,7 @@ TEST_F(AutofillAiManagerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAutofillAmbientAutofill,
-      {{"ambient_autofill_eligible_tiers", "1"},
-       {"ambient_autofill_supported_entity_types", "Passport"}});
-  autofill_client().GetPrefs()->SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+      {{"ambient_autofill_supported_entity_types", "Passport"}});
   autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillAiIdentityEntitiesEnabled, true);
 
@@ -2939,10 +2926,7 @@ TEST_P(AutofillAiManagerCacheReadinessTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAutofillAmbientAutofill,
-      {{"ambient_autofill_eligible_tiers", "1"},
-       {"ambient_autofill_supported_entity_types", "Passport"}});
-  autofill_client().GetPrefs()->SetInteger(
-      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+      {{"ambient_autofill_supported_entity_types", "Passport"}});
   autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillAiIdentityEntitiesEnabled, true);
 

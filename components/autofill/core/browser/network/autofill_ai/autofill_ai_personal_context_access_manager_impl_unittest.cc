@@ -38,8 +38,6 @@
 #include "components/personal_context/proto/features/ambient_autofill.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/subscription_eligibility/subscription_eligibility_prefs.h"
-#include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -195,16 +193,11 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
         {{features::kAutofillAmbientAutofillSupportedEntityTypes.name,
           kSupportedEntityTypes}});
     personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
-    pref_service_.registry()->RegisterIntegerPref(
-        subscription_eligibility::prefs::kAiSubscriptionTier, 0);
-    subscription_eligibility_service_ = std::make_unique<
-        subscription_eligibility::SubscriptionEligibilityService>(
-        &pref_service_);
     access_manager_ =
         std::make_unique<AutofillAiPersonalContextAccessManagerImpl>(
             &mock_personal_context_service_, &mock_eligibility_service_,
-            subscription_eligibility_service_.get(), &pref_service_,
-            &fake_device_info_sync_service_, &suppression_manager_);
+            &pref_service_, &fake_device_info_sync_service_,
+            &suppression_manager_);
     ON_CALL(mock_eligibility_service_, GetEligibilityState)
         .WillByDefault(Return(
             personal_context::PersonalContextEligibilityState::kEligible));
@@ -358,8 +351,6 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockPersonalContextService mock_personal_context_service_;
   MockPersonalContextEligibilityService mock_eligibility_service_;
-  std::unique_ptr<subscription_eligibility::SubscriptionEligibilityService>
-      subscription_eligibility_service_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
   InMemoryEntitySuppressionManager suppression_manager_;
   std::unique_ptr<AutofillAiPersonalContextAccessManagerImpl> access_manager_;
@@ -1525,12 +1516,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 // a 30-second startup delay.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        LogsAmbientNonEligibilityReasonAfterStartupDelay) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kAutofillAmbientAutofill,
-        {{features::kAutofillAmbientAutofillEligibleTiers.name, "1,2"}}}},
-      {});
-
   // Before the startup delay, startup logging should not have occurred.
   histogram_tester().ExpectTotalCount(
       "Autofill.Ai.PersonalContext.NonEligibilityReason", 0);
@@ -1543,49 +1528,9 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 }
 
 // Tests that `Autofill.Ai.PersonalContext.NonEligibilityReason` is logged on
-// subscription tier updates after the startup delay has elapsed.
-TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
-       LogsAmbientNonEligibilityReasonOnTierChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kAutofillAmbientAutofill,
-        {{features::kAutofillAmbientAutofillEligibleTiers.name, "1,2"}}}},
-      {});
-
-  // Set tier to an eligible tier (1) before startup logging triggers.
-  pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
-                           1);
-
-  // Fast forward past the startup delay to complete startup logging (records
-  // kEligible).
-  FastForwardBy(kNonEligibilityLoggingDelayOnStartup + base::Seconds(1));
-
-  histogram_tester().ExpectBucketCount(
-      "Autofill.Ai.PersonalContext.NonEligibilityReason",
-      personal_context::PersonalContextNonEligibilityReason::kEligible, 1);
-
-  // Then change tier to an ineligible tier (99).
-  pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
-                           99);
-  histogram_tester().ExpectBucketCount(
-      "Autofill.Ai.PersonalContext.NonEligibilityReason",
-      personal_context::PersonalContextNonEligibilityReason::
-          kNotG1SubscriberOrAndroidPremiumDevice,
-      1);
-}
-
-// Tests that `Autofill.Ai.PersonalContext.NonEligibilityReason` is logged on
 // settings toggle updates after the startup delay has elapsed.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        LogsAmbientNonEligibilityReasonOnToggleChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kAutofillAmbientAutofill,
-        {{features::kAutofillAmbientAutofillEligibleTiers.name, "1,2"}}}},
-      {});
-
-  pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
-                           1);
   FastForwardBy(kNonEligibilityLoggingDelayOnStartup + base::Seconds(1));
 
   histogram_tester().ExpectBucketCount(

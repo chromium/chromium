@@ -424,11 +424,6 @@ BASE_FEATURE(kAutofillAllowFillingModifiedInitialValues,
 
 // When enabled, the ambient autofill experience is enabled in Chrome.
 BASE_FEATURE(kAutofillAmbientAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(std::string,
-                   kAutofillAmbientAutofillEligibleTiers,
-                   &kAutofillAmbientAutofill,
-                   "ambient_autofill_eligible_tiers",
-                   "");
 // A comma-separated list of EntityType string names (e.g. "Passport,Driver's
 // license,Vehicle") supported for Ambient Autofill. If empty, no entity types
 // are supported.

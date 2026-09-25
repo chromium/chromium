@@ -191,16 +191,14 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   }
 
   if ([self isRunningTest:@selector(testToggleSuggestionsFromGeminiSwitch)]) {
-    config.features_enabled_and_params.push_back(
-        {autofill::features::kAutofillAmbientAutofill,
-         {{"ambient_autofill_eligible_tiers", "1"}}});
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAmbientAutofill);
     config.features_enabled.push_back(
         autofill::features::kAutofillAiAvailableByDefault);
     config.features_enabled_and_params.push_back(
         {personal_context::features::debug::
              kPersonalContextForceEnablementState,
          {{"state", "2"}}});
-    config.additional_args.push_back("--force-ai-subscription-tier=1");
   }
 
   return config;
@@ -1343,7 +1341,6 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
                    @(kCanContextuallyUseGeminiInChromeCapabilityName) : @YES,
                  }];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey setIntegerValue:1 forUserPref:"sync.ai_subscription_tier"];
 
   [self openAutofillProfilesSettings];
 

@@ -257,8 +257,6 @@ AutofillAiPersonalContextAccessManagerImpl::
         personal_context::PersonalContextService* personal_context_service,
         personal_context::PersonalContextEligibilityService*
             personal_context_eligibility_service,
-        subscription_eligibility::SubscriptionEligibilityService*
-            subscription_eligibility_service,
         PrefService* pref_service,
         syncer::DeviceInfoSyncService* device_info_sync_service,
         EntitySuppressionManager* suppression_manager)
@@ -269,10 +267,6 @@ AutofillAiPersonalContextAccessManagerImpl::
       device_info_sync_service_(device_info_sync_service) {
   eligibility_service_observation_.Observe(
       personal_context_eligibility_service);
-  if (subscription_eligibility_service) {
-    subscription_eligibility_observation_.Observe(
-        subscription_eligibility_service);
-  }
   if (suppression_manager) {
     suppression_observation_.Observe(suppression_manager);
   }
@@ -737,11 +731,6 @@ void AutofillAiPersonalContextAccessManagerImpl::OnEligibilityStateChanged(
   }
 }
 
-void AutofillAiPersonalContextAccessManagerImpl::OnAiSubscriptionTierUpdated(
-    int32_t /*new_subscription_tier*/) {
-  ComputeAndMaybeLogNonEligibilityReason();
-}
-
 void AutofillAiPersonalContextAccessManagerImpl::
     OnPersonalContextSettingsToggleChanged() {
   ComputeAndMaybeLogNonEligibilityReason();
@@ -762,14 +751,6 @@ void AutofillAiPersonalContextAccessManagerImpl::
 
   std::optional<PersonalContextNonEligibilityReason> non_eligibility_reason =
       personal_context_eligibility_service_->GetNonEligibilityReason();
-
-  if (non_eligibility_reason ==
-          PersonalContextNonEligibilityReason::kEligible &&
-      !IsSubscriptionTierEligibleForAmbientAutofill(
-          subscription_eligibility_observation_.GetSource())) {
-    non_eligibility_reason = PersonalContextNonEligibilityReason::
-        kNotG1SubscriberOrAndroidPremiumDevice;
-  }
 
   if (non_eligibility_reason ==
           PersonalContextNonEligibilityReason::kEligible &&

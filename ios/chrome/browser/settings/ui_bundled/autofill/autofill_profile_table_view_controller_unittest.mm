@@ -567,14 +567,11 @@ TEST_F(AutofillProfileTableViewControllerTest,
 TEST_F(AutofillProfileTableViewControllerTest,
        TestSuggestionsFromGeminiSettingSectionVisible) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{autofill::features::kAutofillAmbientAutofill,
-        {{"ambient_autofill_eligible_tiers", "1"}}},
-       {autofill::features::kAutofillAiAvailableByDefault, {}}},
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAmbientAutofill,
+                            autofill::features::kAutofillAiAvailableByDefault},
       /*disabled_features=*/{kYourSavedInfoSettingsPageIos});
   SignIn();
-  profile_->GetPrefs()->SetInteger("sync.ai_subscription_tier", 1);
 
   CreateController();
   CheckController();
@@ -606,14 +603,11 @@ TEST_F(AutofillProfileTableViewControllerTest,
 TEST_F(AutofillProfileTableViewControllerTest,
        TestSelectSuggestionsFromGeminiRowReportsUserAction) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{autofill::features::kAutofillAmbientAutofill,
-        {{"ambient_autofill_eligible_tiers", "1"}}},
-       {autofill::features::kAutofillAiAvailableByDefault, {}}},
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{autofill::features::kAutofillAmbientAutofill,
+                            autofill::features::kAutofillAiAvailableByDefault},
       /*disabled_features=*/{kYourSavedInfoSettingsPageIos});
   SignIn();
-  profile_->GetPrefs()->SetInteger("sync.ai_subscription_tier", 1);
 
   CreateController();
   CheckController();
