@@ -6047,6 +6047,7 @@ test("unit_tests") {
       "../renderer/accessibility/phrase_segmentation/tokenizer_unittest.cc",
       "../renderer/accessibility/read_anything/read_aloud_app_model_unittest.cc",
       "../renderer/accessibility/read_anything/read_aloud_traversal_utils_unittest.cc",
+      "../renderer/accessibility/read_anything/read_anything_app_controller_unittest.cc",
       "../renderer/accessibility/read_anything/read_anything_app_model_unittest.cc",
       "../renderer/accessibility/read_anything/read_anything_node_utils_unittest.cc",
       "../renderer/media/webrtc_logging_agent_impl_unittest.cc",

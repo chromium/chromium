@@ -485,6 +485,9 @@ void ReadAnythingAppController::ProcessModelUpdates() {
 }
 
 void ReadAnythingAppController::ExecuteJavaScript(const std::string& script) {
+  if (!render_frame()) {
+    return;
+  }
   // TODO(crbug.com/40802192): Use v8::Function rather than javascript. If
   // possible, replace this function call with firing an event.
   render_frame()->ExecuteJavaScript(base::ASCIIToUTF16(script));
