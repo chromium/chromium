@@ -345,7 +345,7 @@ BASE_FEATURE(kMixedFixedIntervalMatcher, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the FrameEvictionManager scales its limit of max number of saved
 // frames dynamically based on memory pressure.
-BASE_FEATURE(kScalableFrameEviction, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kScalableFrameEviction, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Remove gpu process reference if gpu context is loss, and gpu channel cannot
 // be established due to said gpu process exiting.
