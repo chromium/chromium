@@ -57,6 +57,13 @@ TEST_F(ReadAnythingAppModelNoInitTest,
   EXPECT_FALSE(model().is_screen_ai_service_ready());
 }
 
+TEST_F(ReadAnythingAppModelNoInitTest,
+       GetOriginalPageMetrics_EmptyBeforeTreeInitialization) {
+  ReadAnythingAppModel::OriginalPageMetrics metrics =
+      model().GetOriginalPageMetrics();
+  EXPECT_FALSE(metrics.maybe_has_key_points);
+}
+
 class ReadAnythingAppModelTest : public testing::Test {
  public:
   ReadAnythingAppModelTest() = default;
@@ -2603,7 +2610,7 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_EQ(mapping[0].end, 15);
 }
 TEST_F(ReadAnythingAppModelTest,
-       MaybeHasKeyPointsSection_ReturnsTrueForHeadings) {
+       GetOriginalPageMetrics_ReturnsTrueForHeadings) {
   // Create an AXTreeUpdate with headings.
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
@@ -2631,10 +2638,10 @@ TEST_F(ReadAnythingAppModelTest,
   ApplyAccessibilityUpdates(tree_id_, {update});
   model().SetActiveTreeId(tree_id_);
 
-  EXPECT_TRUE(model().MaybeHasKeyPointsSection());
+  EXPECT_TRUE(model().GetOriginalPageMetrics().maybe_has_key_points);
 }
 
-TEST_F(ReadAnythingAppModelTest, MaybeHasKeyPointsSection_ReturnsFalseForH1) {
+TEST_F(ReadAnythingAppModelTest, GetOriginalPageMetrics_ReturnsFalseForH1) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   ui::AXNodeData root;
@@ -2655,7 +2662,7 @@ TEST_F(ReadAnythingAppModelTest, MaybeHasKeyPointsSection_ReturnsFalseForH1) {
   ApplyAccessibilityUpdates(tree_id_, {update});
   model().SetActiveTreeId(tree_id_);
 
-  EXPECT_FALSE(model().MaybeHasKeyPointsSection());
+  EXPECT_FALSE(model().GetOriginalPageMetrics().maybe_has_key_points);
 }
 
 TEST_F(ReadAnythingAppModelTest, GetActiveTreeUrl) {

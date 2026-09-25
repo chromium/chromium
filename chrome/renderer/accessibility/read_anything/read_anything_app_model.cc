@@ -337,6 +337,40 @@ bool ReadAnythingAppModel::ContentNodesOnlyContainHeadings() {
   return true;
 }
 
+ReadAnythingAppModel::OriginalPageMetrics
+ReadAnythingAppModel::GetOriginalPageMetrics() const {
+  if (!ContainsActiveTree()) {
+    return {};
+  }
+  const auto it = tree_infos_.find(active_tree_id_);
+  if (it == tree_infos_.end()) {
+    return {};
+  }
+  const AXTreeInfo* tree_info = it->second.get();
+  if (tree_info->original_page_metrics.has_value()) {
+    return tree_info->original_page_metrics.value();
+  }
+
+  ui::AXSerializableTree* active_tree = GetTreeFromId(active_tree_id_);
+  if (!active_tree || !active_tree->root()) {
+    tree_info->original_page_metrics = OriginalPageMetrics();
+    return tree_info->original_page_metrics.value();
+  }
+
+  OriginalPageMetrics metrics;
+  for (ui::AXNode* node = active_tree->root(); node;
+       node = node->GetNextUnignoredInTreeOrder()) {
+    if (IsNodeLikelyKeyPoints(node)) {
+      metrics.maybe_has_key_points = true;
+      break;
+    }
+  }
+
+  tree_info->original_page_metrics = metrics;
+  return metrics;
+}
+
+// Checks if a specific AXNode seems likely to indicate a key points section.
 // This method uses a heuristic to make an educated guess about whether the
 // original page that reading mode was opened on has some type of key points
 // section. This heuristic checks if there's a heading or button that has
@@ -344,25 +378,6 @@ bool ReadAnythingAppModel::ContentNodesOnlyContainHeadings() {
 // that could likely indicate that a section represents a "key points."
 // This is just intended as an approximation for metrics purposes to better
 // understand the types of pages that reading mode is opened on.
-bool ReadAnythingAppModel::MaybeHasKeyPointsSection() const {
-  if (!ContainsActiveTree()) {
-    return false;
-  }
-  ui::AXSerializableTree* active_tree = GetTreeFromId(active_tree_id_);
-  if (!active_tree || !active_tree->root()) {
-    return false;
-  }
-
-  for (ui::AXNode* node = active_tree->root(); node;
-       node = node->GetNextUnignoredInTreeOrder()) {
-    if (IsNodeLikelyKeyPoints(node)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Checks if a specific AXNode seems likely to indicate a key points section.
 bool ReadAnythingAppModel::IsNodeLikelyKeyPoints(ui::AXNode* node) const {
   if (node->GetRole() == ax::mojom::Role::kHeading ||
       node->GetRole() == ax::mojom::Role::kButton ||
@@ -702,6 +717,9 @@ void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
 
   // Set URL info if it hasn't already been set.
   SetTreeInfoUrlInformation(*it->second);
+
+  // Reset cached original page metrics since tree structure changed.
+  it->second->original_page_metrics.reset();
 
   ProcessGeneratedEvents(tree_id, event_generator, prev_tree_size,
                          tree->size());

@@ -664,7 +664,9 @@ suite('Logger', () => {
     h2.textContent = 'The Bottom Line';
     container.appendChild(h2);
 
-    visualBrowserProxy.keyPointsSection = true;
+    visualBrowserProxy.originalPageMetrics = {
+      maybeHasKeyPoints: true,
+    };
 
     logger.logDistilledPageStructure(container);
 

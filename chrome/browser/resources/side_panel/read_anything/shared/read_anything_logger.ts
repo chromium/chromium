@@ -280,10 +280,18 @@ export class ReadAnythingLogger {
       this.logPdfDistilledPageStructure_(headerCounts, paragraphs.length);
     }
 
-    this.logEnglishKeyPointsMetrics_(wordCountContainer);
+    this.logOriginalPageMetrics_(wordCountContainer);
   }
 
-  private logEnglishKeyPointsMetrics_(wordCountContainer: Element) {
+  private logOriginalPageMetrics_(wordCountContainer: Element) {
+    const originalPageMetrics =
+        this.visualBrowserProxy_.getOriginalPageMetrics();
+    this.logEnglishKeyPointsMetrics_(
+        wordCountContainer, originalPageMetrics.maybeHasKeyPoints);
+  }
+
+  private logEnglishKeyPointsMetrics_(
+      wordCountContainer: Element, maybeHasKeyPointsOnPage: boolean) {
     const lang = this.audioBrowserProxy_.getBaseLanguageForSpeech();
     if (!lang || !lang.toLowerCase().startsWith('en')) {
       return;
@@ -307,8 +315,6 @@ export class ReadAnythingLogger {
         'Accessibility.ReadAnything.PageStructure.EnglishKeyPointsInReadingMode',
         maybeHasKeyPoints);
 
-    const maybeHasKeyPointsOnPage =
-        this.visualBrowserProxy_.maybeHasKeyPointsSection();
     this.metrics.recordBoolean(
         'Accessibility.ReadAnything.PageStructure.EnglishKeyPointsOnPage',
         maybeHasKeyPointsOnPage);

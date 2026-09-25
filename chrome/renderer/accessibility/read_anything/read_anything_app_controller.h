@@ -310,7 +310,7 @@ class ReadAnythingAppController
                          ui::AXNodeID focus_node_id,
                          int focus_offset);
   void OnCollapseSelection();
-  bool MaybeHasKeyPointsSection() const;
+  v8::Local<v8::Value> GetOriginalPageMetrics();
   std::string GetKeyPointsRegex() const;
   void AttemptLogEarlySelection(bool from_side_panel);
   void OnDistilled(int word_count);

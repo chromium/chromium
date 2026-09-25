@@ -87,6 +87,13 @@ class ReadAnythingAppModel {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingEarlySelection)
 
+  // Information about content on the original page, used for capturing
+  // differences in types of content on the original page and on the distilled
+  // page in metrics.
+  struct OriginalPageMetrics {
+    bool maybe_has_key_points = false;
+  };
+
   struct AXTreeInfo {
     explicit AXTreeInfo(std::unique_ptr<ui::AXTreeManager> manager);
     AXTreeInfo(const AXTreeInfo&) = delete;
@@ -120,6 +127,9 @@ class ReadAnythingAppModel {
 
     // Whether the latest tree is the "What's New" page.
     bool is_whats_new = false;
+
+    // Cached original page metrics for this tree.
+    mutable std::optional<OriginalPageMetrics> original_page_metrics;
 
     // TODO(41496290): Include any information that is associated with a
     // particular AXTree, namely is_pdf. Right now, this is set every time the
@@ -754,9 +764,12 @@ class ReadAnythingAppModel {
 
   bool has_pending_selection() const { return has_pending_selection_; }
 
-  // If the original page has something that looks like a key points section.
+  // Computes and returns original page metrics (e.g. key points section) for
+  // the active tree in a single pass.
+  OriginalPageMetrics GetOriginalPageMetrics() const;
+
+  // Checks if a specific AXNode seems likely to indicate a key points section.
   // This is a rough heuristic intended for metrics only and is not guaranteed.
-  bool MaybeHasKeyPointsSection() const;
   bool IsNodeLikelyKeyPoints(ui::AXNode* node) const;
   std::string GetKeyPointsRegex() const { return kKeyPointsRegex; }
 

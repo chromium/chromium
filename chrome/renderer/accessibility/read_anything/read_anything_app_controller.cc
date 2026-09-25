@@ -1390,8 +1390,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getCurrentTextContent",
                  &ReadAnythingAppController::GetCurrentTextContent)
       .SetMethod("shouldShowUi", &ReadAnythingAppController::ShouldShowUI)
-      .SetMethod("maybeHasKeyPointsSection",
-                 &ReadAnythingAppController::MaybeHasKeyPointsSection)
+      .SetMethod("getOriginalPageMetrics",
+                 &ReadAnythingAppController::GetOriginalPageMetrics)
       .SetMethod("getKeyPointsRegex",
                  &ReadAnythingAppController::GetKeyPointsRegex)
       .SetMethod("onIsSpeechActiveChanged",
@@ -2271,8 +2271,16 @@ void ReadAnythingAppController::OnDistilled(int word_count) {
       kMaxWordsConsumed, kWordsConsumedBuckets);
 }
 
-bool ReadAnythingAppController::MaybeHasKeyPointsSection() const {
-  return model_.MaybeHasKeyPointsSection();
+v8::Local<v8::Value> ReadAnythingAppController::GetOriginalPageMetrics() {
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+  v8::Local<v8::Object> obj = v8::Object::New(isolate);
+  gin::Dictionary dict(isolate, obj);
+
+  ReadAnythingAppModel::OriginalPageMetrics metrics =
+      model_.GetOriginalPageMetrics();
+  dict.Set("maybeHasKeyPoints", metrics.maybe_has_key_points);
+  return obj;
 }
 
 std::string ReadAnythingAppController::GetKeyPointsRegex() const {

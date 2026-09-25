@@ -13,7 +13,7 @@ export {browserProxyFactory as userEducationProxyFactory} from '//resources/mojo
 export type {AppElement} from './app/app.js';
 export {AppStyleUpdater} from './app/app_style_updater.js';
 export type {ReadAnythingToolbarElement} from './app/read_anything_toolbar.js';
-export type {VisualBrowserProxy} from './app/visual_browser_proxy.js';
+export type {OriginalPageMetrics, VisualBrowserProxy} from './app/visual_browser_proxy.js';
 export {VisualBrowserProxyImpl} from './app/visual_browser_proxy.js';
 export type {AxSegment, ContentBrowserProxy, SkiaImageBitmap} from './content/content_browser_proxy.js';
 export {ContentBrowserProxyImpl} from './content/content_browser_proxy.js';

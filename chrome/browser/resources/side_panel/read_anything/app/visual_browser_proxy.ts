@@ -6,6 +6,10 @@ import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
 import {EventForwarder} from '../content/read_anything_types.js';
 
+export interface OriginalPageMetrics {
+  maybeHasKeyPoints: boolean;
+}
+
 // Interface for accessing and updating visual presentation, layout, and theme
 // settings (such as fonts, line and letter spacing, color themes, line focus,
 // and presentation states) in Read Anything.
@@ -57,7 +61,7 @@ export interface VisualBrowserProxy {
   getLowContrastDarkTheme(): number;
   getColorTheme(): number;
 
-  maybeHasKeyPointsSection(): boolean;
+  getOriginalPageMetrics(): OriginalPageMetrics;
   getKeyPointsRegex(): string;
 
   requestImageData(nodeId: number): void;
@@ -251,8 +255,8 @@ export class VisualBrowserProxyImpl implements VisualBrowserProxy {
     return chrome.readingMode.colorTheme;
   }
 
-  maybeHasKeyPointsSection(): boolean {
-    return chrome.readingMode.maybeHasKeyPointsSection();
+  getOriginalPageMetrics(): OriginalPageMetrics {
+    return chrome.readingMode.getOriginalPageMetrics();
   }
 
   getKeyPointsRegex(): string {

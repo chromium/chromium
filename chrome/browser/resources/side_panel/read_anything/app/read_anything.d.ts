@@ -26,6 +26,13 @@ interface AxTreeAnchorMetadata {
   textAfter?: string;
 }
 
+// Information about content on the original page, used for capturing
+// differences in types of content on the original page and on the distilled
+// page in metrics.
+interface OriginalPageMetrics {
+  maybeHasKeyPoints: boolean;
+}
+
 declare namespace chrome {
   export namespace readingMode {
     /////////////////////////////////////////////////////////////////////
@@ -252,8 +259,10 @@ declare namespace chrome {
     // Returns true if the element is a leaf node.
     function isLeafNode(nodeId: number): boolean;
 
-    // Returns true if the original page has a section with key points.
-    function maybeHasKeyPointsSection(): boolean;
+
+    // Traverses the original page's accessibility tree to calculate metrics
+    // (e.g. key points section) in a single pass.
+    function getOriginalPageMetrics(): OriginalPageMetrics;
 
     // Returns a regex string of keywords used to identify a key points section.
     function getKeyPointsRegex(): string;
