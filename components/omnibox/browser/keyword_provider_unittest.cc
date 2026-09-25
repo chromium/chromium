@@ -96,7 +96,7 @@ class KeywordProviderTest : public testing::Test {
   struct TestData {
     const std::u16string input;
     const size_t num_results;
-    const MatchType<ResultType> output[3];
+    const std::array<MatchType<ResultType>, 3> output;
   };
 
   KeywordProviderTest() : kw_provider_(nullptr) {}
@@ -138,11 +138,9 @@ void KeywordProviderTest::RunTest(
     matches = kw_provider_->matches();
     ASSERT_EQ(keyword_cases[i].num_results, matches.size());
     for (size_t j = 0; j < matches.size(); ++j) {
-      EXPECT_EQ(UNSAFE_TODO(keyword_cases[i].output[j].member),
-                matches[j].*member);
-      EXPECT_EQ(
-          UNSAFE_TODO(keyword_cases[i].output[j].allowed_to_be_default_match),
-          matches[j].allowed_to_be_default_match);
+      EXPECT_EQ(keyword_cases[i].output[j].member, matches[j].*member);
+      EXPECT_EQ(keyword_cases[i].output[j].allowed_to_be_default_match,
+                matches[j].allowed_to_be_default_match);
     }
   }
 }
@@ -156,8 +154,8 @@ TEST_F(KeywordProviderTest, Edit) {
 
       // Check that tokenization only collapses whitespace between first tokens,
       // no-query-input cases have a space appended, and action is not escaped.
-      {u"z", 1, {{u"z ", true}, kEmptyMatch, kEmptyMatch}},
-      {u"z    \t", 1, {{u"z ", true}, kEmptyMatch, kEmptyMatch}},
+      {u"z", 1, {{{u"z ", true}, kEmptyMatch, kEmptyMatch}}},
+      {u"z    \t", 1, {{{u"z ", true}, kEmptyMatch, kEmptyMatch}}},
 
       // Check that exact, substituting keywords with a verbatim search term
       // don't generate a result.  (These are handled by SearchProvider.)
@@ -166,16 +164,16 @@ TEST_F(KeywordProviderTest, Edit) {
 
       // Matches should be limited to three, and sorted in quality order, not
       // alphabetical.
-      {u"aaa", 2, {{u"aaaa ", false}, {u"aaaaa ", false}, kEmptyMatch}},
+      {u"aaa", 2, {{{u"aaaa ", false}, {u"aaaaa ", false}, kEmptyMatch}}},
       {u"a 1 2 3",
        3,
-       {{u"aa 1 2 3", false}, {u"ab 1 2 3", false}, {u"aaaa 1 2 3", false}}},
-      {u"www.a", 3, {{u"aa ", false}, {u"ab ", false}, {u"aaaa ", false}}},
+       {{{u"aa 1 2 3", false}, {u"ab 1 2 3", false}, {u"aaaa 1 2 3", false}}}},
+      {u"www.a", 3, {{{u"aa ", false}, {u"ab ", false}, {u"aaaa ", false}}}},
       {u"foo hello",
        2,
-       {{u"fooshort.com hello", false},
-        {u"foolong.co.uk hello", false},
-        kEmptyMatch}},
+       {{{u"fooshort.com hello", false},
+         {u"foolong.co.uk hello", false},
+         kEmptyMatch}}},
       // Exact matches should prevent returning inexact matches.  Also, the
       // verbatim query for this keyword match should not be returned.  (It's
       // returned by SearchProvider.)
@@ -187,15 +185,15 @@ TEST_F(KeywordProviderTest, Edit) {
       // domain name.
       {u"host foo",
        1,
-       {{u"host.site.com foo", false}, kEmptyMatch, kEmptyMatch}},
+       {{{u"host.site.com foo", false}, kEmptyMatch, kEmptyMatch}}},
       {u"host.site foo",
        1,
-       {{u"host.site.com foo", false}, kEmptyMatch, kEmptyMatch}},
+       {{{u"host.site.com foo", false}, kEmptyMatch, kEmptyMatch}}},
       {u"site foo", 0, {kEmptyMatch, kEmptyMatch, kEmptyMatch}},
 
       // Clean up keyword input properly.  "http" and "https" are the only
       // allowed schemes.
-      {u"www", 1, {{u"www ", true}, kEmptyMatch, kEmptyMatch}},
+      {u"www", 1, {{{u"www ", true}, kEmptyMatch, kEmptyMatch}}},
       {u"www.", 0, {kEmptyMatch, kEmptyMatch, kEmptyMatch}},
       // In this particular example, stripping the "www." from "www.FOO" means
       // we can allow matching against keywords that explicitly start with
@@ -203,20 +201,20 @@ TEST_F(KeywordProviderTest, Edit) {
       // seems reasonable.
       {u"www.w w",
        3,
-       {{u"www w", false},
-        {u"weasel w", false},
-        {u"www.cleantestv2.com w", false}}},
-      {u"http://www", 1, {{u"www ", true}, kEmptyMatch, kEmptyMatch}},
+       {{{u"www w", false},
+         {u"weasel w", false},
+         {u"www.cleantestv2.com w", false}}}},
+      {u"http://www", 1, {{{u"www ", true}, kEmptyMatch, kEmptyMatch}}},
       {u"http://www.", 0, {kEmptyMatch, kEmptyMatch, kEmptyMatch}},
       {u"ftp: blah", 0, {kEmptyMatch, kEmptyMatch, kEmptyMatch}},
       {u"mailto:z", 0, {kEmptyMatch, kEmptyMatch, kEmptyMatch}},
       {u"ftp://z", 0, {kEmptyMatch, kEmptyMatch, kEmptyMatch}},
-      {u"https://z", 1, {{u"z ", true}, kEmptyMatch, kEmptyMatch}},
+      {u"https://z", 1, {{{u"z ", true}, kEmptyMatch, kEmptyMatch}}},
 
       // Non-substituting keywords, whether typed fully or not
       // should not add a space.
-      {u"nonsu", 1, {{u"nonsub", false}, kEmptyMatch, kEmptyMatch}},
-      {u"nonsub", 1, {{u"nonsub", true}, kEmptyMatch, kEmptyMatch}},
+      {u"nonsu", 1, {{{u"nonsub", false}, kEmptyMatch, kEmptyMatch}}},
+      {u"nonsub", 1, {{{u"nonsub", true}, kEmptyMatch, kEmptyMatch}}},
   };
 
   RunTest<std::u16string>(edit_cases, &AutocompleteMatch::fill_into_edit);
@@ -226,33 +224,33 @@ TEST_F(KeywordProviderTest, URL) {
   const MatchType<GURL> kEmptyMatch = {GURL(), false};
   TestData<GURL> url_cases[] = {
       // No query input -> empty destination URL.
-      {u"z", 1, {{GURL(), true}, kEmptyMatch, kEmptyMatch}},
-      {u"z    \t", 1, {{GURL(), true}, kEmptyMatch, kEmptyMatch}},
+      {u"z", 1, {{{GURL(), true}, kEmptyMatch, kEmptyMatch}}},
+      {u"z    \t", 1, {{{GURL(), true}, kEmptyMatch, kEmptyMatch}}},
 
       // Check that tokenization only collapses whitespace between first tokens
       // and query input, but not rest of URL, is escaped.
       {u"w  bar +baz",
        3,
-       {{GURL(" +%2B?=bar+%2Bbazfoo "), false},
-        {GURL("bar+%2Bbaz=z"), false},
-        {GURL("http://www.cleantestv2.com/?q=bar+%2Bbaz"), false}}},
+       {{{GURL(" +%2B?=bar+%2Bbazfoo "), false},
+         {GURL("bar+%2Bbaz=z"), false},
+         {GURL("http://www.cleantestv2.com/?q=bar+%2Bbaz"), false}}}},
 
       // Substitution should work with various locations of the "%s".
       {u"aaa 1a2b",
        2,
-       {{GURL("http://aaaa/?aaaa=1&b=1a2b&c"), false},
-        {GURL("1a2b"), false},
-        kEmptyMatch}},
+       {{{GURL("http://aaaa/?aaaa=1&b=1a2b&c"), false},
+         {GURL("1a2b"), false},
+         kEmptyMatch}}},
       {u"a 1 2 3",
        3,
-       {{GURL("aa.com?foo=1+2+3"), false},
-        {GURL("bogus URL 1+2+3"), false},
-        {GURL("http://aaaa/?aaaa=1&b=1+2+3&c"), false}}},
+       {{{GURL("aa.com?foo=1+2+3"), false},
+         {GURL("bogus URL 1+2+3"), false},
+         {GURL("http://aaaa/?aaaa=1&b=1+2+3&c"), false}}}},
       {u"www.w w",
        3,
-       {{GURL(" +%2B?=wfoo "), false},
-        {GURL("weaselwweasel"), false},
-        {GURL("http://www.cleantestv2.com/?q=w"), false}}},
+       {{{GURL(" +%2B?=wfoo "), false},
+         {GURL("weaselwweasel"), false},
+         {GURL("http://www.cleantestv2.com/?q=w"), false}}}},
   };
 
   RunTest<GURL>(url_cases, &AutocompleteMatch::destination_url);
@@ -262,10 +260,10 @@ TEST_F(KeywordProviderTest, Contents) {
   const MatchType<std::u16string> kEmptyMatch = {std::u16string(), false};
   TestData<std::u16string> contents_cases[] = {
       // No query input -> substitute "<Type search term>" into contents.
-      {u"z", 1, {{u"<Type search term>", true}, kEmptyMatch, kEmptyMatch}},
+      {u"z", 1, {{{u"<Type search term>", true}, kEmptyMatch, kEmptyMatch}}},
       {u"z    \t",
        1,
-       {{u"<Type search term>", true}, kEmptyMatch, kEmptyMatch}},
+       {{{u"<Type search term>", true}, kEmptyMatch, kEmptyMatch}}},
 
       // Exact keyword matches with remaining text should return nothing.
       {u"www.www www", 0, {kEmptyMatch, kEmptyMatch, kEmptyMatch}},
@@ -282,16 +280,16 @@ TEST_F(KeywordProviderTest, Contents) {
       // populated later by AutocompleteController.
       {u"aaa",
        2,
-       {{u"<Type search term>", false},
-        {u"<Type search term>", false},
-        kEmptyMatch}},
+       {{{u"<Type search term>", false},
+         {u"<Type search term>", false},
+         kEmptyMatch}}},
       // When there is a search string, simply display it.
-      {u"www.w w", 3, {{u"w", false}, {u"w", false}, {u"w", false}}},
+      {u"www.w w", 3, {{{u"w", false}, {u"w", false}, {u"w", false}}}},
       // Also, check that tokenization only collapses whitespace between first
       // tokens and contents are not escaped or unescaped.
       {u"a   1 2+ 3",
        3,
-       {{u"1 2+ 3", false}, {u"1 2+ 3", false}, {u"1 2+ 3", false}}},
+       {{{u"1 2+ 3", false}, {u"1 2+ 3", false}, {u"1 2+ 3", false}}}},
   };
 
   RunTest<std::u16string>(contents_cases, &AutocompleteMatch::contents);
@@ -419,9 +417,9 @@ TEST_F(KeywordProviderTest, ExtraQueryParams) {
   TestData<GURL> url_cases[] = {
       {u"a 1 2 3",
        3,
-       {{GURL("aa.com?a=b&foo=1+2+3"), false},
-        {GURL("bogus URL 1+2+3"), false},
-        {GURL("http://aaaa/?aaaa=1&b=1+2+3&c"), false}}},
+       {{{GURL("aa.com?a=b&foo=1+2+3"), false},
+         {GURL("bogus URL 1+2+3"), false},
+         {GURL("http://aaaa/?aaaa=1&b=1+2+3&c"), false}}}},
   };
 
   RunTest<GURL>(url_cases, &AutocompleteMatch::destination_url);
