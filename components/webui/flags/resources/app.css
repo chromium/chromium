@@ -408,3 +408,12 @@ cr-tabs {
 .actions-container cr-icon-button {
   margin-inline-start: 8px;
 }
+
+cr-toast {
+  /* Ensure toasts appear above the #needs-restart tray (z-index: 10). */
+  z-index: 11;
+}
+
+.dropdown-item:hover {
+  background-color: var(--cr-hover-background-color);
+}

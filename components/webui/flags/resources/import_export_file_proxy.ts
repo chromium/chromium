@@ -5,6 +5,8 @@
 export interface ImportExportFileProxy {
   downloadFile(a: HTMLAnchorElement): void;
   selectFile(input: HTMLInputElement): void;
+  copyToClipboard(text: string): Promise<void>;
+  readFromClipboard(): Promise<string>;
 }
 
 export class ImportExportFileProxyImpl implements ImportExportFileProxy {
@@ -14,6 +16,14 @@ export class ImportExportFileProxyImpl implements ImportExportFileProxy {
 
   selectFile(input: HTMLInputElement) {
     input.click();
+  }
+
+  copyToClipboard(text: string): Promise<void> {
+    return navigator.clipboard.writeText(text);
+  }
+
+  readFromClipboard(): Promise<string> {
+    return navigator.clipboard.readText();
   }
 
   static getInstance(): ImportExportFileProxy {

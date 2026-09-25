@@ -20,11 +20,19 @@ import {TestFlagsBrowserProxy} from './test_flags_browser_proxy.js';
 
 class TestImportExportFileProxy extends TestBrowserProxy implements
     ImportExportFileProxy {
+  private clipboardText_: string = '';
+
   constructor() {
     super([
       'downloadFile',
       'selectFile',
+      'copyToClipboard',
+      'readFromClipboard',
     ]);
+  }
+
+  setClipboardText(text: string) {
+    this.clipboardText_ = text;
   }
 
   downloadFile(a: HTMLAnchorElement) {
@@ -33,6 +41,17 @@ class TestImportExportFileProxy extends TestBrowserProxy implements
 
   selectFile(input: HTMLInputElement) {
     this.methodCalled('selectFile', input);
+  }
+
+  copyToClipboard(text: string): Promise<void> {
+    this.clipboardText_ = text;
+    this.methodCalled('copyToClipboard', text);
+    return Promise.resolve();
+  }
+
+  readFromClipboard(): Promise<string> {
+    this.methodCalled('readFromClipboard');
+    return Promise.resolve(this.clipboardText_);
   }
 }
 
@@ -465,16 +484,32 @@ suite('FlagsAppTest', function() {
     assertTrue(isVisible(importButton));
     assertTrue(isVisible(exportButton));
 
-    // Test Export.
+    // Test Export (downloads file AND copies JSON to clipboard).
     browserProxy.reset();
     fileProxy.reset();
     exportButton.click();
     await browserProxy.whenCalled('exportFlags');
+    const copiedText = await fileProxy.whenCalled('copyToClipboard');
+    assertEquals(
+        JSON.stringify({enabled_flags: [], customized_flags: {}}, null, 2),
+        copiedText);
     const anchor = await fileProxy.whenCalled('downloadFile');
     assertEquals('flags.json', anchor.download);
+    const toast = app.getRequiredElement<CrToastElement>('#toast');
+    await microtasksFinished();
+    assertTrue(toast.open);
+    assertEquals(
+        'Flags exported and copied to clipboard.', toast.textContent.trim());
 
-    // Test Import.
+    // Test Import via dropdown menu -> Upload file.
     browserProxy.reset();
+    fileProxy.reset();
+    importButton.click();
+    const importFromFileButton =
+        app.getRequiredElement<HTMLElement>('#import-from-file');
+    importFromFileButton.click();
+    await fileProxy.whenCalled('selectFile');
+
     const fileInput =
         app.getRequiredElement<HTMLInputElement>('#import-file-input');
     const validJson = JSON.stringify({enabled_flags: ['flag1@1']});
@@ -487,6 +522,75 @@ suite('FlagsAppTest', function() {
 
     const importedData = await browserProxy.whenCalled('importFlags');
     assertEquals('flag1@1', importedData.enabled_flags[0]);
+  });
+
+  test('ImportFromClipboard', async function() {
+    loadTimeData.overrideValues({importExportEnabled: true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const data: ExperimentalFeaturesData =
+        structuredClone(experimentalFeaturesData);
+    data.importExportEnabled = true;
+    await setupApp(data);
+
+    browserProxy.reset();
+    fileProxy.reset();
+    const validJson = JSON.stringify({
+      enabled_flags: ['flag1@1'],
+      customized_flags: {'custom-flag': 'value'},
+    });
+    fileProxy.setClipboardText(validJson);
+
+    const importButton =
+        app.getRequiredElement<HTMLElement>('#experiment-import');
+    importButton.click();
+
+    const importFromClipboardButton =
+        app.getRequiredElement<HTMLElement>('#import-from-clipboard');
+    importFromClipboardButton.click();
+
+    await fileProxy.whenCalled('readFromClipboard');
+    const importedData = await browserProxy.whenCalled('importFlags');
+    assertEquals('flag1@1', importedData.enabled_flags[0]);
+    assertEquals('value', importedData.customized_flags['custom-flag']);
+  });
+
+  test('ImportInvalidClipboard', async function() {
+    loadTimeData.overrideValues({importExportEnabled: true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const data: ExperimentalFeaturesData =
+        structuredClone(experimentalFeaturesData);
+    data.importExportEnabled = true;
+    await setupApp(data);
+
+    browserProxy.reset();
+    fileProxy.reset();
+    fileProxy.setClipboardText(JSON.stringify({
+      customized_flags: {},
+      end_flags: ['composebox-voice-search-coherence@3'],
+    }));
+
+    const importButton =
+        app.getRequiredElement<HTMLElement>('#experiment-import');
+    importButton.click();
+
+    const importFromClipboardButton =
+        app.getRequiredElement<HTMLElement>('#import-from-clipboard');
+    importFromClipboardButton.click();
+
+    await fileProxy.whenCalled('readFromClipboard');
+    const errorToast = app.getRequiredElement<CrToastElement>('#errorToast');
+    await new Promise<void>(resolve => {
+      const check = () => {
+        if (errorToast.open) {
+          resolve();
+        } else {
+          setTimeout(check, 10);
+        }
+      };
+      check();
+    });
+    assertTrue(errorToast.open);
+    assertEquals('Invalid clipboard format.', errorToast.textContent.trim());
   });
 
   test('ImportInvalidFile', async function() {

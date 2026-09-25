@@ -5,6 +5,7 @@
 // <if expr="is_ios">
 import 'chrome://resources/js/ios/web_ui.js';
 // </if>
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -15,6 +16,7 @@ import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import '/strings.m.js';
 import './experiment.js';
 
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -147,6 +149,7 @@ export class FlagsAppElement extends CrLitElement {
       importError: {
         type: String,
       },
+      toastMessage_: {type: String},
 
       tabNames_: {type: Array},
       selectedTabIndex_: {type: Number},
@@ -182,6 +185,7 @@ export class FlagsAppElement extends CrLitElement {
   protected accessor searching: boolean = false;
   protected accessor needsRestart: boolean = false;
   protected accessor importError: string = '';
+  protected accessor toastMessage_: string = '';
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
@@ -529,6 +533,15 @@ export class FlagsAppElement extends CrLitElement {
   protected async onExportClick_() {
     const data = await FlagsBrowserProxyImpl.getInstance().exportFlags();
     const content = JSON.stringify(data, null, 2);
+
+    try {
+      await ImportExportFileProxyImpl.getInstance().copyToClipboard(content);
+      this.showToast_('Flags exported and copied to clipboard.');
+    } catch (error) {
+      console.error('Unable to copy exported flags to clipboard:', error);
+      this.showToast_('Flags exported.');
+    }
+
     const blob = new Blob([content], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -541,6 +554,31 @@ export class FlagsAppElement extends CrLitElement {
     }, 0);
   }
 
+  protected onImportClick_(e: Event) {
+    const menu = this.getRequiredElement<CrActionMenuElement>('#import-menu');
+    menu.showAt(e.currentTarget as HTMLElement);
+  }
+
+  protected onImportFromFileClick_() {
+    const menu = this.getRequiredElement<CrActionMenuElement>('#import-menu');
+    menu.close();
+    const fileInput =
+        this.getRequiredElement<HTMLInputElement>('#import-file-input');
+    ImportExportFileProxyImpl.getInstance().selectFile(fileInput);
+  }
+
+  protected async onImportFromClipboardClick_() {
+    const menu = this.getRequiredElement<CrActionMenuElement>('#import-menu');
+    menu.close();
+    try {
+      const text =
+          await ImportExportFileProxyImpl.getInstance().readFromClipboard();
+      await this.importFlagsFromJson_(text, 'Invalid clipboard format.');
+    } catch {
+      this.rejectImport_('Invalid clipboard format.');
+    }
+  }
+
   protected async onImportFileChange_(e: Event) {
     const input = e.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) {
@@ -551,6 +589,14 @@ export class FlagsAppElement extends CrLitElement {
 
     try {
       const text = await file.text();
+      await this.importFlagsFromJson_(text, 'Invalid file format.');
+    } catch {
+      this.rejectImport_('Invalid file format.');
+    }
+  }
+
+  private async importFlagsFromJson_(text: string, errorMessage: string) {
+    try {
       const data = JSON.parse(text);
 
       if (!data || typeof data !== 'object' || Array.isArray(data)) {
@@ -578,12 +624,18 @@ export class FlagsAppElement extends CrLitElement {
       FlagsBrowserProxyImpl.getInstance().resetAllFlags();
       await FlagsBrowserProxyImpl.getInstance().importFlags(data);
       this.needsRestart = true;
-      this.announceStatus('Flags imported successfully.');
+      this.showToast_('Flags imported successfully.');
       await this.requestExperimentalFeaturesData();
       await this.updateComplete;
     } catch {
-      this.rejectImport_('Invalid file format.');
+      this.rejectImport_(errorMessage);
     }
+  }
+
+  private showToast_(msg: string) {
+    this.toastMessage_ = msg;
+    this.announceStatus(msg);
+    this.getRequiredElement<CrToastElement>('#toast').show();
   }
 
   private rejectImport_(msg: string) {
