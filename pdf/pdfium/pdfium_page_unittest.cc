@@ -39,6 +39,10 @@
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/range/range.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace chrome_pdf {
 
 namespace {
@@ -1211,6 +1215,13 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailWithTransparency) {
 }
 
 TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailWithOverlapCropBox) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/566174935): Re-enable once the Skia expectation matches
+  // Win11 rendering after PDFium roll.
+  if (GetParam() && base::win::GetVersion() >= base::win::Version::WIN11) {
+    GTEST_SKIP() << "Skia rendering mismatch on Windows 11.";
+  }
+#endif
   TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
