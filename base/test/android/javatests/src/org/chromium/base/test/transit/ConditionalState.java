@@ -269,6 +269,19 @@ public abstract class ConditionalState {
         return mElements.declareView(viewMatcher);
     }
 
+    /** Declare as an element a View that matches all |viewMatchers|. */
+    @SafeVarargs
+    public final ViewElement<View> declareView(Matcher<View>... viewMatchers) {
+        return mElements.declareView(viewMatchers);
+    }
+
+    /** Declare as an element a |viewClass| that matches all |viewMatchers|. */
+    @SafeVarargs
+    public final <ViewT extends View> ViewElement<ViewT> declareView(
+            Class<ViewT> viewClass, Matcher<View>... viewMatchers) {
+        return mElements.declareView(viewClass, viewMatchers);
+    }
+
     /** Declare as an element a lazily-checked View that matches |viewMatcher|. */
     public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
             ViewSpec<ViewT> viewSpec) {

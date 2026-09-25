@@ -103,6 +103,19 @@ public class Elements extends BaseElements {
             return declareView(viewSpec(viewClass, viewMatcher), options);
         }
 
+        /** See {@link ConditionalState#declareView(Matcher...)}. */
+        @SafeVarargs
+        public final ViewElement<View> declareView(Matcher<View>... viewMatchers) {
+            return declareView(viewSpec(viewMatchers), ViewElement.Options.DEFAULT);
+        }
+
+        /** See {@link ConditionalState#declareView(Class, Matcher...)}. */
+        @SafeVarargs
+        public final <ViewT extends View> ViewElement<ViewT> declareView(
+                Class<ViewT> viewClass, Matcher<View>... viewMatchers) {
+            return declareView(viewSpec(viewClass, viewMatchers), ViewElement.Options.DEFAULT);
+        }
+
         /** See {@link ConditionalState#declareOptionalView(ViewSpec)}. */
         public <ViewT extends View> OptionalViewElement<ViewT> declareOptionalView(
                 ViewSpec<ViewT> viewSpec) {

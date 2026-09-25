@@ -10,8 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.instanceOf;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,8 +29,7 @@ public class PreferenceFacility extends Facility<SettingsStation<?>> {
     public PreferenceFacility(String prefTitle) {
         prefViewElement =
                 declareView(
-                        viewSpec(
-                                hasDescendant(withText(prefTitle)),
-                                withParent(instanceOf(RecyclerView.class))));
+                        hasDescendant(withText(prefTitle)),
+                        withParent(instanceOf(RecyclerView.class)));
     }
 }

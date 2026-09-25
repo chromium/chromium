@@ -71,9 +71,8 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
         urlBarElement =
                 declareView(
                         UrlBar.class,
-                        allOf(
-                                withId(R.id.url_bar),
-                                isDescendantOfA(withId(R.id.tab_search_overlay_panel))));
+                        withId(R.id.url_bar),
+                        isDescendantOfA(withId(R.id.tab_search_overlay_panel)));
     }
 
     /** Types the given query into the overlay's search box and waits for suggestions to appear. */

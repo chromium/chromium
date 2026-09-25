@@ -7,8 +7,6 @@ package org.chromium.chrome.test.transit.ui;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewSpec.viewSpec;
-
 import android.os.Build;
 import android.view.View;
 
@@ -88,11 +86,11 @@ public class MessageFacility<HostStationT extends CtaPageStation> extends Facili
 
     /** Declare a ViewElement with the message's |title|. */
     protected ViewElement<View> declareTitleView(String title) {
-        return declareView(viewSpec(withId(R.id.message_title), withText(title)));
+        return declareView(withId(R.id.message_title), withText(title));
     }
 
     /** Declare a ViewElement for the primary button.. */
     protected ViewElement<View> declarePrimaryButtonView(String text) {
-        return declareView(viewSpec(withId(R.id.message_primary_button), withText(text)));
+        return declareView(withId(R.id.message_primary_button), withText(text));
     }
 }
