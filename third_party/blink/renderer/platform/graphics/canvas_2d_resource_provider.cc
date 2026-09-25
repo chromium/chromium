@@ -584,6 +584,7 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
 
   const bool needs_clear = !is_cleared_;
   is_cleared_ = true;
+  auto* image_provider = GetOrCreateCanvasImageProvider();
 
   auto access = resource_->BeginAccess(/*readonly=*/false);
   gpu::raster::RasterInterface* ri = RasterInterface();
@@ -615,9 +616,9 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
       can_use_lcd_text, /*visible=*/true, GetColorSpace(),
       /*hdr_headroom=*/0.f, resource()->GetSharedImage()->mailbox().name);
 
-  ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
-                     full_raster_rect, playback_rect, post_translate,
-                     post_scale, /*requires_clear=*/false,
+  ri->RasterCHROMIUM(list.get(), image_provider, size, full_raster_rect,
+                     playback_rect, post_translate, post_scale,
+                     /*requires_clear=*/false,
                      /*raster_inducing_scroll_offsets=*/nullptr,
                      &max_op_size_hint, custom_callback);
 
