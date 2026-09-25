@@ -206,6 +206,9 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
+      isLensSearchEligible_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -222,6 +225,7 @@ export class OmniboxPopupSearchboxElement extends
       canShowSecondarySideMediaQueryList.matches;
   accessor hasSecondarySide: boolean = false;
   accessor isLogicallyFocused_: boolean = false;
+  accessor isLensSearchEligible_: boolean = false;
   accessor hasInputSelection_: boolean = false;
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');
@@ -235,6 +239,8 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxLensSearch');
+  private isComposeboxChipEnabled_: boolean =
+      loadTimeData.getBoolean('composeboxShowChip');
   protected accessor useWebkitSearchIcons_: boolean = false;
   override accessor multiLineEnabled: boolean =
       loadTimeData.getBoolean('searchboxMultiline');
@@ -347,6 +353,13 @@ export class OmniboxPopupSearchboxElement extends
               a11yLabel,
               icon: iconUrl,
             };
+          }),
+      this.searchboxCallbackRouter_.updateLensSearchEligibility.addListener(
+          (eligible: boolean) => {
+            this.isLensSearchEligible_ = eligible;
+            if (this.isComposeboxChipEnabled_) {
+              this.updateDropdownVisibility();
+            }
           }),
     ];
     this.popupListenerIds_ = [
@@ -555,7 +568,17 @@ export class OmniboxPopupSearchboxElement extends
     this.clearAutocompleteMatches();
     this.popupPageHandler_.revert(this.currentSequenceNum_);
   }
-
+  /**
+   * Determines whether the dropdown should be visible considering contextual
+   * chips because the header "Ask Google about this page" is suppressed when
+   * this chip mode is enabled.
+   * TODO(crbug.com/555355466): Clean up contextual chip visibility logic.
+   */
+  override shouldDropdownBeVisible(): boolean {
+    const hasContextualChips =
+        this.isComposeboxChipEnabled_ && this.isLensSearchEligible_;
+    return this.hasMatches() || hasContextualChips;
+  }
   /**
    * Dispatches an autocomplete query to the browser process via Mojo.
    *
