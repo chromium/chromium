@@ -98,7 +98,9 @@ void DumpUsage(const base::CommandLine& cmd_line,
       L"Defaults\n"
       L"                            to "
       L"..\\..\\third_party\\lzma_sdk\\Executable\n"
-      L"                            relative to this program's location.\n",
+      L"                            relative to this program's location.\n"
+      L" --fast_archive_compression Use fast compression of chrome.7z into\n"
+      L"                            chrome.packed.7z.\n",
       cmd_line.GetProgram().value().c_str()));
 }
 

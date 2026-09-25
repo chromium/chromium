@@ -19,7 +19,8 @@
 // CommandLine instance, and 2) resides in the output directory of a build
 // tree.  When #2 is not the case, the --7za_path command-line switch may be
 // used to provide the (relative or absolute) path to the directory containing
-// 7za.exe.
+// 7za.exe.  The --fast_archive_compression switch may be used to speed up
+// compression of chrome.packed.7z at the expense of archive size.
 
 #include "chrome/installer/test/alternate_version_generator.h"
 
@@ -76,6 +77,7 @@ const wchar_t kMakeCab[] = L"makecab.exe";
 const wchar_t kSetupEx_[] = L"setup.ex_";
 const wchar_t kSetupExe[] = L"setup.exe";
 const char kSwitch7zaPath[] = "7za_path";
+const char kSwitchFastArchiveCompression[] = "fast_archive_compression";
 const wchar_t kTempDirPrefix[] = L"mini_installer_test_temp";
 
 // A helper class for creating and cleaning a temporary directory.  A temporary
@@ -718,7 +720,11 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
 
   // Compress chrome.7z into chrome.packed.7z for compressed builds.
   if (!chrome_packed_7z.empty() &&
-      !CreateArchive(chrome_packed_7z, chrome_7z, 9)) {
+      !CreateArchive(chrome_packed_7z, chrome_7z,
+                     base::CommandLine::ForCurrentProcess()->HasSwitch(
+                         kSwitchFastArchiveCompression)
+                         ? 1
+                         : 9)) {
     return false;
   }
 

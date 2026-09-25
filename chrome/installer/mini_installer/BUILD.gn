@@ -375,6 +375,9 @@ if (!(is_component_build && is_debug && target_cpu == "x86") &&
       "--path_7za",
       "../../third_party/lzma_sdk/bin/win64",
     ]
+    if (fast_archive_compression) {
+      args += [ "--fast_archive_compression" ]
+    }
     deps = [
       ":mini_installer",
       alternate_version_generator_target,
