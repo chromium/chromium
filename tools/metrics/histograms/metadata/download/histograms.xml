@@ -404,6 +404,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.History.DownloadCount" units="downloads"
+    expires_after="2027-09-24">
+  <owner>fdoray@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>chrome-downloads@google.com</owner>
+  <summary>
+    Records the number of download history rows received when loading download
+    history for a profile (in DownloadHistory::LoadHistoryDownloads). Used to
+    detect if some users have an egregious number of downloads, and evaluate
+    whether cleanup methods added later (e.g. clean up older than 90 days) work.
+  </summary>
+</histogram>
+
 <histogram name="Download.History.LoadedInSession" enum="BooleanLoaded"
     expires_after="2027-03-18">
   <owner>qinmin@chromium.org</owner>

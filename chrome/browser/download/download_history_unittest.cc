@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "chrome/test/base/testing_profile.h"
@@ -578,6 +579,40 @@ TEST_F(DownloadHistoryTest, DownloadHistoryTest_OnHistoryQueryComplete_Pre) {
   std::move(query_callback).Run(std::move(query_results));
   EXPECT_TRUE(observer.on_history_query_complete_called_);
   history->RemoveObserver(&observer);
+}
+
+// Test that Download.History.DownloadCount histogram is emitted with the number
+// of rows received from history query.
+TEST_F(DownloadHistoryTest, DownloadHistoryTest_DownloadCountHistogram) {
+  base::HistogramTester histogram_tester;
+  class TestHistoryAdapter : public DownloadHistory::HistoryAdapter {
+   public:
+    explicit TestHistoryAdapter(
+        history::HistoryService::DownloadQueryCallback* callback_storage)
+        : HistoryAdapter(nullptr), query_callback_(callback_storage) {}
+    void QueryDownloads(
+        history::HistoryService::DownloadQueryCallback callback) override {
+      *query_callback_ = std::move(callback);
+    }
+
+    raw_ptr<history::HistoryService::DownloadQueryCallback> query_callback_;
+  };
+
+  history::HistoryService::DownloadQueryCallback query_callback;
+  auto test_history_adapter =
+      std::make_unique<TestHistoryAdapter>(&query_callback);
+
+  std::unique_ptr<DownloadHistory> history(
+      new DownloadHistory(&manager(), std::move(test_history_adapter)));
+  ASSERT_FALSE(query_callback.is_null());
+
+  std::vector<history::DownloadRow> query_results(3);
+  query_results[0].id = 1;
+  query_results[1].id = 2;
+  query_results[2].id = 3;
+  std::move(query_callback).Run(std::move(query_results));
+
+  histogram_tester.ExpectUniqueSample("Download.History.DownloadCount", 3, 1);
 }
 
 // Test that the OnHistoryQueryComplete() observer method is invoked for an

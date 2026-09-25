@@ -36,6 +36,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_crx_util.h"
@@ -459,6 +460,8 @@ void DownloadHistory::LoadHistoryDownloads(
   base::UmaHistogramCustomTimes("Download.History.LoadLatency",
                                 base::TimeTicks::Now() - load_start_time_,
                                 base::Milliseconds(1), base::Minutes(1), 50);
+  base::UmaHistogramCounts100000("Download.History.DownloadCount",
+                                 base::saturated_cast<int>(rows.size()));
 
   initial_history_query_complete_ = true;
   for (Observer& observer : observers_) {
