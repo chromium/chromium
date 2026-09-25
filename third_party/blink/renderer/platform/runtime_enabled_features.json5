@@ -5636,7 +5636,6 @@
       // https://github.com/whatwg/html/issues/12227
       name: "SelectedcontentelementAttribute",
       status: "experimental",
-      depends_on: ["SelectedcontentSpec"],
     },
     {
       // Makes the <selectedcontent> element work in <select multiple> by
@@ -5645,14 +5644,7 @@
       // https://issues.chromium.org/issues/483769482
       name: "SelectedcontentMultiple",
       status: "experimental",
-      depends_on: ["SelectedcontentSpec", "CustomizableSelectMultiplePopup"],
-    },
-    {
-      // Aligns the implementation of the <selectedcontent> element with the
-      // HTML spec. https://issues.chromium.org/issues/458113204
-      // Enabled in M151, safe to remove in M153.
-      name: "SelectedcontentSpec",
-      status: "stable",
+      depends_on: ["CustomizableSelectMultiplePopup"],
     },
     {
       // See https://crbug.com/40664519

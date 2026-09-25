@@ -618,8 +618,7 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
   // TODO(crbug.com/453705243): Call OptionInserted on the ancestor datalist if
   // it changed.
 
-  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled() && Selected() &&
-      nearest_ancestor_select_) {
+  if (Selected() && nearest_ancestor_select_) {
     if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
       return InsertionNotificationRequest::
           kInsertionShouldCallDidNotifySubtreeInsertions;
@@ -634,8 +633,7 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
 }
 
 void HTMLOptionElement::DidNotifySubtreeInsertionsToDocument() {
-  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled() && Selected() &&
-      nearest_ancestor_select_) {
+  if (Selected() && nearest_ancestor_select_) {
     if (nearest_ancestor_select_->IsMultiple()) {
       nearest_ancestor_select_->UpdateAllSelectedcontentsMultiple();
     } else {
