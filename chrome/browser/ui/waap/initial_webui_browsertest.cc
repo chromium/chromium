@@ -928,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
   // Verify ShowRequestedToFirstPaint was not recorded.
   histogram_tester.ExpectTotalCount(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
-      "ShowRequestedToFirstPaint.FromConstructor2",
+      "ShowRequestedToFirstPaint2",
       0);
 
   // Verify FirstPaintGap was not recorded.
