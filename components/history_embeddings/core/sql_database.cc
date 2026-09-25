@@ -166,10 +166,6 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir,
                        /*compatible_version=*/kCurrentDatabaseVersion)) {
     return sql::InitStatus::INIT_FAILURE;
   }
-  if (meta_table.GetCompatibleVersionNumber() > kCurrentDatabaseVersion) {
-    LOG(ERROR) << "HistoryEmbeddings database is too new.";
-    return sql::INIT_TOO_NEW;
-  }
 
   if (!InitSchema(db_)) {
     return sql::INIT_FAILURE;
