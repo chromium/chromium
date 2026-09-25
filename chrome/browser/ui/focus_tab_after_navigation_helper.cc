@@ -33,7 +33,7 @@ void FocusTabAfterNavigationHelper::ReadyToCommitNavigation(
   // (only 1 is a hard-requirement;  2 and 3 seem desirable but there are no
   // known scenarios where violating these requirements would lead to bugs).
   if (ShouldFocusTabContents(navigation)) {
-    web_contents()->SetInitialFocus();
+    web_contents()->Focus();
   }
 }
 
