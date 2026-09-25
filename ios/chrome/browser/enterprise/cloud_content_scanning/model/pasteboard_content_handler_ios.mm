@@ -6,13 +6,41 @@
 
 #import "base/barrier_closure.h"
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/paste_protection_metrics.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace enterprise_connectors {
+
+namespace {
+
+void RecordScanResultMetrics(const RequestHandlerResultActionLevel& level) {
+  switch (level) {
+    // `kNotScan` means clipboard content was empty.
+    case RequestHandlerResultActionLevel::kNotScan:
+    case RequestHandlerResultActionLevel::kAudit:
+      base::UmaHistogramEnumeration(
+          kIOSPasteProtectionScanTriggeredEventResultHistogram,
+          EnterprisePasteProtectionEventResult::kAllow);
+      break;
+    case RequestHandlerResultActionLevel::kWarn:
+      base::UmaHistogramEnumeration(
+          kIOSPasteProtectionScanTriggeredEventResultHistogram,
+          EnterprisePasteProtectionEventResult::kWarn);
+      break;
+    case RequestHandlerResultActionLevel::kBlock:
+      base::UmaHistogramEnumeration(
+          kIOSPasteProtectionScanTriggeredEventResultHistogram,
+          EnterprisePasteProtectionEventResult::kBlock);
+      break;
+  }
+}
+
+}  // namespace
 
 PasteboardContentHandlerIOS::PasteboardContentHandlerIOS(
     PasteboardInfo pasteboard_info,
@@ -46,7 +74,15 @@ void PasteboardContentHandlerIOS::StartContentAnalysisRequest() {
       base::BindOnce(&PasteboardContentHandlerIOS::OnGetRequestHandlerResults,
                      weak_ptr_factory_.GetWeakPtr()));
 
+  // Start the timer to record how long it takes to upload the content before
+  // receiving the scan result.
+  scan_start_time_ = base::TimeTicks::Now();
+
   if (!pasteboard_info_.text.empty()) {
+    base::UmaHistogramEnumeration(
+        kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+        EnterprisePasteProtectionScanType::kText);
+
     text_request_handler_ = ClipboardRequestHandler::Create(
         content_analysis_info_.get(), upload_service_, router_,
         pasteboard_info_.destination_url, ClipboardRequestHandler::Type::kText,
@@ -65,6 +101,10 @@ void PasteboardContentHandlerIOS::StartContentAnalysisRequest() {
   }
 
   if (!pasteboard_info_.image.empty()) {
+    base::UmaHistogramEnumeration(
+        kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+        EnterprisePasteProtectionScanType::kImage);
+
     image_request_handler_ = ClipboardRequestHandler::Create(
         content_analysis_info_.get(), upload_service_, router_,
         pasteboard_info_.destination_url, ClipboardRequestHandler::Type::kImage,
@@ -95,13 +135,20 @@ void PasteboardContentHandlerIOS::OnGetImageResult(
 }
 
 void PasteboardContentHandlerIOS::OnGetRequestHandlerResults() {
+  // Record the time after we receive both the scan results.
+  base::UmaHistogramTimes(kIOSPasteProtectionScanTriggeredScanTimeHistogram,
+                          base::TimeTicks::Now() - scan_start_time_);
+
   // Provide the highest action result (kBlock > kWarn > kAudit).
   if (text_result_action_ > image_result_action_) {
+    RecordScanResultMetrics(text_result_action_);
     std::move(result_callback_).Run(std::move(text_result_));
   } else if (image_result_action_ > text_result_action_) {
+    RecordScanResultMetrics(image_result_action_);
     std::move(result_callback_).Run(std::move(image_result_));
   } else {
     // Default to `text_result_` when both of image and text strings are empty.
+    RecordScanResultMetrics(text_result_action_);
     std::move(result_callback_).Run(std::move(text_result_));
   }
 }
@@ -110,11 +157,15 @@ void PasteboardContentHandlerIOS::ReportWarningBypass() {
   if (text_result_action_ == RequestHandlerResultActionLevel::kWarn) {
     text_request_handler_->ReportWarningBypass(
         /*user_justification=*/std::nullopt);
+    base::UmaHistogramBoolean(
+        kIOSPasteProtectionScanTriggeredWarningBypassedHistogram, true);
   }
 
   if (image_result_action_ == RequestHandlerResultActionLevel::kWarn) {
     image_request_handler_->ReportWarningBypass(
         /*user_justification=*/std::nullopt);
+    base::UmaHistogramBoolean(
+        kIOSPasteProtectionScanTriggeredWarningBypassedHistogram, true);
   }
 }
 

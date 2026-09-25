@@ -1107,6 +1107,50 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Error with obfuscation scheme"/>
 </enum>
 
+<!-- LINT.IfChange(EnterprisePasteProtectionEventResult) -->
+
+<enum name="EnterprisePasteProtectionEventResult">
+  <summary>The event result for a paste protection scan.</summary>
+  <int value="0" label="Allow"/>
+  <int value="1" label="Warn"/>
+  <int value="2" label="Block"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/enterprise/cloud_content_scanning/model/paste_protection_metrics.h:EnterprisePasteProtectionEventResult) -->
+
+<!-- LINT.IfChange(EnterprisePasteProtectionInvalidatedType) -->
+
+<enum name="EnterprisePasteProtectionInvalidatedType">
+  <summary>
+    Type of the scenario that can invalidate an ongoing scan request for paste
+    protection scan.
+  </summary>
+  <int value="0" label="Pasteboard Changed">
+    Pasteboard content was changed before a scan finishes.
+  </int>
+  <int value="1" label="Navigated Away">
+    User navigated away from the current webpage.
+  </int>
+  <int value="2" label="Invalid Tab State">
+    The tab originated the paste event is hidden.
+  </int>
+  <int value="3" label="Spinning Overlay Dismissed">
+    The in-progress spinning overlay is dimissed by other process (alerts, etc.)
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/enterprise/cloud_content_scanning/model/paste_protection_metrics.h:EnterprisePasteProtectionInvalidatedType) -->
+
+<!-- LINT.IfChange(EnterprisePasteProtectionScanType) -->
+
+<enum name="EnterprisePasteProtectionScanType">
+  <summary>Type of the clipboard content of the paste protection scan.</summary>
+  <int value="0" label="Text"/>
+  <int value="1" label="Image"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/enterprise/cloud_content_scanning/model/paste_protection_metrics.h:EnterprisePasteProtectionScanType) -->
+
 <enum name="EnterprisePolicies">
 <!-- Generated from components/policy/resources/templates/policies.yaml -->
 

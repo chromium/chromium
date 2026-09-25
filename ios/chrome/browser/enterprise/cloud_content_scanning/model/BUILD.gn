@@ -20,6 +20,8 @@ source_set("model") {
     "ios_cloud_binary_upload_service_factory.mm",
     "ios_content_analysis_request.h",
     "ios_content_analysis_request.mm",
+    "paste_protection_metrics.h",
+    "paste_protection_metrics.mm",
     "pasteboard_content_handler_ios.h",
     "pasteboard_content_handler_ios.mm",
   ]

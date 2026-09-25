@@ -112,6 +112,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/strings",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/enterprise/cloud_content_scanning/model",
     "//ios/chrome/browser/enterprise/cloud_content_scanning/test:test_support",
     "//ios/chrome/browser/enterprise/common/test",
     "//ios/chrome/browser/enterprise/connectors/reporting",

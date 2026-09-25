@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/test_future.h"
 #import "components/enterprise/common/proto/connectors.pb.h"
 #import "components/enterprise/connectors/core/analysis_settings.h"
@@ -17,6 +18,7 @@
 #import "components/enterprise/connectors/core/common.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service_factory.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/paste_protection_metrics.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -160,6 +162,7 @@ class PasteboardContentHandlerIOSTest : public PlatformTest {
   raw_ptr<FakeClipboardRequestHandler> text_request_handler_;
   raw_ptr<FakeClipboardRequestHandler> image_request_handler_;
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
   RequestHandlerResult text_result_;
@@ -194,6 +197,12 @@ TEST_F(PasteboardContentHandlerIOSTest, EmptyTextAndImage) {
   EXPECT_TRUE(future.IsReady());
   RequestHandlerResult result = future.Take();
   EXPECT_EQ(result.final_result, FinalContentAnalysisResult::SUCCESS);
+
+  histogram_tester_.ExpectTotalCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredEventResultHistogram,
+      EnterprisePasteProtectionEventResult::kAllow, 1);
 
   ResetHandlers();
 }
@@ -230,6 +239,13 @@ TEST_F(PasteboardContentHandlerIOSTest, OnlyText) {
   EXPECT_EQ(final_result.final_result, FinalContentAnalysisResult::SUCCESS);
   EXPECT_TRUE(final_result.complies);
 
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kText, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredEventResultHistogram,
+      EnterprisePasteProtectionEventResult::kAllow, 1);
+
   ResetHandlers();
 }
 
@@ -264,6 +280,13 @@ TEST_F(PasteboardContentHandlerIOSTest, OnlyImage) {
   RequestHandlerResult final_result = future.Take();
   EXPECT_EQ(final_result.final_result, FinalContentAnalysisResult::SUCCESS);
   EXPECT_TRUE(final_result.complies);
+
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kImage, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredEventResultHistogram,
+      EnterprisePasteProtectionEventResult::kAllow, 1);
 
   ResetHandlers();
 }
@@ -303,6 +326,18 @@ TEST_F(PasteboardContentHandlerIOSTest, TextActionLevelHigherThanImage) {
   RequestHandlerResult final_result = future.Take();
   EXPECT_EQ(final_result.final_result, FinalContentAnalysisResult::FAILURE);
 
+  histogram_tester_.ExpectBucketCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kText, 1);
+  histogram_tester_.ExpectBucketCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kImage, 1);
+  histogram_tester_.ExpectTotalCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram, 2);
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredEventResultHistogram,
+      EnterprisePasteProtectionEventResult::kBlock, 1);
+
   ResetHandlers();
 }
 
@@ -341,6 +376,18 @@ TEST_F(PasteboardContentHandlerIOSTest, ImageActionLevelHigherThanText) {
   RequestHandlerResult final_result = future.Take();
   EXPECT_EQ(final_result.final_result, FinalContentAnalysisResult::FAILURE);
 
+  histogram_tester_.ExpectBucketCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kText, 1);
+  histogram_tester_.ExpectBucketCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kImage, 1);
+  histogram_tester_.ExpectTotalCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram, 2);
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredEventResultHistogram,
+      EnterprisePasteProtectionEventResult::kBlock, 1);
+
   ResetHandlers();
 }
 
@@ -377,6 +424,18 @@ TEST_F(PasteboardContentHandlerIOSTest, EqualActionLevelsDefaultToText) {
   RequestHandlerResult final_result = future.Take();
   EXPECT_EQ(final_result.final_result, FinalContentAnalysisResult::WARNING);
 
+  histogram_tester_.ExpectBucketCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kText, 1);
+  histogram_tester_.ExpectBucketCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kImage, 1);
+  histogram_tester_.ExpectTotalCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram, 2);
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredEventResultHistogram,
+      EnterprisePasteProtectionEventResult::kWarn, 1);
+
   ResetHandlers();
 }
 
@@ -409,10 +468,25 @@ TEST_F(PasteboardContentHandlerIOSTest, ReportWarningBypassText) {
 
   ASSERT_TRUE(future.IsReady());
 
+  histogram_tester_.ExpectBucketCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kText, 1);
+  histogram_tester_.ExpectBucketCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kImage, 1);
+  histogram_tester_.ExpectTotalCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram, 2);
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredEventResultHistogram,
+      EnterprisePasteProtectionEventResult::kWarn, 1);
+
   handler->ReportWarningBypass();
 
   ASSERT_TRUE(text_request_handler_->warning_bypass_reported());
   ASSERT_FALSE(image_request_handler_->warning_bypass_reported());
+
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredWarningBypassedHistogram, true, 1);
 
   ResetHandlers();
 }
@@ -446,10 +520,25 @@ TEST_F(PasteboardContentHandlerIOSTest, ReportWarningBypassBoth) {
 
   ASSERT_TRUE(future.IsReady());
 
+  histogram_tester_.ExpectBucketCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kText, 1);
+  histogram_tester_.ExpectBucketCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram,
+      EnterprisePasteProtectionScanType::kImage, 1);
+  histogram_tester_.ExpectTotalCount(
+      kIOSPasteProtectionScanTriggeredScanTypeHistogram, 2);
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredEventResultHistogram,
+      EnterprisePasteProtectionEventResult::kWarn, 1);
+
   handler->ReportWarningBypass();
 
   ASSERT_TRUE(text_request_handler_->warning_bypass_reported());
   ASSERT_TRUE(image_request_handler_->warning_bypass_reported());
+
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredWarningBypassedHistogram, true, 2);
 
   ResetHandlers();
 }

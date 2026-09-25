@@ -11,6 +11,7 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/time/time.h"
 #import "components/enterprise/connectors/core/common.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "url/gurl.h"
@@ -108,6 +109,10 @@ class PasteboardContentHandlerIOS {
   // A callback to invoke with the highest action level from either text or
   // image scan result. (Block > Warn > Audit)
   base::OnceCallback<void(RequestHandlerResult)> result_callback_;
+
+  // The time when the scan starts, used for recording how long a scan takes for
+  // one paste event.
+  base::TimeTicks scan_start_time_;
 
   base::WeakPtrFactory<PasteboardContentHandlerIOS> weak_ptr_factory_{this};
 };
