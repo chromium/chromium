@@ -242,6 +242,34 @@ suite('OrganizerListSectionItemTest', () => {
         assertFalse(itemClicked);
       });
 
+  test('right clicking item dispatches context-menu-click event', async () => {
+    const item = {
+      title: ['Tab Group'],
+    };
+    listItem.item = item;
+    await microtasksFinished();
+
+    const contextMenuClickPromise =
+        eventToPromise('context-menu-click', listItem);
+    const event = new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 15,
+      clientY: 25,
+    });
+    listItem.$.crUrlListItem.dispatchEvent(event);
+    const contextMenuEvent = await contextMenuClickPromise as CustomEvent<{
+                               item: typeof item,
+                               x: number,
+                               y: number,
+                             }>;
+
+    assertTrue(event.defaultPrevented);
+    assertEquals(item, contextMenuEvent.detail.item);
+    assertEquals(15, contextMenuEvent.detail.x);
+    assertEquals(25, contextMenuEvent.detail.y);
+  });
+
   test(
       'resetActionButtonStateIfNeeded hides action button when not hovered',
       async () => {

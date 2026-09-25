@@ -254,6 +254,34 @@ suite('OrganizerListSectionTest', () => {
     assertEquals(0, delegate.getClickCount());
   });
 
+  test('notifies delegate when an item is right-clicked', async () => {
+    const items: Array<OrganizerListSectionItem<unknown>> = [
+      {title: ['Tab 1'], description: [{text: 'tab1.com'}]},
+      {title: ['Tab 2'], description: [{text: 'tab2.com'}]},
+    ];
+    const delegate = new TestSectionDelegate('Open Tabs', items);
+    listSection.delegate = delegate;
+    await microtasksFinished();
+
+    const listItems =
+        listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
+    assertEquals(2, listItems.length);
+
+    listItems[1]!.$.crUrlListItem.dispatchEvent(new MouseEvent('contextmenu', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 42,
+      clientY: 84,
+    }));
+    await microtasksFinished();
+
+    assertEquals(1, delegate.getContextMenuClickCount());
+    assertEquals(items[1], delegate.getLastContextMenuClickedItem());
+    assertDeepEquals({x: 42, y: 84}, delegate.getLastContextMenuCoordinates());
+    assertEquals(0, delegate.getClickCount());
+    assertEquals(0, mockHandler.getCallCount('closePanel'));
+  });
+
   test('filters items based on searchQuery', async () => {
     const delegateItems: Array<OrganizerListSectionItem<unknown>> = [
       {title: ['Google'], description: [{text: 'google.com'}]},

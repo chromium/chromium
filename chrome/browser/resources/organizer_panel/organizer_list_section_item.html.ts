@@ -13,7 +13,7 @@ export function getHtml(this: OrganizerListSectionItemElement) {
     .itemAriaDescription="${this.getAriaDescription_() || nothing}"
     .url="${this.item.prefixIcon?.url || nothing}"
     ?always-show-suffix="${this.hasSuffix_()}"
-    .size="${this.item.size || nothing}">
+    .size="${this.item.size || nothing}" @contextmenu="${this.onContextmenu_}">
   <div id="content" slot="content">
     <organizer-list-section-item-title id="title"
         .titleParts="${this.item.title}"

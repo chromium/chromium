@@ -16,6 +16,10 @@ export class TestSectionDelegate implements
   private lastActionButtonElement_?: HTMLElement;
   private actionButtonClickCount_: number = 0;
 
+  private lastContextMenuClickedItem_?: OrganizerListSectionItem<unknown>;
+  private lastContextMenuCoordinates_?: {x: number, y: number};
+  private contextMenuClickCount_: number = 0;
+
   constructor(
       header: string, items: Array<OrganizerListSectionItem<unknown>> = []) {
     this.header_ = header;
@@ -63,5 +67,24 @@ export class TestSectionDelegate implements
 
   getActionButtonClickCount(): number {
     return this.actionButtonClickCount_;
+  }
+
+  onItemContextMenuClicked(
+      item: OrganizerListSectionItem<unknown>, x: number, y: number) {
+    this.lastContextMenuClickedItem_ = item;
+    this.lastContextMenuCoordinates_ = {x, y};
+    this.contextMenuClickCount_++;
+  }
+
+  getLastContextMenuClickedItem(): OrganizerListSectionItem<unknown>|undefined {
+    return this.lastContextMenuClickedItem_;
+  }
+
+  getLastContextMenuCoordinates(): {x: number, y: number}|undefined {
+    return this.lastContextMenuCoordinates_;
+  }
+
+  getContextMenuClickCount(): number {
+    return this.contextMenuClickCount_;
   }
 }

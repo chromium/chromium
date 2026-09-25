@@ -27,4 +27,9 @@ export interface OrganizerListSectionDelegate<T> {
   onItemActionButtonClicked?
       (item: OrganizerListSectionItem<T>, buttonElement: HTMLElement):
           Promise<void>|void;
+
+  // Optional: Called when an item's context menu is triggered via right-click.
+  onItemContextMenuClicked?
+      (item: OrganizerListSectionItem<T>, x: number, y: number): Promise<void>|
+      void;
 }

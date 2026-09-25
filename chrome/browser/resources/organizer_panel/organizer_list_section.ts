@@ -255,6 +255,17 @@ export class OrganizerListSectionElement extends CrLitElement implements
     itemElement.resetActionButtonStateIfNeeded();
   }
 
+  protected async onItemContextMenuClick_(e: CustomEvent<{
+    item: HighlightableOrganizerListSectionItem<unknown>,
+    x: number,
+    y: number,
+  }>) {
+    assert(e.detail.item);
+    assert(this.delegate);
+    await this.delegate.onItemContextMenuClicked?.(
+        e.detail.item, e.detail.x, e.detail.y);
+  }
+
   protected getFilteredItems_():
       Array<HighlightableOrganizerListSectionItem<unknown>> {
     return this.filteredItems_;

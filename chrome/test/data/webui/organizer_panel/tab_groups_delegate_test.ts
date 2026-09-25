@@ -193,4 +193,14 @@ suite('TabGroupsDelegateTest', () => {
     assertDeepEquals(sampleGroups[0]!.id, args[0]);
     assertDeepEquals({x: 10, y: 20, width: 30, height: 40}, args[1]);
   });
+
+  test('calls showContextMenu on context menu click', async () => {
+    const items = await delegate.getItems();
+
+    delegate.onItemContextMenuClicked(items[0]!, 15, 25);
+
+    const args = await mockHandler.whenCalled('showContextMenu');
+    assertDeepEquals(sampleGroups[0]!.id, args[0]);
+    assertDeepEquals({x: 15, y: 25, width: 0, height: 0}, args[1]);
+  });
 });

@@ -17,7 +17,8 @@ ${this.hasNoSearchResults_() ? html`
     ${this.getInitialItems_().map(item => html`
       <organizer-list-section-item .item="${item}" role="listitem"
           @click="${this.onItemClick_}"
-          @action-button-click="${this.onItemActionButtonClick_}">
+          @action-button-click="${this.onItemActionButtonClick_}"
+          @context-menu-click="${this.onItemContextMenuClick_}">
       </organizer-list-section-item>
     `)}
     ${this.hasMoreItems_() ? html`
@@ -25,7 +26,8 @@ ${this.hasNoSearchResults_() ? html`
         ${this.getRemainingItems_().map(item => html`
           <organizer-list-section-item .item="${item}" role="listitem"
               @click="${this.onItemClick_}"
-              @action-button-click="${this.onItemActionButtonClick_}">
+              @action-button-click="${this.onItemActionButtonClick_}"
+              @context-menu-click="${this.onItemContextMenuClick_}">
           </organizer-list-section-item>
         `)}
       </div>

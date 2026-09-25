@@ -65,6 +65,17 @@ export class TabGroupsDelegate implements
     });
   }
 
+  async onItemContextMenuClicked(
+      item: OrganizerListSectionItem<TabGroup>, x: number, y: number) {
+    assert(item.data);
+    await this.browserProxy_.handler.showContextMenu(item.data.id, {
+      x: Math.round(x),
+      y: Math.round(y),
+      width: 0,
+      height: 0,
+    });
+  }
+
   private notifyClient_() {
     this.client_?.onItemsChanged(
         this.tabGroups_.map(group => this.tabGroupToSectionItem_(group)));

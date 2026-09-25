@@ -132,6 +132,17 @@ export class OrganizerListSectionItemElement extends
   private listFormatter_ = new Intl.ListFormat(
       document.documentElement.lang || undefined,
       {style: 'narrow', type: 'conjunction'});
+  private boundOnContextmenu_ = this.onContextmenu_.bind(this);
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('contextmenu', this.boundOnContextmenu_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('contextmenu', this.boundOnContextmenu_);
+  }
 
   protected getAriaLabel_(): string {
     return this.listFormatter_.format(this.item.title);
@@ -160,6 +171,16 @@ export class OrganizerListSectionItemElement extends
     this.fire('action-button-click', {
       item: this.item,
       buttonElement: e.currentTarget as HTMLElement,
+    });
+  }
+
+  protected onContextmenu_(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.fire('context-menu-click', {
+      item: this.item,
+      x: e.clientX,
+      y: e.clientY,
     });
   }
 
