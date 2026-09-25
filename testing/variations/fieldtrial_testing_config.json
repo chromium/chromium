@@ -10045,6 +10045,24 @@
             ]
         }
     ],
+    "HistoryReportClusterDatabaseMetrics": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HistoryReportClusterDatabaseMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "HistorySyncAlternativeIllustration": [
         {
             "platforms": [
