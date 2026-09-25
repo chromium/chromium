@@ -517,6 +517,7 @@ ci.builder(
         ],
     ),
     cores = 8,
+    ssd = None,
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "cros",

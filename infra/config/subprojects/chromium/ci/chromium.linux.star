@@ -92,6 +92,7 @@ ci.builder(
             "chromium_linux_cast_receiver",
         ],
     ),
+    ssd = None,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
@@ -136,6 +137,7 @@ ci.builder(
             "chromium_linux_cast_receiver",
         ],
     ),
+    ssd = None,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
@@ -179,6 +181,7 @@ ci.builder(
             "chromium_linux_cast_receiver_gtests",
         ],
     ),
+    ssd = None,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
@@ -222,6 +225,7 @@ ci.builder(
             "chromium_linux_cast_receiver_gtests",
         ],
     ),
+    ssd = None,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
@@ -313,6 +317,7 @@ ci.builder(
             "linux-jammy",
         ],
     ),
+    ssd = None,
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -369,6 +374,7 @@ ci.builder(
             "isolate_profile_data",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "bld",
@@ -411,6 +417,7 @@ ci.builder(
             "all",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "debug|builder",
         short_name = "64",
@@ -520,6 +527,7 @@ ci.thin_tester(
         browser_config = targets.browser_config.DEBUG,
         os_type = targets.os_type.LINUX,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "arm64",
         short_name = "dbg",
@@ -562,6 +570,7 @@ ci.builder(
     targets = targets.bundle(
         additional_compile_targets = "chrome",
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "bld-wl",
@@ -624,6 +633,7 @@ ci.thin_tester(
             ),
         },
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "no-webui",
@@ -748,6 +758,7 @@ ci.thin_tester(
             ),
         },
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "tst",
@@ -890,6 +901,7 @@ ci.thin_tester(
             ),
         },
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "debug|tester",
         short_name = "64",
@@ -994,6 +1006,7 @@ ci.thin_tester(
             ),
         },
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "tst-wl",
@@ -1081,6 +1094,7 @@ ci.thin_tester(
             ),
         },
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "tst-mt",
@@ -1124,6 +1138,7 @@ ci.builder(
             "linux-jammy",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "nsl",
@@ -1221,6 +1236,7 @@ ci.builder(
             ),
         },
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "OriginIsolation",
         short_name = "oi",
@@ -1272,6 +1288,7 @@ ci.builder(
             ),
         },
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
         short_name = "bfc",
@@ -1312,6 +1329,7 @@ ci.builder(
             "all",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "trc",
@@ -1353,6 +1371,7 @@ ci.builder(
             "empty_main",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "gcc",
@@ -1385,6 +1404,7 @@ ci.builder(
             "all",
         ],
     ),
+    ssd = None,
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -1439,6 +1459,7 @@ ci.builder(
             "v4l2_unittest",
         ],
     ),
+    ssd = None,
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "linux",

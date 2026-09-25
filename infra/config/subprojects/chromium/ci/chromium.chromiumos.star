@@ -105,6 +105,7 @@ ci.builder(
             "chromiumos_preflight",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release|x64",
         short_name = "asn",
@@ -155,6 +156,7 @@ ci.builder(
             "chromiumos_preflight",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release|x64",
         short_name = "cfi",
@@ -211,6 +213,7 @@ ci.builder(
             "chromiumos_preflight",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "simple|debug|x64",
         short_name = "dbg",
@@ -267,6 +270,7 @@ ci.builder(
             "chromiumos_preflight",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release|x64",
         short_name = "compile",
@@ -315,6 +319,7 @@ ci.thin_tester(
         browser_config = targets.browser_config.CROS_CHROME,
         os_type = targets.os_type.CROS,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release|x64",
         short_name = "gtest",
@@ -365,6 +370,7 @@ ci.builder(
             "chromiumos_preflight",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "simple|debug",
         short_name = "arm",
@@ -407,6 +413,7 @@ ci.builder(
             "chromiumos_preflight",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "arm",
@@ -459,6 +466,7 @@ ci.builder(
     targets_settings = targets.settings(
         browser_config = targets.browser_config.CROS_CHROME,
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release",
         short_name = "a64",
@@ -563,6 +571,7 @@ ci.builder(
             ),
         },
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "default",
         short_name = "dbg",
@@ -758,6 +767,7 @@ ci.thin_tester(
             ),
         },
     ),
+    ssd = None,
     # TODO(crbug.com/505579819): Enable gardening once the bot is stable.
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
@@ -809,6 +819,7 @@ ci.builder(
             "x86-64",
         ],
     ),
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "default|cfm",
         short_name = "cfm",
