@@ -419,12 +419,44 @@ class WebContentsDestroyingChooser : public BluetoothChooser {
   base::OnceClosure on_destroy_;
 };
 
+class WebContentsDestroyingScanningPrompt : public BluetoothScanningPrompt {
+ public:
+  explicit WebContentsDestroyingScanningPrompt(base::OnceClosure on_destroy)
+      : on_destroy_(std::move(on_destroy)) {}
+  WebContentsDestroyingScanningPrompt(
+      const WebContentsDestroyingScanningPrompt&) = delete;
+  WebContentsDestroyingScanningPrompt& operator=(
+      const WebContentsDestroyingScanningPrompt&) = delete;
+  ~WebContentsDestroyingScanningPrompt() override {
+    if (on_destroy_) {
+      std::move(on_destroy_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_destroy_;
+};
+
+// Completes StopScan asynchronously, like a real adapter, so a later
+// StartDiscoverySession can proceed.
+void PostStopScanSuccess(
+    device::BluetoothAdapter::DiscoverySessionResultCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), /*is_error=*/false,
+                     device::UMABluetoothDiscoverySessionOutcome::SUCCESS));
+}
+
 class TestBluetoothDelegate : public BluetoothDelegate {
  public:
   using RunBluetoothChooserCallback =
       base::RepeatingCallback<std::unique_ptr<BluetoothChooser>(
           RenderFrameHost*,
           const BluetoothChooser::EventHandler&)>;
+  using ShowBluetoothScanningPromptCallback =
+      base::RepeatingCallback<std::unique_ptr<BluetoothScanningPrompt>(
+          RenderFrameHost*,
+          const BluetoothScanningPrompt::EventHandler&)>;
 
   TestBluetoothDelegate() = default;
   ~TestBluetoothDelegate() override = default;
@@ -464,10 +496,18 @@ class TestBluetoothDelegate : public BluetoothDelegate {
   std::unique_ptr<BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
       RenderFrameHost* frame,
       const BluetoothScanningPrompt::EventHandler& event_handler) override {
+    if (show_bluetooth_scanning_prompt_callback_) {
+      return show_bluetooth_scanning_prompt_callback_.Run(frame, event_handler);
+    }
     auto prompt =
         std::make_unique<FakeBluetoothScanningPrompt>(std::move(event_handler));
     prompt_ = prompt.get();
     return std::move(prompt);
+  }
+
+  void set_show_bluetooth_scanning_prompt_callback(
+      ShowBluetoothScanningPromptCallback callback) {
+    show_bluetooth_scanning_prompt_callback_ = std::move(callback);
   }
 
   void ShowDevicePairPrompt(content::RenderFrameHost* frame,
@@ -577,6 +617,7 @@ class TestBluetoothDelegate : public BluetoothDelegate {
   std::map<std::string, blink::WebBluetoothDeviceId> address_to_id_map_;
   std::map<blink::WebBluetoothDeviceId, std::string> id_to_address_map_;
   RunBluetoothChooserCallback run_bluetooth_chooser_callback_;
+  ShowBluetoothScanningPromptCallback show_bluetooth_scanning_prompt_callback_;
 };
 
 class TestContentBrowserClient : public ContentBrowserClient {
@@ -951,6 +992,55 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     return service_ptr_->allowed_devices().GetDeviceAddress(device_id);
   }
 
+  bool HasScanningDiscoverySession() {
+    return !!service_ptr_->ble_scan_discovery_session_;
+  }
+
+  bool HasScanningPromptController() {
+    return !!service_ptr_->device_scanning_prompt_controller_;
+  }
+
+  // Makes the delegate return a prompt whose destruction deletes the
+  // WebContents, and therefore the service.
+  void UseWebContentsDestroyingScanningPrompt() {
+    browser_client_.bluetooth_delegate()
+        ->set_show_bluetooth_scanning_prompt_callback(
+            base::BindRepeating(&WebBluetoothServiceImplTest::
+                                    CreateWebContentsDestroyingScanningPrompt,
+                                base::Unretained(this)));
+  }
+
+  std::unique_ptr<BluetoothScanningPrompt>
+  CreateWebContentsDestroyingScanningPrompt(
+      RenderFrameHost* frame,
+      const BluetoothScanningPrompt::EventHandler& event_handler) {
+    scanning_prompt_shown_.SetValue();
+    return std::make_unique<WebContentsDestroyingScanningPrompt>(
+        base::BindOnce(&WebBluetoothServiceImplTest::DestroyContentsFromPrompt,
+                       base::Unretained(this)));
+  }
+
+  void DestroyContentsFromPrompt() {
+    service_ptr_ = nullptr;
+    DeleteContents();
+    contents_destroyed_.SetValue();
+  }
+
+  void RequestScanningStart(
+      FakeWebBluetoothAdvertisementClient& client,
+      blink::mojom::WebBluetoothLeScanFilterPtr filter,
+      WebBluetoothService::RequestScanningStartCallback callback) {
+    contents()->GetPrimaryMainFrame()->SimulateUserActivation();
+    mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
+        client_remote;
+    client.BindReceiver(client_remote.InitWithNewEndpointAndPassReceiver());
+    auto options = blink::mojom::WebBluetoothRequestLEScanOptions::New();
+    options->filters.emplace();
+    options->filters->push_back(std::move(filter));
+    service_ptr_->RequestScanningStart(std::move(client_remote),
+                                       std::move(options), std::move(callback));
+  }
+
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   raw_ptr<WebBluetoothServiceImpl> service_ptr_ = nullptr;
   mojo::Remote<blink::mojom::WebBluetoothService> service_;
@@ -959,6 +1049,8 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
   std::unique_ptr<FakeBluetoothDeviceBundle> battery_device_bundle_;
   std::unique_ptr<FakeBluetoothDeviceBundle> heart_rate_device_bundle_;
   FakeWebBluetoothCharacteristicClient characteristic_client_;
+  TestFuture<void> scanning_prompt_shown_;
+  TestFuture<void> contents_destroyed_;
 };
 
 TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestDevice) {
@@ -1114,6 +1206,99 @@ TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestScanningStart) {
       FROM_HERE, base::BindLambdaForTesting([this]() { DeleteService(); }));
 
   loop.RunUntilIdle();
+}
+
+TEST_F(WebBluetoothServiceImplTest, DestroyedDuringRequestScanningStartReset) {
+  adapter_->SetStartScanWithFilterResult(
+      device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
+  UseWebContentsDestroyingScanningPrompt();
+  // Destroying the service stops the active discovery session.
+  EXPECT_CALL(*adapter_, StopScan).Times(1);
+
+  FakeWebBluetoothAdvertisementClient client_a;
+  TestFuture<WebBluetoothResult> future_a;
+  RequestScanningStart(client_a, CreateScanFilter("a", "b"),
+                       future_a.GetCallback());
+  ASSERT_TRUE(scanning_prompt_shown_.Wait());
+  ASSERT_TRUE(HasScanningDiscoverySession());
+
+  // With a discovery session active, a second request replaces the open
+  // prompt synchronously, and closing it destroys the WebContents.
+  FakeWebBluetoothAdvertisementClient client_b;
+  TestFuture<WebBluetoothResult> future_b;
+  RequestScanningStart(client_b, CreateScanFilter("c", "d"),
+                       future_b.GetCallback());
+
+  EXPECT_TRUE(contents_destroyed_.IsReady());
+  ASSERT_TRUE(future_a.IsReady());
+  EXPECT_EQ(future_a.Get(), WebBluetoothResult::PROMPT_CANCELED);
+  EXPECT_FALSE(future_b.IsReady());
+}
+
+TEST_F(WebBluetoothServiceImplTest,
+       DestroyedDuringStartDiscoverySessionForScanningReset) {
+  adapter_->SetStartScanWithFilterResult(
+      device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
+  UseWebContentsDestroyingScanningPrompt();
+  // Once when A's session is dropped, once when the service is destroyed.
+  EXPECT_CALL(*adapter_, StopScan)
+      .Times(2)
+      .WillRepeatedly(&PostStopScanSuccess);
+
+  auto client_a = std::make_unique<FakeWebBluetoothAdvertisementClient>();
+  TestFuture<WebBluetoothResult> future_a;
+  RequestScanningStart(*client_a, CreateScanFilter("a", "b"),
+                       future_a.GetCallback());
+  ASSERT_TRUE(scanning_prompt_shown_.Wait());
+
+  // Disconnecting A drops its client and the discovery session, but the
+  // prompt stays open.
+  client_a.reset();
+  EXPECT_EQ(future_a.Get(), WebBluetoothResult::PROMPT_CANCELED);
+  ASSERT_FALSE(HasScanningDiscoverySession());
+  ASSERT_TRUE(HasScanningPromptController());
+
+  // B restarts discovery; OnStartDiscoverySessionForScanning() replaces the
+  // open prompt, and closing it destroys the WebContents.
+  FakeWebBluetoothAdvertisementClient client_b;
+  TestFuture<WebBluetoothResult> future_b;
+  RequestScanningStart(client_b, CreateScanFilter("c", "d"),
+                       future_b.GetCallback());
+  ASSERT_TRUE(contents_destroyed_.Wait());
+  EXPECT_FALSE(future_b.IsReady());
+}
+
+TEST_F(WebBluetoothServiceImplTest,
+       DestroyedDuringDiscoverySessionErrorForScanningReset) {
+  adapter_->SetStartScanWithFilterResult(
+      device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
+  UseWebContentsDestroyingScanningPrompt();
+  // Only A's session is ever active.
+  EXPECT_CALL(*adapter_, StopScan).WillOnce(&PostStopScanSuccess);
+
+  auto client_a = std::make_unique<FakeWebBluetoothAdvertisementClient>();
+  TestFuture<WebBluetoothResult> future_a;
+  RequestScanningStart(*client_a, CreateScanFilter("a", "b"),
+                       future_a.GetCallback());
+  ASSERT_TRUE(scanning_prompt_shown_.Wait());
+
+  // Disconnecting A drops its client and the discovery session, but the
+  // prompt stays open.
+  client_a.reset();
+  EXPECT_EQ(future_a.Get(), WebBluetoothResult::PROMPT_CANCELED);
+  ASSERT_FALSE(HasScanningDiscoverySession());
+  ASSERT_TRUE(HasScanningPromptController());
+
+  // B's discovery restart fails; OnDiscoverySessionErrorForScanning() resets
+  // the open prompt, and closing it destroys the WebContents.
+  adapter_->SetStartScanWithFilterResult(
+      device::UMABluetoothDiscoverySessionOutcome::FAILED);
+  FakeWebBluetoothAdvertisementClient client_b;
+  TestFuture<WebBluetoothResult> future_b;
+  RequestScanningStart(client_b, CreateScanFilter("c", "d"),
+                       future_b.GetCallback());
+  ASSERT_TRUE(contents_destroyed_.Wait());
+  EXPECT_FALSE(future_b.IsReady());
 }
 
 TEST_F(WebBluetoothServiceImplTest, RequestScanningStartWithoutUserActivation) {

@@ -1791,11 +1791,10 @@ void WebBluetoothServiceImpl::RequestScanningStartImpl(
   }
 
   if (ble_scan_discovery_session_) {
-    auto scanning_client = std::make_unique<ScanningClient>(
-        /*service=*/this, std::move(client_remote), std::move(options),
-        std::move(callback));
-
-    if (AreScanFiltersAllowed(scanning_client->scan_options().filters)) {
+    if (AreScanFiltersAllowed(options->filters)) {
+      auto scanning_client = std::make_unique<ScanningClient>(
+          /*service=*/this, std::move(client_remote), std::move(options),
+          std::move(callback));
       scanning_client->RunCallback(blink::mojom::WebBluetoothResult::SUCCESS);
       scanning_client->set_allow_send_event(true);
       scanning_clients_.push_back(std::move(scanning_client));
@@ -1804,9 +1803,20 @@ void WebBluetoothServiceImpl::RequestScanningStartImpl(
 
     // By resetting |device_scanning_prompt_controller_|, it returns an error if
     // there are duplicate calls to RequestScanningStart().
+    // Closing the prompt may synchronously destroy `this`.
+    base::WeakPtr<WebBluetoothServiceImpl> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
+    device_scanning_prompt_controller_.reset();
+    if (!weak_this) {
+      return;
+    }
+
+    auto scanning_client = std::make_unique<ScanningClient>(
+        /*service=*/this, std::move(client_remote), std::move(options),
+        std::move(callback));
     device_scanning_prompt_controller_ =
         std::make_unique<BluetoothDeviceScanningPromptController>(
-            this, render_frame_host());
+            weak_ptr_factory_.GetWeakPtr(), render_frame_host());
     scanning_client->SetPromptController(
         device_scanning_prompt_controller_.get());
     scanning_clients_.push_back(std::move(scanning_client));
@@ -1847,20 +1857,30 @@ void WebBluetoothServiceImpl::OnStartDiscoverySessionForScanning(
 
   ble_scan_discovery_session_ = std::move(session);
 
-  auto scanning_client = std::make_unique<ScanningClient>(
-      /*service=*/this, std::move(client_remote), std::move(options),
-      std::move(request_scanning_start_callback_));
-
-  if (AreScanFiltersAllowed(scanning_client->scan_options().filters)) {
+  if (AreScanFiltersAllowed(options->filters)) {
+    auto scanning_client = std::make_unique<ScanningClient>(
+        /*service=*/this, std::move(client_remote), std::move(options),
+        std::move(request_scanning_start_callback_));
     scanning_client->RunCallback(blink::mojom::WebBluetoothResult::SUCCESS);
     scanning_client->set_allow_send_event(true);
     scanning_clients_.push_back(std::move(scanning_client));
     return;
   }
 
+  // Closing an open prompt may synchronously destroy `this`.
+  base::WeakPtr<WebBluetoothServiceImpl> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  device_scanning_prompt_controller_.reset();
+  if (!weak_this) {
+    return;
+  }
+
+  auto scanning_client = std::make_unique<ScanningClient>(
+      /*service=*/this, std::move(client_remote), std::move(options),
+      std::move(request_scanning_start_callback_));
   device_scanning_prompt_controller_ =
       std::make_unique<BluetoothDeviceScanningPromptController>(
-          this, render_frame_host());
+          weak_ptr_factory_.GetWeakPtr(), render_frame_host());
   scanning_client->SetPromptController(
       device_scanning_prompt_controller_.get());
   scanning_clients_.push_back(std::move(scanning_client));
@@ -1870,7 +1890,13 @@ void WebBluetoothServiceImpl::OnStartDiscoverySessionForScanning(
 void WebBluetoothServiceImpl::OnDiscoverySessionErrorForScanning() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
 
+  // Closing an open prompt may synchronously destroy `this`.
+  base::WeakPtr<WebBluetoothServiceImpl> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   device_scanning_prompt_controller_.reset();
+  if (!weak_this) {
+    return;
+  }
 
   std::move(request_scanning_start_callback_)
       .Run(blink::mojom::WebBluetoothResult::NO_BLUETOOTH_ADAPTER);

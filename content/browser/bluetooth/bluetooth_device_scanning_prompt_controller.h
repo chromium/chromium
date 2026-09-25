@@ -8,10 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 
@@ -25,7 +24,7 @@ class BluetoothDeviceScanningPromptController final {
   // |render_frame_host| should be the RenderFrameHost that owns the
   // |web_bluetooth_service_|.
   BluetoothDeviceScanningPromptController(
-      WebBluetoothServiceImpl* web_bluetooth_service,
+      base::WeakPtr<WebBluetoothServiceImpl> web_bluetooth_service,
       RenderFrameHost& render_frame_host);
   ~BluetoothDeviceScanningPromptController();
 
@@ -41,9 +40,9 @@ class BluetoothDeviceScanningPromptController final {
 
  private:
   // The WebBluetoothServiceImpl that owns this instance.
-  const raw_ptr<WebBluetoothServiceImpl> web_bluetooth_service_;
-  // The RenderFrameHost that owns |web_bluetooth_service_|.
-  const raw_ref<RenderFrameHost> render_frame_host_;
+  const base::WeakPtr<WebBluetoothServiceImpl> web_bluetooth_service_;
+  // The token of the RenderFrameHost that owns |web_bluetooth_service_|.
+  const GlobalRenderFrameHostToken render_frame_host_token_;
 
   // The currently opened BluetoothScanningPrompt.
   std::unique_ptr<BluetoothScanningPrompt> prompt_;
