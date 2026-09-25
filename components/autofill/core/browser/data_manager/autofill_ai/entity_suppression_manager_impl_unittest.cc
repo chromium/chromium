@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_sync_bridge.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
@@ -34,7 +35,8 @@ class MockEntitySuppressionManagerObserver
 class EntitySuppressionManagerImplTest : public testing::Test {
  public:
   EntitySuppressionManagerImplTest()
-      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
+      : os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting(
+            /*is_sync_for_unittests=*/true)) {}
   ~EntitySuppressionManagerImplTest() override = default;
 
   void SetUp() override {
@@ -42,7 +44,7 @@ class EntitySuppressionManagerImplTest : public testing::Test {
     auto bridge = std::make_unique<EntitySuppressionSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
-        encryptor_);
+        os_crypt_async_.get());
     ASSERT_TRUE(base::test::RunUntil([&]() { return bridge->IsLoaded(); }));
     manager_ =
         std::make_unique<EntitySuppressionManagerImpl>(std::move(bridge));
@@ -56,7 +58,7 @@ class EntitySuppressionManagerImplTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  scoped_refptr<const os_crypt_async::Encryptor> encryptor_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<EntitySuppressionManagerImpl> manager_;
 };

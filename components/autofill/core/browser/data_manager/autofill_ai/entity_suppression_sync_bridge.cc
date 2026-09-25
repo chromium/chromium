@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
@@ -18,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
@@ -70,19 +72,24 @@ DecryptSuppressionSpecifics(const std::string& encrypted_value,
 EntitySuppressionSyncBridge::EntitySuppressionSyncBridge(
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     syncer::OnceDataTypeStoreFactory store_factory,
-    scoped_refptr<const os_crypt_async::Encryptor> encryptor)
-    : syncer::DataTypeSyncBridge(std::move(change_processor)),
-      encryptor_(std::move(encryptor)) {
-  CHECK(encryptor_);
-  if (!encryptor_->IsEncryptionAvailable()) {
-    // TODO(crbug.com/501036619): Report a ModelError when encryption is
-    // unavailable.
-    return;
-  }
+    os_crypt_async::OSCryptAsync* os_crypt_async)
+    : syncer::DataTypeSyncBridge(std::move(change_processor)) {
+  CHECK(os_crypt_async);
+  // Reading and decrypting local suppression records requires both the
+  // `DataTypeStore` and the `os_crypt_async::Encryptor`. Since both are
+  // initialized asynchronously, wait for both callbacks to complete before
+  // reading data from the store.
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      /*num_closures=*/2,
+      base::BindOnce(&EntitySuppressionSyncBridge::OnRequiredServicesReady,
+                     weak_ptr_factory_.GetWeakPtr()));
+  os_crypt_async->GetInstance(
+      base::BindOnce(&EntitySuppressionSyncBridge::OnEncryptorReady,
+                     weak_ptr_factory_.GetWeakPtr(), barrier));
   std::move(store_factory)
       .Run(syncer::AUTOFILL_ENTITY_SUPPRESSION,
            base::BindOnce(&EntitySuppressionSyncBridge::OnStoreCreated,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr(), barrier));
 }
 
 EntitySuppressionSyncBridge::~EntitySuppressionSyncBridge() {
@@ -453,14 +460,38 @@ EntitySuppressionSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
 }
 
 void EntitySuppressionSyncBridge::OnStoreCreated(
+    base::RepeatingClosure barrier,
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::DataTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     change_processor()->ReportError(*error);
+  } else {
+    CHECK(store);
+    store_ = std::move(store);
+  }
+  barrier.Run();
+}
+
+void EntitySuppressionSyncBridge::OnEncryptorReady(
+    base::RepeatingClosure barrier,
+    scoped_refptr<os_crypt_async::Encryptor> encryptor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(encryptor);
+  if (encryptor->IsEncryptionAvailable()) {
+    encryptor_ = std::move(encryptor);
+  } else {
+    // TODO(crbug.com/501036619): Report a ModelError when encryption is
+    // unavailable.
+  }
+  barrier.Run();
+}
+
+void EntitySuppressionSyncBridge::OnRequiredServicesReady() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!store_ || !encryptor_) {
     return;
   }
-  store_ = std::move(store);
   store_->ReadAllDataAndMetadata(
       base::BindOnce(&EntitySuppressionSyncBridge::OnReadAllDataAndMetadata,
                      weak_ptr_factory_.GetWeakPtr()));

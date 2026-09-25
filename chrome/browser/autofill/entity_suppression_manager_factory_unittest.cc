@@ -44,7 +44,8 @@ TEST_F(EntitySuppressionManagerFactoryTest,
   EntitySuppressionManager* service =
       EntitySuppressionManagerFactory::GetForProfile(&profile);
 
-  EXPECT_NE(nullptr, service);
+  ASSERT_NE(nullptr, service);
+  EXPECT_NE(nullptr, service->GetSyncControllerDelegate());
 }
 
 // Tests that off-the-record profiles return nullptr even when feature is

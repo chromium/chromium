@@ -1501,6 +1501,7 @@ static_library("browser") {
     "//components/one_time_tokens/core/browser",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/os_crypt/async/browser",
     "//components/os_crypt/async/common",
     "//components/os_crypt/common",
     "//components/password_manager/core/browser/features:password_features",
