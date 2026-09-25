@@ -17426,6 +17426,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="LevelUp.Promo.Displayed">
+  <owner>zijingl@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Recorded when the Level Up promo is displayed from the Promos Manager.
+  </description>
+</action>
+
 <action name="LinkCapturingAcceptedFromInfoBar">
   <owner>dmurph@google.com</owner>
   <owner>pwa-team@google.com</owner>

@@ -234,6 +234,7 @@ chromium-metrics-reviews@google.com.
       summary="Remind me later for default browser."/>
   <variant name="DockingPromo" summary="Docking Promo."/>
   <variant name="FullscreenSignin" summary="Fullscreen sign-in promo."/>
+  <variant name="LevelUp" summary="Level Up promo"/>
   <variant name="MadeForIOSDefaultBrowser"
       summary="&quot;Made For iOS&quot; default browser promo."/>
   <variant name="PostDefaultAbandonment"

@@ -65,6 +65,7 @@
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/features.h"
+#import "ios/chrome/browser/level_up/model/level_up_promo_profile_agent.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/ntp/model/home_background_customization_promo_profile_agent.h"
 #import "ios/chrome/browser/profile_metrics/model/profile_activity_profile_agent.h"
@@ -103,7 +104,6 @@
 #import "net/url_request/url_request_context.h"
 #import "net/url_request/url_request_context_getter.h"
 #import "ui/base/device_form_factor.h"
-
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 #import "ios/chrome/browser/credential_provider/model/credential_provider_service_factory.h"  // nogncheck
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"  // nogncheck
@@ -623,6 +623,10 @@ void RemoveSessionsFromSessionsToDiscard(const SessionIds& session_ids,
   }
 
   [_state addAgent:[[HomeBackgroundCustomizationPromoProfileAgent alloc] init]];
+
+  if (IsLevelUpEnabled()) {
+    [_state addAgent:[[LevelUpPromoProfileAgent alloc] init]];
+  }
 }
 
 - (void)maybeContinueForegroundInitialization {

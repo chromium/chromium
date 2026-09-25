@@ -725,6 +725,25 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
                     Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
 
     return config;
+  } else if (kIPHiOSPromoLevelUpFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysTrue;
+    // Feature can only be used once.
+    config.used =
+        EventConfig(events::kIOSLevelUpPromoUsed, Comparator(LESS_THAN, 1),
+                    kMaxStoragePeriod, kMaxStoragePeriod);
+
+    // Max Impression cap: 1.
+    config.trigger =
+        EventConfig("level_up_promo_trigger", Comparator(LESS_THAN, 1),
+                    kMaxStoragePeriod, kMaxStoragePeriod);
+
+    // Available 4 days after new user completes first run.
+    config.event_configs.insert(EventConfig(events::kIOSFirstRunComplete,
+                                            Comparator(LESS_THAN, 1), 4,
+                                            kMaxStoragePeriod));
+    return config;
   } else {
     return std::nullopt;
   }

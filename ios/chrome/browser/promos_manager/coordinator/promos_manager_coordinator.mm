@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/default_browser/promo/tailored/ui/stay_safe_default_browser_promo_view_provider.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/features.h"
+#import "ios/chrome/browser/level_up/model/level_up_promo_display_handler.h"
 #import "ios/chrome/browser/ntp/coordinator/home_background_customization_promo_display_handler.h"
 #import "ios/chrome/browser/post_restore_signin/ui_bundled/post_restore_signin_provider.h"
 #import "ios/chrome/browser/promos_manager/coordinator/bannered_promo_view_provider.h"
@@ -55,6 +56,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -612,6 +614,15 @@
 
   _displayHandlerPromos[promos_manager::Promo::HomeBackgroundCustomization] =
       [[HomeBackgroundCustomizationPromoDisplayHandler alloc] init];
+
+  // Level Up promo handler.
+  if (IsLevelUpEnabled()) {
+    id<LevelUpCommands> levelUpHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), LevelUpCommands);
+    _displayHandlerPromos[promos_manager::Promo::LevelUp] =
+        [[LevelUpPromoDisplayHandler alloc]
+            initWithLevelUpCommandsHandler:levelUpHandler];
+  }
 }
 
 - (void)registerStandardPromoViewProviderPromos {

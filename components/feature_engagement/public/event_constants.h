@@ -190,6 +190,9 @@ extern const char kLensButtonKeyboardUsed[];
 // The user has triggered the Lens button in the Composebox.
 extern const char kIOSLensButtonComposeboxUsed[];
 
+// Event fired when the Level Up promo is used once.
+extern const char kIOSLevelUpPromoUsed[];
+
 // The user has more than one gesture to refresh a page in iOS. This includes
 // but not limited to re-typing the URL in omnibox and refreshing from context
 // menu.

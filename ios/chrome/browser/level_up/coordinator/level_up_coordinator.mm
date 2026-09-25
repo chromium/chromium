@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/level_up/coordinator/level_up_coordinator.h"
 
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/level_up/coordinator/level_up_mediator.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
@@ -14,6 +18,9 @@
 #import "ios/chrome/browser/level_up/ui/level_up_all_tasks_view_controller.h"
 #import "ios/chrome/browser/level_up/ui/level_up_promo_view_controller.h"
 #import "ios/chrome/browser/level_up/ui/level_up_view_controller.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -89,15 +96,22 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 
 - (void)start {
   [super start];
-  _authService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
-  if (!_authService->HasPrimaryIdentity()) {
-    [self showSignedOutSnackbarAndDismiss];
-    return;
-  }
+  // Updates the kIOSLevelUpPromoUsed event to prevent PromosManager
+  // from triggering Level Up promo before it is deregistered.
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(
+          self.browser->GetProfile());
+  CHECK(tracker);
+  tracker->NotifyEvent(feature_engagement::events::kIOSLevelUpPromoUsed);
+
   _prefService = self.browser->GetProfile()->GetPrefs();
-  // Display level up promo if user has not opted in.
-  if (!_prefService->GetBoolean(prefs::kLevelUpOptIn)) {
+
+  // Deregisters the Level Up promo right after it is shown;
+  // Otherwise, displays the Level Up promo.
+  if (_prefService->GetBoolean(prefs::kLevelUpOptIn)) {
+    PromosManagerFactory::GetForProfile(self.browser->GetProfile())
+        ->DeregisterPromo(promos_manager::Promo::LevelUp);
+  } else {
     [self showLevelUpPromo];
     return;
   }
@@ -361,6 +375,13 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 
 // Displays the Level Up main UIpage.
 - (void)showLevelUp {
+  // TODO(crbug.com/565364655): remove the snackabr and only show signin sheet.
+  _authService =
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+  if (!_authService->HasPrimaryIdentity()) {
+    [self showSignedOutSnackbarAndDismiss];
+    return;
+  }
   LevelUpViewController* viewController = [[LevelUpViewController alloc] init];
   viewController.handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LevelUpCommands);

@@ -82,3 +82,26 @@ source_set("unit_tests") {
     "//third_party/ocmock",
   ]
 }
+
+source_set("promo") {
+  sources = [
+    "level_up_promo_display_handler.h",
+    "level_up_promo_display_handler.mm",
+    "level_up_promo_profile_agent.h",
+    "level_up_promo_profile_agent.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/promos_manager/coordinator:promos" ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/prefs",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}

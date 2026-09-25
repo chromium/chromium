@@ -298,6 +298,7 @@ DEFINE_VARIATION_PARAM(kIPHiOSPromoBackgroundCustomizationFeature,
                        "IPH_iOSPromoBackgroundCustomization");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoContextualDefaultBrowserGeminiFeature,
                        "IPH_iOSPromoContextualDefaultBrowserGemini");
+DEFINE_VARIATION_PARAM(kIPHiOSPromoLevelUpFeature, "IPHiOSPromoLevelUpFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoSigninFullscreenFeature,
                        "IPH_iOSPromoSigninFullscreen");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoPostRestoreFeature,
@@ -841,6 +842,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSPromoContextualDefaultBrowserGeminiFeature),
         VARIATION_ENTRY(kIPHiOSPromoCredentialProviderExtensionFeature),
         VARIATION_ENTRY(kIPHiOSPromoGenericDefaultBrowserFeature),
+        VARIATION_ENTRY(kIPHiOSPromoLevelUpFeature),
         VARIATION_ENTRY(kIPHiOSPromoMadeForIOSFeature),
         VARIATION_ENTRY(kIPHiOSPromoNonModalAppSwitcherDefaultBrowserFeature),
         VARIATION_ENTRY(kIPHiOSPromoNonModalShareDefaultBrowserFeature),

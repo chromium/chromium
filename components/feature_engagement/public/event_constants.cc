@@ -110,6 +110,7 @@ const char kHistoryOnOverflowMenuUsed[] = "history_on_overflow_menu_used";
 const char kSettingsOnOverflowMenuUsed[] = "settings_on_overflow_menu_used";
 const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
 const char kIOSLensButtonComposeboxUsed[] = "lens_compose_box_used";
+const char kIOSLevelUpPromoUsed[] = "ios_level_up_promo_used";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
 const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
 const char kIOSPullToRefreshIPHDismissButtonTapped[] =
