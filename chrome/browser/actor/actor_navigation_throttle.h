@@ -69,6 +69,8 @@ class ActorNavigationThrottle : public content::NavigationThrottle {
       override;
   content::NavigationThrottle::ThrottleCheckResult WillProcessResponse()
       override;
+  content::NavigationThrottle::ThrottleCheckResult WillCommitWithoutUrlLoader()
+      override;
   const char* GetNameForLogging() override;
 
  private:

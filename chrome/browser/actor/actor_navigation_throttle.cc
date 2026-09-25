@@ -114,6 +114,24 @@ ActorNavigationThrottle::WillProcessResponse() {
   return content::NavigationThrottle::DEFER;
 }
 
+content::NavigationThrottle::ThrottleCheckResult
+ActorNavigationThrottle::WillCommitWithoutUrlLoader() {
+  if (navigation_handle()->IsSameDocument()) {
+    return content::NavigationThrottle::PROCEED;
+  }
+  if (!navigation_handle()->IsRendererInitiated()) {
+    return WillStartOrRedirectRequest(/*is_redirection=*/false);
+  }
+  if (!execution_engine_) {
+    return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  }
+  execution_engine_->ShouldNavigationCommit(
+      *navigation_handle(),
+      base::BindOnce(&ActorNavigationThrottle::OnNavigationConfirmationDecision,
+                     weak_factory_.GetWeakPtr()));
+  return content::NavigationThrottle::DEFER;
+}
+
 void ActorNavigationThrottle::OnNavigationConfirmationDecision(
     MayActOnUrlBlockReason block_reason) {
   if (block_reason == MayActOnUrlBlockReason::kAllowed) {

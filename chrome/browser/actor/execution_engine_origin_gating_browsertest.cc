@@ -3162,4 +3162,118 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineHardcodedSensitiveSiteBrowserTest,
           url::Origin::Create(sensitive_url)))));
 }
 
+// Regression test for crbug.com/563004214: a cross-origin opener navigating an
+// acted-on tab to about:blank (which commits without a URL loader) must be
+// gated by ActorNavigationThrottle and must not poison the tab's committed
+// origin to bypass new-origin confirmation on subsequent navigations.
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       OpenerCrossOriginAboutBlankNavigationGated) {
+  const GURL evil_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+
+  content::WebContents* acted_contents = web_contents();
+  ASSERT_TRUE(content::NavigateToURL(acted_contents, start_url));
+
+  // Open a popup on foo.com before starting the actor task so foo.com holds a
+  // `window.opener` reference to `acted_contents`.
+  content::TestNavigationObserver popup_observer(evil_url);
+  popup_observer.StartWatchingNewWebContents();
+  ASSERT_TRUE(content::ExecJs(
+      acted_contents, content::JsReplace("window.open($1);", evil_url)));
+  popup_observer.Wait();
+  content::WebContents* popup_contents = web_contents();
+  ASSERT_NE(popup_contents, acted_contents);
+
+  // Reactivate tab 0 (`acted_contents`) before opening Glic and starting the
+  // actor task on it.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  ASSERT_EQ(web_contents(), acted_contents);
+
+  OpenGlicAndCreateTask();
+  actor_task().AddTab(active_tab()->GetHandle(), /*stop_task_on_detach=*/true,
+                      base::DoNothing());
+  ASSERT_TRUE(actor_task().HasTab(active_tab()->GetHandle()));
+
+  // Deny any navigation confirmation requests.
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  // Step 1: Cross-origin popup attempts to navigate the acted-on tab to
+  // about:blank via window.opener. This must be gated against foo.com and
+  // denied.
+  content::TestNavigationObserver about_blank_observer(
+      acted_contents, content::MessageLoopRunner::QuitMode::IMMEDIATE,
+      /*ignore_uncommitted_navigations=*/false);
+  EXPECT_TRUE(content::ExecJs(popup_contents,
+                              "window.opener.location = 'about:blank';"));
+  about_blank_observer.Wait();
+
+  EXPECT_FALSE(about_blank_observer.last_navigation_succeeded());
+  EXPECT_EQ(about_blank_observer.last_initiator_origin(),
+            url::Origin::Create(evil_url));
+  EXPECT_EQ(acted_contents->GetLastCommittedURL(), start_url);
+  EXPECT_EQ(acted_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+            url::Origin::Create(start_url));
+
+  RunTestSequence(VerifyNavigationConfirmationRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "taskId": $2})",
+          url::Origin::Create(evil_url), actor_task().id().value()))));
+
+  // Step 2: Same-origin navigation to about:blank initiated by the acted-on tab
+  // itself must still be allowed via kAllowSameOrigin without prompting.
+  content::TestNavigationObserver same_origin_blank_observer(acted_contents);
+  EXPECT_TRUE(
+      content::ExecJs(acted_contents, "window.location = 'about:blank';"));
+  same_origin_blank_observer.Wait();
+  EXPECT_TRUE(same_origin_blank_observer.last_navigation_succeeded());
+  EXPECT_EQ(same_origin_blank_observer.last_initiator_origin(),
+            url::Origin::Create(start_url));
+  EXPECT_EQ(acted_contents->GetLastCommittedURL(), GURL(url::kAboutBlankURL));
+  EXPECT_EQ(acted_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+            url::Origin::Create(start_url));
+}
+
+// Regression test for crbug.com/563004214: if an acted-on tab is at about:blank
+// with an inherited sensitive origin, page action safety checks must evaluate
+// the effective origin rather than auto-allowing via kAllowAboutBlank.
+IN_PROC_BROWSER_TEST_F(ExecutionEngineHardcodedSensitiveSiteBrowserTest,
+                       PageActionOnInheritedAboutBlankPromptsUser) {
+  const GURL sensitive_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), sensitive_url));
+
+  // Navigate from bar.com to about:blank so GetLastCommittedURL() is
+  // about:blank while GetLastCommittedOrigin() is https://bar.com.
+  content::TestNavigationObserver blank_observer(web_contents());
+  ASSERT_TRUE(
+      content::ExecJs(web_contents(), "window.location = 'about:blank';"));
+  blank_observer.Wait();
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), GURL(url::kAboutBlankURL));
+  ASSERT_EQ(web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+            url::Origin::Create(sensitive_url));
+  EXPECT_EQ(blank_observer.last_initiator_origin(),
+            url::Origin::Create(sensitive_url));
+
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, false)));
+
+  WaitTool::SetNoDelayForTesting();
+  std::unique_ptr<ToolRequest> tool_request = MakeWaitRequest(active_tab());
+  ASSERT_TRUE(tool_request->RequiresUrlCheckInCurrentTab());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(tool_request), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
+
+  RunTestSequence(VerifyUserConfirmationDialogRequest(
+      base::test::ParseJsonDict(content::JsReplace(
+          R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
+          url::Origin::Create(sensitive_url)))));
+}
+
 }  // namespace actor

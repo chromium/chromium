@@ -647,6 +647,8 @@ void CreateAndAddChromeThrottlesForCommitWithoutUrlLoader(
         registry);
   }
 
+  actor::ActorNavigationThrottle::MaybeCreateAndAdd(registry);
+
   // PwcNavigationThrottle must also cancel off-allowlist main-frame
   // navigations that commit without a URL loader (e.g. a subframe navigating
   // the main frame to about:blank), which never reach WillStartRequest().

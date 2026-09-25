@@ -535,6 +535,27 @@ url::Origin OriginOrPrecursorIfOpaque(const url::Origin& origin) {
       origin.GetTupleOrPrecursorTupleIfOpaque().GetURL());
 }
 
+// Returns `url_to_commit` if its origin/precursor already matches
+// `origin_to_commit`'s tuple or precursor (preserving path/query for URL-level
+// policy checks), or if `origin_to_commit` has no tuple/precursor (e.g.
+// browser-initiated about:blank).  Otherwise (e.g. renderer-initiated
+// about:blank or about:srcdoc that inherited a tuple/precursor origin), returns
+// the precursor/tuple origin's GURL so gating evaluates the true security
+// principal rather than "about:blank".
+GURL GetEffectiveUrlForGating(const GURL& url_to_commit,
+                              const url::Origin& origin_to_commit) {
+  const url::Origin effective_origin =
+      OriginOrPrecursorIfOpaque(origin_to_commit);
+  if (effective_origin.opaque()) {
+    return url_to_commit;
+  }
+  if (OriginOrPrecursorIfOpaque(url::Origin::Create(url_to_commit)) ==
+      effective_origin) {
+    return url_to_commit;
+  }
+  return effective_origin.GetURL();
+}
+
 ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
     const origin_gating::GatingDecision& decision) {
   switch (decision.attribution.type()) {
@@ -902,6 +923,12 @@ void ExecutionEngine::ShouldNavigationCommit(
 
   const url::Origin source_origin = OriginOrPrecursorIfOpaque(
       GetPrimaryMainFrame(navigation_handle)->GetLastCommittedOrigin());
+  const GURL destination_url = GetEffectiveUrlForGating(
+      navigation_handle.GetURL(),
+      url::Origin::Resolve(
+          navigation_handle.GetURL(),
+          navigation_handle.GetInitiatorOrigin().value_or(url::Origin())));
+  const url::Origin destination_origin = url::Origin::Create(destination_url);
   auto event = GateableEvent::kNavigationResponse;
   auto wrapped_callback = TrackPendingNavigation(
       pending_navigation_cancellations_, std::move(callback),
@@ -911,15 +938,15 @@ void ExecutionEngine::ShouldNavigationCommit(
           GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
           navigation_handle.IsInPrerenderedMainFrame(), std::move(timer),
           ExtractMimeType(navigation_handle)),
-      event, source_origin.GetURL(), navigation_handle.GetURL(),
+      event, source_origin.GetURL(), destination_url,
       base::BindOnce(
           &ExecutionEngine::OnComputedGatingDecision, GetWeakPtr(),
           std::move(wrapped_callback),
-          journal_->CreatePendingAsyncEntry(
-              navigation_handle.GetURL(), task_->id(),
-              MakeBrowserTrackUUID(task_->id()), "OriginGatingDecision", {}),
-          source_origin, url::Origin::Create(navigation_handle.GetURL()),
-          state_, navigation_handle.GetInitiatorOrigin(), event));
+          journal_->CreatePendingAsyncEntry(destination_url, task_->id(),
+                                            MakeBrowserTrackUUID(task_->id()),
+                                            "OriginGatingDecision", {}),
+          source_origin, destination_origin, state_,
+          navigation_handle.GetInitiatorOrigin(), event));
 }
 
 void ExecutionEngine::CancelPendingNavigations() {
@@ -1407,15 +1434,11 @@ void ExecutionEngine::SafetyChecksForNextAction() {
     return;
   }
 
-  // Asynchronously check if we can act on the tab. NOTE that the check uses
-  // `GetLastCommittedURL()` from the tab. For opaque origins, this means that
-  // we'll get the precursor URL. For this reason, we previously added the
-  // precursor to `origin_gating_cache()` to ensure the optimization guide
-  // sensitive origin check would be skipped as expected.
-
   // TODO(mcnee): Add UMA for the outcomes.
   content::WebContents& web_contents = *(tab->GetContents());
-  const GURL& url = web_contents.GetPrimaryMainFrame()->GetLastCommittedURL();
+  content::RenderFrameHost* main_frame = web_contents.GetPrimaryMainFrame();
+  const GURL url = GetEffectiveUrlForGating(
+      main_frame->GetLastCommittedURL(), main_frame->GetLastCommittedOrigin());
   auto event = GateableEvent::kPageAction;
   GetOriginGatingChecker().ComputeGatingDecision(
       std::make_unique<PageActionGatingContext>(web_contents.GetWeakPtr()),
@@ -1431,13 +1454,11 @@ void ExecutionEngine::SafetyChecksForNextAction() {
           }))
           .Then(base::BindOnce(&ExecutionEngine::DidFinishAsyncSafetyChecks,
                                GetActionSequenceWeakPtr(),
-                               tab->GetContents()
-                                   ->GetPrimaryMainFrame()
-                                   ->GetLastCommittedOrigin())));
+                               main_frame->GetLastCommittedOrigin())));
 }
 
 void ExecutionEngine::DidFinishAsyncSafetyChecks(
-    const url::Origin& evaluated_origin,
+    const url::Origin& committed_origin,
     mojom::ActionResultCode result_code) {
   TRACE_EVENT0("actor", "ExecutionEngine::DidFinishAsyncSafetyChecks");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1458,7 +1479,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   }
 
   TaskId task_id = task_->id();
-  if (!evaluated_origin.IsSameOriginWith(tab->GetContents()
+  if (!committed_origin.IsSameOriginWith(tab->GetContents()
                                              ->GetPrimaryMainFrame()
                                              ->GetLastCommittedOrigin())) {
     // A cross-origin navigation occurred before we got permission. The result

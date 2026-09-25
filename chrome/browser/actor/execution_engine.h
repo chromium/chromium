@@ -371,7 +371,7 @@ class ExecutionEngine : public ToolDelegate,
 
   // Performs synchronous safety checks for the next action. If everything
   // passes calls tool_controller_.Invoke().
-  void DidFinishAsyncSafetyChecks(const url::Origin& evaluated_origin,
+  void DidFinishAsyncSafetyChecks(const url::Origin& committed_origin,
                                   mojom::ActionResultCode result_code);
 
   // If a failure occurs before the next action starts, we associate the tab
