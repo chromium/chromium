@@ -234,8 +234,6 @@ public class StripLayoutHelper
     // An observer that is notified of changes to a {@link TabModel} object.
     private final TabGroupObserver mTabGroupObserver =
             new TabGroupObserver() {
-                @Nullable Token mSourceTabGroupId;
-
                 @Override
                 public void willMoveTabGroup(Token tabGroupId, int currentIndex) {
                     mMovingGroup = true;
@@ -271,25 +269,16 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void willMoveTabOutOfGroup(
-                        Tab movedTab, @Nullable Token destinationTabGroupId) {
-                    // TODO(crbug.com/326494015): Refactor #didMoveTabOutOfGroup to pass in previous
-                    //  root ID.
-                    mSourceTabGroupId = movedTab.getTabGroupId();
-                }
-
-                @Override
                 public void didMoveTabOutOfGroup(Tab movedTab, Token oldTabGroupId) {
-                    updateGroupTextAndSharedState(mSourceTabGroupId);
+                    updateGroupTextAndSharedState(oldTabGroupId);
                     Token groupIdToHide = mGroupIdToHideSupplier.get();
                     // TODO(crbug.com/430514194): There is a strong possibility this is never true
                     // as didRemoveTabGroup is invoked before this and would make groupIdToHide
                     // null.
                     boolean removedHiddenLastTabInGroup =
-                            groupIdToHide != null
-                                    && groupIdToHide.equals(mSourceTabGroupId)
+                            oldTabGroupId.equals(groupIdToHide)
                                     && mModel != null
-                                    && !mModel.tabGroupExists(mSourceTabGroupId);
+                                    && !mModel.tabGroupExists(oldTabGroupId);
 
                     // Skip if the rebuild will be handled elsewhere after reaching a "proper" tab
                     // state, such as confirming the group deletion.
