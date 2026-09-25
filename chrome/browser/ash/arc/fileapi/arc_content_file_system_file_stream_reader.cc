@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -161,15 +160,14 @@ void ArcContentFileSystemFileStreamReader::OnOpenFileSession(
 
   session_id_ = std::move(file_handle->url_id);
   CHECK(session_id_.length() > 0, base::NotFatalUntil::M160);
-  mojo::PlatformHandle platform_handle =
-      mojo::UnwrapPlatformHandle(std::move(file_handle->fd));
+  mojo::PlatformHandle platform_handle = std::move(file_handle->fd);
   if (!platform_handle.is_valid()) {
-    LOG(ERROR) << "PassWrappedInternalPlatformHandle failed";
+    LOG(ERROR) << "Invalid platform handle";
     CloseInternal(CloseStatus::kStatusError);
     std::move(callback).Run(net::ERR_INVALID_HANDLE);
     return;
   }
-  file_ = std::make_unique<base::File>(platform_handle.ReleaseFD());
+  file_ = std::make_unique<base::File>(platform_handle.TakeFD());
   if (!file_->IsValid()) {
     LOG(ERROR) << "Invalid file.";
     CloseInternal(CloseStatus::kStatusError);

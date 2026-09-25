@@ -303,7 +303,7 @@ struct FileSession {
   string url_id;
 
   // FD for writing or reading the file specified by the URL.
-  handle fd;
+  handle<platform> fd;
 };
 
 // Representation of an entry in the MediaStore downloads collection.
@@ -373,7 +373,7 @@ interface FileSystemHost {
 
   // Returns an FD for reading the file specified by the URL.
   [MinVersion=6]
-  OpenFileToRead@4(string url) => (handle? fd);
+  OpenFileToRead@4(string url) => (handle<platform>? fd);
 
   // Asks the user to select files using ChromeOS file selector.
   [MinVersion=9]
@@ -540,7 +540,7 @@ interface FileSystemInstance {
   // DocumentsProvider file specified by the URL. The thumbnail should be close
   // in size (width and height) but not necessarily the same as |size_hint|.
   [MinVersion=15]
-  OpenThumbnail@21(string url, Size size_hint) => (handle? fd);
+  OpenThumbnail@21(string url, Size size_hint) => (handle<platform>? fd);
 
   // Closes the ParcelFileDescriptor corresponding to the url_id. An error
   // message can be sent to the ContentProvider as needed.

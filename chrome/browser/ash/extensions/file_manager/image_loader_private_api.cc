@@ -376,14 +376,11 @@ void ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::GotContentUrls(
               &ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::
                   GotArcThumbnailFileHandle,
               this),
-          mojo::ScopedHandle()));
+          mojo::PlatformHandle()));
 }
 
 void ImageLoaderPrivateGetArcDocumentsProviderThumbnailFunction::
-    GotArcThumbnailFileHandle(mojo::ScopedHandle handle) {
-  mojo::PlatformHandle platform_handle =
-      mojo::UnwrapPlatformHandle(std::move(handle));
-
+    GotArcThumbnailFileHandle(mojo::PlatformHandle platform_handle) {
   if (!platform_handle.is_valid()) {
     Respond(Error("File not found"));
     return;

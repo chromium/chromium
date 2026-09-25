@@ -23,7 +23,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace arc {
 
@@ -413,12 +413,9 @@ void FakeFileSystemInstance::OpenFileSessionToWrite(
   DCHECK(fd.is_valid());
   std::string url_id = GenerateUrlId();
   AddOpenSession(url_id, fd.get());
-  mojo::ScopedHandle wrapped_handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
-  DCHECK(wrapped_handle.is_valid());
   mojom::FileSessionPtr file_session = mojom::FileSession::New();
   file_session->url_id = std::move(url_id);
-  file_session->fd = std::move(wrapped_handle);
+  file_session->fd = mojo::PlatformHandle(std::move(fd));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(file_session)));
 }
@@ -443,12 +440,9 @@ void FakeFileSystemInstance::OpenFileSessionToRead(
   DCHECK(fd.is_valid());
   std::string url_id = GenerateUrlId();
   AddOpenSession(url_id, fd.get());
-  mojo::ScopedHandle wrapped_handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
-  DCHECK(wrapped_handle.is_valid());
   mojom::FileSessionPtr file_session = mojom::FileSession::New();
   file_session->url_id = std::move(url_id);
-  file_session->fd = std::move(wrapped_handle);
+  file_session->fd = mojo::PlatformHandle(std::move(fd));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(file_session)));
 }
@@ -460,13 +454,13 @@ void FakeFileSystemInstance::OpenThumbnail(const std::string& url,
   auto iter = files_.find(url);
   if (iter == files_.end()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::PlatformHandle()));
     return;
   }
   const File& file = iter->second;
   if (file.thumbnail_content.empty()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::PlatformHandle()));
     return;
   }
   // This validates that size_hint parameter is propagated properly from the
@@ -476,16 +470,13 @@ void FakeFileSystemInstance::OpenThumbnail(const std::string& url,
     LOG(ERROR) << "Unexpected thumbnail size hint: " << size_hint.width() << "x"
                << size_hint.height();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::PlatformHandle()));
     return;
   }
   base::ScopedFD fd = CreateStreamFileDescriptorToRead(file.thumbnail_content);
-  mojo::ScopedHandle wrapped_handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
-  DCHECK(wrapped_handle.is_valid());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), std::move(wrapped_handle)));
+      base::BindOnce(std::move(callback), mojo::PlatformHandle(std::move(fd))));
 }
 
 void FakeFileSystemInstance::GetDocument(const std::string& authority,

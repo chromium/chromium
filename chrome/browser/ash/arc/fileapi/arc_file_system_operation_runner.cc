@@ -21,6 +21,7 @@
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -230,14 +231,14 @@ void ArcFileSystemOperationRunner::OpenThumbnailAfterAccessCheck(
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   if (!accessible) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::PlatformHandle()));
     return;
   }
   auto* file_system_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_bridge_service_->file_system(), OpenThumbnail);
   if (!file_system_instance) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), mojo::ScopedHandle()));
+        FROM_HERE, base::BindOnce(std::move(callback), mojo::PlatformHandle()));
     return;
   }
   file_system_instance->OpenThumbnail(url.spec(), size, std::move(callback));

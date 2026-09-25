@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/dbus/arc/arc_appfuse_provider_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace arc {
 
@@ -39,21 +39,15 @@ class ArcAppfuseBridgeFactory
   ~ArcAppfuseBridgeFactory() override = default;
 };
 
-void RunWithScopedHandle(base::OnceCallback<void(mojo::ScopedHandle)> callback,
-                         std::optional<base::ScopedFD> fd) {
+void RunWithPlatformHandle(
+    base::OnceCallback<void(mojo::PlatformHandle)> callback,
+    std::optional<base::ScopedFD> fd) {
   if (!fd || !fd.value().is_valid()) {
     LOG(ERROR) << "Invalid FD: fd.has_value() = " << fd.has_value();
-    std::move(callback).Run(mojo::ScopedHandle());
+    std::move(callback).Run(mojo::PlatformHandle());
     return;
   }
-  mojo::ScopedHandle wrapped_handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd.value())));
-  if (!wrapped_handle.is_valid()) {
-    LOG(ERROR) << "Failed to wrap handle";
-    std::move(callback).Run(mojo::ScopedHandle());
-    return;
-  }
-  std::move(callback).Run(std::move(wrapped_handle));
+  std::move(callback).Run(mojo::PlatformHandle(std::move(fd.value())));
 }
 
 }  // namespace
@@ -85,7 +79,8 @@ void ArcAppfuseBridge::Mount(uint32_t uid,
                              MountCallback callback) {
   // This is safe because ArcAppfuseProviderClient outlives ArcServiceLauncher.
   ash::ArcAppfuseProviderClient::Get()->Mount(
-      uid, mount_id, base::BindOnce(&RunWithScopedHandle, std::move(callback)));
+      uid, mount_id,
+      base::BindOnce(&RunWithPlatformHandle, std::move(callback)));
 }
 
 void ArcAppfuseBridge::Unmount(uint32_t uid,
@@ -102,7 +97,7 @@ void ArcAppfuseBridge::OpenFile(uint32_t uid,
                                 OpenFileCallback callback) {
   ash::ArcAppfuseProviderClient::Get()->OpenFile(
       uid, mount_id, file_id, flags,
-      base::BindOnce(&RunWithScopedHandle, std::move(callback)));
+      base::BindOnce(&RunWithPlatformHandle, std::move(callback)));
 }
 
 // static

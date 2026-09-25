@@ -9,6 +9,7 @@
 #include "chromeos/ash/experiences/arc/mojom/file_system.mojom-forward.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -26,8 +27,7 @@ void OnOpenFileToTruncate(int64_t length,
     std::move(callback).Run(base::File::FILE_ERROR_FAILED);
     return;
   }
-  mojo::PlatformHandle platform_handle =
-      mojo::UnwrapPlatformHandle(std::move(file_handle->fd));
+  mojo::PlatformHandle platform_handle = std::move(file_handle->fd);
   if (!platform_handle.is_valid()) {
     std::move(callback).Run(base::File::FILE_ERROR_FAILED);
     return;

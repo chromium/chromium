@@ -47,7 +47,6 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "url/gurl.h"
@@ -129,7 +128,7 @@ void GetMetadataOnIOThread(
 
 // TODO(risan): Write test.
 // Open a file from a VFS (vs Chrome-only) filesystem.
-mojo::ScopedHandle OpenVFSFileToRead(const base::FilePath& fs_path) {
+mojo::PlatformHandle OpenVFSFileToRead(const base::FilePath& fs_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   // Open the file and wrap the fd to be returned through mojo.
@@ -137,9 +136,9 @@ mojo::ScopedHandle OpenVFSFileToRead(const base::FilePath& fs_path) {
       open(fs_path.value().c_str(), O_RDONLY | O_CLOEXEC | O_NOFOLLOW)));
   if (!fd.is_valid()) {
     PLOG(WARNING) << "Invalid FD for fs_path: " << fs_path;
-    return mojo::ScopedHandle();
+    return mojo::PlatformHandle();
   }
-  return mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
+  return mojo::PlatformHandle(std::move(fd));
 }
 
 // Factory of ArcFileSystemBridge.
@@ -369,7 +368,7 @@ void ArcFileSystemBridge::OpenFileToRead(const std::string& url,
   GURL url_decoded = DecodeFromChromeContentProviderUrl(GURL(url));
   if (url_decoded.is_empty() || !IsUrlAllowed(url_decoded)) {
     LOG(ERROR) << "Invalid URL: " << url << " " << url_decoded;
-    std::move(callback).Run(mojo::ScopedHandle());
+    std::move(callback).Run(mojo::PlatformHandle());
     return;
   }
 
@@ -588,7 +587,7 @@ void ArcFileSystemBridge::OpenFileById(const GURL& url_decoded,
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   if (!id.has_value()) {
     LOG(ERROR) << "Missing ID";
-    std::move(callback).Run(mojo::ScopedHandle());
+    std::move(callback).Run(mojo::PlatformHandle());
     return;
   }
 
@@ -607,20 +606,11 @@ void ArcFileSystemBridge::OnOpenFileById(const GURL& url_decoded,
     LOG(ERROR) << "Invalid FD";
     if (!HandleIdReleased(id))
       LOG(ERROR) << "Cannot release ID: " << id;
-    std::move(callback).Run(mojo::ScopedHandle());
+    std::move(callback).Run(mojo::PlatformHandle());
     return;
   }
 
-  mojo::ScopedHandle wrapped_handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd)));
-  if (!wrapped_handle.is_valid()) {
-    LOG(ERROR) << "Failed to wrap handle";
-    if (!HandleIdReleased(id))
-      LOG(ERROR) << "Cannot release ID: " << id;
-    std::move(callback).Run(mojo::ScopedHandle());
-    return;
-  }
-  std::move(callback).Run(std::move(wrapped_handle));
+  std::move(callback).Run(mojo::PlatformHandle(std::move(fd)));
 }
 
 bool ArcFileSystemBridge::HandleReadRequest(const std::string& id,

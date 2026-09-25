@@ -302,7 +302,7 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToRead) {
   base::RunLoop run_loop;
   arc_file_system_bridge_->OpenFileToRead(
       EncodeToChromeContentProviderUrl(test_url_).spec(),
-      base::BindLambdaForTesting([&](mojo::ScopedHandle result) {
+      base::BindLambdaForTesting([&](mojo::PlatformHandle result) {
         EXPECT_TRUE(result.is_valid());
         run_loop.Quit();
       }));
@@ -591,7 +591,7 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToReadOnArcVmRequiresSharedPath) {
 
   // 1. Without sharing the path, OpenFileToRead should fail.
   {
-    base::test::TestFuture<mojo::ScopedHandle> future;
+    base::test::TestFuture<mojo::PlatformHandle> future;
     arc_file_system_bridge_->OpenFileToRead(chrome_content_provider_url.spec(),
                                             future.GetCallback());
     EXPECT_FALSE(future.Get().is_valid());
@@ -603,7 +603,7 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToReadOnArcVmRequiresSharedPath) {
 
   // 3. With sharing the path, OpenFileToRead should succeed.
   {
-    base::test::TestFuture<mojo::ScopedHandle> future;
+    base::test::TestFuture<mojo::PlatformHandle> future;
     arc_file_system_bridge_->OpenFileToRead(chrome_content_provider_url.spec(),
                                             future.GetCallback());
     EXPECT_TRUE(future.Get().is_valid());

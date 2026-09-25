@@ -18,7 +18,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -191,16 +190,15 @@ void ArcContentFileSystemFileStreamWriter::OnOpenFileSession(
 
   session_id_ = std::move(file_session->url_id);
   CHECK(session_id_.length() > 0, base::NotFatalUntil::M160);
-  mojo::PlatformHandle platform_handle =
-      mojo::UnwrapPlatformHandle(std::move(file_session->fd));
+  mojo::PlatformHandle platform_handle = std::move(file_session->fd);
   if (!platform_handle.is_valid()) {
     has_pending_operation_ = false;
-    LOG(ERROR) << "PassWrappedInternalPlatformHandle failed";
+    LOG(ERROR) << "Invalid platform handle";
     CloseInternal(CloseStatus::kStatusError);
     std::move(callback).Run(net::ERR_INVALID_HANDLE);
     return;
   }
-  file_ = std::make_unique<base::File>(platform_handle.ReleaseFD());
+  file_ = std::make_unique<base::File>(platform_handle.TakeFD());
   CHECK(file_->IsValid(), base::NotFatalUntil::M160);
   if (offset_ == 0) {
     // We can skip the step to seek the file.
