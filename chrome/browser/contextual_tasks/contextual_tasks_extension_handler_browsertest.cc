@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -589,6 +590,70 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       MultipleFramesDeduplicateSearchMessages) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  handler_->SetTaskId(task_id);
+
+  // Primary handler (handler_) already has mock_page_ bound in
+  // SetUpOnMainThread. Create a child frame with a second handler and second
+  // bound mock page.
+  ASSERT_TRUE(
+      content::ExecJs(web_contents_,
+                      "const iframe = document.createElement('iframe'); "
+                      "document.body.appendChild(iframe);"));
+  content::RenderFrameHost* child_rfh =
+      content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(child_rfh, nullptr);
+
+  ContextualTasksExtensionHandler::CreateForCurrentDocument(child_rfh);
+  auto* child_handler =
+      ContextualTasksExtensionHandler::GetForCurrentDocument(child_rfh);
+  ASSERT_NE(child_handler, nullptr);
+
+  NiceMock<MockContextualTasksExtensionPage> mock_child_page;
+  mojo::PendingReceiver<mojom::ExtensionPageHandler>
+      child_page_handler_receiver;
+  child_handler->CreateExtensionPageHandler(
+      mock_child_page.BindAndGetRemote(),
+      std::move(child_page_handler_receiver));
+
+  // Verify that only the primary handler (handler_) emits the mount message,
+  // and the child handler does not emit a duplicate message.
+  base::RunLoop mount_run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        EXPECT_TRUE(message->inject_chrome_input().is_active());
+        mount_run_loop.Quit();
+      });
+  EXPECT_CALL(mock_child_page, PostSearchMessage(_)).Times(0);
+
+  handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,test_crop");
+  mount_run_loop.Run();
+
+  // Next, verify that when child_handler removes the crop, only the primary
+  // handler emits the unmount message.
+  auto model = handler_->GetOrCreateInputStateModelForTesting();
+  ASSERT_TRUE(model && model->lens_crop().has_value());
+
+  base::RunLoop unmount_run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        EXPECT_FALSE(message->inject_chrome_input().is_active());
+        unmount_run_loop.Quit();
+      });
+  EXPECT_CALL(mock_child_page, PostSearchMessage(_)).Times(0);
+
+  child_handler->RemoveLensCrop();
+  unmount_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                        OnLensThumbnailCreated_EmitsInjectChromeInput) {
   base::RunLoop run_loop;
 
@@ -1066,9 +1131,73 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(model->lens_crop().has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       SuccessiveCropReplacedInPlaceWithoutUnmount) {
+  // Step 1: Emit first crop. Should emit mount (is_active=true) and dispatch
+  // OnLensCropUpdated to the page.
+  base::RunLoop run_loop1;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        EXPECT_TRUE(message->inject_chrome_input().is_active());
+        run_loop1.Quit();
+      });
+  EXPECT_CALL(mock_page_,
+              OnLensCropUpdated(GURL("data:image/png;base64,crop1")))
+      .Times(1);
+
+  handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,crop1");
+  run_loop1.Run();
+
+  // Step 2: Emit second crop immediately without prior dismissal.
+  // Must update the chip in-place via OnLensCropUpdated without emitting any
+  // new PostSearchMessage (mount or unmount) to AIM.
+  base::RunLoop run_loop2;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_)).Times(0);
+  EXPECT_CALL(mock_page_,
+              OnLensCropUpdated(GURL("data:image/png;base64,crop2")))
+      .WillOnce([&](const GURL& data_uri) {
+        EXPECT_EQ("data:image/png;base64,crop2", data_uri.spec());
+        run_loop2.Quit();
+      });
+
+  handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,crop2");
+  run_loop2.Run();
+
+  // Step 3: Dismiss second crop. Should now emit unmount (is_active=false).
+  EXPECT_CALL(*mock_lens_controller_, lens_overlay_controller())
+      .WillRepeatedly(Return(mock_lens_overlay_controller_.get()));
+  EXPECT_CALL(*mock_lens_overlay_controller_, ClearRegionSelection()).Times(1);
+  EXPECT_CALL(
+      *mock_lens_controller_,
+      CloseLensAsync(
+          lens::LensOverlayDismissalSource::kContextualTasksLensChipRemoved))
+      .Times(1);
+
+  base::RunLoop run_loop3;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        EXPECT_FALSE(message->inject_chrome_input().is_active());
+        run_loop3.Quit();
+      });
+
+  handler_->RemoveLensCrop();
+  run_loop3.Run();
+}
+
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
     CreateExtensionPageHandler_InitializesInputStateModelAndEmitsPostSearchMessage) {
+  if (auto* user_data =
+          contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
+              web_contents_)) {
+    user_data->UnregisterExtensionFrame(handler_);
+  }
   ASSERT_TRUE(
       content::ExecJs(web_contents_,
                       "const iframe = document.createElement('iframe'); "

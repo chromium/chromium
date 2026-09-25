@@ -109,6 +109,29 @@ suite('LensChipTest', () => {
         assertEquals('', app.getDataUriForTesting());
       });
 
+  test(
+      'Chip updates preview when onLensCropUpdated is dispatched', async () => {
+        browserProxy.handler.setLensCropPreviewResult(null);
+
+        app = document.createElement('lens-chip-app');
+        document.body.appendChild(app);
+        await microtasksFinished();
+
+        const UPDATED_DATA_URI =
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg' +
+            '0kAAAAFElEQVR42mNk+M/wHwMDAwMDkAAAAP//DwYFBQAAAABJRU5ErkJggg==';
+
+        browserProxy.callbackRouterRemote.onLensCropUpdated(UPDATED_DATA_URI);
+        await microtasksFinished();
+
+        assertEquals(UPDATED_DATA_URI, app.getDataUriForTesting());
+        const cropImage =
+            app.shadowRoot?.querySelector<HTMLImageElement>('#cropImage');
+        assertTrue(!!cropImage);
+        assertTrue(isVisible(cropImage));
+        assertEquals(UPDATED_DATA_URI, cropImage.src);
+      });
+
   test('Dark mode reflects attribute correctly', async () => {
     app = document.createElement('lens-chip-app');
     document.body.appendChild(app);

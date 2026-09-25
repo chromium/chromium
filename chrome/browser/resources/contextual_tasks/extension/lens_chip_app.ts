@@ -11,6 +11,7 @@ import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_b
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CSSResultGroup} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './lens_chip_app.css.js';
 import {getHtml} from './lens_chip_app.html.js';
@@ -59,6 +60,7 @@ export class LensChipAppElement extends CrLitElement {
       loadTimeData.getString('lensRegionChipDismissA11yLabel');
 
   private pageHandler_: ExtensionPageHandlerInterface|null = null;
+  private listenerIds_: number[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -69,6 +71,23 @@ export class LensChipAppElement extends CrLitElement {
     }
 
     this.fetchPreview_();
+
+    const callbackRouter =
+        ExtensionBrowserProxyImpl.getInstance().callbackRouter;
+    this.listenerIds_.push(
+        callbackRouter.onLensCropUpdated.addListener((dataUri: Url) => {
+          this.dataUri = dataUri;
+        }));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    const callbackRouter =
+        ExtensionBrowserProxyImpl.getInstance().callbackRouter;
+    for (const id of this.listenerIds_) {
+      callbackRouter.removeListener(id);
+    }
+    this.listenerIds_ = [];
   }
 
   setPageHandlerForTesting(handler: ExtensionPageHandlerInterface|null) {

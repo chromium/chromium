@@ -467,4 +467,10 @@ interface ExtensionPage {
 
   // Called by the browser process (C++) when the Lens overlay is shown/hidden.
   OnLensOverlayStateChanged(bool is_showing);
+
+  // Called by the browser process (C++, ContextualTasksExtensionHandler)
+  // when an updated Lens region selection is captured while the chip
+  // iframe is already mounted, allowing the chip to update its preview
+  // thumbnail in-place without unmounting/remounting.
+  OnLensCropUpdated(url.mojom.Url data_uri);
 };

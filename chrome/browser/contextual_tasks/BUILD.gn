@@ -610,6 +610,7 @@ if (!is_android) {
       ":test_support",
       ":ui",
       ":ui_impl",
+      ":user_data",
       "//base",
       "//base/test:test_support",
       "//chrome/browser:browser_process",

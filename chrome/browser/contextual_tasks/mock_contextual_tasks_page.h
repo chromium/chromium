@@ -106,6 +106,7 @@ class MockContextualTasksExtensionPage : public mojom::ExtensionPage {
               (override));
   MOCK_METHOD(void, OnHandshakeComplete, (), (override));
   MOCK_METHOD(void, OnLensOverlayStateChanged, (bool is_showing), (override));
+  MOCK_METHOD(void, OnLensCropUpdated, (const GURL& data_uri), (override));
 
  private:
   mojo::Receiver<mojom::ExtensionPage> receiver_{this};

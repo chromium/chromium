@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 
+#include <algorithm>
+
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -136,6 +138,52 @@ ContextualTasksWebContentsUserData::GetOrCreateInputStateModel(
   last_active_model_ = model->AsWeakPtr();
   input_state_models_[session_handle.session_id()] = std::move(model);
   return last_active_model_;
+}
+
+void ContextualTasksWebContentsUserData::RegisterExtensionFrame(
+    const void* handler_id) {
+  for (auto& frame : extension_frames_) {
+    if (frame.handler_id == handler_id) {
+      return;
+    }
+  }
+  extension_frames_.push_back(ExtensionFrameInfo{
+      .handler_id = handler_id,
+      .is_page_bound = false,
+  });
+}
+
+void ContextualTasksWebContentsUserData::UpdateExtensionFrameBound(
+    const void* handler_id,
+    bool is_page_bound) {
+  for (auto& frame : extension_frames_) {
+    if (frame.handler_id == handler_id) {
+      frame.is_page_bound = is_page_bound;
+      return;
+    }
+  }
+}
+
+void ContextualTasksWebContentsUserData::UnregisterExtensionFrame(
+    const void* handler_id) {
+  std::erase_if(extension_frames_, [&](const ExtensionFrameInfo& frame) {
+    return frame.handler_id == handler_id;
+  });
+}
+
+bool ContextualTasksWebContentsUserData::IsPrimarySearchMessageSender(
+    const void* handler_id) const {
+  if (!handler_id) {
+    return false;
+  }
+
+  for (const auto& frame : extension_frames_) {
+    if (frame.is_page_bound) {
+      return frame.handler_id == handler_id;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace contextual_tasks

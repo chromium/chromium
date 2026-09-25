@@ -269,6 +269,7 @@ class ContextualTasksExtensionHandler
   void OnInputStateChanged(const omnibox::InputState& state);
   base::WeakPtr<contextual_search::InputStateModel>
   GetOrCreateInputStateModel();
+  bool IsPrimarySearchMessageSender() const;
   void OnLensThumbnailCreated(const std::string& thumbnail_uri);
   void RecordTimeToHandshakeComplete();
   void HandleOnSubmitQueryRequest();
@@ -289,6 +290,7 @@ class ContextualTasksExtensionHandler
   omnibox::ModelMode active_model_ = omnibox::MODEL_MODE_UNSPECIFIED;
 
   bool is_lens_crop_mounted_ = false;
+  std::string last_lens_crop_data_uri_;
   base::WeakPtrFactory<ContextualTasksExtensionHandler> weak_ptr_factory_{this};
 };
 
