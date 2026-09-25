@@ -90,7 +90,7 @@ class MockPage : public read_anything::mojom::UntrustedPage {
   ~MockPage() override = default;
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPage> BindAndGetRemote() {
-    DCHECK(!receiver_.is_bound());
+    receiver_.reset();
     return receiver_.BindNewPipeAndPassRemote();
   }
 
@@ -575,6 +575,62 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 
   histogram_tester.ExpectUniqueSample("Accessibility.ReadAnything.LineFocus",
                                       kLineFocus, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       Destructor_LogsImages) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  handler_->OnImagesEnabledChanged(false);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  extension_wrapper_ptr_ = nullptr;
+#endif
+  handler_.reset();
+
+  histogram_tester.ExpectUniqueSample("Accessibility.ReadAnything.Images",
+                                      false, 1);
+
+  handler_ = CreateHandler();
+  handler_->OnImagesEnabledChanged(true);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  extension_wrapper_ptr_ = nullptr;
+#endif
+  handler_.reset();
+
+  histogram_tester.ExpectBucketCount("Accessibility.ReadAnything.Images", false,
+                                     1);
+  histogram_tester.ExpectBucketCount("Accessibility.ReadAnything.Images", true,
+                                     1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       Destructor_LogsLinks) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  handler_->OnLinksEnabledChanged(false);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  extension_wrapper_ptr_ = nullptr;
+#endif
+  handler_.reset();
+
+  histogram_tester.ExpectUniqueSample("Accessibility.ReadAnything.Links", false,
+                                      1);
+
+  handler_ = CreateHandler();
+  handler_->OnLinksEnabledChanged(true);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  extension_wrapper_ptr_ = nullptr;
+#endif
+  handler_.reset();
+
+  histogram_tester.ExpectBucketCount("Accessibility.ReadAnything.Links", false,
+                                     1);
+  histogram_tester.ExpectBucketCount("Accessibility.ReadAnything.Links", true,
+                                     1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,

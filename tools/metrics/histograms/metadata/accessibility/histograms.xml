@@ -3311,6 +3311,16 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.Images" enum="BooleanEnabled"
+    expires_after="2027-02-07">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records whether images are enabled in the Read Anything panel when the panel
+    is closed.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.Language" enum="LocaleCodeBCP47"
     expires_after="2027-02-07">
   <owner>abigailbklein@google.com</owner>
@@ -3396,6 +3406,16 @@ recorded in the same way, even if they fit the naming pattern. -->
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records the user-chosen line spacing for the Read Anything panel.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.Links" enum="BooleanEnabled"
+    expires_after="2027-02-07">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records whether links are enabled in the Read Anything panel when the panel
+    is closed.
   </summary>
 </histogram>
 

@@ -2114,6 +2114,12 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
           prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing));
   base::UmaHistogramEnumeration("Accessibility.ReadAnything.LetterSpacing",
                                 letter_spacing);
+  base::UmaHistogramBoolean(
+      "Accessibility.ReadAnything.Images",
+      prefs->GetBoolean(prefs::kAccessibilityReadAnythingImagesEnabled));
+  base::UmaHistogramBoolean(
+      "Accessibility.ReadAnything.Links",
+      prefs->GetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled));
   if (features::IsReadAnythingLineFocusEnabled()) {
     auto line_focus = static_cast<read_anything::mojom::LineFocus>(
         prefs->GetInteger(prefs::kAccessibilityReadAnythingLineFocus));
