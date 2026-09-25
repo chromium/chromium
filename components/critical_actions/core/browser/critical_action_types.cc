@@ -4,7 +4,10 @@
 
 #include "components/critical_actions/core/browser/critical_action_types.h"
 
+#include "base/json/json_reader.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -44,8 +47,25 @@ std::string CriticalActionEntry::GetLabel() const {
     case ActionType::kSettingChange:
       return l10n_util::GetStringUTF8(
           IDS_HISTORY_CRITICAL_ACTION_SETTING_CHANGE);
-    case ActionType::kWebMcpTool:
+    case ActionType::kWebMcpTool: {
+      if (!metadata.empty()) {
+        std::optional<base::DictValue> parsed =
+            base::JSONReader::ReadDict(metadata, base::JSON_PARSE_RFC);
+        if (parsed) {
+          if (const std::string* title = parsed->FindString("tool_title");
+              title && !title->empty()) {
+            return *title;
+          }
+          if (const std::string* name = parsed->FindString("tool_name");
+              name && !name->empty()) {
+            return l10n_util::GetStringFUTF8(
+                IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL_WITH_NAME,
+                base::UTF8ToUTF16(*name));
+          }
+        }
+      }
       return l10n_util::GetStringUTF8(IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL);
+    }
     case ActionType::kUnknown:
       return "";
   }

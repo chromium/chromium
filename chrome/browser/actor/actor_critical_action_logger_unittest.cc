@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/fake_tool_request.h"
+#include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
@@ -31,10 +32,14 @@
 #include "components/history/core/browser/history_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/content_extraction/script_tools.mojom.h"
 
 namespace actor {
 
 namespace {
+
+using ::testing::HasSubstr;
+using ::testing::Not;
 
 class ActorCriticalActionLoggerTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -349,6 +354,54 @@ TEST_F(ActorCriticalActionLoggerTest, SkipsLoggingWhenFeatureDisabled) {
 
   auto logged_actions = GetLoggedActions();
   EXPECT_TRUE(logged_actions.empty());
+
+  actor_service().StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+}
+
+TEST_F(ActorCriticalActionLoggerTest, LogsWebMcpToolAction) {
+  TaskId task_id = actor_service().CreateTaskForTesting();
+  ActorTask* task = actor_service().GetTask(task_id);
+
+  ScriptToolRequest request(CreateTabHandle(), base::UnguessableToken::Create(),
+                            "flight_search", "{\"destination\":\"Paris\"}");
+
+  mojom::ActionResultPtr result = MakeOkResult();
+  result->script_tool_response = mojom::ScriptToolResponse::New();
+  result->script_tool_response->input_arguments =
+      "{\"destination\":\"Paris\"}";
+  result->script_tool_response->tool = blink::mojom::ScriptTool::New();
+  result->script_tool_response->tool->name = "flight_search";
+  result->script_tool_response->tool->title = "Search Flights";
+  result->script_tool_response->tool->description =
+      "Searches and books flight tickets";
+  result->script_tool_response->tool->annotations =
+      blink::mojom::ScriptToolAnnotations::New();
+  result->script_tool_response->tool->annotations->consequential = true;
+  result->script_tool_response->tool->annotations->read_only = false;
+
+  ActorCriticalActionLogger::MaybeLogAction(*task, profile(), request, *result,
+                                            /*navigation_id=*/1014);
+  FlushPendingActions(1014);
+
+  auto logged_actions = GetLoggedActions();
+  ASSERT_EQ(logged_actions.size(), 1u);
+  EXPECT_EQ(logged_actions[0].action_type,
+            critical_actions::ActionType::kWebMcpTool);
+  EXPECT_EQ(logged_actions[0].conversation_id,
+            task->source_info().id.value_or(""));
+  EXPECT_EQ(logged_actions[0].actor_task_id,
+            base::NumberToString(task_id.value()));
+  EXPECT_THAT(logged_actions[0].metadata,
+              HasSubstr("\"tool_name\":\"flight_search\""));
+  EXPECT_THAT(logged_actions[0].metadata,
+              HasSubstr("\"tool_title\":\"Search Flights\""));
+  EXPECT_THAT(
+      logged_actions[0].metadata,
+      HasSubstr("\"tool_description\":\"Searches and books flight tickets\""));
+  EXPECT_THAT(logged_actions[0].metadata, HasSubstr("\"consequential\":true"));
+  EXPECT_THAT(logged_actions[0].metadata, HasSubstr("\"read_only\":false"));
+  EXPECT_THAT(logged_actions[0].metadata, Not(HasSubstr("input_arguments")));
 
   actor_service().StopTaskForTesting(
       task_id, actor::ActorTask::StoppedReason::kTaskComplete);

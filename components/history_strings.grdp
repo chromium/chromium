@@ -369,6 +369,9 @@
   <message name="IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL" desc="Fallback label for WebMCP tool execution critical action in history item." translateable="false">
     Used website tool
   </message>
+  <message name="IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL_WITH_NAME" desc="Label for WebMCP tool execution with tool name in history item." translateable="false">
+    Used website tool: <ph name="TOOL_NAME">$1<ex>book_flight</ex></ph>
+  </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL_TOOLTIP" desc="Tooltip for WebMCP tool execution critical action in history item." translateable="false">
     Website actions
   </message>

@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
+#include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
@@ -31,20 +32,17 @@
 #include "components/critical_actions/core/browser/critical_action_service.h"
 #include "components/critical_actions/core/browser/features.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "third_party/blink/public/mojom/content_extraction/script_tools.mojom.h"
 
 namespace actor {
 
 namespace {
 
-std::string GetActionMetadata(const ToolRequest& action,
-                              critical_actions::ActionType action_type) {
-  if (action_type != critical_actions::ActionType::kFormFill) {
-    return "";
-  }
-
+std::string GetFormFillMetadata(const ToolRequest& action) {
   CHECK_EQ(action.Name(), AttemptFormFillingToolRequest::kName);
   const auto& form_req =
-      *static_cast<const AttemptFormFillingToolRequest*>(&action);
+      static_cast<const AttemptFormFillingToolRequest&>(action);
+
   base::ListValue data_list;
   for (const auto& req : form_req.requests()) {
     data_list.Append(autofill::ActorFormFillingRequestedDataToStringView(
@@ -58,6 +56,54 @@ std::string GetActionMetadata(const ToolRequest& action,
     return json_metadata;
   }
   return "";
+}
+
+std::string GetWebMcpToolMetadata(const mojom::ActionResult& result) {
+  if (!result.script_tool_response || !result.script_tool_response->tool) {
+    return "";
+  }
+
+  const blink::mojom::ScriptTool& tool = *result.script_tool_response->tool;
+  base::DictValue dict;
+  dict.Set("tool_name", tool.name);
+  if (tool.title.has_value() && !tool.title->empty()) {
+    dict.Set("tool_title", *tool.title);
+  }
+  dict.Set("tool_description", tool.description);
+
+  if (tool.annotations) {
+    dict.Set("annotations",
+             base::DictValue()
+                 .Set("consequential", tool.annotations->consequential)
+                 .Set("read_only", tool.annotations->read_only)
+                 .Set("untrusted_content", tool.annotations->untrusted_content)
+                 .Set("debugging", tool.annotations->debugging));
+  }
+
+  std::string json_metadata;
+  if (base::JSONWriter::Write(dict, &json_metadata)) {
+    return json_metadata;
+  }
+  return "";
+}
+
+std::string GetActionMetadata(const ToolRequest& action,
+                              critical_actions::ActionType action_type,
+                              const mojom::ActionResult& result) {
+  switch (action_type) {
+    case critical_actions::ActionType::kFormFill:
+      return GetFormFillMetadata(action);
+    case critical_actions::ActionType::kWebMcpTool:
+      return GetWebMcpToolMetadata(result);
+    case critical_actions::ActionType::kDownload:
+    case critical_actions::ActionType::kSettingChange:
+    case critical_actions::ActionType::kCredentialAccess:
+    case critical_actions::ActionType::kGooglePasswordManager:
+    case critical_actions::ActionType::kFederatedLogin:
+    case critical_actions::ActionType::kCredentialsOtp:
+    case critical_actions::ActionType::kUnknown:
+      return "";
+  }
 }
 
 critical_actions::ActionType EvaluateLoginRequest(
@@ -99,6 +145,9 @@ critical_actions::ActionType EvaluateToolRequest(
     }
     return critical_actions::ActionType::kFormFill;
   }
+  if (name == ScriptToolRequest::kName) {
+    return critical_actions::ActionType::kWebMcpTool;
+  }
 
   return critical_actions::ActionType::kUnknown;
 }
@@ -124,7 +173,7 @@ void ActorCriticalActionLogger::MaybeLogAction(
 
   LogAgentSelfReportedAction(profile, task.source_info().id.value_or(""),
                              action_type, navigation_id, task.id(),
-                             GetActionMetadata(action, action_type));
+                             GetActionMetadata(action, action_type, result));
 }
 
 void ActorCriticalActionLogger::LogAgentSelfReportedAction(
