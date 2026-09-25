@@ -185,6 +185,10 @@
 #include "chrome/browser/ui/shared_highlighting/shared_highlighting_promo.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/font_prewarmer_tab_helper.h"
+#endif
+
 namespace tabs {
 
 TabFeatures::TabFeatures() = default;
@@ -636,6 +640,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   commit_limit_oom_recovery_tracker_ =
       GetUserDataFactory().CreateInstance<CommitLimitOOMRecoveryTracker>(tab,
                                                                          tab);
+  font_prewarmer_tab_helper_ =
+      std::make_unique<FontPrewarmerTabHelper>(tab.GetContents());
 #endif
 
   if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
@@ -962,6 +968,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   }
   shared_highlighting_promo_ =
       std::make_unique<SharedHighlightingPromo>(new_contents);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  font_prewarmer_tab_helper_ =
+      std::make_unique<FontPrewarmerTabHelper>(new_contents);
 #endif
 }
 

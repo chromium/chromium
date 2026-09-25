@@ -170,8 +170,7 @@ FontPrewarmerTabHelper::~FontPrewarmerTabHelper() = default;
 
 FontPrewarmerTabHelper::FontPrewarmerTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<FontPrewarmerTabHelper>(*web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 // static
 std::string FontPrewarmerTabHelper::GetSearchResultsPageFontsPref() {
@@ -229,5 +228,3 @@ void FontPrewarmerTabHelper::ReadyToCommitNavigation(
   }
   coordinator.RequestFonts(rfh);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FontPrewarmerTabHelper);

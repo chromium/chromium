@@ -1111,10 +1111,6 @@ source_set("tab_helpers_impl") {
     ]
   }
 
-  if (is_win) {
-    deps += [ "//chrome/browser:font_prewarmer_tab_helper" ]
-  }
-
   if (enable_captive_portal_detection) {
     deps += [
       "//chrome/browser/captive_portal",

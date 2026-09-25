@@ -209,10 +209,6 @@
 #include "chromeos/ash/experiences/isolated_web_app/cros_isolated_web_app_enabler.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/font_prewarmer_tab_helper.h"
-#endif
-
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
@@ -760,10 +756,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   metrics::DesktopSessionDurationObserver::CreateForWebContents(web_contents);
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  FontPrewarmerTabHelper::CreateForWebContents(web_contents);
 #endif
 
   // --- Section 3: Feature tab helpers behind BUILDFLAGs ---

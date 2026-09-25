@@ -44,6 +44,7 @@ class ConnectionHelpTabHelper;
 class CookieControlsPageActionController;
 class FileSystemAccessPageActionController;
 class FocusTabAfterNavigationHelper;
+class FontPrewarmerTabHelper;
 class FramebustBlockTabHelper;
 
 class FormInteractionTabHelper;
@@ -714,6 +715,7 @@ class TabFeatures {
       search_promotion_navigation_observer_;
   std::unique_ptr<CommitLimitOOMRecoveryTracker>
       commit_limit_oom_recovery_tracker_;
+  std::unique_ptr<FontPrewarmerTabHelper> font_prewarmer_tab_helper_;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

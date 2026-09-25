@@ -676,7 +676,10 @@ if (!is_android) {
     }
 
     if (is_win) {
-      deps += [ "//chrome/browser/ui/search_promotion" ]
+      deps += [
+        "//chrome/browser:font_prewarmer_tab_helper",
+        "//chrome/browser/ui/search_promotion",
+      ]
     }
 
     if (is_chromeos) {
