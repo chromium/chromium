@@ -10,6 +10,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/mock_image_fetcher.h"
 #import "components/image_fetcher/core/request_metadata.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -747,4 +749,47 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   EXPECT_EQ(expected_image, actual_image);
   EXPECT_GT(actual_original_size.width, 0);
   EXPECT_GT(actual_original_size.height, 0);
+}
+
+// Tests loading and applying the ephemeral theme background without adding it
+// to the recently used backgrounds list.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       LoadAndApplyEphemeralBackground) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kNewTabPageEphemeralTheme,
+      {
+          {kNTPEphemeralThemeSeedColorParam, "FF8000"},
+          {kNTPEphemeralThemeBackgroundURLParam, "/path/to/animation.json"},
+      });
+
+  size_t initial_recent_count =
+      CustomizationService()->GetRecentlyUsedBackgrounds().size();
+
+  [mediator_ loadRecentlyUsedBackgroundConfigurations];
+
+  ASSERT_EQ(1u, consumer_.configurations.count);
+  BackgroundCollectionConfiguration* section = consumer_.configurations[0];
+  ASSERT_GE(section.configurationOrder.count, 2u);
+
+  NSString* default_id = section.configurationOrder[0];
+  NSString* ephemeral_id = section.configurationOrder[1];
+  id<BackgroundCustomizationConfiguration> ephemeral_item =
+      section.configurations[ephemeral_id];
+  ASSERT_TRUE(ephemeral_item);
+  EXPECT_EQ(HomeCustomizationBackgroundStyle::kEphemeral,
+            ephemeral_item.backgroundStyle);
+  EXPECT_NE(nil, ephemeral_item.colorPalette);
+  EXPECT_NSEQ(@"/path/to/animation.json",
+              ephemeral_item.animatedBackgroundPath);
+  EXPECT_NSEQ(default_id, consumer_.selectedBackgroundId);
+
+  // Apply and save the ephemeral theme.
+  [mediator_ applyBackgroundForConfiguration:ephemeral_item];
+  [mediator_ saveCurrentTheme];
+
+  EXPECT_TRUE(CustomizationService()->IsCurrentEphemeralTheme());
+  EXPECT_NSEQ(ephemeral_id, consumer_.selectedBackgroundId);
+  EXPECT_EQ(initial_recent_count,
+            CustomizationService()->GetRecentlyUsedBackgrounds().size());
 }

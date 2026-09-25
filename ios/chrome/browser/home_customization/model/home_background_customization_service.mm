@@ -55,6 +55,10 @@ namespace {
 // The number of maximum recently used backgrounds to store.
 const int kMaxRecentlyUsedBackgrounds = 7;
 
+// Sentinel collection ID used in `ThemeIosSpecifics` to represent the
+// ephemeral theme in `current_theme_`.
+constexpr std::string_view kEphemeralThemeCollectionId = "ephemeral_theme";
+
 // Checks if the legacy theme pref has been migrated. If not, copies the legacy
 // value to the new pref and marks migration as complete. Returns the encoded
 // migrated theme if migration occurred, or `std::nullopt` otherwise.
@@ -198,7 +202,8 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
 
   std::optional<RecentlyUsedBackgroundInternal> current_background =
       std::nullopt;
-  if (GetCurrentNtpCustomBackground() || GetCurrentColorTheme()) {
+  if (!IsCurrentEphemeralTheme() &&
+      (GetCurrentNtpCustomBackground() || GetCurrentColorTheme())) {
     current_background = current_theme_;
   }
   if (GetCurrentUserUploadedBackground()) {
@@ -293,8 +298,9 @@ bool HomeBackgroundCustomizationService::IsCurrentThemeSyncable() const {
     return false;
   }
 
-  // If a user uploaded background is set, do NOT sync.
-  return !current_user_uploaded_background_.has_value();
+  // If a user uploaded background or ephemeral theme is set, do NOT sync.
+  return !current_user_uploaded_background_.has_value() &&
+         !IsCurrentEphemeralTheme();
 }
 
 bool HomeBackgroundCustomizationService::IsCurrentThemeManagedByPolicy() const {
@@ -331,8 +337,10 @@ HomeBackgroundCustomizationService::GetCurrentCustomBackground() {
 
 std::optional<sync_pb::NtpCustomBackground>
 HomeBackgroundCustomizationService::GetCurrentNtpCustomBackground() {
-  // If customization is disabled by policy, no custom background is available.
-  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
+  // If customization is disabled by policy or the ephemeral theme is active,
+  // no custom background is available.
+  if (IsCustomizationDisabledOrColorManagedByPolicy() ||
+      IsCurrentEphemeralTheme()) {
     return std::nullopt;
   }
 
@@ -431,6 +439,36 @@ void HomeBackgroundCustomizationService::ClearCurrentBackground() {
   NotifyObserversOfBackgroundChange();
 }
 
+void HomeBackgroundCustomizationService::SetCurrentEphemeralTheme(
+    SkColor color,
+    sync_pb::UserColorTheme::BrowserColorVariant color_variant) {
+  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
+    return;
+  }
+
+  current_theme_.Clear();
+  current_theme_.mutable_ntp_background()->set_collection_id(
+      std::string(kEphemeralThemeCollectionId));
+  sync_pb::UserColorTheme* color_theme =
+      current_theme_.mutable_user_color_theme();
+  color_theme->set_color(color);
+  color_theme->set_browser_color_variant(color_variant);
+
+  ClearCurrentUserUploadedBackground();
+
+  NotifyObserversOfBackgroundChange();
+}
+
+bool HomeBackgroundCustomizationService::IsCurrentEphemeralTheme() const {
+  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
+    return false;
+  }
+
+  return current_theme_.has_ntp_background() &&
+         current_theme_.ntp_background().collection_id() ==
+             kEphemeralThemeCollectionId;
+}
+
 void HomeBackgroundCustomizationService::DeleteRecentlyUsedBackground(
     RecentlyUsedBackground recent_background) {
   // Make sure this is not the current background.
@@ -498,10 +536,11 @@ void HomeBackgroundCustomizationService::StoreCurrentTheme() {
   }
 
   // Only update recently used backgrounds list if the background is not
-  // default.
+  // default or ephemeral.
   std::optional<RecentlyUsedBackgroundInternal> new_recent_background =
       std::nullopt;
-  if (GetCurrentNtpCustomBackground() || GetCurrentColorTheme()) {
+  if (!IsCurrentEphemeralTheme() &&
+      (GetCurrentNtpCustomBackground() || GetCurrentColorTheme())) {
     new_recent_background = current_theme_;
   }
 

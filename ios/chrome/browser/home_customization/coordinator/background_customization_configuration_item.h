@@ -50,6 +50,12 @@ class NtpCustomBackground;
 - (instancetype)initWithNoBackground;
 
 // Initializes a new instance of the background customization configuration
+// with the ephemeral theme.
+- (instancetype)initWithEphemeralTheme:(UIColor*)backgroundColor
+                             imagePath:(NSString*)imagePath
+                     accessibilityName:(NSString*)accessibilityName;
+
+// Initializes a new instance of the background customization configuration
 // with a user-uploaded image path, a framing coordinates and an accessibility
 // name.
 - (instancetype)initWithUserUploadedImagePath:(NSString*)imagePath

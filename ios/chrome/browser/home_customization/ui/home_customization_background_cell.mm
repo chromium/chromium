@@ -185,6 +185,7 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
                                                    defaultValue]];
 
   [_backgroundImageView setImage:nil framingCoordinates:nil];
+  [_backgroundImageView setAnimatedBackgroundPath:nil];
   _backgroundConfiguration = nil;
   [_logoView removeFromSuperview];
   _logoView = nil;
@@ -273,6 +274,10 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
   _searchEngineLogoMediator = searchEngineLogoMediator;
   self.accessibilityLabel = option.accessibilityName;
   self.accessibilityValue = option.accessibilityValue;
+  if (option.animatedBackgroundPath.length > 0) {
+    [_backgroundImageView
+        setAnimatedBackgroundPath:option.animatedBackgroundPath];
+  }
 
   [self applyTheme];
 }

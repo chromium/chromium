@@ -8,6 +8,8 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
 
 namespace {
 
@@ -69,6 +71,9 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
 @interface HomeCustomizationImageView () {
   // The underlying image view to actually display the image.
   UIImageView* _imageView;
+
+  // The underlying animated background displayed in the view, if any.
+  id<LottieAnimation> _animatedBackground;
 
   // The framing coordinates for the current image's position.
   HomeCustomizationFramingCoordinates* _framingCoordinates;
@@ -150,6 +155,7 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
 - (void)setImage:(UIImage*)image
     framingCoordinates:
         (HomeCustomizationFramingCoordinates*)framingCoordinates {
+  [self setAnimatedBackgroundPath:nil];
   _imageView.image = image;
   _framingCoordinates = framingCoordinates;
 
@@ -161,6 +167,39 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
   }
 
   [self updateImagePosition];
+}
+
+- (void)setAnimatedBackgroundPath:(NSString*)animatedBackgroundPath {
+  _imageView.image = nil;
+  _framingCoordinates = nil;
+  if (_animatedBackground) {
+    [_animatedBackground stop];
+    [_animatedBackground.animationView removeFromSuperview];
+  }
+  _animatedBackground = nil;
+  if (!animatedBackgroundPath.length) {
+    return;
+  }
+  NSString* filePath = animatedBackgroundPath;
+  if ([filePath hasPrefix:@"file://"]) {
+    filePath = [[NSURL URLWithString:filePath] path];
+  }
+  LottieAnimationConfiguration* config =
+      [[LottieAnimationConfiguration alloc] init];
+  config.animationName =
+      [[filePath lastPathComponent] stringByDeletingPathExtension];
+  config.bundle =
+      [NSBundle bundleWithPath:[filePath stringByDeletingLastPathComponent]];
+  _animatedBackground = ios::provider::GenerateLottieAnimation(config);
+  if (!_animatedBackground) {
+    return;
+  }
+  UIView* animationView = _animatedBackground.animationView;
+  animationView.translatesAutoresizingMaskIntoConstraints = NO;
+  animationView.contentMode = UIViewContentModeScaleAspectFill;
+  [self addSubview:animationView];
+  AddSameConstraints(animationView, self);
+  [_animatedBackground play];
 }
 
 /// Updates the position of the image. Even though it is positioned via

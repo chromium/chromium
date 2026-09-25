@@ -125,6 +125,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   HomeCustomizationImageView* _backgroundImageView;
   UIImage* _backgroundImage;
   HomeCustomizationFramingCoordinates* _framingCoordinates;
+  NSString* _animatedBackgroundPath;
   NewTabPageBottomSheetViewController* _bottomSheetViewController;
   UIViewController* _feedViewController;
   UIViewController* _feedTopSectionViewController;
@@ -193,6 +194,12 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 
   _backgroundImageView = [[HomeCustomizationImageView alloc] init];
   _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  if (_animatedBackgroundPath.length > 0) {
+    [_backgroundImageView setAnimatedBackgroundPath:_animatedBackgroundPath];
+  } else if (_backgroundImage) {
+    [_backgroundImageView setImage:_backgroundImage
+                framingCoordinates:_framingCoordinates];
+  }
   [self.view addSubview:_backgroundImageView];
   AddSameConstraints(_backgroundImageView, self.view);
 
@@ -893,6 +900,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 - (void)setBackgroundImage:(UIImage*)backgroundImage
         framingCoordinates:
             (HomeCustomizationFramingCoordinates*)framingCoordinates {
+  _animatedBackgroundPath = nil;
   _backgroundImage = backgroundImage;
   _framingCoordinates = framingCoordinates;
 
@@ -908,6 +916,13 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
                         framingCoordinates:weakFramingCoordinates];
                   }
                   completion:nil];
+}
+
+- (void)setAnimatedBackgroundPath:(NSString*)animatedBackgroundPath {
+  _animatedBackgroundPath = animatedBackgroundPath;
+  _backgroundImage = nil;
+  _framingCoordinates = nil;
+  [_backgroundImageView setAnimatedBackgroundPath:_animatedBackgroundPath];
 }
 
 #pragma mark - Setters

@@ -182,6 +182,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   // The current background image.
   UIImage* _backgroundImage;
   HomeCustomizationFramingCoordinates* _framingCoordinates;
+  // Local path for an animated background, if any.
+  NSString* _animatedBackgroundPath;
   // The image view to display the current background image.
   HomeCustomizationImageView* _backgroundImageView;
   // The view controller holding the NTP quick actions buttons.
@@ -250,7 +252,11 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
   _backgroundImageView = [[HomeCustomizationImageView alloc] init];
   _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self updateBackgroundImageView];
+  if (_animatedBackgroundPath.length > 0) {
+    [_backgroundImageView setAnimatedBackgroundPath:_animatedBackgroundPath];
+  } else {
+    [self updateBackgroundImageView];
+  }
   [self.view addSubview:_backgroundImageView];
   AddSameConstraints(_backgroundImageView, self.view);
 
@@ -802,10 +808,18 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 - (void)setBackgroundImage:(UIImage*)backgroundImage
         framingCoordinates:
             (HomeCustomizationFramingCoordinates*)framingCoordinates {
+  _animatedBackgroundPath = nil;
   _backgroundImage = backgroundImage;
   _framingCoordinates = framingCoordinates;
 
   [self updateBackgroundImageView];
+}
+
+- (void)setAnimatedBackgroundPath:(NSString*)animatedBackgroundPath {
+  _animatedBackgroundPath = animatedBackgroundPath;
+  _backgroundImage = nil;
+  _framingCoordinates = nil;
+  [_backgroundImageView setAnimatedBackgroundPath:_animatedBackgroundPath];
 }
 
 - (void)setAIMAllowed:(BOOL)allowed {

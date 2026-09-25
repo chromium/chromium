@@ -81,6 +81,7 @@ class HomeBackgroundCustomizationServiceTest : public PlatformTest {
   }
 
   void CreateService() {
+    observation_.Reset();
     service_ = std::make_unique<HomeBackgroundCustomizationService>(
         pref_service_.get(), user_image_manager_.get(),
         background_image_service_.get());
@@ -1355,4 +1356,30 @@ TEST_F(HomeBackgroundCustomizationServiceTest, LocalChangesTriggerSync) {
   EXPECT_EQ(
       color_theme,
       changes[0].sync_data().GetSpecifics().theme_ios().user_color_theme());
+}
+
+// Test that setting and storing the ephemeral theme persists across service
+// restarts without adding it to the recently used backgrounds list.
+TEST_F(HomeBackgroundCustomizationServiceTest, SetAndPersistEphemeralTheme) {
+  pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
+  CreateService();
+
+  service_->SetCurrentEphemeralTheme(
+      0xFFFF8000, sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
+  service_->StoreCurrentTheme();
+
+  EXPECT_TRUE(service_->IsCurrentEphemeralTheme());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
+  ASSERT_TRUE(service_->GetCurrentColorTheme().has_value());
+  EXPECT_EQ(0xFFFF8000u, service_->GetCurrentColorTheme()->color());
+  EXPECT_TRUE(service_->GetRecentlyUsedBackgrounds().empty());
+
+  // Simulate an app restart by recreating the service.
+  CreateService();
+
+  EXPECT_TRUE(service_->IsCurrentEphemeralTheme());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground());
+  ASSERT_TRUE(service_->GetCurrentColorTheme().has_value());
+  EXPECT_EQ(0xFFFF8000u, service_->GetCurrentColorTheme()->color());
+  EXPECT_TRUE(service_->GetRecentlyUsedBackgrounds().empty());
 }

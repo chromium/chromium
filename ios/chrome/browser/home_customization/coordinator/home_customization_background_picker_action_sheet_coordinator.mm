@@ -247,6 +247,7 @@ CGFloat const kSheetCornerRadius = 30;
           "UserUploaded.Tapped"));
       return;
     case HomeCustomizationBackgroundStyle::kDefault:
+    case HomeCustomizationBackgroundStyle::kEphemeral:
       NOTREACHED();
   }
 
@@ -384,6 +385,7 @@ CGFloat const kSheetCornerRadius = 30;
           _backgroundConfigurationMediator.backgroundSelectionOutcome);
       break;
     case HomeCustomizationBackgroundStyle::kDefault:
+    case HomeCustomizationBackgroundStyle::kEphemeral:
       return;
   }
 }

@@ -199,6 +199,15 @@ class HomeBackgroundCustomizationService
   // this change to disk.
   void ClearCurrentBackground();
 
+  // Sets the current background to the ephemeral theme without persisting this
+  // change to disk or adding it to the recently used backgrounds list.
+  void SetCurrentEphemeralTheme(
+      SkColor color,
+      sync_pb::UserColorTheme::BrowserColorVariant color_variant);
+
+  // Returns whether the ephemeral theme is currently active.
+  bool IsCurrentEphemeralTheme() const;
+
   // Stores the current theme to disk.
   void StoreCurrentTheme();
 

@@ -57,6 +57,9 @@ class GURL;
 // The localized accessibility value associated with the configuration.
 @property(nonatomic, copy) NSString* accessibilityValue;
 
+// The file path of the animated background to display, if any.
+@property(readonly, nonatomic) NSString* animatedBackgroundPath;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_BACKGROUND_CUSTOMIZATION_CONFIGURATION_H_

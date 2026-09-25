@@ -139,8 +139,11 @@ enum class HomeCustomizationBackgroundStyle : NSInteger {
   // User-uploaded background image.
   kUserUploaded,
 
+  // Ephemeral theme background.
+  kEphemeral,
+
   // Must be last.
-  kMaxValue = kUserUploaded,
+  kMaxValue = kEphemeral,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSHomeCustomizationBackgroundStyle)
 

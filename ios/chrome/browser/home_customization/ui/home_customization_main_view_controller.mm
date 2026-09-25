@@ -344,9 +344,11 @@
 
   id<BackgroundCustomizationConfiguration> configuration =
       _backgroundCollectionConfiguration.configurations[itemIdentifier];
-  // Don't allow deletion for the default entry.
+  // Don't allow deletion for the default or ephemeral entry.
   if (configuration.backgroundStyle ==
-      HomeCustomizationBackgroundStyle::kDefault) {
+          HomeCustomizationBackgroundStyle::kDefault ||
+      configuration.backgroundStyle ==
+          HomeCustomizationBackgroundStyle::kEphemeral) {
     return [UIContextMenuConfiguration configurationWithIdentifier:nil
                                                    previewProvider:nil
                                                     actionProvider:nil];
@@ -486,7 +488,10 @@
   }
 
   if (backgroundConfiguration.backgroundStyle ==
-      HomeCustomizationBackgroundStyle::kPreset) {
+          HomeCustomizationBackgroundStyle::kPreset ||
+      (backgroundConfiguration.backgroundStyle ==
+           HomeCustomizationBackgroundStyle::kEphemeral &&
+       !backgroundConfiguration.thumbnailURL.is_empty())) {
     [self fetchPresetImageForCell:backgroundCell
                     configuration:backgroundConfiguration
                    itemIdentifier:itemIdentifier];
@@ -613,7 +618,9 @@
     [identifiers addObject:key];
 
     if (configuration.backgroundStyle ==
-        HomeCustomizationBackgroundStyle::kDefault) {
+            HomeCustomizationBackgroundStyle::kDefault ||
+        configuration.backgroundStyle ==
+            HomeCustomizationBackgroundStyle::kEphemeral) {
       indexAfterDefault = identifiers.count;
     }
   }

@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
@@ -809,6 +810,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   HomeCustomizationFramingCoordinates* coordinates =
       [self framingCoordinatesForCustomBackground:customBackground];
   coordinates.originalImageSize = originalImageSize;
+  [self.consumer setAnimatedBackgroundPath:nil];
   [self.consumer setBackgroundImage:image framingCoordinates:coordinates];
 
   CustomUITraitAccessor* traitAccessor = [[CustomUITraitAccessor alloc]
@@ -991,6 +993,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     return;
   }
 
+  [self.consumer setAnimatedBackgroundPath:nil];
   [self.consumer setBackgroundImage:nil framingCoordinates:nil];
 
   std::optional<sync_pb::UserColorTheme> colorTheme =
@@ -1007,6 +1010,11 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
     UIColor* tintColor = colorPalette.tintColor;
     [self.logoMediator setLogoTintColor:tintColor];
+    if (_backgroundCustomizationService->IsCurrentEphemeralTheme() &&
+        IsNTPEphemeralThemeEnabled()) {
+      [self.consumer setAnimatedBackgroundPath:
+                         GetNTPEphemeralThemeAnimatedBackgroundPath()];
+    }
     if (initialLoad) {
       base::UmaHistogramEnumeration(
           "IOS.HomeCustomization.Background.Ntp.Loaded",
