@@ -702,8 +702,6 @@ Suggestion GetSuggestionForEntity(
   suggestion.labels = {{Suggestion::Text(std::move(label))}};
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (entity.record_type() == EntityInstance::RecordType::kPersonalContext) {
-    suggestion.labels.push_back({Suggestion::Text(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI))});
     suggestion.children = CreateAmbientAutofillSubMenu(entity);
   }
 #endif
@@ -934,6 +932,20 @@ constexpr bool IsPersonalContextNoticeSuggestionSupported() {
 #endif
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Creates an unselectable section title suggestion for Personal Context
+// suggestions.
+Suggestion CreatePersonalContextSectionTitle() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI),
+      SuggestionType::kTitle);
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
+  return suggestion;
+}
+#endif
+
 // Returns a list of `Suggestion` generated for the given
 // `entities_to_suggest`.
 std::vector<Suggestion> CreateSuggestionsForEntities(
@@ -970,7 +982,11 @@ std::vector<Suggestion> CreateSuggestionsForEntities(
       client.GetAppLocale());
 
   std::vector<Suggestion> suggestions;
-  suggestions.reserve(entities_to_suggest.size());
+
+  // Extra is for the "Suggested by Gemini" label which may or may not be
+  // required.
+  suggestions.reserve(entities_to_suggest.size() + 1);
+
   CHECK_EQ(entities_to_suggest.size(), labels.size());
   for (auto [entity, label] : std::views::zip(entities_to_suggest, labels)) {
     base::span<const AutofillFieldWithAttributeType> fields_with_types =
@@ -982,6 +998,20 @@ std::vector<Suggestion> CreateSuggestionsForEntities(
         form, entity, fields_with_types, *trigger_field_with_type,
         std::move(label), client.GetAppLocale()));
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  auto it = std::ranges::find_if(
+      entities_to_suggest, [](const EntityInstance& entity) {
+        return entity.record_type() ==
+               EntityInstance::RecordType::kPersonalContext;
+      });
+  if (it != entities_to_suggest.end()) {
+    suggestions.insert(
+        suggestions.begin() + std::distance(entities_to_suggest.begin(), it),
+        CreatePersonalContextSectionTitle());
+  }
+#endif
+
   return suggestions;
 }
 
