@@ -689,7 +689,7 @@ static void JNI_WebsitePreferenceBridge_GetChosenObjects(
     ScopedJavaLocalRef<jstring> jorigin = ConvertUTF8ToJavaString(env, origin);
 
     ScopedJavaLocalRef<jstring> jname = ConvertUTF16ToJavaString(
-        env, context->GetObjectDisplayName(object->value));
+        env, context->GetObjectDisplayNameForUI(object->value));
 
     std::string serialized;
     bool written = base::JSONWriter::Write(object->value, &serialized);

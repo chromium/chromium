@@ -171,6 +171,11 @@ class ObjectPermissionContextBase : public KeyedService,
   virtual std::u16string GetObjectDisplayName(
       const base::DictValue& object) = 0;
 
+  // Gets the human-readable name for a given object suitable for displaying in
+  // UI surfaces.
+  virtual std::u16string GetObjectDisplayNameForUI(
+      const base::DictValue& object);
+
   // Triggers the immediate flushing of all scheduled save setting operations.
   // To be called when the host_content_settings_map_ is about to become
   // unusable (e.g. browser context shutting down) or before invalidating

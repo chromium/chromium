@@ -29,6 +29,7 @@ include_rules = [
   "+content/public/common",
   "+content/public/test",
   "+content/test",
+  "+device/base/public/cpp",
   "+device/bluetooth",
   "+extensions/buildflags",
   "+media/base/media_switches.h",

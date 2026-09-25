@@ -12,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
@@ -47,6 +48,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info_ui_delegate.h"
+#include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_uma_util.h"
@@ -58,6 +60,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/buildflags.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -72,6 +75,7 @@
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -822,6 +826,29 @@ TEST_F(PageInfoBubbleViewTest, ResetPermissionInfoWithUsbDevice) {
   EXPECT_EQ(kExpectedChildren, api_->GetPermissionsCount());
   EXPECT_FALSE(api_->reset_permissions_button());
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
+}
+
+TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithBluetoothDevice) {
+  base::test::ScopedFeatureList feature_list(
+      features::kWebBluetoothNewPermissionsBackend);
+  const auto origin = url::Origin::Create(GURL(kUrl));
+  auto* context = BluetoothChooserContextFactory::GetForProfile(
+      web_contents_helper_->profile());
+  base::DictValue object;
+  object.Set("device-address", "00:11:22:33:44:55");
+  object.Set("name", "Malicious\nDevice\u202EName");
+  object.Set("web-bluetooth-device-id",
+             blink::WebBluetoothDeviceId::Create().str());
+  object.Set("services", base::DictValue());
+  object.Set("manufacturer-data", base::DictValue());
+  context->GrantObjectPermission(origin, std::move(object));
+
+  PermissionInfoList list;
+  api_->SetPermissionInfo(list);
+  const auto& chosen_object_children = api_->GetChosenObjectChildren();
+  ASSERT_EQ(3u, chosen_object_children.size());
+  EXPECT_EQ(u"\u2068Malicious Device\u202EName\u2069",
+            GetChosenObjectTitle(chosen_object_children)->GetText());
 }
 
 namespace {

@@ -10,10 +10,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
+#include "device/base/public/cpp/string_util.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-#include "device/bluetooth/string_util_icu.h"
 #include "url/gurl.h"
 
 namespace ash::bluetooth_config {

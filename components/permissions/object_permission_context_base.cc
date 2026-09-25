@@ -490,4 +490,9 @@ ObjectPermissionContextBase::RevokeEphemeralPermissions(
   return {};
 }
 
+std::u16string ObjectPermissionContextBase::GetObjectDisplayNameForUI(
+    const base::DictValue& object) {
+  return GetObjectDisplayName(object);
+}
+
 }  // namespace permissions

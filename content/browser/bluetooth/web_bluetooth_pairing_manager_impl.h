@@ -83,6 +83,8 @@ class CONTENT_EXPORT WebBluetoothPairingManagerImpl
                            PairConfirmPinPromptSuccess);
   FRIEND_TEST_ALL_PREFIXES(BluetoothPairingManagerTest,
                            PairConfirmPinPromptCancelled);
+  FRIEND_TEST_ALL_PREFIXES(BluetoothPairingManagerTest,
+                           PromptForPairingReceivesContainedDeviceName);
 
   // Pair the Bluetooth device identified by |device_id|. |num_pair_attempts|
   // represents the number of pairing attempts for the specified device which

@@ -396,7 +396,7 @@ void PageInfoMainView::SetPermissionInfo(
     auto object_view = std::make_unique<ChosenObjectView>(
         std::move(object),
         presenter_->GetChooserContextFromUIInfo(*object->ui_info)
-            ->GetObjectDisplayName(object->chooser_object->value));
+            ->GetObjectDisplayNameForUI(object->chooser_object->value));
     object_view->AddObserver(this);
     chosen_object_rows_.push_back(
         content_view->AddChildView(std::move(object_view)));

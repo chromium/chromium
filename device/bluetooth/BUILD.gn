@@ -169,8 +169,6 @@ component("bluetooth") {
     "bluetooth_socket_net.h",
     "bluetooth_socket_thread.cc",
     "bluetooth_socket_thread.h",
-    "string_util_icu.cc",
-    "string_util_icu.h",
   ]
 
   defines = [ "DEVICE_BLUETOOTH_IMPLEMENTATION" ]

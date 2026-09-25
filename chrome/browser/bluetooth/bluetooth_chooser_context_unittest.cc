@@ -706,3 +706,34 @@ TEST_F(BluetoothChooserContextTest, ClearBrowsingDataScannedDevices) {
       context->GetWebBluetoothDeviceId(foo_origin_, fake_device1_->GetAddress())
           .IsValid());
 }
+
+TEST_F(BluetoothChooserContextTest, GetObjectDisplayNameVsForUI) {
+  std::vector<blink::mojom::WebBluetoothLeScanFilterPtr> scan_filters;
+  auto filter = blink::mojom::WebBluetoothLeScanFilter::New();
+  filter->name = "Malicious\nDevice\r\n\t\u202EName";
+  scan_filters.push_back(std::move(filter));
+  auto options = blink::mojom::WebBluetoothRequestDeviceOptions::New(
+      std::move(scan_filters), /*exclusion_filters=*/
+      std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>(),
+      /*optional_services=*/std::vector<device::BluetoothUUID>(),
+      /*optional_manufacturer_data=*/std::vector<uint16_t>(),
+      /*accept_all_devices=*/false);
+
+  BluetoothChooserContext* context = GetChooserContext(profile());
+  auto malicious_device =
+      GetBluetoothDevice("Malicious\nDevice\r\n\t\u202EName", kDeviceAddress1);
+  context->GrantServiceAccessPermission(foo_origin_, malicious_device.get(),
+                                        options.get());
+
+  std::vector<std::unique_ptr<BluetoothChooserContext::Object>> objects =
+      context->GetGrantedObjects(foo_origin_);
+  ASSERT_EQ(1u, objects.size());
+
+  // Developer-facing and stored permission API returns the raw device name.
+  EXPECT_EQ(u"Malicious\nDevice\r\n\t\u202EName",
+            context->GetObjectDisplayName(objects[0]->value));
+  // UI-facing getter returns the contained, whitespace-collapsed, FSI-isolated
+  // name.
+  EXPECT_EQ(u"\u2068Malicious Device \u202EName\u2069",
+            context->GetObjectDisplayNameForUI(objects[0]->value));
+}

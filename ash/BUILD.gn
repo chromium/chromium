@@ -3463,6 +3463,7 @@ component("ash") {
     "//components/viz/client",
     "//components/viz/host",
     "//dbus",
+    "//device/base/public/cpp",
     "//device/bluetooth",
     "//extensions/common:common_constants",
     "//google_apis/drive",

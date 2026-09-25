@@ -20,6 +20,7 @@ is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
 
 test("device_unittests") {
   sources = [
+    "base/string_util_unittest.cc",
     "base/synchronization/one_writer_seqlock_unittest.cc",
     "bluetooth/adapter_unittest.cc",
     "bluetooth/advertisement_unittest.cc",
@@ -37,7 +38,6 @@ test("device_unittests") {
     "bluetooth/public/cpp/bluetooth_uuid_unittest.cc",
     "bluetooth/server_socket_unittest.cc",
     "bluetooth/socket_unittest.cc",
-    "bluetooth/string_util_icu_unittest.cc",
     "bluetooth/test/bluetooth_gatt_server_test.cc",
     "bluetooth/test/bluetooth_gatt_server_test.h",
     "bluetooth/test/bluetooth_test.cc",

@@ -20,13 +20,13 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "device/base/public/cpp/string_util.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-#include "device/bluetooth/string_util_icu.h"
 #include "device/bluetooth/strings/grit/bluetooth_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -160,9 +160,8 @@ std::u16string BluetoothDevice::GetNameForDisplay() const {
   std::optional<std::string> name = GetName();
   if (name && HasGraphicCharacter(name.value())) {
     return base::UTF8ToUTF16(name.value());
-  } else {
-    return GetAddressWithLocalizedDeviceTypeName();
   }
+  return GetAddressWithLocalizedDeviceTypeName();
 }
 
 std::u16string BluetoothDevice::GetAddressWithLocalizedDeviceTypeName() const {

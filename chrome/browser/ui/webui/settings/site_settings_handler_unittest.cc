@@ -139,6 +139,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "device/base/public/cpp/string_util.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -4725,10 +4726,11 @@ class SiteSettingsHandlerChooserExceptionTest
         // TODO(crbug.com/40667219): No policy-granted exceptions are
         // included because Web Bluetooth does not support granting device
         // permissions by policy.
-        EXPECT_THAT(
-            GetExceptionDisplayNames(exceptions),
-            UnorderedElementsAre("persistent-device", "persistent-device",
-                                 "ephemeral-device", "user-granted-device"));
+        EXPECT_THAT(GetExceptionDisplayNames(exceptions),
+                    UnorderedElementsAre(GetPersistentDeviceDisplayName(),
+                                         GetPersistentDeviceDisplayName(),
+                                         GetEphemeralDeviceDisplayName(),
+                                         GetUserGrantedDeviceDisplayName()));
         break;
       case ContentSettingsType::HID_CHOOSER_DATA:
       case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -4756,7 +4758,7 @@ class SiteSettingsHandlerChooserExceptionTest
     const std::string kWebUIOriginStr =
         kWebUIUrl.DeprecatedGetOriginAsURL().spec();
     EXPECT_FALSE(ChooserExceptionContainsSiteException(
-        exceptions, "persistent-device", kWebUIOriginStr));
+        exceptions, GetPersistentDeviceDisplayName(), kWebUIOriginStr));
   }
 
   void TestHandleGetChooserExceptionListForOffTheRecord() {
@@ -4783,11 +4785,12 @@ class SiteSettingsHandlerChooserExceptionTest
                                                    /*expected_total_calls=*/1u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("persistent-device", "persistent-device",
-                                   "ephemeral-device", "user-granted-device",
-                                   "off-the-record-device"));
+          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
+                      UnorderedElementsAre(GetPersistentDeviceDisplayName(),
+                                           GetPersistentDeviceDisplayName(),
+                                           GetEphemeralDeviceDisplayName(),
+                                           GetUserGrantedDeviceDisplayName(),
+                                           GetOffTheRecordDeviceDisplayName()));
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -4826,10 +4829,11 @@ class SiteSettingsHandlerChooserExceptionTest
                                                    /*expected_total_calls=*/3u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("persistent-device", "persistent-device",
-                                   "ephemeral-device", "user-granted-device"));
+          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
+                      UnorderedElementsAre(GetPersistentDeviceDisplayName(),
+                                           GetPersistentDeviceDisplayName(),
+                                           GetEphemeralDeviceDisplayName(),
+                                           GetUserGrantedDeviceDisplayName()));
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -4884,10 +4888,11 @@ class SiteSettingsHandlerChooserExceptionTest
                                                    /*expected_total_calls=*/1u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("persistent-device", "persistent-device",
-                                   "ephemeral-device", "user-granted-device"));
+          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
+                      UnorderedElementsAre(GetPersistentDeviceDisplayName(),
+                                           GetPersistentDeviceDisplayName(),
+                                           GetEphemeralDeviceDisplayName(),
+                                           GetUserGrantedDeviceDisplayName()));
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -4938,10 +4943,10 @@ class SiteSettingsHandlerChooserExceptionTest
                                                    /*expected_total_calls=*/4u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("persistent-device", "ephemeral-device",
-                                   "user-granted-device"));
+          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
+                      UnorderedElementsAre(GetPersistentDeviceDisplayName(),
+                                           GetEphemeralDeviceDisplayName(),
+                                           GetUserGrantedDeviceDisplayName()));
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -5002,9 +5007,9 @@ class SiteSettingsHandlerChooserExceptionTest
                                                    /*expected_total_calls=*/7u);
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
-          EXPECT_THAT(
-              GetExceptionDisplayNames(exceptions),
-              UnorderedElementsAre("ephemeral-device", "user-granted-device"));
+          EXPECT_THAT(GetExceptionDisplayNames(exceptions),
+                      UnorderedElementsAre(GetEphemeralDeviceDisplayName(),
+                                           GetUserGrantedDeviceDisplayName()));
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -5044,7 +5049,7 @@ class SiteSettingsHandlerChooserExceptionTest
       // Ensure the exception for user-granted-device on kAndroidOrigin is
       // present since we will try to revoke it.
       EXPECT_TRUE(ChooserExceptionContainsSiteException(
-          exceptions, "user-granted-device", kAndroidOriginStr));
+          exceptions, GetUserGrantedDeviceDisplayName(), kAndroidOriginStr));
     }
 
     // User granted USB permissions that are not covered by policy should be
@@ -5072,7 +5077,7 @@ class SiteSettingsHandlerChooserExceptionTest
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(GetExceptionDisplayNames(exceptions),
-                      UnorderedElementsAre("ephemeral-device"));
+                      UnorderedElementsAre(GetEphemeralDeviceDisplayName()));
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -5095,7 +5100,7 @@ class SiteSettingsHandlerChooserExceptionTest
           NOTREACHED();
       }
       EXPECT_FALSE(ChooserExceptionContainsSiteException(
-          exceptions, "user-granted-device", kAndroidOriginStr));
+          exceptions, GetUserGrantedDeviceDisplayName(), kAndroidOriginStr));
     }
   }
 
@@ -5121,7 +5126,7 @@ class SiteSettingsHandlerChooserExceptionTest
       switch (content_type()) {
         case ContentSettingsType::BLUETOOTH_CHOOSER_DATA:
           EXPECT_THAT(GetExceptionDisplayNames(exceptions),
-                      UnorderedElementsAre("user-granted-device"));
+                      UnorderedElementsAre(GetUserGrantedDeviceDisplayName()));
           break;
         case ContentSettingsType::HID_CHOOSER_DATA:
         case ContentSettingsType::SERIAL_CHOOSER_DATA:
@@ -5137,7 +5142,7 @@ class SiteSettingsHandlerChooserExceptionTest
           NOTREACHED();
       }
       EXPECT_TRUE(ChooserExceptionContainsSiteException(
-          exceptions, "user-granted-device", kYoutubeOriginStr));
+          exceptions, GetUserGrantedDeviceDisplayName(), kYoutubeOriginStr));
     }
 
     // Clear data for kYoutubeOrigin. The permission should be revoked.
@@ -5332,6 +5337,22 @@ class SiteSettingsHandlerChooserExceptionTest
   // access a specific device by its vendor and product IDs.
   virtual std::string GetUnknownProductDisplayName() { return {}; }
 
+  virtual std::string GetPersistentDeviceDisplayName() {
+    return "persistent-device";
+  }
+
+  virtual std::string GetEphemeralDeviceDisplayName() {
+    return "ephemeral-device";
+  }
+
+  virtual std::string GetUserGrantedDeviceDisplayName() {
+    return "user-granted-device";
+  }
+
+  virtual std::string GetOffTheRecordDeviceDisplayName() {
+    return "off-the-record-device";
+  }
+
   permissions::MockPermissionObserver observer_;
 };
 
@@ -5479,6 +5500,26 @@ class SiteSettingsHandlerBluetoothTest
 
   ContentSettingsType guard_type() override {
     return ContentSettingsType::BLUETOOTH_GUARD;
+  }
+
+  std::string GetPersistentDeviceDisplayName() override {
+    return base::UTF16ToUTF8(
+        device::ContainStringForDisplay(u"persistent-device"));
+  }
+
+  std::string GetEphemeralDeviceDisplayName() override {
+    return base::UTF16ToUTF8(
+        device::ContainStringForDisplay(u"ephemeral-device"));
+  }
+
+  std::string GetUserGrantedDeviceDisplayName() override {
+    return base::UTF16ToUTF8(
+        device::ContainStringForDisplay(u"user-granted-device"));
+  }
+
+  std::string GetOffTheRecordDeviceDisplayName() override {
+    return base::UTF16ToUTF8(
+        device::ContainStringForDisplay(u"off-the-record-device"));
   }
 
   base::test::ScopedFeatureList feature_list_;

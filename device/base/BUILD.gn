@@ -2,7 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/rust/rust_static_library.gni")
 import("//device/vr/buildflags/buildflags.gni")
+
+rust_static_library("string_util_rs") {
+  visibility = [ ":base" ]
+
+  # Required for cxx bridge generated code.
+  allow_unsafe = true
+  crate_name = "device_base_string_util"
+  crate_root = "string_util.rs"
+  sources = [ "string_util.rs" ]
+  cxx_bindings = [ "string_util.rs" ]
+  deps = [ "//third_party/rust/icu_properties/v2:lib" ]
+}
 
 component("base") {
   output_name = "device_base"
@@ -11,9 +24,13 @@ component("base") {
     "device_base_export.h",
     "features.cc",
     "features.h",
+    "public/cpp/string_util.cc",
+    "public/cpp/string_util.h",
   ]
 
   defines = [ "DEVICE_BASE_IMPLEMENTATION" ]
+
+  deps = [ ":string_util_rs" ]
 
   public_deps = [
     "//base",

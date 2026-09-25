@@ -140,6 +140,7 @@ source_set("unit_tests") {
   deps = [
     ":page_info",
     "//base/test:test_support",
+    "//chrome/browser/bluetooth",
     "//chrome/browser/content_settings",
     "//chrome/browser/privacy_sandbox:test_support",
     "//chrome/browser/ui/hats:test_support",
@@ -152,6 +153,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist",
     "//content/test:test_support",
     "//testing/gtest",
+    "//third_party/blink/public/common",
     "//ui/views:test_support",
   ]
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]

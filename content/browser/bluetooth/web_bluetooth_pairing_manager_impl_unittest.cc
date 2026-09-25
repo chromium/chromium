@@ -285,6 +285,7 @@ class BluetoothPairingManagerTest : public testing::Test,
       BluetoothDelegate::PairPromptCallback callback,
       BluetoothDelegate::PairingKind pairing_kind,
       const std::optional<std::u16string>& pin) override {
+    last_device_identifier_ = device_identifier;
     std::move(callback).Run(prompt_result_);
   }
 
@@ -296,6 +297,10 @@ class BluetoothPairingManagerTest : public testing::Test,
 
   void SetPromptResult(PairPromptResult result) {
     prompt_result_ = result;
+  }
+
+  const std::u16string& last_device_identifier() const {
+    return last_device_identifier_;
   }
 
   const std::vector<uint8_t>& characteristic_value() const {
@@ -322,6 +327,7 @@ class BluetoothPairingManagerTest : public testing::Test,
   bool device_paired_ = false;
   AuthBehavior auth_behavior_ = AuthBehavior::kUnspecified;
   PairPromptResult prompt_result_;
+  std::u16string last_device_identifier_;
   std::unique_ptr<WebBluetoothPairingManagerImpl> pairing_manager_;
   SingleThreadTaskEnvironment single_threaded_task_environment_;
 };
@@ -883,6 +889,7 @@ TEST_F(BluetoothPairingManagerTest, CredentialPromptPINSuccess) {
       });
   pairing_manager()->RequestPinCode(&device);
   run_loop.Run();
+  EXPECT_EQ(u"\u2068test device\u2069", last_device_identifier());
 }
 
 TEST_F(BluetoothPairingManagerTest, CredentialPromptPINCancelled) {
@@ -943,6 +950,7 @@ TEST_F(BluetoothPairingManagerTest, PairConfirmPromptSuccess) {
   pair_callback_ = future.GetCallback();
   pairing_manager()->AuthorizePairing(&device);
   EXPECT_FALSE(future.Get());
+  EXPECT_EQ(u"\u2068test device\u2069", last_device_identifier());
 }
 
 TEST_F(BluetoothPairingManagerTest, PairConfirmPromptCancelled) {
@@ -985,6 +993,7 @@ TEST_F(BluetoothPairingManagerTest, PairConfirmPinPromptSuccess) {
   pair_callback_ = future.GetCallback();
   pairing_manager()->ConfirmPasskey(&device, 123456);
   EXPECT_FALSE(future.Get());
+  EXPECT_EQ(u"\u2068test device\u2069", last_device_identifier());
 }
 
 TEST_F(BluetoothPairingManagerTest, PairConfirmPinPromptCancelled) {
@@ -1006,6 +1015,51 @@ TEST_F(BluetoothPairingManagerTest, PairConfirmPinPromptCancelled) {
   pair_callback_ = future.GetCallback();
   pairing_manager()->ConfirmPasskey(&device, 123456);
   EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, future.Get());
+}
+
+TEST_F(BluetoothPairingManagerTest,
+       PromptForPairingReceivesContainedDeviceName) {
+  PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kSuccess;
+  SetPromptResult(result);
+
+  MockBluetoothDevice device(/*adapter=*/nullptr,
+                             /*bluetooth_class=*/0,
+                             "Malicious\nDevice\r\n\t\u202EName",
+                             kValidTestData.device_address,
+                             /*initially_paired=*/false,
+                             /*connected=*/true);
+
+  EXPECT_CALL(device, GetAddress()).Times(3);
+  EXPECT_CALL(device, GetNameForDisplay()).Times(3);
+
+  // 1. RequestPinCode
+  base::RunLoop run_loop;
+  pair_callback_ = base::BindLambdaForTesting(
+      [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+        EXPECT_FALSE(error_code);
+        run_loop.Quit();
+      });
+  pairing_manager()->RequestPinCode(&device);
+  run_loop.Run();
+  EXPECT_EQ(u"\u2068Malicious Device \u202EName\u2069",
+            last_device_identifier());
+
+  // 2. AuthorizePairing
+  TestFuture<std::optional<BluetoothDevice::ConnectErrorCode>> auth_future;
+  pair_callback_ = auth_future.GetCallback();
+  pairing_manager()->AuthorizePairing(&device);
+  EXPECT_FALSE(auth_future.Get());
+  EXPECT_EQ(u"\u2068Malicious Device \u202EName\u2069",
+            last_device_identifier());
+
+  // 3. ConfirmPasskey
+  TestFuture<std::optional<BluetoothDevice::ConnectErrorCode>> passkey_future;
+  pair_callback_ = passkey_future.GetCallback();
+  pairing_manager()->ConfirmPasskey(&device, 123456);
+  EXPECT_FALSE(passkey_future.Get());
+  EXPECT_EQ(u"\u2068Malicious Device \u202EName\u2069",
+            last_device_identifier());
 }
 
 TEST_F(BluetoothPairingManagerTest, StartNotificationsAllAuthsSuccess) {

@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "device/base/public/cpp/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace permissions {
@@ -169,11 +170,13 @@ void BluetoothChooserController::AddOrUpdateDevice(
     bool is_gatt_connected,
     bool is_paired,
     int signal_strength_level) {
+  std::u16string sanitized_device_name =
+      device::ContainStringForDisplay(device_name);
   auto name_it = device_id_to_name_map_.find(device_id);
   if (name_it != device_id_to_name_map_.end()) {
     if (should_update_name) {
       std::u16string previous_device_name = name_it->second;
-      name_it->second = device_name;
+      name_it->second = sanitized_device_name;
 
       const auto& it = device_name_counts_.find(previous_device_name);
       CHECK(it != device_name_counts_.end());
@@ -182,7 +185,7 @@ void BluetoothChooserController::AddOrUpdateDevice(
       if (--(it->second) == 0)
         device_name_counts_.erase(it);
 
-      ++device_name_counts_[device_name];
+      ++device_name_counts_[sanitized_device_name];
     }
 
     auto device_it =
@@ -203,8 +206,8 @@ void BluetoothChooserController::AddOrUpdateDevice(
 
   devices_.push_back(
       {device_id, signal_strength_level, is_gatt_connected, is_paired});
-  device_id_to_name_map_.insert({device_id, device_name});
-  ++device_name_counts_[device_name];
+  device_id_to_name_map_.insert({device_id, sanitized_device_name});
+  ++device_name_counts_[sanitized_device_name];
   if (view())
     view()->OnOptionAdded(devices_.size() - 1);
 }

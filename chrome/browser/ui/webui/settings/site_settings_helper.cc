@@ -1445,7 +1445,8 @@ base::ListValue GetChooserExceptionListFromProfile(
       continue;
     }
 
-    std::u16string name = chooser_context->GetObjectDisplayName(object->value);
+    std::u16string name =
+        chooser_context->GetObjectDisplayNameForUI(object->value);
     auto& chooser_exception_details = all_chooser_objects[std::make_pair(
         name, base::Value(object->value.Clone()))];
 

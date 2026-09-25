@@ -15,6 +15,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/browser_context.h"
+#include "device/base/public/cpp/string_util.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
@@ -305,6 +306,11 @@ bool BluetoothChooserContext::IsValidObject(const base::DictValue& object) {
 std::u16string BluetoothChooserContext::GetObjectDisplayName(
     const base::DictValue& object) {
   return base::UTF8ToUTF16(*object.FindString(kDeviceNameKey));
+}
+
+std::u16string BluetoothChooserContext::GetObjectDisplayNameForUI(
+    const base::DictValue& object) {
+  return device::ContainStringForDisplay(GetObjectDisplayName(object));
 }
 
 void BluetoothChooserContext::Shutdown() {

@@ -644,6 +644,7 @@ if (!is_android) {
       "//components/webauthn/core/browser:passkey_model",
       "//components/webauthn/core/browser:test_support",
       "//content/test:test_support",
+      "//device/base/public/cpp",
       "//device/bluetooth",
       "//device/bluetooth:mocks",
       "//device/fido:test_support",

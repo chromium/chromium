@@ -91,10 +91,12 @@ class BluetoothChooserContext : public ObjectPermissionContextBase {
   static blink::WebBluetoothDeviceId GetObjectDeviceId(
       const base::DictValue& object);
 
-  // ObjectPermissionContextBase;
+  // ObjectPermissionContextBase:
   std::string GetKeyForObject(const base::DictValue& object) override;
   bool IsValidObject(const base::DictValue& object) override;
   std::u16string GetObjectDisplayName(const base::DictValue& object) override;
+  std::u16string GetObjectDisplayNameForUI(
+      const base::DictValue& object) override;
 
   // KeyedService:
   void Shutdown() override;
