@@ -1,0 +1,70 @@
+<!doctype html>
+<!--
+Tests WebXR projection layer without 'layers' feature enabled.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      useWebGL2 = true;
+      // Do not request 'layers' feature.
+      immersiveSessionInit = {};
+
+      let projectionLayer = null;
+      let glBinding = null;
+      let frameCount = 0;
+
+      function fillColor(gl, subImage, color) {
+        gl.viewport(
+            subImage.viewport.x, subImage.viewport.y, subImage.viewport.width,
+            subImage.viewport.height);
+        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - viewport");
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(subImage.viewport.x, subImage.viewport.y, subImage.viewport.width,
+            subImage.viewport.height);
+        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - scissor");
+        gl.framebufferTexture2D(
+            gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D,
+            subImage.colorTexture, 0);
+        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - framebufferTexture2D");
+        gl.clearColor(color[0], color[1], color[2], color[3]);
+        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - clearColor");
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - clear");
+        gl.finish();
+        assert_equals(gl.getError(), gl.NO_ERROR, "fillColor - finish");
+      }
+
+      onSessionStartedCallback = function(session) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, gl.createFramebuffer());
+      };
+
+      updateRenderStateCallback = function(session, gl) {
+        glBinding = new XRWebGLBinding(session, gl);
+        projectionLayer = glBinding.createProjectionLayer(
+            {textureType: 'texture', depthFormat: 0 /*GL_NONE*/});
+        session.updateRenderState({ layers: [projectionLayer] });
+      };
+
+      onImmersiveXRFrameCallback = function(session, frame, gl) {
+        if (++frameCount === 3) {
+          done();
+        }
+
+        const pose = frame.getViewerPose(
+            sessionInfos[getSessionType(session)].currentRefSpace);
+        for (const view of pose.views) {
+          let subImage = glBinding.getViewSubImage(projectionLayer, view);
+          fillColor(gl, subImage, [1.0, 0.0, 0.0, 1.0]);  // Red
+        }
+      };
+    </script>
+  </body>
+</html>

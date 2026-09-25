@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_image_tracking_result.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_event.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_sources_change_event.h"
+#include "third_party/blink/renderer/modules/xr/xr_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
 #include "third_party/blink/renderer/modules/xr/xr_mesh_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_plane_manager.h"
@@ -94,6 +95,10 @@ const char kBaseLayerAndLayers[] =
 
 const char kMultiLayersNotEnabled[] =
     "This session does not support multiple layers.";
+
+const char kNonProjectionLayerNotEnabled[] =
+    "Non-projection layers are not allowed when layers feature is not "
+    "enabled.";
 
 const char kDuplicateLayer[] = "All layers in render state must be unique.";
 
@@ -560,22 +565,6 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
       return;
     }
 
-    // Validate that the session was created with the layers feature enabled
-    // when the user wishes to render multiple layers at once.
-    if (init->layers()->size() > 1 &&
-        !IsFeatureEnabled(device::mojom::XRSessionFeature::LAYERS)) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                        kMultiLayersNotEnabled);
-      return;
-    }
-
-    // Validate that the number of layers is allowed.
-    if (init->layers()->size() > maxRenderLayers()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                        kTooManyLayers);
-      return;
-    }
-
     HeapHashSet<Member<const XRLayer>> unique_layers;
     for (const XRLayer* layer : *init->layers()) {
       // Check for duplicate layers.
@@ -589,6 +578,32 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
         exception_state.ThrowTypeError(kIncompatibleLayer);
         return;
       }
+    }
+
+    // Validate that the session was created with the layers feature enabled
+    // when the user wishes to render multiple layers at once or non-projection
+    // layers.
+    if (!IsFeatureEnabled(device::mojom::XRSessionFeature::LAYERS)) {
+      if (init->layers()->size() > 1) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                          kMultiLayersNotEnabled);
+        return;
+      }
+      for (const XRLayer* layer : *init->layers()) {
+        if (layer->LayerType() != XRLayerType::kProjectionLayer) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              kNonProjectionLayerNotEnabled);
+          return;
+        }
+      }
+    }
+
+    // Validate that the number of layers is allowed.
+    if (init->layers()->size() > maxRenderLayers()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                        kTooManyLayers);
+      return;
     }
   }
 
@@ -2264,7 +2279,8 @@ void XRSession::OnFrame(double timestamp,
     auto* transport_delegate = render_state_->GetTransportDelegate();
     CHECK(transport_delegate);
 
-    if (shared_images.empty() && layers_enabled_) {
+    if (shared_images.empty() &&
+        (layers_enabled_ || !render_state_->layers().empty())) {
       DVLOG(2) << __func__ << ": there is no shared images.";
       xr_->frameProvider()->SubmitFrame(transport_delegate);
       return;
@@ -2272,7 +2288,7 @@ void XRSession::OnFrame(double timestamp,
 
     if (should_update_layers_backend_) {
       should_update_layers_backend_ = false;
-      if (layers_enabled_) {
+      if (LayerManager()) {
         // This means that the page has updated the layers since it last
         // received a new frame, but we haven't updated the backend yet, so the
         // page won't be able to use those layers just yet as they expect. For
@@ -2282,7 +2298,6 @@ void XRSession::OnFrame(double timestamp,
         // allow the layer sequence to be updated by the backend compositor
         // without dropping the current frame.
         render_state_->UpdateLayersBackend(LayerManager());
-        render_state_->OnLayersUpdated();
 
         // Submit this animation frame without changes and request a new one
         // immediately.
@@ -2292,11 +2307,9 @@ void XRSession::OnFrame(double timestamp,
       }
     }
 
-    // If the 'layers' feature is disabled, the shared image lacks an associated
-    // layer ID. The shared image must then be bound to the first layer.
-    layer_shared_image_manager_.SetSharedImages(
-        layers_enabled_ ? nullptr : render_state_->GetFirstLayer(),
-        std::move(shared_images));
+    // If baseLayer is used, bind the shared image with its layer ID.
+    layer_shared_image_manager_.SetSharedImages(render_state_->baseLayer(),
+                                                std::move(shared_images));
 
     // Dispatch the "redraw" event for layers that should be updated.
     if (layers_enabled_) {

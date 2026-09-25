@@ -40,7 +40,9 @@ void XRRenderState::Update(const XRRenderStateInit* init) {
     depth_far_ = std::max(0.0, init->depthFar());
   }
   if (init->hasBaseLayer()) {
-    needs_layers_update_ |= base_layer_ != init->baseLayer();
+    if (!layers_->empty()) {
+      needs_layers_update_ = true;
+    }
     base_layer_ = init->baseLayer();
     UpdateLayersState(MakeGarbageCollected<FrozenArray<XRLayer>>());
   }
@@ -190,10 +192,6 @@ void XRRenderState::UpdateLayersBackend(
   }
 
   blink::Vector<device::LayerId> ids;
-  if (base_layer_) {
-    ids.push_back(base_layer_->layer_id());
-  }
-
   if (layers_) {
     ids.reserve(layers_->size());
     for (XRLayer* layer : *layers_) {

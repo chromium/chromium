@@ -197,6 +197,36 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMediaLayers) {
   t->EndTest();
 }
 
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestProjectionLayerWithoutLayersFeature) {
+  UiUtils::DisableOverlayForTesting();
+  MockForLayers mock;
+
+  t->LoadFileAndAwaitInitialization("test_openxr_projection_layer");
+  t->EnterSessionWithUserGestureOrFail();
+
+  t->WaitOnJavaScriptStep();
+  t->AssertNoJavaScriptErrors();
+
+  mock.WaitForTotalFrameCount(1);
+
+  constexpr uint32_t view_dimension = 128;
+
+  std::vector<device::ViewData> expected_views;
+  expected_views.push_back(
+      {.color = SK_ColorRED,
+       .eye = device::mojom::XREye::kLeft,
+       .viewport = {0, 0, view_dimension, view_dimension}});
+  expected_views.push_back(
+      {.color = SK_ColorRED,
+       .eye = device::mojom::XREye::kRight,
+       .viewport = {view_dimension, 0, view_dimension, view_dimension}});
+
+  std::vector<device::LayerData> expected_layers;
+  mock.VerifyFrame(expected_views, expected_layers);
+
+  t->EndTest();
+}
+
 }  // namespace vr
 
 #endif  // BUILDFLAG(ENABLE_OPENXR)
