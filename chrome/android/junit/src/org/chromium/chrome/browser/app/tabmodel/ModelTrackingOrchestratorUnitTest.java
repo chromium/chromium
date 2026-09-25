@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +40,8 @@ import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabGroupCollectionData;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
+import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
@@ -52,6 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /** Unit tests for {@link ModelTrackingOrchestrator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -122,8 +126,10 @@ public class ModelTrackingOrchestratorUnitTest {
 
         when(mRegularTabModel.isOffTheRecord()).thenReturn(false);
         when(mRegularTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        when(mRegularTabModel.iterator()).thenAnswer(inv -> Collections.emptyIterator());
         when(mIncognitoTabModel.isOffTheRecord()).thenReturn(true);
         when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.EMPTY);
+        when(mIncognitoTabModel.iterator()).thenAnswer(inv -> Collections.emptyIterator());
         when(mRegularData.getGroupsData()).thenReturn(new TabGroupCollectionData[0]);
         when(mStorageLoadedData.getLoadedTabStates())
                 .thenReturn(new StorageLoadedData.LoadedTabState[1]);
@@ -193,6 +199,7 @@ public class ModelTrackingOrchestratorUnitTest {
 
     @Test
     public void testShadowStoreCatchUpLifecycle_withIncognitoLoad() {
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
 
         mOrchestrator.onAuthoritativeStateLoaded();
@@ -315,7 +322,7 @@ public class ModelTrackingOrchestratorUnitTest {
 
         MockTab tab = new MockTab(1, mProfile);
         TabStateAttributesRegistry.createAttributesForTab(
-                tab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+                tab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
 
         mRegularTabSupplier.set(tab);
         mOrchestrator.saveTab(tab);
@@ -456,6 +463,7 @@ public class ModelTrackingOrchestratorUnitTest {
         when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
 
         mOrchestrator.onDataLoaded(mStorageLoadedData, /* incognito= */ true);
+        assertFalse(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
 
         // Standard restore completed.
         mOrchestrator.onRestoredForModel(/* incognito= */ true);
@@ -464,6 +472,117 @@ public class ModelTrackingOrchestratorUnitTest {
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
         verify(mIncognitoSynchronizer).consumeCollectionObserverFactory(any());
         verify(mIncognitoSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
+    }
+
+    @Test
+    public void testIncognitoModelCreatedBeforeRestoreFinished_NonAuthoritative_DefersFullSave() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
+        mOrchestrator.setLoadIncognitoTabsOnStart(false);
+
+        verify(mIncognitoTabModel).addIncognitoObserver(mIncognitoObserverCaptor.capture());
+        IncognitoTabModelObserver observer = mIncognitoObserverCaptor.getValue();
+
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        observer.onIncognitoModelCreated();
+
+        // Should not start tracking or fullSave before onRestoreFinished (before shadow DB raze).
+        assertFalse(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
+        verify(mIncognitoSynchronizer, never()).fullSave(any());
+
+        // Once onRestoreFinished runs after DB raze, fullSave and tracking are initialized.
+        mOrchestrator.onRestoreFinished();
+        assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
+        verify(mIncognitoSynchronizer).fullSave(any());
+    }
+
+    @Test
+    public void testIncognitoModelCreatedAfterRestoreFinished_NonAuthoritative_TriggersFullSave() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
+        mOrchestrator.onAuthoritativeStateLoaded();
+        mOrchestrator.setLoadIncognitoTabsOnStart(true);
+
+        verify(mIncognitoTabModel).addIncognitoObserver(mIncognitoObserverCaptor.capture());
+        IncognitoTabModelObserver observer = mIncognitoObserverCaptor.getValue();
+
+        // At onRestoreFinished time, incognito model is still EMPTY (not created).
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.EMPTY);
+        mOrchestrator.onRestoreFinished();
+
+        ArgumentCaptor<Runnable> regularCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mRegularSynchronizer).fullSave(regularCallbackCaptor.capture());
+        regularCallbackCaptor.getValue().run();
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mMigrationManager, times(1)).onShadowStoreCaughtUp();
+        assertFalse(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
+        verify(mIncognitoSynchronizer, never()).fullSave(any());
+
+        // Later in the session, user opens an incognito tab and model is created.
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        observer.onIncognitoModelCreated();
+
+        assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
+        ArgumentCaptor<Runnable> incognitoCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mIncognitoSynchronizer).fullSave(incognitoCallbackCaptor.capture());
+        incognitoCallbackCaptor.getValue().run();
+        ShadowLooper.runUiThreadTasks();
+
+        // onShadowStoreCaughtUp should not fire a second time.
+        verify(mMigrationManager, times(1)).onShadowStoreCaughtUp();
+    }
+
+    @Test
+    public void
+            testIncognitoModelCreatedBeforeRegularFullSaveFinishes_NonAuthoritative_DefersCaughtUpUntilBothFinish() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
+        mOrchestrator.onAuthoritativeStateLoaded();
+        mOrchestrator.setLoadIncognitoTabsOnStart(false);
+
+        verify(mIncognitoTabModel).addIncognitoObserver(mIncognitoObserverCaptor.capture());
+        IncognitoTabModelObserver observer = mIncognitoObserverCaptor.getValue();
+
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.EMPTY);
+        mOrchestrator.onRestoreFinished();
+
+        ArgumentCaptor<Runnable> regularCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mRegularSynchronizer).fullSave(regularCallbackCaptor.capture());
+
+        // Incognito model is created while regular fullSave is still in flight.
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        observer.onIncognitoModelCreated();
+
+        ArgumentCaptor<Runnable> incognitoCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mIncognitoSynchronizer).fullSave(incognitoCallbackCaptor.capture());
+
+        // Completing regular fullSave alone must not fire onShadowStoreCaughtUp.
+        regularCallbackCaptor.getValue().run();
+        ShadowLooper.runUiThreadTasks();
+        verify(mMigrationManager, never()).onShadowStoreCaughtUp();
+
+        // Completing incognito fullSave now fires onShadowStoreCaughtUp once.
+        incognitoCallbackCaptor.getValue().run();
+        ShadowLooper.runUiThreadTasks();
+        verify(mMigrationManager, times(1)).onShadowStoreCaughtUp();
+    }
+
+    @Test
+    public void testFullSaveAndInitTracking_ClearsTabStateDirtiness() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
+
+        MockTab tab = new MockTab(1, mProfile);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
+        assertEquals(DirtinessState.DIRTY, attributes.getDirtinessState());
+
+        when(mRegularTabModel.iterator())
+                .thenAnswer(inv -> Collections.singletonList((Tab) tab).iterator());
+
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+
+        verify(mRegularSynchronizer).fullSave(any());
+        assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
     }
 
     @Test

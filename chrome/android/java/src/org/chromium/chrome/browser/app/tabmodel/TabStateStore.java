@@ -75,6 +75,9 @@ public class TabStateStore implements TabPersistentStore {
     private int mRestoredTabCount;
     private boolean mIsDestroyed;
     private boolean mHasLoadWarnings;
+    private boolean mIsRestoreFinished;
+    private boolean mIsAuthoritativeStateLoaded;
+    private boolean mShadowPostRestoreInitialized;
 
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
@@ -123,8 +126,20 @@ public class TabStateStore implements TabPersistentStore {
 
                 @Override
                 public void onCancelled() {
-                    assumeNonNull(mModelTrackingManager).onRestoreCancelled();
-                    deleteDbIfNonAuthoritative();
+                    if (mIsDestroyed) return;
+
+                    mCombinedTabRestorer = null;
+                    mIsRestoreFinished = true;
+
+                    for (TabPersistentStoreObserver observer : mObservers) {
+                        observer.onStateLoaded();
+                    }
+
+                    if (mIsAuthoritative) {
+                        assumeNonNull(mModelTrackingManager).onRestoreCancelled();
+                    } else {
+                        maybeCompleteShadowRestoreAndCatchUp();
+                    }
                 }
 
                 @Override
@@ -537,8 +552,11 @@ public class TabStateStore implements TabPersistentStore {
     /** Called when the authoritative store has finished loading state for the window. */
     public void onAuthoritativeStateLoaded() {
         assert !mIsAuthoritative;
+        if (mIsDestroyed) return;
         assertInitialized();
+        mIsAuthoritativeStateLoaded = true;
         mModelTrackingManager.onAuthoritativeStateLoaded();
+        maybeCompleteShadowRestoreAndCatchUp();
     }
 
     private void onTabStateDirtinessChanged(Tab tab, @DirtinessState int dirtiness) {
@@ -682,25 +700,42 @@ public class TabStateStore implements TabPersistentStore {
 
     /** Called after all tabs have been created. */
     private void onFinishedCreatingAllTabs() {
-        deleteDbIfNonAuthoritative();
-
         if (mIsDestroyed) return;
 
         mCombinedTabRestorer = null;
+        mIsRestoreFinished = true;
 
         for (TabPersistentStoreObserver observer : mObservers) {
             observer.onStateLoaded();
         }
 
-        if (!mIsAuthoritative) {
-            assert mTabRegistrationObserver == null;
-            mTabRegistrationObserver =
-                    new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
-            mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
-                    new InnerRegistrationObserver());
+        if (mIsAuthoritative) {
+            assumeNonNull(mModelTrackingManager).onRestoreFinished();
+        } else {
+            maybeCompleteShadowRestoreAndCatchUp();
         }
+    }
+
+    private void maybeCompleteShadowRestoreAndCatchUp() {
+        assert !mIsAuthoritative;
+        if (mIsDestroyed
+                || mShadowPostRestoreInitialized
+                || !mIsRestoreFinished
+                || !mIsAuthoritativeStateLoaded) {
+            return;
+        }
+        mShadowPostRestoreInitialized = true;
+
+        deleteDbIfNonAuthoritative();
+
+        assert mTabRegistrationObserver == null;
+        mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
+        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                new InnerRegistrationObserver());
 
         assumeNonNull(mModelTrackingManager).onRestoreFinished();
+        updateTabCountForModel(/* incognito= */ false);
+        updateTabCountForModel(/* incognito= */ true);
     }
 
     private void deleteDbIfNonAuthoritative() {

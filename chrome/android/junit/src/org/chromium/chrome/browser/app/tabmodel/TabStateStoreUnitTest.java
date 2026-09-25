@@ -450,8 +450,7 @@ public class TabStateStoreUnitTest {
         LoadedTabState loadedTabState = new LoadedTabState(0, tabState);
         when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {loadedTabState});
 
-        mTabStateStore.loadState(
-                /* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
+        mTabStateStore.loadState(/* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
 
         ArgumentCaptor<TabModelObserver> captor = ArgumentCaptor.forClass(TabModelObserver.class);
         verify(mRegularTabModel).addObserver(captor.capture());
@@ -481,8 +480,7 @@ public class TabStateStoreUnitTest {
         LoadedTabState loadedTabState = new LoadedTabState(0, tabState);
         when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {loadedTabState});
 
-        mTabStateStore.loadState(
-                /* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
+        mTabStateStore.loadState(/* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
 
         ArgumentCaptor<TabModelObserver> captor = ArgumentCaptor.forClass(TabModelObserver.class);
         verify(mRegularTabModel).addObserver(captor.capture());
@@ -726,16 +724,8 @@ public class TabStateStoreUnitTest {
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
 
         List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
-
-        StorageLoadedData regularData = mock(StorageLoadedData.class);
-        when(regularData.getWarnings()).thenReturn(new StorageLoadWarning[0]);
-        when(regularData.getLoadedTabStates()).thenReturn(new LoadedTabState[0]);
-        callbacks.get(0).onResult(regularData);
-
-        StorageLoadedData incognitoData = mock(StorageLoadedData.class);
-        when(incognitoData.getWarnings()).thenReturn(new StorageLoadWarning[0]);
-        when(incognitoData.getLoadedTabStates()).thenReturn(new LoadedTabState[0]);
-        callbacks.get(1).onResult(incognitoData);
+        callbacks.get(0).onResult(mRegularData);
+        callbacks.get(1).onResult(mIncognitoData);
 
         verify(mObserver).onInitialized(0);
 
@@ -743,6 +733,192 @@ public class TabStateStoreUnitTest {
         ShadowLooper.runUiThreadTasks();
 
         verify(mObserver).onStateLoaded();
+        verify(mModelTrackingOrchestrator, never()).onRestoreFinished();
+        verify(mTabStateStorageService, never()).clearWindow(WINDOW_TAG);
+        verify(mTabCountTracker, never()).clearCurrentWindow();
+        verify(mActiveTabCache, never()).clearCurrentWindow();
+        verify(mMigrationManager, never()).onShadowStoreRazed();
+
+        when(mModelTrackingOrchestrator.isSynchronizerPresent(false)).thenReturn(true);
+        when(mRegularTabModel.getCount()).thenReturn(2);
+
+        mTabStateStore.onAuthoritativeStateLoaded();
+
+        verify(mModelTrackingOrchestrator).onAuthoritativeStateLoaded();
+        verify(mModelTrackingOrchestrator).onRestoreFinished();
+        verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
+        verify(mTabCountTracker).clearCurrentWindow();
+        verify(mActiveTabCache).clearCurrentWindow();
+        verify(mMigrationManager).onShadowStoreRazed();
+        verify(mTabCountTracker).updateTabCount(false, 2);
+    }
+
+    @Test
+    public void testClearCurrentWindowOnRestore_NonAuthoritative_AuthLoadedFirst() {
+        mTabStateStore =
+                new TabStateStore(
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        WINDOW_TAG,
+                        mTabCreatorManager,
+                        mTabPersistencePolicy,
+                        mMigrationManager,
+                        mCipherFactory,
+                        mTabCountTracker,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
+                        /* isAuthoritative= */ false,
+                        /* isFromRecreating= */ false);
+        mTabStateStore.addObserver(mObserver);
+
+        mTabStateStore.onNativeLibraryReady();
+        when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
+        reset(
+                mMigrationManager,
+                mModelTrackingOrchestrator,
+                mTabStateStorageService,
+                mTabCountTracker);
+
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        verify(mTabStateStorageService, times(2))
+                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
+
+        // Authoritative store finishes loading before shadow restoreTabs completes.
+        mTabStateStore.onAuthoritativeStateLoaded();
+        verify(mModelTrackingOrchestrator).onAuthoritativeStateLoaded();
+        verify(mModelTrackingOrchestrator, never()).onRestoreFinished();
+        verify(mTabStateStorageService, never()).clearWindow(WINDOW_TAG);
+        verify(mMigrationManager, never()).onShadowStoreRazed();
+
+        List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
+        callbacks.get(0).onResult(mRegularData);
+        callbacks.get(1).onResult(mIncognitoData);
+
+        verify(mObserver).onInitialized(0);
+
+        mTabStateStore.restoreTabs(true);
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mObserver).onStateLoaded();
+        verify(mModelTrackingOrchestrator).onRestoreFinished();
+        verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
+        verify(mTabCountTracker).clearCurrentWindow();
+        verify(mActiveTabCache).clearCurrentWindow();
+        verify(mMigrationManager).onShadowStoreRazed();
+    }
+
+    @Test
+    public void testDestroyAndOnAuthoritativeStateLoadedAfterDestroy_NonAuthoritative() {
+        mTabStateStore =
+                new TabStateStore(
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        WINDOW_TAG,
+                        mTabCreatorManager,
+                        mTabPersistencePolicy,
+                        mMigrationManager,
+                        mCipherFactory,
+                        mTabCountTracker,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
+                        /* isAuthoritative= */ false,
+                        /* isFromRecreating= */ false);
+        mTabStateStore.addObserver(mObserver);
+
+        mTabStateStore.onNativeLibraryReady();
+        when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
+        when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mTabCreator);
+        reset(
+                mMigrationManager,
+                mModelTrackingOrchestrator,
+                mTabStateStorageService,
+                mTabCountTracker);
+
+        TabState tabState = new TabState();
+        tabState.contentsState = mock(WebContentsState.class);
+        LoadedTabState loadedTabState = new LoadedTabState(0, tabState);
+        when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {loadedTabState});
+
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        verify(mTabStateStorageService, times(2))
+                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
+
+        List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
+        callbacks.get(0).onResult(mRegularData);
+        callbacks.get(1).onResult(mIncognitoData);
+
+        // Destroy while CombinedTabRestorer is active before restoreTabs completes.
+        mTabStateStore.destroy();
+
+        verify(mObserver, never()).onStateLoaded();
+        verify(mModelTrackingOrchestrator, never()).onRestoreCancelled();
+        verify(mTabStateStorageService, never()).clearWindow(WINDOW_TAG);
+
+        // Calling onAuthoritativeStateLoaded after destroy should be a no-op.
+        mTabStateStore.onAuthoritativeStateLoaded();
+        verify(mModelTrackingOrchestrator, never()).onAuthoritativeStateLoaded();
+        verify(mModelTrackingOrchestrator, never()).onRestoreFinished();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
+    public void
+            testLoadAndRestore_WillCloseAllTabs_NonAuthoritative_CompletesCatchUpWhenAuthLoaded() {
+        mTabStateStore =
+                new TabStateStore(
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        WINDOW_TAG,
+                        mTabCreatorManager,
+                        mTabPersistencePolicy,
+                        mMigrationManager,
+                        mCipherFactory,
+                        mTabCountTracker,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
+                        /* isAuthoritative= */ false,
+                        /* isFromRecreating= */ false);
+        mTabStateStore.addObserver(mObserver);
+
+        mTabStateStore.onNativeLibraryReady();
+        when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
+        when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mTabCreator);
+        reset(
+                mMigrationManager,
+                mModelTrackingOrchestrator,
+                mTabStateStorageService,
+                mTabCountTracker);
+
+        TabState tabState = new TabState();
+        tabState.contentsState = mock(WebContentsState.class);
+        LoadedTabState loadedTabState = new LoadedTabState(0, tabState);
+        when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {loadedTabState});
+
+        mTabStateStore.loadState(/* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
+
+        ArgumentCaptor<TabModelObserver> captor = ArgumentCaptor.forClass(TabModelObserver.class);
+        verify(mRegularTabModel).addObserver(captor.capture());
+        TabModelObserver observer = captor.getValue();
+
+        observer.willCloseAllTabs(false);
+
+        verify(mTabStateStorageService)
+                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
+
+        List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
+        callbacks.get(0).onResult(mRegularData);
+
+        verify(mObserver).onStateLoaded();
+        verify(mModelTrackingOrchestrator, never()).onRestoreCancelled();
+        verify(mTabStateStorageService, never()).clearWindow(WINDOW_TAG);
+
+        mTabStateStore.onAuthoritativeStateLoaded();
+
+        verify(mModelTrackingOrchestrator).onAuthoritativeStateLoaded();
         verify(mModelTrackingOrchestrator).onRestoreFinished();
         verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
         verify(mTabCountTracker).clearCurrentWindow();
