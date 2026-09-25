@@ -58,6 +58,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -1447,6 +1448,7 @@ bool TestRecipeReplayer::ExecuteAutofillAction(base::DictValue action) {
     return false;
 
   VLOG(1) << "Invoking Chrome Autofill on `" << xpath << "`.";
+  content::RenderFrameHostWrapper rfh_wrapper(frame);
   // Clear the input box first, in case a previous value is there.
   // If the text input box is not clear, pressing the down key will not
   // bring up the autofill suggestion box.
@@ -1461,7 +1463,7 @@ bool TestRecipeReplayer::ExecuteAutofillAction(base::DictValue action) {
   }
 
   std::string autofill_triggered_field_type;
-  if (GetElementProperty(frame, xpath,
+  if (GetElementProperty(rfh_wrapper.get(), xpath,
                          "return target.getAttribute('autofill-prediction');",
                          &autofill_triggered_field_type)) {
     VLOG(1) << "The field's Chrome Autofill annotation: "
@@ -1470,8 +1472,13 @@ bool TestRecipeReplayer::ExecuteAutofillAction(base::DictValue action) {
     VLOG(1) << "Failed to obtain the field's Chrome Autofill annotation during "
                "autofill form step!";
   }
+  if (rfh_wrapper.IsDestroyed()) {
+    VLOG(1) << "Frame is gone, not invoking Chrome Autofill on `" << xpath
+            << "`.";
+    return false;
+  }
   if (!feature_action_executor()->AutofillForm(
-          xpath, frame_path, kAutofillActionNumRetries, frame,
+          xpath, frame_path, kAutofillActionNumRetries, rfh_wrapper.get(),
           StringToFieldType(autofill_triggered_field_type))) {
     return false;
   }
@@ -1591,12 +1598,13 @@ bool TestRecipeReplayer::ExecuteHoverAction(base::DictValue action) {
     return false;
   }
 
+  content::RenderFrameHostWrapper rfh_wrapper(frame);
   gfx::Rect rect;
   if (!GetBoundingRectOfTargetElement(xpath, frame, &rect)) {
     return false;
   }
 
-  if (!SimulateMouseHoverAt(frame, rect.CenterPoint())) {
+  if (!SimulateMouseHoverAt(rfh_wrapper.get(), rect.CenterPoint())) {
     return false;
   }
 
@@ -1685,8 +1693,14 @@ bool TestRecipeReplayer::ExecuteRunCommandAction(base::DictValue action) {
   VLOG(1) << "Running JavaScript commands on the page.";
 
   // Execute the commands.
+  content::RenderFrameHostWrapper rfh_wrapper(frame);
   for (const std::string& command : commands) {
-    if (!content::ExecJs(frame, command)) {
+    if (rfh_wrapper.IsDestroyed()) {
+      VLOG(1) << "Frame is gone, not executing JavaScript command `" << command
+              << "`.";
+      return false;
+    }
+    if (!content::ExecJs(rfh_wrapper.get(), command)) {
       ADD_FAILURE() << "Failed to execute JavaScript command `" << command
                     << "`!";
       return false;
@@ -1778,6 +1792,7 @@ bool TestRecipeReplayer::ExecuteTypePasswordAction(base::DictValue action) {
   if (!value)
     return false;
 
+  content::RenderFrameHostWrapper rfh_wrapper(frame);
   // Clear the password field first, in case a previous value is there.
   if (!ExecuteJavaScriptOnElementByXpath(
           frame, xpath,
@@ -1785,10 +1800,14 @@ bool TestRecipeReplayer::ExecuteTypePasswordAction(base::DictValue action) {
     ADD_FAILURE() << "Failed to execute JavaScript to clear the input value!";
     return false;
   }
+  if (rfh_wrapper.IsDestroyed()) {
+    VLOG(1) << "Frame is gone, not typing inside `" << xpath << "`.";
+    return false;
+  }
 
   VLOG(1) << "Typing '" << *value << "' inside `" << xpath << "`.";
   content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(frame);
+      content::WebContents::FromRenderFrameHost(rfh_wrapper.get());
   for (char character : *value) {
     SimulateKeyPressWrapper(web_contents, ui::DomKey::FromCharacter(character));
   }
@@ -1820,6 +1839,7 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, false, true))
     return false;
+  content::RenderFrameHostWrapper rfh_wrapper(frame);
 
   base::Value* autofill_prediction_container =
       action.Find("expectedAutofillType");
@@ -1846,7 +1866,8 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
     VLOG(1) << "Checking the field `" << xpath << "` has the autofill type '"
             << expected_autofill_prediction_type << "'";
     ExpectElementPropertyEqualsAnyOf(
-        frame, xpath, "return target.getAttribute('autofill-prediction');",
+        rfh_wrapper.get(), xpath,
+        "return target.getAttribute('autofill-prediction');",
         {expected_autofill_prediction_type}, "autofill type mismatch",
         IgnoreCase(true));
   }
@@ -1863,12 +1884,14 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
 
   VLOG(1) << "Checking the field `" << xpath << "`.";
   if (expected_value) {
-    ExpectElementPropertyEqualsAnyOf(frame, xpath, "return target.value;",
-                                     {*expected_value}, "text value mismatch");
+    ExpectElementPropertyEqualsAnyOf(rfh_wrapper.get(), xpath,
+                                     "return target.value;", {*expected_value},
+                                     "text value mismatch");
   }
   if (expected_values) {
-    ExpectElementPropertyEqualsAnyOf(frame, xpath, "return target.value;",
-                                     *expected_values, "text value mismatch");
+    ExpectElementPropertyEqualsAnyOf(rfh_wrapper.get(), xpath,
+                                     "return target.value;", *expected_values,
+                                     "text value mismatch");
   }
   return true;
 }
@@ -2110,8 +2133,13 @@ bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
     if (!GetIFramePathFromAction(action, &frame_path))
       return false;
 
+    content::RenderFrameHostWrapper rfh_wrapper(*frame);
     if (!PlaceFocusOnElement(*xpath, frame_path, *frame))
       return false;
+    if (rfh_wrapper.IsDestroyed()) {
+      VLOG(1) << "Frame is gone after placing focus on `" << *xpath << "`.";
+      return false;
+    }
   }
   return true;
 }
@@ -2161,12 +2189,22 @@ bool TestRecipeReplayer::GetIFrameOffsetFromIFramePath(
     gfx::Vector2d* offset) {
   *offset = gfx::Vector2d(0, 0);
 
+  content::GlobalRenderFrameHostId frame_id = frame->GetGlobalId();
   for (const std::string& xpath : iframe_path) {
-    content::RenderFrameHost* parent_frame = frame->GetParent();
+    content::RenderFrameHost* child_frame =
+        content::RenderFrameHost::FromID(frame_id);
+    if (!child_frame) {
+      VLOG(1) << "Frame is gone, not getting the offset of iframe `" << xpath
+              << "`.";
+      return false;
+    }
+
+    content::RenderFrameHost* parent_frame = child_frame->GetParent();
     if (parent_frame == nullptr) {
       ADD_FAILURE() << "Trying to iterate past the top level frame!";
       return false;
     }
+    frame_id = parent_frame->GetGlobalId();
 
     gfx::Rect rect;
     if (!GetBoundingRectOfTargetElement(xpath, parent_frame, &rect)) {
@@ -2176,7 +2214,6 @@ bool TestRecipeReplayer::GetIFrameOffsetFromIFramePath(
     }
 
     *offset += rect.OffsetFromOrigin();
-    frame = parent_frame;
   }
 
   return true;
@@ -2209,7 +2246,10 @@ bool TestRecipeReplayer::WaitForStateChange(
     if (!GetTargetFrameFromAction(action, frame)) {
       return false;
     }
-    if (AllAssertionsPassed(*frame, state_assertions)) {
+    // Do not report a frame that the assertions destroyed.
+    content::RenderFrameHostWrapper rfh_wrapper(*frame);
+    if (AllAssertionsPassed(*frame, state_assertions) &&
+        !rfh_wrapper.IsDestroyed()) {
       return true;
     }
     if (base::TimeTicks::Now() - start_time > timeout) {
@@ -2235,15 +2275,20 @@ bool TestRecipeReplayer::AllAssertionsPassed(
             << LifecycleStateToStringView(state);
     return false;
   }
+  content::RenderFrameHostWrapper rfh_wrapper(frame.render_frame_host());
   for (const std::string& assertion : assertions) {
+    if (rfh_wrapper.IsDestroyed() || !rfh_wrapper->IsActive()) {
+      VLOG(1) << "Frame gone or not active, not testing '" << assertion << "'.";
+      return false;
+    }
     content::EvalJsResult result =
-        EvalJs(frame, base::StringPrintf("(function() {"
-                                         "  try {"
-                                         "    %s"
-                                         "  } catch (ex) {}"
-                                         "  return false;"
-                                         "})();",
-                                         assertion.c_str()));
+        EvalJs(rfh_wrapper.get(), base::StringPrintf("(function() {"
+                                                     "  try {"
+                                                     "    %s"
+                                                     "  } catch (ex) {}"
+                                                     "  return false;"
+                                                     "})();",
+                                                     assertion.c_str()));
     if (!result.is_ok()) {
       VLOG(1) << "'" << assertion << "' failed: " << result.ExtractError();
       return false;
@@ -2289,6 +2334,11 @@ bool TestRecipeReplayer::GetElementProperty(
     const std::string& element_xpath,
     const std::string& get_property_function_body,
     std::string* property) {
+  if (!frame.render_frame_host()) {
+    VLOG(1) << "Frame is gone, not getting a property of `" << element_xpath
+            << "`.";
+    return false;
+  }
   content::EvalJsResult result = content::EvalJs(
       frame, base::StringPrintf(
                  "(function() {"
@@ -2396,6 +2446,11 @@ bool TestRecipeReplayer::PlaceFocusOnElement(
   content::RenderFrameHostWrapper rfh_wrapper(frame);
   if (!ScrollElementIntoView(element_xpath, frame))
     return false;
+  if (rfh_wrapper.IsDestroyed()) {
+    VLOG(1) << "Frame is gone after scrolling, not placing focus on `"
+            << element_xpath << "`.";
+    return false;
+  }
 
   const std::string focus_on_target_field_js(
       base::StringPrintf("(function() {const element = "
@@ -2407,7 +2462,7 @@ bool TestRecipeReplayer::PlaceFocusOnElement(
                          element_xpath.c_str()));
 
   content::EvalJsResult result =
-      content::EvalJs(frame, focus_on_target_field_js);
+      content::EvalJs(rfh_wrapper.get(), focus_on_target_field_js);
   if (result.is_bool() && result.ExtractBool()) {
     return true;
   }
