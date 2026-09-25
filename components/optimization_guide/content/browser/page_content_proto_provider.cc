@@ -46,7 +46,9 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -323,6 +325,10 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
   render_frame_info.source_origin = render_frame_host->GetLastCommittedOrigin();
   render_frame_info.url = render_frame_host->GetLastCommittedURL();
   render_frame_info.media_data = ComputeMediaData(render_frame_host);
+  render_frame_info.script_tools_are_allowed =
+      base::FeatureList::IsEnabled(blink::features::kWebMCP) &&
+      render_frame_host->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTools);
 
   if (base::FeatureList::IsEnabled(
           features::kAnnotatedPageContentVerifyPopupProcess)) {

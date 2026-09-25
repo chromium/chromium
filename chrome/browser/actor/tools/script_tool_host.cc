@@ -26,7 +26,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 
 namespace actor {
@@ -97,6 +99,12 @@ mojom::ActionResultPtr ScriptToolHost::TimeOfUseValidation(
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
 
+  CHECK(base::FeatureList::IsEnabled(blink::features::kWebMCP));
+  if (!target_rfh->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTools)) {
+    return MakeResult(mojom::ActionResultCode::kScriptToolInvocationFailed);
+  }
+
   target_frame_tree_node_id_ = target_rfh->GetFrameTreeNodeId();
   target_document_ = target_rfh->GetWeakDocumentPtr();
   return MakeOkResult();
@@ -126,6 +134,9 @@ void ScriptToolHost::Invoke(ToolCallback callback) {
   InitializePendingResult();
   auto* frame = target_document_.AsRenderFrameHostIfValid();
   CHECK(frame);
+  CHECK(base::FeatureList::IsEnabled(blink::features::kWebMCP));
+  CHECK(frame->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kTools));
 
   // Provide transient user activation to the frame for the tool invocation.
   if (base::FeatureList::IsEnabled(
@@ -356,6 +367,19 @@ void ScriptToolHost::DidFinishNavigation(
     PostErrorResult(std::move(tool_done_callback_),
                     mojom::ActionResultCode::kScriptToolCrossOriginNavigation,
                     base::StrCat({"Cross-origin navigation to: ",
+                                  new_host->GetLastCommittedURL().spec()}));
+    return;
+  }
+
+  // The new document must also be allowed to use WebMCP. It may not be, even
+  // though it is same-origin with the original target document, if it was
+  // served with `Permissions-Policy: tools=()`, or if its embedder revoked
+  // `allow="tools"` before the navigation.
+  if (!new_host->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kTools)) {
+    PostErrorResult(std::move(tool_done_callback_),
+                    mojom::ActionResultCode::kScriptToolInvocationFailed,
+                    base::StrCat({"Tools permission disabled in new document: ",
                                   new_host->GetLastCommittedURL().spec()}));
     return;
   }

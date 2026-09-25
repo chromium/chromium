@@ -14,6 +14,7 @@
 #include "chrome/common/actor/actor_constants.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace actor {
 
@@ -42,6 +43,13 @@ void ScriptToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
 ToolRequest::CreateToolResult ScriptToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
+  if (!base::FeatureList::IsEnabled(blink::features::kWebMCP)) {
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kScriptToolInvocationFailed,
+                       /*requires_page_stabilization=*/false,
+                       "WebMCP is not enabled.")};
+  }
+
   if (!GetTabHandle().Get()) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          /*requires_page_stabilization=*/false,

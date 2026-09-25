@@ -1053,8 +1053,23 @@ void ConvertFrameData(
       metadata.frame_metadata.back()->has_media_transcripts = true;
     }
   }
-  for (const auto& tool : mojom_frame_data.script_tools) {
-    ConvertScriptTool(*tool, proto_frame_data->add_script_tools());
+  // Silently drop `script_tools` rather than killing the renderer if
+  // `!render_frame_info.script_tools_are_allowed` and
+  // `!mojom_frame_data.script_tools.empty()`. `GetAIPageContent` is requested
+  // over an unassociated `blink.mojom.AIPageContentAgent` pipe and
+  // `GetRenderFrameInfo()` is evaluated asynchronously on the `RenderFrameHost`
+  // only after all subframes have responded. If a frame legitimately sends
+  // `script_tools` from a document where `Permissions-Policy: tools` is
+  // enabled, and later commits a navigation that reuses the same
+  // `RenderFrameHost` to a document with `Permissions-Policy: tools=()` while
+  // the browser is still waiting on other subframes, `script_tools_are_allowed`
+  // will be false by the time conversion runs. `RenderFrameHost` reuse happens
+  // when RenderDocument is disabled, *and* also independently when navigating
+  // away from the initial empty document.
+  if (render_frame_info.script_tools_are_allowed) {
+    for (const auto& tool : mojom_frame_data.script_tools) {
+      ConvertScriptTool(*tool, proto_frame_data->add_script_tools());
+    }
   }
 
   // Accessibility focus is tracked globally in the browser, so it should be set

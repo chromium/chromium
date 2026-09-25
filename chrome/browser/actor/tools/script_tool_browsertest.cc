@@ -33,6 +33,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 
@@ -964,6 +965,54 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptToolSkipVoting, SkipVoting) {
             ScreenshotPolicy::kSkipped);
   EXPECT_EQ(strategy.GetPageContentExtractionPolicy(active_tab()->GetHandle()),
             PageContentExtractionPolicy::kSkipped);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, PermissionsPolicyDisabled) {
+  // Embed a cross-origin iframe without `allow="tools"`. Since the default
+  // allowlist for `Permissions-Policy: tools` is `EnableForSelf`, the
+  // cross-origin iframe has `PermissionsPolicyFeature::kTools` disabled.
+  content::RenderFrameHost& subframe =
+      NavigateSubframe(embedded_https_test_server().GetURL(
+                           "example.com", "/actor/simple_iframe.html"),
+                       embedded_https_test_server().GetURL(
+                           "sub.other.com", "/actor/script_tool.html"));
+  EXPECT_FALSE(subframe.HasTransientUserActivation());
+
+  auto action =
+      MakeScriptToolRequest(subframe, "echo", R"JSON({"text": "test"})JSON");
+  RunScriptToolExpectingError(
+      std::move(action), mojom::ActionResultCode::kScriptToolInvocationFailed);
+
+  // Ensure the browser process did not grant transient user activation to the
+  // disallowed frame.
+  EXPECT_FALSE(subframe.HasTransientUserActivation());
+}
+
+// A declarative tool whose result comes from a new, same-origin document must
+// fail if the new document has `PermissionsPolicyFeature::kTools` disabled.
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
+                       PermissionsPolicyDisabledInCrossDocumentResult) {
+  // The same-origin iframe has `PermissionsPolicyFeature::kTools` enabled by
+  // default.
+  content::RenderFrameHost& subframe = NavigateSubframe(
+      embedded_https_test_server().GetURL("example.com",
+                                          "/actor/simple_iframe.html"),
+      embedded_https_test_server().GetURL(
+          "example.com", "/actor/declarative_script_tool_cross_document.html"));
+  ASSERT_TRUE(subframe.IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kTools));
+
+  // Revoke `tools` from the iframe. The updated container policy only applies
+  // to the document created by the tool's form submission.
+  ASSERT_TRUE(
+      content::ExecJs(web_contents(),
+                      "document.getElementById('iframe').setAttribute('allow', "
+                      "\"tools 'none'\");"));
+
+  auto action = MakeScriptToolRequest(subframe, "declarative_tool",
+                                      R"JSON({"echo": "hello world"})JSON");
+  RunScriptToolExpectingError(
+      std::move(action), mojom::ActionResultCode::kScriptToolInvocationFailed);
 }
 
 }  // namespace actor

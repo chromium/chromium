@@ -3406,5 +3406,57 @@ INSTANTIATE_TEST_SUITE_P(All,
                                  .enable_otp_redaction = true,
                              }));
 
+TEST_F(PageContentProtoUtilTest, ScriptToolsFilteredByRenderFrameInfo) {
+  auto main_frame_token = CreateFrameToken();
+  auto root_content = CreatePageContent();
+  auto tool = blink::mojom::ScriptTool::New();
+  tool->name = "forged_tool";
+  tool->description = "forged description";
+  tool->annotations = blink::mojom::ScriptToolAnnotations::New();
+  root_content->frame_data->script_tools.push_back(std::move(tool));
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+
+  bool allow_script_tools = false;
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int child_process_id,
+          blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        RenderFrameInfo render_frame_info;
+        render_frame_info.global_frame_token = main_frame_token;
+        render_frame_info.source_origin =
+            url::Origin::Create(GURL("https://example.com"));
+        render_frame_info.url = GURL("https://example.com");
+        render_frame_info.serialized_server_token = token.ToString();
+        render_frame_info.script_tools_are_allowed = allow_script_tools;
+        return render_frame_info;
+      });
+
+  {
+    AIPageContentResult page_content;
+    FrameTokenSet frame_token_set;
+    ASSERT_TRUE(ConvertAIPageContentToProto(
+                    blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                    page_content_map, get_render_frame_info, frame_token_set,
+                    page_content)
+                    .has_value());
+    EXPECT_TRUE(page_content.proto.main_frame_data().script_tools().empty());
+  }
+
+  allow_script_tools = true;
+  {
+    AIPageContentResult page_content;
+    FrameTokenSet frame_token_set;
+    ASSERT_TRUE(ConvertAIPageContentToProto(
+                    blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                    page_content_map, get_render_frame_info, frame_token_set,
+                    page_content)
+                    .has_value());
+    ASSERT_EQ(page_content.proto.main_frame_data().script_tools().size(), 1);
+    EXPECT_EQ(page_content.proto.main_frame_data().script_tools(0).name(),
+              "forged_tool");
+  }
+}
+
 }  // namespace
 }  // namespace optimization_guide

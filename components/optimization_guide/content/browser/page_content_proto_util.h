@@ -80,6 +80,15 @@ struct RenderFrameInfo {
 
   // The trusted screen bounds of the active popup widget in DIPs.
   gfx::Rect popup_bounds_in_dips;
+
+  // Whether the browser process has verified that this frame is allowed to
+  // expose WebMCP script tools (i.e., the WebMCP feature is enabled and the
+  // frame's Permissions-Policy allows the `tools` feature). This ensures a
+  // compromised renderer in a frame where `Permissions-Policy: tools` is
+  // disabled (such as a cross-origin iframe without `allow="tools"`) cannot
+  // trick the browser into advertising or registering tools with the actor
+  // stack.
+  bool script_tools_are_allowed = false;
 };
 
 struct TargetNodeInfo {
