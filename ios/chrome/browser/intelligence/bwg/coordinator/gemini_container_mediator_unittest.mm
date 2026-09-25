@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import <optional>
+#import <vector>
 
 #import "base/functional/callback_helpers.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -41,6 +42,7 @@
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -112,6 +114,7 @@
 @property(nonatomic, assign) BOOL dismissKeyboardCalled;
 @property(nonatomic, assign) BOOL worklogCompact;
 @property(nonatomic, assign, getter=isActuationActive) BOOL actuationActive;
+@property(nonatomic, assign) CGFloat contentHeight;
 @end
 
 @implementation FakeGeminiContainerConsumer
@@ -131,6 +134,53 @@
 - (void)setActuationActive:(BOOL)active {
   _actuationActive = active;
 }
+@end
+
+// Fake command handler for testing `AssistantContainerCommands` methods that
+// take `std::optional` arguments, which `NSInvocation` and `OCMock` cannot
+// unbox.
+@interface FakeAssistantContainerCommandsHandler
+    : NSObject <AssistantContainerCommands>
+@property(nonatomic, assign) std::optional<NSInteger> mediumDetentHeight;
+@property(nonatomic, assign) NSInteger setMediumDetentHeightCallCount;
+@end
+
+@implementation FakeAssistantContainerCommandsHandler
+
+- (void)showAssistantContainerWithContent:(UIViewController*)viewController
+                                 delegate:
+                                     (id<AssistantContainerDelegate>)delegate {
+}
+
+- (void)dismissAssistantContainerAnimated:(BOOL)animated
+                               completion:(ProceduralBlock)completion {
+}
+
+- (void)setAssistantContainerDetents:
+    (std::vector<AssistantContainerDetent>)detents {
+}
+
+- (void)animateAssistantContainerToDetent:(AssistantContainerDetent)detent {
+}
+
+- (void)animateAssistantContainerToDetent:(AssistantContainerDetent)detent
+                                 duration:(NSTimeInterval)duration
+                                    curve:(UIViewAnimationCurve)curve {
+}
+
+- (void)setAssistantContainerMinimizedDetentHeight:(NSInteger)height {
+}
+
+- (void)setAssistantContainerMediumDetentHeight:
+    (std::optional<NSInteger>)height {
+  _mediumDetentHeight = height;
+  _setMediumDetentHeightCallCount++;
+}
+
+- (void)setAssistantContainerGrabberHidden:(BOOL)hidden
+                                  animated:(BOOL)animated {
+}
+
 @end
 
 namespace ios::provider {
@@ -216,9 +266,12 @@ class GeminiContainerMediatorTest : public PlatformTest {
     startup_state_ = [[GeminiStartupState alloc]
         initWithEntryPoint:gemini::EntryPoint::Promo];
 
-    mediator_ = [[GeminiContainerMediator alloc] initWithBrowser:browser_.get()
-                                                    actorService:nullptr
-                                                    eventHandler:&delegate_];
+    mediator_ = [[GeminiContainerMediator alloc]
+              initWithBrowser:browser_.get()
+                 actorService:nullptr
+        authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                  profile_.get())
+                 eventHandler:&delegate_];
     mediator_.containerHandler = mock_container_handler_;
     mediator_.geminiHandler = mock_gemini_handler_;
   }
@@ -498,9 +551,12 @@ TEST_F(GeminiContainerMediatorTest,
 // Tests that the mediator handles a null delegate gracefully without crashing.
 TEST_F(GeminiContainerMediatorTest, TestNullDelegate) {
   GeminiContainerMediator* null_delegate_mediator =
-      [[GeminiContainerMediator alloc] initWithBrowser:browser_.get()
-                                          actorService:nullptr
-                                          eventHandler:nullptr];
+      [[GeminiContainerMediator alloc]
+                initWithBrowser:browser_.get()
+                   actorService:nullptr
+          authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                    profile_.get())
+                   eventHandler:nullptr];
 
   // Verify that calling delegate methods does not crash when delegate is null.
   [null_delegate_mediator
@@ -1219,6 +1275,42 @@ TEST_F(
   EXPECT_TRUE(fake_wrapper.populateCalled);
 
   [mock_wrapper_class stopMocking];
+}
+
+// Test that `didChangeUIState:` queries `contentHeight` from the consumer and
+// updates `mediumDetentHeight` in points when entering zero state, and resets
+// it to `std::nullopt` when leaving zero state.
+TEST_F(GeminiContainerMediatorTest,
+       TestUpdatesZeroStateMediumDetentHeightInPoints) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  constexpr CGFloat kZeroStateHeight = 382.4;
+  constexpr NSInteger kExpectedMediumDetentHeight = 383;
+
+  FakeAssistantContainerCommandsHandler* fake_container_handler =
+      [[FakeAssistantContainerCommandsHandler alloc] init];
+  mediator_.containerHandler = fake_container_handler;
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  consumer.contentHeight = kZeroStateHeight;
+  mediator_.consumer = consumer;
+
+  [mediator_ connect];
+  EXPECT_EQ(1, fake_container_handler.setMediumDetentHeightCallCount);
+  EXPECT_EQ(std::optional<NSInteger>(kExpectedMediumDetentHeight),
+            fake_container_handler.mediumDetentHeight);
+
+  // Transitioning out of zero state resets `mediumDetentHeight` to
+  // `std::nullopt`.
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
+                      sessionID:nil
+                 conversationID:nil];
+  EXPECT_EQ(2, fake_container_handler.setMediumDetentHeightCallCount);
+  EXPECT_EQ(std::nullopt, fake_container_handler.mediumDetentHeight);
 }
 
 }  // namespace

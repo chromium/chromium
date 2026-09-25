@@ -104,19 +104,31 @@ TEST_F(GeminiContainerViewControllerTest, TestDismissKeyboard) {
 }
 
 // Tests that updateZeroStateVisibility updates
-// zeroStateViewController view hidden state.
+// zeroStateViewController view hidden state and contentHeight reflects the
+// visible content.
 TEST_F(GeminiContainerViewControllerTest, TestUpdateZeroStateVisibility) {
   UIViewController* zero_state_view_controller =
       [[UIViewController alloc] init];
-  container_view_controller_.zeroStateViewController =
-      zero_state_view_controller;
+  [zero_state_view_controller.view.heightAnchor constraintEqualToConstant:280.0]
+      .active = YES;
+  [child_view_controller_.view.heightAnchor constraintEqualToConstant:80.0]
+      .active = YES;
 
-  [container_view_controller_ updateZeroStateVisibility:YES];
+  GeminiContainerViewController* container =
+      [[GeminiContainerViewController alloc]
+          initWithGeminiViewController:child_view_controller_
+                 worklogViewController:nil];
+  container.zeroStateViewController = zero_state_view_controller;
+  [scoped_key_window_.Get() addSubview:container.view];
+  [container loadViewIfNeeded];
+
+  [container updateZeroStateVisibility:YES];
   EXPECT_FALSE(zero_state_view_controller.view.hidden);
+  EXPECT_EQ([container contentHeight], 360.0);
 
-  [container_view_controller_ updateZeroStateVisibility:NO];
+  [container updateZeroStateVisibility:NO];
   EXPECT_TRUE(zero_state_view_controller.view.hidden);
+  EXPECT_EQ([container contentHeight], 80.0);
 
-  [container_view_controller_ updateZeroStateVisibility:YES];
-  EXPECT_FALSE(zero_state_view_controller.view.hidden);
+  [container.view removeFromSuperview];
 }

@@ -21,6 +21,7 @@ namespace gemini {
 enum class EntryPoint;
 }  // namespace gemini
 
+class AuthenticationService;
 class Browser;
 class GeminiContainerMediatorEventHandler;
 @class GeminiConfiguration;
@@ -71,6 +72,7 @@ class GeminiContainerMediatorEventHandler;
 // Initializes the mediator with the given dependencies.
 - (instancetype)initWithBrowser:(Browser*)browser
                    actorService:(actor::ActorService*)actorService
+          authenticationService:(AuthenticationService*)authService
                    eventHandler:
                        (GeminiContainerMediatorEventHandler*)eventHandler
     NS_DESIGNATED_INITIALIZER;

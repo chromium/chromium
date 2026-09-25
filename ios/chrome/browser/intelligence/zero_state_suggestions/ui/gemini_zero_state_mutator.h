@@ -19,6 +19,10 @@
             (GeminiZeroStateViewController*)viewController
                   didSelectSuggestion:(ZeroStateSuggestion*)suggestion;
 
+// Returns the first name of the primary identity, used to personalize the
+// greeting. Returns nil when there is no signed-in user.
+- (NSString*)userFirstName;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ZERO_STATE_SUGGESTIONS_UI_GEMINI_ZERO_STATE_MUTATOR_H_

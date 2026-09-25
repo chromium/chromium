@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 
 #import <memory>
+#import <optional>
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -44,7 +45,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
@@ -134,6 +134,8 @@ class GeminiContainerMediatorTabHelperObserver
   raw_ptr<ProfileIOS> _profile;
   // Service tracking actor tasks and updates.
   raw_ptr<actor::ActorService> _actorService;
+  // Authentication service used to retrieve the primary identity.
+  raw_ptr<AuthenticationService> _authService;
   // Track if we have triggered feature engagement for Gemini Live IPH or New
   // Badge.
   BOOL _hasTriggeredGeminiLiveIPH;
@@ -149,11 +151,13 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (instancetype)initWithBrowser:(Browser*)browser
                    actorService:(actor::ActorService*)actorService
+          authenticationService:(AuthenticationService*)authService
                    eventHandler:
                        (GeminiContainerMediatorEventHandler*)eventHandler {
   self = [super init];
   if (self) {
     _eventHandler = eventHandler;
+    _authService = authService;
     if (browser) {
       _webStateList = browser->GetWebStateList();
       _profile = browser->GetProfile();
@@ -317,6 +321,7 @@ class GeminiContainerMediatorTabHelperObserver
   _consumer = nil;
   _webStateList = nullptr;
   _profile = nullptr;
+  _authService = nullptr;
   [_gatewayManager disconnect];
   _gatewayManager = nil;
   [_stateManager reset];
@@ -494,6 +499,12 @@ class GeminiContainerMediatorTabHelperObserver
                                     YES);
 }
 
+- (NSString*)userFirstName {
+  id<SystemIdentity> identity =
+      _authService ? _authService->GetPrimaryIdentity() : nil;
+  return identity.userGivenName;
+}
+
 #pragma mark - Private
 
 - (void)applyUserPrefsToPageContext:(GeminiPageContext*)geminiPageContext {
@@ -516,7 +527,7 @@ class GeminiContainerMediatorTabHelperObserver
                                pageContext:(GeminiPageContext*)pageContext
                               startupState:(GeminiStartupState*)startupState {
   GeminiConfiguration* config = [[GeminiConfiguration alloc] init];
-  config.authService = AuthenticationServiceFactory::GetForProfile(_profile);
+  config.authService = _authService;
   config.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
   config.gateway = self.gateway;
@@ -585,14 +596,26 @@ class GeminiContainerMediatorTabHelperObserver
 #pragma mark - GeminiContainerUIStateManagerDelegate
 
 - (void)didChangeUIState:(GeminiContainerUIState)containerUIState {
+  [self.consumer updateZeroStateVisibility:containerUIState.zeroStateVisible];
+  [self.consumer setWorklogCompact:(containerUIState.detent == kMinimized)];
+  [self.consumer setActuationActive:containerUIState.actuating];
+
+  if (containerUIState.zeroStateVisible) {
+    CGFloat contentHeight = [self.consumer contentHeight];
+    if (contentHeight > 0) {
+      [self.containerHandler
+          setAssistantContainerMediumDetentHeight:ceil(contentHeight)];
+    }
+  } else {
+    [self.containerHandler
+        setAssistantContainerMediumDetentHeight:std::nullopt];
+  }
+
   [self.containerHandler
       animateAssistantContainerToDetent:containerUIState.detent];
   [self.containerHandler
       setAssistantContainerGrabberHidden:!containerUIState.hasGrabber
                                 animated:YES];
-  [self.consumer updateZeroStateVisibility:containerUIState.zeroStateVisible];
-  [self.consumer setWorklogCompact:(containerUIState.detent == kMinimized)];
-  [self.consumer setActuationActive:containerUIState.actuating];
 }
 
 #pragma mark - GeminiContainerMutator

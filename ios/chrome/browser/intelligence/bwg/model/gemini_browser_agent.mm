@@ -479,10 +479,12 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
     return;
   }
 
-  gemini_container_mediator_ =
-      [[GeminiContainerMediator alloc] initWithBrowser:browser_
-                                          actorService:nullptr
-                                          eventHandler:this];
+  gemini_container_mediator_ = [[GeminiContainerMediator alloc]
+            initWithBrowser:browser_
+               actorService:nullptr
+      authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                browser_->GetProfile())
+               eventHandler:this];
   shared_tabs_delegate_bridge_ =
       [[GeminiSharedTabsDelegateBridge alloc] initWithBrowserAgent:this];
   gemini_container_mediator_.sharedTabsDelegate = shared_tabs_delegate_bridge_;

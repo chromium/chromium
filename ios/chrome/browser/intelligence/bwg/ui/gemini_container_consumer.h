@@ -22,6 +22,9 @@
 // Notifies consumer whether actuation is currently active.
 - (void)setActuationActive:(BOOL)active;
 
+// Returns the fitting height of the container's current content.
+- (CGFloat)contentHeight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_GEMINI_CONTAINER_CONSUMER_H_

@@ -124,6 +124,17 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   [_worklogViewController notifyHeightDidChange];
 }
 
+- (CGFloat)contentHeight {
+  [self.view layoutIfNeeded];
+  CGSize targetSize = CGSizeMake(self.view.bounds.size.width,
+                                 UILayoutFittingCompressedSize.height);
+  return [_geminiContentView
+               systemLayoutSizeFittingSize:targetSize
+             withHorizontalFittingPriority:UILayoutPriorityRequired
+                   verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
+      .height;
+}
+
 #pragma mark - Private
 
 // Adds the zero-state view controller to `containerStack`.
@@ -155,7 +166,7 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
       setContentHuggingPriority:UILayoutPriorityDefaultHigh
                         forAxis:UILayoutConstraintAxisVertical];
   [_geminiViewController.view
-      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisVertical];
   [_geminiViewController didMoveToParentViewController:self];
 }

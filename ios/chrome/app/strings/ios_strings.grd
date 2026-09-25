@@ -197,6 +197,12 @@
       <message name="IDS_AUTOFILL_SETTINGS_GOOGLE_WALLET_LEGAL_NOTICE" desc="Footer text in Payment Methods settings page informing users where to manage Google Wallet data and privacy preferences. [iOS only]">
         Visit Google Wallet to manage <ph name="BEGIN_LINK">BEGIN_LINK</ph>data and privacy preferences<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_GEMINI_IOS_ZERO_STATE_GREETING" desc="The greeting displayed to the user in Gemini">
+        What do you want to work on?
+      </message>
+      <message name="IDS_GEMINI_IOS_ZERO_STATE_GREETING_WITH_FIRST_NAME" desc="The greeting displayed to the user in Gemini with the user's first name.">
+        What do you want to work on, <ph name="USER_FIRST_NAME">$1<ex>John</ex></ph>?
+      </message>
       <message name="IDS_IOS_ACCNAME_CLEAR_TEXT" desc="The accessibility label for the clear text button in the location bar [Length: unlimited].">
         Clear text
       </message>

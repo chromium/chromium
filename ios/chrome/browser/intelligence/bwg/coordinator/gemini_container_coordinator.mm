@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
 @interface GeminiContainerCoordinator ()
@@ -61,9 +62,11 @@
   // TODO(crbug.com/535579970): After bottom sheet migration, the startup state
   // can be added to the init params.
   _mediator = [[GeminiContainerMediator alloc]
-      initWithBrowser:self.browser
-         actorService:actorService
-         eventHandler:GeminiBrowserAgent::FromBrowser(self.browser)];
+            initWithBrowser:self.browser
+               actorService:actorService
+      authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                self.browser->GetProfile())
+               eventHandler:GeminiBrowserAgent::FromBrowser(self.browser)];
   _containerHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                          AssistantContainerCommands);
   _mediator.containerHandler = _containerHandler;
