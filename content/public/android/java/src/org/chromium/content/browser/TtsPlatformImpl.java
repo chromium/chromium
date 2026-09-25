@@ -85,7 +85,7 @@ class TtsPlatformImpl {
     }
 
     private static class TtsEngine {
-        private final TextToSpeech mTextToSpeech;
+        private final @Nullable TextToSpeech mTextToSpeech;
         private @Nullable List<TtsVoice> mVoices;
         private boolean mInitialized;
         private @Nullable String mCurrentLanguage;
@@ -96,15 +96,21 @@ class TtsPlatformImpl {
         private TtsEngine(long nativeTtsPlatformImplAndroid) {
             mNativeTtsPlatformImplAndroid = nativeTtsPlatformImplAndroid;
             mInitialized = false;
-            mTextToSpeech =
-                    new TextToSpeech(
-                            ContextUtils.getApplicationContext(),
-                            status -> {
-                                if (status == TextToSpeech.SUCCESS) {
-                                    PostTask.runOrPostTask(
-                                            TaskTraits.UI_DEFAULT, () -> initializeDefault());
-                                }
-                            });
+            TextToSpeech tts = null;
+            try {
+                tts =
+                        new TextToSpeech(
+                                ContextUtils.getApplicationContext(),
+                                status -> {
+                                    if (status == TextToSpeech.SUCCESS) {
+                                        PostTask.runOrPostTask(
+                                                TaskTraits.UI_DEFAULT, () -> initializeDefault());
+                                    }
+                                });
+            } catch (Exception e) {
+                // Ignore exception if binding to TTS service fails.
+            }
+            mTextToSpeech = tts;
         }
 
         /**
@@ -113,15 +119,21 @@ class TtsPlatformImpl {
          */
         private TtsEngine(String engineId) {
             mInitialized = false;
-            mTextToSpeech =
-                    new TextToSpeech(
-                            ContextUtils.getApplicationContext(),
-                            status -> {
-                                if (status == TextToSpeech.SUCCESS) {
-                                    initializeNonDefault();
-                                }
-                            },
-                            engineId);
+            TextToSpeech tts = null;
+            try {
+                tts =
+                        new TextToSpeech(
+                                ContextUtils.getApplicationContext(),
+                                status -> {
+                                    if (status == TextToSpeech.SUCCESS) {
+                                        initializeNonDefault();
+                                    }
+                                },
+                                engineId);
+            } catch (Exception e) {
+                // Ignore exception if binding to TTS service fails.
+            }
+            mTextToSpeech = tts;
         }
 
         /** Initialization for non-default TTS Engine does not enumerate voices. */
@@ -144,8 +156,9 @@ class TtsPlatformImpl {
 
                     try (TraceEvent te =
                             TraceEvent.scoped("TtsEngine:initialize_default.async_task")) {
-                        Locale[] locales = Locale.getAvailableLocales();
                         final List<TtsVoice> voices = new ArrayList<>();
+                        if (mTextToSpeech == null) return voices;
+                        Locale[] locales = Locale.getAvailableLocales();
                         for (Locale locale : locales) {
                             if (!locale.getVariant().isEmpty()) continue;
                             try {
@@ -199,7 +212,7 @@ class TtsPlatformImpl {
 
         private boolean speak(
                 int utteranceId, String text, String lang, float rate, float pitch, float volume) {
-            if (!isInitialized()) {
+            if (!isInitialized() || mTextToSpeech == null) {
                 return false;
             }
             if (lang == null) {
@@ -222,11 +235,11 @@ class TtsPlatformImpl {
         }
 
         private void stop() {
-            if (isInitialized()) mTextToSpeech.stop();
+            if (isInitialized() && mTextToSpeech != null) mTextToSpeech.stop();
             if (mPendingUtterance != null) mPendingUtterance = null;
         }
 
-        private TextToSpeech getTextToSpeech() {
+        private @Nullable TextToSpeech getTextToSpeech() {
             return mTextToSpeech;
         }
 
@@ -248,18 +261,20 @@ class TtsPlatformImpl {
     }
 
     private boolean isEngineInstalled(String engineId) {
-        for (TextToSpeech.EngineInfo engineInfo :
-                mDefaultTtsEngine.getTextToSpeech().getEngines()) {
+        TextToSpeech tts = mDefaultTtsEngine.getTextToSpeech();
+        if (tts == null) return false;
+        for (TextToSpeech.EngineInfo engineInfo : tts.getEngines()) {
             if (TextUtils.equals(engineInfo.name, engineId)) return true;
         }
         return false;
     }
 
     private TtsEngine getOrCreateTtsEngine(String engineId) {
+        TextToSpeech defaultTts = mDefaultTtsEngine.getTextToSpeech();
         if (!mDefaultTtsEngine.isInitialized()
                 || TextUtils.isEmpty(engineId)
-                || TextUtils.equals(
-                        engineId, mDefaultTtsEngine.getTextToSpeech().getDefaultEngine())
+                || defaultTts == null
+                || TextUtils.equals(engineId, defaultTts.getDefaultEngine())
                 || !isEngineInstalled(engineId)) {
             return mDefaultTtsEngine;
         }
@@ -431,7 +446,8 @@ class TtsPlatformImpl {
     }
 
     @SuppressWarnings("deprecation")
-    private void addOnUtteranceProgressListener(TextToSpeech tts) {
+    private void addOnUtteranceProgressListener(@Nullable TextToSpeech tts) {
+        if (tts == null) return;
         tts.setOnUtteranceProgressListener(
                 new UtteranceProgressListener() {
                     @Override
