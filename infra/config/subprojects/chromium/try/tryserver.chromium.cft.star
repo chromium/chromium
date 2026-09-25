@@ -60,6 +60,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-arm64-rel-cft",
+    mirrors = [
+        "ci/linux-arm64-rel-cft",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-arm64-rel-cft",
+            "release_try_builder",
+        ],
+    ),
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "browser-automation-staff@google.com",
+    siso_remote_linking = True,
+)
+
+try_.builder(
     name = "mac-rel-cft",
     mirrors = [
         "ci/mac-rel-cft",

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions for the chromium.cft (chrome for testing) builder group."""
 
+load("@chromium-luci//args.star", "args")
 load("@chromium-luci//builder_config.star", "builder_config")
 load("@chromium-luci//builder_health_indicators.star", "health_spec")
 load("@chromium-luci//builders.star", "cpu", "os")
@@ -267,6 +268,100 @@ ci.builder(
     ssd = None,
     console_view_entry = consoles.console_view_entry(
         short_name = "linux-rel-cft",
+    ),
+    contact_team_email = "browser-automation-staff@google.com",
+    siso_remote_linking = True,
+)
+
+ci.builder(
+    name = "linux-arm64-rel-cft",
+    description_html = "Builds and tests Chrome for Testing release builds on arm64.",
+    builder_spec = builder_spec(
+        build_config = builder_config.build_config.RELEASE,
+        target_platform = builder_config.target_platform.LINUX,
+        additional_configs = [
+            # This is necessary due to this builder running the
+            # telemetry_perf_unittests suite.
+            "chromium_with_telemetry_dependencies",
+        ],
+        is_arm64 = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "remoteexec",
+            "minimal_symbols",
+            "chrome_for_testing",
+            "chrome_with_codecs",
+            "linux",
+            "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_linux_gtests",
+            "chromium_linux_rel_isolated_scripts",
+            "chromium_linux_scripts",
+        ],
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "isolate_profile_data",
+            "linux-jammy",
+            "arm64",
+            "gce",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                args = [
+                    "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter",
+                    "--flag-specific=chrome-for-testing",
+                ],
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+            "blink_wpt_tests": targets.remove(
+                reason = "go/chrome-for-testing-test-strategy",
+            ),
+            "browser_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.browser_tests.filter",
+                ],
+                swarming = targets.swarming(
+                    shards = 20,
+                ),
+            ),
+            "interactive_ui_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.interactive_ui_tests.filter",
+                ],
+            ),
+            "not_site_per_process_blink_web_tests": targets.mixin(
+                args = [
+                    "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
+                    "--flag-specific=chrome-for-testing",
+                ],
+            ),
+            "telemetry_perf_unittests": targets.mixin(
+                args = [
+                    "--xvfb",
+                    "--jobs=1",
+                ],
+            ),
+            "webdriver_wpt_tests": targets.remove(
+                reason = "https://crbug.com/929689, https://crbug.com/936557",
+            ),
+        },
+    ),
+    os = os.LINUX_DEFAULT,
+    # TODO(crbug.com/536942511): Enable gardening when stable.
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "linux-arm64-rel-cft",
     ),
     contact_team_email = "browser-automation-staff@google.com",
     siso_remote_linking = True,
