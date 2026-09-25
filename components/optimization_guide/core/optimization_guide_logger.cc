@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -97,7 +98,8 @@ OptimizationGuideLogger* OptimizationGuideLogger::GetInstance() {
 
 OptimizationGuideLogger::OptimizationGuideLogger()
     : command_line_flag_enabled_(
-          optimization_guide::switches::IsDebugLogsEnabled()) {
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              optimization_guide::switches::kDebugLoggingEnabled)) {
   if (command_line_flag_enabled_) {
     recent_log_messages_.reserve(kMaxRecentLogMessages);
   }

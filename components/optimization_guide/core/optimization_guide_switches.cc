@@ -25,12 +25,6 @@ const char kEnableModelQualityDogfoodLogging[] =
 const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[] =
     "optimization-guide-get-free-disk-space-with-user-visible-priority-task";
 
-bool IsDebugLogsEnabled() {
-  static bool enabled =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(kDebugLoggingEnabled);
-  return enabled;
-}
-
 std::optional<base::FilePath> GetOnDeviceModelExecutionOverride() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(kOnDeviceModelExecutionOverride)) {

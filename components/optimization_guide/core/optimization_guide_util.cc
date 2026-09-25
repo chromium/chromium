@@ -208,7 +208,7 @@ optimization_guide::proto::ChromePlatform GetChromePlatform() {
 void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
                          bool is_off_the_record,
                          PrefService* pref_service) {
-  if (!optimization_guide::switches::IsDebugLogsEnabled()) {
+  if (!optimization_guide_logger->ShouldEnableDebugLogs()) {
     return;
   }
   if (!optimization_guide::features::IsOptimizationHintsEnabled()) {

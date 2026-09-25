@@ -36,9 +36,6 @@ extern const char kEnableModelQualityDogfoodLogging[];
 // TODO(crbug.com/514743962): Move to components/optimization_guide/core/optimization_guide_logger.h.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kDebugLoggingEnabled[];
-// Returns true if debug logs are enabled for the optimization guide.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsDebugLogsEnabled();
 
 }  // namespace switches
 }  // namespace optimization_guide

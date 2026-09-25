@@ -24,9 +24,8 @@
         optimization_guide_logger->ShouldEnableDebugLogs()) {                  \
       optimization_guide_logger->OnLogMessageAdded(                            \
           base::Time::Now(), log_source, __FILE__, __LINE__, message);         \
-    }                                                                          \
-    if (optimization_guide::switches::IsDebugLogsEnabled())                    \
       DVLOG(0) << message;                                                     \
+    }                                                                          \
   } while (0)
 
 class OptimizationGuideLogger;
