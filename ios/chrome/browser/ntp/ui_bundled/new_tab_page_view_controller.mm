@@ -649,8 +649,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       // top and bottom spacing.
       heightAboveFeed -= content_suggestions::ReducedModuleSpacing();
       // Then add in the custom spacing used for this module.
-      heightAboveFeed += content_suggestions::QuickActionsTopPadding() +
-                         [self quickActionsBottomSpacing];
+      heightAboveFeed +=
+          content_suggestions::QuickActionsTopPadding(self.traitCollection) +
+          [self quickActionsBottomSpacing];
     }
   }
   return heightAboveFeed;
@@ -1417,7 +1418,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
             constraintEqualToAnchor:self.headerView.bottomAnchor
                            constant:self.quickActionsVisible
                                         ? content_suggestions::
-                                              QuickActionsTopPadding()
+                                              QuickActionsTopPadding(
+                                                  self.traitCollection)
                                         : content_suggestions::
                                               ReducedModuleSpacing()],
       ];
