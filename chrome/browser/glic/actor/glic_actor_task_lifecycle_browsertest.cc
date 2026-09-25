@@ -8,6 +8,7 @@
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/glic/actor/new_glic_actor_functional_browsertest.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -1245,7 +1246,30 @@ bool IsProtectRecentlyVisibleTabEnabled() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
+class GlicActorTaskLifecyclePriorityBrowserTest
+    : public GlicActorTaskLifecycleFunctionalBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  GlicActorTaskLifecyclePriorityBrowserTest() {
+    if (IsNoWebview()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kGlicNoWebview},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kGlicNoWebview});
+    }
+  }
+  ~GlicActorTaskLifecyclePriorityBrowserTest() override = default;
+
+  bool IsNoWebview() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicActorTaskLifecyclePriorityBrowserTest,
                        testActuatingPriorityChange) {
   GlicInstanceImpl* instance = GetInstanceImpl();
   ASSERT_TRUE(instance);
@@ -1254,12 +1278,15 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
       GlicSidePanelCoordinator::GetForTab(active_tab());
   bool supports_peek = coordinator && coordinator->SupportsPeek();
 
-  content::WebContents* webui_contents = instance->host().webui_contents();
-  ASSERT_TRUE(webui_contents);
-  content::RenderProcessHost* webui_rph =
-      webui_contents->GetPrimaryMainFrame()->GetProcess();
+  content::WebContents* webui_contents = nullptr;
+  content::RenderProcessHost* webui_rph = nullptr;
+  if (!features::IsGlicNoWebviewEnabled()) {
+    webui_contents = instance->host().webui_contents();
+    ASSERT_TRUE(webui_contents);
+    webui_rph = webui_contents->GetPrimaryMainFrame()->GetProcess();
+  }
   content::WebContents* guest_contents = instance->host().web_client_contents();
-  EXPECT_TRUE(guest_contents);
+  ASSERT_TRUE(guest_contents);
   content::RenderProcessHost* guest_rph =
       guest_contents->GetPrimaryMainFrame()->GetProcess();
 
@@ -1272,8 +1299,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
   EXPECT_EQ(guest_contents->GetVisibility(), content::Visibility::HIDDEN);
 
 #if !BUILDFLAG(IS_ANDROID)
-  EXPECT_OK(
-      RunUntilPriorityIs(webui_rph, base::Process::Priority::kBestEffort));
+  if (!features::IsGlicNoWebviewEnabled()) {
+    EXPECT_OK(
+        RunUntilPriorityIs(webui_rph, base::Process::Priority::kBestEffort));
+  }
   EXPECT_OK(
       RunUntilPriorityIs(guest_rph, base::Process::Priority::kBestEffort));
 #else
@@ -1284,10 +1313,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
           ? content::ChildProcessImportance::NOT_PERCEPTIBLE
           : content::ChildProcessImportance::NORMAL;
 
-  EXPECT_OK(RunUntilImportanceIs(webui_rph, expected_importance_when_hidden));
-  // TODO(crbug.com/525435394): Ensure the guest process is not protected.
-  EXPECT_OK(RunUntilImportanceIs(
-      guest_rph, content::ChildProcessImportance::NOT_PERCEPTIBLE));
+  if (!features::IsGlicNoWebviewEnabled()) {
+    EXPECT_OK(RunUntilImportanceIs(webui_rph, expected_importance_when_hidden));
+    // TODO(crbug.com/525435394): Ensure the guest process is not protected.
+    EXPECT_OK(RunUntilImportanceIs(
+        guest_rph, content::ChildProcessImportance::NOT_PERCEPTIBLE));
+  } else {
+    EXPECT_OK(RunUntilImportanceIs(guest_rph, expected_importance_when_hidden));
+  }
 #endif
   ExecuteJsTest();
 
@@ -1304,18 +1337,24 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
         WaitForWebUiContentsVisibility(instance, content::Visibility::HIDDEN));
     EXPECT_EQ(guest_contents->GetVisibility(), content::Visibility::HIDDEN);
   } else {
-    EXPECT_EQ(webui_contents->GetVisibility(), content::Visibility::HIDDEN);
+    if (!features::IsGlicNoWebviewEnabled()) {
+      EXPECT_EQ(webui_contents->GetVisibility(), content::Visibility::HIDDEN);
+    }
     EXPECT_EQ(guest_contents->GetVisibility(), content::Visibility::HIDDEN);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  EXPECT_OK(
-      RunUntilPriorityIs(webui_rph, base::Process::Priority::kUserBlocking));
+  if (!features::IsGlicNoWebviewEnabled()) {
+    EXPECT_OK(
+        RunUntilPriorityIs(webui_rph, base::Process::Priority::kUserBlocking));
+  }
   EXPECT_OK(
       RunUntilPriorityIs(guest_rph, base::Process::Priority::kUserBlocking));
 #else
-  EXPECT_OK(RunUntilImportanceIs(webui_rph,
-                                 content::ChildProcessImportance::IMPORTANT));
+  if (!features::IsGlicNoWebviewEnabled()) {
+    EXPECT_OK(RunUntilImportanceIs(webui_rph,
+                                   content::ChildProcessImportance::IMPORTANT));
+  }
   EXPECT_OK(RunUntilImportanceIs(guest_rph,
                                  content::ChildProcessImportance::IMPORTANT));
 #endif
@@ -1329,13 +1368,17 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
   EXPECT_EQ(active_tab(), second_tab);
 
 #if !BUILDFLAG(IS_ANDROID)
-  EXPECT_OK(
-      RunUntilPriorityIs(webui_rph, base::Process::Priority::kUserVisible));
+  if (!features::IsGlicNoWebviewEnabled()) {
+    EXPECT_OK(
+        RunUntilPriorityIs(webui_rph, base::Process::Priority::kUserVisible));
+  }
   EXPECT_OK(
       RunUntilPriorityIs(guest_rph, base::Process::Priority::kUserVisible));
 #else
-  EXPECT_OK(RunUntilImportanceIs(webui_rph,
-                                 content::ChildProcessImportance::MODERATE));
+  if (!features::IsGlicNoWebviewEnabled()) {
+    EXPECT_OK(RunUntilImportanceIs(webui_rph,
+                                   content::ChildProcessImportance::MODERATE));
+  }
   EXPECT_OK(RunUntilImportanceIs(guest_rph,
                                  content::ChildProcessImportance::MODERATE));
 #endif
@@ -1346,17 +1389,31 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
 
   // Now Glic is not actuating, so the priority should drop.
 #if !BUILDFLAG(IS_ANDROID)
-  EXPECT_OK(
-      RunUntilPriorityIs(webui_rph, base::Process::Priority::kBestEffort));
+  if (!features::IsGlicNoWebviewEnabled()) {
+    EXPECT_OK(
+        RunUntilPriorityIs(webui_rph, base::Process::Priority::kBestEffort));
+  }
   EXPECT_OK(
       RunUntilPriorityIs(guest_rph, base::Process::Priority::kBestEffort));
 #else
-  EXPECT_OK(RunUntilImportanceIs(webui_rph, expected_importance_when_hidden));
-  // TODO(crbug.com/525435394): Ensure the guest process is not protected.
-  EXPECT_OK(RunUntilImportanceIs(
-      guest_rph, content::ChildProcessImportance::NOT_PERCEPTIBLE));
+  if (!features::IsGlicNoWebviewEnabled()) {
+    EXPECT_OK(RunUntilImportanceIs(webui_rph, expected_importance_when_hidden));
+    // TODO(crbug.com/525435394): Ensure the guest process is not protected.
+    EXPECT_OK(RunUntilImportanceIs(
+        guest_rph, content::ChildProcessImportance::NOT_PERCEPTIBLE));
+  } else {
+    EXPECT_OK(RunUntilImportanceIs(guest_rph, expected_importance_when_hidden));
+  }
 #endif
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    GlicActorTaskLifecyclePriorityBrowserTest,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "NoWebview" : "Webview";
+    });
 
 }  // namespace
 }  // namespace glic::actor
