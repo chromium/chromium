@@ -19,6 +19,18 @@ class PersonalDataManager;
 class WebStateList;
 
 @protocol CreditCardSuggestionBottomSheetConsumer;
+@class CreditCardSuggestionBottomSheetMediator;
+
+// Delegate for handling mediator lifecycle actions, such as requesting
+// dismissal.
+@protocol CreditCardSuggestionBottomSheetMediatorDelegate <NSObject>
+
+// Requests coordinator dismissal and complete teardown.
+- (void)creditCardSuggestionBottomSheetMediatorDidRequestDismissal:
+    (CreditCardSuggestionBottomSheetMediator*)mediator;
+
+@end
+
 // This mediator fetches a list suggestions to display in the bottom sheet.
 // It also manages filling the form when a suggestion is selected, as well
 // as showing the keyboard if requested when the bottom sheet is dismissed.
@@ -32,6 +44,10 @@ class WebStateList;
 
 // The bottom sheet suggestions consumer.
 @property(nonatomic, weak) id<CreditCardSuggestionBottomSheetConsumer> consumer;
+
+// The mediator's delegate.
+@property(nonatomic, weak) id<CreditCardSuggestionBottomSheetMediatorDelegate>
+    delegate;
 
 // Whether the bottom sheet has any credit cards to display.
 @property(nonatomic, readonly) BOOL hasCreditCards;

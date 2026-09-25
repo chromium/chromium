@@ -18,6 +18,7 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/infobar.h"
@@ -25,6 +26,10 @@
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/model/features.h"
+#import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
+#import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
@@ -38,7 +43,9 @@
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -106,14 +113,24 @@ class TestChromeAutofillClientIOS : public autofill::ChromeAutofillClientIOS {
 
 }  // namespace
 
-// Fake implementation of AutofillCommands to capture ambient notice triggers.
+// Fake implementation of `AutofillCommands` to capture triggers in tests.
 @interface FakeAutofillCommandsForBottomSheet : NSObject
 @property(nonatomic, assign) BOOL showAmbientAutofillNoticeCalled;
+@property(nonatomic, assign) int dismissEditAddressBottomSheetCallCount;
+@property(nonatomic, assign) BOOL showPaymentsBottomSheetCalled;
 @end
 
 @implementation FakeAutofillCommandsForBottomSheet
 - (void)showAmbientAutofillNotice:(const autofill::FormActivityParams&)params {
   _showAmbientAutofillNoticeCalled = YES;
+}
+
+- (void)dismissEditAddressBottomSheet {
+  _dismissEditAddressBottomSheetCallCount++;
+}
+
+- (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
+  _showPaymentsBottomSheetCalled = YES;
 }
 @end
 
@@ -613,4 +630,203 @@ TEST_F(AutofillBottomSheetTabHelperTest,
 
   // Verify that showAmbientAutofillNotice: is triggered.
   EXPECT_TRUE(commands_handler.showAmbientAutofillNoticeCalled);
+}
+
+// Tests that setting the autofill bottom sheet handler to nil triggers
+// dismissal of the edit address bottom sheet.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       DismissesEditAddressBottomSheetWhenHandlerResetToNil) {
+  FakeAutofillCommandsForBottomSheet* commands_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)commands_handler);
+  EXPECT_EQ(commands_handler.dismissEditAddressBottomSheetCallCount, 0);
+
+  // Reset handler to nil.
+  helper_->SetAutofillBottomSheetHandler(nil);
+  EXPECT_EQ(commands_handler.dismissEditAddressBottomSheetCallCount, 1);
+}
+
+// Test that DidFinishNavigation clears registered renderer IDs on
+// cross-document navigation but retains them on same-document navigation.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       DidFinishNavigationClearsRegisteredRendererIds) {
+  web::WebFrame* frame = nullptr;
+  autofill::AutofillManager* manager = nullptr;
+  autofill::FormGlobalId form_id;
+  SetupAmbientNoticeForm(autofill::FieldRendererId(0), frame, manager, form_id);
+
+  // Register the listeners.
+  helper_->UpdateListenersForAmbientAutofillForm(*manager, form_id,
+                                                 /*only_new=*/false);
+
+  // Set up the fake command handler.
+  FakeAutofillCommandsForBottomSheet* commands_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)commands_handler);
+
+  // Simulate same-document navigation: registered IDs should be preserved.
+  web::FakeNavigationContext same_doc_context;
+  same_doc_context.SetIsSameDocument(true);
+  same_doc_context.SetHasCommitted(true);
+  helper_->DidFinishNavigation(web_state_.get(), &same_doc_context);
+
+  web::ScriptMessage form_message =
+      ScriptMessageForForm(ValidFormMessageBody(frame->GetFrameId()));
+  helper_->OnFormMessageReceived(form_message);
+  EXPECT_TRUE(commands_handler.showAmbientAutofillNoticeCalled);
+
+  // Reset handler state.
+  commands_handler.showAmbientAutofillNoticeCalled = NO;
+
+  // Simulate uncommitted cross-document navigation: registered IDs should be
+  // preserved.
+  web::FakeNavigationContext uncommitted_context;
+  uncommitted_context.SetIsSameDocument(false);
+  uncommitted_context.SetHasCommitted(false);
+  helper_->DidFinishNavigation(web_state_.get(), &uncommitted_context);
+
+  helper_->OnFormMessageReceived(form_message);
+  EXPECT_TRUE(commands_handler.showAmbientAutofillNoticeCalled);
+
+  // Reset handler state.
+  commands_handler.showAmbientAutofillNoticeCalled = NO;
+
+  // Simulate committed cross-document navigation: registered IDs should be
+  // cleared.
+  web::FakeNavigationContext cross_doc_context;
+  cross_doc_context.SetIsSameDocument(false);
+  cross_doc_context.SetHasCommitted(true);
+  helper_->DidFinishNavigation(web_state_.get(), &cross_doc_context);
+
+  helper_->OnFormMessageReceived(form_message);
+  EXPECT_FALSE(commands_handler.showAmbientAutofillNoticeCalled);
+}
+
+// Test that DidStartNavigation invalidates pending suggestion retrieval
+// callbacks, preventing bottom sheet presentation on cross-document
+// navigation, while same-document navigation preserves them.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       DidStartNavigationCancelsPendingCallbacks) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kStatelessFormSuggestionController, kAutofillPaymentsSheetV3Ios}, {});
+
+  FormSuggestionTabHelper::CreateForWebState(web_state_.get(), @[]);
+
+  __block FormSuggestionsReadyCompletion captured_completion = nil;
+  id swizzle_block =
+      ^(id self, const autofill::FormActivityParams& params,
+        web::WebState* webState, FormSuggestionsReadyCompletion completion) {
+        captured_completion = [completion copy];
+      };
+  ScopedBlockSwizzler swizzler(
+      [FormSuggestionController class],
+      @selector(retrieveSuggestionsForForm:webState:accessoryViewUpdateBlock:),
+      swizzle_block);
+
+  FakeAutofillCommandsForBottomSheet* commands_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)commands_handler);
+
+  autofill::FormActivityParams params;
+  params.form_name = "test_form";
+  params.field_identifier = "test_field";
+  params.frame_id = "test_frame";
+
+  FormSuggestion* test_suggestion = [FormSuggestion
+      suggestionWithValue:@"Visa **** 1234"
+       displayDescription:@"Card description"
+                     icon:nil
+                     type:autofill::SuggestionType::kCreditCardEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+
+  // Request bottom sheet for payments and verify completion is captured.
+  helper_->MaybeShowPaymentsBottomSheet(params);
+  ASSERT_TRUE(captured_completion != nil);
+
+  // Simulate cross-document navigation start: cancels weak pointers.
+  web::FakeNavigationContext cross_doc_context;
+  cross_doc_context.SetIsSameDocument(false);
+  helper_->DidStartNavigation(web_state_.get(), &cross_doc_context);
+
+  // Execute completion block: should be ignored due to weak pointer
+  // invalidation.
+  captured_completion(@[ test_suggestion ], nil);
+  EXPECT_FALSE(commands_handler.showPaymentsBottomSheetCalled);
+
+  // Request bottom sheet again.
+  captured_completion = nil;
+  helper_->MaybeShowPaymentsBottomSheet(params);
+  ASSERT_TRUE(captured_completion != nil);
+
+  // Simulate same-document navigation start: preserves callbacks.
+  web::FakeNavigationContext same_doc_context;
+  same_doc_context.SetIsSameDocument(true);
+  helper_->DidStartNavigation(web_state_.get(), &same_doc_context);
+
+  // Execute completion block: should present the payments bottom sheet.
+  captured_completion(@[ test_suggestion ], nil);
+  EXPECT_TRUE(commands_handler.showPaymentsBottomSheetCalled);
+}
+
+// Test that RenderProcessGone cancels pending suggestion retrieval callbacks
+// and clears registered renderer IDs.
+TEST_F(AutofillBottomSheetTabHelperTest, RenderProcessGoneClearsState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kStatelessFormSuggestionController, kAutofillPaymentsSheetV3Ios}, {});
+
+  FormSuggestionTabHelper::CreateForWebState(web_state_.get(), @[]);
+
+  web::WebFrame* frame = nullptr;
+  autofill::AutofillManager* manager = nullptr;
+  autofill::FormGlobalId form_id;
+  SetupAmbientNoticeForm(autofill::FieldRendererId(0), frame, manager, form_id);
+  helper_->UpdateListenersForAmbientAutofillForm(*manager, form_id,
+                                                 /*only_new=*/false);
+
+  __block FormSuggestionsReadyCompletion captured_completion = nil;
+  id swizzle_block =
+      ^(id self, const autofill::FormActivityParams& params,
+        web::WebState* webState, FormSuggestionsReadyCompletion completion) {
+        captured_completion = [completion copy];
+      };
+  ScopedBlockSwizzler swizzler(
+      [FormSuggestionController class],
+      @selector(retrieveSuggestionsForForm:webState:accessoryViewUpdateBlock:),
+      swizzle_block);
+
+  FakeAutofillCommandsForBottomSheet* commands_handler =
+      [[FakeAutofillCommandsForBottomSheet alloc] init];
+  helper_->SetAutofillBottomSheetHandler(
+      (id<AutofillCommands>)commands_handler);
+
+  autofill::FormActivityParams params;
+  params.form_name = "test_form";
+  params.field_identifier = "test_field";
+  params.frame_id = "test_frame";
+
+  helper_->MaybeShowPaymentsBottomSheet(params);
+  ASSERT_TRUE(captured_completion != nil);
+
+  helper_->RenderProcessGone(web_state_.get());
+
+  FormSuggestion* test_suggestion = [FormSuggestion
+      suggestionWithValue:@"Visa **** 1234"
+       displayDescription:@"Card description"
+                     icon:nil
+                     type:autofill::SuggestionType::kCreditCardEntry
+                  payload:autofill::Suggestion::Payload()
+           requiresReauth:NO];
+  captured_completion(@[ test_suggestion ], nil);
+  EXPECT_FALSE(commands_handler.showPaymentsBottomSheetCalled);
+
+  web::ScriptMessage form_message =
+      ScriptMessageForForm(ValidFormMessageBody(frame->GetFrameId()));
+  helper_->OnFormMessageReceived(form_message);
+  EXPECT_FALSE(commands_handler.showAmbientAutofillNoticeCalled);
 }

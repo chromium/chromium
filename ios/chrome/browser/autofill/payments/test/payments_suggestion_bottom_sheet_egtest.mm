@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/autofill/authentication/test/authentication_egtest_util.h"
 #import "ios/chrome/browser/autofill/manual_fill/test/manual_fill_matchers.h"
 #import "ios/chrome/browser/autofill/model/features.h"
+#import "ios/chrome/browser/autofill/payments/coordinator/payments_suggestion_bottom_sheet_exit_reason.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_constants.h"
 #import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -39,6 +41,8 @@ using chrome_test_util::TextFieldForCellWithLabelId;
 namespace {
 
 const char kCreditCardWithAutofocusUrl[] = "/credit_card_autofocused.html";
+const char kDestinationUrl[] = "/destination.html";
+const char kDestinationPageText[] = "You've arrived";
 const char kFormCardNumber[] = "CCNo";
 const char kFormCardExpirationMonth[] = "CCExpiresMonth";
 const char kFormCardExpirationYear[] = "CCExpiresYear";
@@ -806,6 +810,47 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // The keyboard should instead appear because it's a standard password field
   // tap.
   [ChromeEarlGrey waitForKeyboardToAppear];
+}
+
+// Test that payments bottom sheet is dismissed upon cross-document navigation.
+- (void)DISABLED_testPaymentsBottomSheetDismissesOnCrossDocumentNavigation {
+  [self loadPaymentsPage];
+
+  // Tap on the credit card field to trigger the Payments Bottom Sheet. Use the
+  // unverified tap because the tap's effect is browser-side (presenting the
+  // bottom sheet), which `WaitOnResponsiveContinueButton()` verifies directly
+  // without the flaky JS mousedown round-trip.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementUnverified(
+                        [ElementSelector selectorWithElementID:kFormCardName])];
+
+  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
+
+  // Navigate to a form-free document so the new page cannot re-arm the bottom
+  // sheet while the dismissal is being asserted.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kDestinationUrl)];
+  [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText];
+
+  // Verify that the bottom sheet is automatically dismissed upon navigation.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:continueButton];
+
+  // Verify that the bottom sheet dismissal is recorded with
+  // kNavigationOrTabChange, and not as a bad provider failure or generic
+  // dismissal.
+  const int expectedBucket = static_cast<int>(
+      PaymentsSuggestionBottomSheetExitReason::kNavigationOrTabChange);
+  bool metricLogged = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool {
+        return [MetricsAppInterface
+                   expectUniqueSampleWithCount:1
+                                     forBucket:expectedBucket
+                                  forHistogram:
+                                      @"IOS.PaymentsBottomSheet.ExitReason"] ==
+               nil;
+      });
+  GREYAssertTrue(metricLogged,
+                 @"IOS.PaymentsBottomSheet.ExitReason should record "
+                 @"kNavigationOrTabChange upon navigation dismissal.");
 }
 
 @end

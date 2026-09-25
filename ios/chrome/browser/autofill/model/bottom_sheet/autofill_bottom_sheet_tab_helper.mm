@@ -211,9 +211,9 @@ void AutofillBottomSheetTabHelper::ShowEditAddressBottomSheet() {
 
 void AutofillBottomSheetTabHelper::SetAutofillBottomSheetHandler(
     id<AutofillCommands> commands_handler) {
-  if (!commands_handler) {
-    // Means that the web state has been destroyed therefore dismiss the edit
-    // address bottom sheet if it's shown.
+  if (!commands_handler && commands_handler_) {
+    // If the handler is being cleared, dismiss the edit address bottom sheet
+    // if it is currently shown.
     [commands_handler_ dismissEditAddressBottomSheet];
   }
   commands_handler_ = commands_handler;
@@ -328,10 +328,11 @@ void AutofillBottomSheetTabHelper::MaybeShowPaymentsBottomSheet(
   // the bottom sheet as a valid signal as a manual gesture.
   params.has_user_gesture = true;
 
-  auto completion = base::CallbackToBlock(base::BindOnce(
-      &AutofillBottomSheetTabHelper::
-          OnSuggestionsRetrievedForPaymentsBottomSheet,
-      weak_factory_.GetWeakPtr(), params, base::TimeTicks::Now()));
+  auto completion = base::CallbackToBlock(
+      base::BindOnce(&AutofillBottomSheetTabHelper::
+                         OnSuggestionsRetrievedForPaymentsBottomSheet,
+                     suggestion_request_weak_factory_.GetWeakPtr(), params,
+                     base::TimeTicks::Now()));
   [provider retrieveSuggestionsForForm:params
                               webState:web_state_
               accessoryViewUpdateBlock:completion];
@@ -617,16 +618,45 @@ void AutofillBottomSheetTabHelper::RefocusElementIfNeeded(
                  web_state_->GetWeakPtr()));
 }
 
-// WebStateObserver
+void AutofillBottomSheetTabHelper::CancelPendingSuggestionRequests() {
+  suggestion_request_weak_factory_.InvalidateWeakPtrs();
+}
 
-void AutofillBottomSheetTabHelper::DidFinishNavigation(
+// WebStateObserver:
+
+void AutofillBottomSheetTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
+  CHECK(navigation_context);
   if (navigation_context->IsSameDocument()) {
     return;
   }
 
-  // Clear all registered renderer ids
+  CancelPendingSuggestionRequests();
+}
+
+void AutofillBottomSheetTabHelper::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  CHECK(navigation_context);
+  if (navigation_context->IsSameDocument() ||
+      !navigation_context->HasCommitted()) {
+    return;
+  }
+
+  CancelPendingSuggestionRequests();
+
+  // Clear all registered renderer IDs.
+  registered_password_renderer_ids_.clear();
+  registered_payments_renderer_ids_.clear();
+  registered_password_generation_renderer_ids_.clear();
+  registered_ambient_renderer_ids_.clear();
+}
+
+void AutofillBottomSheetTabHelper::RenderProcessGone(web::WebState* web_state) {
+  CancelPendingSuggestionRequests();
+
+  // Clear all registered renderer IDs.
   registered_password_renderer_ids_.clear();
   registered_payments_renderer_ids_.clear();
   registered_password_generation_renderer_ids_.clear();
@@ -634,6 +664,7 @@ void AutofillBottomSheetTabHelper::DidFinishNavigation(
 }
 
 void AutofillBottomSheetTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  CancelPendingSuggestionRequests();
   web_state->RemoveObserver(this);
   frames_manager_observation_.Reset();
   web_state_ = nullptr;
