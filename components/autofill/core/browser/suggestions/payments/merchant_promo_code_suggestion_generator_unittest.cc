@@ -97,16 +97,17 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
 
   DisplayStrings display_strings;
   display_strings.value_prop_text = "5% off (€10 max)";
-  AutofillOfferData wallet_direct_offer = AutofillOfferData::WalletDirectOffer(
+  AutofillOfferData wallet_direct_offer(
       /*offer_id=*/"2", base::Time::Now() + base::Days(2),
       {GURL("https://www.example.com")},
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
-      display_strings, "test_promo_code_1");
+      display_strings, "test_promo_code_1",
+      /*offer_reward_amount=*/"5% off");
   test_api(payments_data_manager())
       .AddOfferData(std::make_unique<AutofillOfferData>(wallet_direct_offer));
 
   Suggestion promo_code_suggestion =
-      Suggestion(u"5% off (€10 max)", SuggestionType::kMerchantPromoCodeEntry);
+      Suggestion(u"5% off", SuggestionType::kMerchantPromoCodeEntry);
   Suggestion separator_suggestion = Suggestion(SuggestionType::kSeparator);
   Suggestion footer_suggestion = Suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_OFFERS_FOOTER_TEXT),
@@ -139,11 +140,12 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
 
   DisplayStrings display_strings;
   display_strings.value_prop_text = "5% off (€10 max)";
-  AutofillOfferData wallet_direct_offer = AutofillOfferData::WalletDirectOffer(
+  AutofillOfferData wallet_direct_offer(
       /*offer_id=*/"2", base::Time::Now() + base::Days(2),
       {GURL("https://www.example.com")},
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
-      display_strings, "test_promo_code_1");
+      display_strings, "test_promo_code_1",
+      /*offer_reward_amount=*/"5% off");
   test_api(payments_data_manager())
       .AddOfferData(std::make_unique<AutofillOfferData>(wallet_direct_offer));
 
@@ -173,18 +175,20 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
   DisplayStrings display_strings;
   display_strings.value_prop_text = "test_value_prop_text_1";
   std::string promo_code = "test_promo_code_1";
-  AutofillOfferData offer1 = AutofillOfferData::WalletDirectOffer(
+  AutofillOfferData offer1(
       /*offer_id=*/"1", expiry, merchant_origins,
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
-      display_strings, promo_code);
+      display_strings, promo_code,
+      /*offer_reward_amount=*/"test_offer_reward_amount_1");
 
   DisplayStrings display_strings2;
   display_strings2.value_prop_text = "test_value_prop_text_2";
   std::string promo_code2 = "test_promo_code_2";
-  AutofillOfferData offer2 = AutofillOfferData::WalletDirectOffer(
+  AutofillOfferData offer2(
       /*offer_id=*/"2", expiry, merchant_origins,
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
-      display_strings2, promo_code2);
+      display_strings2, promo_code2,
+      /*offer_reward_amount=*/"test_offer_reward_amount_2");
 
   test_api(payments_data_manager())
       .AddOfferData(std::make_unique<AutofillOfferData>(offer1));
@@ -196,7 +200,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
   ASSERT_EQ(promo_code_suggestions.size(), 4u);
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value,
-            u"test_value_prop_text_1");
+            u"test_offer_reward_amount_1");
   EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::PromoCode>(),
             Suggestion::PromoCode("test_promo_code_1"));
 
@@ -216,7 +220,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
             SuggestionType::kMerchantPromoCodeEntry);
 
   EXPECT_EQ(promo_code_suggestions[1].main_text.value,
-            u"test_value_prop_text_2");
+            u"test_offer_reward_amount_2");
   EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::PromoCode>(),
             Suggestion::PromoCode("test_promo_code_2"));
   EXPECT_THAT(promo_code_suggestions[1],
@@ -257,11 +261,12 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
         base::StrCat({"test_value_prop_text_", offer_id});
     test_api(payments_data_manager())
         .AddOfferData(std::make_unique<AutofillOfferData>(
-            AutofillOfferData::WalletDirectOffer(
-                offer_id, expiry, merchant_origins,
-                /*offer_details_url=*/GURL("https://offer-details-url.com/"),
-                display_strings,
-                base::StrCat({"test_promo_code_", offer_id}))));
+            offer_id, expiry, merchant_origins,
+            /*offer_details_url=*/GURL("https://offer-details-url.com/"),
+            display_strings,
+            /*promo_code=*/base::StrCat({"test_promo_code_", offer_id}),
+            /*offer_reward_amount=*/
+            base::StrCat({"test_offer_reward_amount_", offer_id})));
   }
 
   std::vector<Suggestion> promo_code_suggestions = GetPromoCodeSuggestions();
@@ -276,7 +281,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
               SuggestionType::kMerchantPromoCodeEntry);
     EXPECT_EQ(promo_code_suggestions[i].main_text.value,
               base::UTF8ToUTF16(base::StrCat(
-                  {"test_value_prop_text_", base::NumberToString(i + 1)})));
+                  {"test_offer_reward_amount_", base::NumberToString(i + 1)})));
     EXPECT_EQ(promo_code_suggestions[i].GetPayload<Suggestion::PromoCode>(),
               Suggestion::PromoCode(base::StrCat(
                   {"test_promo_code_", base::NumberToString(i + 1)})));

@@ -144,8 +144,8 @@ class MerchantPromoCodeManagerTest
 
 TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   SetUpPromoCodeOffer(kTestOriginUrl, GURL("https://offer-details-url.com/"));
-  Suggestion promo_code_suggestion = Suggestion(
-      u"5% off on shoes. Up to $50.", SuggestionType::kMerchantPromoCodeEntry);
+  Suggestion promo_code_suggestion =
+      Suggestion(u"5% off on shoes.", SuggestionType::kMerchantPromoCodeEntry);
 
   // Setting up mock to verify that the handler is returned a list of
   // promo-code-based suggestions, followed by a separator and the "Manage

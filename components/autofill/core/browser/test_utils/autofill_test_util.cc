@@ -681,11 +681,12 @@ AutofillOfferData GetPromoCodeOfferData(GURL origin,
   display_strings.usage_instructions_text =
       "Click the promo code field at checkout to autofill it.";
   std::string promo_code = "5PCTOFFSHOES";
+  std::string offer_reward_amount = "5% off on shoes.";
   GURL offer_details_url = GURL("https://pay.google.com");
 
-  return AutofillOfferData::GPayPromoCodeOffer(
-      std::move(offer_id), expiry, merchant_origins, offer_details_url,
-      display_strings, promo_code);
+  return AutofillOfferData(std::move(offer_id), expiry, merchant_origins,
+                           offer_details_url, display_strings, promo_code,
+                           offer_reward_amount);
 }
 
 VirtualCardUsageData GetVirtualCardUsageData1() {
