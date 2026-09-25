@@ -28,6 +28,7 @@ namespace webapps {
 
 namespace test {
 extern int g_minimum_favicon_size_for_testing;
+extern int g_ideal_favicon_size_for_testing;
 }  // namespace test
 
 // This class is responsible for fetching the primary icon for installing a site
@@ -47,6 +48,8 @@ class InstallableIconFetcher {
   InstallableIconFetcher(const InstallableIconFetcher&) = delete;
   InstallableIconFetcher& operator=(const InstallableIconFetcher&) = delete;
 
+  friend class InstallableIconFetcherTest;
+
  private:
   void TryFetchingNextIcon();
   void OnManifestIconFetched(
@@ -56,6 +59,11 @@ class InstallableIconFetcher {
 
   void FetchFavicon();
   void OnFaviconFetched(const favicon_base::LargeIconResult& result);
+  void OnFaviconProcessingFailed(InstallableStatusCode code);
+
+  void FetchFaviconFromCandidates();
+  void OnFaviconCandidateDownloaded(const GURL& icon_url,
+                                    const SkBitmap& bitmap);
 
   void OnIconFetched(const GURL& icon_url,
                      const blink::mojom::ManifestImageResource_Purpose purpose,
