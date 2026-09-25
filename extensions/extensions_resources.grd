@@ -9,6 +9,8 @@
   <release seq="1">
     <includes>
       <include name="IDR_EXTENSION_API_FEATURES" file="common\api\_api_features.json" type="BINDATA" compress="gzip"/>
+      <include name="IDR_FULL_PAGE_MIME_HANDLER_HTML" file="browser/mime_handler/resources/full_page.html" type="BINDATA" />
+      <include name="IDR_OOPIF_MIME_HANDLER_HTML" file="browser/mime_handler/resources/oopif.html" type="BINDATA" />
     </includes>
   </release>
 </grit>

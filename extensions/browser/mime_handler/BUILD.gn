@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
-import("//pdf/features.gni")
 
 assert(enable_extensions && !is_android)
 
@@ -65,7 +64,9 @@ source_set("mime_handler_page") {
     "//content/public/browser",
     "//content/public/common",
     "//content/public/common:buildflags",
+    "//extensions:extensions_resources_grd",
     "//skia",
+    "//ui/base",
   ]
 }
 

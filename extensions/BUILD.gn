@@ -44,7 +44,11 @@ group("extensions_resources") {
 
 grit("extensions_resources_grd") {
   source = "extensions_resources.grd"
-  inputs = [ "common/api/_api_features.json" ]
+  inputs = [
+    "common/api/_api_features.json",
+    "browser/mime_handler/resources/oopif.html",
+    "browser/mime_handler/resources/full_page.html",
+  ]
   outputs = [
     "grit/extensions_resources.h",
     "extensions_resources.pak",
