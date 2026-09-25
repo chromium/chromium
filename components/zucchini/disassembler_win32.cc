@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/zucchini/abs32_utils.h"
@@ -45,15 +46,6 @@ bool ReadWin32Header(ConstBufferView image, BufferSource* source) {
     return false;
 
   return true;
-}
-
-template <class TRAITS>
-const pe::ImageDataDirectory* ReadDataDirectory(
-    const typename TRAITS::ImageOptionalHeader* optional_header,
-    size_t index) {
-  if (index >= optional_header->number_of_rva_and_sizes)
-    return nullptr;
-  return &UNSAFE_TODO(optional_header->data_directory[index]);
 }
 
 // Decides whether |section| (assumed value) is a section that contains code.
@@ -217,10 +209,12 @@ bool DisassemblerWin32<TRAITS>::ParseHeader() {
     return false;
   }
 
-  base_relocation_table_ = ReadDataDirectory<Traits>(
-      optional_header, pe::kIndexOfBaseRelocationTable);
-  if (!base_relocation_table_)
+  auto data_dirs =
+      base::span(optional_header->data_directory).first(num_data_dir);
+  if (data_dirs.size() <= pe::kIndexOfBaseRelocationTable) {
     return false;
+  }
+  base_relocation_table_ = data_dirs.get_at(pe::kIndexOfBaseRelocationTable);
 
   image_base_ = optional_header->image_base;
 
