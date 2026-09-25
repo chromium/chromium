@@ -228,6 +228,7 @@ class ChromeWalletablePassClient;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+class GoogleOneOfferIphTabHelper;
 namespace web_app {
 class ProtocolHandlerPickerCoordinator;
 }  // namespace web_app
@@ -727,6 +728,10 @@ class TabFeatures {
   std::unique_ptr<CommitLimitOOMRecoveryTracker>
       commit_limit_oom_recovery_tracker_;
   std::unique_ptr<FontPrewarmerTabHelper> font_prewarmer_tab_helper_;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<GoogleOneOfferIphTabHelper> google_one_offer_iph_tab_helper_;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

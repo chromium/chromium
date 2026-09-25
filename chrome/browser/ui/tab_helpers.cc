@@ -204,7 +204,6 @@
 #include "chrome/browser/ash/mahi/web_contents/mahi_tab_helper.h"
 #include "chrome/browser/chromeos/gemini_app/gemini_app_tab_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
-#include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper.h"
 #include "chromeos/ash/experiences/isolated_web_app/cros_isolated_web_app_enabler.h"
 #endif
 
@@ -734,7 +733,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  GoogleOneOfferIphTabHelper::CreateForWebContents(web_contents);
   // Do not create for Incognito mode.
   if (!profile->IsOffTheRecord()) {
     CampaignsManagerSessionTabHelper::CreateForWebContents(web_contents);

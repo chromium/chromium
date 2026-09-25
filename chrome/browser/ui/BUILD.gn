@@ -2632,7 +2632,6 @@ static_library("ui") {
       "//chrome/browser/ui/ash/desks",
       "//chrome/browser/ui/ash/editor_menu",
       "//chrome/browser/ui/ash/global_media_controls",
-      "//chrome/browser/ui/ash/google_one",
       "//chrome/browser/ui/ash/holding_space",
       "//chrome/browser/ui/ash/in_session_auth",
       "//chrome/browser/ui/ash/login",

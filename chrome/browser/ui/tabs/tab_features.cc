@@ -179,6 +179,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
+#include "chrome/browser/ui/ash/google_one/google_one_offer_iph_tab_helper.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.h"
 #endif
 
@@ -708,6 +709,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             .CreateInstance<web_app::ProtocolHandlerPickerCoordinator>(
                 tab, tab, apps::AppServiceProxyFactory::GetForProfile(profile));
   }
+  google_one_offer_iph_tab_helper_ =
+      std::make_unique<GoogleOneOfferIphTabHelper>(tab.GetContents());
 #endif
 
   // The controller is created for all tabs but only affects back button
@@ -987,6 +990,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   desktop_session_duration_observer_ =
       metrics::DesktopSessionDurationObserver::MaybeCreate(new_contents);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  google_one_offer_iph_tab_helper_ =
+      std::make_unique<GoogleOneOfferIphTabHelper>(new_contents);
 #endif
 }
 

@@ -26,7 +26,6 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -193,7 +192,4 @@ void GoogleOneOfferIphTabHelper::PrimaryPageChanged(content::Page& page) {
 
 GoogleOneOfferIphTabHelper::GoogleOneOfferIphTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<GoogleOneOfferIphTabHelper>(*web_contents) {}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(GoogleOneOfferIphTabHelper);
+    : content::WebContentsObserver(web_contents) {}
