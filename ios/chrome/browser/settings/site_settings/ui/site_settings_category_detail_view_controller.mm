@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_category_detail_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/functional/bind.h"
 #import "base/notreached.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "ios/chrome/browser/settings/site_settings/public/site_settings_constants.h"
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_category_detail_mutator.h"
@@ -18,13 +21,20 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+// Delay before removing search controller from navigation item to prevent UIKit
+// freeze. See crbug.com/430383178.
+constexpr base::TimeDelta kSearchControllerRemovalDelay =
+    base::Milliseconds(300);
 
 // Section identifiers for the Category Detail table view.
 enum SectionIdentifier {
@@ -61,6 +71,8 @@ enum ItemType {
   NSArray<SiteSettingsSiteException*>* _filteredNotAllowedSites;
   NSString* _searchTerm;
   UISearchController* _searchController;
+  UIControl* _scrimView;
+  BOOL _wasInSearch;
 }
 
 - (instancetype)initWithCategory:(SiteSettingsCategory)category {
@@ -95,11 +107,20 @@ enum ItemType {
   _searchController.searchBar.accessibilityIdentifier =
       kSiteSettingsCategoryDetailSearchBarId;
 
-  self.navigationItem.searchController = _searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
   self.definesPresentationContext = YES;
 
+  _scrimView = [[UIControl alloc] init];
+  _scrimView.alpha = 0.0f;
+  _scrimView.backgroundColor = [UIColor colorNamed:kScrimBackgroundColor];
+  _scrimView.translatesAutoresizingMaskIntoConstraints = NO;
+  _scrimView.accessibilityIdentifier = kSiteSettingsCategoryDetailScrimViewId;
+  [_scrimView addTarget:self
+                 action:@selector(dismissSearchController:)
+       forControlEvents:UIControlEventTouchUpInside];
+
   [self filterSitesForSearchTerm:_searchTerm];
+  [self updateNavigationBar];
   [self loadModel];
   [self updateUIForEditState];
 }
@@ -107,6 +128,13 @@ enum ItemType {
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   [self updateUIForEditState];
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  if ([_scrimView isDescendantOfView:self.view]) {
+    [self.view bringSubviewToFront:_scrimView];
+  }
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
@@ -142,6 +170,9 @@ enum ItemType {
 }
 
 - (BOOL)shouldHideToolbar {
+  if (_scrimView.alpha > 0.0f) {
+    return YES;
+  }
   return self.navigationController &&
          self.navigationController.visibleViewController != self &&
          self.navigationController.topViewController != self;
@@ -158,6 +189,14 @@ enum ItemType {
 - (void)updateUIForEditState {
   [super updateUIForEditState];
   [self updatedToolbarForEditState];
+}
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+  [super setEditing:editing animated:animated];
+  _searchController.searchBar.userInteractionEnabled = !editing;
+  _searchController.searchBar.alpha =
+      editing ? kTableViewNavigationAlphaForDisabledSearchBar : 1.0;
+  [self updateUIForEditState];
 }
 
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
@@ -333,26 +372,145 @@ enum ItemType {
       [UISwipeActionsConfiguration configurationWithActions:@[ deleteAction ]];
 }
 
+#pragma mark - UISearchControllerDelegate
+
+- (void)willPresentSearchController:(UISearchController*)searchController {
+  _wasInSearch = YES;
+  [self showScrim];
+}
+
+- (void)didDismissSearchController:(UISearchController*)searchController {
+  [self hideScrim];
+}
+
 #pragma mark - UISearchResultsUpdating
 
 - (void)updateSearchResultsForSearchController:
     (UISearchController*)searchController {
-  [self filterSitesForSearchTerm:searchController.searchBar.text];
+  NSString* searchText = searchController.searchBar.text;
+  if (searchText.length == 0 && _searchController.active) {
+    [self showScrim];
+  } else {
+    [self hideScrim];
+  }
+  if (searchText.length > 0) {
+    _wasInSearch = YES;
+  }
+  [self filterSitesForSearchTerm:searchText];
   [self reloadSitesAndUpdateEditState];
 }
 
 #pragma mark - Private
 
-// Updates edit mode and toolbar buttons when the visible site exceptions change
-// and reloads the table view data.
+// Updates edit mode, navigation bar search controller visibility, and toolbar
+// buttons when the visible site exceptions change, then reloads the table view.
 - (void)reloadSitesAndUpdateEditState {
   if (self.isViewLoaded) {
     if (![self editButtonEnabled] && self.tableView.editing) {
       [self setEditing:NO animated:YES];
     }
+    [self updateNavigationBar];
     [self updateUIForEditState];
   }
   [self reloadData];
+}
+
+// Shows the search bar in the navigation item only when site exceptions exist.
+- (void)updateNavigationBar {
+  BOOL hasSiteExceptions =
+      _allAllowedSites.count > 0 || _allNotAllowedSites.count > 0;
+  if (!hasSiteExceptions) {
+    if (_searchController.active) {
+      _searchController.active = NO;
+    }
+    if (@available(iOS 26, *)) {
+      if (_wasInSearch) {
+        // Prevents a UIKit freeze when removing `searchController` immediately
+        // after search. See crbug.com/430383178.
+        __weak __typeof(self) weakSelf = self;
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, base::BindOnce(^{
+              weakSelf.navigationItem.searchController = nil;
+            }),
+            kSearchControllerRemovalDelay);
+      } else {
+        self.navigationItem.searchController = nil;
+      }
+    } else {
+      self.navigationItem.searchController = nil;
+    }
+    _wasInSearch = NO;
+  } else {
+    self.navigationItem.searchController = _searchController;
+  }
+}
+
+// Dismisses the search controller when the scrim is tapped.
+- (void)dismissSearchController:(UIControl*)sender {
+  if (_searchController.active) {
+    _searchController.active = NO;
+  }
+}
+
+// Shows the scrim overlay and hides the bottom toolbar while the search bar is
+// focused with an empty query.
+- (void)showScrim {
+  if (_scrimView.alpha >= 1.0f) {
+    return;
+  }
+  self.navigationController.toolbarHidden = YES;
+  _scrimView.alpha = 0.0f;
+  [self.tableView addSubview:_scrimView];
+  UIView* superview = self.tableView.superview;
+  if (superview) {
+    if (@available(iOS 26, *)) {
+      AddSameConstraints(_scrimView, superview);
+    } else {
+      [NSLayoutConstraint activateConstraints:@[
+        [_scrimView.leadingAnchor
+            constraintEqualToAnchor:superview.leadingAnchor],
+        [_scrimView.trailingAnchor
+            constraintEqualToAnchor:superview.trailingAnchor],
+        [_scrimView.bottomAnchor
+            constraintEqualToAnchor:superview.bottomAnchor],
+        [_scrimView.topAnchor
+            constraintEqualToAnchor:self.navigationController.navigationBar
+                                        .bottomAnchor],
+      ]];
+    }
+  }
+  self.tableView.accessibilityElementsHidden = YES;
+  self.tableView.scrollEnabled = NO;
+  UIView* scrimView = _scrimView;
+  [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
+                   animations:^{
+                     scrimView.alpha = 1.0f;
+                     [superview layoutIfNeeded];
+                   }];
+}
+
+// Hides the scrim overlay and restores the bottom toolbar.
+- (void)hideScrim {
+  if (_scrimView.alpha <= 0.0f) {
+    return;
+  }
+  UIView* scrimView = _scrimView;
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
+      animations:^{
+        scrimView.alpha = 0.0f;
+      }
+      completion:^(BOOL finished) {
+        [weakSelf didFinishHidingScrim];
+      }];
+  self.navigationController.toolbarHidden = self.shouldHideToolbar;
+}
+
+// Cleans up the scrim view and re-enables table view interaction after hiding.
+- (void)didFinishHidingScrim {
+  [_scrimView removeFromSuperview];
+  self.tableView.accessibilityElementsHidden = NO;
+  self.tableView.scrollEnabled = YES;
 }
 
 // Populates the default permission setting section with Ask and Block options.

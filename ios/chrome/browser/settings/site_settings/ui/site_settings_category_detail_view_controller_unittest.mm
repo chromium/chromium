@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_category_detail_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
+#import "base/time/time.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/site_settings/public/site_settings_constants.h"
@@ -61,6 +63,8 @@ class SiteSettingsCategoryDetailViewControllerTest
 
   id mutator_;
   id delegate_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Tests that the view controller initializes with the default settings section
@@ -356,4 +360,52 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest,
 #pragma clang diagnostic pop
   EXPECT_OCMOCK_VERIFY(mutator_);
   EXPECT_FALSE(view_controller.editing);
+}
+
+// Tests that the search controller is hidden when no site exceptions exist,
+// shown when exceptions exist, and displays a scrim when focused with an empty
+// query.
+TEST_F(SiteSettingsCategoryDetailViewControllerTest,
+       TestSearchVisibilityAndScrim) {
+  CreateController();
+  CheckController();
+
+  SiteSettingsCategoryDetailViewController* view_controller = GetController();
+
+  // With no site exceptions, the search bar should be hidden.
+  EXPECT_EQ(nil, view_controller.navigationItem.searchController);
+
+  // Adding a site exception reveals the search bar.
+  SiteSettingsSiteException* allowedSite =
+      CreateSiteException(@"https://allowed.com", @"allowed.com");
+  [view_controller setAllowedSites:@[ allowedSite ] notAllowedSites:@[]];
+  UISearchController* searchController =
+      view_controller.navigationItem.searchController;
+  ASSERT_NE(nil, searchController);
+
+  // Presenting the search controller shows the scrim and hides the toolbar.
+  [searchController.delegate willPresentSearchController:searchController];
+  EXPECT_TRUE([view_controller shouldHideToolbar]);
+  EXPECT_FALSE(view_controller.tableView.scrollEnabled);
+  EXPECT_TRUE(view_controller.tableView.accessibilityElementsHidden);
+
+  // Typing a search query hides the scrim and restores the toolbar.
+  searchController.searchBar.text = @"allowed";
+  [searchController.searchResultsUpdater
+      updateSearchResultsForSearchController:searchController];
+  EXPECT_FALSE([view_controller shouldHideToolbar]);
+  EXPECT_TRUE([view_controller editButtonEnabled]);
+
+  // Entering edit mode disables interaction on the search bar.
+  [view_controller setEditing:YES animated:NO];
+  EXPECT_FALSE(searchController.searchBar.userInteractionEnabled);
+  [view_controller setEditing:NO animated:NO];
+  EXPECT_TRUE(searchController.searchBar.userInteractionEnabled);
+
+  // Removing all site exceptions hides the search bar again after the delay.
+  searchController.searchBar.text = @"";
+  [searchController.delegate didDismissSearchController:searchController];
+  [view_controller setAllowedSites:@[] notAllowedSites:@[]];
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  EXPECT_EQ(nil, view_controller.navigationItem.searchController);
 }

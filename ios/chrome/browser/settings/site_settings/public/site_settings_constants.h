@@ -60,4 +60,8 @@ inline constexpr NSString* const kSiteSettingsCategoryDetailAskCellId =
 inline constexpr NSString* const kSiteSettingsCategoryDetailBlockCellId =
     @"kSiteSettingsCategoryDetailBlockCellId";
 
+// Accessibility identifier for the category detail search scrim view.
+inline constexpr NSString* const kSiteSettingsCategoryDetailScrimViewId =
+    @"kSiteSettingsCategoryDetailScrimViewId";
+
 #endif  // IOS_CHROME_BROWSER_SETTINGS_SITE_SETTINGS_PUBLIC_SITE_SETTINGS_CONSTANTS_H_
