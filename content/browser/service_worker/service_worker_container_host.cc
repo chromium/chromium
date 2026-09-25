@@ -619,8 +619,9 @@ ServiceWorkerRegistrationObjectManager::CreateInfo(
 void ServiceWorkerRegistrationObjectManager::RemoveHost(
     int64_t registration_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(registration_object_hosts_.contains(registration_id),
-        base::NotFatalUntil::M159);
+  // TODO(crbug.com/562865789): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(registration_object_hosts_.contains(registration_id));
   // This is a workaround for a really unfavorable ownership structure of
   // service worker content code. This boils down to the following ownership
   // cycle:
