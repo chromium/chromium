@@ -18,33 +18,22 @@ import android.app.Activity;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
-import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.base.TestActivity;
 
-/** On device unit tests for {@link CustomTabBottomBarView}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+/** Unit tests for {@link CustomTabBottomBarView}. */
+@RunWith(BaseRobolectricTestRunner.class)
 public class CustomTabBottomBarViewUnitTest {
-    @Rule
-    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
     private final PayloadCallbackHelper<Integer> mSwipeDirectionHelper =
             new PayloadCallbackHelper<>();
     private final PayloadCallbackHelper<View> mClickHelper = new PayloadCallbackHelper<>();
@@ -69,24 +58,19 @@ public class CustomTabBottomBarViewUnitTest {
 
     @Before
     public void setUp() {
-        mActivity = mActivityTestRule.launchActivity(null);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mView =
-                            (CustomTabBottomBarView)
-                                    mActivity
-                                            .getLayoutInflater()
-                                            .inflate(R.layout.custom_tabs_bottombar, null);
-                    mStub = mActivity.getLayoutInflater().inflate(R.layout.bottombar_stub, null);
-                    mStub.setOnClickListener(mClickHelper::notifyCalled);
-                    mView.addView(mStub);
-                    mView.setSwipeHandler(mSwipeHandler);
-                    mActivity.setContentView(mView);
-                });
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+
+        mView =
+                (CustomTabBottomBarView)
+                        mActivity.getLayoutInflater().inflate(R.layout.custom_tabs_bottombar, null);
+        mStub = mActivity.getLayoutInflater().inflate(R.layout.bottombar_stub, null);
+        mStub.setOnClickListener(mClickHelper::notifyCalled);
+        mView.addView(mStub);
+        mView.setSwipeHandler(mSwipeHandler);
+        mActivity.setContentView(mView);
     }
 
     @Test
-    @SmallTest
     public void testTouchEventNotInterceptedWithNoSwipeHandler() {
         mView.setSwipeHandler(null);
         var motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
@@ -96,8 +80,6 @@ public class CustomTabBottomBarViewUnitTest {
     }
 
     @Test
-    @SmallTest
-    @DisabledTest(message = "crbug.com/563056275")
     public void testSwipeUp() {
         onView(withChild(withId(R.id.stub))).perform(swipeUp());
         assertEquals(
@@ -106,7 +88,6 @@ public class CustomTabBottomBarViewUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableIf.Build(
             supported_abis_includes = "arm64-v8a",
             sdk_is_greater_than = 33,
@@ -117,8 +98,6 @@ public class CustomTabBottomBarViewUnitTest {
     }
 
     @Test
-    @SmallTest
-    @DisabledTest(message = "crbug.com/563056275")
     public void testChildRespondsToClick() {
         onView(withId(R.id.stub)).perform(click());
         assertEquals(mStub, mClickHelper.getOnlyPayloadBlocking());

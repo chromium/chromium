@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
-import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
-
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.OMNIBOX_ENABLED;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TITLE_VISIBLE;
@@ -29,20 +28,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
@@ -50,33 +46,21 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarB
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.MinimizeButtonData;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.SideSheetMaximizeButtonData;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 
-import java.util.concurrent.ExecutionException;
+/** Unit tests for {@link CustomTabToolbarButtonsViewBinder}. */
+@RunWith(BaseRobolectricTestRunner.class)
+public class CustomTabToolbarButtonsViewBinderUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-/** On-device unit tests for {@link CustomTabToolbarButtonsViewBinder}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-public class CustomTabToolbarButtonsViewBinderTest {
-    @Rule
-    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private final PayloadCallbackHelper<View> mClickHelper = new PayloadCallbackHelper<>();
-    private final CallbackHelper mMaximizeButtonHelper = new CallbackHelper();
-    private final View.OnClickListener mOnClickListener = mClickHelper::notifyCalled;
-    private final MaximizeButtonCallback mMaximizeButtonCallback =
-            () -> {
-                mMaximizeButtonHelper.notifyCalled();
-                return false;
-            };
+    @Mock private View.OnClickListener mOnClickListener;
+    @Mock private MaximizeButtonCallback mMaximizeButtonCallback;
 
     private Activity mActivity;
     private CustomTabToolbar mToolbar;
@@ -85,58 +69,47 @@ public class CustomTabToolbarButtonsViewBinderTest {
     private int mToolbarHorizontalPadding;
 
     @Before
-    public void setUp() throws ExecutionException {
-        mActivityTestRule.launchActivity(null);
-        mActivity = mActivityTestRule.getActivity();
+    public void setUp() {
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mToolbarHorizontalPadding =
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.custom_tabs_toolbar_horizontal_padding);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mToolbar =
-                            (CustomTabToolbar)
-                                    LayoutInflater.from(mActivity)
-                                            .inflate(
-                                                    R.layout.new_custom_tab_toolbar,
-                                                    new FrameLayout(mActivity),
-                                                    false);
-                    mActivity.setContentView(mToolbar);
+        mToolbar =
+                (CustomTabToolbar)
+                        LayoutInflater.from(mActivity)
+                                .inflate(
+                                        R.layout.new_custom_tab_toolbar,
+                                        new FrameLayout(mActivity),
+                                        false);
+        mActivity.setContentView(mToolbar);
 
-                    mCustomActionButtons = new PropertyListModel<>();
-                    mModel =
-                            CustomTabToolbarButtonsProperties.create(
-                                    /* customActionButtonsVisible= */ true,
-                                    mCustomActionButtons,
-                                    new MinimizeButtonData(),
-                                    new CloseButtonData(),
-                                    /* menuButtonVisible= */ true,
-                                    /* optionalButtonVisible= */ false,
-                                    /* toolbarWidth= */ ViewUtils.dpToPx(mActivity, 500),
-                                    /* omniboxEnabled= */ false,
-                                    /* titleVisible= */ false,
-                                    /* isIncognito= */ false,
-                                    /* tint= */ ThemeUtils.getThemedToolbarIconTint(
-                                            mActivity, APP_DEFAULT));
+        mCustomActionButtons = new PropertyListModel<>();
+        mModel =
+                CustomTabToolbarButtonsProperties.create(
+                        /* customActionButtonsVisible= */ true,
+                        mCustomActionButtons,
+                        new MinimizeButtonData(),
+                        new CloseButtonData(),
+                        /* menuButtonVisible= */ true,
+                        /* optionalButtonVisible= */ false,
+                        /* toolbarWidth= */ ViewUtils.dpToPx(mActivity, 500),
+                        /* omniboxEnabled= */ false,
+                        /* titleVisible= */ false,
+                        /* isIncognito= */ false,
+                        /* tint= */ ThemeUtils.getThemedToolbarIconTint(mActivity, APP_DEFAULT));
 
-                    // The view binder uses this tag to get the model.
-                    mToolbar.setTag(R.id.view_model, mModel);
+        // The view binder uses this tag to get the model.
+        mToolbar.setTag(R.id.view_model, mModel);
 
-                    CustomTabToolbarButtonsViewBinder viewBinder =
-                            new CustomTabToolbarButtonsViewBinder();
-                    PropertyModelChangeProcessor.create(mModel, mToolbar, viewBinder);
-                    var listMcp =
-                            new ListModelChangeProcessor<>(
-                                    mCustomActionButtons, mToolbar, viewBinder);
-                    mCustomActionButtons.addObserver(listMcp);
-                });
+        CustomTabToolbarButtonsViewBinder viewBinder = new CustomTabToolbarButtonsViewBinder();
+        PropertyModelChangeProcessor.create(mModel, mToolbar, viewBinder);
+        var listMcp = new ListModelChangeProcessor<>(mCustomActionButtons, mToolbar, viewBinder);
+        mCustomActionButtons.addObserver(listMcp);
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testInitialState() {
         assertNull(mToolbar.getCloseButton());
         assertNull(mToolbar.getMinimizeButton());
@@ -147,9 +120,6 @@ public class CustomTabToolbarButtonsViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testCloseButton() {
         Drawable icon = new BitmapDrawable();
         mModel.set(
@@ -165,7 +135,7 @@ public class CustomTabToolbarButtonsViewBinderTest {
         assertEquals(View.VISIBLE, closeButton.getVisibility());
         assertEquals(icon, closeButton.getDrawable());
         closeButton.performClick();
-        assertThat(mClickHelper.getOnlyPayloadBlocking(), equalTo(closeButton));
+        verify(mOnClickListener).onClick(closeButton);
 
         // Close button at start, menu at end.
         FrameLayout.LayoutParams closeLp = (FrameLayout.LayoutParams) closeButton.getLayoutParams();
@@ -178,9 +148,6 @@ public class CustomTabToolbarButtonsViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testCloseButton_End() {
         mModel.set(
                 CustomTabToolbarButtonsProperties.CLOSE_BUTTON,
@@ -203,9 +170,6 @@ public class CustomTabToolbarButtonsViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testMinimizeButton() {
         mModel.set(
                 CustomTabToolbarButtonsProperties.MINIMIZE_BUTTON,
@@ -215,13 +179,10 @@ public class CustomTabToolbarButtonsViewBinderTest {
         assertNotNull(minimizeButton);
         assertEquals(View.VISIBLE, minimizeButton.getVisibility());
         minimizeButton.performClick();
-        assertThat(mClickHelper.getOnlyPayloadBlocking(), equalTo(minimizeButton));
+        verify(mOnClickListener).onClick(minimizeButton);
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testSideSheetMaximizeButton() {
         mModel.set(
                 CustomTabToolbarButtonsProperties.SIDE_SHEET_MAXIMIZE_BUTTON,
@@ -231,13 +192,10 @@ public class CustomTabToolbarButtonsViewBinderTest {
         assertNotNull(maximizeButton);
         assertEquals(View.VISIBLE, maximizeButton.getVisibility());
         maximizeButton.performClick();
-        assertThat(mMaximizeButtonHelper.getCallCount(), equalTo(1));
+        verify(mMaximizeButtonCallback).onClick();
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testCustomActionButtons_addUpdateRemove() {
         // Add
         Drawable icon1 = new ColorDrawable(0xFF0000);
@@ -259,7 +217,7 @@ public class CustomTabToolbarButtonsViewBinderTest {
         assertEquals(icon1, button.getDrawable());
 
         button.performClick();
-        assertThat(mClickHelper.getOnlyPayloadBlocking(), equalTo(button));
+        verify(mOnClickListener).onClick(button);
 
         // Update
         Drawable icon2 = new ColorDrawable(0x00FF00);
@@ -278,9 +236,6 @@ public class CustomTabToolbarButtonsViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testOptionalButton() {
         mToolbar.ensureOptionalButtonInflated();
         mModel.set(CustomTabToolbarButtonsProperties.OPTIONAL_BUTTON_VISIBLE, true);
@@ -291,9 +246,6 @@ public class CustomTabToolbarButtonsViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testButtonHiding_notEnoughSpace() {
         mModel.set(
                 CustomTabToolbarButtonsProperties.CLOSE_BUTTON,
@@ -335,9 +287,6 @@ public class CustomTabToolbarButtonsViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testButtonFlipVisibility_minimizeOverShare() {
         setToolbarWidthForMaxButtons(3); // close, menu, 1 more (minimize or custom action)
         addCustomActionButton(ButtonType.CCT_SHARE_BUTTON, 0xFF0000, "description");
@@ -362,9 +311,6 @@ public class CustomTabToolbarButtonsViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testButtonFlipVisibility_minimizeOverCustomOpenInBrowser() {
         setToolbarWidthForMaxButtons(3); // close, menu, and 1 more (minimize or chrome action)
         addCustomActionButton(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON, 0xFF0000, "description");
@@ -389,9 +335,6 @@ public class CustomTabToolbarButtonsViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testButtonFlipVisibility_minimizeOver2CustomActions() {
         setToolbarWidthForMaxButtons(3); // close, menu, and 1 more (minimize or chrome action)
         addCustomActionButton(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON, 0xFF0000, "descriptionOib");
@@ -421,9 +364,6 @@ public class CustomTabToolbarButtonsViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testButtonFlipVisibility_customOverMinimize() {
         setToolbarWidthForMaxButtons(3); // close, menu, and 1 more (minimize or custom action)
         addCustomActionButton(ButtonType.OTHER, 0xFF0000, "description");
@@ -474,9 +414,6 @@ public class CustomTabToolbarButtonsViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"CustomTabs"})
     public void testIncognito() {
         mModel.set(CustomTabToolbarButtonsProperties.IS_INCOGNITO, true);
 

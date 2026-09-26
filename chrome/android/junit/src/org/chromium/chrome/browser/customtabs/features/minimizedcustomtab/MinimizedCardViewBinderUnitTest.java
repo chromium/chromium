@@ -27,27 +27,21 @@ import android.widget.TextView;
 
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 
-/** On-device unit tests for {@link MinimizedCardViewBinder}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-public class MinimizedCardViewBinderTest {
+/** Unit tests for {@link MinimizedCardViewBinder}. */
+@RunWith(BaseRobolectricTestRunner.class)
+public class MinimizedCardViewBinderUnitTest {
     private static final int HEIGHT_DP = 90;
     private static final String SHORT_TITLE = "Google";
     private static final String LONG_TITLE =
@@ -56,11 +50,7 @@ public class MinimizedCardViewBinderTest {
     private static final String LONG_URL =
             "subdomain.longlonglonglonglonglonglonglong.awebsitewithalongurl.com";
 
-    @ClassRule
-    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
+    private Activity mActivity;
 
     private View mView;
     private PropertyModel mModel;
@@ -68,48 +58,37 @@ public class MinimizedCardViewBinderTest {
     private TextView mUrl;
     private ImageView mFavicon;
 
-    @BeforeClass
-    public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
-    }
-
     @Before
-    public void setUp() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    float density = sActivity.getResources().getDisplayMetrics().density;
-                    int height = Math.round(HEIGHT_DP * density);
-                    int width = Math.round(ASPECT_RATIO.floatValue() * height);
-                    var layoutParams = new FrameLayout.LayoutParams(width, height);
-                    ViewGroup content = new FrameLayout(sActivity);
-                    sActivity.setContentView(content, layoutParams);
-                    mView =
-                            LayoutInflater.from(sActivity)
-                                    .inflate(R.layout.custom_tabs_minimized_card, content, true);
-                    mModel =
-                            new PropertyModel.Builder(MinimizedCardProperties.ALL_KEYS)
-                                    .with(MinimizedCardProperties.TITLE, "")
-                                    .with(MinimizedCardProperties.URL, "")
-                                    .with(MinimizedCardProperties.FAVICON, null)
-                                    .build();
-                    PropertyModelChangeProcessor.create(
-                            mModel, mView, MinimizedCardViewBinder::bind);
-                    mTitle = mView.findViewById(R.id.title);
-                    mUrl = mView.findViewById(R.id.url);
-                    mFavicon = mView.findViewById(R.id.favicon);
-                });
+    public void setUp() {
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        float density = mActivity.getResources().getDisplayMetrics().density;
+        int height = Math.round(HEIGHT_DP * density);
+        int width = Math.round(ASPECT_RATIO.floatValue() * height);
+        var layoutParams = new FrameLayout.LayoutParams(width, height);
+        ViewGroup content = new FrameLayout(mActivity);
+        mActivity.setContentView(content, layoutParams);
+        mView =
+                LayoutInflater.from(mActivity)
+                        .inflate(R.layout.custom_tabs_minimized_card, content, true);
+        mModel =
+                new PropertyModel.Builder(MinimizedCardProperties.ALL_KEYS)
+                        .with(MinimizedCardProperties.TITLE, "")
+                        .with(MinimizedCardProperties.URL, "")
+                        .with(MinimizedCardProperties.FAVICON, null)
+                        .build();
+        PropertyModelChangeProcessor.create(mModel, mView, MinimizedCardViewBinder::bind);
+        mTitle = mView.findViewById(R.id.title);
+        mUrl = mView.findViewById(R.id.url);
+        mFavicon = mView.findViewById(R.id.favicon);
     }
 
     @Test
-    @SmallTest
     public void testTitleUrlFavicon() {
         var favicon = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(MinimizedCardProperties.TITLE, SHORT_TITLE);
-                    mModel.set(MinimizedCardProperties.URL, SHORT_URL);
-                    mModel.set(MinimizedCardProperties.FAVICON, favicon);
-                });
+
+        mModel.set(MinimizedCardProperties.TITLE, SHORT_TITLE);
+        mModel.set(MinimizedCardProperties.URL, SHORT_URL);
+        mModel.set(MinimizedCardProperties.FAVICON, favicon);
 
         onView(withId(R.id.title)).check(matches(withText(SHORT_TITLE)));
         onView(withId(R.id.url)).check(matches(withText(SHORT_URL)));
@@ -118,15 +97,12 @@ public class MinimizedCardViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testTitleUrlFaviconLong() {
         var favicon = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(MinimizedCardProperties.TITLE, LONG_TITLE);
-                    mModel.set(MinimizedCardProperties.URL, LONG_URL);
-                    mModel.set(MinimizedCardProperties.FAVICON, favicon);
-                });
+
+        mModel.set(MinimizedCardProperties.TITLE, LONG_TITLE);
+        mModel.set(MinimizedCardProperties.URL, LONG_URL);
+        mModel.set(MinimizedCardProperties.FAVICON, favicon);
 
         onView(withId(R.id.title)).check(matches(withText(LONG_TITLE)));
         assertEquals(1, mTitle.getLineCount());
@@ -137,14 +113,11 @@ public class MinimizedCardViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testEmptyTitle() {
         var favicon = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(MinimizedCardProperties.URL, SHORT_URL);
-                    mModel.set(MinimizedCardProperties.FAVICON, favicon);
-                });
+
+        mModel.set(MinimizedCardProperties.URL, SHORT_URL);
+        mModel.set(MinimizedCardProperties.FAVICON, favicon);
 
         onView(withId(R.id.title)).check(matches(withEffectiveVisibility(Visibility.GONE)));
         onView(withId(R.id.url)).check(matches(withText(SHORT_URL)));
@@ -154,7 +127,6 @@ public class MinimizedCardViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testNullFavicon() {
         onView(withId(R.id.favicon)).check(matches(isCompletelyDisplayed()));
         assertNotNull(mFavicon.getDrawable());

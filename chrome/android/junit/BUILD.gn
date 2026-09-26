@@ -737,6 +737,8 @@ if (is_android) {
 
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.customtabs") {
+    resources_package = "org.chromium.chrome"
+
     sources = [
       "src/org/chromium/chrome/browser/customtabs/AuthTabColorProviderUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/AuthTabIntentDataProviderUnitTest.java",
@@ -749,6 +751,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/CustomTabAppMenuHelperUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabAppMenuPropertiesDelegateUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabBottomBarDelegateUnitTest.java",
+      "src/org/chromium/chrome/browser/customtabs/CustomTabBottomBarViewUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabCookiesFetcherUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabDelegateFactoryUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabFileUtilsUnitTest.java",
@@ -781,8 +784,12 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/features/ImmersiveModeControllerTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/TabInteractionRecorderUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/WebappInsetsConsumerTest.java",
+      "src/org/chromium/chrome/browser/customtabs/features/desktop_popup_header/DesktopPopupHeaderLayoutCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/desktop_popup_header/DesktopPopupHeaderMediatorUnitTest.java",
+      "src/org/chromium/chrome/browser/customtabs/features/desktop_popup_header/DesktopPopupHeaderViewBinderUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/CustomTabMinimizationManagerUnitTest.java",
+      "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCardCoordinatorUnitTest.java",
+      "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCardViewBinderUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCustomTabIphControllerUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedFeatureUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/ContentGestureListenerTest.java",
@@ -795,6 +802,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/BrandingSecurityButtonAnimationDelegateUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/BrowserServicesThemeColorProviderUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabHistoryIphControllerUnitTest.java",
+      "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarButtonsViewBinderUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarColorControllerUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarUnitTest.java",
@@ -803,6 +811,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//chrome/android:chrome_java",
+      "//chrome/android:chrome_unit_test_java_resources",
       "//chrome/browser/tabpersistence:java",
       "//chrome/browser/ui/android/extensions:java",
       "//chrome/browser/ui/android/toolbar:adaptive_features_java",

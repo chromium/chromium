@@ -2083,15 +2083,7 @@ android_library(
     "chrome_unit_test_java_org.chromium.chrome.browser.customtabs") {
   resources_package = "org.chromium.chrome"
 
-  sources = [
-    "src/org/chromium/chrome/browser/customtabs/CustomTabBottomBarViewUnitTest.java",
-    "src/org/chromium/chrome/browser/customtabs/CustomTabLaunchCauseMetricsTest.java",
-    "src/org/chromium/chrome/browser/customtabs/features/desktop_popup_header/DesktopPopupHeaderLayoutCoordinatorUnitTest.java",
-    "src/org/chromium/chrome/browser/customtabs/features/desktop_popup_header/DesktopPopupHeaderViewBinderUnitTest.java",
-    "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCardCoordinatorTest.java",
-    "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCardViewBinderTest.java",
-    "src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarButtonsViewBinderTest.java",
-  ]
+  sources = [ "src/org/chromium/chrome/browser/customtabs/CustomTabLaunchCauseMetricsTest.java" ]
 
   deps = [ ":common_unit_test_deps_java" ]
 }
