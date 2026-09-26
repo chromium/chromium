@@ -960,11 +960,17 @@ TEST_F(ActionAppMenuTest, FooterButtonClickExecutesActionAfterMenuClosed) {
       views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
   ASSERT_TRUE(footer_view);
 
+#if BUILDFLAG(IS_MAC)
+  // On Mac, right container child 0 is kActionOptions (Settings).
+  views::View* settings_container = footer_view->right_container_for_testing();
+#else
   // Left container child 0 is kActionOptions (Settings).
-  views::View* left_container = footer_view->left_container_for_testing();
-  ASSERT_TRUE(left_container);
-  auto* settings_button =
-      views::AsViewClass<AppMenuFooterButton>(left_container->children()[0]);
+  views::View* settings_container = footer_view->left_container_for_testing();
+#endif
+  ASSERT_TRUE(settings_container);
+  ASSERT_FALSE(settings_container->children().empty());
+  auto* settings_button = views::AsViewClass<AppMenuFooterButton>(
+      settings_container->children()[0]);
   ASSERT_TRUE(settings_button);
 
   // Verify strict ordering:
@@ -1142,14 +1148,22 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElements) {
 
   views::View* left_container = footer_view->left_container_for_testing();
   ASSERT_TRUE(left_container);
+  views::View* right_container = footer_view->right_container_for_testing();
+  ASSERT_TRUE(right_container);
+#if BUILDFLAG(IS_MAC)
+  ASSERT_EQ(left_container->children().size(), 1u);  // Help
+  EXPECT_TRUE(
+      views::IsViewClass<AppMenuFooterButton>(left_container->children()[0]));
+  ASSERT_EQ(right_container->children().size(), 1u);  // Settings
+  EXPECT_TRUE(
+      views::IsViewClass<AppMenuFooterButton>(right_container->children()[0]));
+#else
   ASSERT_EQ(left_container->children().size(), 2u);  // Settings, Help
   EXPECT_TRUE(
       views::IsViewClass<AppMenuFooterButton>(left_container->children()[0]));
   EXPECT_TRUE(
       views::IsViewClass<AppMenuFooterButton>(left_container->children()[1]));
 
-  views::View* right_container = footer_view->right_container_for_testing();
-  ASSERT_TRUE(right_container);
   if (browser_defaults::kShowExitMenuItem) {
     ASSERT_EQ(right_container->children().size(), 1u);  // Exit
     EXPECT_TRUE(views::IsViewClass<AppMenuFooterButton>(
@@ -1157,6 +1171,7 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElements) {
   } else {
     EXPECT_EQ(right_container->children().size(), 0u);
   }
+#endif
 
   // Without managed UI, separator and bottom container should not be added.
   EXPECT_EQ(footer_view->separator_for_testing(), nullptr);

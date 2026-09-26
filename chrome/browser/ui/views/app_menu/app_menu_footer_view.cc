@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
@@ -23,6 +24,31 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/view_class_properties.h"
+
+namespace {
+
+enum class FooterContainer {
+  kLeft,
+  kRight,
+  kBottom,
+};
+
+FooterContainer GetFooterContainerForAction(actions::ActionId action_id) {
+  switch (action_id) {
+    case kActionShowManagementPage:
+      return FooterContainer::kBottom;
+#if BUILDFLAG(IS_MAC)
+    case kActionOptions:
+#else
+    case kActionExit:
+#endif
+      return FooterContainer::kRight;
+    default:
+      return FooterContainer::kLeft;
+  }
+}
+
+}  // namespace
 
 AppMenuFooterView::AppMenuFooterView(
     views::MenuItemView* parent_menu_item,
@@ -53,7 +79,8 @@ AppMenuFooterView::AppMenuFooterView(
   top_container_->SetInsideBorderInsets(
       provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_MARGIN));
 
-  // Left sub-container: holds the Settings and Help action items.
+  // Left sub-container: holds the Settings and Help action items (or just Help
+  // on Mac).
   left_container_ =
       top_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
   left_container_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
@@ -67,7 +94,7 @@ AppMenuFooterView::AppMenuFooterView(
   auto* spacer = top_container_->AddChildView(std::make_unique<views::View>());
   top_container_->SetFlexForView(spacer, 1);
 
-  // Right sub-container: holds the Exit action item.
+  // Right sub-container: holds the Exit action item (or Settings on Mac).
   right_container_ =
       top_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
   right_container_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
@@ -124,16 +151,19 @@ AppMenuFooterView::AppMenuFooterView(
       button->SetImageModel(*icon_override);
     }
 
-    if (action_id.value() == kActionShowManagementPage) {
-      auto* button_ptr = bottom_container->AddChildView(std::move(button));
-      button_ptr->SetUseRowStyle(true);
-      bottom_container->SetFlexForView(button_ptr, 1);
-    } else if (action_id.value() == kActionExit) {
-      auto* button_ptr = right_container_->AddChildView(std::move(button));
-      button_ptr->SetUseRowStyle(false);
-    } else {
-      auto* button_ptr = left_container_->AddChildView(std::move(button));
-      button_ptr->SetUseRowStyle(false);
+    switch (GetFooterContainerForAction(action_id.value())) {
+      case FooterContainer::kBottom: {
+        auto* button_ptr = bottom_container->AddChildView(std::move(button));
+        button_ptr->SetUseRowStyle(true);
+        bottom_container->SetFlexForView(button_ptr, 1);
+        break;
+      }
+      case FooterContainer::kRight:
+        right_container_->AddChildView(std::move(button));
+        break;
+      case FooterContainer::kLeft:
+        left_container_->AddChildView(std::move(button));
+        break;
     }
   }
 
