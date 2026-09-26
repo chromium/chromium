@@ -646,14 +646,16 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     return nil;
   }
   if (_overrideLogoPath) {
-    UIImage* lightImage = [UIImage imageWithContentsOfFile:_overrideLogoPath];
+    NSData* lightData = [NSData dataWithContentsOfFile:_overrideLogoPath];
+    UIImage* lightImage = lightData ? [UIImage imageWithData:lightData] : nil;
     if (lightImage) {
       self.containerView.shrunkLogoView.contentMode =
           UIViewContentModeScaleAspectFit;
-      UIImage* darkImage =
+      NSData* darkData =
           _overrideDarkLogoPath
-              ? [UIImage imageWithContentsOfFile:_overrideDarkLogoPath]
+              ? [NSData dataWithContentsOfFile:_overrideDarkLogoPath]
               : nil;
+      UIImage* darkImage = darkData ? [UIImage imageWithData:darkData] : nil;
       if (darkImage) {
         UIImageAsset* imageAsset = [[UIImageAsset alloc] init];
         [imageAsset registerImage:lightImage

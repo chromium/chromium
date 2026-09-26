@@ -262,4 +262,20 @@ TEST_F(SearchEngineLogoMediatorTest, TestEmptyCacheDoesNotResetLogo) {
   EXPECT_EQ(SearchEngineLogoState::kNone, containerView.logoState);
 }
 
+// Test that setting a missing override logo file path does not crash and falls
+// back gracefully.
+TEST_F(SearchEngineLogoMediatorTest, TestMissingOverrideLogoPathDoesNotCrash) {
+  EXPECT_CALL(*logo_service_, GetLogo(_, false, false))
+      .Times(testing::AtMost(1));
+  SelectSearchEngineWithKeyword(TemplateURLPrepopulateData::google);
+
+  [mediator_
+      setOverrideLogoPath:@"/nonexistent/ephemeral_google_logo_light.png"
+             darkLogoPath:@"/nonexistent/ephemeral_google_logo_dark.png"];
+
+  SearchEngineLogoContainerView* containerView =
+      (SearchEngineLogoContainerView*)[mediator_ view];
+  EXPECT_EQ(SearchEngineLogoState::kLogo, containerView.logoState);
+}
+
 }  // anonymous namespace

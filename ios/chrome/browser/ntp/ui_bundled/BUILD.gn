@@ -465,6 +465,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/image_fetcher/model",
     "//ios/chrome/browser/metrics/model:activity_reporter",
     "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/search_engine_logo/mediator",
     "//ios/chrome/browser/ntp/search_engine_logo/ui",
     "//ios/chrome/browser/ntp/shared/metrics",
     "//ios/chrome/browser/ntp/shared/metrics:constants",

@@ -53,6 +53,8 @@ constexpr base::TimeDelta kFadeDuration = base::Milliseconds(500);
     // imageview frame matches the intrinsic size.
     [NSLayoutConstraint activateConstraints:@[
       [_shrunkLogoView.heightAnchor constraintEqualToAnchor:self.heightAnchor],
+      [_shrunkLogoView.widthAnchor
+          constraintLessThanOrEqualToAnchor:self.widthAnchor],
       [_shrunkLogoView.centerXAnchor
           constraintEqualToAnchor:self.centerXAnchor],
       [_shrunkLogoView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor]

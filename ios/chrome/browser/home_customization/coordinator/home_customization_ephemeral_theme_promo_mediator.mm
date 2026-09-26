@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_ephemeral_theme_promo_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "third_party/skia/include/core/SkColor.h"
 
 namespace {
 

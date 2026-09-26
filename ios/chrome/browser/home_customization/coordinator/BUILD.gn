@@ -88,6 +88,7 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/util",
+    "//skia",
     "//ui/base",
     "//ui/strings:ui_strings_grit",
     "//url",
