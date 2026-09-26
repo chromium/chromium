@@ -660,4 +660,149 @@ TEST_F(ScriptAncestryTrackerTest,
   EXPECT_FALSE(test_observer_->IsMarkedScript(target_id));
 }
 
+TEST_F(ScriptAncestryTrackerTest, DynamicScriptAppendsExternalModule) {
+  SimSubresourceRequest initial_script(
+      "https://example.com/initial_marked_script.js", "application/javascript");
+  SimSubresourceRequest root("https://example.com/root.js",
+                             "application/javascript");
+
+  main_resource_->Complete(
+      "<body><script src=\"initial_marked_script.js\"></script></body>");
+  test::RunPendingTasks();
+
+  initial_script.Complete(
+      "var s = document.createElement('script');"
+      "s.type = 'module';"
+      "s.src = 'root.js';"
+      "document.body.appendChild(s);");
+  test::RunPendingTasks();
+
+  root.Complete("console.log('root');");
+  test::RunPendingTasks();
+
+  V8ScriptId initial_id =
+      test_observer_->WaitAndFindScriptIdByUrl("initial_marked_script.js");
+  V8ScriptId root_id = test_observer_->WaitAndFindScriptIdByUrl("root.js");
+
+  EXPECT_NE(V8ScriptId(), initial_id);
+  EXPECT_NE(V8ScriptId(), root_id);
+  EXPECT_TRUE(test_observer_->IsMarkedScript(initial_id));
+  EXPECT_TRUE(test_observer_->IsMarkedScript(root_id));
+
+  const auto* root_info = test_observer_->GetRegisteredScript(root_id);
+  ASSERT_TRUE(root_info);
+  EXPECT_EQ(initial_id, root_info->marked_script_id);
+
+  const auto* metadata = test_observer_->GetScriptMetadata(root_id);
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(initial_id, metadata->marked_script_id);
+}
+
+TEST_F(ScriptAncestryTrackerTest, DynamicImportFromMarkedScript) {
+  SimSubresourceRequest initial_script(
+      "https://example.com/initial_marked_script.js", "application/javascript");
+  SimSubresourceRequest sub("https://example.com/sub.js",
+                            "application/javascript");
+
+  main_resource_->Complete(
+      "<body><script src=\"initial_marked_script.js\"></script></body>");
+  test::RunPendingTasks();
+
+  initial_script.Complete("import('./sub.js');");
+  test::RunPendingTasks();
+
+  sub.Complete("console.log('sub');");
+  test::RunPendingTasks();
+
+  V8ScriptId initial_id =
+      test_observer_->WaitAndFindScriptIdByUrl("initial_marked_script.js");
+  V8ScriptId sub_id = test_observer_->WaitAndFindScriptIdByUrl("sub.js");
+
+  EXPECT_NE(V8ScriptId(), initial_id);
+  EXPECT_NE(V8ScriptId(), sub_id);
+  EXPECT_TRUE(test_observer_->IsMarkedScript(initial_id));
+  EXPECT_TRUE(test_observer_->IsMarkedScript(sub_id));
+
+  const auto* sub_info = test_observer_->GetRegisteredScript(sub_id);
+  ASSERT_TRUE(sub_info);
+  EXPECT_EQ(initial_id, sub_info->marked_script_id);
+
+  const auto* metadata = test_observer_->GetScriptMetadata(sub_id);
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(initial_id, metadata->marked_script_id);
+}
+
+TEST_F(ScriptAncestryTrackerTest,
+       DynamicScriptAppendsExternalModule_NotMarked) {
+  SimSubresourceRequest initial_script("https://example.com/initial_script.js",
+                                       "application/javascript");
+  SimSubresourceRequest root("https://example.com/root.js",
+                             "application/javascript");
+
+  main_resource_->Complete(
+      "<body><script src=\"initial_script.js\"></script></body>");
+  test::RunPendingTasks();
+
+  initial_script.Complete(
+      "var s = document.createElement('script');"
+      "s.type = 'module';"
+      "s.src = 'root.js';"
+      "document.body.appendChild(s);");
+  test::RunPendingTasks();
+
+  root.Complete("console.log('root');");
+  test::RunPendingTasks();
+
+  V8ScriptId initial_id =
+      test_observer_->WaitAndFindScriptIdByUrl("initial_script.js");
+  V8ScriptId root_id = test_observer_->WaitAndFindScriptIdByUrl("root.js");
+
+  EXPECT_NE(V8ScriptId(), initial_id);
+  EXPECT_NE(V8ScriptId(), root_id);
+  EXPECT_FALSE(test_observer_->IsMarkedScript(initial_id));
+  EXPECT_FALSE(test_observer_->IsMarkedScript(root_id));
+
+  const auto* root_info = test_observer_->GetRegisteredScript(root_id);
+  ASSERT_TRUE(root_info);
+  EXPECT_EQ(V8ScriptId(), root_info->marked_script_id);
+
+  const auto* metadata = test_observer_->GetScriptMetadata(root_id);
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(V8ScriptId(), metadata->marked_script_id);
+}
+
+TEST_F(ScriptAncestryTrackerTest, DynamicImportFromUnmarkedScript_NotMarked) {
+  SimSubresourceRequest initial_script("https://example.com/initial_script.js",
+                                       "application/javascript");
+  SimSubresourceRequest sub("https://example.com/sub.js",
+                            "application/javascript");
+
+  main_resource_->Complete(
+      "<body><script src=\"initial_script.js\"></script></body>");
+  test::RunPendingTasks();
+
+  initial_script.Complete("import('./sub.js');");
+  test::RunPendingTasks();
+
+  sub.Complete("console.log('sub');");
+  test::RunPendingTasks();
+
+  V8ScriptId initial_id =
+      test_observer_->WaitAndFindScriptIdByUrl("initial_script.js");
+  V8ScriptId sub_id = test_observer_->WaitAndFindScriptIdByUrl("sub.js");
+
+  EXPECT_NE(V8ScriptId(), initial_id);
+  EXPECT_NE(V8ScriptId(), sub_id);
+  EXPECT_FALSE(test_observer_->IsMarkedScript(initial_id));
+  EXPECT_FALSE(test_observer_->IsMarkedScript(sub_id));
+
+  const auto* sub_info = test_observer_->GetRegisteredScript(sub_id);
+  ASSERT_TRUE(sub_info);
+  EXPECT_EQ(V8ScriptId(), sub_info->marked_script_id);
+
+  const auto* metadata = test_observer_->GetScriptMetadata(sub_id);
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(V8ScriptId(), metadata->marked_script_id);
+}
+
 }  // namespace blink

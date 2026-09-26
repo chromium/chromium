@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
@@ -37,7 +39,11 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
       : url_(url),
         modulator_(modulator),
         promise_resolver_(promise_resolver),
-        import_phase_(import_phase) {}
+        import_phase_(import_phase) {
+    async_task_context_.Schedule(
+        ExecutionContext::From(modulator_->GetScriptState()), "DynamicImport",
+        probe::AsyncTaskContext::StackOptions::kScan);
+  }
 
   void Trace(Visitor*) const override;
 
@@ -49,6 +55,7 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
   const Member<Modulator> modulator_;
   const Member<ScriptPromiseResolver<IDLAny>> promise_resolver_;
   const v8::ModuleImportPhase import_phase_;
+  probe::AsyncTaskContext async_task_context_;
 };
 
 // Abstract callback for modules resolution.
@@ -130,6 +137,8 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
   ScriptState* script_state = modulator_->GetScriptState();
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
+  probe::AsyncTask async_task(ExecutionContext::From(script_state),
+                              &async_task_context_, "DynamicImportTreeClient");
 
   // <spec step="2">If settings object's ...</spec>
   if (!module_script) {
