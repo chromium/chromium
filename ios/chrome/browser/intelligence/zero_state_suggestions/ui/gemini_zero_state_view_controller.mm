@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_mutator.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -24,6 +25,9 @@ constexpr CGFloat kContainerTopPadding = 36.0;
 constexpr CGFloat kGeminiLogoSize = 38.0;
 constexpr CGFloat kLogoToGreetingSpacing = 16.0;
 constexpr CGFloat kChipsContainerHeight = 180.0;
+constexpr CGFloat kCloseButtonSize = 46.0;
+constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
+constexpr CGFloat kCloseButtonPadding = 20.0;
 
 }  // namespace
 
@@ -92,6 +96,27 @@ constexpr CGFloat kChipsContainerHeight = 180.0;
                                       forAxis:UILayoutConstraintAxisVertical];
   [self.view addSubview:_suggestionsStack];
 
+  UIButtonConfiguration* closeButtonConfig =
+      [UIButtonConfiguration filledButtonConfiguration];
+  closeButtonConfig.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  closeButtonConfig.image =
+      SymbolWithPointSize(SymbolXMark, kCloseButtonSymbolPointSize);
+  closeButtonConfig.baseBackgroundColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
+  closeButtonConfig.baseForegroundColor =
+      [UIColor colorNamed:kTextPrimaryColor];
+
+  __weak __typeof(self) weakSelf = self;
+  UIAction* closeAction = [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf.mutator didTapZeroStateCloseButton];
+  }];
+  UIButton* closeButton = [UIButton buttonWithConfiguration:closeButtonConfig
+                                              primaryAction:closeAction];
+  closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ICON_CLOSE);
+  [self.view addSubview:closeButton];
+  AddSquareConstraints(closeButton, kCloseButtonSize);
+
   UILayoutGuide* headerLayoutGuide = [[UILayoutGuide alloc] init];
   [self.view addLayoutGuide:headerLayoutGuide];
 
@@ -111,6 +136,10 @@ constexpr CGFloat kChipsContainerHeight = 180.0;
   centerHeaderConstraint.priority = UILayoutPriorityDefaultHigh;
 
   [NSLayoutConstraint activateConstraints:@[
+    [closeButton.topAnchor constraintEqualToAnchor:self.view.topAnchor
+                                          constant:kCloseButtonPadding],
+    [closeButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
+                                               constant:-kCloseButtonPadding],
     guideTopConstraint,
     [headerLayoutGuide.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor

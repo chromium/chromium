@@ -23,16 +23,37 @@ ZeroStateSuggestion* CreateSuggestion(NSString* text, NSString* query) {
   return suggestion;
 }
 
-// Recursively finds all UIButton instances in the view hierarchy.
+// Recursively finds all chip UIButton instances (with titles) in the view
+// hierarchy.
 NSArray<UIButton*>* FindButtons(UIView* view) {
   NSMutableArray<UIButton*>* buttons = [NSMutableArray array];
   if ([view isKindOfClass:[UIButton class]]) {
-    [buttons addObject:static_cast<UIButton*>(view)];
+    UIButton* button = static_cast<UIButton*>(view);
+    if (button.configuration.title.length > 0) {
+      [buttons addObject:button];
+    }
   }
   for (UIView* subview in view.subviews) {
     [buttons addObjectsFromArray:FindButtons(subview)];
   }
   return buttons;
+}
+
+// Recursively finds the close UIButton instance in the view hierarchy.
+UIButton* FindCloseButton(UIView* view) {
+  if ([view isKindOfClass:[UIButton class]]) {
+    UIButton* button = static_cast<UIButton*>(view);
+    if (button.configuration.image && !button.configuration.title.length) {
+      return button;
+    }
+  }
+  for (UIView* subview in view.subviews) {
+    UIButton* found = FindCloseButton(subview);
+    if (found) {
+      return found;
+    }
+  }
+  return nil;
 }
 
 // Recursively finds all UILabel instances in the view hierarchy.
@@ -153,6 +174,21 @@ TEST_F(GeminiZeroStateViewControllerTest, TapChipButtonNotifiesMutator) {
                                      didSelectSuggestion:suggestion2]);
 
   [buttons[1] sendActionsForControlEvents:UIControlEventTouchUpInside];
+
+  id self = nil;
+  OCMVerifyAll(mock_mutator_);
+}
+
+// Tests that tapping the close button notifies the mutator.
+TEST_F(GeminiZeroStateViewControllerTest, TapCloseButtonNotifiesMutator) {
+  [view_controller_ loadViewIfNeeded];
+
+  UIButton* close_button = FindCloseButton(view_controller_.view);
+  ASSERT_NE(close_button, nil);
+
+  OCMExpect([mock_mutator_ didTapZeroStateCloseButton]);
+
+  [close_button sendActionsForControlEvents:UIControlEventTouchUpInside];
 
   id self = nil;
   OCMVerifyAll(mock_mutator_);

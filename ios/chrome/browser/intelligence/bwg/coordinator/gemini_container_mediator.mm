@@ -499,6 +499,10 @@ class GeminiContainerMediatorTabHelperObserver
                                     YES);
 }
 
+- (void)didTapZeroStateCloseButton {
+  [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
+}
+
 - (NSString*)userFirstName {
   id<SystemIdentity> identity =
       _authService ? _authService->GetPrimaryIdentity() : nil;

@@ -883,6 +883,14 @@ TEST_F(GeminiContainerMediatorTest, TestDidSelectSuggestionEmptyQuery) {
   EXPECT_FALSE(ios::provider::GetLastUpdatePromptActionShouldAutoSubmit());
 }
 
+// Tests that didTapZeroStateCloseButton dismisses the Gemini flow.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidTapZeroStateCloseButtonDismissesGeminiFlow) {
+  OCMExpect([mock_gemini_handler_ dismissGeminiFlowWithCompletion:nil]);
+  [mediator_ didTapZeroStateCloseButton];
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+}
+
 // Tests that propagatePageContext queries sharedTabsDelegate and
 // updates the active attached tab context.
 TEST_F(GeminiContainerMediatorTest,
