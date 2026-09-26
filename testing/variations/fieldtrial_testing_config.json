@@ -5444,9 +5444,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Beta_M154",
                     "enable_features": [
-                        "ComposeboxDriveContextMenuOption"
+                        "ComposeboxDriveContextMenuOption",
+                        "ComposeboxDriveContextMenuOptionDisclaimer"
                     ]
                 }
             ]
