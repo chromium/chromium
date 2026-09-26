@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_PICKER_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_PICKER_UTILS_H_
 
+#include "build/build_config.h"
 #include "ui/gfx/native_ui_types.h"
 
 class BrowserWindowInterface;
@@ -33,5 +34,14 @@ views::Widget* CreateMediaPickerDialogWidget(BrowserWindowInterface* browser,
                                              views::DialogDelegate* delegate,
                                              gfx::NativeWindow context,
                                              gfx::NativeView parent);
+
+#if BUILDFLAG(IS_MAC)
+// Applies or removes the "floating companion" window treatment given to a
+// media picker opened from a surface that itself floats (e.g. a searchbox
+// popup). The individual window properties involved must be kept in sync and
+// changed in a specific order, so always go through this function rather than
+// setting them directly.
+void SetMediaPickerFloatingTreatment(views::Widget* widget, bool floating);
+#endif
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PICKER_UTILS_H_

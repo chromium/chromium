@@ -32,6 +32,10 @@ class DesktopMediaPermissionPaneViewMac : public views::View {
  private:
   void OpenScreenRecordingSettingsPane();
 
+  // Returns the dialog to the normal window level if it was floating, so that
+  // the System Settings window this pane sends the user to is reachable.
+  void LowerFloatingWidget();
+
   const DesktopMediaList::Type type_;
   base::RepeatingCallback<void()> open_screen_recording_settings_callback_;
   bool clicked_ = false;

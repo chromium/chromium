@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -13,6 +14,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -57,15 +59,10 @@ void CenterDialogOnTargetDisplay(views::Widget* widget,
       parent_bounds = context_bounds;
     }
 #if BUILDFLAG(IS_MAC)
-    // Only enable floating & activation independence if the caller widget was
-    // explicitly designed to float.
-    const bool is_floating_companion =
-        context_widget->GetZOrderLevel() == ui::ZOrderLevel::kFloatingWindow;
-
-    if (is_floating_companion) {
-      widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
-      widget->SetActivationIndependence(true);
-      widget->SetCanAppearInExistingFullscreenSpaces(true);
+    // Only enable the floating treatment if the caller widget was explicitly
+    // designed to float.
+    if (context_widget->GetZOrderLevel() == ui::ZOrderLevel::kFloatingWindow) {
+      SetMediaPickerFloatingTreatment(widget, true);
     }
 #endif
   }
@@ -147,3 +144,16 @@ views::Widget* CreateMediaPickerDialogWidget(BrowserWindowInterface* browser,
 
   return widget;
 }
+
+#if BUILDFLAG(IS_MAC)
+void SetMediaPickerFloatingTreatment(views::Widget* widget, bool floating) {
+  CHECK(widget);
+  // `Widget::SetActivationIndependence()` CHECKs that the z-order level already
+  // matches the requested independence, so the level must always be updated
+  // first, in both directions.
+  widget->SetZOrderLevel(floating ? ui::ZOrderLevel::kFloatingWindow
+                                  : ui::ZOrderLevel::kNormal);
+  widget->SetActivationIndependence(floating);
+  widget->SetCanAppearInExistingFullscreenSpaces(floating);
+}
+#endif

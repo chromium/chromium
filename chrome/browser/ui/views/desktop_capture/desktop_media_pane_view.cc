@@ -106,6 +106,11 @@ bool DesktopMediaPaneView::WasPermissionButtonClicked() const {
          permission_pane_view_->WasPermissionButtonClicked();
 }
 
+void DesktopMediaPaneView::SimulatePermissionButtonClickForTesting() {
+  CHECK(permission_pane_view_);
+  permission_pane_view_->SimulateClickForTesting();  // IN-TEST
+}
+
 bool DesktopMediaPaneView::PermissionRequired() const {
   switch (type_) {
     case DesktopMediaList::Type::kScreen:
