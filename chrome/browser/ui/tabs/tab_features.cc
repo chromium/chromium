@@ -164,6 +164,7 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_attachment_tracker.h"
+#include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/window_management/window_management_content_setting_observer.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -851,6 +852,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   tab_context_decryption_token_tab_helper_ =
       TabContextDecryptionTokenTabHelper::MaybeCreate(tab.GetContents());
+
+  v8_compile_hints_tab_helper_ =
+      v8_compile_hints::V8CompileHintsTabHelper::MaybeCreate(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1130,6 +1134,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   tab_context_decryption_token_tab_helper_ =
       TabContextDecryptionTokenTabHelper::MaybeCreate(new_contents);
+
+  v8_compile_hints_tab_helper_ =
+      v8_compile_hints::V8CompileHintsTabHelper::MaybeCreate(new_contents);
 }
 
 customize_chrome::SidePanelController*

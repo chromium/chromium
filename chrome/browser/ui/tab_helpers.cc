@@ -91,7 +91,6 @@
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
-#include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -590,8 +589,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
                                                                service);
   }
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
-  v8_compile_hints::V8CompileHintsTabHelper::MaybeCreateForWebContents(
-      web_contents);
   vr::VrTabHelper::CreateForWebContents(web_contents);
   OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);
 

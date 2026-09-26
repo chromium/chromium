@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_V8_COMPILE_HINTS_V8_COMPILE_HINTS_TAB_HELPER_H_
 #define CHROME_BROWSER_V8_COMPILE_HINTS_V8_COMPILE_HINTS_TAB_HELPER_H_
 
+#include <memory>
+
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/v8_compile_hints/proto/v8_compile_hints_metadata.pb.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
@@ -40,9 +41,7 @@ enum class V8CompileHintsModelQuality {
 // OptimizationGuide, and sends it to the renderer.
 //
 // All methods must be called from the UI thread.
-class V8CompileHintsTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<V8CompileHintsTabHelper> {
+class V8CompileHintsTabHelper : public content::WebContentsObserver {
  public:
   // Indirection for sending the data, used in testing.
   using SendDataToRendererFunction =
@@ -59,7 +58,8 @@ class V8CompileHintsTabHelper
 
   ~V8CompileHintsTabHelper() override;
 
-  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+  static std::unique_ptr<V8CompileHintsTabHelper> MaybeCreate(
+      content::WebContents* web_contents);
 
   // content::WebContentsObserver implementation
   void PrimaryPageChanged(content::Page& page) override;
@@ -73,8 +73,6 @@ class V8CompileHintsTabHelper
       "WebCore.Scripts.V8CrowdsourcedCompileHints.ModelQuality";
 
  private:
-  friend class content::WebContentsUserData<V8CompileHintsTabHelper>;
-
   void SendDataToRenderer(const v8_compile_hints::proto::Model& model);
 
   // Callback for |optimization_guide_decider_|.
@@ -94,8 +92,6 @@ class V8CompileHintsTabHelper
       optimization_guide::OptimizationGuideDecision,
       const optimization_guide::OptimizationMetadata&)>
       on_optimization_guide_decision_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace v8_compile_hints

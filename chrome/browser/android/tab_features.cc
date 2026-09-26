@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
@@ -240,6 +241,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   tab_context_decryption_token_tab_helper_ =
       TabContextDecryptionTokenTabHelper::MaybeCreate(web_contents);
+
+  v8_compile_hints_tab_helper_ =
+      v8_compile_hints::V8CompileHintsTabHelper::MaybeCreate(web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

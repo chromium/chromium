@@ -38,8 +38,7 @@ class V8CompileHintsTabHelperTest : public ChromeRenderViewHostTestHarness {
   // Owned by OptimizationGuide.
   raw_ptr<NiceMock<MockOptimizationGuideKeyedService>>
       mock_optimization_guide_keyed_service_;
-  // Owned by |web_contents()|.
-  raw_ptr<V8CompileHintsTabHelper> tab_helper_;
+  std::unique_ptr<V8CompileHintsTabHelper> tab_helper_;
 };
 
 void V8CompileHintsTabHelperTest::SetUp() {
@@ -58,13 +57,12 @@ void V8CompileHintsTabHelperTest::SetUp() {
                     return std::make_unique<
                         NiceMock<MockOptimizationGuideKeyedService>>();
                   })));
-  V8CompileHintsTabHelper::MaybeCreateForWebContents(web_contents());
-  tab_helper_ = V8CompileHintsTabHelper::FromWebContents(web_contents());
+  tab_helper_ = V8CompileHintsTabHelper::MaybeCreate(web_contents());
 }
 
 void V8CompileHintsTabHelperTest::TearDown() {
   mock_optimization_guide_keyed_service_ = nullptr;
-  tab_helper_ = nullptr;
+  tab_helper_.reset();
   ChromeRenderViewHostTestHarness::TearDown();
 }
 

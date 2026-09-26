@@ -13,11 +13,11 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace v8_compile_hints {
@@ -28,26 +28,25 @@ V8CompileHintsTabHelper::V8CompileHintsTabHelper(
     content::WebContents* web_contents,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<V8CompileHintsTabHelper>(*web_contents),
       optimization_guide_decider_(optimization_guide_decider),
       web_contents_(web_contents) {
   optimization_guide_decider_->RegisterOptimizationTypes(
       {optimization_guide::proto::V8_COMPILE_HINTS});
 }
 
-void V8CompileHintsTabHelper::MaybeCreateForWebContents(
+// static
+std::unique_ptr<V8CompileHintsTabHelper> V8CompileHintsTabHelper::MaybeCreate(
     content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   optimization_guide::OptimizationGuideDecider* optimization_guide_decider =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   if (!optimization_guide_decider) {
-    return;
+    return nullptr;
   }
 
-  web_contents->SetUserData(&kUserDataKey,
-                            std::make_unique<V8CompileHintsTabHelper>(
-                                web_contents, optimization_guide_decider));
+  return std::make_unique<V8CompileHintsTabHelper>(web_contents,
+                                                   optimization_guide_decider);
 }
 
 void V8CompileHintsTabHelper::PrimaryPageChanged(content::Page& page) {
@@ -148,7 +147,5 @@ void V8CompileHintsTabHelper::SendDataToRenderer(const proto::Model& model) {
 
   web_contents_->SetV8CompileHints(std::move(read_only_region));
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(V8CompileHintsTabHelper);
 
 }  // namespace v8_compile_hints

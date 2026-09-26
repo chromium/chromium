@@ -74,6 +74,10 @@ namespace payments {
 class WebPaymentsObserver;
 }  // namespace payments
 
+namespace v8_compile_hints {
+class V8CompileHintsTabHelper;
+}  // namespace v8_compile_hints
+
 class ConnectionHelpTabHelper;
 class HttpAuthCacheStatus;
 class SecurityStateEventObserver;
@@ -176,6 +180,8 @@ class TabFeatures {
   std::unique_ptr<payments::WebPaymentsObserver> web_payments_observer_;
   std::unique_ptr<TabContextDecryptionTokenTabHelper>
       tab_context_decryption_token_tab_helper_;
+  std::unique_ptr<v8_compile_hints::V8CompileHintsTabHelper>
+      v8_compile_hints_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;
