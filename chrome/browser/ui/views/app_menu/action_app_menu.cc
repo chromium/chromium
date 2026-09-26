@@ -507,13 +507,17 @@ void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,
   search_item->set_children_use_full_width(true);
   search_item->set_vertical_margin(0);
 
+  const auto* provider = ChromeLayoutProvider::Get();
+  gfx::Insets margins =
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN);
+  if (has_notification_header_) {
+    margins.set_top(margins.top() +
+                    provider->GetDistanceMetric(
+                        DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
+  }
+
   auto search_bar = std::make_unique<AppMenuSearchBarView>();
-  search_bar->SetProperty(
-      views::kMarginsKey,
-      ChromeLayoutProvider::Get()->GetInsetsMetric(
-          has_notification_header_
-              ? INSETS_ACTION_APP_MENU_SEARCH_BAR_WITH_NOTIFICATION_MARGIN
-              : INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
+  search_bar->SetProperty(views::kMarginsKey, margins);
   search_bar_ = search_bar.get();
   search_item->AddChildView(std::move(search_bar));
 }
@@ -569,16 +573,20 @@ void ActionAppMenu::PopulateBlockSection(
   block_item->set_children_use_full_width(true);
   block_item->set_vertical_margin(0);
 
+  const auto* provider = ChromeLayoutProvider::Get();
+  gfx::Insets margins =
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_MARGIN);
+  if (has_notification_header_ && !search_bar_) {
+    margins.set_top(margins.top() +
+                    provider->GetDistanceMetric(
+                        DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
+  }
+
   auto block_view = std::make_unique<AppMenuBlockView>(
       block_action_item, &action_view_controller_, &command_to_action_map_,
       base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
                           base::Unretained(this)));
-  block_view->SetProperty(
-      views::kMarginsKey,
-      ChromeLayoutProvider::Get()->GetInsetsMetric(
-          has_notification_header_ && !search_bar_
-              ? INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN
-              : INSETS_ACTION_APP_MENU_BLOCK_MARGIN));
+  block_view->SetProperty(views::kMarginsKey, margins);
   block_item->AddChildView(std::move(block_view));
 }
 

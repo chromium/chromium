@@ -1490,7 +1490,7 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
   ASSERT_TRUE(search_bar_margins);
   EXPECT_EQ(*search_bar_margins, provider->GetInsetsMetric(
                                      INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
-  EXPECT_EQ(*search_bar_margins, gfx::Insets::TLBR(4, 16, 16, 16));
+  EXPECT_EQ(*search_bar_margins, gfx::Insets::TLBR(0, 12, 12, 12));
 
   // The block section item follows the search bar and has 0dp top margin.
   views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(1);
@@ -1506,7 +1506,7 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
   ASSERT_TRUE(block_margins);
   EXPECT_EQ(*block_margins,
             provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_MARGIN));
-  EXPECT_EQ(*block_margins, gfx::Insets::TLBR(0, 16, 8, 16));
+  EXPECT_EQ(*block_margins, gfx::Insets::TLBR(0, 12, 8, 12));
 
   // Check initial empty state.
   views::ImageView* icon = search_bar->search_icon_for_testing();
@@ -1596,8 +1596,7 @@ TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
   EXPECT_EQ(submenu->GetInsets(), gfx::Insets());
 
   // The block section item has no border. Margins are applied to the child
-  // block view (4px top margin adjusting for menu top margin and 16px
-  // horizontal insets).
+  // block view (0px top margin and 12px horizontal insets).
   views::MenuItemView* block_item = submenu->GetMenuItemAt(0);
   ASSERT_NE(block_item, nullptr);
   EXPECT_EQ(block_item->GetInsets(), gfx::Insets());
@@ -1611,7 +1610,7 @@ TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
   ASSERT_TRUE(block_margins);
   EXPECT_EQ(*block_margins,
             provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_MARGIN));
-  EXPECT_EQ(*block_margins, gfx::Insets::TLBR(4, 16, 8, 16));
+  EXPECT_EQ(*block_margins, gfx::Insets::TLBR(0, 12, 8, 12));
   EXPECT_EQ(block_view->GetInsideBorderInsets(), gfx::Insets());
 
   // The footer item has 0 vertical margin, 0 insets (border removed).
@@ -1632,7 +1631,7 @@ TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
   EXPECT_EQ(top_container->GetInsideBorderInsets(),
             provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_MARGIN));
   EXPECT_EQ(top_container->GetInsideBorderInsets(),
-            gfx::Insets::TLBR(8, 16, 8, 16));
+            gfx::Insets::TLBR(8, 12, 8, 12));
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -1704,25 +1703,25 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   ASSERT_GE(root_titles.size(), 2u);
 
   // First header ("Your Chrome"):
-  // - Starts flush with the card (16dp horizontal insets, content start 16)
+  // - Starts flush with the card (12dp horizontal insets, content start 12)
   // - Standard top margin (8dp).
   EXPECT_EQ(root_titles[0]->GetParentMenuItem(), root);
   ASSERT_TRUE(root_titles[0]->GetBorder());
   EXPECT_EQ(root_titles[0]->GetInsets(),
             provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_HEADER));
-  EXPECT_EQ(root_titles[0]->GetInsets(), gfx::Insets::VH(0, 16));
-  EXPECT_EQ(root_titles[0]->GetContentStart(), 16);
+  EXPECT_EQ(root_titles[0]->GetInsets(), gfx::Insets::VH(0, 12));
+  EXPECT_EQ(root_titles[0]->GetContentStart(), 12);
   EXPECT_EQ(root_titles[0]->GetTopMargin(), 8);
 
   // Second header ("Tools and Actions"):
-  // - Starts flush with the card (16dp horizontal insets, content start 16)
+  // - Starts flush with the card (12dp horizontal insets, content start 12)
   // - Doubled top margin (16dp).
   EXPECT_EQ(root_titles[1]->GetParentMenuItem(), root);
   ASSERT_TRUE(root_titles[1]->GetBorder());
   EXPECT_EQ(root_titles[1]->GetInsets(),
             provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_HEADER));
-  EXPECT_EQ(root_titles[1]->GetInsets(), gfx::Insets::VH(0, 16));
-  EXPECT_EQ(root_titles[1]->GetContentStart(), 16);
+  EXPECT_EQ(root_titles[1]->GetInsets(), gfx::Insets::VH(0, 12));
+  EXPECT_EQ(root_titles[1]->GetContentStart(), 12);
   EXPECT_EQ(root_titles[1]->GetTopMargin(), 16);
 
   // 4. Headers in submenus (not under root).
@@ -1777,18 +1776,18 @@ TEST_F(ActionAppMenuTest, BlockSectionAndMenuHostWidth) {
   ASSERT_TRUE(submenu);
 
   // 1. Verify SubmenuView (the menu host content) preferred width and laid-out
-  // width is 330dp.
-  EXPECT_EQ(submenu->GetPreferredSize({}).width(), 330);
-  EXPECT_EQ(submenu->width(), 330);
+  // width is 322dp.
+  EXPECT_EQ(submenu->GetPreferredSize({}).width(), 322);
+  EXPECT_EQ(submenu->width(), 322);
 
-  // 2. Verify block container row MenuItemView width is 330dp.
+  // 2. Verify block container row MenuItemView width is 322dp.
   views::MenuItemView* block_item = submenu->GetMenuItemAt(0);
   ASSERT_NE(block_item, nullptr);
-  EXPECT_EQ(block_item->GetDimensions().children_width, 330);
-  EXPECT_EQ(block_item->width(), 330);
+  EXPECT_EQ(block_item->GetDimensions().children_width, 322);
+  EXPECT_EQ(block_item->width(), 322);
 
   // 3. Verify AppMenuBlockView preferred width (298dp = 3 * 94dp + 2 *
-  // 8dp) and laid-out width (330dp - 32dp margins = 298dp).
+  // 8dp) and laid-out width (322dp - 24dp margins = 298dp).
   ASSERT_EQ(block_item->children().size(), 1u);
   auto* block_view =
       views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
@@ -1888,9 +1887,8 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
   EXPECT_EQ(upgrade_item->GetMenuItemBackground()->bottom_radius, 12);
 
   // Verify the following block section item has
-  // INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN, creating 12px of
-  // whitespace below the notification banner (matching the 12px container inset
-  // above).
+  // DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN added to its top margin,
+  // creating 12px of whitespace below the notification banner.
   views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(1);
   ASSERT_NE(block_item, nullptr);
   ASSERT_EQ(block_item->children().size(), 1u);
@@ -1900,9 +1898,13 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
   const gfx::Insets* block_margins =
       block_view->GetProperty(views::kMarginsKey);
   ASSERT_TRUE(block_margins);
-  EXPECT_EQ(*block_margins,
-            ChromeLayoutProvider::Get()->GetInsetsMetric(
-                INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN));
+  const auto* provider = ChromeLayoutProvider::Get();
+  gfx::Insets expected_margins =
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_MARGIN);
+  expected_margins.set_top(expected_margins.top() +
+                           provider->GetDistanceMetric(
+                               DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
+  EXPECT_EQ(*block_margins, expected_margins);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -2049,9 +2051,8 @@ TEST_F(ActionAppMenuTest, DefaultBrowserNotificationRowStyling) {
   EXPECT_EQ(default_browser_item->GetMenuItemBackground()->bottom_radius, 12);
 
   // Verify the following block section item has
-  // INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN, creating 12px of
-  // whitespace below the notification banner (matching the 12px container
-  // inset above).
+  // DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN added to its top margin,
+  // creating 12px of whitespace below the notification banner.
   views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(1);
   ASSERT_NE(block_item, nullptr);
   ASSERT_EQ(block_item->children().size(), 1u);
@@ -2061,9 +2062,13 @@ TEST_F(ActionAppMenuTest, DefaultBrowserNotificationRowStyling) {
   const gfx::Insets* block_margins =
       block_view->GetProperty(views::kMarginsKey);
   ASSERT_TRUE(block_margins);
-  EXPECT_EQ(*block_margins,
-            ChromeLayoutProvider::Get()->GetInsetsMetric(
-                INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN));
+  const auto* provider = ChromeLayoutProvider::Get();
+  gfx::Insets expected_margins =
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_MARGIN);
+  expected_margins.set_top(expected_margins.top() +
+                           provider->GetDistanceMetric(
+                               DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
+  EXPECT_EQ(*block_margins, expected_margins);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -2212,9 +2217,13 @@ TEST_F(ActionAppMenuTest, GlobalErrorNotificationRowStyling) {
   const gfx::Insets* block_margins =
       block_view->GetProperty(views::kMarginsKey);
   ASSERT_TRUE(block_margins);
-  EXPECT_EQ(*block_margins,
-            ChromeLayoutProvider::Get()->GetInsetsMetric(
-                INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN));
+  const auto* provider = ChromeLayoutProvider::Get();
+  gfx::Insets expected_margins =
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_MARGIN);
+  expected_margins.set_top(expected_margins.top() +
+                           provider->GetDistanceMetric(
+                               DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
+  EXPECT_EQ(*block_margins, expected_margins);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

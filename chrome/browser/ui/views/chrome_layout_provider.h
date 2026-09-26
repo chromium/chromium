@@ -31,15 +31,8 @@ enum ChromeInsetsMetric {
   INSETS_ACTION_APP_MENU_ITEM,
   // Margins for the search bar in the Block-style Action App Menu.
   INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN,
-  // Margins for the search bar in the Block-style Action App Menu when a
-  // notification header is present.
-  INSETS_ACTION_APP_MENU_SEARCH_BAR_WITH_NOTIFICATION_MARGIN,
   // Margins for the block actions section in the Block-style Action App Menu.
-  // Top margin is dynamic depending on whether the search bar is enabled.
   INSETS_ACTION_APP_MENU_BLOCK_MARGIN,
-  // Margins for the block actions section in the Block-style Action App Menu
-  // when a notification header is present and the search bar is absent.
-  INSETS_ACTION_APP_MENU_BLOCK_WITH_NOTIFICATION_MARGIN,
   // Border insets for section headers in the Block-style Action App Menu.
   INSETS_ACTION_APP_MENU_HEADER,
   // Margins for the footer container in the Block-style Action App Menu.
@@ -258,6 +251,8 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING,
   // Horizontal margin for Block-style Action App Menu section container cards.
   DISTANCE_ACTION_APP_MENU_CONTAINER_MARGIN,
+  // Top margin added below a notification header in the Block-style App Menu.
+  DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN,
   // Maximum width for the Block-style Action App Menu.
   DISTANCE_ACTION_APP_MENU_MAX_WIDTH,
 };
