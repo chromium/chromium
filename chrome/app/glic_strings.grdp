@@ -360,7 +360,7 @@
   <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3_V2" desc="Bullet point explaining user responsibility and risks for this setting, with accessible link attributes.">
     Gemini may make mistakes, like sharing your info or making purchases without asking. <ph name="LINK_BEGIN">&lt;a href="$1" target="_blank" aria-label="$2" aria-description="$3"&gt;</ph>Review the risks<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_REVIEW_RISKS_LINK_LABEL_SPARK" desc="Accessible name for the 'Review the risks' link in the experimental triggering consider section." is_accessibility_with_no_ui="true">
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_REVIEW_RISKS_LINK_LABEL" desc="Accessible name for the 'Review the risks' link in the experimental triggering consider section." is_accessibility_with_no_ui="true">
     Review the risks of using Gemini
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE" desc="Title for the Gemini feature introduction screen" formatter_data="android_java">

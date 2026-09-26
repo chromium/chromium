@@ -1165,7 +1165,7 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
             IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_3_V2,
             base::UTF8ToUTF16(experimental_triggering_safety_url),
             base::EscapeForHTML(l10n_util::GetStringUTF16(
-                IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_REVIEW_RISKS_LINK_LABEL_SPARK)),
+                IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_REVIEW_RISKS_LINK_LABEL)),
             base::EscapeForHTML(
                 l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB))));
   } else {
