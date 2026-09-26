@@ -42,6 +42,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(const base::Feature*,
                              kAppMenuNewBadgeFeatureInternal,
                              nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAppMenuIsAlertedInternal, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(int, kAppMenuActionParamInternal, -1)
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
@@ -84,6 +85,9 @@ const ui::ClassProperty<const base::Feature*>* const
 
 const ui::ClassProperty<bool>* const AppMenuActionItem::kIsAlertedKey =
     kAppMenuIsAlertedInternal;
+
+const ui::ClassProperty<int>* const AppMenuActionItem::kActionParamKey =
+    kAppMenuActionParamInternal;
 
 std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
     actions::ActionId action_id,
@@ -140,6 +144,10 @@ std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
   if (params.chip_text.has_value()) {
     item->SetProperty(kChipTextKey, std::make_unique<std::u16string>(
                                         params.chip_text.value()));
+  }
+
+  if (params.action_param.has_value()) {
+    item->SetProperty(kActionParamKey, params.action_param.value());
   }
 
   return item;

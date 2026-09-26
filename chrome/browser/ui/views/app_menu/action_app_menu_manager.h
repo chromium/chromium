@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "ui/actions/action_id.h"
@@ -40,6 +41,10 @@ class ActionAppMenuManager {
   // Populates the menu action hierarchy under the app menu root.
   void CreateMenuHierarchy();
 
+  // Cleans up the menu action hierarchy and records any menu close
+  // notifications when the menu is closed.
+  void OnMenuClosed();
+
   actions::ActionItem* GetAppMenuRoot() const;
 
  private:
@@ -56,6 +61,7 @@ class ActionAppMenuManager {
   std::unique_ptr<TabGroupDynamicMenu> tab_groups_menu_;
   std::unique_ptr<SendTabToSelfDynamicMenu> send_tab_to_self_menu_;
   std::unique_ptr<ProfileDynamicMenu> profile_menu_;
+  std::optional<base::ElapsedTimer> safety_hub_notification_timer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_MANAGER_H_

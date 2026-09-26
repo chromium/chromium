@@ -134,6 +134,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
@@ -154,6 +155,7 @@
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_bubble_controller.h"
@@ -261,6 +263,18 @@ ui::Accelerator GetAcceleratorForCommandId(int command_id) {
     return accelerator;
   }
   return ui::Accelerator();
+}
+
+void MaybeLogSafetyHubNotificationClicked(
+    BrowserWindowInterface* bwi,
+    const actions::ActionInvocationContext& context) {
+  const int action_param =
+      context.GetProperty(AppMenuActionItem::kActionParamKey);
+  if (action_param != -1) {
+    safety_hub_util::LogMenuNotificationClicked(
+        bwi->GetProfile(),
+        static_cast<safety_hub::SafetyHubModuleType>(action_param));
+  }
 }
 
 actions::ActionItem::ActionItemBuilder ChromeMenuAction(
@@ -3865,6 +3879,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                MaybeLogSafetyHubNotificationClicked(bwi, context);
                 chrome::ShowPasswordCheck(bwi);
               },
               bwi))
@@ -4603,6 +4618,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                MaybeLogSafetyHubNotificationClicked(bwi, context);
                 chrome::ShowExtensions(bwi);
               },
               bwi),
@@ -4634,6 +4650,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                MaybeLogSafetyHubNotificationClicked(bwi, context);
                 chrome::ShowSettingsSubPage(bwi, chrome::kSafetyHubSubPage);
               },
               bwi),

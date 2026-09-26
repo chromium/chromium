@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/safety_hub/menu_notification_service.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -2462,6 +2463,77 @@ TEST_F(ActionAppMenuTest, ZoomAndBlockButtonMetrics) {
                                      MENU_ACTION_NEW_TAB, 1);
   histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction.NewTab", 0);
   histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
+}
+
+TEST_F(ActionAppMenuTest, SafetyHubNotificationMetrics) {
+  SafetyHubMenuNotificationServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+        Profile* profile = Profile::FromBrowserContext(context);
+        auto service = std::make_unique<SafetyHubMenuNotificationService>(
+            profile->GetPrefs(), nullptr, nullptr,
+#if !BUILDFLAG(IS_ANDROID)
+            nullptr,
+#endif
+            profile);
+        auto getter = base::BindRepeating(
+            []() -> std::optional<std::unique_ptr<SafetyHubResult>> {
+              return std::make_unique<SafetyHubSafeBrowsingResult>(
+                  SafeBrowsingState::kDisabledByUser);
+            });
+        service->UpdateResultGetterForTesting(
+            safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS, getter);
+        return service;
+      }));
+
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.Impression",
+      safety_hub::SafetyHubSurfaces::kThreeDotMenu, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.EntryPointImpression",
+      safety_hub::SafetyHubEntryPoint::kMenuNotifications, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.MenuNotificationImpression",
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS, 1);
+
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionOpenSafetyHub, testing::_, testing::_))
+      .WillOnce([this](actions::ActionId id, actions::ActionItem* item,
+                       actions::ActionInvocationContext context) {
+        EXPECT_EQ(
+            context.GetProperty(AppMenuActionItem::kActionParamKey),
+            static_cast<int>(
+                safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS));
+        safety_hub_util::LogMenuNotificationClicked(
+            profile_.get(),
+            static_cast<safety_hub::SafetyHubModuleType>(
+                context.GetProperty(AppMenuActionItem::kActionParamKey)));
+      });
+  menu.ExecuteCommand(kActionOpenSafetyHub, /*mouse_event_flags=*/0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.Interaction",
+      safety_hub::SafetyHubSurfaces::kThreeDotMenu, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.EntryPointInteraction",
+      safety_hub::SafetyHubEntryPoint::kMenuNotifications, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyHub.MenuNotificationClicked",
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS, 1);
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_SHOW_SAFETY_HUB, 1);
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.SafetyHubNotificationOpenSafetyHub", 1);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
 }
 
 }  // namespace

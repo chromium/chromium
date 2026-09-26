@@ -74,8 +74,7 @@
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_context_menu_delegate.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -1324,18 +1323,8 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
 void AppMenuModel::LogSafetyHubInteractionMetrics(
     safety_hub::SafetyHubModuleType sh_module,
     int event_flags) {
-  base::UmaHistogramEnumeration("Settings.SafetyHub.Interaction",
-                                safety_hub::SafetyHubSurfaces::kThreeDotMenu);
-  base::UmaHistogramEnumeration(
-      "Settings.SafetyHub.EntryPointInteraction",
-      safety_hub::SafetyHubEntryPoint::kMenuNotifications);
-  base::UmaHistogramEnumeration("Settings.SafetyHub.MenuNotificationClicked",
-                                sh_module);
-
-  if (SafetyHubHatsService* hats_service =
-          SafetyHubHatsServiceFactory::GetForProfile(browser_->GetProfile())) {
-    hats_service->SafetyHubNotificationClicked(sh_module);
-  }
+  safety_hub_util::LogMenuNotificationClicked(browser_->GetProfile(),
+                                              sh_module);
 }
 
 void AppMenuModel::LogMenuMetrics(int command_id) {
@@ -2528,13 +2517,7 @@ bool AppMenuModel::AddSafetyHubMenuItem() {
   if (!notification.has_value()) {
     return false;
   }
-  base::UmaHistogramEnumeration("Settings.SafetyHub.Impression",
-                                safety_hub::SafetyHubSurfaces::kThreeDotMenu);
-  base::UmaHistogramEnumeration(
-      "Settings.SafetyHub.EntryPointImpression",
-      safety_hub::SafetyHubEntryPoint::kMenuNotifications);
-  base::UmaHistogramEnumeration("Settings.SafetyHub.MenuNotificationImpression",
-                                notification->module);
+  safety_hub_util::LogMenuNotificationImpression(notification->module);
   const auto safety_hub_icon = ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled() ? kSecurityIcon : kSecurityOldIcon,
       ui::kColorMenuIcon, kDefaultIconSize);

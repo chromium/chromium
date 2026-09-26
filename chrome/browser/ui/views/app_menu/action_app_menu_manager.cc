@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -417,6 +418,16 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
   AddFooterActions(root);
 }
 
+void ActionAppMenuManager::OnMenuClosed() {
+  if (safety_hub_notification_timer_.has_value()) {
+    safety_hub_util::MaybeNotifyMenuNotificationSeen(
+        browser_window_interface_->GetProfile(),
+        safety_hub_notification_timer_->Elapsed());
+    safety_hub_notification_timer_.reset();
+  }
+  GetAppMenuRoot()->ResetActionList();
+}
+
 void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
   actions::ActionItem* scope =
       BrowserActions::From(browser_window_interface_)->root_action_item();
@@ -469,9 +480,13 @@ void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
             if (std::optional<actions::ActionId> action_id =
                     chrome::CommandActionUpdater::GetActionId(
                         notification->command)) {
-              if (maybe_add_notification(
-                      action_id.value(),
-                      {.text_override = notification->label})) {
+              if (maybe_add_notification(action_id.value(),
+                                         {.text_override = notification->label,
+                                          .action_param = static_cast<int>(
+                                              notification->module)})) {
+                safety_hub_util::LogMenuNotificationImpression(
+                    notification->module);
+                safety_hub_notification_timer_.emplace();
                 return;
               }
             }

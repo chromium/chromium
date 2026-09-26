@@ -56,6 +56,7 @@ class AppMenuActionItem {
     std::optional<bool> is_checkable;
     std::optional<ItemHeight> item_height;
     std::optional<std::u16string> minor_text;
+    std::optional<int> action_param;
     raw_ptr<const base::Feature> new_badge_feature;
     ui::ElementIdentifier element_id;
     std::optional<bool> is_alerted;
@@ -74,6 +75,7 @@ class AppMenuActionItem {
   static const ui::ClassProperty<const base::Feature*>* const
       kNewBadgeFeatureKey;
   static const ui::ClassProperty<bool>* const kIsAlertedKey;
+  static const ui::ClassProperty<int>* const kActionParamKey;
 
   AppMenuActionItem() = delete;
   AppMenuActionItem(const AppMenuActionItem&) = delete;

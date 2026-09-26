@@ -9,8 +9,12 @@
 #include "components/safety_check/safety_check.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/grit/branded_strings.h"
@@ -144,6 +148,43 @@ base::DictValue GetVersionCardData() {
                  static_cast<int>(safety_hub::SafetyHubCardState::kWarning));
   }
   return result;
+}
+
+void LogMenuNotificationImpression(safety_hub::SafetyHubModuleType sh_module) {
+  base::UmaHistogramEnumeration("Settings.SafetyHub.Impression",
+                                safety_hub::SafetyHubSurfaces::kThreeDotMenu);
+  base::UmaHistogramEnumeration(
+      "Settings.SafetyHub.EntryPointImpression",
+      safety_hub::SafetyHubEntryPoint::kMenuNotifications);
+  base::UmaHistogramEnumeration("Settings.SafetyHub.MenuNotificationImpression",
+                                sh_module);
+}
+
+void LogMenuNotificationClicked(Profile* profile,
+                                safety_hub::SafetyHubModuleType sh_module) {
+  base::UmaHistogramEnumeration("Settings.SafetyHub.Interaction",
+                                safety_hub::SafetyHubSurfaces::kThreeDotMenu);
+  base::UmaHistogramEnumeration(
+      "Settings.SafetyHub.EntryPointInteraction",
+      safety_hub::SafetyHubEntryPoint::kMenuNotifications);
+  base::UmaHistogramEnumeration("Settings.SafetyHub.MenuNotificationClicked",
+                                sh_module);
+
+  if (SafetyHubHatsService* hats_service =
+          SafetyHubHatsServiceFactory::GetForProfile(profile)) {
+    hats_service->SafetyHubNotificationClicked(sh_module);
+  }
+}
+
+void MaybeNotifyMenuNotificationSeen(Profile* profile,
+                                     base::TimeDelta time_shown) {
+  if (time_shown < base::Seconds(5)) {
+    return;
+  }
+  if (SafetyHubHatsService* hats_service =
+          SafetyHubHatsServiceFactory::GetForProfile(profile)) {
+    hats_service->SafetyHubNotificationSeen();
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

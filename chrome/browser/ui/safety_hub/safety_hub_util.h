@@ -7,8 +7,11 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "url/gurl.h"
+
+class Profile;
 
 namespace safety_hub_util {
 
@@ -46,6 +49,19 @@ bool IsAbusiveNotificationRevocationIgnored(HostContentSettingsMap* hcsm,
 #if !BUILDFLAG(IS_ANDROID)
 // Fetches data for the version card to return data to the desktop UI.
 base::DictValue GetVersionCardData();
+
+// Records impression metrics when a Safety Hub menu notification is shown.
+void LogMenuNotificationImpression(safety_hub::SafetyHubModuleType sh_module);
+
+// Records interaction metrics and notifies HaTS when a Safety Hub menu
+// notification is clicked.
+void LogMenuNotificationClicked(Profile* profile,
+                                safety_hub::SafetyHubModuleType sh_module);
+
+// Notifies HaTS if a Safety Hub menu notification was shown for at least the
+// minimum required duration (5 seconds).
+void MaybeNotifyMenuNotificationSeen(Profile* profile,
+                                     base::TimeDelta time_shown);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace safety_hub_util

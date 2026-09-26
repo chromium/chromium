@@ -183,16 +183,22 @@ void ActionAppMenu::ExecuteCommand(int id, int mouse_event_flags) {
       actions::ActionInvocationContext::Builder()
           .SetProperty(chrome::kDispositionKey,
                        ui::DispositionFromEventFlags(mouse_event_flags))
+          .SetProperty(
+              AppMenuActionItem::kActionParamKey,
+              base_action->GetProperty(AppMenuActionItem::kActionParamKey))
           .Build());
 }
 
 void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   actions::ActionItem* action_to_execute = nullptr;
+  int action_param = -1;
   if (action_to_execute_on_close_) {
     auto action_iterator =
         command_to_action_map_.find(action_to_execute_on_close_.value());
     CHECK(action_iterator != command_to_action_map_.end());
     action_to_execute = action_iterator->second->GetActionItem();
+    action_param = action_iterator->second->GetProperty(
+        AppMenuActionItem::kActionParamKey);
   }
 
   search_bar_ = nullptr;
@@ -203,10 +209,13 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
   if (on_menu_closed_callback_) {
     on_menu_closed_callback_.Run();
   }
-  menu_manager_->GetAppMenuRoot()->ResetActionList();
+  menu_manager_->OnMenuClosed();
 
   if (action_to_execute) {
-    action_to_execute->InvokeAction();
+    action_to_execute->InvokeAction(
+        actions::ActionInvocationContext::Builder()
+            .SetProperty(AppMenuActionItem::kActionParamKey, action_param)
+            .Build());
   }
 }
 
