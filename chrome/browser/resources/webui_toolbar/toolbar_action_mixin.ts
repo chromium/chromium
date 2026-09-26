@@ -17,6 +17,7 @@ export interface ToolbarActionMixinInterface<T> extends
   // Set if the TrackedElementManager indicates the element should be
   // highlighted.
   trackedHighlighted: boolean;
+  lastUnhighlightedTime: number;
   getElementId(state: T): string|undefined;
   getSecondaryElementId(): string|undefined;
   getMimeType(): string;
@@ -55,6 +56,7 @@ export const ToolbarActionMixin =
 
         accessor state: T = initialState;
         accessor trackedHighlighted: boolean = false;
+        lastUnhighlightedTime: number = 0;
 
         private registerHelpBubbleController_: AbortController|null = null;
 
@@ -137,6 +139,9 @@ export const ToolbarActionMixin =
           this.registerHelpBubble(newId, this, {
             secondaryId: this.getSecondaryElementId(),
             onHighlightChanged: (highlighted: boolean) => {
+              if (this.trackedHighlighted && !highlighted) {
+                this.lastUnhighlightedTime = performance.now();
+              }
               this.trackedHighlighted = highlighted;
             },
             onHelpBubbleShown: () => setHasHelpBubble(this, true),

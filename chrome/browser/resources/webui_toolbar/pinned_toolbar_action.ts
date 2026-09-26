@@ -23,7 +23,7 @@ import type {OverflowableToolbarAction} from './overflowable_toolbar_action_cont
 import {getHtml} from './pinned_toolbar_action.html.js';
 import {ToolbarActionMixin} from './toolbar_action_mixin.js';
 import {getCss} from './toolbar_button.css.js';
-import {getContextMenuPosition, getContextMenuSourceType} from './toolbar_button.js';
+import {getContextMenuPosition, getContextMenuSourceType, shouldSkipNextClick} from './toolbar_button.js';
 
 const initialState: PinnedToolbarActionState = {
   action: PinnedToolbarAction.kUnspecified,
@@ -86,6 +86,7 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase
   accessor poppedOut: boolean = false;
 
   private iconTable_: IconTable = IconTable.getInstance();
+  private skipNextClick_: boolean = false;
 
   private get browserProxy_(): BrowserProxy {
     return BrowserProxyImpl.getInstance();
@@ -113,7 +114,21 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase
     return style.length > 0 ? style : undefined;
   }
 
-  protected onActionClick_() {
+  protected onPointerdown_(e: PointerEvent) {
+    this.skipNextClick_ =
+        // `trackedHighlighted` should accurately reflect if this element has an
+        // anchored bubble. Popped out actions can be highlighted via
+        // `state.highlighted` which does not indicate they are anchoring a
+        // bubble.
+        shouldSkipNextClick(
+            e, this.trackedHighlighted, this.lastUnhighlightedTime);
+  }
+
+  protected onActionClick_(e: PointerEvent) {
+    if (this.skipNextClick_ && e.pointerType !== '') {
+      this.skipNextClick_ = false;
+      return;
+    }
     this.browserProxy_.toolbarUIHandler.invokePinnedToolbarAction(
         this.state.action);
   }

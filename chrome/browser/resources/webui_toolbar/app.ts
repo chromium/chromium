@@ -94,7 +94,7 @@ import {ToolbarActionMixin} from './toolbar_action_mixin.js';
 import type {ToolbarActionMixinInterface} from './toolbar_action_mixin.js';
 import {OverflowableToolbarActionContainerMixin} from './overflowable_toolbar_action_container_mixin.js';
 import type {OverflowableToolbarAction, OverflowableToolbarActionContainer} from './overflowable_toolbar_action_container_mixin.js';
-import {getClickSourceType, getContextMenuSourceType, PressHandler} from './toolbar_button.js';
+import {getClickSourceType, getContextMenuSourceType, PressHandler, shouldSkipNextClick} from './toolbar_button.js';
 import {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 import {CrLazyIconset} from '/shared/cr_lazy_iconset.js';
@@ -150,6 +150,7 @@ export {
   resetInitialStateForTesting,
   OverflowableToolbarActionContainerMixin,
   SecurityChipRole,
+  shouldSkipNextClick,
   ToolbarActionContainerMixin,
   ToolbarActionMixin,
   ToolbarChipButtonElement,

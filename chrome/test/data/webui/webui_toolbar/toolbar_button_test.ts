@@ -5,7 +5,7 @@
 import {isMac} from 'chrome://resources/js/platform.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {getClickSourceType, getContextMenuSourceType, PressHandler} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {getClickSourceType, getContextMenuSourceType, PressHandler, shouldSkipNextClick} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 suite('ToolbarButtonTest', function() {
   test('GetClickSourceType', function() {
@@ -89,6 +89,36 @@ suite('ToolbarButtonTest', function() {
     assertEquals(
         MenuSourceType.kMouse,
         getContextMenuSourceType(new MouseEvent('contextmenu', {button: 2})));
+  });
+
+  test('ShouldSkipNextClick', function() {
+    // Non-primary button (e.g. middle or right click) -> false
+    assertFalse(shouldSkipNextClick(
+        new PointerEvent('pointerdown', {button: 1, pointerType: 'mouse'}),
+        /*isBubbleOpen=*/ true));
+    assertFalse(shouldSkipNextClick(
+        new PointerEvent('pointerdown', {button: 2, pointerType: 'mouse'}),
+        /*isBubbleOpen=*/ true));
+
+    // Empty pointerType (e.g. keyboard) -> false
+    assertFalse(shouldSkipNextClick(
+        new PointerEvent('pointerdown', {button: 0, pointerType: ''}),
+        /*isBubbleOpen=*/ true));
+
+    const leftMouseDown =
+        new PointerEvent('pointerdown', {button: 0, pointerType: 'mouse'});
+
+    // Primary pointer click when bubble is open -> true
+    assertTrue(shouldSkipNextClick(leftMouseDown, /*isBubbleOpen=*/ true));
+
+    // Primary pointer click when bubble is closed and not recently closed ->
+    // false
+    assertFalse(shouldSkipNextClick(
+        leftMouseDown, /*isBubbleOpen=*/ false, performance.now() - 200));
+
+    // Primary pointer click when bubble was closed less than 100ms ago -> true
+    assertTrue(shouldSkipNextClick(
+        leftMouseDown, /*isBubbleOpen=*/ false, performance.now()));
   });
 
   const TARGET_SIZE = 100;

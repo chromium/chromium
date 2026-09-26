@@ -385,6 +385,28 @@ export function getContextMenuSourceType(e: Event): MenuSourceType {
   return MenuSourceType.kMouse;
 }
 
+/**
+ * Call this method on pointerdown to determine whether a click following this
+ * pointerdown event should be skipped to avoid reopening a bubble that was
+ * dismissed due to focus loss (due to this pointerdown). `e` should be the
+ * pointerdown event. `isBubbleOpen` should indicate if a bubble is currently
+ * open. `lastBubbleClosedTime` should indicate when a bubble was last closed.
+ */
+export function shouldSkipNextClick(
+    e: PointerEvent, isBubbleOpen: boolean,
+    lastBubbleClosedTime: number = 0): boolean {
+  // Ignore non-primary clicks or clicks not coming from a pointer (i.e.
+  // keyboard).
+  if (e.button !== BUTTON_LEFT || e.pointerType === '') {
+    return false;
+  }
+  return isBubbleOpen ||
+      // Sometimes the IPC to remove highlighting (due to the pointerdown) can
+      // arrive before the pointerdown event itself, so allow for this race.
+      // 100ms matches views::kMinimumTimeBetweenButtonClicks.
+      (performance.now() - lastBubbleClosedTime < 100);
+}
+
 export function getEventDispositionFlags(
     e: MouseEvent|KeyboardEvent,
     options: GetEventDispositionFlagsOptions = {}): EventDispositionFlag[] {
