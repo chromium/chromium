@@ -16,7 +16,7 @@ AreaOfInterest::~AreaOfInterest() = default;
 Suggestion::Suggestion() = default;
 Suggestion::~Suggestion() = default;
 
-void Suggestion::Execute(mojo::ScopedInterfaceEndpointHandle endpoint) {
+void Suggestion::Execute(mojo::GenericPendingAssociatedReceiver endpoint) {
   if (binder_ && endpoint.is_valid()) {
     binder_.Run(std::move(endpoint));
   }

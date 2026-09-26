@@ -7,6 +7,7 @@ module glic.selection;
 import "chrome/browser/selection/mojom/action.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "skia/public/mojom/bitmap.mojom";
+import "mojo/public/mojom/base/generic_pending_associated_receiver.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 union RegionShape {
@@ -92,8 +93,13 @@ interface SelectionOverlayPageHandler {
   // Suggested actions are delivered in segments via `listener`.
   GetSuggestedActions(pending_remote<SuggestedActionsListener> listener);
 
-  // The user executes a suggested action by ID.
-  ExecuteSuggestedAction(mojo_base.mojom.UnguessableToken action_id);
+  // The user executes a suggested action by ID. `channel` carries the endpoint
+  // the fulfillment talks over, tagged with the interface it speaks. It is
+  // required for `InlineFulfillment` actions and must be null for every other
+  // kind.
+  ExecuteSuggestedAction(
+      mojo_base.mojom.UnguessableToken action_id,
+      mojo_base.mojom.GenericPendingAssociatedReceiver? channel);
 };
 
 // `chrome-untrusted://glic/selection-overlay/` WebUI page handler that receives

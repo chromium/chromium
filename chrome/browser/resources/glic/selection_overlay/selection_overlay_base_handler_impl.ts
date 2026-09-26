@@ -163,7 +163,8 @@ export class SelectionOverlayBaseHandlerImpl extends
 
   executeSuggestedAction(actionId: UnguessableToken): void {
     const proxy = BrowserProxyImpl.getInstance();
-    proxy.handler.executeSuggestedAction(actionId);
+    // TODO(liuwilliam): Use a real channel for inline fulfillment.
+    proxy.handler.executeSuggestedAction(actionId, /*channel=*/ null);
   }
 
   dismissOverlay(reason: number): void {

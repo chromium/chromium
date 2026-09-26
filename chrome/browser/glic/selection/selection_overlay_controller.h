@@ -13,10 +13,13 @@
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
+#include "chrome/browser/selection/mojom/action.mojom-forward.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/ui/lens/overlay_base_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -152,7 +155,9 @@ class SelectionOverlayController
   void GetSuggestedActions(
       mojo::PendingRemote<selection::SuggestedActionsListener> listener)
       override;
-  void ExecuteSuggestedAction(const base::UnguessableToken& action_id) override;
+  void ExecuteSuggestedAction(
+      const base::UnguessableToken& action_id,
+      mojo::GenericPendingAssociatedReceiver channel) override;
 
  private:
   void OnScreenshotTaken(const SkBitmap& bitmap);

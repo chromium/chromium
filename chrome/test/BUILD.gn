@@ -1620,6 +1620,7 @@ if (!is_android) {
 
     deps = [
       ":platform_browser_tests",
+      ":test_interfaces",
       ":test_support",
       ":test_support_ui",
       "//base",

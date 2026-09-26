@@ -14,9 +14,16 @@
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/mojom/echo.test-mojom.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace glic {
@@ -597,9 +604,13 @@ class FakePromptSuggestionTool : public ::selection::SuggestionTool {
   raw_ptr<tabs::TabInterface> tab_;
 };
 
-class InlineSuggestion : public ::selection::Suggestion {
+class InlineSuggestion : public ::selection::Suggestion,
+                         public ::test::mojom::Echo {
  public:
-  InlineSuggestion() = default;
+  InlineSuggestion() {
+    SetInterface<::test::mojom::Echo>(base::BindRepeating(
+        &InlineSuggestion::BindEcho, base::Unretained(this)));
+  }
   ~InlineSuggestion() override = default;
 
   // ::selection::Suggestion:
@@ -611,8 +622,21 @@ class InlineSuggestion : public ::selection::Suggestion {
         ::selection::mojom::InlineFulfillment::New("does_not_matter.js"));
   }
 
+  // ::test::mojom::Echo:
+  void EchoString(const std::string& input,
+                  EchoStringCallback callback) override {
+    std::move(callback).Run(input);
+  }
+
+  bool channel_bound() const { return receiver_.is_bound(); }
+
  private:
+  void BindEcho(mojo::PendingAssociatedReceiver<::test::mojom::Echo> receiver) {
+    receiver_.Bind(std::move(receiver));
+  }
+
   std::u16string label_ = u"InlineSuggestion";
+  mojo::AssociatedReceiver<::test::mojom::Echo> receiver_{this};
 };
 
 class FakeInlineSuggestionTool : public ::selection::SuggestionTool {
@@ -627,9 +651,16 @@ class FakeInlineSuggestionTool : public ::selection::SuggestionTool {
   void RequestSuggestions(const ::selection::AreaOfInterest& processed_area,
                           ::selection::SuggestionsCallback callback) override {
     std::vector<std::unique_ptr<::selection::Suggestion>> suggestions;
-    suggestions.push_back(std::make_unique<InlineSuggestion>());
+    auto suggestion = std::make_unique<InlineSuggestion>();
+    last_suggestion_ = suggestion.get();
+    suggestions.push_back(std::move(suggestion));
     std::move(callback).Run(std::move(suggestions), /*complete=*/true);
   }
+
+  InlineSuggestion* last_suggestion() { return last_suggestion_; }
+
+ private:
+  raw_ptr<InlineSuggestion> last_suggestion_ = nullptr;
 };
 
 ::selection::mojom::ActionPtr GetActionFromRegion(
@@ -681,12 +712,13 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   EXPECT_TRUE(action->is_handoff());
 
   static_cast<selection::SelectionOverlayPageHandler*>(controller)
-      ->ExecuteSuggestedAction(action_id);
+      ->ExecuteSuggestedAction(action_id,
+                               mojo::GenericPendingAssociatedReceiver());
   EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
-                       InlineFulfillmentKeepsOverlay) {
+                       InlineFulfillmentBindsChannel) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
 
   auto* suggestion_service = ::selection::SuggestionService::From(tab);
@@ -711,10 +743,59 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   EXPECT_EQ(action->get_inline_fulfillment()->resource_name,
             "does_not_matter.js");
 
+  mojo::AssociatedRemote<::test::mojom::Echo> channel;
   static_cast<selection::SelectionOverlayPageHandler*>(controller)
-      ->ExecuteSuggestedAction(action_id);
+      ->ExecuteSuggestedAction(
+          action_id, mojo::GenericPendingAssociatedReceiver(
+                         channel.BindNewEndpointAndPassDedicatedReceiver()));
   EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOverlay);
   EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
+
+  ASSERT_TRUE(tool.last_suggestion());
+  EXPECT_TRUE(tool.last_suggestion()->channel_bound());
+
+  // The endpoint name matched what the suggestion registered, so real calls
+  // work.
+  base::test::TestFuture<const std::string&> echoed;
+  channel->EchoString("hello", echoed.GetCallback());
+  EXPECT_EQ(echoed.Get(), "hello");
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       InlineFulfillmentRejectsMismatchedInterface) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+
+  auto* suggestion_service = ::selection::SuggestionService::From(tab);
+  ASSERT_TRUE(suggestion_service);
+  FakeInlineSuggestionTool tool;
+  ScopedToolRegistration registration(suggestion_service, &tool);
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  base::UnguessableToken action_id;
+  ASSERT_TRUE(GetActionFromRegion(controller, &action_id));
+
+  mojo::AssociatedRemote<::test::mojom::Echo> channel;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+  static_cast<selection::SelectionOverlayPageHandler*>(controller)
+      ->ExecuteSuggestedAction(
+          action_id,
+          mojo::GenericPendingAssociatedReceiver(
+              "test.mojom.NotEcho",
+              channel.BindNewEndpointAndPassDedicatedReceiver().PassHandle()));
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Channel interface does not match.");
+
+  ASSERT_TRUE(tool.last_suggestion());
+  EXPECT_FALSE(tool.last_suggestion()->channel_bound());
 }
 
 }  // namespace glic

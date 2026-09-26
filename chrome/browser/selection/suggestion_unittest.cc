@@ -15,6 +15,7 @@
 #include "chrome/test/mojom/echo.test-mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -71,8 +72,8 @@ class SuggestionTest : public testing::Test {
 TEST_F(SuggestionTest, RegisteredBinderClaimsEndpoint) {
   EchoSuggestion suggestion;
   mojo::AssociatedRemote<::test::mojom::Echo> remote;
-  suggestion.Execute(
-      remote.BindNewEndpointAndPassDedicatedReceiver().PassHandle());
+  suggestion.Execute(mojo::GenericPendingAssociatedReceiver(
+      remote.BindNewEndpointAndPassDedicatedReceiver()));
 
   EXPECT_TRUE(suggestion.executed());
 
@@ -84,8 +85,8 @@ TEST_F(SuggestionTest, RegisteredBinderClaimsEndpoint) {
 TEST_F(SuggestionTest, UnclaimedEndpointDisconnectsPeer) {
   PlainSuggestion suggestion;
   mojo::AssociatedRemote<::test::mojom::Echo> remote;
-  suggestion.Execute(
-      remote.BindNewEndpointAndPassDedicatedReceiver().PassHandle());
+  suggestion.Execute(mojo::GenericPendingAssociatedReceiver(
+      remote.BindNewEndpointAndPassDedicatedReceiver()));
 
   EXPECT_TRUE(suggestion.executed());
 
@@ -97,12 +98,12 @@ TEST_F(SuggestionTest, UnclaimedEndpointDisconnectsPeer) {
 
 TEST_F(SuggestionTest, ExecuteWithoutEndpointLeavesBinderAvailable) {
   EchoSuggestion suggestion;
-  suggestion.Execute(mojo::ScopedInterfaceEndpointHandle());
+  suggestion.Execute(mojo::GenericPendingAssociatedReceiver());
 
   // The binder never ran, so a later call can still hand an endpoint over.
   mojo::AssociatedRemote<::test::mojom::Echo> remote;
-  suggestion.Execute(
-      remote.BindNewEndpointAndPassDedicatedReceiver().PassHandle());
+  suggestion.Execute(mojo::GenericPendingAssociatedReceiver(
+      remote.BindNewEndpointAndPassDedicatedReceiver()));
 
   EXPECT_TRUE(suggestion.executed());
   base::test::TestFuture<const std::string&> echoed;

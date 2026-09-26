@@ -22,6 +22,7 @@ mojo_ts_files = [
   "mojo/public/mojom/base/error.mojom-webui.ts",
   "mojo/public/mojom/base/file.mojom-webui.ts",
   "mojo/public/mojom/base/file_path.mojom-webui.ts",
+  "mojo/public/mojom/base/generic_pending_associated_receiver.mojom-webui.ts",
   "mojo/public/mojom/base/int128.mojom-webui.ts",
   "mojo/public/mojom/base/jserror.mojom-converters.ts",
   "mojo/public/mojom/base/jserror.mojom-webui.ts",

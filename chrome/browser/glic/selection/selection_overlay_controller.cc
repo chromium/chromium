@@ -226,8 +226,7 @@ SelectionOverlayController::SelectionOverlayController(
   if (base::FeatureList::IsEnabled(kStaticSelectionSuggestions)) {
     static_suggestion_tool_ =
         std::make_unique<StaticSelectionSuggestionTool>(CHECK_DEREF(tab_));
-    if (auto* suggestion_service =
-            ::selection::SuggestionService::From(tab_)) {
+    if (auto* suggestion_service = ::selection::SuggestionService::From(tab_)) {
       suggestion_service->RegisterTool(static_suggestion_tool_.get());
     }
   }
@@ -251,8 +250,7 @@ SelectionOverlayController::SelectionOverlayController(
 
 SelectionOverlayController::~SelectionOverlayController() {
   if (static_suggestion_tool_) {
-    if (auto* suggestion_service =
-            ::selection::SuggestionService::From(tab_)) {
+    if (auto* suggestion_service = ::selection::SuggestionService::From(tab_)) {
       suggestion_service->UnregisterTool(static_suggestion_tool_.get());
     }
   }
@@ -896,7 +894,8 @@ void SelectionOverlayController::OnSuggestionsReceived(
 }
 
 void SelectionOverlayController::ExecuteSuggestedAction(
-    const base::UnguessableToken& action_id) {
+    const base::UnguessableToken& action_id,
+    mojo::GenericPendingAssociatedReceiver channel) {
   if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
     return;
   }
@@ -918,10 +917,15 @@ void SelectionOverlayController::ExecuteSuggestedAction(
   }
 
   auto tag = matched_suggestion->GetAction()->which();
-  matched_suggestion->OnSuggestionExecuted();
 
   switch (tag) {
     case ::selection::mojom::Action::Tag::kHandoff:
+      // kHandoff should not have a channel since the surface is going away.
+      if (channel) {
+        receiver_.ReportBadMessage("Channel supplied for a handoff action.");
+        return;
+      }
+      matched_suggestion->Execute(mojo::GenericPendingAssociatedReceiver());
       // `capture_region_observer_` is only bound if the overlay is invoked
       // from the side panel web client.
       if (!capture_region_observer_.is_bound()) {
@@ -929,7 +933,16 @@ void SelectionOverlayController::ExecuteSuggestedAction(
       }
       return;
     case ::selection::mojom::Action::Tag::kInlineFulfillment:
-      // The overlay remains.
+      // Fulfillment must have a channel.
+      if (!channel) {
+        receiver_.ReportBadMessage("Inline fulfillment requires a channel.");
+        return;
+      }
+      if (channel.interface_name() != matched_suggestion->interface_name()) {
+        receiver_.ReportBadMessage("Channel interface does not match.");
+        return;
+      }
+      matched_suggestion->Execute(std::move(channel));
       return;
   }
 }
