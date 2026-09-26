@@ -523,4 +523,7 @@ public class Features {
     // WebViewCompat.createSharedArrayBuffer
     // WebMessagePayload.getAsSharedArrayBuffer
     public static final String WEB_MESSAGE_SHARED_ARRAY_BUFFER = "WEB_MESSAGE_SHARED_ARRAY_BUFFER";
+
+    // WebFeature.WEB_SURFACE
+    public static final String WEB_SURFACE = "WEB_SURFACE";
 }

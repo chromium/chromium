@@ -24,6 +24,10 @@ class SupportLibWebContentAdapter implements WebContentBoundaryInterface {
         mWebContent = webContent;
     }
 
+    public WebContent getWebContent() {
+        return mWebContent;
+    }
+
     @Override
     public <T extends WebView> T executeViewFactory(
             Context baseContext, Function<Context, T> factory) {

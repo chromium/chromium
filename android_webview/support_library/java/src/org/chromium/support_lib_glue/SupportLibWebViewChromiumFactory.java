@@ -20,6 +20,7 @@ import com.android.webview.chromium.ProfileStore;
 import com.android.webview.chromium.SharedStatics;
 import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebContent;
+import com.android.webview.chromium.WebSurface;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
@@ -35,6 +36,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.SharedArrayBuffer;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
 import org.chromium.support_lib_boundary.WebContentConfig;
+import org.chromium.support_lib_boundary.WebSurfaceEvent;
 import org.chromium.support_lib_boundary.WebViewProviderFactoryBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewStartUpCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewStartUpConfigBoundaryInterface;
@@ -157,6 +159,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WEBVIEW_NAVIGATE_DRAIN_PREFETCH,
                 Features.NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS + Features.DEV_SUFFIX,
                 Features.WEB_MESSAGE_SHARED_ARRAY_BUFFER + Features.DEV_SUFFIX,
+                Features.WEB_SURFACE + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
                 // exception is when adding a new method to an interface that extends from
@@ -393,6 +396,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS,
         ApiCall.CREATE_SHARED_ARRAY_BUFFER,
         ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_SHARED_ARRAY_BUFFER,
+        ApiCall.CREATE_WEB_SURFACE,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -611,8 +615,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int NAVIGATION_GET_NAVIGATION_START_UPTIME_MILLIS = 208;
         int CREATE_SHARED_ARRAY_BUFFER = 209;
         int WEB_MESSAGE_PAYLOAD_GET_AS_SHARED_ARRAY_BUFFER = 210;
+        int CREATE_WEB_SURFACE = 211;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 211;
+        int COUNT = 212;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)
@@ -667,6 +672,18 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
             buildConfig.accept(builder);
             WebContent webContent = builder.build();
             SupportLibWebContentAdapter adapter = new SupportLibWebContentAdapter(webContent);
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(adapter);
+        }
+    }
+
+    @Override
+    public /* WebSurfaceBoundaryInterface */ InvocationHandler createWebSurface(
+            BiConsumer<@WebSurfaceEvent Integer, Object> eventListener) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.CREATE_WEB_SURFACE")) {
+            recordApiCall(ApiCall.CREATE_WEB_SURFACE);
+            WebSurface webSurface =
+                    new WebSurface(() -> eventListener.accept(WebSurfaceEvent.INVALIDATE, null));
+            SupportLibWebSurfaceAdapter adapter = new SupportLibWebSurfaceAdapter(webSurface);
             return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(adapter);
         }
     }
