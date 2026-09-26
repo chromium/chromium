@@ -711,7 +711,9 @@ suite('OmniboxEverywhereOmniboxTest', () => {
   });
 
   test(
-      'Tab navigates to contextual entrypoint when dropdown is visible',
+      'Tab and Shift+Tab navigate across AIM, contextual entrypoint (+), ' +
+          'voice search, lens search, and back to input when dropdown is ' +
+          'visible',
       async () => {
         omnibox.virtualFocusEnabled = true;
         omnibox.dropdownIsVisible = true;
@@ -725,36 +727,84 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertEquals(0, omnibox.selection.line);
         assertEquals(SelectionLineState.kNormal, omnibox.selection.state);
 
-        // Tab 1 -> AIM button.
-        const tabEvent1 = new KeyboardEvent('keydown', {
-          key: 'Tab',
-          bubbles: true,
-          composed: true,
-          cancelable: true,
-        });
-        omnibox.$.input.inputElement.dispatchEvent(tabEvent1);
-        await microtasksFinished();
-        assertTrue(tabEvent1.defaultPrevented);
-        assertEquals(
-            SelectionLineState.kFocusedButtonAim, omnibox.selection.state);
-
-        // Tab 2 -> Contextual entrypoint button.
-        const tabEvent2 = new KeyboardEvent('keydown', {
-          key: 'Tab',
-          bubbles: true,
-          composed: true,
-          cancelable: true,
-        });
-        omnibox.$.input.inputElement.dispatchEvent(tabEvent2);
-        await microtasksFinished();
-        assertTrue(tabEvent2.defaultPrevented);
-        assertEquals(
-            SelectionLineState.kFocusedButtonContextEntrypoint,
-            omnibox.selection.state);
-
         const entrypoint =
             omnibox.shadowRoot.querySelector<ContextualEntrypointButtonElement>(
                 '#context')!;
+        const voiceContainer = omnibox.shadowRoot.querySelector<HTMLElement>(
+            '.searchbox-icon-button-container.voice')!;
+        const lensContainer = omnibox.shadowRoot.querySelector<HTMLElement>(
+            '.searchbox-icon-button-container.lens')!;
+
+        const dispatchTab = async (shiftKey: boolean = false) => {
+          const tabEvent = new KeyboardEvent('keydown', {
+            key: 'Tab',
+            shiftKey,
+            bubbles: true,
+            composed: true,
+            cancelable: true,
+          });
+          omnibox.$.input.inputElement.dispatchEvent(tabEvent);
+          await microtasksFinished();
+          assertTrue(tabEvent.defaultPrevented);
+        };
+
+        // Tab 1 -> AIM button.
+        await dispatchTab();
+        assertEquals(
+            SelectionLineState.kFocusedButtonAim, omnibox.selection.state);
+
+        // Tab 2 -> Contextual entrypoint (+) button.
+        await dispatchTab();
+        assertEquals(
+            SelectionLineState.kFocusedButtonContextEntrypoint,
+            omnibox.selection.state);
+        assertTrue(entrypoint.hasVirtualFocus);
+        assertFalse(voiceContainer.hasAttribute('has-virtual-focus'));
+        assertFalse(lensContainer.hasAttribute('has-virtual-focus'));
+
+        // Tab 3 -> Voice search (Mic) button.
+        await dispatchTab();
+        assertEquals(
+            SelectionLineState.kFocusedButtonVoiceSearch,
+            omnibox.selection.state);
+        assertFalse(entrypoint.hasVirtualFocus);
+        assertTrue(voiceContainer.hasAttribute('has-virtual-focus'));
+        assertFalse(lensContainer.hasAttribute('has-virtual-focus'));
+
+        // Tab 4 -> Lens search button.
+        await dispatchTab();
+        assertEquals(
+            SelectionLineState.kFocusedButtonLensSearch,
+            omnibox.selection.state);
+        assertFalse(entrypoint.hasVirtualFocus);
+        assertFalse(voiceContainer.hasAttribute('has-virtual-focus'));
+        assertTrue(lensContainer.hasAttribute('has-virtual-focus'));
+
+        // Tab 5 -> Wraps back to default match / search input (line 0).
+        await dispatchTab();
+        assertEquals(0, omnibox.selection.line);
+        assertEquals(SelectionLineState.kNormal, omnibox.selection.state);
+        assertFalse(lensContainer.hasAttribute('has-virtual-focus'));
+
+        // Shift+Tab 1 -> Back to Lens search button.
+        await dispatchTab(/*shiftKey=*/ true);
+        assertEquals(
+            SelectionLineState.kFocusedButtonLensSearch,
+            omnibox.selection.state);
+        assertTrue(lensContainer.hasAttribute('has-virtual-focus'));
+
+        // Shift+Tab 2 -> Back to Voice search (Mic) button.
+        await dispatchTab(/*shiftKey=*/ true);
+        assertEquals(
+            SelectionLineState.kFocusedButtonVoiceSearch,
+            omnibox.selection.state);
+        assertTrue(voiceContainer.hasAttribute('has-virtual-focus'));
+
+        // Shift+Tab 3 -> Back to Contextual entrypoint (+) button.
+        await dispatchTab(/*shiftKey=*/ true);
+        assertEquals(
+            SelectionLineState.kFocusedButtonContextEntrypoint,
+            omnibox.selection.state);
         assertTrue(entrypoint.hasVirtualFocus);
       });
 
@@ -864,6 +914,65 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertTrue(omnibox.$.input.hasAttribute('force-single-line'));
         assertFalse(omnibox.$.input.isMultiline());
         assertTrue(omnibox.dropdownIsVisible);
+      });
+
+  test(
+      'Enter on virtually focused voice and lens buttons activates them',
+      async () => {
+        omnibox.virtualFocusEnabled = true;
+        omnibox.dropdownIsVisible = true;
+        const match = createSearchMatchForTesting();
+        omnibox.activeQueryId = 0;
+        testProxy.page.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              queryId: 0,
+              input: 'query',
+              matches: [match],
+            }));
+        await microtasksFinished();
+
+        let voiceSearchDispatched = false;
+        omnibox.addEventListener('open-voice-search', () => {
+          voiceSearchDispatched = true;
+        });
+
+        omnibox.setSelection({
+          line: -1,
+          state: SelectionLineState.kFocusedButtonVoiceSearch,
+          actionIndex: 0,
+        });
+        await microtasksFinished();
+
+        const enterVoiceEvent = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        });
+        omnibox.$.input.inputElement.dispatchEvent(enterVoiceEvent);
+        await microtasksFinished();
+
+        assertTrue(enterVoiceEvent.defaultPrevented);
+        assertTrue(voiceSearchDispatched);
+
+        omnibox.setSelection({
+          line: -1,
+          state: SelectionLineState.kFocusedButtonLensSearch,
+          actionIndex: 0,
+        });
+        await microtasksFinished();
+
+        const enterLensEvent = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+        });
+        omnibox.$.input.inputElement.dispatchEvent(enterLensEvent);
+        await microtasksFinished();
+
+        assertTrue(enterLensEvent.defaultPrevented);
+        assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
       });
 });
 
