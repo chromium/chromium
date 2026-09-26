@@ -1910,6 +1910,214 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
             new_browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+class SessionRestoreRespectShouldTriggerTest : public SessionRestoreTest {
+ public:
+  SessionRestoreRespectShouldTriggerTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kRespectShouldTriggerSessionRestoreOnDesktop);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class SessionRestoreRespectShouldTriggerDisabledTest
+    : public SessionRestoreTest {
+ public:
+  SessionRestoreRespectShouldTriggerDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kRespectShouldTriggerSessionRestoreOnDesktop);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that navigating with `should_trigger_session_restore = false` when
+// no browser windows are open does not trigger session restore.
+IN_PROC_BROWSER_TEST_F(SessionRestoreRespectShouldTriggerTest,
+                       WindowWithoutSessionRestoreWhenNoWindowsOpen) {
+  Profile* profile = browser()->GetProfile();
+
+  // Add a second tab to create a multi-tab session.
+  GURL url1 = chrome_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title1.html")));
+  GURL url2 = chrome_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title2.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  // Set startup pref to restore last session.
+  SessionStartupPref::SetStartupPref(
+      profile, SessionStartupPref(SessionStartupPref::LAST));
+
+  // Close the browser while keeping the process and profile alive.
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  CloseBrowserSynchronously(browser());
+
+  SessionServiceTestHelper helper(profile);
+  helper.SetForceBrowserNotAliveWithNoWindows(true);
+
+  int restore_callback_count = 0;
+  auto subscription = SessionRestore::RegisterOnSessionRestoredCallback(
+      base::BindLambdaForTesting(
+          [&](Profile*, int) { ++restore_callback_count; }));
+
+  // Navigate to a target url with should_trigger_session_restore = false.
+  GURL target_url = chrome_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("simple.html")));
+  NavigateParams params(profile, target_url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  params.should_trigger_session_restore = false;
+  Navigate(&params);
+
+  ASSERT_TRUE(params.browser);
+  WaitForTabsToLoad(params.browser);
+  content::RunAllTasksUntilIdle();
+
+  // Verify that only one window was opened and it contains only the target tab.
+  EXPECT_EQ(0, restore_callback_count);
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_EQ(1, params.browser->GetTabStripModel()->count());
+  EXPECT_EQ(
+      target_url,
+      params.browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+
+// Verifies kill-switch behavior: when the feature is disabled, navigating with
+// `should_trigger_session_restore = false` still triggers session restore.
+IN_PROC_BROWSER_TEST_F(SessionRestoreRespectShouldTriggerDisabledTest,
+                       WindowWithSessionRestoreWhenFeatureDisabled) {
+  Profile* profile = browser()->GetProfile();
+
+  // Add a second tab to create a multi-tab session.
+  GURL url1 = chrome_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title1.html")));
+  GURL url2 = chrome_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title2.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  // Set startup pref to restore last session.
+  SessionStartupPref::SetStartupPref(
+      profile, SessionStartupPref(SessionStartupPref::LAST));
+
+  // Close the browser while keeping the process and profile alive.
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  CloseBrowserSynchronously(browser());
+
+  SessionServiceTestHelper helper(profile);
+  helper.SetForceBrowserNotAliveWithNoWindows(true);
+
+  SessionRestoreTestHelper restore_observer;
+
+  // Navigate to a target url with should_trigger_session_restore = false.
+  GURL target_url = chrome_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("simple.html")));
+  NavigateParams params(profile, target_url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  params.should_trigger_session_restore = false;
+  Navigate(&params);
+
+  ASSERT_TRUE(params.browser);
+  restore_observer.Wait();
+  WaitForTabsToLoad(params.browser);
+
+  // When the feature is disabled, session restore occurs and restores the
+  // previous session tabs alongside the navigated target tab.
+  EXPECT_EQ(3, params.browser->GetTabStripModel()->count());
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+
+// Verifies that opening a window with `should_trigger_session_restore = false`
+// preserves the previous session in last session storage so it can be restored.
+IN_PROC_BROWSER_TEST_F(SessionRestoreRespectShouldTriggerTest,
+                       PreviousSessionPreservedWhenRestoreSkipped) {
+  Profile* profile = browser()->GetProfile();
+
+  // Create a multi-tab session.
+  GURL url1 = chrome_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title1.html")));
+  GURL url2 = chrome_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title2.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  // Set startup pref to restore last session.
+  SessionStartupPref::SetStartupPref(
+      profile, SessionStartupPref(SessionStartupPref::LAST));
+
+  // Close the browser while keeping the process alive.
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  CloseBrowserSynchronously(browser());
+
+  SessionServiceTestHelper helper(profile);
+  helper.SetForceBrowserNotAliveWithNoWindows(true);
+
+  // Open a window with should_trigger_session_restore = false.
+  GURL target_url = chrome_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("simple.html")));
+  NavigateParams params(profile, target_url, ui::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  params.should_trigger_session_restore = false;
+  Navigate(&params);
+
+  ASSERT_TRUE(params.browser);
+  WaitForTabsToLoad(params.browser);
+  content::RunAllTasksUntilIdle();
+  ASSERT_EQ(1, params.browser->GetTabStripModel()->count());
+
+  // Verify that the previous session was saved to last session storage.
+  std::vector<std::unique_ptr<sessions::SessionWindow>> windows;
+  SessionID active_window_id = SessionID::InvalidValue();
+  std::string platform_session_id;
+  std::set<SessionID> discarded_window_ids;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    helper.ReadWindows(&windows, &active_window_id, &platform_session_id,
+                       &discarded_window_ids);
+  }
+  ASSERT_EQ(1u, windows.size());
+  EXPECT_EQ(2u, windows[0]->tabs.size());
+
+  keep_alive.reset();
+  profile_keep_alive.reset();
+}
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+
 // Ensures active tab properly restored when tabs before it closed.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, ActiveIndexUpdatedAtClose) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));

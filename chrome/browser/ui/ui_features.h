@@ -92,6 +92,11 @@ BASE_DECLARE_FEATURE_PARAM(int, kSeparateDefaultAndPinPromptMessageVersion);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+// When enabled, SessionService respects the should_trigger_session_restore
+// flag on BrowserInitState when deciding whether to restore a session for a
+// newly opened browser window.
+BASE_DECLARE_FEATURE(kRespectShouldTriggerSessionRestoreOnDesktop);
+
 // When enabled, user may see the session restore UI flow.
 BASE_DECLARE_FEATURE(kSessionRestoreInfobar);
 

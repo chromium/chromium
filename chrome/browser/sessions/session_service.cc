@@ -119,6 +119,19 @@ class InstanceTracker : public base::SupportsUserData::Data {
   int session_service_count_ = 0;
 };
 
+bool ShouldTriggerSessionRestoreForBrowser(BrowserWindowInterface* browser) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(
+          features::kRespectShouldTriggerSessionRestoreOnDesktop) &&
+      browser) {
+    if (const auto* init_state = BrowserInitState::From(browser)) {
+      return init_state->should_trigger_session_restore();
+    }
+  }
+#endif
+  return true;
+}
+
 }  // namespace
 
 SessionService::SessionService(Profile* profile)
@@ -593,7 +606,9 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
         *base::CommandLine::ForCurrentProcess(), profile());
     sessions::TabRestoreService* tab_restore_service =
         TabRestoreServiceFactory::GetForProfileIfExisting(profile());
-    if (pref.ShouldRestoreLastSession() &&
+
+    if (ShouldTriggerSessionRestoreForBrowser(browser) &&
+        pref.ShouldRestoreLastSession() &&
         (!tab_restore_service || !tab_restore_service->IsRestoring())) {
       SessionRestore::RestoreSession(
           profile(), browser,
