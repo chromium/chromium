@@ -32,6 +32,7 @@ BASE_FEATURE(kComposeboxPersistentAimButtonOmnibox,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kComposeboxPersistentAimButtonWithX,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kComposeboxRealboxOutsideClick, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSuggestRequestSendsMultifileCgiParam,
              base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kKeepMenuOpenOnTabSelectForRealbox(

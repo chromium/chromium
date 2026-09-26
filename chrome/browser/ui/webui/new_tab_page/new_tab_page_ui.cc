@@ -811,6 +811,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean("composeboxPersistentAimButton",
                      base::FeatureList::IsEnabled(
                          omnibox::kComposeboxPersistentAimButtonRealbox));
+  source->AddBoolean(
+      "composeboxRealboxOutsideClick",
+      base::FeatureList::IsEnabled(omnibox::kComposeboxRealboxOutsideClick));
   source->AddBoolean("composeboxPersistentAimButtonWithX",
                      base::FeatureList::IsEnabled(
                          omnibox::kComposeboxPersistentAimButtonWithX));

@@ -13518,6 +13518,7 @@ from previous Chrome versions.
   <int value="-424701311" label="SignedHTTPExchange:disabled"/>
   <int value="-424689493" label="HistoryClustersHideVisits:enabled"/>
   <int value="-424584720" label="ClipboardFilenames:enabled"/>
+  <int value="-424297054" label="ComposeboxRealboxOutsideClick:enabled"/>
   <int value="-424261945" label="RequestDesktopSiteWindowSetting:disabled"/>
   <int value="-424134004" label="WebPaymentsExperimentalFeatures:disabled"/>
   <int value="-424125732" label="FlossIsAvailabilityCheckNeeded:disabled"/>
@@ -16605,6 +16606,7 @@ from previous Chrome versions.
   <int value="530260251" label="TextSafetyClassifier:disabled"/>
   <int value="530311761" label="AIPromptAPIForWebPlatform:disabled"/>
   <int value="530828403" label="AllowStartingServiceManagerOnly:disabled"/>
+  <int value="531081698" label="ComposeboxRealboxOutsideClick:disabled"/>
   <int value="531157579" label="EnterOverviewFromWallpaper:enabled"/>
   <int value="531193343"
       label="ClientSideDetectionServerModelForScamDetectionDesktop:disabled"/>

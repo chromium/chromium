@@ -56,6 +56,10 @@ BASE_DECLARE_FEATURE(kComposeboxPersistentAimButtonOmnibox);
 // the persistent AIM button is also enabled for the surface.
 BASE_DECLARE_FEATURE(kComposeboxPersistentAimButtonWithX);
 
+// If enabled, clicking outside the Realbox Composebox closes the suggestions
+// dropdown and restores page interaction while keeping the Composebox open.
+BASE_DECLARE_FEATURE(kComposeboxRealboxOutsideClick);
+
 // If enabled, suggest requests for multifile inputs will include the cinpts CGI param.
 BASE_DECLARE_FEATURE(kSuggestRequestSendsMultifileCgiParam);
 

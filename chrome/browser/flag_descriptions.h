@@ -1656,6 +1656,12 @@ inline constexpr char kComposeboxPersistentAimButtonWithXDescription[] =
     "Shows an X icon on the persistent AIM button. Only effective if the "
     "persistent AIM button is also enabled for the surface.";
 
+inline constexpr char kComposeboxRealboxOutsideClickName[] =
+    "Composebox Outside Click (Realbox)";
+inline constexpr char kComposeboxRealboxOutsideClickDescription[] =
+    "Clicking outside the Realbox Composebox closes the suggestions dropdown "
+    "and restores page interaction while keeping the Composebox open.";
+
 inline constexpr char kComposeboxSkillsContextualTasksName[] =
     "Composebox/Searchbox Skills (Contextual Tasks)";
 inline constexpr char kComposeboxSkillsContextualTasksDescription[] =

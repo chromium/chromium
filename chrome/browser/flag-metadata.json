@@ -2082,6 +2082,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "composebox-realbox-outside-click",
+    "owners": [ "yvonneshi@google.com", "jilinyang@google.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "composebox-rich-image-suggestions-omnibox",
     "owners": [ "yvonneshi@google.com", "chrome-desktop-ntp@google.com" ],
     "expiry_milestone": 165
