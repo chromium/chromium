@@ -1173,6 +1173,35 @@ TEST_F(PdfAccessibilityTreeTest, HeadingToBodySizeRatioMetrics) {
       "Accessibility.PdfHeuristics.HeadingToBodySizeRatioMin", 180, 1);
 }
 
+TEST_F(PdfAccessibilityTreeTest, HeaderFooterNormalizedLocationMetrics) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Run 0: Page number header with bottom edge at y = 70 (7%).
+  // Runs 1-3: Body text.
+  // Run 4: Page number footer with top edge at y = 920 (92%).
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"1", "body1", "body2", "end", "2"}),
+      {gfx::RectF(50.0f, 50.0f, 20.0f, 20.0f),
+       gfx::RectF(50.0f, 150.0f, 200.0f, 20.0f),
+       gfx::RectF(50.0f, 170.0f, 200.0f, 20.0f),
+       gfx::RectF(50.0f, 190.0f, 200.0f, 20.0f),
+       gfx::RectF(50.0f, 920.0f, 20.0f, 20.0f)});
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.HeaderNormalizedLocation", 7, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.FooterNormalizedLocation", 92, 1);
+}
+
 TEST_F(PdfAccessibilityTreeTest, HeadingClassifierMetrics_FontSize) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list;

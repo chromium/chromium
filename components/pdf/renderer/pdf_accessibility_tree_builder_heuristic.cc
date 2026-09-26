@@ -644,6 +644,43 @@ void RecordHeadingToBodySizeRatioHistogram(std::string_view name, int sample) {
   histogram->Add(sample);
 }
 
+// Records the body-facing edge of each header (bottom) and footer (top) block
+// as a percentage of the page height, matching the edges the margin checks
+// use. Called once block roles are final, since later runs can promote or
+// demote a block.
+void RecordHeaderFooterLocationHistograms(
+    base::span<const ui::AXNodeData* const> block_nodes,
+    const HeuristicPageProperties& page_properties) {
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  if (page_properties.page_height <= 0) {
+    return;
+  }
+
+  for (const ui::AXNodeData* block_node : block_nodes) {
+    const gfx::RectF& bounds = block_node->relative_bounds.bounds;
+    std::string_view histogram_name;
+    float edge_y;
+    switch (block_node->role) {
+      case ax::mojom::Role::kSectionHeader:
+        histogram_name = "Accessibility.PdfHeuristics.HeaderNormalizedLocation";
+        edge_y = bounds.bottom();
+        break;
+      case ax::mojom::Role::kSectionFooter:
+        histogram_name = "Accessibility.PdfHeuristics.FooterNormalizedLocation";
+        edge_y = bounds.y();
+        break;
+      default:
+        continue;
+    }
+    // Block bounds are in document coordinates.
+    float page_edge_y = edge_y - page_properties.page_offset_y;
+    base::UmaHistogramPercentage(
+        histogram_name,
+        static_cast<int>(
+            std::round(page_edge_y * 100.0f / page_properties.page_height)));
+  }
+}
+
 // Returns a span of AccessibilityCharInfo corresponding to the text run at
 // `text_run_index`.
 base::span<const chrome_pdf::AccessibilityCharInfo> GetTextRunChars(
@@ -1166,6 +1203,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   };
 
   ui::AXNodeData* block_node = nullptr;
+  std::vector<const ui::AXNodeData*> block_nodes;
   ui::AXNodeData* previous_on_line_node = nullptr;
   StaticTextState static_text_state;
   HeadingClassifier current_heading_classifier = HeadingClassifier::kNone;
@@ -1209,6 +1247,7 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       block_node = CreateBlockLevelNode(run_context, page_properties,
                                         &current_heading_classifier);
       builder_->page_node()->child_ids.push_back(block_node->id);
+      block_nodes.push_back(block_node);
 
       if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
           current_heading_classifier != HeadingClassifier::kNone) {
@@ -1322,6 +1361,10 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
 #else
   AddRemainingAnnotations(block_node);
 #endif
+
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    RecordHeaderFooterLocationHistograms(block_nodes, page_properties);
+  }
 }
 
 ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(

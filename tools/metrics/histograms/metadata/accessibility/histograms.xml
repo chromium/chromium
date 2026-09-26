@@ -2540,6 +2540,34 @@ recorded in the same way, even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.PdfHeuristics.FooterNormalizedLocation"
+    units="%" expires_after="2027-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the top edge of a text block classified as a footer in an untagged
+    PDF, as a percentage of the page height (0 is the top of the page). Recorded
+    once per footer block when a page's accessibility tree is built. Used to
+    check whether footers are creeping up into body content. Page number footers
+    are classified from 90% and other footers from 95%.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.PdfHeuristics.HeaderNormalizedLocation"
+    units="%" expires_after="2027-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the bottom edge of a text block classified as a header in an
+    untagged PDF, as a percentage of the page height (0 is the top of the page).
+    Recorded once per header block when a page's accessibility tree is built.
+    Used to check whether headers are creeping down into body content. Headers
+    are classified within the top 10% of the page.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.PdfHeuristics.HeadingClassifier"
     enum="PdfAccessibilityHeadingClassifier" expires_after="2027-08-01">
   <owner>kristislee@google.com</owner>
