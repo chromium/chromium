@@ -446,10 +446,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       glic_promotion_source_navigation_observer_ =
           std::make_unique<glic::GlicPromotionSourceNavigationObserver>(&tab);
 
-      if (glic::GlicEnabling::IsSelectionPromptEnabledForProfile(profile) ||
-          (base::FeatureList::IsEnabled(
-               features::kGlicTextSelectionContextMenu) &&
-           glic::GlicEnabling::IsEnabledForProfile(profile))) {
+      if (glic::GlicEnabling::IsEnabledForProfile(profile)) {
         glic_selection_observer_ =
             std::make_unique<glic::GlicSelectionObserver>(tab.GetContents());
       }

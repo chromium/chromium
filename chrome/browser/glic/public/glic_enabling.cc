@@ -1255,7 +1255,7 @@ bool GlicEnabling::IsContextualMenuItemEnabled(
 }
 
 // static
-bool GlicEnabling::IsSelectionPromptEnabledForProfile(Profile* profile) {
+bool GlicEnabling::IsInlineCueEnabledForProfile(Profile* profile) {
   return IsEnabledForProfile(profile) &&
          base::FeatureList::IsEnabled(features::kGlicSelectionPrompt);
 }

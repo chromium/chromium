@@ -54,8 +54,8 @@ extern const base::FeatureParam<base::TimeDelta> kAutoOpenGlicCooldown;
 BASE_DECLARE_FEATURE(kGlicInvoke);
 BASE_DECLARE_FEATURE(kGlicOnboardingMetricsMigration);
 
+// Controls inline cue for text selection.
 BASE_DECLARE_FEATURE(kGlicSelectionPrompt);
-extern const base::FeatureParam<bool> kGlicSelectionPromptUpdatesOnly;
 extern const base::FeatureParam<bool> kGlicSelectionShowCopyButtons;
 extern const base::FeatureParam<bool> kGlicSelectionAutoSendPrompt;
 extern const base::FeatureParam<std::string> kGlicSelectionPromptCta;

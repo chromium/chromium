@@ -18128,7 +18128,7 @@
             ]
         }
     ],
-    "TextSelectionTopCue": [
+    "TextSelectionInlineCue": [
         {
             "platforms": [
                 "chromeos",
@@ -18138,11 +18138,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20260601",
-                    "params": {
-                        "updates_only": "true",
-                        "use_widget": "false"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
                         "GlicSelectionPrompt"
                     ]

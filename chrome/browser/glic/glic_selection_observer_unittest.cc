@@ -150,7 +150,12 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   }
 
  protected:
-  bool IsSelectionPromptEnabled() const override { return true; }
+  bool IsTextSelectionSharingEnabled() const override { return true; }
+
+  // Mirrors production: the inline cue is controlled by the feature.
+  bool IsInlineCueEnabled() const override {
+    return base::FeatureList::IsEnabled(features::kGlicSelectionPrompt);
+  }
 
   bool IsPanelShowing(tabs::TabInterface* tab_interface,
                       BrowserWindowInterface* bwi) override {
@@ -246,7 +251,6 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kGlicSelectionPrompt);
     ChromeRenderViewHostTestHarness::SetUp();
 
     test_eligibility_holder_ =
@@ -287,7 +291,6 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestGlicSelectionObserver> observer_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
@@ -983,8 +986,7 @@ TEST_F(GlicSelectionObserverTest, SelectionShowOnShiftClick) {
 
 TEST_F(GlicSelectionObserverTest, UpdateSelectionStatePanelShowing) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kGlicSelectionPrompt, {{"updates_only", "false"}});
+  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
 
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
@@ -1004,6 +1006,34 @@ TEST_F(GlicSelectionObserverTest, UpdateSelectionStatePanelShowing) {
 
   EXPECT_TRUE(observer->show_selection_affordance_called());
   EXPECT_EQ(u"Selected Text", *observer->last_affordance_text());
+  EXPECT_TRUE(observer->send_context_called());
+  EXPECT_EQ(u"Selected Text", *observer->last_sent_context());
+}
+
+// Sharing the text selection with the panel does not depend on the inline cue
+// feature, which only controls the selection affordance.
+TEST_F(GlicSelectionObserverTest,
+       UpdateSelectionStatePanelShowingWithoutSelectionPrompt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicSelectionPrompt);
+
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  tabs::MockTabInterface mock_tab;
+  MockBrowserWindowInterface mock_bwi;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
+      .WillRepeatedly(testing::Return(&mock_bwi));
+
+  observer->set_call_base_update_selection_state(true);
+  observer->set_mock_panel_showing(true);
+
+  observer->OnTextSelectionChanged(nullptr, u"Selected Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+
+  EXPECT_FALSE(observer->show_selection_affordance_called());
   EXPECT_TRUE(observer->send_context_called());
   EXPECT_EQ(u"Selected Text", *observer->last_sent_context());
 }
@@ -1035,9 +1065,6 @@ TEST_F(GlicSelectionObserverTest,
 }
 
 TEST_F(GlicSelectionObserverTest, EligibleSelection) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
-
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
@@ -1060,9 +1087,6 @@ TEST_F(GlicSelectionObserverTest, EligibleSelection) {
 }
 
 TEST_F(GlicSelectionObserverTest, IneligibleSelection) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
-
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
@@ -1084,9 +1108,6 @@ TEST_F(GlicSelectionObserverTest, IneligibleSelection) {
 }
 
 TEST_F(GlicSelectionObserverTest, DynamicEligibilityChangeClearsContext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
-
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
@@ -1117,9 +1138,6 @@ TEST_F(GlicSelectionObserverTest, DynamicEligibilityChangeClearsContext) {
 
 TEST_F(GlicSelectionObserverTest,
        EligibilityChangePushesContextWhenPanelShowing) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
-
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
@@ -1156,9 +1174,6 @@ TEST_F(GlicSelectionObserverTest,
 
 TEST_F(GlicSelectionObserverTest,
        EligibilityChangeDoesNotPushContextWhenPanelClosed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
-
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
@@ -1189,9 +1204,6 @@ TEST_F(GlicSelectionObserverTest,
 
 TEST_F(GlicSelectionObserverTest,
        EligibilityChangeDoesNotPushContextWhenNullBrowserWindow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
-
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
@@ -1282,8 +1294,7 @@ TEST_F(GlicSelectionObserverTest,
        ShakeTriggerSucceedsWhenFeatureAndPrefEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicSelectionPrompt,
-                            features::kGlicShakeTrigger},
+      /*enabled_features=*/{features::kGlicShakeTrigger},
       /*disabled_features=*/{});
   profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
   NavigateAndCommit(GURL("https://example.com/"));
@@ -1298,9 +1309,7 @@ TEST_F(GlicSelectionObserverTest,
 
 TEST_F(GlicSelectionObserverTest, ShakeTriggerDisabledByFeatureFlag) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicSelectionPrompt},
-      /*disabled_features=*/{features::kGlicShakeTrigger});
+  feature_list.InitAndDisableFeature(features::kGlicShakeTrigger);
   profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
   NavigateAndCommit(GURL("https://example.com/"));
 
@@ -1315,8 +1324,7 @@ TEST_F(GlicSelectionObserverTest, ShakeTriggerDisabledByFeatureFlag) {
 TEST_F(GlicSelectionObserverTest, ShakeTriggerDisabledByPref) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicSelectionPrompt,
-                            features::kGlicShakeTrigger},
+      /*enabled_features=*/{features::kGlicShakeTrigger},
       /*disabled_features=*/{});
   profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, false);
   NavigateAndCommit(GURL("https://example.com/"));
@@ -1332,8 +1340,7 @@ TEST_F(GlicSelectionObserverTest, ShakeTriggerDisabledByPref) {
 TEST_F(GlicSelectionObserverTest, ContinuousMoveDoesNotTriggerShake) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicSelectionPrompt,
-                            features::kGlicShakeTrigger},
+      /*enabled_features=*/{features::kGlicShakeTrigger},
       /*disabled_features=*/{});
   profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
   NavigateAndCommit(GURL("https://example.com/"));
@@ -1355,8 +1362,7 @@ TEST_F(GlicSelectionObserverTest, ContinuousMoveDoesNotTriggerShake) {
 TEST_F(GlicSelectionObserverTest, ShakeTriggerDisabledWhenSidePanelClosed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicSelectionPrompt,
-                            features::kGlicShakeTrigger},
+      /*enabled_features=*/{features::kGlicShakeTrigger},
       /*disabled_features=*/{});
   profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
   NavigateAndCommit(GURL("https://example.com/"));
@@ -1376,8 +1382,7 @@ TEST_F(GlicSelectionObserverTest,
        ShakeTriggerSucceedsWhenSidePanelClosedIfOnlyOnSidePanelFalse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{features::kGlicSelectionPrompt, {}},
-                            {features::kGlicShakeTrigger,
+      /*enabled_features=*/{{features::kGlicShakeTrigger,
                              {{"only_on_side_panel", "false"}}}},
       /*disabled_features=*/{});
   profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
@@ -1397,8 +1402,7 @@ TEST_F(GlicSelectionObserverTest,
 TEST_F(GlicSelectionObserverTest, ShakeTriggerSucceedsWhenSidePanelOpen) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicSelectionPrompt,
-                            features::kGlicShakeTrigger},
+      /*enabled_features=*/{features::kGlicShakeTrigger},
       /*disabled_features=*/{});
   profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
   NavigateAndCommit(GURL("https://example.com/"));
@@ -1609,9 +1613,6 @@ TEST_F(GlicSelectionObserverPromptTest,
 
 TEST_F(GlicSelectionObserverPromptTest,
        SendAdditionalContextToPanelOptsOutOfLiveMode) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicSelectionPrompt);
-
   tabs::MockTabInterface mock_tab;
   MockBrowserWindowInterface mock_bwi;
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),

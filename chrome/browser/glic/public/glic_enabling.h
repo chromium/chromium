@@ -292,8 +292,8 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   static bool IsContextualMenuItemEnabled(Profile* profile,
                                           const std::u16string& selection_text);
 
-  // Whether the selection prompt is enabled.
-  static bool IsSelectionPromptEnabledForProfile(Profile* profile);
+  // Whether the inline cue is enabled.
+  static bool IsInlineCueEnabledForProfile(Profile* profile);
 
   // Returns true if Glic is enabled for the profile, the feature is enabled,
   // and the account is non-enterprise (or for Glic dev).

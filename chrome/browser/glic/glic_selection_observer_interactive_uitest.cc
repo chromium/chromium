@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_browser_interactive_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
@@ -28,8 +29,7 @@ class GlicSelectionObserverInteractiveUiTest
  public:
   GlicSelectionObserverInteractiveUiTest() {
     glic_test_environment().SetGlicPagePath("/glic/test_client/index.html");
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicSelectionPrompt, {{"updates_only", "true"}}}}, {});
+    scoped_feature_list_.InitAndDisableFeature(features::kGlicSelectionPrompt);
   }
 
  protected:
@@ -91,8 +91,7 @@ class GlicSelectionObserverCrossOriginNavigationTest
  public:
   GlicSelectionObserverCrossOriginNavigationTest() {
     glic_test_environment().SetGlicPagePath("/glic/test_client/index.html");
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicSelectionPrompt, {{"updates_only", "true"}}}}, {});
+    scoped_feature_list_.InitAndDisableFeature(features::kGlicSelectionPrompt);
   }
 
   void SetUpOnMainThread() override {

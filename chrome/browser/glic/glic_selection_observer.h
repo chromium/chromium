@@ -103,8 +103,13 @@ class GlicSelectionObserver
   // Virtual for testing.
   virtual void DismissUI(DismissReason reason);
 
-  // Returns true if the selection prompt is enabled for the current profile.
-  virtual bool IsSelectionPromptEnabled() const;
+  // Returns true if the text selection is shared for the current profile.
+  // Virtual for testing.
+  virtual bool IsTextSelectionSharingEnabled() const;
+
+  // Returns true if the inline cue is enabled for the current profile.
+  // Virtual for testing.
+  virtual bool IsInlineCueEnabled() const;
 
   // Returns true if Glic panel is showing for the current browser.
   // Virtual for testing.

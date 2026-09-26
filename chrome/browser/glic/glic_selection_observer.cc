@@ -399,7 +399,7 @@ GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
   explain_selection_trigger_ = std::make_unique<ExplainSelectionTrigger>();
 }
 
-bool GlicSelectionObserver::IsSelectionPromptEnabled() const {
+bool GlicSelectionObserver::IsTextSelectionSharingEnabled() const {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -407,7 +407,15 @@ bool GlicSelectionObserver::IsSelectionPromptEnabled() const {
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return false;
   }
-  return GlicEnabling::IsSelectionPromptEnabledForProfile(profile);
+  return GlicEnabling::IsEnabledForProfile(profile);
+}
+
+bool GlicSelectionObserver::IsInlineCueEnabled() const {
+  if (!IsTextSelectionSharingEnabled()) {
+    return false;
+  }
+  return GlicEnabling::IsInlineCueEnabledForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
 }
 
 void GlicSelectionObserver::UpdateSelectionStateFromContextMenu(
@@ -524,7 +532,7 @@ void GlicSelectionObserver::OnInputEvent(
 
 void GlicSelectionObserver::ProcessInputEvent(
     std::unique_ptr<blink::WebInputEvent> event) {
-  if (!IsSelectionPromptEnabled() && !has_sent_selection_context_) {
+  if (!IsTextSelectionSharingEnabled() && !has_sent_selection_context_) {
     return;
   }
 
@@ -637,7 +645,7 @@ void GlicSelectionObserver::ProcessInputEvent(
 void GlicSelectionObserver::OnTextSelectionChanged(
     content::RenderFrameHost* render_frame_host,
     std::u16string_view selected_text) {
-  if (!IsSelectionPromptEnabled() && !has_sent_selection_context_) {
+  if (!IsTextSelectionSharingEnabled() && !has_sent_selection_context_) {
     return;
   }
 
@@ -870,8 +878,7 @@ void GlicSelectionObserver::UpdateSelectionState(
   bool panel_showing = IsPanelShowing(tab_interface, bwi);
 
   if (panel_showing) {
-    if (is_pending_selection &&
-        !features::kGlicSelectionPromptUpdatesOnly.Get()) {
+    if (is_pending_selection && IsInlineCueEnabled()) {
       ShowSelectionAffordance(selected_text, bwi);
     } else if (widget_delegate_ && !is_explaining_) {
       widget_delegate_->CloseWidget();
@@ -880,8 +887,7 @@ void GlicSelectionObserver::UpdateSelectionState(
     SendAdditionalContextToPanel(tab_interface, selected_text);
     has_sent_selection_context_ = true;
   } else {
-    if (is_pending_selection &&
-        !features::kGlicSelectionPromptUpdatesOnly.Get()) {
+    if (is_pending_selection && IsInlineCueEnabled()) {
       ShowSelectionAffordance(selected_text, bwi);
     }
     has_sent_selection_context_ = false;
@@ -1457,7 +1463,7 @@ bool GlicSelectionObserver::IsShakeTriggerEnabled() const {
 }
 
 void GlicSelectionObserver::TriggerRegionCapture() {
-  if (!IsSelectionPromptEnabled() || !IsShakeTriggerEnabled()) {
+  if (!IsTextSelectionSharingEnabled() || !IsShakeTriggerEnabled()) {
     return;
   }
   if (!glic_keyed_service_) {
