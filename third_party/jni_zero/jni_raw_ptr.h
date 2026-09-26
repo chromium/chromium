@@ -42,7 +42,6 @@ class JniRawPtr {
  public:
   constexpr JniRawPtr() : ptr_(nullptr) {}
   constexpr JniRawPtr(std::nullptr_t) : ptr_(nullptr) {}
-  explicit JniRawPtr(T* ptr) : ptr_(ptr) {}
 
   // Allow copy and move.
   JniRawPtr(const JniRawPtr&) = default;
@@ -56,6 +55,11 @@ class JniRawPtr {
   explicit operator bool() const { return ptr_ != nullptr; }
 
  private:
+  template <typename U>
+  friend JniRawPtr<U> MakeRaw(U* ptr);
+
+  explicit JniRawPtr(T* ptr) : ptr_(ptr) {}
+
   T* ptr_;
 };
 

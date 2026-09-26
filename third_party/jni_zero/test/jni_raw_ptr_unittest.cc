@@ -23,16 +23,13 @@ static_assert(sizeof(JniRawPtr<SampleClass>) == sizeof(SampleClass*));
 
 TEST(JniRawPtrTest, BasicCreation) {
   SampleClass sample;
-  JniRawPtr<SampleClass> ptr(&sample);
+  JniRawPtr<SampleClass> ptr = MakeRaw(&sample);
   EXPECT_EQ(&sample, ptr.get());
-
-  auto ptr_makeraw = MakeRaw(&sample);
-  EXPECT_EQ(&sample, ptr_makeraw.get());
 }
 
 TEST(JniRawPtrTest, CopyAndMove) {
   SampleClass sample;
-  JniRawPtr<SampleClass> ptr1(&sample);
+  JniRawPtr<SampleClass> ptr1 = MakeRaw(&sample);
 
   // Copy
   auto ptr2 = ptr1;
@@ -67,7 +64,7 @@ TEST(JniRawPtrTest, NullPointer) {
 
 TEST(JniRawPtrTest, DereferenceAndBool) {
   SampleClass sample;
-  JniRawPtr<SampleClass> ptr(&sample);
+  JniRawPtr<SampleClass> ptr = MakeRaw(&sample);
   EXPECT_TRUE(ptr);
   EXPECT_EQ(&sample, &(*ptr));
   EXPECT_EQ(&sample, ptr.operator->());

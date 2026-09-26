@@ -58,8 +58,7 @@ static void JNI_Sample_TriggerCallbackWithSafePtr(JNIEnv* env, int32_t value) {
 
   static NativeObject* borrowed_obj = new NativeObject(0);
   borrowed_obj->value = value;
-  Java_Sample_acceptRawPtrFromCpp(
-      env, jni_zero::JniRawPtr<NativeObject>(borrowed_obj));
+  Java_Sample_acceptRawPtrFromCpp(env, jni_zero::MakeRaw(borrowed_obj));
 
   Java_Sample_acceptUniquePtrFromCpp(env,
                                      jni_zero::MakeUnique<NativeObject>(value));
@@ -81,7 +80,7 @@ static jni_zero::JniRawPtr<NativeObject> JNI_Sample_BorrowNativeObject(
     int32_t value) {
   static NativeObject* obj = new NativeObject(0);
   obj->value = value;
-  return jni_zero::JniRawPtr<NativeObject>(obj);
+  return jni_zero::MakeRaw(obj);
 }
 
 static bool JNI_Sample_IsNullPtr(JNIEnv* env, NativeObject* ptr) {
