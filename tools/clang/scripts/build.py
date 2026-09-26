@@ -557,7 +557,7 @@ def BuildLibXml2(cc, cxx, cmake_sysroot, mac_deployment_target):
   RunCommand(['ninja', 'install'], setenv=True)
 
   if sys.platform == 'win32':
-    libxml2_lib = os.path.join(dirs.lib_dir, 'xml2s.lib')
+    libxml2_lib = os.path.join(dirs.lib_dir, 'libxml2s.lib')
   else:
     libxml2_lib = os.path.join(dirs.lib_dir, 'libxml2.a')
   extra_cmake_flags = [
