@@ -47,6 +47,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Tab"/>
   <int value="16" label="Photo Spark"/>
   <int value="17" label="Bolt"/>
+  <int value="18" label="Image Create"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom:IconType) -->

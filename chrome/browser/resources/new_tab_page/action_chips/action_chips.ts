@@ -145,6 +145,8 @@ export class ActionChipsElement extends CrLitElement {
         return 'icon-type-photo-spark';
       case IconType.kBolt:
         return 'icon-type-bolt';
+      case IconType.kImageCreate:
+        return 'icon-type-image-create';
       default:
         return '';
     }

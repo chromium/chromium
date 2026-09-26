@@ -500,7 +500,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
   if (suggest_template.has_value() && suggest_template->has_type_icon()) {
     // Update this assertion and the switch below whenever values are added.
     static_assert(omnibox::SuggestTemplateInfo::IconType_MAX ==
-                  omnibox::SuggestTemplateInfo::BOLT);
+                  omnibox::SuggestTemplateInfo::IMAGE_CREATE);
     switch (suggest_template->type_icon()) {
       case omnibox::SuggestTemplateInfo::ICON_TYPE_UNSPECIFIED:
         // When not specified, fall back on regular match icon logic below.
@@ -537,6 +537,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       case omnibox::SuggestTemplateInfo::TAB:
       case omnibox::SuggestTemplateInfo::PHOTO_SPARK:
       case omnibox::SuggestTemplateInfo::BOLT:
+      case omnibox::SuggestTemplateInfo::IMAGE_CREATE:
       default:
         // Out of range value defaults to search loupe.
         return features::IsRoundedIconsEnabled()

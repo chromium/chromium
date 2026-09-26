@@ -24,7 +24,7 @@ import "tool_mode.proto";
 // Suggest Template rendering data.
 // Next ID: 13
 message SuggestTemplateInfo {
-  // LINT.IfChange(StandardSuggestStyle)
+// LINT.IfChange(StandardSuggestStyle)
   enum StandardSuggestStyle {
     SUGGEST_STYLE_UNSPECIFIED = 0;
     // Suggestions with query text only
@@ -36,12 +36,12 @@ message SuggestTemplateInfo {
     // Suggestions with rich image only (e.g. create image suggestions).
     RICH_IMAGE = 4;
   }
-  // LINT.ThenChange(//components/omnibox/browser/searchbox.mojom:SuggestStyle)
+// LINT.ThenChange(//components/omnibox/browser/searchbox.mojom:SuggestStyle)
 
   // The style of the suggestion.
   optional StandardSuggestStyle style = 1;
 
-  // Next ID: 18
+  // Next ID: 19
   enum IconType {
     // Unspecified.
     ICON_TYPE_UNSPECIFIED = 0;
@@ -91,6 +91,9 @@ message SuggestTemplateInfo {
     // Bolt icon, may be used for brainstorm suggestions.
     // Icon: Google Symbols:bolt
     BOLT = 17;
+    // Image create icon, used for create image suggestions.
+    // Icon: Luminous Symbols:image_create
+    IMAGE_CREATE = 18;
   }
 
   // The icon type of the suggestion, this is typically the icon in front of
@@ -235,6 +238,7 @@ message SuggestTemplateInfo {
   // Where to display the secondary text relative to the primary text.
   optional SecondaryTextPlacement secondary_text_placement = 11;
 
-  // Whether secondary text should wrap up to 2 lines on mobile.
+  // Whether to wrap the secondary text to the next line. Currently only
+  // supporst wrapping to 2 total lines.
   optional bool wrap_secondary_text = 12;
 }
