@@ -326,7 +326,6 @@ suite('ContentController', () => {
         async () => {
           contentBrowserProxy.activeDistillationMethod =
               contentBrowserProxy.distillationTypeReadability;
-          contentController.configureTrustedTypes();
           contentBrowserProxy.htmlContent =
               'I see my present\npartner\n\nin the imperfect tense';
 
@@ -346,7 +345,6 @@ suite('ContentController', () => {
         async () => {
           contentBrowserProxy.activeDistillationMethod =
               contentBrowserProxy.distillationTypeReadability;
-          contentController.configureTrustedTypes();
           contentBrowserProxy.htmlContent =
               '<pre>I see my present\npartner\n\nin the imperfect tense</pre>';
 
@@ -554,7 +552,6 @@ suite('ContentController', () => {
       const url = 'https://www.relsilicon.com/';
       contentBrowserProxy.activeDistillationMethod =
           contentBrowserProxy.distillationTypeReadability;
-      contentController.configureTrustedTypes();
       const text = 'a link';
       contentBrowserProxy.htmlContent = `<a href="${url}">${text}</a>`;
 
@@ -640,7 +637,6 @@ suite('ContentController', () => {
           contentBrowserProxy.activeDistillationMethod =
               contentBrowserProxy.distillationTypeReadability;
           const buttonText = 'Buttons should be seen and not clicked';
-          contentController.configureTrustedTypes();
           contentBrowserProxy.htmlContent = `<button>${buttonText}</button>`;
 
           const root = contentController.updateContent();
@@ -660,7 +656,6 @@ suite('ContentController', () => {
           contentBrowserProxy.activeDistillationMethod =
               contentBrowserProxy.distillationTypeReadability;
           const markText = 'When everything is important, nothing is';
-          contentController.configureTrustedTypes();
           contentBrowserProxy.htmlContent = `<mark>${markText}</mark>`;
 
           const root = contentController.updateContent();
@@ -872,7 +867,6 @@ suite('ContentController', () => {
           contentBrowserProxy.readabilityEnabled = true;
           contentBrowserProxy.activeDistillationMethod =
               contentBrowserProxy.distillationTypeReadability;
-          contentController.configureTrustedTypes();
           contentBrowserProxy.htmlContent = `<a href="${url}">${text}</a>`;
           visualBrowserProxy.linksEnabled = false;
 
@@ -903,7 +897,6 @@ suite('ContentController', () => {
           contentBrowserProxy.readabilityEnabled = true;
           contentBrowserProxy.activeDistillationMethod =
               contentBrowserProxy.distillationTypeReadability;
-          contentController.configureTrustedTypes();
           contentBrowserProxy.htmlContent = `<a href="${url}">${text}</a>`;
           visualBrowserProxy.linksEnabled = true;
 
@@ -1706,5 +1699,50 @@ suite('ContentController', () => {
     contentBrowserProxy.onImageDownloaded.callListeners(nodeId);
 
     assertTrue(!!nodeStore.getDomNode(nodeId));
+  });
+
+  suite('updateContentForReadability', () => {
+    setup(() => {
+      contentBrowserProxy.readabilityEnabled = true;
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeReadability;
+      visualBrowserProxy.linksEnabled = true;
+    });
+
+    test(
+        'distilled content with embedded media frame is sanitized',
+        async () => {
+          contentBrowserProxy.htmlContent = '<p>Normal text</p>' +
+              '<iframe data-video="//www.youtube.com/embed/test" ' +
+              'srcdoc="<script>evil()</script>"></iframe>';
+
+          const root = contentController.updateContent() as DocumentFragment;
+          await microtasksFinished();
+
+          assertTrue(!!root);
+          assertEquals(null, root.querySelector('iframe'));
+          assertEquals(null, root.querySelector('script'));
+          assertStringContains(root.textContent || '', 'Normal text');
+        });
+
+    test('strips style, meta, and template elements', async () => {
+      contentBrowserProxy.htmlContent =
+          '<style>body { display: none; }</style>' +
+          '<meta http-equiv="refresh" content="0;url=https://example.com">' +
+          '<template><p>Hidden</p></template>' +
+          '<p>Safe text <a href="javascript:void(0)">Link</a></p>';
+
+      const root = contentController.updateContent() as DocumentFragment;
+      await microtasksFinished();
+
+      assertTrue(!!root);
+      assertEquals(null, root.querySelector('style'));
+      assertEquals(null, root.querySelector('meta'));
+      assertEquals(null, root.querySelector('template'));
+      const link = root.querySelector('a');
+      assertTrue(!!link);
+      assertEquals('', link.getAttribute('href'));
+      assertStringContains(root.textContent || '', 'Safe text');
+    });
   });
 });

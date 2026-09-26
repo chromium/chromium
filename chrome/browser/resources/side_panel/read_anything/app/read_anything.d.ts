@@ -4,9 +4,16 @@
 
 /** @fileoverview Definitions for chrome.readingMode API */
 
+// Sanitizer API definitions for Element.prototype.setHTML.
+// Note: SanitizerConfig and related types are already declared in lib.dom.d.ts.
+interface SetHtmlOptions {
+  sanitizer?: SanitizerConfig;
+}
+
 // Add non-standard function to element for TS to compile correctly.
 interface Element {
   scrollIntoViewIfNeeded: () => void;
+  setHTML(html: string, options?: SetHtmlOptions): void;
 }
 
 interface AxTreeAnchorMetadata {

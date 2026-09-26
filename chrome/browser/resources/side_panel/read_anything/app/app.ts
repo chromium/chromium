@@ -183,9 +183,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.nodeStore_.clear();
     ColorChangeUpdater.forDocument().start();
     this.contentState_ = this.contentController_.getState();
-    if (this.contentBrowserProxy_.isReadabilityEnabled()) {
-      this.contentController_.configureTrustedTypes();
-    }
     this.isReadAnythingImprovedUiEnabled_ =
         this.visualBrowserProxy_.isReadAnythingImprovedUiEnabled();
   }

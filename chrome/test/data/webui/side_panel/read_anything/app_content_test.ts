@@ -885,7 +885,6 @@ suite('AppContent', () => {
 
   suite('on image toggle with readability', () => {
     setup(() => {
-      contentController.configureTrustedTypes();
       contentBrowserProxy.activeDistillationMethod =
           contentBrowserProxy.distillationTypeReadability;
     });
@@ -986,7 +985,6 @@ suite('AppContent', () => {
       const text = 'the best link ever';
       contentBrowserProxy.activeDistillationMethod =
           contentBrowserProxy.distillationTypeReadability;
-      contentController.configureTrustedTypes();
       contentBrowserProxy.htmlContent = `<a href="${url}">${text}</a>`;
       app.updateContent();
       await microtasksFinished();
