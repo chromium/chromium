@@ -6430,7 +6430,7 @@ TEST_F(ComposeboxQueryControllerTest,
 }
 
 TEST_F(ComposeboxQueryControllerTest,
-       TranslateTextQuery_DoesNotSendVitOrVsridParam) {
+       TranslateTextQuery_DoesNotSendVitVsridOrUdmParam) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
 
@@ -6468,6 +6468,11 @@ TEST_F(ComposeboxQueryControllerTest,
   std::string vsrid_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(search_url, kRequestIdParameterKey,
                                           &vsrid_value));
+
+  // Assert: Udm param is NOT present.
+  std::string udm_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      search_url, kSearchModeQueryParameterKey, &udm_value));
 
   // Assert: Gsession id is added.
   std::string gsession_id_value;
