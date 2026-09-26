@@ -358,22 +358,26 @@ void RegisterInfoBars() {
     auto spec =
         InfoBarSpec::Builder(InfoBarDelegate::SESSION_RESTORE_INFOBAR_DELEGATE)
             .SetMessageTextTemplate(u"$1")
-            .SetSubstitutionsCallback(base::BindRepeating(
-                [](content::WebContents*) {
+            .SetSubstitutionsCallback(
+                base::BindRepeating([](content::WebContents*) {
                   return session_restore_infobar::
                       SessionRestoreInfoBarManager::GetInstance()
                           ->GetMessageSubstitutions();
                 }))
             .SetLinkText(l10n_util::GetStringUTF16(IDS_SESSION_RESTORE_LINK))
+            .SetLinkAccessibleText(
+                l10n_util::GetStringUTF16(IDS_SESSION_RESTORE_LINK_ARIA_LABEL))
             .SetLinkNavigationUrl(GURL("chrome://settings/onStartup"))
+            .SetShouldShowLinkBeforeButton(true)
+            .SetLinkSpacingWhenPositionedBeforeButton(4)
             .SetIcon(vector_icons::kProductRefreshIcon)
             .SetDarkModeIcon(features::IsRoundedIconsEnabled()
                                  ? omnibox::kChromeProductIcon
                                  : omnibox::kProductChromeRefreshOldIcon)
             .SetScope(InfoBarScope::kGlobal)
             .SetExpireOnNavigation(false)
-            .SetBrowserFilter(base::BindRepeating(
-                [](BrowserWindowInterface* browser) {
+            .SetBrowserFilter(
+                base::BindRepeating([](BrowserWindowInterface* browser) {
                   return session_restore_infobar::
                       SessionRestoreInfoBarManager::GetInstance()
                           ->ShouldTrackBrowser(browser);

@@ -50,8 +50,26 @@ InfoBarSpec::Builder& InfoBarSpec::Builder::SetLinkText(
   return *this;
 }
 
+InfoBarSpec::Builder& InfoBarSpec::Builder::SetLinkAccessibleText(
+    std::u16string link_accessible_text) {
+  spec_.link_accessible_text_ = std::move(link_accessible_text);
+  return *this;
+}
+
 InfoBarSpec::Builder& InfoBarSpec::Builder::SetLinkNavigationUrl(GURL gurl) {
   spec_.link_navigation_url_ = std::move(gurl);
+  return *this;
+}
+
+InfoBarSpec::Builder& InfoBarSpec::Builder::SetShouldShowLinkBeforeButton(
+    bool should_show_link_before_button) {
+  spec_.should_show_link_before_button_ = should_show_link_before_button;
+  return *this;
+}
+
+InfoBarSpec::Builder&
+InfoBarSpec::Builder::SetLinkSpacingWhenPositionedBeforeButton(int spacing) {
+  spec_.link_spacing_when_positioned_before_button_ = spacing;
   return *this;
 }
 

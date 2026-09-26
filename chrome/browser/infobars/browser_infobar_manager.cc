@@ -121,7 +121,19 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
     return params_.link_text.value_or(spec_.link_text());
   }
 
+  std::optional<std::u16string> GetLinkAccessibleText() const override {
+    return spec_.link_accessible_text();
+  }
+
   GURL GetLinkURL() const override { return spec_.link_navigation_url(); }
+
+  bool ShouldShowLinkBeforeButton() const override {
+    return spec_.should_show_link_before_button();
+  }
+
+  int GetLinkSpacingWhenPositionedBeforeButton() const override {
+    return spec_.link_spacing_when_positioned_before_button();
+  }
 
   int GetIconId() const override { return spec_.icon_id(); }
 

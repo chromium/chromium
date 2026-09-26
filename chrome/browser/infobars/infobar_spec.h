@@ -93,7 +93,16 @@ class InfoBarSpec {
     return inline_link_callback_;
   }
   const std::u16string& link_text() const { return link_text_; }
+  const std::optional<std::u16string>& link_accessible_text() const {
+    return link_accessible_text_;
+  }
   const GURL& link_navigation_url() const { return link_navigation_url_; }
+  bool should_show_link_before_button() const {
+    return should_show_link_before_button_;
+  }
+  int link_spacing_when_positioned_before_button() const {
+    return link_spacing_when_positioned_before_button_;
+  }
   InfoBarDelegate::InfobarPriority priority() const { return priority_; }
   InfoBarScope scope() const { return scope_; }
   const gfx::VectorIcon* icon() const { return icon_; }
@@ -130,7 +139,10 @@ class InfoBarSpec {
   SubstitutionsCallback substitutions_callback_;
   InlineLinkCallback inline_link_callback_;
   std::u16string link_text_;
+  std::optional<std::u16string> link_accessible_text_;
   GURL link_navigation_url_;
+  bool should_show_link_before_button_ = false;
+  int link_spacing_when_positioned_before_button_ = 0;
   InfoBarDelegate::InfobarPriority priority_ =
       InfoBarDelegate::InfobarPriority::kDefault;
   InfoBarScope scope_ = InfoBarScope::kTab;
@@ -199,7 +211,10 @@ class InfoBarSpec::Builder {
   Builder& SetSubstitutionsCallback(SubstitutionsCallback callback);
   Builder& SetInlineLinkCallback(InlineLinkCallback callback);
   Builder& SetLinkText(std::u16string link_text);
+  Builder& SetLinkAccessibleText(std::u16string link_accessible_text);
   Builder& SetLinkNavigationUrl(GURL gurl);
+  Builder& SetShouldShowLinkBeforeButton(bool should_show_link_before_button);
+  Builder& SetLinkSpacingWhenPositionedBeforeButton(int spacing);
   Builder& SetIcon(const gfx::VectorIcon& icon);
   // Shown instead of the SetIcon() icon when the infobar is in dark mode.
   Builder& SetDarkModeIcon(const gfx::VectorIcon& icon);
