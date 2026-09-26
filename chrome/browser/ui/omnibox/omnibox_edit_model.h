@@ -958,7 +958,7 @@ class OmniboxEditModel {
   // The current popup selection; set to normal kNoMatch when there's no popup.
   OmniboxPopupSelection popup_selection_ =
       OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
-                            OmniboxPopupSelection::NORMAL);
+                            OmniboxPopupSelection::LineState::kNormal);
 
   // When a result changes, this informs of the URL in the previously selected
   // suggestion whose tab switch button was focused, so that we may compare

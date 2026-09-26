@@ -147,15 +147,17 @@ void RecordActionShownForAllActions(const AutocompleteResult& result,
       match.takeover_action->RecordActionShown(
           line_index,
           /*executed=*/line_index == executed_selection.line &&
-              executed_selection.state == OmniboxPopupSelection::NORMAL);
+              executed_selection.state ==
+                  OmniboxPopupSelection::LineState::kNormal);
     }
     for (size_t action_index = 0; action_index < match.actions.size();
          ++action_index) {
       match.actions[action_index]->RecordActionShown(
-          line_index, /*executed=*/line_index == executed_selection.line &&
-                          action_index == executed_selection.action_index &&
-                          executed_selection.state ==
-                              OmniboxPopupSelection::FOCUSED_BUTTON_ACTION);
+          line_index,
+          /*executed=*/line_index == executed_selection.line &&
+              action_index == executed_selection.action_index &&
+              executed_selection.state ==
+                  OmniboxPopupSelection::LineState::kFocusedButtonAction);
     }
   }
 }

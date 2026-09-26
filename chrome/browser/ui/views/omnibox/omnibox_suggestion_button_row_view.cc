@@ -447,8 +447,8 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
       omnibox::kSparkIcon));
 
   {
-    OmniboxPopupSelection selection(model_index_,
-                                    OmniboxPopupSelection::KEYWORD_MODE);
+    OmniboxPopupSelection selection(
+        model_index_, OmniboxPopupSelection::LineState::kKeywordMode);
     keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
@@ -463,7 +463,7 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
   for (size_t action_index = 0; action_index < match().actions.size();
        action_index++) {
     OmniboxPopupSelection selection(
-        model_index_, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
+        model_index_, OmniboxPopupSelection::LineState::kFocusedButtonAction,
         action_index);
     auto* button = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
@@ -511,7 +511,7 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     keyword_button_->SetVisible(false);
   } else {
     SetPillButtonVisibility(keyword_button_,
-                            OmniboxPopupSelection::KEYWORD_MODE);
+                            OmniboxPopupSelection::LineState::kKeywordMode);
     if (keyword_button_->GetVisible()) {
       CHECK(!match().associated_keyword.empty());
       const auto names = SelectedKeywordView::GetKeywordLabelNames(
@@ -524,8 +524,8 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   }
 
   for (const auto& action_button : action_buttons_) {
-    SetPillButtonVisibility(action_button,
-                            OmniboxPopupSelection::FOCUSED_BUTTON_ACTION);
+    SetPillButtonVisibility(
+        action_button, OmniboxPopupSelection::LineState::kFocusedButtonAction);
     if (action_button->GetVisible()) {
       const OmniboxAction* action =
           match().actions[action_button->selection().action_index].get();
@@ -625,7 +625,7 @@ void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
 void OmniboxSuggestionButtonRowView::ButtonPressed(
     const OmniboxPopupSelection selection,
     const ui::Event& event) {
-  if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
+  if (selection.state == OmniboxPopupSelection::LineState::kKeywordMode) {
     // Note: Since keyword mode logic depends on state of the edit model, the
     // selection must first be set to prepare for keyword mode before accepting.
     popup_view_->controller()->edit_model()->SetPopupSelection(selection);

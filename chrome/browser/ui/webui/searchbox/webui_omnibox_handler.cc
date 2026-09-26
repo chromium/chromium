@@ -87,20 +87,20 @@ namespace {
 searchbox::mojom::SelectionLineState ConvertLineState(
     OmniboxPopupSelection::LineState state) {
   switch (state) {
-    case OmniboxPopupSelection::LineState::NORMAL:
+    case OmniboxPopupSelection::LineState::kNormal:
       return searchbox::mojom::SelectionLineState::kNormal;
-    case OmniboxPopupSelection::LineState::KEYWORD_MODE:
+    case OmniboxPopupSelection::LineState::kKeywordMode:
       return searchbox::mojom::SelectionLineState::kKeywordMode;
-    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM:
+    case OmniboxPopupSelection::LineState::kFocusedButtonAim:
       return searchbox::mojom::SelectionLineState::kFocusedButtonAim;
-    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION:
+    case OmniboxPopupSelection::LineState::kFocusedButtonAction:
       return searchbox::mojom::SelectionLineState::kFocusedButtonAction;
-    case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_REMOVE_SUGGESTION:
+    case OmniboxPopupSelection::LineState::kFocusedButtonRemoveSuggestion:
       return searchbox::mojom::SelectionLineState::
           kFocusedButtonRemoveSuggestion;
     default:
       // WebUI omnibox doesn't support the other UIs and their focus states.
-      NOTREACHED() << state;
+      NOTREACHED() << static_cast<int>(state);
   }
 }
 
@@ -219,7 +219,7 @@ void WebuiOmniboxHandler::ActivateKeyword(
   // The rest of this function mirrors
   // `OmniboxSuggestionButtonRowView::ButtonPressed()`.
   OmniboxPopupSelection selection(
-      line, OmniboxPopupSelection::LineState::KEYWORD_MODE);
+      line, OmniboxPopupSelection::LineState::kKeywordMode);
   // Note: Since keyword mode logic depends on state of the edit model, the
   // selection must first be set to prepare for keyword mode before accepting.
   edit_model()->SetPopupSelection(selection);
@@ -381,7 +381,7 @@ void WebuiOmniboxHandler::StepSelection(
       NOTREACHED();
     }
   }
-  page_->StepSelection(direction == OmniboxPopupSelection::kForward
+  page_->StepSelection(direction == OmniboxPopupSelection::Direction::kForward
                            ? searchbox::mojom::SelectionDirection::kForward
                            : searchbox::mojom::SelectionDirection::kBackward,
                        mojom_step);

@@ -318,8 +318,9 @@ void OmniboxPopupHandler::LogEscapeAction(
 void OmniboxPopupHandler::OpenAimPopup(bool via_keyboard) {
   if (controller_) {
     controller_->edit_model()->OpenSelection(
-        OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
-                              OmniboxPopupSelection::FOCUSED_BUTTON_AIM),
+        OmniboxPopupSelection(
+            OmniboxPopupSelection::kNoMatch,
+            OmniboxPopupSelection::LineState::kFocusedButtonAim),
         via_keyboard);
   }
 }

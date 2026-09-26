@@ -133,32 +133,32 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
     OmniboxEditModel* model =
         GetLocationBar()->GetOmniboxController()->edit_model();
 
-    model->SetPopupSelection(
-        OmniboxPopupSelection(0, OmniboxPopupSelection::KEYWORD_MODE));
+    model->SetPopupSelection(OmniboxPopupSelection(
+        0, OmniboxPopupSelection::LineState::kKeywordMode));
     if (!VerifyActiveButtonText(popup_view, 0, u"Search")) {
       return false;
     }
 
-    model->SetPopupSelection(
-        OmniboxPopupSelection(1, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
+    model->SetPopupSelection(OmniboxPopupSelection(
+        1, OmniboxPopupSelection::LineState::kFocusedButtonAction));
     if (!VerifyActiveButtonText(popup_view, 1, u"Switch")) {
       return false;
     }
 
-    model->SetPopupSelection(
-        OmniboxPopupSelection(2, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
+    model->SetPopupSelection(OmniboxPopupSelection(
+        2, OmniboxPopupSelection::LineState::kFocusedButtonAction));
     if (!VerifyActiveButtonText(popup_view, 2, u"Delete")) {
       return false;
     }
 
-    model->SetPopupSelection(
-        OmniboxPopupSelection(3, OmniboxPopupSelection::KEYWORD_MODE));
+    model->SetPopupSelection(OmniboxPopupSelection(
+        3, OmniboxPopupSelection::LineState::kKeywordMode));
     if (!VerifyActiveButtonText(popup_view, 3, u"Search")) {
       return false;
     }
 
-    model->SetPopupSelection(
-        OmniboxPopupSelection(3, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
+    model->SetPopupSelection(OmniboxPopupSelection(
+        3, OmniboxPopupSelection::LineState::kFocusedButtonAction));
     if (!VerifyActiveButtonText(popup_view, 3, u"Switch")) {
       return false;
     }

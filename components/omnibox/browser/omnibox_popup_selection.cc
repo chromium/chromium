@@ -20,7 +20,8 @@ constexpr size_t OmniboxPopupSelection::kNoMatch = static_cast<size_t>(-1);
 
 #if DCHECK_ALWAYS_ON
 std::ostream& operator<<(std::ostream& os, const OmniboxPopupSelection& s) {
-  os << '{' << s.line << ',' << s.state << ',' << s.action_index << '}';
+  os << '{' << s.line << ',' << static_cast<int>(s.state) << ','
+     << s.action_index << '}';
   return os;
 }
 
@@ -37,20 +38,21 @@ std::ostream& operator<<(std::ostream& os,
 
 bool OmniboxPopupSelection::IsChangeToKeyword(
     OmniboxPopupSelection from) const {
-  return state == KEYWORD_MODE && from.state != KEYWORD_MODE;
+  return state == LineState::kKeywordMode &&
+         from.state != LineState::kKeywordMode;
 }
 
 bool OmniboxPopupSelection::IsButtonFocused() const {
-  return state != NORMAL && state != KEYWORD_MODE;
+  return state != LineState::kNormal && state != LineState::kKeywordMode;
 }
 
 bool OmniboxPopupSelection::IsAction() const {
-  return state == FOCUSED_BUTTON_ACTION;
+  return state == LineState::kFocusedButtonAction;
 }
 
 bool OmniboxPopupSelection::IsNonMatchSelection() const {
-  return line == kNoMatch &&
-         (state == FOCUSED_BUTTON_AIM || state == CTRL_ENTER);
+  return line == kNoMatch && (state == LineState::kFocusedButtonAim ||
+                              state == LineState::kCtrlEnter);
 }
 
 bool OmniboxPopupSelection::IsControlPresentOnMatch(
@@ -62,28 +64,28 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
   const auto& match = result.match_at(line);
 
   switch (state) {
-    case NORMAL: {
+    case LineState::kNormal: {
       // `NULL_RESULT_MESSAGE` cannot be focused, except for IPH suggestions
       // that contain links (such as the disclaimer or setting promo) which
       // need to be navigable by screen readers.
       return match.type != AutocompleteMatchType::NULL_RESULT_MESSAGE ||
              (match.IsIphSuggestion() && !match.iph_link_url.is_empty());
     }
-    case KEYWORD_MODE:
+    case LineState::kKeywordMode:
       return !match.associated_keyword.empty();
-    case FOCUSED_BUTTON_ACTION: {
+    case LineState::kFocusedButtonAction: {
       // Actions buttons should not be shown in keyword mode.
       return !match.from_keyword && action_index < match.actions.size();
     }
-    case FOCUSED_BUTTON_THUMBS_UP:
-    case FOCUSED_BUTTON_THUMBS_DOWN:
+    case LineState::kFocusedButtonThumbsUp:
+    case LineState::kFocusedButtonThumbsDown:
       return match.type == AutocompleteMatchType::HISTORY_EMBEDDINGS;
-    case FOCUSED_BUTTON_REMOVE_SUGGESTION:
+    case LineState::kFocusedButtonRemoveSuggestion:
       return match.SupportsDeletion();
-    case FOCUSED_IPH_LINK:
+    case LineState::kFocusedIphLink:
       return match.IsIphSuggestion() && !match.iph_link_url.is_empty();
-    case FOCUSED_BUTTON_AIM:
-    case CTRL_ENTER:
+    case LineState::kFocusedButtonAim:
+    case LineState::kCtrlEnter:
       return false;
     default:
       break;
@@ -119,12 +121,12 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
   }
 
   // Handle the simple case of just getting the first or last element.
-  if (step == kAllLines) {
-    return direction == kForward ? all_available_selections.back()
-                                 : all_available_selections.front();
+  if (step == Step::kAllLines) {
+    return direction == Direction::kForward ? all_available_selections.back()
+                                            : all_available_selections.front();
   }
 
-  if (direction == kForward) {
+  if (direction == Direction::kForward) {
     // To go forward, we want to change to the first selection that's larger
     // than the current selection, and std::upper_bound() does just
     // that.
@@ -138,7 +140,7 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
 
     // Normal case where we found the next selection.
     return *next;
-  } else if (direction == kBackward) {
+  } else if (direction == Direction::kBackward) {
     // To go backwards, decrement one from std::lower_bound(), which finds the
     // current selection. I didn't use std::find() here, because
     // std::lower_bound() can gracefully handle the case where
@@ -172,23 +174,23 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
   // all of these states - just that it's possible to get there, if available.
   std::vector<LineState> all_states;
   switch (step) {
-    case kWholeLine:
-    case kAllLines:
-      all_states.push_back(NORMAL);
+    case Step::kWholeLine:
+    case Step::kAllLines:
+      all_states.push_back(LineState::kNormal);
       // Whole line stepping can go straight into keyword mode.
-      all_states.push_back(KEYWORD_MODE);
+      all_states.push_back(LineState::kKeywordMode);
       break;
-    case kStateOrLine:
-      all_states.push_back(NORMAL);
-      all_states.push_back(KEYWORD_MODE);
+    case Step::kStateOrLine:
+      all_states.push_back(LineState::kNormal);
+      all_states.push_back(LineState::kKeywordMode);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      all_states.push_back(FOCUSED_BUTTON_AIM);
-      all_states.push_back(FOCUSED_BUTTON_ACTION);
+      all_states.push_back(LineState::kFocusedButtonAim);
+      all_states.push_back(LineState::kFocusedButtonAction);
 #endif
-      all_states.push_back(FOCUSED_BUTTON_THUMBS_UP);
-      all_states.push_back(FOCUSED_BUTTON_THUMBS_DOWN);
-      all_states.push_back(FOCUSED_BUTTON_REMOVE_SUGGESTION);
-      all_states.push_back(FOCUSED_IPH_LINK);
+      all_states.push_back(LineState::kFocusedButtonThumbsUp);
+      all_states.push_back(LineState::kFocusedButtonThumbsDown);
+      all_states.push_back(LineState::kFocusedButtonRemoveSuggestion);
+      all_states.push_back(LineState::kFocusedIphLink);
       break;
   }
   DCHECK(std::is_sorted(all_states.begin(), all_states.end()))
@@ -203,13 +205,14 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
   //   AIM button selection will instead be added to the default match, below.
   // Note that the ordering logic in `operator<=>` ensures that `kNoMatch` comes
   // before other selections.
-  if (aim_button_visible && step == kStateOrLine && input.IsZeroSuggest()) {
-    available_selections.emplace_back(kNoMatch, FOCUSED_BUTTON_AIM);
+  if (aim_button_visible && step == Step::kStateOrLine &&
+      input.IsZeroSuggest()) {
+    available_selections.emplace_back(kNoMatch, LineState::kFocusedButtonAim);
   }
   // Now, for each accessible line, add all the available line states to a list.
   for (size_t line_number = 0; line_number < result.size(); ++line_number) {
     for (LineState line_state : all_states) {
-      if (line_state == FOCUSED_BUTTON_AIM) {
+      if (line_state == LineState::kFocusedButtonAim) {
         // The AIM button is included in the focus order if:
         // - The AIM button is visible.
         // - This is the first match (`line_number == 0`).
@@ -246,7 +249,7 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
             !input.IsZeroSuggest()) {
           available_selections.emplace_back(line_number, line_state);
         }
-      } else if (line_state == FOCUSED_BUTTON_ACTION) {
+      } else if (line_state == LineState::kFocusedButtonAction) {
         constexpr size_t kMaxActionCount = 8;
         for (size_t i = 0; i < kMaxActionCount; i++) {
           OmniboxPopupSelection selection(line_number, line_state, i);
@@ -259,21 +262,21 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
             break;
           }
         }
-      } else if (line_state == KEYWORD_MODE && kIsDesktop) {
+      } else if (line_state == LineState::kKeywordMode && kIsDesktop) {
         OmniboxPopupSelection selection(line_number, line_state);
         if (selection.IsControlPresentOnMatch(result)) {
           if (result.match_at(line_number)
                   .HasInstantKeyword(template_url_service)) {
             if (available_selections.size() > 0 &&
                 available_selections.back().line == line_number &&
-                available_selections.back().state == LineState::NORMAL) {
+                available_selections.back().state == LineState::kNormal) {
               // Remove the preceding normal state selection so that keyword
               // mode will be entered immediately when the user arrows down
               // to this keyword line.
               available_selections.pop_back();
             }
             available_selections.push_back(selection);
-          } else if (step == kStateOrLine) {
+          } else if (step == Step::kStateOrLine) {
             available_selections.push_back(selection);
           }
         }

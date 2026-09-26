@@ -1407,23 +1407,23 @@ TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {
 
   handler_->OnSelectionChanged(
       OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
-      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL));
+      OmniboxPopupSelection(0, OmniboxPopupSelection::LineState::kNormal));
   page_.FlushForTesting();
   EXPECT_EQ(0, selection->line);
   EXPECT_EQ(searchbox::mojom::SelectionLineState::kNormal, selection->state);
 
   handler_->OnSelectionChanged(
-      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL),
-      OmniboxPopupSelection(1, OmniboxPopupSelection::KEYWORD_MODE));
+      OmniboxPopupSelection(0, OmniboxPopupSelection::LineState::kNormal),
+      OmniboxPopupSelection(1, OmniboxPopupSelection::LineState::kKeywordMode));
   page_.FlushForTesting();
   EXPECT_EQ(1, selection->line);
   EXPECT_EQ(searchbox::mojom::SelectionLineState::kKeywordMode,
             selection->state);
 
   handler_->OnSelectionChanged(
-      OmniboxPopupSelection(2, OmniboxPopupSelection::NORMAL),
-      OmniboxPopupSelection(2, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
-                            4));
+      OmniboxPopupSelection(2, OmniboxPopupSelection::LineState::kNormal),
+      OmniboxPopupSelection(
+          2, OmniboxPopupSelection::LineState::kFocusedButtonAction, 4));
   page_.FlushForTesting();
   EXPECT_EQ(2, selection->line);
   EXPECT_EQ(4, selection->action_index);
@@ -1431,9 +1431,10 @@ TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {
             selection->state);
 
   handler_->OnSelectionChanged(
-      OmniboxPopupSelection(3, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION, 4),
       OmniboxPopupSelection(
-          3, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION));
+          3, OmniboxPopupSelection::LineState::kFocusedButtonAction, 4),
+      OmniboxPopupSelection(
+          3, OmniboxPopupSelection::LineState::kFocusedButtonRemoveSuggestion));
   page_.FlushForTesting();
   EXPECT_EQ(3, selection->line);
   EXPECT_EQ(
@@ -1463,7 +1464,7 @@ TEST_F(WebuiOmniboxHandlerTest, SetPopupSelection_IgnoresOutOfBounds) {
       std::move(fake_autocomplete_controller));
 
   omnibox_controller_->edit_model()->SetPopupSelection(
-      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL));
+      OmniboxPopupSelection(0, OmniboxPopupSelection::LineState::kNormal));
   EXPECT_EQ(0U, omnibox_controller_->edit_model()->GetPopupSelection().line);
 
   // Calling SetPopupSelection with an out-of-bounds index should be ignored.
@@ -1481,7 +1482,7 @@ TEST_F(WebuiOmniboxHandlerTest, SetPopupSelection_IgnoresOutOfBounds) {
   selection->state = searchbox::mojom::SelectionLineState::kKeywordMode;
   selection->action_index = 0;
   handler_->SetPopupSelection(std::move(selection));
-  EXPECT_EQ(OmniboxPopupSelection::NORMAL,
+  EXPECT_EQ(OmniboxPopupSelection::LineState::kNormal,
             omnibox_controller_->edit_model()->GetPopupSelection().state);
 
   // Calling SetPopupSelection with a valid index should succeed.

@@ -1480,7 +1480,8 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnActionExecuted) {
   // omnibox suggestion created by the extension.
   location_bar->GetOmniboxController()->edit_model()->OpenSelection(
       OmniboxPopupSelection(
-          /*line=*/1, /*state=*/OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
+          /*line=*/1,
+          /*state=*/OmniboxPopupSelection::LineState::kFocusedButtonAction,
           /*action_index=*/0),
       base::TimeTicks(), WindowOpenDisposition::CURRENT_TAB);
 

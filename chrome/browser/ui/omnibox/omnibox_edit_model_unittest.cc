@@ -663,10 +663,11 @@ TEST_F(OmniboxEditModelTest, CtrlEnterSelectionNavigatesToDesiredTLDNoMatch) {
                                             _, _, _, _, _, _, _, _))
       .Times(1);
 
-  // When selection state is CTRL_ENTER and line is kNoMatch (e.g. popup closed
+  // When selection state is kCtrlEnter and line is kNoMatch (e.g. popup closed
   // after typing and pressing Ctrl+Enter in WebUI), verify navigation to .com.
-  model()->OpenSelection(OmniboxPopupSelection(
-      OmniboxPopupSelection::kNoMatch, OmniboxPopupSelection::CTRL_ENTER));
+  model()->OpenSelection(
+      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
+                            OmniboxPopupSelection::LineState::kCtrlEnter));
 }
 
 TEST_F(OmniboxEditModelTest, SpaceInMiddleWithoutKeywordSelectionDoesNotCrash) {
@@ -841,8 +842,9 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
 };
 
 // This verifies that the new treatment of the user's selected match in
-// |SetSelectedLine()| with removed |AutocompleteResult::Selection::empty()|
-// is correct in the face of various replacement versions of |empty()|.
+// |SetSelectedLine()| with removed
+// |AutocompleteResult::Selection::empty()| is correct in the face of various
+// replacement versions of |empty()|.
 TEST_F(OmniboxEditModelPopupTest, SetSelectedLine) {
   ACMatches matches;
   for (size_t i = 0; i < 2; ++i) {
@@ -934,7 +936,7 @@ TEST_F(OmniboxEditModelPopupTest,
   int label_prefix_length = 0;
   for (const auto& test_case : test_cases) {
     model()->SetPopupSelection(OmniboxPopupSelection(
-        test_case.line, OmniboxPopupSelection::KEYWORD_MODE));
+        test_case.line, OmniboxPopupSelection::LineState::kKeywordMode));
     std::u16string label =
         model()->GetPopupAccessibilityLabelForCurrentSelection(
             test_case.input_text, true, &label_prefix_length);
@@ -1093,18 +1095,18 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
 
   // Step by states forward.
   for (auto selection : {
-           Selection(1, Selection::NORMAL),
-           Selection(1, Selection::FOCUSED_BUTTON_THUMBS_UP),
-           Selection(1, Selection::FOCUSED_BUTTON_THUMBS_DOWN),
-           Selection(1, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
-           Selection(2, Selection::NORMAL),
-           Selection(2, Selection::KEYWORD_MODE),
-           Selection(3, Selection::NORMAL),
-           Selection(3, Selection::KEYWORD_MODE),
-           Selection(3, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
-           Selection(4, Selection::NORMAL),
-           Selection(5, Selection::NORMAL),
-           Selection(0, Selection::NORMAL),
+           Selection(1, Selection::LineState::kNormal),
+           Selection(1, Selection::LineState::kFocusedButtonThumbsUp),
+           Selection(1, Selection::LineState::kFocusedButtonThumbsDown),
+           Selection(1, Selection::LineState::kFocusedButtonRemoveSuggestion),
+           Selection(2, Selection::LineState::kNormal),
+           Selection(2, Selection::LineState::kKeywordMode),
+           Selection(3, Selection::LineState::kNormal),
+           Selection(3, Selection::LineState::kKeywordMode),
+           Selection(3, Selection::LineState::kFocusedButtonRemoveSuggestion),
+           Selection(4, Selection::LineState::kNormal),
+           Selection(5, Selection::LineState::kNormal),
+           Selection(0, Selection::LineState::kNormal),
        }) {
     model()->OnTabPressed(false);
     EXPECT_EQ(selection, model()->GetPopupSelection());
@@ -1112,21 +1114,21 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   // Step by states backward. Unlike prior to suggestion button row, there is
   // no difference in behavior for KEYWORD mode moving forward or backward.
   for (auto selection : {
-           Selection(5, Selection::NORMAL),
-           Selection(4, Selection::NORMAL),
-           Selection(3, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
-           Selection(3, Selection::KEYWORD_MODE),
-           Selection(3, Selection::NORMAL),
-           Selection(2, Selection::KEYWORD_MODE),
-           Selection(2, Selection::NORMAL),
-           Selection(1, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
-           Selection(1, Selection::FOCUSED_BUTTON_THUMBS_DOWN),
-           Selection(1, Selection::FOCUSED_BUTTON_THUMBS_UP),
-           Selection(1, Selection::NORMAL),
-           Selection(0, Selection::NORMAL),
-           Selection(5, Selection::NORMAL),
-           Selection(4, Selection::NORMAL),
-           Selection(3, Selection::FOCUSED_BUTTON_REMOVE_SUGGESTION),
+           Selection(5, Selection::LineState::kNormal),
+           Selection(4, Selection::LineState::kNormal),
+           Selection(3, Selection::LineState::kFocusedButtonRemoveSuggestion),
+           Selection(3, Selection::LineState::kKeywordMode),
+           Selection(3, Selection::LineState::kNormal),
+           Selection(2, Selection::LineState::kKeywordMode),
+           Selection(2, Selection::LineState::kNormal),
+           Selection(1, Selection::LineState::kFocusedButtonRemoveSuggestion),
+           Selection(1, Selection::LineState::kFocusedButtonThumbsDown),
+           Selection(1, Selection::LineState::kFocusedButtonThumbsUp),
+           Selection(1, Selection::LineState::kNormal),
+           Selection(0, Selection::LineState::kNormal),
+           Selection(5, Selection::LineState::kNormal),
+           Selection(4, Selection::LineState::kNormal),
+           Selection(3, Selection::LineState::kFocusedButtonRemoveSuggestion),
        }) {
     model()->OnTabPressed(true);
     EXPECT_EQ(selection, model()->GetPopupSelection());
@@ -1134,9 +1136,11 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
 
   // Try the `kAllLines` step behavior.
   model()->OnUpOrDownPressed(false, true);
-  EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(Selection(0, Selection::LineState::kNormal),
+            model()->GetPopupSelection());
   model()->OnUpOrDownPressed(true, true);
-  EXPECT_EQ(Selection(5, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(Selection(5, Selection::LineState::kNormal),
+            model()->GetPopupSelection());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1206,14 +1210,17 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
 
   // Step by states forward.
   for (auto selection : {
-           Selection(1, Selection::NORMAL),
-           Selection(1, Selection::FOCUSED_BUTTON_ACTION),
-           Selection(2, Selection::NORMAL),
-           Selection(3, Selection::NORMAL),
-           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/0),
-           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/1),
-           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/2),
-           Selection(0, Selection::NORMAL),
+           Selection(1, Selection::LineState::kNormal),
+           Selection(1, Selection::LineState::kFocusedButtonAction),
+           Selection(2, Selection::LineState::kNormal),
+           Selection(3, Selection::LineState::kNormal),
+           Selection(4, Selection::LineState::kFocusedButtonAction,
+                     /*action_index=*/0),
+           Selection(4, Selection::LineState::kFocusedButtonAction,
+                     /*action_index=*/1),
+           Selection(4, Selection::LineState::kFocusedButtonAction,
+                     /*action_index=*/2),
+           Selection(0, Selection::LineState::kNormal),
        }) {
     model()->OnTabPressed(false);
     auto popup_selection = model()->GetPopupSelection();
@@ -1226,14 +1233,17 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
   }
   // Step by states backward.
   for (auto selection : {
-           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/2),
-           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/1),
-           Selection(4, Selection::FOCUSED_BUTTON_ACTION, /*action_index=*/0),
-           Selection(3, Selection::NORMAL),
-           Selection(2, Selection::NORMAL),
-           Selection(1, Selection::FOCUSED_BUTTON_ACTION),
-           Selection(1, Selection::NORMAL),
-           Selection(0, Selection::NORMAL),
+           Selection(4, Selection::LineState::kFocusedButtonAction,
+                     /*action_index=*/2),
+           Selection(4, Selection::LineState::kFocusedButtonAction,
+                     /*action_index=*/1),
+           Selection(4, Selection::LineState::kFocusedButtonAction,
+                     /*action_index=*/0),
+           Selection(3, Selection::LineState::kNormal),
+           Selection(2, Selection::LineState::kNormal),
+           Selection(1, Selection::LineState::kFocusedButtonAction),
+           Selection(1, Selection::LineState::kNormal),
+           Selection(0, Selection::LineState::kNormal),
        }) {
     model()->OnTabPressed(true);
     auto popup_selection = model()->GetPopupSelection();
@@ -1247,9 +1257,11 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
 
   // Try the `kAllLines` step behavior.
   model()->OnUpOrDownPressed(false, true);
-  EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(Selection(0, Selection::LineState::kNormal),
+            model()->GetPopupSelection());
   model()->OnUpOrDownPressed(true, true);
-  EXPECT_EQ(Selection(3, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(Selection(3, Selection::LineState::kNormal),
+            model()->GetPopupSelection());
 }
 #endif
 
@@ -1295,27 +1307,31 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
                               /*is_temporary_text=*/false, u"1",
                               std::u16string(), std::u16string(),
                               KeywordState::kNone, std::u16string(), {});
-  EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(Selection(0, Selection::LineState::kNormal),
+            model()->GetPopupSelection());
   EXPECT_EQ(u"1", model()->text());
   EXPECT_FALSE(model()->is_temporary_text());
 
   // Tab down to second match.
   model()->OnTabPressed(false);
-  EXPECT_EQ(Selection(1, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(Selection(1, Selection::LineState::kNormal),
+            model()->GetPopupSelection());
   EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab down to the third match, and expect that we update the temporary
   // text to the third match.
   model()->OnTabPressed(false);
-  EXPECT_EQ(Selection(2, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(Selection(2, Selection::LineState::kNormal),
+            model()->GetPopupSelection());
   EXPECT_EQ(u"a3", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Now tab backwards to the second match, expect we update the temporary text
   // to the second match.
   model()->OnTabPressed(true);
-  EXPECT_EQ(Selection(1, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(Selection(1, Selection::LineState::kNormal),
+            model()->GetPopupSelection());
   EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 }
@@ -1342,15 +1358,17 @@ TEST_F(OmniboxEditModelPopupTest, ResetFocusOnResultChange) {
   // Default match should be focused initially.
   model()->OnPopupResultChanged();
   EXPECT_EQ(model()->GetPopupSelection(),
-            OmniboxPopupSelection(0u, Selection::NORMAL));
+            OmniboxPopupSelection(0u, Selection::LineState::kNormal));
   model()->SetPopupSelection(Selection(0), true, false);
   EXPECT_EQ(model()->GetPopupSelection(),
-            OmniboxPopupSelection(0u, Selection::NORMAL));
+            OmniboxPopupSelection(0u, Selection::LineState::kNormal));
 
   // Focus the button.
-  model()->SetPopupSelection(Selection(0, Selection::FOCUSED_BUTTON_ACTION));
-  EXPECT_EQ(model()->GetPopupSelection(),
-            OmniboxPopupSelection(0u, Selection::FOCUSED_BUTTON_ACTION));
+  model()->SetPopupSelection(
+      Selection(0, Selection::LineState::kFocusedButtonAction));
+  EXPECT_EQ(
+      model()->GetPopupSelection(),
+      OmniboxPopupSelection(0u, Selection::LineState::kFocusedButtonAction));
 
   // Adding a match at end. Expect focus to reset.
   matches[0].relevance = 999;
@@ -1364,18 +1382,20 @@ TEST_F(OmniboxEditModelPopupTest, ResetFocusOnResultChange) {
                       /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
   EXPECT_EQ(model()->GetPopupSelection(),
-            OmniboxPopupSelection(0u, Selection::NORMAL));
+            OmniboxPopupSelection(0u, Selection::LineState::kNormal));
 
   // Focus the 2nd match.
   model()->SetPopupSelection(Selection(1));
   EXPECT_EQ(model()->GetPopupSelection(),
-            OmniboxPopupSelection(1u, Selection::NORMAL));
+            OmniboxPopupSelection(1u, Selection::LineState::kNormal));
 
   // Focus the button.
-  model()->SetPopupSelection(Selection(model()->GetPopupSelection().line,
-                                       Selection::FOCUSED_BUTTON_ACTION));
-  EXPECT_EQ(model()->GetPopupSelection(),
-            OmniboxPopupSelection(1u, Selection::FOCUSED_BUTTON_ACTION));
+  model()->SetPopupSelection(
+      Selection(model()->GetPopupSelection().line,
+                Selection::LineState::kFocusedButtonAction));
+  EXPECT_EQ(
+      model()->GetPopupSelection(),
+      OmniboxPopupSelection(1u, Selection::LineState::kFocusedButtonAction));
 
   // Adding a match at end. Expect focus to reset.
   matches[0].relevance = 999;
@@ -1388,7 +1408,7 @@ TEST_F(OmniboxEditModelPopupTest, ResetFocusOnResultChange) {
                       /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
   EXPECT_EQ(model()->GetPopupSelection(),
-            OmniboxPopupSelection(0u, Selection::NORMAL));
+            OmniboxPopupSelection(0u, Selection::LineState::kNormal));
 }
 
 // Android handles actions and metrics differently from other platforms.
@@ -1417,8 +1437,8 @@ TEST_F(OmniboxEditModelPopupTest, OpenActionSelectionLogsOmniboxEvent) {
                       /*can_show_contextual_suggestions=*/false,
                       /*mia_enabled=*/false, /*is_incognito=*/false);
   model()->OnPopupResultChanged();
-  model()->OpenSelection(
-      OmniboxPopupSelection(1, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
+  model()->OpenSelection(OmniboxPopupSelection(
+      1, OmniboxPopupSelection::LineState::kFocusedButtonAction));
   EXPECT_EQ(client()->last_log_disposition(),
             WindowOpenDisposition::SWITCH_TO_TAB);
   histogram_tester.ExpectUniqueSample("Omnibox.EventCount", 1, 1);
@@ -1463,19 +1483,21 @@ TEST_F(OmniboxEditModelPopupTest, OpenThumbsDownSelectionShowsFeedback) {
                               /*is_temporary_text=*/false, u"a1",
                               std::u16string(), std::u16string(),
                               KeywordState::kNone, std::u16string(), {});
-  EXPECT_EQ(Selection(0, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(Selection(0, Selection::LineState::kNormal),
+            model()->GetPopupSelection());
   EXPECT_EQ(u"a1", model()->text());
   EXPECT_FALSE(model()->is_temporary_text());
 
   // Tab down to second match.
   model()->OnTabPressed(false);
-  EXPECT_EQ(Selection(1, Selection::NORMAL), model()->GetPopupSelection());
+  EXPECT_EQ(Selection(1, Selection::LineState::kNormal),
+            model()->GetPopupSelection());
   EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
 
   // Tab to focus the thumbs up button.
   model()->OnTabPressed(false);
-  EXPECT_EQ(Selection(1, Selection::FOCUSED_BUTTON_THUMBS_UP),
+  EXPECT_EQ(Selection(1, Selection::LineState::kFocusedButtonThumbsUp),
             model()->GetPopupSelection());
   EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
@@ -1484,12 +1506,12 @@ TEST_F(OmniboxEditModelPopupTest, OpenThumbsDownSelectionShowsFeedback) {
 
   // Simulate pressing the thumbs up button.
   model()->OpenSelection(OmniboxPopupSelection(
-      1, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP));
+      1, OmniboxPopupSelection::LineState::kFocusedButtonThumbsUp));
   EXPECT_EQ(FeedbackType::kThumbsUp, result->match_at(1)->feedback_type);
 
   // Tab to focus the thumbs down button.
   model()->OnTabPressed(false);
-  EXPECT_EQ(Selection(1, Selection::FOCUSED_BUTTON_THUMBS_DOWN),
+  EXPECT_EQ(Selection(1, Selection::LineState::kFocusedButtonThumbsDown),
             model()->GetPopupSelection());
   EXPECT_EQ(u"a2", model()->text());
   EXPECT_TRUE(model()->is_temporary_text());
@@ -1503,14 +1525,14 @@ TEST_F(OmniboxEditModelPopupTest, OpenThumbsDownSelectionShowsFeedback) {
 
   // Simulate pressing the thumbs down button.
   model()->OpenSelection(OmniboxPopupSelection(
-      1, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN));
+      1, OmniboxPopupSelection::LineState::kFocusedButtonThumbsDown));
   EXPECT_EQ(FeedbackType::kThumbsDown, result->match_at(1)->feedback_type);
   EXPECT_EQ(u"a", input_text);
   EXPECT_EQ("https://foo/", destination_url.spec());
 
   // Simulate pressing the thumbs down button.
   model()->OpenSelection(OmniboxPopupSelection(
-      1, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN));
+      1, OmniboxPopupSelection::LineState::kFocusedButtonThumbsDown));
   EXPECT_EQ(FeedbackType::kNone, result->match_at(1)->feedback_type);
 }
 
@@ -2384,7 +2406,7 @@ TEST_F(OmniboxEditModelPopupTest,
 
   // 2. Select the second match (index 1).
   model()->SetPopupSelection(
-      OmniboxPopupSelection(1, OmniboxPopupSelection::NORMAL));
+      OmniboxPopupSelection(1, OmniboxPopupSelection::LineState::kNormal));
   ASSERT_EQ(1u, model()->GetPopupSelection().line);
 
   // 3. Update the result set to have only 1 match.
@@ -2431,7 +2453,7 @@ TEST_F(OmniboxEditModelPopupTest, OpenFeaturedSearchMatch) {
 
   // Selecting the match with NORMAL state should enter keyword mode.
   model()->OpenSelection(
-      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL));
+      OmniboxPopupSelection(0, OmniboxPopupSelection::LineState::kNormal));
 
   EXPECT_TRUE(model()->is_keyword_selected());
   EXPECT_EQ(u"@bookmarks", model()->keyword());

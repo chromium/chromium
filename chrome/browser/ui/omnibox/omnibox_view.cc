@@ -180,7 +180,8 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                 .use_action_icons_in_location_bar) {
     OmniboxPopupSelection selection =
         controller()->edit_model()->GetPopupSelection();
-    if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_ACTION &&
+    if (selection.state ==
+            OmniboxPopupSelection::LineState::kFocusedButtonAction &&
         selection.action_index < match.actions.size()) {
       action = match.actions[selection.action_index].get();
     }
@@ -371,7 +372,7 @@ std::u16string OmniboxView::ComputeFriendlySuggestionTextForAccessibility(
   suggestion_text_prefix_length = 0;
 
   if (controller()->edit_model()->GetPopupSelection().state ==
-      OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM) {
+      OmniboxPopupSelection::LineState::kFocusedButtonAim) {
     friendly_suggestion_text =
         controller()->edit_model()->GetPopupAccessibilityLabelForAimButton();
   } else if (controller()->edit_model()->GetPopupSelection().line ==

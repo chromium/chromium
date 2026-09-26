@@ -44,7 +44,9 @@ class TestOmniboxPopupViewViews : public OmniboxPopupViewViews {
       : OmniboxPopupViewViews(/*omnibox_view=*/nullptr,
                               controller,
                               /*location_bar_view=*/nullptr),
-        selection_(OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL)) {}
+        selection_(
+            OmniboxPopupSelection(0,
+                                  OmniboxPopupSelection::LineState::kNormal)) {}
 
   TestOmniboxPopupViewViews(const TestOmniboxPopupViewViews&) = delete;
   TestOmniboxPopupViewViews& operator=(const TestOmniboxPopupViewViews&) =

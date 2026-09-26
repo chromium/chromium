@@ -177,8 +177,8 @@ void OmniboxController::ClearPopupKeywordMode() const {
   TRACE_EVENT0("omnibox", "OmniboxController::ClearPopupKeywordMode");
   if (IsPopupOpen()) {
     OmniboxPopupSelection selection = edit_model_->GetPopupSelection();
-    if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
-      selection.state = OmniboxPopupSelection::NORMAL;
+    if (selection.state == OmniboxPopupSelection::LineState::kKeywordMode) {
+      selection.state = OmniboxPopupSelection::LineState::kNormal;
       edit_model_->SetPopupSelection(selection);
     }
   }

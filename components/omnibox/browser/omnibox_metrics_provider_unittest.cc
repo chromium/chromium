@@ -1017,7 +1017,7 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_CrossDeviceTab) {
 
     OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
                                      /*session_data=*/session);
-    log.selection.state = OmniboxPopupSelection::NORMAL;
+    log.selection.state = OmniboxPopupSelection::LineState::kNormal;
     log.elapsed_time_since_user_focused_omnibox = base::Seconds(3);
     log.ukm_source_id = ukm::NoURLSourceId();
 
@@ -1048,7 +1048,7 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_CrossDeviceTab) {
     // Select the second match (index 1), which is NOT cross device.
     OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/1,
                                      /*session_data=*/session);
-    log.selection.state = OmniboxPopupSelection::NORMAL;
+    log.selection.state = OmniboxPopupSelection::LineState::kNormal;
     log.elapsed_time_since_user_focused_omnibox = base::Seconds(3);
     log.ukm_source_id = ukm::NoURLSourceId();
 
@@ -1077,7 +1077,8 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_CrossDeviceTab) {
     OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
                                      /*session_data=*/session);
     // Select the action on match 0.
-    log.selection.state = OmniboxPopupSelection::FOCUSED_BUTTON_ACTION;
+    log.selection.state =
+        OmniboxPopupSelection::LineState::kFocusedButtonAction;
     log.selection.action_index = 0;
     log.elapsed_time_since_user_focused_omnibox = base::Seconds(5);
     log.ukm_source_id = ukm::NoURLSourceId();
@@ -1115,7 +1116,7 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_CrossDeviceTab) {
 
     OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
                                      /*session_data=*/session);
-    log.selection.state = OmniboxPopupSelection::NORMAL;
+    log.selection.state = OmniboxPopupSelection::LineState::kNormal;
     log.elapsed_time_since_user_focused_omnibox = base::Seconds(3);
     log.ukm_source_id = ukm::NoURLSourceId();
 
@@ -1152,7 +1153,8 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_CrossDeviceTab) {
     OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
                                      /*session_data=*/session);
     // Select the action at index 1 (the CrossDeviceTabAction).
-    log.selection.state = OmniboxPopupSelection::FOCUSED_BUTTON_ACTION;
+    log.selection.state =
+        OmniboxPopupSelection::LineState::kFocusedButtonAction;
     log.selection.action_index = 1;
     log.elapsed_time_since_user_focused_omnibox = base::Seconds(5);
     log.ukm_source_id = ukm::NoURLSourceId();

@@ -14,17 +14,18 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
 
-DEFINE_ENUM_CONVERTERS(OmniboxPopupSelection::LineState,
-                       {OmniboxPopupSelection::NORMAL, u"NORMAL"},
-                       {OmniboxPopupSelection::KEYWORD_MODE, u"KEYWORD_MODE"},
-                       {OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
-                        u"FOCUSED_BUTTON_ACTION"},
-                       {OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP,
-                        u"FOCUSED_BUTTON_THUMBS_UP"},
-                       {OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN,
-                        u"FOCUSED_BUTTON_THUMBS_DOWN"},
-                       {OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION,
-                        u"FOCUSED_BUTTON_REMOVE_SUGGESTION"})
+DEFINE_ENUM_CONVERTERS(
+    OmniboxPopupSelection::LineState,
+    {OmniboxPopupSelection::LineState::kNormal, u"kNormal"},
+    {OmniboxPopupSelection::LineState::kKeywordMode, u"kKeywordMode"},
+    {OmniboxPopupSelection::LineState::kFocusedButtonAction,
+     u"kFocusedButtonAction"},
+    {OmniboxPopupSelection::LineState::kFocusedButtonThumbsUp,
+     u"kFocusedButtonThumbsUp"},
+    {OmniboxPopupSelection::LineState::kFocusedButtonThumbsDown,
+     u"kFocusedButtonThumbsDown"},
+    {OmniboxPopupSelection::LineState::kFocusedButtonRemoveSuggestion,
+     u"kFocusedButtonRemoveSuggestion"})
 
 template <>
 struct ui::metadata::TypeConverter<OmniboxPopupSelection>

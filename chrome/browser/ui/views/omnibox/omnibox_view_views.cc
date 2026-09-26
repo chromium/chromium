@@ -1408,8 +1408,8 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
   if (controller()->IsPopupOpen()) {
     OmniboxPopupSelection selection =
         controller()->edit_model()->GetPopupSelection();
-    if (selection.state != OmniboxPopupSelection::KEYWORD_MODE) {
-      selection.state = OmniboxPopupSelection::NORMAL;
+    if (selection.state != OmniboxPopupSelection::LineState::kKeywordMode) {
+      selection.state = OmniboxPopupSelection::LineState::kNormal;
       controller()->edit_model()->SetPopupSelection(selection);
     }
   }
@@ -2121,8 +2121,8 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
         //    `OmniboxEditModel` open a `kNoMatch`/`NORMAL` selection.
         OmniboxPopupSelection::LineState line_state =
             aim_page_action_icon_has_fake_focus_
-                ? OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM
-                : OmniboxPopupSelection::LineState::NORMAL;
+                ? OmniboxPopupSelection::LineState::kFocusedButtonAim
+                : OmniboxPopupSelection::LineState::kNormal;
         controller()->edit_model()->OpenSelection(
             OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch, line_state),
             event.time_stamp(), disposition, /*via_keyboard=*/true);
@@ -2240,7 +2240,7 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
           controller()->edit_model()->OpenSelection(
               OmniboxPopupSelection(
                   OmniboxPopupSelection::kNoMatch,
-                  OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM),
+                  OmniboxPopupSelection::LineState::kFocusedButtonAim),
               event.time_stamp(), WindowOpenDisposition::CURRENT_TAB,
               /*via_keyboard=*/true);
           return true;

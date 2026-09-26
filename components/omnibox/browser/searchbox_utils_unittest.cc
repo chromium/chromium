@@ -114,7 +114,7 @@ TEST_F(SearchboxUtilsTest, OpenMatchWithAction) {
   EXPECT_CALL(*action, Execute(_)).Times(1);
 
   OmniboxPopupSelection selection(
-      0, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION, 0);
+      0, OmniboxPopupSelection::LineState::kFocusedButtonAction, 0);
 
   OpenMatch(&autocomplete_controller_, &client_,
             MakeAutocompleteSnapshot(&autocomplete_controller_), selection,

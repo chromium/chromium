@@ -19,18 +19,19 @@ class TemplateURLService;
 struct OmniboxPopupSelection {
   // Directions for stepping through selections. These may apply for going
   // up/down by lines or cycling left/right through states within a line.
-  enum Direction { kForward, kBackward };
+  enum class Direction {
+    kForward,
+    kBackward,
+  };
 
   // When changing selections, these are the possible stepping behaviors.
-  enum Step {
+  enum class Step {
     // Step by an entire line regardless of line state. Usually used for the
     // Up and Down arrow keys.
     kWholeLine,
-
     // Step by a state if another one is available on the current line;
     // otherwise step by line. Usually used for the Tab and Shift+Tab keys.
     kStateOrLine,
-
     // Step across all lines to the first or last line. Usually used for the
     // PgUp and PgDn keys.
     kAllLines
@@ -39,47 +40,40 @@ struct OmniboxPopupSelection {
   // See `state` below for details. The order matters; earlier items will be
   // selected first when tabbing through the popup. They are not persisted
   // anywhere and can be freely changed.
-  enum LineState {
+  enum class LineState {
     // NORMAL means the row is focused, and Enter key navigates to the match.
-    NORMAL,
-
+    kNormal,
     // KEYWORD_MODE state is used when in Keyword mode.  If the keyword search
     // button is enabled, keyword mode is entered when the keyword button is
     // focused.
-    KEYWORD_MODE,
-
+    kKeywordMode,
     // FOCUSED_BUTTON_AIM state means that the AIM page action button in the
     // omnibox text field is focused.
-    FOCUSED_BUTTON_AIM,
-
+    kFocusedButtonAim,
     // FOCUSED_BUTTON_ACTION state means an Action button (such as a Pedal)
     // is in focus.
-    FOCUSED_BUTTON_ACTION,
-
+    kFocusedButtonAction,
     // FOCUSED_BUTTON_THUMBS_UP state means the thumbs up button is focused.
-    FOCUSED_BUTTON_THUMBS_UP,
-
+    kFocusedButtonThumbsUp,
     // FOCUSED_BUTTON_THUMBS_DOWN state means the thumbs down button is focused.
     // Pressing enter will attempt to submit feedback form for this suggestion.
-    FOCUSED_BUTTON_THUMBS_DOWN,
-
+    kFocusedButtonThumbsDown,
     // FOCUSED_BUTTON_REMOVE_SUGGESTION state means the Remove Suggestion (X)
     // button is focused. Pressing enter will attempt to remove this suggestion.
-    FOCUSED_BUTTON_REMOVE_SUGGESTION,
-
+    kFocusedButtonRemoveSuggestion,
     // `NULL_RESULT_MESSAGE` IPH match types are not normally focusable, but
     // their links still need to be tab-accessible, so this state is available
     // when such a match has an IPH URL link.
-    FOCUSED_IPH_LINK,
+    kFocusedIphLink,
 
-    // CTRL_ENTER state means that the user triggered Ctrl+Enter on this
+    // `kCtrlEnter` state means that the user triggered Ctrl+Enter on this
     // suggestion.
-    CTRL_ENTER,
+    kCtrlEnter,
 
     // Whenever new line state is added, accessibility label for current
     // selection should be revisited
     // (`OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection()`).
-    LINE_STATE_MAX_VALUE
+    kMaxValue = kCtrlEnter
   };
 
   // The sentinel value for `line` which means no line is selected.
@@ -103,7 +97,7 @@ struct OmniboxPopupSelection {
   size_t action_index = 0u;
 
   explicit OmniboxPopupSelection(size_t line,
-                                 LineState state = NORMAL,
+                                 LineState state = LineState::kNormal,
                                  size_t action_index = 0)
       : line(line), state(state), action_index(action_index) {}
 

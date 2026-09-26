@@ -750,7 +750,7 @@ WebUIReadOnlyOmnibox::OnKey(
         // .com if needed.
         controller()->edit_model()->OpenSelection(
             OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
-                                  OmniboxPopupSelection::LineState::NORMAL),
+                                  OmniboxPopupSelection::LineState::kNormal),
             base::TimeTicks::Now(), disposition, /*via_keyboard=*/true);
       }
       break;
@@ -812,7 +812,7 @@ WebUIReadOnlyOmnibox::OnKey(
           controller()->edit_model()->OpenSelection(
               OmniboxPopupSelection(
                   OmniboxPopupSelection::kNoMatch,
-                  OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM),
+                  OmniboxPopupSelection::LineState::kFocusedButtonAim),
               base::TimeTicks::Now(), WindowOpenDisposition::CURRENT_TAB,
               /*via_keyboard=*/true);
         }
@@ -868,8 +868,8 @@ WebUIReadOnlyOmnibox::OnPointer(
     if (controller()->IsPopupOpen()) {
       OmniboxPopupSelection selection =
           controller()->edit_model()->GetPopupSelection();
-      if (selection.state != OmniboxPopupSelection::KEYWORD_MODE) {
-        selection.state = OmniboxPopupSelection::NORMAL;
+      if (selection.state != OmniboxPopupSelection::LineState::kKeywordMode) {
+        selection.state = OmniboxPopupSelection::LineState::kNormal;
         controller()->edit_model()->SetPopupSelection(selection);
       }
     }

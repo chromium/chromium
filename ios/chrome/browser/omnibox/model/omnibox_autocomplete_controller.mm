@@ -176,8 +176,9 @@ using base::UserMetricsAction;
 
 - (void)openCurrentSelectionWithDisposition:(WindowOpenDisposition)disposition
                                   timestamp:(base::TimeTicks)timestamp {
-  [self openSelection:OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch,
-                                            OmniboxPopupSelection::NORMAL)
+  [self openSelection:OmniboxPopupSelection(
+                          OmniboxPopupSelection::kNoMatch,
+                          OmniboxPopupSelection::LineState::kNormal)
             timestamp:timestamp
           disposition:disposition];
 }
@@ -734,7 +735,7 @@ using base::UserMetricsAction;
   // If the user is executing an action, this will be non-null and some match
   // opening and metrics behavior will be adjusted accordingly.
   OmniboxAction* action = nullptr;
-  if (selection.state == OmniboxPopupSelection::NORMAL &&
+  if (selection.state == OmniboxPopupSelection::LineState::kNormal &&
       match.takeover_action) {
     DCHECK(matchSelectionTimestamp != base::TimeTicks());
     action = match.takeover_action.get();

@@ -1578,28 +1578,26 @@ void SearchboxHandler::OpenAutocompleteMatch(
 
 OmniboxPopupSelection ConvertSelection(
     searchbox::mojom::OmniboxPopupSelectionPtr selection) {
-  OmniboxPopupSelection::LineState state =
-      OmniboxPopupSelection::LineState::LINE_STATE_MAX_VALUE;
+  std::optional<OmniboxPopupSelection::LineState> state;
   switch (selection->state) {
     case searchbox::mojom::SelectionLineState::kNormal: {
-      state = OmniboxPopupSelection::LineState::NORMAL;
+      state = OmniboxPopupSelection::LineState::kNormal;
       break;
     }
     case searchbox::mojom::SelectionLineState::kKeywordMode: {
-      state = OmniboxPopupSelection::LineState::KEYWORD_MODE;
+      state = OmniboxPopupSelection::LineState::kKeywordMode;
       break;
     }
     case searchbox::mojom::SelectionLineState::kFocusedButtonAction: {
-      state = OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION;
+      state = OmniboxPopupSelection::LineState::kFocusedButtonAction;
       break;
     }
     case searchbox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion: {
-      state =
-          OmniboxPopupSelection::LineState::FOCUSED_BUTTON_REMOVE_SUGGESTION;
+      state = OmniboxPopupSelection::LineState::kFocusedButtonRemoveSuggestion;
       break;
     }
     case searchbox::mojom::SelectionLineState::kFocusedButtonAim: {
-      state = OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM;
+      state = OmniboxPopupSelection::LineState::kFocusedButtonAim;
       break;
     }
     case searchbox::mojom::SelectionLineState::kFocusedButtonContextEntrypoint:
@@ -1609,11 +1607,11 @@ OmniboxPopupSelection ConvertSelection(
       NOTREACHED();
     }
     case searchbox::mojom::SelectionLineState::kCtrlEnter: {
-      state = OmniboxPopupSelection::LineState::CTRL_ENTER;
+      state = OmniboxPopupSelection::LineState::kCtrlEnter;
       break;
     }
   }
-  CHECK_NE(state, OmniboxPopupSelection::LineState::LINE_STATE_MAX_VALUE);
+  CHECK(state.has_value());
   // Special case line for mojom equivalent of kNoMatch; it is represented
   // as uint8_t so direct conversion would become a positive out of bounds
   // index.
@@ -1621,7 +1619,7 @@ OmniboxPopupSelection ConvertSelection(
       selection->line == static_cast<uint8_t>(OmniboxPopupSelection::kNoMatch)
           ? OmniboxPopupSelection::kNoMatch
           : selection->line,
-      state, selection->action_index);
+      state.value(), selection->action_index);
 }
 
 void SearchboxHandler::SetPopupSelection(
@@ -1650,7 +1648,7 @@ void SearchboxHandler::OpenPopupSelection(
   // text rather than an AutocompleteResult match item, so it is exempted from
   // being dropped on result sequence ID mismatches.
   const bool is_verbatim_ctrl_enter =
-      popup_selection.state == OmniboxPopupSelection::CTRL_ENTER &&
+      popup_selection.state == OmniboxPopupSelection::LineState::kCtrlEnter &&
       popup_selection.line == OmniboxPopupSelection::kNoMatch;
 
   if (!base::FeatureList::IsEnabled(
@@ -1685,7 +1683,7 @@ void SearchboxHandler::OpenPopupSelection(
   // For Ctrl+Enter selections, the match is generated here rather than taken
   // from the result, and the selection may have no corresponding match at all,
   // e.g. for verbatim input, so this is handled before the range check below.
-  if (popup_selection.state == OmniboxPopupSelection::CTRL_ENTER &&
+  if (popup_selection.state == OmniboxPopupSelection::LineState::kCtrlEnter &&
       autocomplete_controller()->history_url_provider()) {
     const AutocompleteInput& input = autocomplete_controller()->input();
     const AutocompleteResult& result = autocomplete_controller()->result();
@@ -1712,7 +1710,8 @@ void SearchboxHandler::OpenPopupSelection(
   const AutocompleteMatch& match =
       autocomplete_controller()->result().match_at(popup_selection.line);
 
-  if (popup_selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_ACTION) {
+  if (popup_selection.state ==
+      OmniboxPopupSelection::LineState::kFocusedButtonAction) {
     if (popup_selection.action_index < match.actions.size()) {
       auto* action = match.actions[popup_selection.action_index].get();
       if (action) {
@@ -1809,7 +1808,8 @@ void SearchboxHandler::ExecuteAction(uint8_t line,
   } else {
     edit_model()->OpenSelection(
         OmniboxPopupSelection(
-            line, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION, action_index),
+            line, OmniboxPopupSelection::LineState::kFocusedButtonAction,
+            action_index),
         match_selection_timestamp, disposition);
   }
 }

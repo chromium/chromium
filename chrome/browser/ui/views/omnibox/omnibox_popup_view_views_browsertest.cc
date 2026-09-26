@@ -648,8 +648,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_TRUE(contains(ax_name, "press Tab then Enter"));
   EXPECT_FALSE(contains(ax_name, "2 of 2"));
 
-  edit_model()->SetPopupSelection(
-      OmniboxPopupSelection(1, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
+  edit_model()->SetPopupSelection(OmniboxPopupSelection(
+      1, OmniboxPopupSelection::LineState::kFocusedButtonAction));
   EXPECT_TRUE(contains(observer.omnibox_value(), "Tab switch button"));
   EXPECT_EQ(observer.selected_children_changed_count(), 6);
   EXPECT_EQ(observer.selection_changed_count(), 5);
@@ -666,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_FALSE(contains(ax_name, "2 of 2"));
 
   edit_model()->SetPopupSelection(
-      OmniboxPopupSelection(1, OmniboxPopupSelection::NORMAL));
+      OmniboxPopupSelection(1, OmniboxPopupSelection::LineState::kNormal));
   EXPECT_TRUE(contains(observer.omnibox_value(), "The Foo Of All Bars"));
   EXPECT_EQ(observer.selected_children_changed_count(), 8);
   EXPECT_EQ(observer.selection_changed_count(), 7);
