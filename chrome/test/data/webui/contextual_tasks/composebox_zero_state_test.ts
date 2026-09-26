@@ -599,7 +599,6 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     mockTimer.install();
 
     const composeboxElement = contextualTasksApp.$.composebox;
-    const tooltip = contextualTasksApp.$.onboardingTooltip;
     contextualTasksApp.numberOfTimesTooltipShownForTesting = 0;
     contextualTasksApp.userDismissedTooltipForTesting = false;
 
@@ -611,7 +610,10 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     // Show tooltip.
     contextualTasksApp.updateTooltipVisibilityForTesting();
-    assertTrue(tooltip!.shouldShow);
+    const tooltip = contextualTasksApp.shadowRoot.querySelector(
+        'contextual-tasks-onboarding-tooltip');
+    assertTrue(!!tooltip);
+    assertTrue(tooltip.shouldShow);
 
     // Advance time partially.
     mockTimer.tick(1000);
@@ -620,7 +622,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     // Hide tooltip (e.g. chip disappears).
     innerComposebox.getHasAutomaticActiveTabChipToken = () => false;
     contextualTasksApp.updateTooltipVisibilityForTesting();
-    assertFalse(tooltip!.shouldShow);
+    assertFalse(tooltip.shouldShow);
 
     // Advance past original deadline.
     mockTimer.tick(5000);

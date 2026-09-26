@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {ExtensionPageHandlerInterface} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
-import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CSSResultGroup} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -15,14 +14,6 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './lens_chip_app.css.js';
 import {getHtml} from './lens_chip_app.html.js';
-
-export interface LensChipAppElement {
-  $: {
-    chipRoot?: HTMLElement,
-    cropImage?: HTMLImageElement,
-    closeButton?: CrIconButtonElement,
-  };
-}
 
 export class LensChipAppElement extends CrLitElement {
   static get is() {

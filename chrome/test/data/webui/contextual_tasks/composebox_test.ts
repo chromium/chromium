@@ -271,7 +271,6 @@ suite('ContextualTasksComposeboxTest', () => {
   test('TooltipVisibilityUpdatesOnResize', () => {
     mockTimer.install();
     const composeboxElement = contextualTasksApp.$.composebox;
-    const tooltip = contextualTasksApp.$.onboardingTooltip;
 
     // Force show tooltip
     loadTimeData.overrideValues({
@@ -289,7 +288,10 @@ suite('ContextualTasksComposeboxTest', () => {
         document.createElement('div');
 
     contextualTasksApp.updateTooltipVisibilityForTesting();
-    assertTrue(tooltip!.shouldShow);
+    const tooltip = contextualTasksApp.shadowRoot.querySelector(
+        'contextual-tasks-onboarding-tooltip');
+    assertTrue(!!tooltip);
+    assertTrue(tooltip.shouldShow);
 
     // Resize event
     const resizeEvent = new CustomEvent('composebox-resize', {
@@ -301,7 +303,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
     // Tooltip should still be shown and position updated (implicitly via resize
     // observer or logic)
-    assertTrue(tooltip!.shouldShow);
+    assertTrue(tooltip.shouldShow);
   });
 
   test('TooltipResizeObserverCoexistsWithResizeObserver', () => {
@@ -350,7 +352,6 @@ suite('ContextualTasksComposeboxTest', () => {
   test('TooltipImpressionIncrementsAfterDelay', () => {
     mockTimer.install();
     const composeboxElement = contextualTasksApp.$.composebox;
-    const tooltip = contextualTasksApp.$.onboardingTooltip;
 
     // Force show tooltip with delay.
     loadTimeData.overrideValues({
@@ -369,7 +370,10 @@ suite('ContextualTasksComposeboxTest', () => {
 
     // Trigger update.
     contextualTasksApp.updateTooltipVisibilityForTesting();
-    assertTrue(tooltip!.shouldShow);
+    const tooltip = contextualTasksApp.shadowRoot.querySelector(
+        'contextual-tasks-onboarding-tooltip');
+    assertTrue(!!tooltip);
+    assertTrue(tooltip.shouldShow);
 
     // Should not have incremented yet.
     assertEquals(0, contextualTasksApp.numberOfTimesTooltipShownForTesting);
