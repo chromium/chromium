@@ -114,6 +114,10 @@
   -webkit-mask-image: url(chrome://new-tab-page/icons/tab.svg);
 }
 
+.icon-type-image-create {
+  -webkit-mask-image: url(chrome://new-tab-page/icons/image_create.svg);
+}
+
 .action-chip {
   align-items: center;
   background-color: var(--chip-background-color);
