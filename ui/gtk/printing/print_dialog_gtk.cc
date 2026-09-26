@@ -205,11 +205,15 @@ ScopedGObject<GtkPrinter> GetPrinterWithName(std::string_view name) {
       [](GtkPrinter* printer, gpointer user_data) -> gboolean {
         auto* search_data = static_cast<PrinterSearchData*>(user_data);
         const char* printer_name = gtk_printer_get_name(printer);
-        if (!printer_name || printer_name != search_data->name) {
-          return false;  // Keep enumerating.
+        if (printer_name && printer_name == search_data->name) {
+          search_data->printer = WrapGObject(printer);
         }
-        search_data->printer = WrapGObject(printer);
-        return true;  // Done enumerating.
+        // Always return false to let GTK finish enumerating all printers, even
+        // though it has found a match. Returning true here will stop printer
+        // enumeration early, but due to gtk_enumerate_printers() implementation
+        // quirks, that can cause printer capabilities to be incorrectly
+        // populated.
+        return false;
       },
       &data, nullptr, true);
   return std::move(data.printer);
