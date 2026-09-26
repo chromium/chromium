@@ -941,25 +941,20 @@ export const ComposeboxEmbedderMixin =
             this.getDropdownElement().unselect();
           }
 
-          // Smart compose hints should only be updated from the async response.
-          // This prevents the hint flicker from an empty smart compose response
-          // in the synchronous pass.
-          if (this.haveReceivedSynchronousAutocompleteResponse) {
-            // Populate the smart compose suggestion.
-            const nextHint = this.result.smartComposeInlineHint?.trim() ?
-                this.result.smartComposeInlineHint :
-                '';
-            if (this.smartComposeInlineHint !== nextHint) {
-              this.smartComposeInlineHint = nextHint;
-            }
+          // Populate the smart compose suggestion.
+          const nextHint = this.result.smartComposeInlineHint?.trim() ?
+              this.result.smartComposeInlineHint :
+              '';
+          if (this.smartComposeInlineHint !== nextHint) {
+            this.smartComposeInlineHint = nextHint;
+          }
 
-            // Smart compose stats are incremented on every response from the
-            // server.
-            if (this.smartComposeInlineHint) {
-              this.smartComposeStats.shownCount++;
-              this.smartComposeStats.shownLength +=
-                  this.smartComposeInlineHint.length;
-            }
+          // Smart compose stats are incremented on every response from the
+          // server.
+          if (this.smartComposeInlineHint) {
+            this.smartComposeStats.shownCount++;
+            this.smartComposeStats.shownLength +=
+                this.smartComposeInlineHint.length;
           }
 
           this.haveReceivedSynchronousAutocompleteResponse = true;
@@ -1060,23 +1055,7 @@ export const ComposeboxEmbedderMixin =
             }
           }
           this.input = newInput;
-
-          // `clearMatches` is true if input is empty stop any in progress
-          // providers before requerying for on-focus (zero-suggest) inputs. The
-          // searchbox doesn't allow zero-suggest requests to be made while the
-          // ACController is not done.
-          if (this.composeboxNoFlickerSuggestionsFix) {
-            // If the composebox no flickering fix is enabled, stop the
-            // ACController from querying for suggestions when the input is
-            // empty, but don't clear the matches so the dropdown doesn't close.
-            if (this.input === '') {
-              this.getSearchboxHandler().stopAutocomplete(
-                  /*clearResult=*/ true);
-            }
-            this.queryAutocomplete(/* clearMatches= */ false);
-          } else {
-            this.queryAutocomplete(/* clearMatches= */ this.input === '');
-          }
+          this.queryAutocomplete(/* clearMatches= */ false);
         }
 
         onClearSmartCompose() {

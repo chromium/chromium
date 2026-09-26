@@ -477,6 +477,11 @@ class AutocompleteController : public AutocompleteProviderListener,
   // `notify_changed_debouncer_`.
   void CancelNotifyChangedRequest();
 
+  // Returns whether `UpdateResult()` should defer calling
+  // `RequestNotifyChanged()` while waiting for asynchronous providers to
+  // complete.
+  bool ShouldDeferNotifyChanged(UpdateType update_type) const;
+
   // Returns which of the providers that should run are done.
   enum class ProviderDoneState {
     kNotDone,
@@ -610,6 +615,13 @@ class AutocompleteController : public AutocompleteProviderListener,
   // been 2 delayed calls, the 1st having changed the default, the latter not,
   // `NotifyChanged()` couldn't know of the former.
   bool notify_changed_default_match_ = false;
+
+  // True if `UpdateResult()` deferred calling `RequestNotifyChanged()`.
+  // This is used to debounce sync results while async results are pending
+  // to avoid UI flicker.
+  // If the query times out (`AutocompleteStopReason::kInactivity`), `Stop()`
+  // will flush the deferred notification.
+  bool has_deferred_notify_changed_ = false;
 
   // Represents the reason of the last `UpdateResult()` call.
   UpdateType last_update_type_ = UpdateType::kNone;

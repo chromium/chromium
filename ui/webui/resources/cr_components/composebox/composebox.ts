@@ -769,26 +769,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       return;
     }
 
-    // TODO(crbug.com/460888279): This is a temporary, merge safe fix. Ideally,
-    // the ACController is not sending multiple responses for a single query,
-    // especially when the matches is empty. Remove this logic once a long term
-    // fix is found.
-    if (this.composeboxNoFlickerSuggestionsFix && this.showTypedSuggest &&
-        !this.haveReceivedSynchronousAutocompleteResponse) {
-      // The first autcomplete response for ZPS contains no matches, since
-      // composebox doesn't support ZPS from local providers (ex. history
-      // suggestion). Similarly, since composebox doesn't support local
-      // providers, typed suggest first response returns a single verbatim
-      // match, which doesn't show in the dropdown. To prevent closing the
-      // dropdown before the actual response from the suggest server is
-      // received, add the previous non-verbatim matches to this first response.
-      if (this.result && this.result.matches.length > 0 &&
-          result.matches.length <= 1) {
-        result.matches.push(...this.result.matches.filter(
-            match => match.type !== 'search-what-you-typed'));
-      }
-      this.haveReceivedSynchronousAutocompleteResponse = true;
-    }
     this.result = result;
     /* Indicates when suggestion results have changed so that zero state
      * suggestion results in contextual tasks composebox can update accordingly.
@@ -818,25 +798,19 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.$.matches.unselect();
     }
 
-    // Smart compose hints should only be updated from the async response.
-    // This prevents the hint flicker from an empty smart compose response
-    // in the synchronous pass.
-    if (this.haveReceivedSynchronousAutocompleteResponse) {
-      // Populate the smart compose suggestion.
-      const nextHint = this.result.smartComposeInlineHint?.trim() ?
-          this.result.smartComposeInlineHint :
-          '';
-      if (this.smartComposeInlineHint !== nextHint) {
-        this.smartComposeInlineHint = nextHint;
-      }
+    // Populate the smart compose suggestion.
+    const nextHint = this.result.smartComposeInlineHint?.trim() ?
+        this.result.smartComposeInlineHint :
+        '';
+    if (this.smartComposeInlineHint !== nextHint) {
+      this.smartComposeInlineHint = nextHint;
+    }
 
-      // Smart compose stats are incremented on every response from the
-      // server.
-      if (this.smartComposeInlineHint) {
-        this.smartComposeStats.shownCount++;
-        this.smartComposeStats.shownLength +=
-            this.smartComposeInlineHint.length;
-      }
+    // Smart compose stats are incremented on every response from the
+    // server.
+    if (this.smartComposeInlineHint) {
+      this.smartComposeStats.shownCount++;
+      this.smartComposeStats.shownLength += this.smartComposeInlineHint.length;
     }
 
     this.haveReceivedSynchronousAutocompleteResponse = true;

@@ -1396,25 +1396,29 @@ suite('ComposeboxAutocomplete', () => {
       loadTimeData.overrideValues({composeboxShowZps: false});
     });
 
-    test('composebox stops autocomplete when clearing input', async () => {
-      element = createTestElement();
-      await microtasksFinished();
+    test(
+        'composebox does not stop autocomplete when clearing input',
+        async () => {
+          element = createTestElement();
+          await microtasksFinished();
 
-      assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
-      assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 0);
+          assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+          assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 0);
 
-      setInputValue(element.getInputElement().inputElement, 'T');
-      element.getInputElement().inputElement.dispatchEvent(new Event('input'));
-      await microtasksFinished();
-      assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
+          setInputValue(element.getInputElement().inputElement, 'T');
+          element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
+          assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 2);
 
-      setInputValue(element.getInputElement().inputElement, '');
-      element.getInputElement().inputElement.dispatchEvent(new Event('input'));
-      await microtasksFinished();
+          setInputValue(element.getInputElement().inputElement, '');
+          element.getInputElement().inputElement.dispatchEvent(
+              new Event('input'));
+          await microtasksFinished();
 
-      assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 1);
-      assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 3);
-    });
+          assertEquals(searchboxHandler.getCallCount('stopAutocomplete'), 0);
+          assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 3);
+        });
 
     test('queryAutocomplete passes cursor position', async () => {
       element = createTestElement();
