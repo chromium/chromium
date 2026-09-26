@@ -20,40 +20,29 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.core.content.res.ResourcesCompat;
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.MathUtils;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Tests for {@link StatusIndicatorViewBinder}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class StatusIndicatorViewBinderTest {
     private static final String STATUS_TEXT = "Offline";
 
-    @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    private static Activity sActivity;
+    private Activity mActivity;
 
     private ViewResourceFrameLayout mContainer;
     private TextViewWithCompoundDrawables mStatusTextView;
@@ -62,46 +51,34 @@ public class StatusIndicatorViewBinderTest {
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
 
-    @BeforeClass
-    public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
-    }
-
     @Before
-    public void setUp() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sActivity.setContentView(R.layout.status_indicator_container);
-                    mContainer = sActivity.findViewById(R.id.status_indicator);
-                    mStatusTextView = mContainer.findViewById(R.id.status_text);
+    public void setUp() {
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mActivity.setContentView(R.layout.status_indicator_container);
+        mContainer = mActivity.findViewById(R.id.status_indicator);
+        mStatusTextView = mContainer.findViewById(R.id.status_text);
 
-                    mSceneLayer = new MockStatusIndicatorSceneLayer();
-                    mModel =
-                            new PropertyModel.Builder(StatusIndicatorProperties.ALL_KEYS)
-                                    .with(StatusIndicatorProperties.STATUS_TEXT, "")
-                                    .with(StatusIndicatorProperties.STATUS_ICON, null)
-                                    .with(
-                                            StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY,
-                                            View.GONE)
-                                    .with(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, false)
-                                    .build();
-                    mMCP =
-                            PropertyModelChangeProcessor.create(
-                                    mModel,
-                                    new StatusIndicatorViewBinder.ViewHolder(
-                                            mContainer, mSceneLayer),
-                                    StatusIndicatorViewBinder::bind);
-                });
+        mSceneLayer = new MockStatusIndicatorSceneLayer();
+        mModel =
+                new PropertyModel.Builder(StatusIndicatorProperties.ALL_KEYS)
+                        .with(StatusIndicatorProperties.STATUS_TEXT, "")
+                        .with(StatusIndicatorProperties.STATUS_ICON, null)
+                        .with(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.GONE)
+                        .with(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, false)
+                        .build();
+        mMCP =
+                PropertyModelChangeProcessor.create(
+                        mModel,
+                        new StatusIndicatorViewBinder.ViewHolder(mContainer, mSceneLayer),
+                        StatusIndicatorViewBinder::bind);
     }
 
     @After
-    public void tearDown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
+    public void tearDown() {
+        mMCP.destroy();
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testTextView() {
         assertTrue("Wrong initial status text.", TextUtils.isEmpty(mStatusTextView.getText()));
         assertNull("Wrong initial status icon.", mStatusTextView.getCompoundDrawablesRelative()[0]);
@@ -110,15 +87,12 @@ public class StatusIndicatorViewBinderTest {
 
         Drawable drawable =
                 ResourcesCompat.getDrawable(
-                        sActivity.getResources(),
+                        mActivity.getResources(),
                         R.drawable.ic_error_white_24dp_filled,
-                        sActivity.getTheme());
+                        mActivity.getTheme());
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(StatusIndicatorProperties.STATUS_TEXT, STATUS_TEXT);
-                    mModel.set(StatusIndicatorProperties.STATUS_ICON, drawable);
-                });
+        mModel.set(StatusIndicatorProperties.STATUS_TEXT, STATUS_TEXT);
+        mModel.set(StatusIndicatorProperties.STATUS_ICON, drawable);
 
         assertEquals("Wrong status text.", STATUS_TEXT, mStatusTextView.getText());
         assertEquals(
@@ -128,8 +102,6 @@ public class StatusIndicatorViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testVisibility() {
         assertEquals(
                 "Wrong initial Android view visibility.", View.GONE, mContainer.getVisibility());
@@ -137,31 +109,23 @@ public class StatusIndicatorViewBinderTest {
                 "Wrong initial composited view visibility.",
                 mSceneLayer.isSceneOverlayTreeShowing());
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.VISIBLE);
-                    mModel.set(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, true);
-                });
+        mModel.set(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.VISIBLE);
+        mModel.set(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, true);
 
         assertEquals("Android view is not visible.", View.VISIBLE, mContainer.getVisibility());
         assertTrue("Composited view is not visible.", mSceneLayer.isSceneOverlayTreeShowing());
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.GONE);
-                    mModel.set(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, false);
-                });
+        mModel.set(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.GONE);
+        mModel.set(StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE, false);
 
         assertEquals("Android view is not gone.", View.GONE, mContainer.getVisibility());
         assertFalse("Composited view is visible.", mSceneLayer.isSceneOverlayTreeShowing());
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testColorAndTint() {
-        int bgColor = SemanticColorUtils.getDefaultBgColor(sActivity);
-        int textColor = SemanticColorUtils.getDefaultTextColor(sActivity);
+        int bgColor = SemanticColorUtils.getDefaultBgColor(mActivity);
+        int textColor = SemanticColorUtils.getDefaultTextColor(mActivity);
         assertEquals(
                 "Wrong initial background color.",
                 bgColor,
@@ -170,17 +134,14 @@ public class StatusIndicatorViewBinderTest {
 
         Drawable drawable =
                 ResourcesCompat.getDrawable(
-                        sActivity.getResources(),
+                        mActivity.getResources(),
                         R.drawable.ic_error_white_24dp_filled,
-                        sActivity.getTheme());
+                        mActivity.getTheme());
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel.set(StatusIndicatorProperties.STATUS_ICON, drawable);
-                    mModel.set(StatusIndicatorProperties.BACKGROUND_COLOR, Color.BLUE);
-                    mModel.set(StatusIndicatorProperties.TEXT_COLOR, Color.RED);
-                    mModel.set(StatusIndicatorProperties.ICON_TINT, Color.GREEN);
-                });
+        mModel.set(StatusIndicatorProperties.STATUS_ICON, drawable);
+        mModel.set(StatusIndicatorProperties.BACKGROUND_COLOR, Color.BLUE);
+        mModel.set(StatusIndicatorProperties.TEXT_COLOR, Color.RED);
+        mModel.set(StatusIndicatorProperties.ICON_TINT, Color.GREEN);
 
         assertEquals(
                 "Wrong background color.",
@@ -194,24 +155,19 @@ public class StatusIndicatorViewBinderTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testTextAlpha() {
         assertEquals(
                 "Wrong initial text alpha.", 1.f, mStatusTextView.getAlpha(), MathUtils.EPSILON);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(StatusIndicatorProperties.TEXT_ALPHA, .5f));
+        mModel.set(StatusIndicatorProperties.TEXT_ALPHA, .5f);
 
         assertEquals("Wrong text alpha.", .5f, mStatusTextView.getAlpha(), MathUtils.EPSILON);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(StatusIndicatorProperties.TEXT_ALPHA, .0f));
+        mModel.set(StatusIndicatorProperties.TEXT_ALPHA, .0f);
 
         assertEquals("Wrong text alpha.", 0.f, mStatusTextView.getAlpha(), MathUtils.EPSILON);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(StatusIndicatorProperties.TEXT_ALPHA, 1.f));
+        mModel.set(StatusIndicatorProperties.TEXT_ALPHA, 1.f);
 
         assertEquals("Wrong text alpha.", 1.f, mStatusTextView.getAlpha(), MathUtils.EPSILON);
     }
