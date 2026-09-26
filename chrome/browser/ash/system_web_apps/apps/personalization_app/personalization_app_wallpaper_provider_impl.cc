@@ -42,8 +42,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
-#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
 #include "chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.h"
@@ -139,15 +137,6 @@ PersonalizationAppWallpaperProviderImpl::
 
 PersonalizationAppWallpaperProviderImpl::
     ~PersonalizationAppWallpaperProviderImpl() {
-  if (!image_unit_id_map_.empty()) {
-    // User viewed wallpaper page at least once during this session because
-    // |image_unit_id_map_| has wallpaper unit ids saved. Check if this user
-    // should see a wallpaper HaTS.
-    ::ash::personalization_app::PersonalizationAppManagerFactory::
-        GetForBrowserContext(profile_)
-            ->MaybeStartHatsTimer(
-                ::ash::personalization_app::HatsSurveyType::kWallpaper);
-  }
   CancelPreviewWallpaper();
 }
 

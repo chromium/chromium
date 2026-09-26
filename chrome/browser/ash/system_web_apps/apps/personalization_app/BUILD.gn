@@ -52,7 +52,6 @@ static_library("personalization_app") {
     "//ash/webui/personalization_app/mojom:mojom_shared_cpp_sources",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ash/hats",
     "//chrome/browser/ash/wallpaper_handlers",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/camera_presence_notifier",
@@ -220,8 +219,6 @@ source_set("unit_tests") {
 
   sources = [
     "ambient_video_albums_unittest.cc",
-    "mock_personalization_app_manager.cc",
-    "mock_personalization_app_manager.h",
     "personalization_app_ambient_provider_impl_unittest.cc",
     "personalization_app_keyboard_backlight_provider_impl_unittest.cc",
     "personalization_app_sea_pen_provider_impl_unittest.cc",

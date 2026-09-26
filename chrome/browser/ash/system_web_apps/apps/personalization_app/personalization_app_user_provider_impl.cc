@@ -23,8 +23,6 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
-#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/camera_presence_notifier/camera_presence_notifier.h"
@@ -104,14 +102,8 @@ PersonalizationAppUserProviderImpl::PersonalizationAppUserProviderImpl(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-PersonalizationAppUserProviderImpl::~PersonalizationAppUserProviderImpl() {
-  if (page_viewed_) {
-    ::ash::personalization_app::PersonalizationAppManagerFactory::
-        GetForBrowserContext(profile_)
-            ->MaybeStartHatsTimer(
-                ::ash::personalization_app::HatsSurveyType::kAvatar);
-  }
-}
+PersonalizationAppUserProviderImpl::~PersonalizationAppUserProviderImpl() =
+    default;
 
 void PersonalizationAppUserProviderImpl::BindInterface(
     mojo::PendingReceiver<ash::personalization_app::mojom::UserProvider>
@@ -157,7 +149,6 @@ void PersonalizationAppUserProviderImpl::GetUserInfo(
 
 void PersonalizationAppUserProviderImpl::GetDefaultUserImages(
     GetDefaultUserImagesCallback callback) {
-  page_viewed_ = true;
   std::vector<ash::default_user_image::DefaultUserImage> images =
       ash::default_user_image::GetCurrentImageSet();
   std::move(callback).Run(std::move(images));

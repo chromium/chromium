@@ -19,18 +19,9 @@ class LocalSearchServiceProxy;
 
 namespace personalization_app {
 
-enum class HatsSurveyType {
-  kAvatar,
-  kScreensaver,
-  kWallpaper,
-};
-
 // Manager for the Chrome OS Personalization App. This class is implemented as a
 // KeyedService, so one instance of the class is intended to be active for the
 // lifetime of a logged-in user, even if the personalization app is not opened.
-//
-// Handles triggering HaTS surveys based on user interaction with
-// personalization features.
 class PersonalizationAppManager : public KeyedService {
  public:
   static std::unique_ptr<PersonalizationAppManager> Create(
@@ -39,11 +30,6 @@ class PersonalizationAppManager : public KeyedService {
           local_search_service_proxy);
 
   ~PersonalizationAppManager() override = default;
-
-  // Starts |hats_timer_| to show a Personalization survey if this user is
-  // eligible for the survey. Will not start timer if a user has already seen a
-  // Personalization survey during this session.
-  virtual void MaybeStartHatsTimer(HatsSurveyType hats_survey_type) = 0;
 
   virtual SearchHandler* search_handler() = 0;
 };

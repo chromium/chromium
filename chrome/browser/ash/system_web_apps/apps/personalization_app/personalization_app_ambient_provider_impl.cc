@@ -38,8 +38,6 @@
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/ambient_video_albums.h"
-#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager.h"
-#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
@@ -99,14 +97,7 @@ PersonalizationAppAmbientProviderImpl::PersonalizationAppAmbientProviderImpl(
 }
 
 PersonalizationAppAmbientProviderImpl::
-    ~PersonalizationAppAmbientProviderImpl() {
-  if (page_viewed_) {
-    ::ash::personalization_app::PersonalizationAppManagerFactory::
-        GetForBrowserContext(profile_)
-            ->MaybeStartHatsTimer(
-                ::ash::personalization_app::HatsSurveyType::kScreensaver);
-  }
-}
+    ~PersonalizationAppAmbientProviderImpl() = default;
 
 void PersonalizationAppAmbientProviderImpl::BindInterface(
     mojo::PendingReceiver<ash::personalization_app::mojom::AmbientProvider>
@@ -338,7 +329,8 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
 }
 
 void PersonalizationAppAmbientProviderImpl::SetPageViewed() {
-  page_viewed_ = true;
+  // TODO(crbug.com/562297873): Remove SetPageViewed() from mojom in a
+  // follow-up CL.
 }
 
 void PersonalizationAppAmbientProviderImpl::FetchSettingsAndAlbums() {
