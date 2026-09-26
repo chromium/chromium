@@ -20,10 +20,12 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/input_protection/input_protection_specification.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -369,13 +371,35 @@ InputProtectionTestApi::AdvancePastInputProtectionInterval() {
 
 ui::InteractionSequence::StepBuilder
 InputProtectionTestApi::OccludeElementWithAotWindow(
-    ui::ElementIdentifier element_id) {
-  auto step = WithView(element_id, [this](View* view) {
-    gfx::Rect screen_bounds = view->GetBoundsInScreen();
-    aot_widget_ = CreateAotWidget(view, screen_bounds);
-    aot_widget_->Show();
-    WidgetVisibleWaiter(aot_widget_.get()).Wait();
-  });
+    ui::ElementIdentifier element_id,
+    ui::ElementIdentifier button_id,
+    base::RepeatingClosure on_button_clicked) {
+  auto step = WithView(
+      element_id,
+      [this, button_id,
+       on_button_clicked = std::move(on_button_clicked)](View* view) {
+        constexpr int kAotOutsetStep = 20;
+        const int margin =
+            kAotOutsetStep * (static_cast<int>(aot_widgets_.size()) + 1);
+        gfx::Rect screen_bounds = view->GetBoundsInScreen();
+        if (button_id) {
+          screen_bounds.Outset(margin);
+        }
+        auto widget = CreateAotWidget(view, screen_bounds);
+        if (button_id) {
+          constexpr gfx::Rect kButtonBounds{10, 10, 80, 30};
+          auto contents = std::make_unique<View>();
+          auto button =
+              std::make_unique<LabelButton>(on_button_clicked, u"AOT Button");
+          button->SetProperty(kElementIdentifierKey, button_id);
+          button->SetBoundsRect(kButtonBounds);
+          contents->AddChildView(std::move(button));
+          widget->SetContentsView(std::move(contents));
+        }
+        widget->Show();
+        WidgetVisibleWaiter(widget.get()).Wait();
+        aot_widgets_.push_back(std::move(widget));
+      });
   step.SetDescription("OccludeElementWithAotWindow()");
   return step;
 }
@@ -387,44 +411,68 @@ InputProtectionTestApi::OccludeRectWithAotWindow(
   auto step = WithView(element_id, [this, local_bounds](View* view) {
     gfx::Rect screen_bounds = local_bounds;
     View::ConvertRectToScreen(view, &screen_bounds);
-    aot_widget_ = CreateAotWidget(view, screen_bounds);
-    aot_widget_->Show();
-    WidgetVisibleWaiter(aot_widget_.get()).Wait();
+    auto widget = CreateAotWidget(view, screen_bounds);
+    widget->Show();
+    WidgetVisibleWaiter(widget.get()).Wait();
+    aot_widgets_.push_back(std::move(widget));
   });
   step.SetDescription("OccludeRectWithAotWindow()");
   return step;
 }
 
-ui::InteractionSequence::StepBuilder InputProtectionTestApi::HideAotWindow() {
+ui::InteractionSequence::StepBuilder InputProtectionTestApi::HideAotWindows() {
   auto step = Do([this]() {
-    CHECK(aot_widget_);
-    aot_widget_->Hide();
+    CHECK(!aot_widgets_.empty());
+    for (auto& widget : aot_widgets_) {
+      if (widget) {
+        widget->Hide();
+      }
+    }
   });
+  step.SetDescription("HideAotWindows()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder InputProtectionTestApi::HideAotWindow(
+    ui::ElementIdentifier element_id) {
+  auto step = WithView(element_id, [](View* view) {
+    if (auto* widget = view->GetWidget()) {
+      widget->Hide();
+    }
+  });
+  step.SetContext(ui::InteractionSequence::ContextMode::kAny);
+  step.SetMustRemainVisible(false);
   step.SetDescription("HideAotWindow()");
   return step;
 }
 
 ui::InteractionSequence::StepBuilder
-InputProtectionTestApi::MoveAotWindowToUnocclude(
+InputProtectionTestApi::MoveAotWindowsToUnocclude(
     ui::ElementIdentifier element_id) {
   auto step = WithView(element_id, [this](View* view) {
-    CHECK(aot_widget_);
-    gfx::Rect element_bounds = view->GetBoundsInScreen();
-    gfx::Rect aot_bounds = aot_widget_->GetWindowBoundsInScreen();
-    gfx::Point new_origin = element_bounds.top_right() + gfx::Vector2d(50, 0);
-    gfx::Rect target_bounds(new_origin, aot_bounds.size());
-    WidgetBoundsWaiter waiter(aot_widget_.get(), target_bounds);
-    aot_widget_->SetBounds(target_bounds);
-    waiter.Wait();
+    CHECK(!aot_widgets_.empty());
+    const gfx::Rect element_bounds = view->GetBoundsInScreen();
+    const gfx::Point new_origin =
+        element_bounds.top_right() + gfx::Vector2d(50, 0);
+    for (auto& widget : aot_widgets_) {
+      if (!widget) {
+        continue;
+      }
+      const gfx::Rect aot_bounds = widget->GetWindowBoundsInScreen();
+      const gfx::Rect target_bounds(new_origin, aot_bounds.size());
+      WidgetBoundsWaiter waiter(widget.get(), target_bounds);
+      widget->SetBounds(target_bounds);
+      waiter.Wait();
+    }
   });
-  step.SetDescription("MoveAotWindowToUnocclude()");
+  step.SetDescription("MoveAotWindowsToUnocclude()");
   return step;
 }
 
 InputProtectionTestApi::MultiStep
 InputProtectionTestApi::TriggerAotPopAwayAttack(
     ui::ElementIdentifier element_id) {
-  auto steps = Steps(OccludeElementWithAotWindow(element_id), HideAotWindow());
+  auto steps = Steps(OccludeElementWithAotWindow(element_id), HideAotWindows());
   AddDescriptionPrefix(steps, "TriggerAotPopAwayAttack()");
   return steps;
 }

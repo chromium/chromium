@@ -9,7 +9,9 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
+#include "base/functional/callback.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -130,9 +132,14 @@ class InputProtectionTestApi
       std::optional<gfx::Point> tap_point = std::nullopt);
 
   // Creates and shows an Always-On-Top floating window completely occluding the
-  // element with `element_id`.
+  // element with `element_id`. If `button_id` is provided, the window hosts a
+  // button tagged with `button_id` that runs `on_button_clicked` when clicked.
+  // `button_id` also serves as an identifier to address this specific AOT
+  // window (for example, passing `button_id` to `HideAotWindow(button_id)`).
   [[nodiscard]] ui::InteractionSequence::StepBuilder
-  OccludeElementWithAotWindow(ui::ElementIdentifier element_id);
+  OccludeElementWithAotWindow(ui::ElementIdentifier element_id,
+                              ui::ElementIdentifier button_id = {},
+                              base::RepeatingClosure on_button_clicked = {});
 
   // Creates and shows an Always-On-Top floating window occluding `local_bounds`
   // relative to the element with `element_id`.
@@ -140,13 +147,16 @@ class InputProtectionTestApi
       ui::ElementIdentifier element_id,
       const gfx::Rect& local_bounds);
 
-  // Hides the active Always-On-Top window, triggering historical occlusion
-  // tracking.
-  [[nodiscard]] ui::InteractionSequence::StepBuilder HideAotWindow();
+  // Hides all tracked Always-On-Top windows.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder HideAotWindows();
 
-  // Moves the active Always-On-Top window away from `element_id` so that
+  // Hides the Always-On-Top window containing `element_id`.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder HideAotWindow(
+      ui::ElementIdentifier element_id);
+
+  // Moves all tracked Always-On-Top windows away from `element_id` so that
   // `element_id` is no longer occluded.
-  [[nodiscard]] ui::InteractionSequence::StepBuilder MoveAotWindowToUnocclude(
+  [[nodiscard]] ui::InteractionSequence::StepBuilder MoveAotWindowsToUnocclude(
       ui::ElementIdentifier element_id);
 
   // Creates and shows an Always-On-Top floating window completely occluding
@@ -177,7 +187,7 @@ class InputProtectionTestApi
   // `InputProtectionInteractiveTestMixin`) must override this method.
   virtual void FastForwardMockClock(base::TimeDelta delta);
 
-  std::unique_ptr<views::Widget> aot_widget_;
+  std::vector<std::unique_ptr<views::Widget>> aot_widgets_;
 };
 
 // Template for adding `InputProtectionTestApi` to any test fixture which is
@@ -204,7 +214,7 @@ class InputProtectionInteractiveTestMixin : public T,
 
   void TearDown() override {
     private_test_impl().DoTestTearDown();
-    aot_widget_.reset();
+    aot_widgets_.clear();
     run_loop_timeout_.reset();
     T::TearDown();
   }
