@@ -39,13 +39,11 @@ bool EmbeddedPermissionPromptContentScrimView::IsOmniboxEverywhere(
 gfx::Rect EmbeddedPermissionPromptContentScrimView::GetScrimBounds(
     content::WebContents& web_contents) {
   gfx::Rect bounds = web_contents.GetContainerBounds();
-  // Inset top and left by 24px to align with the WebUI card inside the body.
-  // Right and bottom are not inset because `GetContainerBounds()` is only
-  // 24px larger than the card, so insetting all four sides would shrink
-  // width and height by 48px and leave a 24px gap.
+  // Account for padding (24px each side) that only exists on everywhere
+  // omnibox's parent view when voice search permission prompt shows. Do so
+  // by shrinking scrim by same amount.
   if (IsOmniboxEverywhere(web_contents)) {
-    bounds.Inset(gfx::Insets::TLBR(kOmniboxEverywherePadding,
-                                   kOmniboxEverywherePadding, 0, 0));
+    bounds.Inset(gfx::Insets(kOmniboxEverywherePadding));
   }
   return bounds;
 }

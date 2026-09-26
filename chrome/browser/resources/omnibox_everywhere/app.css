@@ -70,9 +70,15 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
  * otherwise use existing min height.
  */
 :host(.has-permission-prompt) #voiceSearchDialog {
-  height: 100%;
+  /* Shrink by 24px each vertical side to allow room for shadows
+   * to not be cut off by outer view container.
+   */
+  height: calc(100% - 48px);
   min-height: var(--voice_search_minimum_height, 128px);
-  width: 100%;
+  /* Shrinks each horizontal side by 24px to match dialog
+   * anchor's sizing.
+   */
+  width: anchor-size(width);
   min-width: var(--voice_search_minimum_width);
 }
 
