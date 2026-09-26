@@ -377,6 +377,105 @@ TEST_F(ManagementApiUnitTest, DisabledByAnotherExtension) {
   EXPECT_EQ(disabling_id, source_extension->id());
 }
 
+// Verifies that when a policy-installed extension disables a user-installed
+// extension via management.setEnabled, the target is disabled with
+// DISABLE_BY_ANOTHER_EXTENSION (rather than DISABLE_BLOCKED_BY_POLICY) so that
+// subsequent management policy re-evaluations do not re-enable it, while
+// disabling a policy-installed target extension continues to use
+// DISABLE_BLOCKED_BY_POLICY.
+TEST_F(ManagementApiUnitTest, PolicyCallerDisabledByAnotherExtensionPersists) {
+  scoped_refptr<const Extension> internal_target =
+      ExtensionBuilder("internal_target")
+          .SetLocation(ManifestLocation::kInternal)
+          .Build();
+  registrar()->AddExtension(internal_target.get());
+  scoped_refptr<const Extension> policy_target =
+      ExtensionBuilder("policy_target")
+          .SetLocation(ManifestLocation::kExternalPolicy)
+          .Build();
+  registrar()->AddExtension(policy_target.get());
+  scoped_refptr<const Extension> policy_caller =
+      ExtensionBuilder("policy_caller")
+          .SetLocation(ManifestLocation::kExternalPolicy)
+          .Build();
+  registrar()->AddExtension(policy_caller.get());
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+
+  // 1. Disabling a user-installed target extension should use
+  // DISABLE_BY_ANOTHER_EXTENSION and persist across policy re-evaluations.
+  {
+    const ExtensionId& id = internal_target->id();
+    base::ListValue args;
+    args.Append(id);
+    // Pass false for the 'enabled' parameter to disable the extension.
+    args.Append(false);
+
+    auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
+    function->set_extension(policy_caller);
+    EXPECT_TRUE(RunFunction(function, args));
+
+    EXPECT_TRUE(registry()->disabled_extensions().Contains(id));
+    EXPECT_TRUE(prefs->HasDisableReason(
+        id, disable_reason::DISABLE_BY_ANOTHER_EXTENSION));
+    EXPECT_FALSE(
+        prefs->HasDisableReason(id, disable_reason::DISABLE_BLOCKED_BY_POLICY));
+    std::string disabling_id;
+    EXPECT_TRUE(prefs->ReadPrefAsString(id, kDisableReasonByExtensionId,
+                                        &disabling_id));
+    EXPECT_EQ(disabling_id, policy_caller->id());
+
+    // Re-evaluating management policy (as happens on browser restart, developer
+    // mode toggle, or sync) should preserve the disabled state because the
+    // target is disabled by another extension, not by Chrome's policy
+    // blocklist.
+    service()->CheckManagementPolicy();
+    EXPECT_TRUE(registry()->disabled_extensions().Contains(id));
+    EXPECT_TRUE(prefs->HasDisableReason(
+        id, disable_reason::DISABLE_BY_ANOTHER_EXTENSION));
+
+    // The user can still re-enable the target extension (simulated by running
+    // ManagementSetEnabledFunction without a source extension), which clears
+    // the disable reason and the recorded disabling extension.
+    std::string error;
+    EXPECT_TRUE(RunSetEnabledFunction(/*web_contents=*/nullptr, id,
+                                      /*use_user_gesture=*/true,
+                                      /*accept_dialog=*/true, &error))
+        << error;
+    EXPECT_TRUE(registry()->enabled_extensions().Contains(id));
+    EXPECT_TRUE(prefs->GetDisableReasons(id).empty());
+    EXPECT_FALSE(prefs->ReadPrefAsString(id, kDisableReasonByExtensionId,
+                                         &disabling_id));
+  }
+
+  // 2. Disabling a policy-installed target extension should continue to use
+  // DISABLE_BLOCKED_BY_POLICY so it is re-evaluated on startup/policy refresh.
+  {
+    const ExtensionId& id = policy_target->id();
+    base::ListValue args;
+    args.Append(id);
+    // Pass false for the 'enabled' parameter to disable the extension.
+    args.Append(false);
+
+    auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
+    function->set_extension(policy_caller);
+    EXPECT_TRUE(RunFunction(function, args));
+
+    EXPECT_TRUE(registry()->disabled_extensions().Contains(id));
+    EXPECT_TRUE(
+        prefs->HasDisableReason(id, disable_reason::DISABLE_BLOCKED_BY_POLICY));
+    EXPECT_FALSE(prefs->HasDisableReason(
+        id, disable_reason::DISABLE_BY_ANOTHER_EXTENSION));
+
+    // Unlike user-installed targets, a policy-installed target disabled by
+    // another extension is re-enabled when management policy is re-evaluated,
+    // since nothing in ManagementPolicy requires it to remain disabled.
+    service()->CheckManagementPolicy();
+    EXPECT_TRUE(registry()->enabled_extensions().Contains(id));
+    EXPECT_TRUE(prefs->GetDisableReasons(id).empty());
+  }
+}
+
 // Tests management.uninstall.
 TEST_F(ManagementApiUnitTest, ManagementUninstall) {
   // Note: uninstall calls must come from an extension, WebUI or the Webstore.

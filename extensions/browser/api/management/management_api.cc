@@ -476,13 +476,16 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
   // Disable extension.
   if (!should_enable) {
     disable_reason::DisableReason reason = disable_reason::DISABLE_USER_ACTION;
-    if (extension() &&
-        (Manifest::IsPolicyLocation(extension()->location()) ||
-         Manifest::IsComponentLocation(extension()->location()))) {
-      reason = disable_reason::DISABLE_BLOCKED_BY_POLICY;
-    } else if (extension()) {
-      // If extension() is non-null, another extension is calling the API.
-      reason = disable_reason::DISABLE_BY_ANOTHER_EXTENSION;
+    if (extension()) {
+      // If a policy or component extension disables a policy-installed target
+      // extension, use DISABLE_BLOCKED_BY_POLICY so that the disable is
+      // permitted by ManagementPolicy and re-evaluated on startup/policy
+      // refresh. For all other target extensions, use
+      // DISABLE_BY_ANOTHER_EXTENSION so the disabled state persists across
+      // restarts and the user can still re-enable the extension.
+      reason = Manifest::IsPolicyLocation(target_extension->location())
+                   ? disable_reason::DISABLE_BLOCKED_BY_POLICY
+                   : disable_reason::DISABLE_BY_ANOTHER_EXTENSION;
     }
 
     const ManagementAPIDelegate* delegate = ManagementAPI::GetFactoryInstance()
