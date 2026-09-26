@@ -17,6 +17,11 @@ TEST(PromoCodeMetricsTest, LogPromoCodeFormEvent) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.PromoCode",
       PromoCodeFormEvent::kPromoCodeSuggestionsShown, 1);
+
+  LogPromoCodeFormEvent(PromoCodeFormEvent::kPromoCodeSuggestionFilled);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      PromoCodeFormEvent::kPromoCodeSuggestionFilled, 1);
 }
 
 }  // namespace

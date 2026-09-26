@@ -49,7 +49,9 @@ class MerchantPromoCodeManager : public AutofillManager::Observer {
       SingleFieldFillRouter::OnSuggestionsReturnedCallback&
           on_suggestions_returned);
 
-  virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) {}
+  // Logs promo code suggestion filled funnel event (at most once per page
+  // load). `suggestion` must be a merchant promo code entry.
+  virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion);
 
   // Logs promo code suggestions shown funnel event (at most once per page
   // load).
@@ -60,11 +62,19 @@ class MerchantPromoCodeManager : public AutofillManager::Observer {
   virtual void Reset();
 
  private:
+  struct PageMetrics {
+    // Indicates whether promo code suggestions shown metric has already been
+    // logged for the current page load.
+    bool has_logged_suggestions_shown = false;
+
+    // Indicates whether promo code suggestion filled metric has already been
+    // logged for the current page load.
+    bool has_logged_suggestion_filled = false;
+  };
+
   ScopedAutofillManagersObservation autofill_managers_observation_{this};
 
-  // Indicates whether promo code suggestions shown metric has already been
-  // logged for the current page load.
-  bool has_logged_suggestions_shown_ = false;
+  PageMetrics page_metrics_;
 };
 
 }  // namespace autofill

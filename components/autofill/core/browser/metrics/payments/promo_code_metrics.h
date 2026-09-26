@@ -22,7 +22,10 @@ enum class PromoCodeFormEvent {
   // Promo code suggestions shown.
   kPromoCodeSuggestionsShown = 2,
 
-  kMaxValue = kPromoCodeSuggestionsShown,
+  // Promo code suggestion filled.
+  kPromoCodeSuggestionFilled = 3,
+
+  kMaxValue = kPromoCodeSuggestionFilled,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillPromoCodeFormEvent)
 

@@ -8,6 +8,7 @@
 #include <functional>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
@@ -110,18 +111,30 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
   return suggestions_generated;
 }
 
-void MerchantPromoCodeManager::DidShowSuggestions() {
-  if (has_logged_suggestions_shown_) {
+void MerchantPromoCodeManager::OnSingleFieldSuggestionSelected(
+    const Suggestion& suggestion) {
+  CHECK_EQ(suggestion.type, SuggestionType::kMerchantPromoCodeEntry);
+  if (page_metrics_.has_logged_suggestion_filled) {
     return;
   }
 
-  has_logged_suggestions_shown_ = true;
+  page_metrics_.has_logged_suggestion_filled = true;
+  autofill_metrics::LogPromoCodeFormEvent(
+      autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionFilled);
+}
+
+void MerchantPromoCodeManager::DidShowSuggestions() {
+  if (page_metrics_.has_logged_suggestions_shown) {
+    return;
+  }
+
+  page_metrics_.has_logged_suggestions_shown = true;
   autofill_metrics::LogPromoCodeFormEvent(
       autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionsShown);
 }
 
 void MerchantPromoCodeManager::Reset() {
-  has_logged_suggestions_shown_ = false;
+  page_metrics_ = {};
 }
 
 }  // namespace autofill

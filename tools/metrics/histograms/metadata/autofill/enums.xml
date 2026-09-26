@@ -4138,6 +4138,7 @@ Called by update_autofill_enums.py.-->
      and no promo code present (once) -->
 
   <int value="2" label="Promo code suggestions shown (once)"/>
+  <int value="3" label="Promo code suggestion filled (once)"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/promo_code_metrics.h:AutofillPromoCodeFormEvent) -->

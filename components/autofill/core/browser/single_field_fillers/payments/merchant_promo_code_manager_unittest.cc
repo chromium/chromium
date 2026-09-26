@@ -371,4 +371,44 @@ TEST_F(MerchantPromoCodeManagerTest,
       autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionsShown, 2);
 }
 
+TEST_F(MerchantPromoCodeManagerTest,
+       OnSingleFieldSuggestionSelected_PromoSuggestion_LogsOncePerPageLoad) {
+  base::HistogramTester histogram_tester;
+
+  Suggestion promo_code_suggestion(SuggestionType::kMerchantPromoCodeEntry);
+
+  // Selecting a promo code suggestion logs the filled funnel event.
+  promo_manager().OnSingleFieldSuggestionSelected(promo_code_suggestion);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionFilled, 1);
+
+  // Selecting a promo code suggestion again on the same page does not log
+  // again.
+  promo_manager().OnSingleFieldSuggestionSelected(promo_code_suggestion);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionFilled, 1);
+}
+
+TEST_F(MerchantPromoCodeManagerTest,
+       OnSingleFieldSuggestionSelected_Reset_AllowsSubsequentLogging) {
+  base::HistogramTester histogram_tester;
+
+  Suggestion promo_code_suggestion(SuggestionType::kMerchantPromoCodeEntry);
+
+  promo_manager().OnSingleFieldSuggestionSelected(promo_code_suggestion);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionFilled, 1);
+
+  // Resetting page load metrics allows the event to be logged again on the next
+  // fill.
+  promo_manager().Reset();
+  promo_manager().OnSingleFieldSuggestionSelected(promo_code_suggestion);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.PromoCode",
+      autofill_metrics::PromoCodeFormEvent::kPromoCodeSuggestionFilled, 2);
+}
+
 }  // namespace autofill
