@@ -27,9 +27,7 @@ class NearbyConnectionsManagerImpl
     : public NearbyConnectionsManager,
       public nearby::connections::mojom::EndpointDiscoveryListener,
       public nearby::connections::mojom::ConnectionLifecycleListener,
-      public nearby::connections::mojom::PayloadListener,
-      public nearby::connections::mojom::ConnectionListenerV3,
-      public nearby::connections::mojom::PayloadListenerV3 {
+      public nearby::connections::mojom::PayloadListener {
  public:
   NearbyConnectionsManagerImpl(
       ash::nearby::NearbyProcessManager* process_manager,
@@ -84,11 +82,6 @@ class NearbyConnectionsManagerImpl
       base::WeakPtr<BandwidthUpgradeListener> listener) override;
   void UpgradeBandwidth(const std::string& endpoint_id) override;
   base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() override;
-  void ConnectV3(nearby::presence::PresenceDevice remote_presence_device,
-                 DataUsage data_usage,
-                 NearbyConnectionCallback callback) override;
-  void DisconnectV3(
-      nearby::presence::PresenceDevice remote_presence_device) override;
 
  protected:
   raw_ptr<nearby::connections::mojom::NearbyConnections> GetNearbyConnections();
@@ -114,12 +107,6 @@ class NearbyConnectionsManagerImpl
   using PayloadStatus = nearby::connections::mojom::PayloadStatus;
   using PayloadTransferUpdatePtr =
       nearby::connections::mojom::PayloadTransferUpdatePtr;
-  using ConnectionListenerV3 = nearby::connections::mojom::ConnectionListenerV3;
-  using PresenceDevicePtr = ash::nearby::presence::mojom::PresenceDevicePtr;
-  using InitialConnectionInfoV3Ptr =
-      nearby::connections::mojom::InitialConnectionInfoV3Ptr;
-  using PayloadListenerV3 = nearby::connections::mojom::PayloadListenerV3;
-  using BandwidthInfoPtr = nearby::connections::mojom::BandwidthInfoPtr;
   using Status = nearby::connections::mojom::Status;
   using Medium = nearby::connections::mojom::Medium;
 
@@ -147,28 +134,9 @@ class NearbyConnectionsManagerImpl
   void OnPayloadTransferUpdate(const std::string& endpoint_id,
                                PayloadTransferUpdatePtr update) override;
 
-  // ConnectionListenerV3:
-  void OnConnectionInitiatedV3(const std::string& endpoint_id,
-                               InitialConnectionInfoV3Ptr info) override;
-  void OnConnectionResultV3(const std::string& endpoint_id,
-                            Status status) override;
-  void OnDisconnectedV3(const std::string& endpoint_id) override;
-  void OnBandwidthChangedV3(const std::string& endpoint_id,
-                            BandwidthInfoPtr bandwidth_info) override;
-
-  // PayloadListenerV3:
-  void OnPayloadReceivedV3(const std::string& endpoint_id,
-                           PayloadPtr payload) override;
-  void OnPayloadTransferUpdateV3(const std::string& endpoint_id,
-                                 PayloadTransferUpdatePtr update) override;
-
   void OnConnectionTimedOut(const std::string& endpoint_id);
-  void OnConnectionTimedOutV3(const std::string& endpoint_id);
   void OnConnectionRequested(const std::string& endpoint_id,
                              ConnectionsStatus status);
-  void OnConnectionRequestedV3(
-      nearby::presence::PresenceDevice remote_presence_device,
-      ConnectionsStatus status);
   void OnNearbyProcessStopped(
       ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
@@ -196,19 +164,9 @@ class NearbyConnectionsManagerImpl
   // A map of endpoint_id to NearbyConnection.
   base::flat_map<std::string, std::unique_ptr<NearbyConnectionImpl>>
       connections_;
-  // A map of endpoint_id to NearbyConnection for V3 connections.
-  base::flat_map<std::string, std::unique_ptr<NearbyConnectionImpl>>
-      connections_v3_;
-  // A map of endpoint_id to `PresenceDevice` to pass back to any listening
-  // clients.
-  base::flat_map<std::string, std::unique_ptr<nearby::presence::PresenceDevice>>
-      endpoint_id_to_presence_device_map_;
   // A map of endpoint_id to timers that timeout a connection request.
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
       connect_timeout_timers_;
-  // A map of endpoint_id to timers that timeout a V3 connection request.
-  base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
-      connect_timeout_timers_v3_;
   // A map of payload_id to PayloadStatusListener weak pointer.
   base::flat_map<int64_t, base::WeakPtr<PayloadStatusListener>>
       payload_status_listeners_;
@@ -223,23 +181,11 @@ class NearbyConnectionsManagerImpl
   base::flat_set<std::string> on_bandwidth_changed_endpoint_ids_;
   // For metrics. A map of endpoint_id to current upgraded medium.
   base::flat_map<std::string, Medium> current_upgraded_mediums_;
-  // For metrics. A set of endpoint_ids for which we have received the first
-  // OnBandwidthChanged V3 event.
-  base::flat_set<std::string> on_bandwidth_changed_endpoint_ids_v3_;
-  // For metrics. A map of endpoint_id to current upgraded medium for V3
-  // connections.
-  base::flat_map<std::string, Medium> current_upgraded_mediums_v3_;
-  // For metrics. A map of endpoint_id to `base::TimeTicks` representing the
-  // start time when `ConnectV3()` is called.
-  base::flat_map<std::string, base::TimeTicks>
-      endpoint_id_to_connect_v3_start_time_;
 
   mojo::Receiver<EndpointDiscoveryListener> endpoint_discovery_listener_{this};
   mojo::ReceiverSet<ConnectionLifecycleListener>
       connection_lifecycle_listeners_;
   mojo::ReceiverSet<PayloadListener> payload_listeners_;
-  mojo::ReceiverSet<ConnectionListenerV3> connection_listener_v3s_;
-  mojo::ReceiverSet<PayloadListenerV3> payload_listener_v3s_;
 
   base::WeakPtrFactory<NearbyConnectionsManagerImpl> weak_ptr_factory_{this};
 };

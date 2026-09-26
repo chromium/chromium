@@ -201,8 +201,6 @@ class NearbySharingServiceImpl
                        const Medium medium) override;
   void OnBandwidthUpgrade(const std::string& endpoint_id,
                           const Medium medium) override;
-  void OnBandwidthUpgradeV3(nearby::presence::PresenceDevice remote_device,
-                            const Medium medium) override;
 
   // ash::SessionObserver:
   void OnLockStateChanged(bool locked) override;

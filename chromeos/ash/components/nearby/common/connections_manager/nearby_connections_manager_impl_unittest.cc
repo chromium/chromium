@@ -18,7 +18,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection_impl.h"
-#include "chromeos/ash/components/nearby/presence/conversions/nearby_presence_conversions.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
@@ -42,7 +41,6 @@ const char kAuthenticationToken[] = "authentication_token";
 const char kRawAuthenticationToken[] = {0x00, 0x05, 0x04, 0x03, 0x02};
 const char kBytePayload[] = {0x08, 0x09, 0x06, 0x04, 0x0f};
 const char kBytePayload2[] = {0x0a, 0x0b, 0x0c, 0x0d, 0x0e};
-const char kDeviceName[] = "Cris Cros's Pixel";
 const int64_t kPayloadId = 689777;
 const int64_t kPayloadId2 = 777689;
 const int64_t kPayloadId3 = 986777;
@@ -51,15 +49,7 @@ const uint64_t kBytesTransferred = 721831;
 const uint8_t kPayload[] = {0x0f, 0x0a, 0x0c, 0x0e};
 // Timeout for initiating a connection to a remote device.
 constexpr base::TimeDelta kInitiateNearbyConnectionTimeout = base::Seconds(60);
-constexpr base::TimeDelta kConnectV3ToSuccessfulConnectionLatency =
-    base::Milliseconds(123u);
 
-const std::vector<uint8_t>& GetDeviceId() {
-  static const base::NoDestructor<std::vector<uint8_t>> val(
-      {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67,
-       0x89, 0xab, 0xcd, 0xef});
-  return *val;
-}
 const std::vector<uint8_t>& GetBluetoothMacAddress() {
   static const base::NoDestructor<std::vector<uint8_t>> val(
       {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13});
@@ -102,23 +92,6 @@ base::FilePath InitializeTemporaryFile(base::File& file) {
   return path;
 }
 
-nearby::presence::PresenceDevice CreatePresenceDevice() {
-  nearby::internal::DeviceIdentityMetaData metadata;
-  metadata.set_device_type(nearby::internal::DeviceType::DEVICE_TYPE_PHONE);
-  metadata.set_device_name(kDeviceName);
-  metadata.set_bluetooth_mac_address(std::string(
-      GetBluetoothMacAddress().begin(), GetBluetoothMacAddress().end()));
-  metadata.set_device_id(
-      std::string(GetDeviceId().begin(), GetDeviceId().end()));
-
-  nearby::presence::PresenceDevice presence_device(kRemoteEndpointId);
-  presence_device.SetDeviceIdentityMetaData(metadata);
-  presence_device.AddAction(static_cast<uint32_t>(
-      nearby::presence::ActionBit::kPresenceManagerAction));
-
-  return presence_device;
-}
-
 }  // namespace
 
 using Status = nearby::connections::mojom::Status;
@@ -126,7 +99,6 @@ using DiscoveredEndpointInfo =
     nearby::connections::mojom::DiscoveredEndpointInfo;
 using ConnectionInfo = nearby::connections::mojom::ConnectionInfo;
 using Medium = nearby::connections::mojom::Medium;
-using BandwidthQuality = nearby::connections::mojom::BandwidthQuality;
 using MediumSelection = nearby::connections::mojom::MediumSelection;
 using PayloadContent = nearby::connections::mojom::PayloadContent;
 using PayloadStatus = nearby::connections::mojom::PayloadStatus;
@@ -187,11 +159,6 @@ class MockBandwidthUpgradeListener
   MOCK_METHOD(void,
               OnBandwidthUpgrade,
               (const std::string& endpoint_id, const Medium medium),
-              (override));
-
-  MOCK_METHOD(void,
-              OnBandwidthUpgradeV3,
-              (nearby::presence::PresenceDevice, const Medium medium),
               (override));
 
   base::WeakPtr<MockBandwidthUpgradeListener> GetWeakPtr() {
@@ -477,85 +444,6 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
                                      FilePayload::New(std::move(file)))),
         payload_listener.GetWeakPtr());
     run_loop.Run();
-  }
-
-  void ConnectV3(
-      nearby::presence::PresenceDevice remote_presence_device,
-      mojo::Remote<ConnectionListenerV3>& connection_listener_v3_remote,
-      mojo::Remote<PayloadListenerV3>& payload_listener_v3_remote,
-      nearby::connections::mojom::InitialConnectionInfoV3Ptr info_v3,
-      Status on_connection_result_status) {
-    ash::nearby::presence::mojom::PresenceDevicePtr presence_device_mojom =
-        ash::nearby::presence::BuildPresenceMojomDevice(remote_presence_device);
-
-    base::RunLoop request_connection_run_loop;
-    EXPECT_CALL(nearby_connections_, RequestConnectionV3)
-        .WillOnce(
-            [&](const std::string& service_id,
-                ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-                ConnectionOptionsPtr options,
-                mojo::PendingRemote<ConnectionListenerV3> listener,
-                NearbyConnectionsMojom::RequestConnectionV3Callback callback) {
-              EXPECT_EQ(kServiceId, service_id);
-              EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
-
-              connection_listener_v3_remote.Bind(std::move(listener));
-              std::move(callback).Run(Status::kSuccess);
-              request_connection_run_loop.Quit();
-            });
-
-    base::RunLoop accept_or_reject_run_loop;
-    NearbyConnection* nearby_connection;
-    nearby_connections_manager_->ConnectV3(
-        remote_presence_device, NearbyConnectionsManager::DataUsage::kOffline,
-        base::BindLambdaForTesting([&](NearbyConnection* connection) {
-          nearby_connection = connection;
-
-          if (on_connection_result_status == Status::kSuccess) {
-            EXPECT_TRUE(nearby_connection);
-          } else {
-            EXPECT_FALSE(nearby_connection);
-          }
-        }));
-    task_environment_.FastForwardBy(kConnectV3ToSuccessfulConnectionLatency);
-
-    request_connection_run_loop.Run();
-    if (info_v3->authentication_status ==
-        nearby::connections::mojom::AuthenticationStatus::kSuccess) {
-      EXPECT_CALL(nearby_connections_, AcceptConnectionV3)
-          .WillOnce(
-              [&](const std::string& service_id,
-                  ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-                  mojo::PendingRemote<PayloadListenerV3> listener,
-                  NearbyConnectionsMojom::AcceptConnectionV3Callback callback) {
-                EXPECT_EQ(kServiceId, service_id);
-                EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
-
-                payload_listener_v3_remote.Bind(std::move(listener));
-                std::move(callback).Run(Status::kSuccess);
-
-                accept_or_reject_run_loop.Quit();
-              });
-    } else {
-      EXPECT_CALL(nearby_connections_, RejectConnectionV3)
-          .WillOnce(
-              [&](const std::string& service_id,
-                  ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-                  NearbyConnectionsMojom::RejectConnectionV3Callback callback) {
-                EXPECT_EQ(kServiceId, service_id);
-                EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
-
-                std::move(callback).Run(Status::kSuccess);
-
-                accept_or_reject_run_loop.Quit();
-              });
-    }
-
-    connection_listener_v3_remote->OnConnectionInitiatedV3(
-        presence_device_mojom->endpoint_id, std::move(info_v3));
-    connection_listener_v3_remote->OnConnectionResultV3(
-        presence_device_mojom->endpoint_id, on_connection_result_status);
-    accept_or_reject_run_loop.Run();
   }
 
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
@@ -2038,306 +1926,6 @@ TEST_F(NearbyConnectionsManagerImplTest,
 
   nearby_connection->Close();
   EXPECT_EQ(nullptr, nearby_connections_manager_);
-}
-
-TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Initiated) {
-  nearby::presence::PresenceDevice presence_device = CreatePresenceDevice();
-
-  base::RunLoop request_connection_run_loop;
-  EXPECT_CALL(nearby_connections_, RequestConnectionV3)
-      .WillOnce(
-          [&](const std::string& service_id,
-              ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-              ConnectionOptionsPtr options,
-              mojo::PendingRemote<ConnectionListenerV3> listener,
-              NearbyConnectionsMojom::RequestConnectionV3Callback callback) {
-            EXPECT_EQ(kServiceId, service_id);
-            EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
-
-            std::move(callback).Run(Status::kSuccess);
-            request_connection_run_loop.Quit();
-          });
-
-  nearby_connections_manager_->ConnectV3(
-      presence_device, NearbyConnectionsManager::DataUsage::kOffline,
-      base::DoNothing());
-  request_connection_run_loop.Run();
-}
-
-TEST_F(NearbyConnectionsManagerImplTest, OnConnectionTimedOutV3) {
-  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
-  nearby::presence::PresenceDevice presence_device = CreatePresenceDevice();
-
-  EXPECT_CALL(nearby_connections_, RequestConnectionV3)
-      .WillOnce(
-          [&](const std::string& service_id,
-              ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-              ConnectionOptionsPtr options,
-              mojo::PendingRemote<ConnectionListenerV3> listener,
-              NearbyConnectionsMojom::RequestConnectionV3Callback callback) {
-            EXPECT_EQ(kServiceId, service_id);
-            EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
-
-            connection_listener_v3_remote.Bind(std::move(listener));
-
-            std::move(callback).Run(Status::kSuccess);
-          });
-
-  EXPECT_CALL(nearby_connections_, DisconnectFromDeviceV3)
-      .WillOnce(
-          [&](const std::string& service_id,
-              ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-              NearbyConnectionsMojom::DisconnectFromDeviceV3Callback callback) {
-            EXPECT_EQ(kServiceId, service_id);
-            EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
-
-            std::move(callback).Run(Status::kSuccess);
-          });
-
-  base::RunLoop on_connection_timed_out_run_loop;
-  NearbyConnection* nearby_connection = nullptr;
-  nearby_connections_manager_->ConnectV3(
-      presence_device, NearbyConnectionsManager::DataUsage::kOffline,
-      base::BindLambdaForTesting([&](NearbyConnection* connection) {
-        nearby_connection = connection;
-        on_connection_timed_out_run_loop.Quit();
-      }));
-
-  task_environment_.FastForwardBy(kInitiateNearbyConnectionTimeout);
-  on_connection_timed_out_run_loop.Run();
-
-  EXPECT_FALSE(nearby_connection);
-  histogram_tester()->ExpectTimeBucketCount(
-      "Nearby.Connections.V3.ConnectionResult.Success.Latency",
-      kConnectV3ToSuccessfulConnectionLatency, 0);
-}
-
-TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Accept) {
-  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
-  mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
-
-  nearby::presence::PresenceDevice presence_device = CreatePresenceDevice();
-
-  ConnectV3(presence_device, connection_listener_v3_remote,
-            payload_listener_v3_remote,
-            nearby::connections::mojom::InitialConnectionInfoV3::New(
-                kAuthenticationToken, kRawAuthenticationToken,
-                /*is_incoming_connection=*/false,
-                nearby::connections::mojom::AuthenticationStatus::kSuccess),
-            /*on_connection_result_status=*/Status::kSuccess);
-
-  histogram_tester()->ExpectBucketCount(
-      "Nearby.Connections.V3.Connection.Result", Status::kSuccess, 1);
-  histogram_tester()->ExpectTotalCount(
-      "Nearby.Connections.V3.Connection.Result", 1);
-  histogram_tester()->ExpectTimeBucketCount(
-      "Nearby.Connections.V3.ConnectionResult.Success.Latency",
-      kConnectV3ToSuccessfulConnectionLatency, 1);
-}
-
-TEST_F(NearbyConnectionsManagerImplTest, RequestConnectionV3Reject) {
-  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
-  mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
-
-  nearby::presence::PresenceDevice presence_device = CreatePresenceDevice();
-
-  ConnectV3(presence_device, connection_listener_v3_remote,
-            payload_listener_v3_remote,
-            nearby::connections::mojom::InitialConnectionInfoV3::New(
-                kAuthenticationToken, kRawAuthenticationToken,
-                /*is_incoming_connection=*/false,
-                nearby::connections::mojom::AuthenticationStatus::kFailure),
-            /*on_connection_result_status=*/Status::kSuccess);
-}
-
-TEST_F(NearbyConnectionsManagerImplTest, OnConnectionResultV3Rejected) {
-  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
-  mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
-
-  nearby::presence::PresenceDevice presence_device = CreatePresenceDevice();
-
-  ConnectV3(presence_device, connection_listener_v3_remote,
-            payload_listener_v3_remote,
-            nearby::connections::mojom::InitialConnectionInfoV3::New(
-                kAuthenticationToken, kRawAuthenticationToken,
-                /*is_incoming_connection=*/false,
-                nearby::connections::mojom::AuthenticationStatus::kFailure),
-            /*on_connection_result_status=*/Status::kError);
-
-  histogram_tester()->ExpectBucketCount(
-      "Nearby.Connections.V3.Connection.Result", Status::kError, 1);
-  histogram_tester()->ExpectTotalCount(
-      "Nearby.Connections.V3.Connection.Result", 1);
-  histogram_tester()->ExpectTimeBucketCount(
-      "Nearby.Connections.V3.ConnectionResult.Success.Latency",
-      kConnectV3ToSuccessfulConnectionLatency, 0);
-}
-
-TEST_F(NearbyConnectionsManagerImplTest, DisconnectV3) {
-  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
-  mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
-
-  nearby::presence::PresenceDevice presence_device = CreatePresenceDevice();
-
-  ConnectV3(presence_device, connection_listener_v3_remote,
-            payload_listener_v3_remote,
-            nearby::connections::mojom::InitialConnectionInfoV3::New(
-                kAuthenticationToken, kRawAuthenticationToken,
-                /*is_incoming_connection=*/false,
-                nearby::connections::mojom::AuthenticationStatus::kSuccess),
-            /*on_connection_result_status=*/Status::kSuccess);
-
-  histogram_tester()->ExpectTimeBucketCount(
-      "Nearby.Connections.V3.ConnectionResult.Success.Latency",
-      kConnectV3ToSuccessfulConnectionLatency, 1);
-
-  base::RunLoop disconnect_run_loop;
-  EXPECT_CALL(nearby_connections_, DisconnectFromDeviceV3)
-      .WillOnce(
-          [&](const std::string& service_id,
-              ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-              NearbyConnectionsMojom::DisconnectFromDeviceV3Callback callback) {
-            EXPECT_EQ(kServiceId, service_id);
-            EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
-
-            std::move(callback).Run(Status::kSuccess);
-            disconnect_run_loop.Quit();
-          });
-
-  nearby_connections_manager_->DisconnectV3(presence_device);
-  disconnect_run_loop.Run();
-}
-
-TEST_F(NearbyConnectionsManagerImplTest, OnConnectionRequestedV3) {
-  nearby::presence::PresenceDevice presence_device = CreatePresenceDevice();
-
-  base::RunLoop request_connection_run_loop;
-  EXPECT_CALL(nearby_connections_, RequestConnectionV3)
-      .WillOnce(
-          [&](const std::string& service_id,
-              ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-              ConnectionOptionsPtr options,
-              mojo::PendingRemote<ConnectionListenerV3> listener,
-              NearbyConnectionsMojom::RequestConnectionV3Callback callback) {
-            EXPECT_EQ(kServiceId, service_id);
-            EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
-
-            std::move(callback).Run(Status::kError);
-            request_connection_run_loop.Quit();
-          });
-
-  nearby_connections_manager_->ConnectV3(
-      presence_device, NearbyConnectionsManager::DataUsage::kOffline,
-      base::DoNothing());
-  request_connection_run_loop.Run();
-}
-
-TEST_F(NearbyConnectionsManagerImplTest, OnBandwidthChangedV3) {
-  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
-  mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
-
-  nearby::presence::PresenceDevice presence_device = CreatePresenceDevice();
-
-  base::RunLoop request_connection_run_loop;
-  EXPECT_CALL(nearby_connections_, RequestConnectionV3)
-      .WillOnce(
-          [&](const std::string& service_id,
-              ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-              ConnectionOptionsPtr options,
-              mojo::PendingRemote<ConnectionListenerV3> listener,
-              NearbyConnectionsMojom::RequestConnectionV3Callback callback) {
-            EXPECT_EQ(kServiceId, service_id);
-            EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
-
-            connection_listener_v3_remote.Bind(std::move(listener));
-            std::move(callback).Run(Status::kSuccess);
-            request_connection_run_loop.Quit();
-          });
-
-  ash::nearby::presence::mojom::PresenceDevicePtr presence_device_mojom =
-      ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
-  nearby_connections_manager_->ConnectV3(
-      presence_device, NearbyConnectionsManager::DataUsage::kOffline,
-      base::DoNothing());
-  request_connection_run_loop.Run();
-
-  testing::NiceMock<MockBandwidthUpgradeListener> bandwidth_listener;
-  nearby_connections_manager_->RegisterBandwidthUpgradeListener(
-      bandwidth_listener.GetWeakPtr());
-
-  base::RunLoop bandwidth_run_loop;
-  EXPECT_CALL(bandwidth_listener,
-              OnBandwidthUpgradeV3(
-                  testing::An<nearby::presence::PresenceDevice>(), testing::_))
-      .WillOnce([&](nearby::presence::PresenceDevice remote_device,
-                    const Medium medium) {
-        EXPECT_EQ(remote_device.GetEndpointId(), kRemoteEndpointId);
-        EXPECT_EQ(medium, Medium::kWebRtc);
-
-        bandwidth_run_loop.Quit();
-      });
-
-  // `OnBandwidthChangedV3()` needs to be called twice. The first one is always
-  // called for the first Medium connected to and does not propagate to the
-  // listener. The second call is when the bandwidth truly changed and is
-  // propagated through to the listener.
-  connection_listener_v3_remote->OnBandwidthChangedV3(
-      presence_device.GetEndpointId(),
-      nearby::connections::mojom::BandwidthInfo::New(BandwidthQuality::kMedium,
-                                                     Medium::kBluetooth));
-  histogram_tester()->ExpectTotalCount(
-      "Nearby.Connections.V3.Medium.ChangedToMedium", 0);
-  connection_listener_v3_remote->OnBandwidthChangedV3(
-      presence_device.GetEndpointId(),
-      nearby::connections::mojom::BandwidthInfo::New(BandwidthQuality::kHigh,
-                                                     Medium::kWebRtc));
-  bandwidth_run_loop.Run();
-  histogram_tester()->ExpectBucketCount(
-      "Nearby.Connections.V3.Medium.ChangedToMedium", Medium::kWebRtc, 1);
-}
-
-TEST_F(NearbyConnectionsManagerImplTest, PayloadListenerV3RemoteCallbacks) {
-  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
-  mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
-
-  const std::vector<uint8_t> byte_payload(std::begin(kBytePayload),
-                                          std::end(kBytePayload));
-
-  nearby::presence::PresenceDevice presence_device = CreatePresenceDevice();
-
-  ConnectV3(presence_device, connection_listener_v3_remote,
-            payload_listener_v3_remote,
-            nearby::connections::mojom::InitialConnectionInfoV3::New(
-                kAuthenticationToken, kRawAuthenticationToken,
-                /*is_incoming_connection=*/false,
-                nearby::connections::mojom::AuthenticationStatus::kSuccess),
-            /*on_connection_result_status=*/Status::kSuccess);
-
-  testing::NiceMock<MockPayloadStatusListener> payload_listener;
-  nearby_connections_manager_->RegisterPayloadStatusListener(
-      kPayloadId, payload_listener.GetWeakPtr());
-
-  base::RunLoop payload_transfer_update_run_loop;
-  EXPECT_CALL(payload_listener, OnStatusUpdate(testing::_, testing::_))
-      .WillOnce([&](MockPayloadStatusListener::PayloadTransferUpdatePtr update,
-                    std::optional<Medium> upgraded_medium) {
-        EXPECT_EQ(update->payload_id, kPayloadId);
-        EXPECT_EQ(update->status, PayloadStatus::kSuccess);
-        EXPECT_EQ(update->total_bytes, kTotalSize);
-        EXPECT_EQ(update->bytes_transferred, kTotalSize);
-
-        payload_transfer_update_run_loop.Quit();
-      });
-
-  payload_listener_v3_remote->OnPayloadReceivedV3(
-      kRemoteEndpointId,
-      Payload::New(kPayloadId,
-                   PayloadContent::NewBytes(BytesPayload::New(byte_payload))));
-  payload_listener_v3_remote->OnPayloadTransferUpdateV3(
-      kRemoteEndpointId,
-      PayloadTransferUpdate::New(kPayloadId, PayloadStatus::kSuccess,
-                                 kTotalSize, /*bytes_transferred=*/kTotalSize));
-  payload_transfer_update_run_loop.Run();
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, InjectBluetoothEndpoint_Success) {

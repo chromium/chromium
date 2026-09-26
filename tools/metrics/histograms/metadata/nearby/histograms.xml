@@ -506,39 +506,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Nearby.Connections.V3.Connection.Result"
-    enum="NearbyConnectionsStatus" expires_after="2027-04-30">
-  <owner>crisrael@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the result upon completing an attempt to connect to a remote device
-    with the V3 connection flow. Emitted when receiving the result from the
-    Nearby utility process.
-  </summary>
-</histogram>
-
-<histogram name="Nearby.Connections.V3.ConnectionResult.Success.Latency"
-    units="ms" expires_after="2027-04-30">
-  <owner>crisrael@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the time spent in milliseconds to receive a NearbyConnection socket
-    after starting a Connect V3 to a remote device. Emitted when the connection
-    is successfully created.
-  </summary>
-</histogram>
-
-<histogram name="Nearby.Connections.V3.Medium.ChangedToMedium"
-    enum="NearbyConnectionsMedium" expires_after="2027-04-30">
-  <owner>crisrael@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the data-transfer medium that the Nearby Connections library
-    successfully switches to for V3 connections. Emitted when the Nearby
-    Connections library notifies of a bandwidth upgrade.
-  </summary>
-</histogram>
-
 <histogram name="Nearby.Connections.WifiDirect.AssociateSocket.Result"
     enum="BooleanSuccess" expires_after="2027-04-30">
   <owner>jackshira@google.com</owner>
