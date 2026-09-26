@@ -76,15 +76,6 @@
       var(--color-searchbox-foreground));
 }
 
-/* Match native text selection background with the inline autocomplete
- * ellipsis indicator badge. */
-:is(input, textarea)::selection {
-  background-color: var(--color-searchbox-selection-background);
-  color: var(
-      --color-searchbox-selection-foreground,
-      var(--color-searchbox-foreground));
-}
-
 /* The scrollbar is only rendered once the input content overflows its max
  * height, e.g. while a long voice transcription is being shown or when the
  * typed text grows past the last visible line. */
