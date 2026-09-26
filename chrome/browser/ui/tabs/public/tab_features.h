@@ -78,6 +78,7 @@ class SecurityStateEventObserver;
 class SharedHighlightingPromo;
 class SidePanelRegistry;
 class TabCaptureContentsBorderHelper;
+class TabContextDecryptionTokenTabHelper;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
 class ThumbnailTabHelper;
@@ -832,6 +833,9 @@ class TabFeatures {
 
   std::unique_ptr<TabCaptureContentsBorderHelper>
       tab_capture_contents_border_helper_;
+
+  std::unique_ptr<TabContextDecryptionTokenTabHelper>
+      tab_context_decryption_token_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

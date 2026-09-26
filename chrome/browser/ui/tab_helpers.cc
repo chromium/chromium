@@ -76,7 +76,6 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
-#include "chrome/browser/sync_tab_context/tab_context_decryption_token_tab_helper.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -584,7 +583,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   }
 #endif
   tasks::TaskTabHelper::CreateForWebContents(web_contents);
-  TabContextDecryptionTokenTabHelper::CreateForWebContents(web_contents);
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
   auto* service = RevokedPermissionsServiceFactory::GetForProfile(profile);
   if (service) {

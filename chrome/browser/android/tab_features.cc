@@ -35,6 +35,7 @@
 #include "chrome/browser/ssl/security_state_event_observer.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
+#include "chrome/browser/sync_tab_context/tab_context_decryption_token_tab_helper.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
@@ -236,6 +237,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     web_payments_observer_ =
         std::make_unique<payments::WebPaymentsObserver>(web_contents);
   }
+
+  tab_context_decryption_token_tab_helper_ =
+      TabContextDecryptionTokenTabHelper::MaybeCreate(web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

@@ -152,22 +152,17 @@ DOCUMENT_USER_DATA_KEY_IMPL(DecryptionTokenApi);
 }  // namespace
 
 // static
-void TabContextDecryptionTokenTabHelper::CreateForWebContents(
+std::unique_ptr<TabContextDecryptionTokenTabHelper>
+TabContextDecryptionTokenTabHelper::MaybeCreate(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
   if (!base::FeatureList::IsEnabled(
           syncer::kSyncEncryptedTabContextContainer)) {
-    return;
+    return nullptr;
   }
 
-  if (FromWebContents(web_contents)) {
-    return;
-  }
-
-  web_contents->SetUserData(
-      UserDataKey(),
-      base::WrapUnique(new TabContextDecryptionTokenTabHelper(web_contents)));
+  return base::WrapUnique(new TabContextDecryptionTokenTabHelper(web_contents));
 }
 
 // static
@@ -185,9 +180,7 @@ void TabContextDecryptionTokenTabHelper::BindTabContextDecryptionTokenExtension(
 
 TabContextDecryptionTokenTabHelper::TabContextDecryptionTokenTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsUserData<TabContextDecryptionTokenTabHelper>(
-          *web_contents),
-      content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 TabContextDecryptionTokenTabHelper::~TabContextDecryptionTokenTabHelper() =
     default;
@@ -203,5 +196,3 @@ void TabContextDecryptionTokenTabHelper::DidFinishNavigation(
         navigation_handle->GetRenderFrameHost());
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabContextDecryptionTokenTabHelper);

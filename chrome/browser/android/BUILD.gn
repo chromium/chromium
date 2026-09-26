@@ -53,6 +53,7 @@ source_set("tabs_impl") {
     "//chrome/browser/payments",
     "//chrome/browser/preloading/new_tab_page_preload",
     "//chrome/browser/sync",
+    "//chrome/browser/sync_tab_context",
     "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel/android",

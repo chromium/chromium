@@ -77,6 +77,7 @@ class WebPaymentsObserver;
 class ConnectionHelpTabHelper;
 class HttpAuthCacheStatus;
 class SecurityStateEventObserver;
+class TabContextDecryptionTokenTabHelper;
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
 namespace customize_chrome {
@@ -173,6 +174,8 @@ class TabFeatures {
       actor_ui_tab_controller_;
 
   std::unique_ptr<payments::WebPaymentsObserver> web_payments_observer_;
+  std::unique_ptr<TabContextDecryptionTokenTabHelper>
+      tab_context_decryption_token_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

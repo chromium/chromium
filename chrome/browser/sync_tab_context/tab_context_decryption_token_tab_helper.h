@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_SYNC_TAB_CONTEXT_TAB_CONTEXT_DECRYPTION_TOKEN_TAB_HELPER_H_
 #define CHROME_BROWSER_SYNC_TAB_CONTEXT_TAB_CONTEXT_DECRYPTION_TOKEN_TAB_HELPER_H_
 
+#include <memory>
+
 #include "chrome/common/tab_context_decryption_token_extension.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
 class RenderFrameHost;
@@ -18,11 +19,10 @@ class NavigationHandle;
 // TabContextDecryptionTokenTabHelper installs the Mojo API for allowed
 // Google Accounts origins to request container decryption tokens from
 // TabContextSyncService.
-class TabContextDecryptionTokenTabHelper
-    : public content::WebContentsUserData<TabContextDecryptionTokenTabHelper>,
-      public content::WebContentsObserver {
+class TabContextDecryptionTokenTabHelper : public content::WebContentsObserver {
  public:
-  static void CreateForWebContents(content::WebContents* web_contents);
+  static std::unique_ptr<TabContextDecryptionTokenTabHelper> MaybeCreate(
+      content::WebContents* web_contents);
 
   static void BindTabContextDecryptionTokenExtension(
       mojo::PendingAssociatedReceiver<
@@ -41,12 +41,8 @@ class TabContextDecryptionTokenTabHelper
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  friend class content::WebContentsUserData<TabContextDecryptionTokenTabHelper>;
-
   explicit TabContextDecryptionTokenTabHelper(
       content::WebContents* web_contents);
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_SYNC_TAB_CONTEXT_TAB_CONTEXT_DECRYPTION_TOKEN_TAB_HELPER_H_

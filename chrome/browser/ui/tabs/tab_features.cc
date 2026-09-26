@@ -51,6 +51,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync_tab_context/tab_context_decryption_token_tab_helper.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -847,6 +848,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     glic_marketing_page_tab_helper_ =
         std::make_unique<glic::GlicMarketingPageTabHelper>(tab.GetContents());
   }
+
+  tab_context_decryption_token_tab_helper_ =
+      TabContextDecryptionTokenTabHelper::MaybeCreate(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1123,6 +1127,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     glic_marketing_page_tab_helper_ =
         std::make_unique<glic::GlicMarketingPageTabHelper>(new_contents);
   }
+
+  tab_context_decryption_token_tab_helper_ =
+      TabContextDecryptionTokenTabHelper::MaybeCreate(new_contents);
 }
 
 customize_chrome::SidePanelController*
