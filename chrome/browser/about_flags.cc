@@ -5034,6 +5034,14 @@ const FeatureEntry::FeatureVariation
         {"3 days", kAutofillUpstreamEnforceStrikeDelay3Days, nullptr},
         {"7 days", kAutofillUpstreamEnforceStrikeDelay7Days, nullptr}};
 
+const FeatureEntry::FeatureParam kCentralizedInfoBarFrameworkEnableAll[] = {
+    {"EnableAll", "true"}};
+
+const FeatureEntry::FeatureVariation kCentralizedInfoBarFrameworkVariations[] =
+    {
+        {"Enable all", kCentralizedInfoBarFrameworkEnableAll, nullptr},
+};
+
 #if BUILDFLAG(ENTERPRISE_PROXY)
 const FeatureEntry::FeatureParam kEnterpriseProxyErrorForced403[] = {
     {enterprise_net::kForcedDisguisedErrorCodeParamName, "403"}};
@@ -13468,7 +13476,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"centralized-infobar-framework",
      flag_descriptions::kCentralizedInfoBarFrameworkName,
      flag_descriptions::kCentralizedInfoBarFrameworkDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(infobars::kCentralizedInfoBarFramework)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(infobars::kCentralizedInfoBarFramework,
+                                    kCentralizedInfoBarFrameworkVariations,
+                                    "CentralizedInfoBarFramework")},
 
     {"autofill-ai-wallet-pass-branding-2026",
      flag_descriptions::kAutofillAiWalletPassBranding2026Name,
