@@ -53,6 +53,14 @@ class SANDBOX_EXPORT SyscallDispatcher {
   // Emulates unlink()/unlinkat().
   virtual int Unlink(const char* unlink) const = 0;
 
+  // Emulates connect() for AF_UNIX sockets. |name| is taken from the sockaddr
+  // by the caller (which runs in the sandboxed process and can dereference
+  // it); an abstract-namespace name is spelled with a leading '@'.
+  virtual int Connect(int sockfd, const char* name) const = 0;
+
+  // Emulates bind() for AF_UNIX sockets, with |name| as for Connect().
+  virtual int Bind(int sockfd, const char* name) const = 0;
+
   // Emulates inotify_add_watch().
   virtual int InotifyAddWatch(int fd,
                               const char* pathname,
@@ -71,6 +79,13 @@ class SANDBOX_EXPORT SyscallDispatcher {
   // using Stat(), or on 32-bit systems it uses Stat64() for the *statat64()
   // syscalls.
   int PerformStatat(const arch_seccomp_data& args, bool stat64);
+
+  // Validates the args passed to a connect() or bind() syscall, extracts the
+  // AF_UNIX path from the sockaddr and performs the syscall using Connect()
+  // or Bind().
+  int PerformConnect(const arch_seccomp_data& args) const;
+  int PerformBind(const arch_seccomp_data& args) const;
+  int PerformConnectOrBind(const arch_seccomp_data& args, bool is_bind) const;
 
   // Validates the args passed to an unlinkat() syscall and performs the syscall
   // using either Unlink() or Rmdir().

@@ -3212,6 +3212,10 @@ test("content_unittests") {
     sources += [ "../browser/accessibility/browser_accessibility_state_impl_auralinux_unittest.cc" ]
   }
 
+  if (is_linux && enable_vr) {
+    sources += [ "../services/isolated_xr_device/xr_sandbox_hook_linux_unittest.cc" ]
+  }
+
   if (is_android || is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {
     data = [
       "$root_out_dir/content_shell.pak",
@@ -3462,6 +3466,10 @@ test("content_unittests") {
       "//sandbox/linux:sandbox_services",
       "//sandbox/linux:sandbox_services_headers",
     ]
+  }
+
+  if (is_linux && enable_vr) {
+    deps += [ "//content/services/isolated_xr_device:xr_sandbox_hook" ]
   }
 
   if (is_fuchsia) {

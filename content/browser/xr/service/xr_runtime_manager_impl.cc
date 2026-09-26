@@ -175,7 +175,21 @@ XRRuntimeManagerImpl::GetOrCreateRuntimeManagerInternal(
 
   // Then add any other "built-in" providers
 #if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_OPENXR)
+  // The isolated XR device service only hosts OpenXR, and launching it starts
+  // a utility process that loads the graphics stack and the runtime's driver
+  // libraries. Do not launch it unless OpenXR is actually enabled, by the same
+  // rule the service applies before creating the runtime.
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kWebXrForceRuntime)
+          ? IsForcedRuntime(command_line, switches::kWebXrRuntimeOpenXr)
+          : base::FeatureList::IsEnabled(device::features::kOpenXR)) {
+    providers.push_back(std::make_unique<IsolatedVRDeviceProvider>());
+  }
+#else
   providers.push_back(std::make_unique<IsolatedVRDeviceProvider>());
+#endif  // BUILDFLAG(ENABLE_OPENXR)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   const bool is_orientation_provider_forced =

@@ -206,6 +206,57 @@ int BrokerClient::Unlink(const char* path) const {
   return PathOnlySyscall(COMMAND_UNLINK, path);
 }
 
+int BrokerClient::Connect(int sockfd, const char* name) const {
+  return SocketNameSyscall(COMMAND_CONNECT, sockfd, name);
+}
+
+int BrokerClient::Bind(int sockfd, const char* name) const {
+  return SocketNameSyscall(COMMAND_BIND, sockfd, name);
+}
+
+int BrokerClient::SocketNameSyscall(BrokerCommand syscall_type,
+                                    int sockfd,
+                                    const char* name) const {
+  if (!name) {
+    return -EFAULT;
+  }
+
+  if (fast_check_in_client_) {
+    const char* allowed =
+        syscall_type == COMMAND_CONNECT
+            ? CommandConnectIsSafe(policy_->allowed_command_set,
+                                   *policy_->file_permissions, name)
+            : CommandBindIsSafe(policy_->allowed_command_set,
+                                *policy_->file_permissions, name);
+    if (!allowed) {
+      return -policy_->file_permissions->denied_errno();
+    }
+  }
+
+  BrokerSimpleMessage message;
+  RAW_CHECK(message.AddIntToMessage(syscall_type));
+  RAW_CHECK(message.AddStringToMessage(name));
+
+  // The socket is passed to the broker, which connects or binds it on our
+  // behalf: both processes then refer to the same open file description, so
+  // the result applies to |sockfd| here.
+  BrokerSimpleMessage reply;
+  ssize_t msg_len = message.SendRecvMsgWithFlagsMultipleFds(
+      ipc_channel_.get(), 0, UNSAFE_TODO(base::span<const int>(&sockfd, 1u)),
+      {}, &reply);
+
+  if (msg_len < 0) {
+    return msg_len;
+  }
+
+  int return_value = -1;
+  if (!reply.ReadInt(&return_value)) {
+    return -ENOMEM;
+  }
+
+  return return_value;
+}
+
 int BrokerClient::InotifyAddWatch(int fd,
                                   const char* pathname,
                                   uint32_t mask) const {

@@ -13,10 +13,12 @@
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
+#include <sys/un.h>
 #include <unistd.h>
 
 #include <array>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -334,6 +336,86 @@ void BrokerHost::UnlinkFileForIPC(const char* requested_filename,
   RAW_CHECK(reply->AddIntToMessage(0));
 }
 
+void BrokerHost::ConnectForIPC(base::ScopedFD sockfd,
+                               const char* requested_name,
+                               BrokerSimpleMessage* message) {
+  ConnectOrBindForIPC(std::move(sockfd), /*is_bind=*/false, requested_name,
+                      message);
+}
+
+void BrokerHost::BindForIPC(base::ScopedFD sockfd,
+                            const char* requested_name,
+                            BrokerSimpleMessage* message) {
+  ConnectOrBindForIPC(std::move(sockfd), /*is_bind=*/true, requested_name,
+                      message);
+}
+
+void BrokerHost::ConnectOrBindForIPC(base::ScopedFD sockfd,
+                                     bool is_bind,
+                                     const char* requested_name,
+                                     BrokerSimpleMessage* message) {
+  const char* name =
+      is_bind
+          ? CommandBindIsSafe(policy_->allowed_command_set,
+                              *policy_->file_permissions, requested_name)
+          : CommandConnectIsSafe(policy_->allowed_command_set,
+                                 *policy_->file_permissions, requested_name);
+  if (!name) {
+    RAW_CHECK(
+        message->AddIntToMessage(-policy_->file_permissions->denied_errno()));
+    return;
+  }
+
+  // "@<name>" selects the abstract namespace, which has no filesystem entry
+  // to rewrite and whose name is length-delimited rather than NUL-terminated.
+  const bool is_abstract = name[0] == '@';
+  std::optional<std::string> rewritten;
+  if (!is_abstract) {
+    rewritten = RewritePathname(name);
+    if (rewritten.has_value()) {
+      name = rewritten.value().c_str();
+    }
+  }
+
+  const size_t offset = is_abstract ? 1 : 0;
+  const std::string_view name_view = std::string_view(name).substr(offset);
+  struct sockaddr_un addr = {};
+  addr.sun_family = AF_UNIX;
+  // A filesystem path needs a trailing NUL inside sun_path; an abstract name
+  // needs no terminator, only the leading NUL already counted in `offset`.
+  const size_t required_size =
+      name_view.size() + offset + (is_abstract ? 0 : 1);
+  if (required_size > sizeof(addr.sun_path)) {
+    RAW_CHECK(message->AddIntToMessage(-ENAMETOOLONG));
+    return;
+  }
+  base::span(addr.sun_path)
+      .subspan(offset)
+      .copy_prefix_from(base::span(name_view));
+  // For the abstract namespace the kernel takes everything between
+  // sun_path and addrlen as the name, so addrlen must cover exactly the
+  // leading NUL plus the name; sizeof(addr) would append the trailing zero
+  // padding to the name. For a filesystem path, which sun_path NUL-terminates,
+  // sizeof(addr) is the conventional length.
+  const socklen_t addrlen =
+      is_abstract
+          ? offsetof(struct sockaddr_un, sun_path) + 1 + name_view.size()
+          : sizeof(addr);
+
+  const int rc =
+      is_bind ? HANDLE_EINTR(bind(sockfd.get(),
+                                  reinterpret_cast<struct sockaddr*>(&addr),
+                                  addrlen))
+              : HANDLE_EINTR(connect(sockfd.get(),
+                                     reinterpret_cast<struct sockaddr*>(&addr),
+                                     addrlen));
+  if (rc < 0) {
+    RAW_CHECK(message->AddIntToMessage(-errno));
+    return;
+  }
+  RAW_CHECK(message->AddIntToMessage(0));
+}
+
 void BrokerHost::InotifyAddWatchForIPC(base::ScopedFD inotify_fd,
                                        const char* requested_filename,
                                        uint32_t mask,
@@ -460,6 +542,28 @@ bool BrokerHost::HandleRemoteCommand(BrokerSimpleMessage* message,
         return false;
       }
       UnlinkFileForIPC(requested_filename, reply);
+      break;
+    }
+    case COMMAND_CONNECT: {
+      const char* requested_name;
+      if (!message->ReadString(&requested_name)) {
+        return false;
+      }
+      if (!recv_fds[0].is_valid()) {
+        return false;
+      }
+      ConnectForIPC(std::move(recv_fds[0]), requested_name, reply);
+      break;
+    }
+    case COMMAND_BIND: {
+      const char* requested_name;
+      if (!message->ReadString(&requested_name)) {
+        return false;
+      }
+      if (!recv_fds[0].is_valid()) {
+        return false;
+      }
+      BindForIPC(std::move(recv_fds[0]), requested_name, reply);
       break;
     }
     case COMMAND_INOTIFY_ADD_WATCH: {

@@ -53,10 +53,12 @@ UtilitySandboxedProcessLauncherDelegate::
 #if DCHECK_IS_ON()
   bool supported_sandbox_type =
       sandbox_type_ == sandbox::mojom::Sandbox::kNoSandbox ||
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+      sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing ||
+#endif
 #if BUILDFLAG(IS_WIN)
       sandbox_type_ ==
           sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing ||
       sandbox_type_ == sandbox::mojom::Sandbox::kPdfConversion ||
       sandbox_type_ == sandbox::mojom::Sandbox::kIconReader ||
       sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
@@ -157,6 +159,12 @@ ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
       sandbox_type_ == sandbox::mojom::Sandbox::kNearby ||
 #endif  // BUILDFLAG(IS_CHROMEOS)
       sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
+#if BUILDFLAG(IS_LINUX)
+      // The XR Device Service installs its broker and seccomp policy from a
+      // pre-sandbox hook, so it must fork from the unsandboxed zygote (like the
+      // other hook-based types) rather than the pre-sandboxed generic zygote.
+      sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing ||
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
       sandbox_type_ == sandbox::mojom::Sandbox::kShapeDetection ||
 #endif

@@ -155,6 +155,22 @@ ResultExpr BrokerProcessPolicy::EvaluateSyscall(int sysno) const {
       }
       break;
 #endif
+#if defined(__NR_connect)
+    case __NR_connect:
+      // ConnectForIPC() connects the sandboxed process's socket on its behalf.
+      if (allowed_command_set_.test(syscall_broker::COMMAND_CONNECT)) {
+        return Allow();
+      }
+      break;
+#endif
+#if defined(__NR_bind)
+    case __NR_bind:
+      // BindForIPC() binds the sandboxed process's socket on its behalf.
+      if (allowed_command_set_.test(syscall_broker::COMMAND_BIND)) {
+        return Allow();
+      }
+      break;
+#endif
     default:
       break;
   }

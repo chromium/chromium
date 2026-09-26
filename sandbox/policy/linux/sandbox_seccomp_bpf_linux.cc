@@ -52,6 +52,9 @@
 #include "sandbox/policy/linux/bpf_service_policy_linux.h"
 #include "sandbox/policy/linux/bpf_speech_recognition_policy_linux.h"
 #include "sandbox/policy/linux/bpf_utility_policy_linux.h"
+#if BUILDFLAG(IS_LINUX)
+#include "sandbox/policy/linux/bpf_xr_policy_linux.h"
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "sandbox/policy/features.h"
@@ -206,6 +209,10 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<ServiceProcessPolicy>();
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       return std::make_unique<SpeechRecognitionProcessPolicy>();
+#if BUILDFLAG(IS_LINUX)
+    case sandbox::mojom::Sandbox::kXrCompositing:
+      return std::make_unique<XrProcessPolicy>();
+#endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case sandbox::mojom::Sandbox::kOnDeviceTranslation:
       return std::make_unique<OnDeviceTranslationProcessPolicy>();
@@ -298,6 +305,9 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case sandbox::mojom::Sandbox::kPlatformRuntime:
     case sandbox::mojom::Sandbox::kOnDeviceTranslation:
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX)
+    case sandbox::mojom::Sandbox::kXrCompositing:
+#endif  // BUILDFLAG(IS_LINUX)
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kServiceWithJit:

@@ -1,1 +1,4 @@
 file://components/webxr/OWNERS
+
+per-file xr_sandbox_hook_linux.*=set noparent
+per-file xr_sandbox_hook_linux.*=file://sandbox/linux/OWNERS

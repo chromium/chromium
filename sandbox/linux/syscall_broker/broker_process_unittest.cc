@@ -10,8 +10,10 @@
 #include <stddef.h>
 #include <sys/inotify.h>
 #include <sys/resource.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/un.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -2042,6 +2044,334 @@ TEST(BrokerProcess, InotifyAddWatchClient) {
 
 TEST(BrokerProcess, InotifyAddWatchHost) {
   TestInotifyAddWatchHelper(false);
+}
+
+void TestConnectHelper(bool fast_check_in_client) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(
+      temp_dir.CreateUniqueTempDirUnderPath(base::FilePath(kTempDirForTests)));
+  std::string allowed_path =
+      temp_dir.GetPath().AppendASCII("allowed.sock").MaybeAsASCII();
+  std::string denied_path =
+      temp_dir.GetPath().AppendASCII("denied.sock").MaybeAsASCII();
+  ASSERT_FALSE(allowed_path.empty());
+  ASSERT_FALSE(denied_path.empty());
+
+  // Listen on both sockets, so only the policy can make a connect() fail.
+  auto listen_on = [](const std::string& path) {
+    base::ScopedFD fd(socket(AF_UNIX, SOCK_STREAM, 0));
+    CHECK(fd.is_valid());
+    struct sockaddr_un addr = {};
+    addr.sun_family = AF_UNIX;
+    CHECK_LT(path.size(), sizeof(addr.sun_path));
+    // addr is zero-initialized, so the NUL terminator is already in place.
+    base::span(addr.sun_path).copy_prefix_from(base::span(path));
+    CHECK_EQ(0, bind(fd.get(), reinterpret_cast<struct sockaddr*>(&addr),
+                     sizeof(addr)));
+    CHECK_EQ(0, listen(fd.get(), 1));
+    return fd;
+  };
+  base::ScopedFD allowed_listener = listen_on(allowed_path);
+  base::ScopedFD denied_listener = listen_on(denied_path);
+
+  auto client_socket = [] {
+    base::ScopedFD fd(socket(AF_UNIX, SOCK_STREAM, 0));
+    CHECK(fd.is_valid());
+    return fd;
+  };
+
+  {
+    // Without COMMAND_CONNECT, even an allowed path is refused.
+    std::vector<BrokerFilePermission> permissions = {
+        BrokerFilePermission::ConnectOnly(allowed_path)};
+    auto policy = std::make_optional<BrokerSandboxConfig>(
+        BrokerCommandSet(), permissions, kFakeErrnoSentinel);
+    BrokerProcess open_broker(std::move(policy), BrokerType::SIGNAL_BASED,
+                              fast_check_in_client);
+    ASSERT_TRUE(open_broker.Fork(base::BindOnce(&NoOpCallback)));
+
+    base::ScopedFD sock = client_socket();
+    EXPECT_EQ(-kFakeErrnoSentinel,
+              open_broker.GetBrokerClientSignalBased()->Connect(
+                  sock.get(), allowed_path.c_str()));
+  }
+
+  BrokerCommandSet command_set;
+  command_set.set(COMMAND_CONNECT);
+
+  {
+    std::vector<BrokerFilePermission> permissions = {
+        BrokerFilePermission::ConnectOnly(allowed_path)};
+    auto policy = std::make_optional<BrokerSandboxConfig>(
+        command_set, permissions, kFakeErrnoSentinel);
+    BrokerProcess open_broker(std::move(policy), BrokerType::SIGNAL_BASED,
+                              fast_check_in_client);
+    ASSERT_TRUE(open_broker.Fork(base::BindOnce(&NoOpCallback)));
+
+    // The allowed path connects, and the connection lands on the client's fd.
+    base::ScopedFD sock = client_socket();
+    EXPECT_EQ(0, open_broker.GetBrokerClientSignalBased()->Connect(
+                     sock.get(), allowed_path.c_str()));
+    struct sockaddr_un peer = {};
+    socklen_t peer_len = sizeof(peer);
+    EXPECT_EQ(0,
+              getpeername(sock.get(), reinterpret_cast<struct sockaddr*>(&peer),
+                          &peer_len));
+    EXPECT_EQ(AF_UNIX, peer.sun_family);
+
+    // Any other socket path is refused, which is the point of brokering.
+    base::ScopedFD denied_sock = client_socket();
+    EXPECT_EQ(-kFakeErrnoSentinel,
+              open_broker.GetBrokerClientSignalBased()->Connect(
+                  denied_sock.get(), denied_path.c_str()));
+
+    // A read/write file permission does not confer connect permission.
+    base::ScopedFD other_sock = client_socket();
+    EXPECT_EQ(-kFakeErrnoSentinel,
+              open_broker.GetBrokerClientSignalBased()->Connect(
+                  other_sock.get(), "/dev/null"));
+  }
+}
+
+void TestConnectAbstractHelper(bool fast_check_in_client) {
+  // Abstract-namespace listeners: the name has a leading NUL and no
+  // filesystem entry, so the address length carries its length.
+  auto listen_abstract = [](const std::string& name) {
+    base::ScopedFD fd(socket(AF_UNIX, SOCK_STREAM, 0));
+    CHECK(fd.is_valid());
+    struct sockaddr_un addr = {};
+    addr.sun_family = AF_UNIX;
+    CHECK_LT(name.size() + 1, sizeof(addr.sun_path));
+    base::span(addr.sun_path).subspan(1u).copy_prefix_from(base::span(name));
+    socklen_t len = offsetof(struct sockaddr_un, sun_path) + 1 + name.size();
+    CHECK_EQ(0, bind(fd.get(), reinterpret_cast<struct sockaddr*>(&addr), len));
+    CHECK_EQ(0, listen(fd.get(), 1));
+    return fd;
+  };
+  auto client_socket = [] {
+    base::ScopedFD fd(socket(AF_UNIX, SOCK_STREAM, 0));
+    CHECK(fd.is_valid());
+    return fd;
+  };
+
+  // Unique per call: abstract names are host-global and the forked broker
+  // inherits the listener fds, so a fixed name would collide with a prior
+  // iteration under --gtest_repeat. The pid plus a counter also mirrors the
+  // per-instance names SteamVR actually mints under the allowed prefix.
+  static int call_counter = 0;
+  const std::string suffix = base::NumberToString(getpid()) + "-" +
+                             base::NumberToString(call_counter++);
+  const std::string allowed_name = "/steamvr/VR_ServerPipe_" + suffix;
+  const std::string denied_name = "/other/Pipe_" + suffix;
+  base::ScopedFD allowed_listener = listen_abstract(allowed_name);
+  base::ScopedFD denied_listener = listen_abstract(denied_name);
+
+  BrokerCommandSet command_set;
+  command_set.set(COMMAND_CONNECT);
+  std::vector<BrokerFilePermission> permissions = {
+      BrokerFilePermission::ConnectOnlyRecursive("@/steamvr/")};
+  auto policy = std::make_optional<BrokerSandboxConfig>(
+      command_set, permissions, kFakeErrnoSentinel);
+  BrokerProcess open_broker(std::move(policy), BrokerType::SIGNAL_BASED,
+                            fast_check_in_client);
+  ASSERT_TRUE(open_broker.Fork(base::BindOnce(&NoOpCallback)));
+
+  // A per-instance name under the allowed prefix connects.
+  base::ScopedFD sock = client_socket();
+  EXPECT_EQ(0, open_broker.GetBrokerClientSignalBased()->Connect(
+                   sock.get(), ("@" + allowed_name).c_str()));
+
+  // A name outside the prefix does not.
+  base::ScopedFD denied_sock = client_socket();
+  EXPECT_EQ(-kFakeErrnoSentinel,
+            open_broker.GetBrokerClientSignalBased()->Connect(
+                denied_sock.get(), ("@" + denied_name).c_str()));
+
+  // Nor does a name that extends the prefix's last component: the prefix is
+  // component-delimited, not a raw string prefix.
+  base::ScopedFD extended_sock = client_socket();
+  EXPECT_EQ(-kFakeErrnoSentinel,
+            open_broker.GetBrokerClientSignalBased()->Connect(
+                extended_sock.get(), "@/steamvrbad/Pipe"));
+
+  // The abstract permission must not satisfy a filesystem path of the same
+  // name, since they are separate namespaces.
+  base::ScopedFD fs_sock = client_socket();
+  EXPECT_EQ(-kFakeErrnoSentinel,
+            open_broker.GetBrokerClientSignalBased()->Connect(
+                fs_sock.get(), allowed_name.c_str()));
+}
+
+TEST(BrokerProcess, ConnectAbstractClient) {
+  TestConnectAbstractHelper(true);
+}
+
+TEST(BrokerProcess, ConnectAbstractHost) {
+  TestConnectAbstractHelper(false);
+}
+
+TEST(BrokerProcess, ConnectClient) {
+  TestConnectHelper(true);
+}
+
+TEST(BrokerProcess, ConnectHost) {
+  TestConnectHelper(false);
+}
+
+void TestBindHelper(bool fast_check_in_client) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(
+      temp_dir.CreateUniqueTempDirUnderPath(base::FilePath(kTempDirForTests)));
+  std::string allowed_path =
+      temp_dir.GetPath().AppendASCII("allowed.sock").MaybeAsASCII();
+  std::string denied_path =
+      temp_dir.GetPath().AppendASCII("denied.sock").MaybeAsASCII();
+  ASSERT_FALSE(allowed_path.empty());
+  ASSERT_FALSE(denied_path.empty());
+
+  auto client_socket = [] {
+    base::ScopedFD fd(socket(AF_UNIX, SOCK_STREAM, 0));
+    CHECK(fd.is_valid());
+    return fd;
+  };
+
+  {
+    // Without COMMAND_BIND, even an allowed path is refused.
+    std::vector<BrokerFilePermission> permissions = {
+        BrokerFilePermission::BindOnly(allowed_path)};
+    auto policy = std::make_optional<BrokerSandboxConfig>(
+        BrokerCommandSet(), permissions, kFakeErrnoSentinel);
+    BrokerProcess open_broker(std::move(policy), BrokerType::SIGNAL_BASED,
+                              fast_check_in_client);
+    ASSERT_TRUE(open_broker.Fork(base::BindOnce(&NoOpCallback)));
+
+    base::ScopedFD sock = client_socket();
+    EXPECT_EQ(-kFakeErrnoSentinel,
+              open_broker.GetBrokerClientSignalBased()->Bind(
+                  sock.get(), allowed_path.c_str()));
+  }
+
+  BrokerCommandSet command_set;
+  command_set.set(COMMAND_BIND);
+
+  {
+    // A connect permission on the other path must not confer bind permission.
+    std::vector<BrokerFilePermission> permissions = {
+        BrokerFilePermission::BindOnly(allowed_path),
+        BrokerFilePermission::ConnectOnly(denied_path)};
+    auto policy = std::make_optional<BrokerSandboxConfig>(
+        command_set, permissions, kFakeErrnoSentinel);
+    BrokerProcess open_broker(std::move(policy), BrokerType::SIGNAL_BASED,
+                              fast_check_in_client);
+    ASSERT_TRUE(open_broker.Fork(base::BindOnce(&NoOpCallback)));
+
+    // The allowed path binds, and the bind lands on the client's fd.
+    base::ScopedFD sock = client_socket();
+    EXPECT_EQ(0, open_broker.GetBrokerClientSignalBased()->Bind(
+                     sock.get(), allowed_path.c_str()));
+    struct sockaddr_un local = {};
+    socklen_t local_len = sizeof(local);
+    EXPECT_EQ(
+        0, getsockname(sock.get(), reinterpret_cast<struct sockaddr*>(&local),
+                       &local_len));
+    EXPECT_EQ(AF_UNIX, local.sun_family);
+    EXPECT_EQ(allowed_path, std::string(local.sun_path));
+
+    // Any other socket path is refused, which is the point of brokering: the
+    // connect permission on it does not allow bind().
+    base::ScopedFD denied_sock = client_socket();
+    EXPECT_EQ(-kFakeErrnoSentinel,
+              open_broker.GetBrokerClientSignalBased()->Bind(
+                  denied_sock.get(), denied_path.c_str()));
+  }
+}
+
+void TestBindAbstractHelper(bool fast_check_in_client) {
+  auto client_socket = [] {
+    base::ScopedFD fd(socket(AF_UNIX, SOCK_STREAM, 0));
+    CHECK(fd.is_valid());
+    return fd;
+  };
+
+  BrokerCommandSet command_set;
+  command_set.set(COMMAND_BIND);
+  std::vector<BrokerFilePermission> permissions = {
+      BrokerFilePermission::BindOnlyRecursive("@fd-cl-")};
+  auto policy = std::make_optional<BrokerSandboxConfig>(
+      command_set, permissions, kFakeErrnoSentinel);
+  BrokerProcess open_broker(std::move(policy), BrokerType::SIGNAL_BASED,
+                            fast_check_in_client);
+  ASSERT_TRUE(open_broker.Fork(base::BindOnce(&NoOpCallback)));
+
+  // A per-instance name under the allowed prefix binds; getsockname() shows
+  // the abstract name (leading NUL, length-delimited) on the client's fd. The
+  // pid plus a counter keeps the host-wide abstract name unique across test
+  // processes and across --gtest_repeat iterations within one process.
+  static int call_counter = 0;
+  const std::string allowed_name = "fd-cl-" + base::NumberToString(getpid()) +
+                                   "-" + base::NumberToString(call_counter++);
+  base::ScopedFD sock = client_socket();
+  EXPECT_EQ(0, open_broker.GetBrokerClientSignalBased()->Bind(
+                   sock.get(), ("@" + allowed_name).c_str()));
+  struct sockaddr_un local = {};
+  socklen_t local_len = sizeof(local);
+  EXPECT_EQ(0,
+            getsockname(sock.get(), reinterpret_cast<struct sockaddr*>(&local),
+                        &local_len));
+  EXPECT_EQ(AF_UNIX, local.sun_family);
+  const size_t name_offset = offsetof(struct sockaddr_un, sun_path) + 1;
+  ASSERT_GT(static_cast<size_t>(local_len), name_offset);
+  EXPECT_EQ('\0', local.sun_path[0]);
+  const base::span<const char> local_name =
+      base::span(local.sun_path).subspan(1u, local_len - name_offset);
+  EXPECT_EQ(allowed_name, std::string(local_name.begin(), local_name.end()));
+
+  // A maximum-length abstract name binds: 107 bytes fill sun_path exactly
+  // (leading NUL plus name, no terminator), which the kernel accepts, so the
+  // broker must not impose a stricter limit.
+  std::string max_name = allowed_name + "-";
+  max_name.resize(sizeof(local.sun_path) - 1, 'x');
+  base::ScopedFD max_sock = client_socket();
+  EXPECT_EQ(0, open_broker.GetBrokerClientSignalBased()->Bind(
+                   max_sock.get(), ("@" + max_name).c_str()));
+  struct sockaddr_un max_local = {};
+  socklen_t max_local_len = sizeof(max_local);
+  EXPECT_EQ(0, getsockname(max_sock.get(),
+                           reinterpret_cast<struct sockaddr*>(&max_local),
+                           &max_local_len));
+  EXPECT_EQ(offsetof(struct sockaddr_un, sun_path) + 1 + max_name.size(),
+            static_cast<size_t>(max_local_len));
+
+  // A name outside the prefix does not bind: the prefix is a literal string
+  // prefix, so even a shorter name sharing its head is refused.
+  base::ScopedFD denied_sock = client_socket();
+  EXPECT_EQ(-kFakeErrnoSentinel, open_broker.GetBrokerClientSignalBased()->Bind(
+                                     denied_sock.get(), "@other-1"));
+  base::ScopedFD short_sock = client_socket();
+  EXPECT_EQ(-kFakeErrnoSentinel, open_broker.GetBrokerClientSignalBased()->Bind(
+                                     short_sock.get(), "@fd-cl"));
+
+  // The abstract permission must not satisfy a filesystem path, since they
+  // are separate namespaces.
+  base::ScopedFD fs_sock = client_socket();
+  EXPECT_EQ(-kFakeErrnoSentinel, open_broker.GetBrokerClientSignalBased()->Bind(
+                                     fs_sock.get(), "/fd-cl-4242"));
+}
+
+TEST(BrokerProcess, BindAbstractClient) {
+  TestBindAbstractHelper(true);
+}
+
+TEST(BrokerProcess, BindAbstractHost) {
+  TestBindAbstractHelper(false);
+}
+
+TEST(BrokerProcess, BindClient) {
+  TestBindHelper(true);
+}
+
+TEST(BrokerProcess, BindHost) {
+  TestBindHelper(false);
 }
 
 TEST(BrokerProcess, IsSyscallAllowed) {

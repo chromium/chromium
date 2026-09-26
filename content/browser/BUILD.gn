@@ -3596,6 +3596,7 @@ source_set("browser") {
       "//content/browser/xr/webxr_internals/mojom:mojo_bindings",
       "//device/vr/buildflags",
       "//device/vr/orientation",
+      "//device/vr/public/cpp",
       "//services/metrics/public/cpp:ukm_builders",
     ]
   }

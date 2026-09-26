@@ -111,6 +111,24 @@ const char* CommandUnlinkIsSafe(const BrokerCommandSet& command_set,
       .first;
 }
 
+const char* CommandConnectIsSafe(const BrokerCommandSet& command_set,
+                                 const BrokerPermissionList& policy,
+                                 const char* requested_name) {
+  if (!command_set.test(COMMAND_CONNECT)) {
+    return nullptr;
+  }
+  return policy.GetFileNameIfAllowedToConnect(requested_name);
+}
+
+const char* CommandBindIsSafe(const BrokerCommandSet& command_set,
+                              const BrokerPermissionList& policy,
+                              const char* requested_name) {
+  if (!command_set.test(COMMAND_BIND)) {
+    return nullptr;
+  }
+  return policy.GetFileNameIfAllowedToBind(requested_name);
+}
+
 const char* CommandInotifyAddWatchIsSafe(const BrokerCommandSet& command_set,
                                          const BrokerPermissionList& policy,
                                          const char* requested_filename,
