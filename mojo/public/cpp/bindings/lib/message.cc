@@ -820,6 +820,11 @@ ReportBadMessageCallback MessageDispatchContext::GetBadMessageCallback() {
   return base::BindOnce(&DoNotifyBadMessage, std::move(*message_));
 }
 
+base::span<const DeserializationError> MessageDispatchContext::error_trace()
+    const {
+  return base::span(error_trace_).first(error_trace_count_);
+}
+
 void AddDeserializationError(const DeserializationError& error) {
   if (auto* context = MessageDispatchContext::current()) {
     context->AddError(error);

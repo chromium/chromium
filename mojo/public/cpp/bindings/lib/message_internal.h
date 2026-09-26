@@ -89,9 +89,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
     }
   }
 
-  base::span<const DeserializationError> error_trace() const {
-    return base::span(error_trace_).first(error_trace_count_);
-  }
+  base::span<const DeserializationError> error_trace() const;
 
  private:
   raw_ptr<MessageDispatchContext> outer_context_;
