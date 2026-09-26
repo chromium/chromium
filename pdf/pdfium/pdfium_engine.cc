@@ -983,7 +983,7 @@ void InitializeSDK(bool enable_v8,
                    bool use_skia,
                    FontMappingMode font_mapping_mode) {
   FPDF_LIBRARY_CONFIG config;
-  config.version = 6;
+  config.version = 7;
   config.m_pUserFontPaths = nullptr;
   config.m_pIsolate = nullptr;
   config.m_pPlatform = nullptr;
@@ -993,11 +993,15 @@ void InitializeSDK(bool enable_v8,
   config.m_FontLibraryType = FPDF_FONTBACKENDTYPE_FREETYPE;
   config.m_BrotliEnabled =
       base::FeatureList::IsEnabled(features::kPdfBrotliDecode);
+  config.m_IsolatePerDocument =
+      base::FeatureList::IsEnabled(features::kPdfXfaSupport);
 
 #if defined(PDF_ENABLE_V8)
   if (enable_v8) {
     SetUpV8();
-    config.m_pIsolate = g_isolate_holder->isolate();
+    if (!config.m_IsolatePerDocument) {
+      config.m_pIsolate = g_isolate_holder->isolate();
+    }
     // NOTE: static_cast<> prior to assigning to (void*) is safer since it
     // will manipulate the pointer value should gin::V8Platform someday have
     // multiple base classes.

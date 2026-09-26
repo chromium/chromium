@@ -153,7 +153,7 @@ void PDFiumTestBase::InitializePDFiumSDK() {
 #endif
 
   FPDF_LIBRARY_CONFIG config;
-  config.version = 6;
+  config.version = 7;
   config.m_pUserFontPaths = font_paths_.data();
   config.m_pIsolate = nullptr;
   config.m_v8EmbedderSlot = 0;
@@ -163,6 +163,8 @@ void PDFiumTestBase::InitializePDFiumSDK() {
   config.m_FontLibraryType = FPDF_FONTBACKENDTYPE_FREETYPE;
   config.m_BrotliEnabled =
       base::FeatureList::IsEnabled(features::kPdfBrotliDecode);
+  config.m_IsolatePerDocument =
+      base::FeatureList::IsEnabled(features::kPdfXfaSupport);
 
   FPDF_InitLibraryWithConfig(&config);
 }
