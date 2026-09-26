@@ -158,12 +158,16 @@ AppMenuFooterView::AppMenuFooterView(
         bottom_container->SetFlexForView(button_ptr, 1);
         break;
       }
-      case FooterContainer::kRight:
-        right_container_->AddChildView(std::move(button));
+      case FooterContainer::kRight: {
+        auto* button_ptr = right_container_->AddChildView(std::move(button));
+        button_ptr->SetUseRowStyle(false);
         break;
-      case FooterContainer::kLeft:
-        left_container_->AddChildView(std::move(button));
+      }
+      case FooterContainer::kLeft: {
+        auto* button_ptr = left_container_->AddChildView(std::move(button));
+        button_ptr->SetUseRowStyle(false);
         break;
+      }
     }
   }
 
