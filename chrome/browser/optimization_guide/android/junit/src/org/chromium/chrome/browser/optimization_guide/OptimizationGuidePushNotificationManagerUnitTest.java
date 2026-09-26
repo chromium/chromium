@@ -22,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -287,46 +286,8 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
     }
 
     @Test
-    public void testCacheDecodingErrors_Success() {
-        OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-
-        int startSuccessErrorCount =
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 1);
-        int startTotalCount =
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult");
-
-        OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITHOUT_PAYLOAD);
-
-        HintNotificationPayload[] cached =
-                OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(
-                        OptimizationType.PERFORMANCE_HINTS);
-        Assert.assertNotNull(cached);
-        Assert.assertEquals(1, cached.length);
-        Assert.assertEquals(NOTIFICATION_WITHOUT_PAYLOAD, cached[0]);
-
-        int afterSuccessErrorCount =
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 1);
-        int afterTotalCount =
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult");
-
-        Assert.assertEquals(1, afterSuccessErrorCount - startSuccessErrorCount);
-        Assert.assertEquals(1, afterTotalCount - startTotalCount);
-    }
-
-    @Test
     public void testCacheDecodingErrors_InvalidProtobuf() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-
-        int startPbErrorCount =
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 2);
-        int startTotalCount =
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult");
 
         ChromeSharedPreferences.getInstance()
                 .writeStringSet(
@@ -342,28 +303,11 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                         OptimizationType.PERFORMANCE_HINTS);
         Assert.assertNotNull(cached);
         Assert.assertEquals(0, cached.length);
-
-        int afterPbErrorCount =
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 2);
-        int afterTotalCount =
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult");
-
-        Assert.assertEquals(1, afterPbErrorCount - startPbErrorCount);
-        Assert.assertEquals(1, afterTotalCount - startTotalCount);
     }
 
     @Test
     public void testCacheDecodingErrors_Base64Error() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-
-        int startB64ErrorCount =
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 3);
-        int startTotalCount =
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult");
 
         ChromeSharedPreferences.getInstance()
                 .writeStringSet(
@@ -376,15 +320,5 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
                         OptimizationType.PERFORMANCE_HINTS);
         Assert.assertNotNull(cached);
         Assert.assertEquals(0, cached.length);
-
-        int afterB64ErrorCount =
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult", /* sample= */ 3);
-        int afterTotalCount =
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "OptimizationGuide.PushNotifications.ReadCacheResult");
-
-        Assert.assertEquals(1, afterB64ErrorCount - startB64ErrorCount);
-        Assert.assertEquals(1, afterTotalCount - startTotalCount);
     }
 }

@@ -696,13 +696,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="OptimizationGuideReadCacheResult">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Invalid protobuf"/>
-  <int value="3" label="Base64 decoding error"/>
-</enum>
-
 <enum name="OptimizationGuideTextSafetyInferenceResult">
   <int value="0" label="Success"/>
   <int value="1" label="Encoding failed"/>

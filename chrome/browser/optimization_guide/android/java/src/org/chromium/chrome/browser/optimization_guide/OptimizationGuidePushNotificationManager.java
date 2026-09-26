@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.util.Base64;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -16,7 +15,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -25,8 +23,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -43,28 +39,6 @@ public class OptimizationGuidePushNotificationManager {
     private static @Nullable Boolean sNativeIsInitialized;
 
     private static final String TAG = "OGPNotificationMngr";
-
-    private static final String READ_CACHE_RESULT_HISTOGRAM =
-            "OptimizationGuide.PushNotifications.ReadCacheResult";
-
-    // Should be in sync with the enum "OptimizationGuideReadCacheResult" in
-    // tools/metrics/histograms/enums.xml.
-    @SuppressWarnings("unused")
-    @IntDef({
-        ReadCacheResult.UNKNOWN,
-        ReadCacheResult.SUCCESS,
-        ReadCacheResult.INVALID_PROTO_ERROR,
-        ReadCacheResult.BASE64_ERROR
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface ReadCacheResult {
-        int UNKNOWN = 0;
-        int SUCCESS = 1;
-        int INVALID_PROTO_ERROR = 2;
-        int BASE64_ERROR = 3;
-
-        int NUM_ENTRIES = 4;
-    }
 
     // All logic here is static, so no instances of this class are needed.
     private OptimizationGuidePushNotificationManager() {}
@@ -127,21 +101,7 @@ public class OptimizationGuidePushNotificationManager {
                         HintNotificationPayload.parseFrom(
                                 Base64.decode(cacheIter.next(), Base64.DEFAULT));
                 notifications.add(payload);
-                RecordHistogram.recordEnumeratedHistogram(
-                        READ_CACHE_RESULT_HISTOGRAM,
-                        ReadCacheResult.SUCCESS,
-                        ReadCacheResult.NUM_ENTRIES);
-            } catch (InvalidProtocolBufferException e) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        READ_CACHE_RESULT_HISTOGRAM,
-                        ReadCacheResult.INVALID_PROTO_ERROR,
-                        ReadCacheResult.NUM_ENTRIES);
-                Log.e(TAG, Log.getStackTraceString(e));
-            } catch (IllegalArgumentException e) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        READ_CACHE_RESULT_HISTOGRAM,
-                        ReadCacheResult.BASE64_ERROR,
-                        ReadCacheResult.NUM_ENTRIES);
+            } catch (InvalidProtocolBufferException | IllegalArgumentException e) {
                 Log.e(TAG, Log.getStackTraceString(e));
             }
         }
