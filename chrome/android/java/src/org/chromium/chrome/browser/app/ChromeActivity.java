@@ -1492,7 +1492,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         Profile profile = getOriginalProfile();
         if (profile == null
                 || !GlicEnabling.isProfileEligible(profile)
-                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
+                || !ActorUtils.isActorPipSupported()
                 || ActorUtils.isBackgroundActuationEnabled()) {
             return;
         }

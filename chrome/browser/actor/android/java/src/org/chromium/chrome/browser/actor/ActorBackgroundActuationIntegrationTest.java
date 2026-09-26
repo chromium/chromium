@@ -30,11 +30,11 @@ import org.chromium.base.Token;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -74,6 +74,7 @@ import java.util.Collections;
     ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING,
     ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION,
 })
+@Restriction(DeviceFormFactor.PHONE_OR_TABLET)
 @DoNotBatch(reason = "Tests background actuation and tab model state across activity lifecycles.")
 @DisableLeakChecks("Activity destruction causes production leak in TabBottomSheetWebUi")
 @SuppressWarnings("DirectInvocationOnMock")
@@ -579,7 +580,6 @@ public class ActorBackgroundActuationIntegrationTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/564815886
     public void testChromeToBackground_ColdStartup_RestoredCorrectly() throws Exception {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         TabModelSelector selector = activity.getTabModelSelector();
@@ -669,7 +669,6 @@ public class ActorBackgroundActuationIntegrationTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/564815886
     public void testChromeToBackground_ColdStartup_PinnedTab_RestoredCorrectly() throws Exception {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         TabModelSelector selector = activity.getTabModelSelector();

@@ -27,6 +27,7 @@ import androidx.activity.ComponentActivity;
 import androidx.core.pip.PictureInPictureDelegate;
 import androidx.lifecycle.Lifecycle;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,9 +37,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
@@ -124,6 +127,11 @@ public class ActorPictureInPictureControllerTest {
         when(mLifecycle.getCurrentState()).thenReturn(Lifecycle.State.RESUMED);
     }
 
+    @After
+    public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
+    }
+
     private ActorTask createMockActorTask(int taskId, String title, @ActorTaskState int state) {
         ActorTask mockTask = mock(ActorTask.class);
         when(mockTask.getId()).thenReturn(taskId);
@@ -134,6 +142,22 @@ public class ActorPictureInPictureControllerTest {
         when(mActorService.getActiveTasksCount()).thenReturn(1);
         when(mActorService.getTask(taskId)).thenReturn(mockTask);
         return mockTask;
+    }
+
+    @Test
+    public void testShouldEnterPip_Desktop_ReturnsFalse() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        when(mActorService.getActiveTasksCount()).thenReturn(1);
+
+        assertFalse(mController.shouldEnterPip());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testShouldEnterPip_Tablet_ReturnsTrue() {
+        when(mActorService.getActiveTasksCount()).thenReturn(1);
+
+        assertTrue(mController.shouldEnterPip());
     }
 
     @Test

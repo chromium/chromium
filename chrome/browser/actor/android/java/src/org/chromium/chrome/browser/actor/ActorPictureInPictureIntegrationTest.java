@@ -23,8 +23,8 @@ import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,6 +43,7 @@ import java.util.Collections;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Restriction(DeviceFormFactor.PHONE_OR_TABLET)
 @DoNotBatch(reason = "Tests PiP transitions which involve activity level state.")
 public class ActorPictureInPictureIntegrationTest {
     @Rule
@@ -99,7 +100,6 @@ public class ActorPictureInPictureIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/564815886
     public void testOffscreenRenderingTransition() throws Exception {
         WebContents webContents = mTab.getWebContents();
         WindowAndroid originalWindow = webContents.getTopLevelNativeWindow();
