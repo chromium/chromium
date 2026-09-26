@@ -4,211 +4,123 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
-import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.tab_ui.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.url_formatter.SchemeDisplay;
-import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
-
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for {@link BottomSheetToolbarViewBinder}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class BottomSheetToolbarViewBinderTest {
-    @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private final AtomicBoolean mIconClicked = new AtomicBoolean();
-
-    private BottomSheetToolbarView mItemView;
+    private @Mock BottomSheetToolbarView mToolbarView;
+    private @Mock Drawable mDrawable;
     private PropertyModel mItemViewModel;
     private PropertyModelChangeProcessor mItemMCP;
 
-    @BeforeClass
-    public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
-    }
-
     @Before
     public void setUp() {
-        Activity activity = sActivityTestRule.getActivity();
-        ViewGroup view = new FrameLayout(activity);
+        mItemViewModel =
+                new PropertyModel.Builder(BottomSheetToolbarProperties.ALL_KEYS)
+                        .with(BottomSheetToolbarProperties.FAVICON_ICON_VISIBLE, true)
+                        .with(BottomSheetToolbarProperties.OPEN_IN_NEW_TAB_VISIBLE, false)
+                        .build();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    activity.setContentView(view);
-
-                    mItemView = new BottomSheetToolbarView(activity);
-                    view.addView(mItemView.getView());
-
-                    mItemViewModel =
-                            new PropertyModel.Builder(BottomSheetToolbarProperties.ALL_KEYS)
-                                    .with(BottomSheetToolbarProperties.FAVICON_ICON_VISIBLE, true)
-                                    .with(
-                                            BottomSheetToolbarProperties.OPEN_IN_NEW_TAB_VISIBLE,
-                                            false)
-                                    .build();
-
-                    mItemMCP =
-                            PropertyModelChangeProcessor.create(
-                                    mItemViewModel, mItemView, BottomSheetToolbarViewBinder::bind);
-                });
+        mItemMCP =
+                PropertyModelChangeProcessor.create(
+                        mItemViewModel, mToolbarView, BottomSheetToolbarViewBinder::bind);
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetTitle() {
-        TextView toolbarText = mItemView.getView().findViewById(R.id.title);
-        assertEquals("", toolbarText.getText());
-
         String title = "titleText";
         mItemViewModel.set(BottomSheetToolbarProperties.TITLE, title);
-        assertEquals(title, toolbarText.getText());
+        verify(mToolbarView).setTitle(title);
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetUrl() {
-        TextView originView = mItemView.getView().findViewById(R.id.origin);
-        assertEquals("", originView.getText());
-
-        GURL url = new GURL("www.test.com");
+        GURL url = JUnitTestGURLs.EXAMPLE_URL;
         mItemViewModel.set(BottomSheetToolbarProperties.URL, url);
-        assertEquals(
-                UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
-                originView.getText());
+        verify(mToolbarView).setUrl(url);
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetSecurityIconDescription() {
-        ImageView securityIcon = mItemView.getView().findViewById(R.id.security_icon);
         String content = "contentText";
         mItemViewModel.set(BottomSheetToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION, content);
-        assertEquals(content, securityIcon.getContentDescription());
+        verify(mToolbarView).setSecurityIconDescription(content);
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetSecurityIconClickCallback() {
-        ImageView securityIcon = mItemView.getView().findViewById(R.id.security_icon);
-        mIconClicked.set(false);
-        mItemViewModel.set(
-                BottomSheetToolbarProperties.SECURITY_ICON_ON_CLICK_CALLBACK,
-                () -> mIconClicked.set(true));
-        securityIcon.performClick();
-        assertEquals(true, mIconClicked.get());
+        Runnable callback = () -> {};
+        mItemViewModel.set(BottomSheetToolbarProperties.SECURITY_ICON_ON_CLICK_CALLBACK, callback);
+        verify(mToolbarView).setSecurityIconClickCallback(callback);
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testCloseButtonClickCallback() {
-        ImageView closeButton = mItemView.getView().findViewById(R.id.close);
-        mIconClicked.set(false);
-        mItemViewModel.set(
-                BottomSheetToolbarProperties.CLOSE_BUTTON_ON_CLICK_CALLBACK,
-                () -> mIconClicked.set(true));
-        closeButton.performClick();
-        assertEquals(true, mIconClicked.get());
+        Runnable callback = () -> {};
+        mItemViewModel.set(BottomSheetToolbarProperties.CLOSE_BUTTON_ON_CLICK_CALLBACK, callback);
+        verify(mToolbarView).setCloseButtonClickCallback(callback);
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetProgress() {
-        ProgressBar progressBar = mItemView.getView().findViewById(R.id.progress_bar);
-        assertEquals(0f, progressBar.getProgress(), 0.1);
-
         float progress = 0.2f;
         mItemViewModel.set(BottomSheetToolbarProperties.LOAD_PROGRESS, progress);
-        assertEquals(Math.round(progress * 100), progressBar.getProgress());
+        verify(mToolbarView).setProgress(progress);
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetProgressVisible() {
-        ProgressBar progressBar = mItemView.getView().findViewById(R.id.progress_bar);
         mItemViewModel.set(BottomSheetToolbarProperties.PROGRESS_VISIBLE, false);
-        assertEquals(View.GONE, progressBar.getVisibility());
+        verify(mToolbarView).setProgressVisible(false);
 
         mItemViewModel.set(BottomSheetToolbarProperties.PROGRESS_VISIBLE, true);
-        assertEquals(View.VISIBLE, progressBar.getVisibility());
+        verify(mToolbarView).setProgressVisible(true);
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetFaviconIconDrawable() {
-        ImageView faviconIcon = mItemView.getView().findViewById(R.id.favicon);
-        assertEquals(null, faviconIcon.getDrawable());
-
-        Drawable iconDrawable =
-                AppCompatResources.getDrawable(
-                        sActivityTestRule.getActivity(), R.drawable.ic_globe_24dp);
-        mItemViewModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE, iconDrawable);
-        assertEquals(iconDrawable, faviconIcon.getDrawable());
+        mItemViewModel.set(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE, mDrawable);
+        verify(mToolbarView).setFaviconIconDrawable(mDrawable);
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetFaviconIconVisible() {
-        ImageView faviconIcon = mItemView.getView().findViewById(R.id.favicon);
-        assertEquals(View.VISIBLE, faviconIcon.getVisibility());
+        verify(mToolbarView).setFaviconIconVisible(true);
 
         mItemViewModel.set(BottomSheetToolbarProperties.FAVICON_ICON_VISIBLE, false);
-        assertEquals(View.GONE, faviconIcon.getVisibility());
+        verify(mToolbarView).setFaviconIconVisible(false);
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testSetOpenInNewTabButtonVisible() {
-        ImageView openInNewTabButton = mItemView.getView().findViewById(R.id.open_in_new_tab);
-        assertEquals(View.GONE, openInNewTabButton.getVisibility());
+        verify(mToolbarView).setOpenInNewTabButtonVisible(false);
 
         mItemViewModel.set(BottomSheetToolbarProperties.OPEN_IN_NEW_TAB_VISIBLE, true);
-        assertEquals(View.VISIBLE, openInNewTabButton.getVisibility());
+        verify(mToolbarView).setOpenInNewTabButtonVisible(true);
     }
 
     @After
-    public void tearDownTest() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
+    public void tearDownTest() {
+        mItemMCP.destroy();
     }
 }
