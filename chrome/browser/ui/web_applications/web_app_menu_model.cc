@@ -150,7 +150,7 @@ void WebAppMenuModel::Build() {
 
   AddItemWithStringIdAndVectorIcon(
       this, IDC_WEB_APP_MENU_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
-      browser()->GetFeatures().location_bar_model()->GetVectorIcon());
+      LocationBarModel::From(browser())->GetVectorIcon());
   size_t app_info_index = GetItemCount() - 1;
 
   CHECK(browser());

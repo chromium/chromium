@@ -131,6 +131,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/omnibox/browser/location_bar_model.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/send_tab_to_self/features.h"
@@ -1355,11 +1356,11 @@ WebContents* ToolbarView::GetWebContents() {
 }
 
 LocationBarModel* ToolbarView::GetLocationBarModel() {
-  return browser_->GetFeatures().location_bar_model();
+  return LocationBarModel::From(browser_.get());
 }
 
 const LocationBarModel* ToolbarView::GetLocationBarModel() const {
-  return browser_->GetFeatures().location_bar_model();
+  return LocationBarModel::From(browser_.get());
 }
 
 ContentSettingBubbleModelDelegate*

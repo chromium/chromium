@@ -11,13 +11,19 @@
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif
 
-TestLocationBarModel::TestLocationBarModel()
-    : security_level_(security_state::NONE),
+TestLocationBarModel::TestLocationBarModel() {
 #if defined(TOOLKIT_VIEWS)
-      icon_(&(features::IsRoundedIconsEnabled() ? omnibox::kInfoIcon
-                                                : omnibox::kHttpOldIcon)),
+  icon_ = &(features::IsRoundedIconsEnabled() ? omnibox::kInfoIcon
+                                              : omnibox::kHttpOldIcon);
 #endif
-      should_display_url_(true) {
+}
+
+TestLocationBarModel::TestLocationBarModel(ui::UnownedUserDataHost& host)
+    : LocationBarModel(host) {
+#if defined(TOOLKIT_VIEWS)
+  icon_ = &(features::IsRoundedIconsEnabled() ? omnibox::kInfoIcon
+                                              : omnibox::kHttpOldIcon);
+#endif
 }
 
 TestLocationBarModel::~TestLocationBarModel() = default;

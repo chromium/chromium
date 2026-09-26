@@ -920,7 +920,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, DISABLED_ReloadAfterKill) {
   // Verify the omnibox contents, URL and icon.
   EXPECT_EQ(u"", omnibox_view_views->GetText());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
-            browser()->GetFeatures().location_bar_model()->GetURL());
+            LocationBarModel::From(browser())->GetURL());
 }
 
 // Omnibox un-elides and elides URL appropriately according to the Always Show

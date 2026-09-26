@@ -26,6 +26,9 @@ class LocationBarModelImpl : public LocationBarModel {
 
   LocationBarModelImpl(LocationBarModelDelegate* delegate,
                        size_t max_url_display_chars);
+  LocationBarModelImpl(ui::UnownedUserDataHost& host,
+                       LocationBarModelDelegate* delegate,
+                       size_t max_url_display_chars);
 
   LocationBarModelImpl(const LocationBarModelImpl&) = delete;
   LocationBarModelImpl& operator=(const LocationBarModelImpl&) = delete;

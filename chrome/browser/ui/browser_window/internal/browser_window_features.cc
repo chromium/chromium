@@ -461,8 +461,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // Must be before location_bar_model_.
   location_bar_model_delegate_ =
       std::make_unique<BrowserLocationBarModelDelegate>(tab_strip_model_);
-  location_bar_model_ = std::make_unique<LocationBarModelImpl>(
-      location_bar_model_delegate_.get(), content::kMaxURLDisplayChars);
+  location_bar_model_ =
+      GetUserDataFactory().CreateInstance<LocationBarModelImpl>(
+          *browser, browser->GetUnownedUserDataHost(),
+          location_bar_model_delegate_.get(), content::kMaxURLDisplayChars);
 
   memory_saver_bubble_controller_ =
       GetUserDataFactory()

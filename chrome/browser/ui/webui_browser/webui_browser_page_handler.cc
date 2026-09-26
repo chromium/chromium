@@ -117,10 +117,7 @@ class WebUIBrowserGuestHandler
   }
 
   void GetSecurityIcon(GetSecurityIconCallback callback) override {
-    auto* icon = &window_->browser()
-                      ->GetFeatures()
-                      .location_bar_model()
-                      ->GetVectorIcon();
+    auto* icon = &LocationBarModel::From(window_->browser())->GetVectorIcon();
     webui_browser::mojom::SecurityIcon icon_type;
     if (icon == &(features::IsRoundedIconsEnabled()
                       ? omnibox::kInfoIcon

@@ -2224,10 +2224,7 @@ class LoginProxyBrowserTest : public InProcessBrowserTest,
     }
 
     // The URL should be hidden to avoid origin confusion issues.
-    EXPECT_TRUE(browser->GetFeatures()
-                    .location_bar_model()
-                    ->GetFormattedFullURL()
-                    .empty());
+    EXPECT_TRUE(LocationBarModel::From(browser)->GetFormattedFullURL().empty());
 
     // Cancel the prompt, which triggers a reload to read the error page content
     // from the server. On HTTPS pages, the error page content still shouldn't
@@ -2246,10 +2243,8 @@ class LoginProxyBrowserTest : public InProcessBrowserTest,
             content::EvalJs(contents, "document.documentElement.innerHTML"));
       }
 
-      EXPECT_FALSE(browser->GetFeatures()
-                       .location_bar_model()
-                       ->GetFormattedFullURL()
-                       .empty());
+      EXPECT_FALSE(
+          LocationBarModel::From(browser)->GetFormattedFullURL().empty());
     }
 
     // Reload; this time, supply credentials and check that the page loads.
@@ -2260,10 +2255,8 @@ class LoginProxyBrowserTest : public InProcessBrowserTest,
                            ui::PAGE_TRANSITION_TYPED),
                        /*navigation_handle_callback=*/{});
       auth_needed_waiter.Wait();
-      EXPECT_TRUE(browser->GetFeatures()
-                      .location_bar_model()
-                      ->GetFormattedFullURL()
-                      .empty());
+      EXPECT_TRUE(
+          LocationBarModel::From(browser)->GetFormattedFullURL().empty());
     }
 
     auto auth_supplied_waiter = CreateAuthSuppliedObserver();
@@ -2274,10 +2267,8 @@ class LoginProxyBrowserTest : public InProcessBrowserTest,
     std::u16string expected_title = u"OK";
     content::TitleWatcher title_watcher(contents, expected_title);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-    EXPECT_FALSE(browser->GetFeatures()
-                     .location_bar_model()
-                     ->GetFormattedFullURL()
-                     .empty());
+    EXPECT_FALSE(
+        LocationBarModel::From(browser)->GetFormattedFullURL().empty());
   }
 };
 

@@ -548,6 +548,7 @@ static_library("location_bar") {
     "autocomplete_input.cc",
     "autocomplete_input.h",
     "autocomplete_scheme_classifier.h",
+    "location_bar_model.cc",
     "location_bar_model.h",
     "location_bar_model_delegate.cc",
     "location_bar_model_delegate.h",
@@ -562,6 +563,7 @@ static_library("location_bar") {
     "//components/omnibox/common",
     "//components/security_state/core",
     "//third_party/metrics_proto",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
   deps = [

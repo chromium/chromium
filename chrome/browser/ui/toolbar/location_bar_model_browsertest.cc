@@ -209,8 +209,7 @@ void LocationBarModelTest::NavigateAndCheckText(
   controller->LoadURL(url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
                       std::string());
 
-  LocationBarModel* location_bar_model =
-      browser()->GetFeatures().location_bar_model();
+  LocationBarModel* location_bar_model = LocationBarModel::From(browser());
 
   if (!url.SchemeIs(url::kJavaScriptScheme)) {
     content::WaitForLoadStop(web_contents);
@@ -236,8 +235,7 @@ void LocationBarModelTest::NavigateAndCheckElided(const GURL& url) {
                       std::string());
   content::WaitForLoadStop(web_contents);
 
-  LocationBarModel* location_bar_model =
-      browser()->GetFeatures().location_bar_model();
+  LocationBarModel* location_bar_model = LocationBarModel::From(browser());
 
   const std::u16string formatted_full_url_after(
       location_bar_model->GetFormattedFullURL());
@@ -292,8 +290,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarModelTest,
                        ShouldDisplayURLWhileNavigatingAwayFromWebUiNTP) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  LocationBarModel* location_bar_model =
-      browser()->GetFeatures().location_bar_model();
+  LocationBarModel* location_bar_model = LocationBarModel::From(browser());
 
   // Open an NTP. Its URL should not be displayed.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
@@ -368,8 +365,7 @@ class LocationBarModelInstantNTPTest : public LocationBarModelTest,
   // location bar before commit. Returns the slow_url so the test body can
   // make destination-URL assertions.
   GURL NavigateRemoteNTPAndClickSlowLink() {
-    LocationBarModel* location_bar_model =
-        browser()->GetFeatures().location_bar_model();
+    LocationBarModel* location_bar_model = LocationBarModel::From(browser());
 
     // Open the remote NTP. The TemplateURLService rewrites
     // chrome::kChromeUINewTabURL into the configured new_tab_url.
@@ -438,8 +434,7 @@ class LocationBarModelInstantNTPBrowserInitiatedLinksTest
 // window.
 IN_PROC_BROWSER_TEST_F(LocationBarModelInstantNTPBrowserInitiatedLinksTest,
                        ShouldDisplayURLWhileNavigatingAwayFromRemoteNTP) {
-  LocationBarModel* location_bar_model =
-      browser()->GetFeatures().location_bar_model();
+  LocationBarModel* location_bar_model = LocationBarModel::From(browser());
   OmniboxView* omnibox_view =
       BrowserWindow::FromBrowser(browser())->GetLocationBar()->GetOmniboxView();
   ASSERT_TRUE(omnibox_view);
@@ -467,8 +462,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarModelInstantNTPBrowserInitiatedLinksTest,
 // until the navigation actually commits.
 IN_PROC_BROWSER_TEST_F(LocationBarModelInstantNTPNoBrowserInitiatedLinksTest,
                        ShouldNotDisplayURLWhileNavigatingAwayFromRemoteNTP) {
-  LocationBarModel* location_bar_model =
-      browser()->GetFeatures().location_bar_model();
+  LocationBarModel* location_bar_model = LocationBarModel::From(browser());
   OmniboxView* omnibox_view =
       BrowserWindow::FromBrowser(browser())->GetLocationBar()->GetOmniboxView();
   ASSERT_TRUE(omnibox_view);

@@ -133,10 +133,7 @@ void SetEngagementScore(BrowserWindowInterface* browser,
 }
 
 bool IsUrlShowing(BrowserWindowInterface* browser) {
-  return !browser->GetFeatures()
-              .location_bar_model()
-              ->GetFormattedFullURL()
-              .empty();
+  return !LocationBarModel::From(browser)->GetFormattedFullURL().empty();
 }
 
 // Navigate to |url| and wait for the load to complete before returning.

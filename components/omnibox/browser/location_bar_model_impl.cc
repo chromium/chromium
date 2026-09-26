@@ -46,6 +46,15 @@ LocationBarModelImpl::LocationBarModelImpl(LocationBarModelDelegate* delegate,
   DCHECK(delegate_);
 }
 
+LocationBarModelImpl::LocationBarModelImpl(ui::UnownedUserDataHost& host,
+                                           LocationBarModelDelegate* delegate,
+                                           size_t max_url_display_chars)
+    : LocationBarModel(host),
+      delegate_(delegate),
+      max_url_display_chars_(max_url_display_chars) {
+  DCHECK(delegate_);
+}
+
 LocationBarModelImpl::~LocationBarModelImpl() = default;
 
 // LocationBarModelImpl Implementation.

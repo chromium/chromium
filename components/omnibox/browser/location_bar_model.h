@@ -7,11 +7,14 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/security_state/core/security_state.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
 namespace gfx {
@@ -23,7 +26,22 @@ struct VectorIcon;
 // account for the state of the omnibox, which is tracked by OmniboxEditModel.
 class LocationBarModel {
  public:
-  virtual ~LocationBarModel() = default;
+  DECLARE_USER_DATA(LocationBarModel);
+
+  template <typename T>
+  static LocationBarModel* From(T* window) {
+    return window ? Get(window->GetUnownedUserDataHost()) : nullptr;
+  }
+
+  template <typename T>
+  static const LocationBarModel* From(const T* window) {
+    return window ? Get(window->GetUnownedUserDataHost()) : nullptr;
+  }
+
+  LocationBarModel(const LocationBarModel&) = delete;
+  LocationBarModel& operator=(const LocationBarModel&) = delete;
+
+  virtual ~LocationBarModel();
 
   // Returns the formatted full URL for the toolbar. The formatting includes:
   //   - Some characters may be unescaped.
@@ -90,10 +108,15 @@ class LocationBarModel {
   virtual bool ShouldPreventElision() const = 0;
 
  protected:
-  LocationBarModel() = default;
+  LocationBarModel();
+  explicit LocationBarModel(ui::UnownedUserDataHost& host);
 
-  LocationBarModel(const LocationBarModel&) = delete;
-  LocationBarModel& operator=(const LocationBarModel&) = delete;
+ private:
+  raw_ptr<ui::UnownedUserDataHost> host_ = nullptr;
+  raw_ptr<LocationBarModel> previous_model_ = nullptr;
+  raw_ptr<LocationBarModel> next_model_ = nullptr;
+  std::optional<ui::ScopedUnownedUserData<LocationBarModel>>
+      scoped_unowned_user_data_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_LOCATION_BAR_MODEL_H_

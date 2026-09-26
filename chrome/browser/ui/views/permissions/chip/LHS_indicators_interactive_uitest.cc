@@ -130,11 +130,7 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    // Restore the original LocationBarModel if it was overridden.
-    if (original_location_bar_model_) {
-      browser()->GetFeatures().swap_location_bar_models(
-          &original_location_bar_model_);
-    }
+    test_location_bar_model_.reset();
     UiBrowserTest::TearDownOnMainThread();
   }
 
@@ -153,15 +149,11 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
     // The pixel tests are sensitive to the URL displayed in the omnibox, as the
     // port number of the test server varies. To prevent flakiness, we override
     // the LocationBarModel with a TestLocationBarModel that returns a static
-    // URL. We preserve the original model to restore it during teardown.
-    auto test_location_bar_model = std::make_unique<TestLocationBarModel>();
-    test_location_bar_model->set_formatted_full_url(text);
-    test_location_bar_model->set_url_for_display(text);
-
-    std::unique_ptr<LocationBarModel> new_model_for_swap =
-        std::move(test_location_bar_model);
-    browser()->GetFeatures().swap_location_bar_models(&new_model_for_swap);
-    original_location_bar_model_ = std::move(new_model_for_swap);
+    // URL.
+    test_location_bar_model_ = std::make_unique<TestLocationBarModel>(
+        browser()->GetUnownedUserDataHost());
+    test_location_bar_model_->set_formatted_full_url(text);
+    test_location_bar_model_->set_url_for_display(text);
 
     omnibox_view->Update();
   }
@@ -380,7 +372,7 @@ class LHSIndicatorsInteractiveUITest : public UiBrowserTest {
   base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
-  std::unique_ptr<LocationBarModel> original_location_bar_model_;
+  std::unique_ptr<TestLocationBarModel> test_location_bar_model_;
 };
 
 IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest, InvokeUi_camera) {

@@ -224,6 +224,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    test_location_bar_model_.reset();
     mock_contextual_tasks_service_ = nullptr;
     webui_toolbar_wc_util_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
@@ -537,10 +538,8 @@ class OmniboxViewTest : public InProcessBrowserTest {
     ASSERT_TRUE(omnibox_view);
 
     if (!test_location_bar_model_) {
-      test_location_bar_model_ = new TestLocationBarModel;
-      std::unique_ptr<LocationBarModel> location_bar_model(
-          test_location_bar_model_);
-      browser()->GetFeatures().swap_location_bar_models(&location_bar_model);
+      test_location_bar_model_ = std::make_unique<TestLocationBarModel>(
+          browser()->GetUnownedUserDataHost());
     }
 
     test_location_bar_model_->set_formatted_full_url(text);
@@ -584,8 +583,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 
-  // Non-owning pointer.
-  raw_ptr<TestLocationBarModel> test_location_bar_model_ = nullptr;
+  std::unique_ptr<TestLocationBarModel> test_location_bar_model_;
 
   // If the WebUI location bar is enabled, this is used to communicate with it.
   std::unique_ptr<WebContentsInteractionTestUtil> webui_toolbar_wc_util_;

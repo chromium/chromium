@@ -77,6 +77,12 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
 
     InteractiveBrowserTest::SetUpOnMainThread();
   }
+
+  void TearDownOnMainThread() override {
+    test_location_bar_model_.reset();
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
   GURL GetURL() {
@@ -103,12 +109,8 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
 
   void OverrideVisibleUrlInLocationBar(const std::u16string& text) {
     OmniboxView* omnibox_view = GetLocationBar()->GetOmniboxView();
-    raw_ptr<TestLocationBarModel> test_location_bar_model_ =
-        new TestLocationBarModel;
-    std::unique_ptr<LocationBarModel> location_bar_model(
-        test_location_bar_model_);
-    browser()->GetFeatures().swap_location_bar_models(&location_bar_model);
-
+    test_location_bar_model_ = std::make_unique<TestLocationBarModel>(
+        browser()->GetUnownedUserDataHost());
     test_location_bar_model_->set_formatted_full_url(text);
 
     // Normally the URL for display has portions elided. We aren't doing that in
@@ -176,6 +178,7 @@ class QuietPromptInteractiveUITest : public InteractiveBrowserTest {
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
+  std::unique_ptr<TestLocationBarModel> test_location_bar_model_;
 };
 
 IN_PROC_BROWSER_TEST_F(QuietPromptInteractiveUITest,

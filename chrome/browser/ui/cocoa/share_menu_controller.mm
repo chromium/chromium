@@ -51,9 +51,7 @@ bool CanShare() {
   BrowserWindowInterface* last_active_browser =
       GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   return last_active_browser &&
-         last_active_browser->GetFeatures()
-             .location_bar_model()
-             ->ShouldDisplayURL() &&
+         LocationBarModel::From(last_active_browser)->ShouldDisplayURL() &&
          last_active_browser->GetTabStripModel()->GetActiveWebContents() &&
          last_active_browser->GetTabStripModel()
              ->GetActiveWebContents()
