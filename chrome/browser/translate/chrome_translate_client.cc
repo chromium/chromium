@@ -60,6 +60,7 @@
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/service/variations_service.h"
@@ -137,6 +138,9 @@ SidePanelUI* ChromeTranslateClient::GetSidePanelUIFromTab(
 
 void ChromeTranslateClient::TriggerPdfTranslation() {
 #if !BUILDFLAG(IS_ANDROID)
+  if (!IsReadingModeOpen()) {
+    opened_side_panel_for_pdf_translation_ = true;
+  }
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
   SidePanelUI* side_panel_ui = GetSidePanelUIFromTab(tab);
@@ -144,6 +148,22 @@ void ChromeTranslateClient::TriggerPdfTranslation() {
     side_panel_ui->Show(
         SidePanelEntryId::kReadAnything,
         SidePanelOpenTrigger::kPdfTranslation);
+  }
+#endif
+}
+
+void ChromeTranslateClient::RevertPdfTranslation() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (opened_side_panel_for_pdf_translation_) {
+    opened_side_panel_for_pdf_translation_ = false;
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents());
+    SidePanelUI* side_panel_ui = GetSidePanelUIFromTab(tab);
+    if (side_panel_ui &&
+        side_panel_ui->IsSidePanelEntryShowing(
+            SidePanelEntryKey(SidePanelEntryId::kReadAnything))) {
+      side_panel_ui->Close();
+    }
   }
 #endif
 }

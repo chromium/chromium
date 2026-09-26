@@ -74,6 +74,9 @@ class TranslateClient {
   // Triggers PDF translation.
   virtual void TriggerPdfTranslation() {}
 
+  // Reverts PDF translation.
+  virtual void RevertPdfTranslation() {}
+
   // Returns true if Reading Mode is open.
   virtual bool IsReadingModeOpen() const = 0;
 };

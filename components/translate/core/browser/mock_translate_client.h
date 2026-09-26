@@ -56,6 +56,7 @@ class MockTranslateClient : public TranslateClient {
                     bool));
   MOCK_METHOD1(IsTranslatableURL, bool(const GURL&));
   MOCK_METHOD(void, TriggerPdfTranslation, (), (override));
+  MOCK_METHOD(void, RevertPdfTranslation, (), (override));
   MOCK_METHOD(bool, IsReadingModeOpen, (), (const, override));
 
  private:

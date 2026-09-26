@@ -1786,6 +1786,22 @@ TEST_F(TranslateManagerTest, DoTranslatePagePDF) {
             expected_target);
 }
 
+TEST_F(TranslateManagerTest, RevertTranslationTriggersRevertPdfTranslation) {
+  PrepareTranslateManager();
+
+  ON_CALL(mock_translate_client_, IsTranslatableURL(_))
+      .WillByDefault(::testing::Return(true));
+  ON_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _))
+      .WillByDefault(::testing::Return(true));
+
+  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+  translate_manager_->GetLanguageState()->SetCurrentLanguage("en");
+
+  EXPECT_CALL(mock_translate_client_, RevertPdfTranslation()).Times(1);
+
+  translate_manager_->RevertTranslation();
+}
+
 TEST_F(TranslateManagerTest, DisableTranslateTriggerFlag) {
   PrepareTranslateManager();
   manager_->set_application_locale("en");

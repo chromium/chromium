@@ -126,6 +126,7 @@ class ChromeTranslateClient
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
   void TriggerPdfTranslation() override;
+  void RevertPdfTranslation() override;
   bool IsReadingModeOpen() const override;
 
   // Performs a one-time undo of the translation and shows the translation
@@ -183,6 +184,8 @@ class ChromeTranslateClient
   void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 #endif
+
+  bool opened_side_panel_for_pdf_translation_ = false;
 
   base::WeakPtrFactory<ChromeTranslateClient> weak_factory_{this};
 
