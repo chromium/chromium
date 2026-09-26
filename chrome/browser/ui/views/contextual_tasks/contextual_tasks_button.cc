@@ -199,6 +199,9 @@ ContextualTasksButton::ContextualTasksButton(
       browser_window_interface_(browser_window_interface) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+  // The contextual tasks button is ephemeral and starts hidden until an active
+  // task requires it.
+  SetVisible(false);
   SetProperty(views::kElementIdentifierKey,
               kContextualTasksEphemeralToolbarButtonElementId);
   const std::u16string button_tooltip =
@@ -467,6 +470,11 @@ bool ContextualTasksButton::ShouldApplyCircularBackgroundShadow() const {
   return controller && controller->ShouldDisplayVerticalTabs();
 }
 
+ui::Layer* ContextualTasksButton::GetDropShadowLayerForTesting() const {
+  return drop_shadow_painted_layer_ ? drop_shadow_painted_layer_->layer()
+                                    : nullptr;
+}
+
 bool ContextualTasksButton::IsSidePanelRightAligned() const {
   if (!browser_window_interface_ || !browser_window_interface_->GetProfile()) {
     return false;
@@ -520,6 +528,8 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
         layer()->GetAnimator()->AbortAllAnimations();
       }
       ClearDropShadow();
+    } else if (!drop_shadow_painted_layer_) {
+      UpdateDropShadow();
     }
     SetVisible(will_be_visible);
   }
@@ -544,9 +554,17 @@ void ContextualTasksButton::UpdateDropShadow(bool force_paint,
     return;
   }
 
-  float target_opacity = drop_shadow_painted_layer_
-                             ? drop_shadow_painted_layer_->layer()->opacity()
-                             : initial_opacity;
+  if (drop_shadow_painted_layer_ &&
+      drop_shadow_painted_layer_->layer()->GetAnimator() &&
+      drop_shadow_painted_layer_->layer()->GetAnimator()->is_animating()) {
+    UpdateDropShadowLayerBounds();
+    return;
+  }
+
+  float target_opacity =
+      drop_shadow_painted_layer_
+          ? drop_shadow_painted_layer_->layer()->GetTargetOpacity()
+          : initial_opacity;
 
   ClearDropShadow();
 

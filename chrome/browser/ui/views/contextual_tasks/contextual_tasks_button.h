@@ -22,8 +22,9 @@ class BrowserWindowInterface;
 
 namespace ui {
 class ImageModel;
+class Layer;
 class LayerOwner;
-}
+}  // namespace ui
 
 class ContextualTasksButton
     : public ToolbarButton,
@@ -36,8 +37,11 @@ class ContextualTasksButton
       BrowserWindowInterface* browser_window_interface);
   ~ContextualTasksButton() override;
 
+  static constexpr int kShadowOutset = 12;
+
   float GetCornerRadiusFor(ToolbarButton::Edge edge) const override;
   bool ShouldApplyCircularBackgroundShadow() const;
+  ui::Layer* GetDropShadowLayerForTesting() const;
   // contextual_tasks::ContextualTasksPanelController::Observer:
   void OnSurfaceStateChanged(
       contextual_tasks::ContextualTasksPanelHost::SurfaceState state,
