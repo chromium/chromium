@@ -141,6 +141,10 @@ class OfferNotificationBubbleControllerImplTest
   }
 
  protected:
+  tabs::MockTabInterface& mock_tab() {
+    return static_cast<tabs::MockTabInterface&>(*tab_interface_);
+  }
+
   void ShowBubble(const AutofillOfferData& offer) {
     controller()->ShowOfferNotificationIfApplicable(
         offer, &card_, {.show_notification_automatically = true});
@@ -277,6 +281,35 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
 
   EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"5% off");
+}
+
+namespace {
+
+// Unlike `TestOfferNotificationBubbleControllerImpl`, keeps the real
+// `UpdatePageActionIcon()`.
+class OfferNotificationBubbleControllerImplWithPageActionIcon
+    : public OfferNotificationBubbleControllerImpl {
+ public:
+  explicit OfferNotificationBubbleControllerImplWithPageActionIcon(
+      content::WebContents* web_contents)
+      : OfferNotificationBubbleControllerImpl(web_contents) {}
+};
+
+}  // namespace
+
+// Tests that updating the page action icon does not crash while the tab has no
+// browser window, which is the case while it is being detached on close.
+TEST_F(OfferNotificationBubbleControllerImplTest,
+       UpdatePageActionIcon_NoBrowserWindow_DoesNotCrash) {
+  web_contents()->SetUserData(
+      OfferNotificationBubbleControllerImpl::UserDataKey(),
+      std::make_unique<OfferNotificationBubbleControllerImplWithPageActionIcon>(
+          web_contents()));
+  ON_CALL(mock_tab(), GetBrowserWindowInterface())
+      .WillByDefault(testing::Return(nullptr));
+
+  OfferNotificationBubbleControllerImpl::FromWebContents(web_contents())
+      ->DismissNotification();
 }
 
 }  // namespace autofill
