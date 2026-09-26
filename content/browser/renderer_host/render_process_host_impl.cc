@@ -3215,11 +3215,11 @@ bool RenderProcessHostImpl::MayReuseHost() {
 }
 
 bool RenderProcessHostImpl::IsUnused() {
-  return is_unused_;
+  return GetProcessLock().is_unused();
 }
 
 void RenderProcessHostImpl::SetIsUsed() {
-  is_unused_ = false;
+  ChildProcessSecurityPolicyImpl::GetInstance()->SetProcessIsUsed(GetID());
 }
 
 void RenderProcessHostImpl::AddRoute(int32_t routing_id,
@@ -3609,7 +3609,7 @@ void RenderProcessHostImpl::SetProcessLock(
   TRACE_EVENT_BEGIN("shutdown", "Lock process", tracing_track_,
                     ChromeTrackEvent::kRenderProcessHost, *this);
   ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-      isolation_context, GetID(), !IsUnused(), process_lock);
+      isolation_context, GetID(), process_lock);
 
   // Note that SetProcessLock is only called on ProcessLock state transitions.
   // (e.g. invalid -> allows_any_site and allows_any_site -> locked_to_site).

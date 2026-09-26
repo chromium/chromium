@@ -218,6 +218,28 @@ class CONTENT_EXPORT ProcessLock {
   // Defined to allow this object to act as a key for std::map.
   bool operator<(const ProcessLock& rhs) const;
 
+  // Indicates whether the process associated with this ProcessLock is
+  // "unused".  This starts out as true for new processes and becomes false
+  // after one of the following:
+  // (1) The process commits any page.
+  // (2) The process is given to a SiteInstance that already has a site
+  //     assigned.
+  // Note that a process hosting ServiceWorkers will be implicitly handled by
+  // (2) during ServiceWorker initialization, and SharedWorkers will be handled
+  // by (1) since a page needs to commit before it can create a SharedWorker.
+  //
+  // While a process is unused, it is still suitable to host a URL that
+  // requires a dedicated process. ChildProcessSecurityPolicyImpl relies on
+  // this to reject attempts to lock an already used process to a site; note
+  // that this class does not enforce that itself.
+  bool is_unused() const { return is_unused_; }
+
+  // Marks the process associated with this ProcessLock as used. Note that this
+  // only mutates this instance, so it has no effect when called on a copy
+  // returned by ChildProcessSecurityPolicyImpl::GetProcessLock(). Most callers
+  // should use RenderProcessHost::SetIsUsed() instead.
+  void set_is_used() { is_unused_ = false; }
+
   std::string ToString() const;
 
  private:
@@ -228,6 +250,11 @@ class CONTENT_EXPORT ProcessLock {
   // restrict what the process has access to in cases that we currently use an
   // allows-any-site ProcessLock.
   std::optional<SiteInfo> site_info_;
+
+  // Indicates whether the process associated with this ProcessLock is
+  // "unused", meaning that it has not committed any page and it has not been
+  // given to a SiteInstance that already has a site assigned. See is_unused().
+  bool is_unused_ = true;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,

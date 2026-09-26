@@ -614,12 +614,18 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // directly. |isolation_context| provides the context, such as
   // BrowsingInstance, from which this process locked was created. This
   // information is used when making isolation decisions for this process, such
-  // as determining which isolated origins pertain to it. |is_process_used|
-  // indicates whether any content has been loaded in the process already.
+  // as determining which isolated origins pertain to it.
   void LockProcess(const IsolationContext& isolation_context,
                    ChildProcessId child_id,
-                   bool is_process_used,
                    const ProcessLock& process_lock);
+
+  // Marks the process identified by |child_id| as "used", meaning that it has
+  // committed a page or has been given to a SiteInstance that already has a
+  // site assigned. Most callers should use RenderProcessHost::SetIsUsed()
+  // instead of calling this directly. Once a process is used, LockProcess()
+  // will reject attempts to lock it to a site, since it is no longer suitable
+  // to host a URL that requires a dedicated process.
+  void SetProcessIsUsed(ChildProcessId child_id);
 
   // Testing helper method that generates a lock_url from |url| and then
   // calls LockProcess() with that lock URL.

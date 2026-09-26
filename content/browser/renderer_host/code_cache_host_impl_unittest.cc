@@ -104,7 +104,7 @@ class CodeCacheHostImplTest : public testing::Test,
             /*is_fenced=*/false,
             /*is_fixed_storage_partition=*/false);
     ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-        site_instance->GetIsolationContext(), process_id, false,
+        site_instance->GetIsolationContext(), process_id,
         ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()));
 
     added_renderers_.push_back(process_id);

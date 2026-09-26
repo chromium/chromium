@@ -918,8 +918,7 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
   }
 
   void SetProcessLock(const ProcessLock& lock_to_set,
-                      const IsolationContext& context,
-                      bool is_process_used) {
+                      const IsolationContext& context) {
     CHECK(!lock_to_set.is_invalid());
     CHECK(!process_lock_.IsLockedToSite());
     CHECK_NE(SiteInstanceImpl::GetDefaultSiteURL(),
@@ -945,7 +944,7 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
         // Do not allow a lock to become more strict if the process has already
         // been used to render any pages.
         if (lock_to_set.IsLockedToSite()) {
-          CHECK(!is_process_used)
+          CHECK(process_lock_.is_unused())
               << "Cannot lock an already used process to " << lock_to_set;
         }
       } else {
@@ -956,6 +955,8 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     process_lock_ = lock_to_set;
     AddBrowsingInstanceInfo(context);
   }
+
+  void SetProcessIsUsed() { process_lock_.set_is_used(); }
 
   void AddBrowsingInstanceInfo(const IsolationContext& context) {
     CHECK(!context.browsing_instance_id().is_null(), base::NotFatalUntil::M159);
@@ -1308,7 +1309,6 @@ void ChildProcessSecurityPolicyImpl::AddForTesting(
                   OriginAgentClusterIsolationState::CreateForDefaultIsolation(
                       browser_context)),
               child_id,
-              /*is_process_used=*/false,
               ProcessLock::CreateAllowAnySite(
                   StoragePartitionConfig::CreateDefault(browser_context),
                   WebExposedIsolationInfo::CreateNonIsolated(),
@@ -2774,7 +2774,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
         // such navigations to succeed (i.e. pass CanCommitOriginAndUrl checks).
         // We don't expect unused processes to be used outside of navigations
         // (e.g. when checking CanAccessDataForOrigin for localStorage, etc.).
-        if (process->IsUnused()) {
+        if (actual_process_lock.is_unused()) {
           return true;
         }
       }
@@ -2973,7 +2973,6 @@ void ChildProcessSecurityPolicyImpl::IncludeIsolationContext(
 void ChildProcessSecurityPolicyImpl::LockProcess(
     const IsolationContext& context,
     ChildProcessId child_id,
-    bool is_process_used,
     const ProcessLock& process_lock) {
   // LockProcess should only be called on the UI thread (OTOH, it is okay to
   // call GetProcessLock from any thread).
@@ -2982,7 +2981,16 @@ void ChildProcessSecurityPolicyImpl::LockProcess(
   base::AutoLock lock(lock_);
   auto* state = process_states_.GetProcessStateForMutation(child_id);
   CHECK(state);
-  state->SetProcessLock(process_lock, context, is_process_used);
+  state->SetProcessLock(process_lock, context);
+}
+
+void ChildProcessSecurityPolicyImpl::SetProcessIsUsed(ChildProcessId child_id) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+
+  base::AutoLock lock(lock_);
+  auto* state = process_states_.GetProcessStateForMutation(child_id);
+  CHECK(state);
+  state->SetProcessIsUsed();
 }
 
 void ChildProcessSecurityPolicyImpl::LockProcessForTesting(
@@ -2990,7 +2998,7 @@ void ChildProcessSecurityPolicyImpl::LockProcessForTesting(
     ChildProcessId child_id,
     const GURL& url) {
   SiteInfo site_info = SiteInfo::CreateForTesting(isolation_context, url);
-  LockProcess(isolation_context, child_id, /* is_process_used=*/false,
+  LockProcess(isolation_context, child_id,
               ProcessLock::FromSiteInfo(site_info));
 }
 

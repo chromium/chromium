@@ -79,7 +79,6 @@ MockRenderProcessHost::MockRenderProcessHost(
       deletion_callback_called_(false),
       is_for_guests_only_(is_for_guests_only),
       priority_(base::Process::Priority::kUserBlocking),
-      is_unused_(true),
       pending_view_count_(0),
       worker_ref_count_(0),
       pending_reuse_ref_count_(0),
@@ -587,11 +586,11 @@ bool MockRenderProcessHost::MayReuseHost() {
 }
 
 bool MockRenderProcessHost::IsUnused() {
-  return is_unused_;
+  return GetProcessLock().is_unused();
 }
 
 void MockRenderProcessHost::SetIsUsed() {
-  is_unused_ = false;
+  ChildProcessSecurityPolicyImpl::GetInstance()->SetProcessIsUsed(GetID());
 }
 
 bool MockRenderProcessHost::HostHasNotBeenUsed() {
@@ -607,7 +606,7 @@ void MockRenderProcessHost::SetProcessLock(
     const IsolationContext& isolation_context,
     const ProcessLock& process_lock) {
   ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-      isolation_context, GetID(), !IsUnused(), process_lock);
+      isolation_context, GetID(), process_lock);
   if (process_lock.IsASiteOrOrigin())
     is_renderer_locked_to_site_ = true;
 }

@@ -93,7 +93,7 @@ void LockProcessIfNeeded(ChildProcessId process_id,
       site_instance->GetSiteInfo().ShouldLockProcessToSite(
           site_instance->GetIsolationContext())) {
     ChildProcessSecurityPolicyImpl::GetInstance()->LockProcess(
-        site_instance->GetIsolationContext(), process_id, false,
+        site_instance->GetIsolationContext(), process_id,
         ProcessLock::FromSiteInfo(site_instance->GetSiteInfo()));
   }
 }
@@ -1744,7 +1744,6 @@ TEST_P(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
                                          /*is_fenced=*/false,
                                          /*is_fixed_storage_partition=*/false);
   p->LockProcess(sandboxed_instance->GetIsolationContext(), kRendererProcess,
-                 /*is_process_used=*/false,
                  ProcessLock::FromSiteInfo(sandboxed_instance->GetSiteInfo()));
 
   auto foo_origin = url::Origin::Create(GURL("https://foo.com"));
@@ -1813,7 +1812,6 @@ TEST_P(ChildProcessSecurityPolicyTest, PdfProcessEnforcements) {
                                          /*is_fenced=*/false,
                                          /*is_fixed_storage_partition=*/false);
   p->LockProcess(pdf_instance->GetIsolationContext(), kRendererProcess,
-                 /*is_process_used=*/false,
                  ProcessLock::FromSiteInfo(pdf_instance->GetSiteInfo()));
 
   auto foo_origin = url::Origin::Create(GURL("https://foo.com"));
@@ -1868,7 +1866,6 @@ TEST_P(ChildProcessSecurityPolicyTest, PdfProcessSandboxedFileSystem) {
                                          /*is_fenced=*/false,
                                          /*is_fixed_storage_partition=*/false);
   p->LockProcess(pdf_instance->GetIsolationContext(), kRendererProcess,
-                 /*is_process_used=*/false,
                  ProcessLock::FromSiteInfo(pdf_instance->GetSiteInfo()));
 
   auto foo_origin = url::Origin::Create(GURL("https://foo.com"));
@@ -3217,7 +3214,6 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
 
     p->Add(kRendererProcess, &context);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererProcess,
-                   /*is_process_used=*/false,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
     p->AddCommittedOrigin(kRendererID, foo);
 
@@ -3283,7 +3279,6 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
             /*is_fenced=*/false,
             /*is_fixed_storage_partition=*/false);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererProcess,
-                   /*is_process_used=*/false,
                    ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
     p->AddCommittedOrigin(kRendererID, sub_foo_origin);
 
@@ -3364,7 +3359,6 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
     // BrowsingInstanceId will not be '1' in general.
     p->Add(kRendererProcess, &context);
     p->LockProcess(foo_instance->GetIsolationContext(), kRendererProcess,
-                   /*is_process_used=*/false,
                    ProcessLock::CreateAllowAnySite(
                        StoragePartitionConfig::CreateDefault(&context),
                        WebExposedIsolationInfo::CreateNonIsolated(),
@@ -3418,7 +3412,6 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
   p->Add(kRendererProcess, &context);
   p->LockProcess(
       foo_instance->GetIsolationContext(), kRendererProcess,
-      /*is_process_used=*/false,
       ProcessLock::CreateAllowAnySite(
           StoragePartitionConfig::CreateDefault(&context),
           WebExposedIsolationInfo::CreateNonIsolated(),
@@ -3428,10 +3421,10 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
 
   // If the process is then considered used (e.g., by loading content), it
   // should not be possible to lock it to another site.
+  p->SetProcessIsUsed(kRendererProcess);
   EXPECT_CHECK_DEATH_WITH(
       {
         p->LockProcess(bar_instance->GetIsolationContext(), kRendererProcess,
-                       /*is_process_used=*/true,
                        ProcessLock::FromSiteInfo(bar_instance->GetSiteInfo()));
       },
       "Cannot lock an already used process to .*bar\\.com");
@@ -3453,7 +3446,6 @@ TEST_P(ChildProcessSecurityPolicyTest, GetProcessLockAfterProcessRemoval) {
   // Lock process to foo.com.
   p->Add(kRendererProcess, &context);
   p->LockProcess(foo_instance->GetIsolationContext(), kRendererProcess,
-                 /*is_process_used=*/false,
                  ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
   EXPECT_TRUE(p->GetProcessLock(kRendererProcess).IsLockedToSite());
   EXPECT_FALSE(p->GetProcessLock(kRendererProcess).AllowsAnySite());

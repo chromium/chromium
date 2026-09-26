@@ -2125,7 +2125,6 @@ TEST_F(SharedWorkerServiceImplTest, CanAccessDataForOriginDenied) {
   policy->AddForTesting(renderer_host->GetID(), browser_context_.get());
   policy->LockProcess(
       pdf_site_instance->GetIsolationContext(), renderer_host->GetID(),
-      /*is_process_used=*/false,
       ProcessLock::FromSiteInfo(pdf_site_instance->GetSiteInfo()));
 
   ASSERT_FALSE(policy->CanAccessDataForOrigin(

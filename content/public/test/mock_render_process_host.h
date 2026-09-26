@@ -360,7 +360,6 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool is_for_guests_only_;
   bool is_pdf_ = false;
   base::Process::Priority priority_;
-  bool is_unused_;
   bool are_v8_optimizations_disabled_ = false;
   bool is_for_top_chrome_web_ui_ = false;
   bool has_immersive_xr_session_ = false;

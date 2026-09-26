@@ -208,6 +208,9 @@ bool ProcessLock::operator==(const ProcessLock& rhs) const {
   // At this point, both `this` and `rhs` are known to have valid SiteInfos.
   // Here we proceed with a comparison almost identical to
   // SiteInfo::MakeSecurityPrincipalKey(), except that `site_url_` is excluded.
+  // Note that `is_unused_` is intentionally excluded so that a used process's
+  // lock compares equal to expected locks freshly constructed from SiteInfo or
+  // UrlInfo.
   return site_info_->ProcessLockCompareTo(rhs.site_info_.value()) == 0;
 }
 
@@ -222,6 +225,7 @@ bool ProcessLock::operator<(const ProcessLock& rhs) const {
   // At this point, both `this` and `rhs` are known to have valid SiteInfos.
   // Here we proceed with a comparison almost identical to
   // SiteInfo::MakeSecurityPrincipalKey(), except that `site_url_` is excluded.
+  // `is_unused_` is also intentionally excluded (see operator==).
   return site_info_->ProcessLockCompareTo(rhs.site_info_.value()) < 0;
 }
 

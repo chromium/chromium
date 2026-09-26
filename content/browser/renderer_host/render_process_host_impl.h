@@ -1500,11 +1500,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // A set of flags that influence RenderProcessHost behavior.
   int flags_;
 
-  // Indicates whether this RenderProcessHost is unused, meaning that it has
-  // not committed any web content, and it has not been given to a SiteInstance
-  // that has a site assigned.
-  bool is_unused_ = true;
-
   // Set if a call to Cleanup is required once the RenderProcessHostImpl is no
   // longer within the RenderProcessHostObserver::RenderProcessExited callbacks.
   bool delayed_cleanup_needed_ = false;
