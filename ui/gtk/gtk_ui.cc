@@ -161,6 +161,17 @@ gfx::FontRenderParams GetGtkFontRenderParams() {
   return params;
 }
 
+const char* GdkBackendName(ui::LinuxUiBackend backend) {
+  switch (backend) {
+    case ui::LinuxUiBackend::kX11:
+      return "x11";
+    case ui::LinuxUiBackend::kWayland:
+      return "wayland";
+    default:
+      return nullptr;
+  }
+}
+
 std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
   switch (backend) {
     case ui::LinuxUiBackend::kStub:
@@ -365,10 +376,18 @@ bool GtkUi::Initialize() {
   if (!GtkCheckVersion(4) && !env->HasVar(kGdkGl)) {
     disable_gdk_gl_probe.emplace(kGdkGl, "disable");
   }
+  // GDK_BACKEND takes precedence over gdk_set_allowed_backends(), so force it
+  // to the platform's backend while GDK opens the display, and restore it
+  // afterwards for the same reason as GDK_GL.
+  std::optional<base::ScopedEnvironmentVariableOverride> gdk_backend;
+  if (const char* name = GdkBackendName(backend)) {
+    gdk_backend.emplace("GDK_BACKEND", name);
+  }
   // gtk_init_check() modifies argv, so make a copy first.
   CmdLineArgs cmd_line = CopyCmdLine(*base::CommandLine::ForCurrentProcess());
   const bool initialized =
       GtkInitFromCommandLine(&cmd_line.argc, cmd_line.argv.data());
+  gdk_backend.reset();
   disable_gdk_gl_probe.reset();
   if (!initialized) {
     return false;

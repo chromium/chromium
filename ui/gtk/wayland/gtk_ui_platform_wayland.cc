@@ -5,7 +5,6 @@
 #include "ui/gtk/wayland/gtk_ui_platform_wayland.h"
 
 #include "base/command_line.h"
-#include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -23,9 +22,6 @@ namespace gtk {
 
 GtkUiPlatformWayland::GtkUiPlatformWayland() {
   gdk_set_allowed_backends("wayland");
-  // GDK_BACKEND takes precedence over gdk_set_allowed_backends(), so override
-  // it to ensure we get the wayland backend.
-  base::Environment::Create()->SetVar("GDK_BACKEND", "wayland");
 }
 
 GtkUiPlatformWayland::~GtkUiPlatformWayland() = default;
