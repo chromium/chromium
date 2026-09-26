@@ -44,11 +44,16 @@ class CC_EXPORT EffectTreeLayerListIterator {
 
   void operator++();
 
-  State state() { return state_; }
+  State state() const { return state_; }
 
   LayerImpl* current_layer() const {
     DCHECK(state_ == State::kLayer);
     return *layer_list_iterator_;
+  }
+
+  int current_effect_tree_index() const {
+    DCHECK(state_ == State::kContributingSurface);
+    return current_effect_tree_index_;
   }
 
   RenderSurfaceImpl* current_render_surface() const {
@@ -56,46 +61,21 @@ class CC_EXPORT EffectTreeLayerListIterator {
     return effect_tree_->GetRenderSurface(current_effect_tree_index_);
   }
 
-  RenderSurfaceImpl* target_render_surface() const {
+  int target_effect_tree_index() const {
     switch (state_) {
       case State::kLayer:
       case State::kTargetSurface:
-        return effect_tree_->GetRenderSurface(current_effect_tree_index_);
-      case State::kContributingSurface: {
-        int target_node_id =
-            effect_tree_->Node(current_effect_tree_index_).target_id;
-        return effect_tree_->GetRenderSurface(target_node_id);
-      }
+        return current_effect_tree_index_;
+      case State::kContributingSurface:
+        return effect_tree_->Node(current_effect_tree_index_).target_id;
       case State::kEnd:
         NOTREACHED();
     }
     NOTREACHED();
   }
 
-  struct Position {
-    State state = State::kEnd;
-    // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
-    // stacks.
-    RAW_PTR_EXCLUSION LayerImpl* current_layer = nullptr;
-    RAW_PTR_EXCLUSION RenderSurfaceImpl* current_render_surface = nullptr;
-    RAW_PTR_EXCLUSION RenderSurfaceImpl* target_render_surface = nullptr;
-  };
-
-  operator const Position() const {
-    Position position;
-    if (state_ == State::kEnd) {
-      return position;
-    }
-
-    position.state = state_;
-    position.target_render_surface = target_render_surface();
-    if (state_ == State::kLayer) {
-      position.current_layer = current_layer();
-    } else if (state_ == State::kContributingSurface) {
-      position.current_render_surface = current_render_surface();
-    }
-
-    return position;
+  RenderSurfaceImpl* target_render_surface() const {
+    return effect_tree_->GetRenderSurface(target_effect_tree_index());
   }
 
  private:

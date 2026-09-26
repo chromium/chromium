@@ -172,5 +172,49 @@ TEST_F(EffectTreeLayerListIteratorTest, ComplexTreeMultiSurface) {
   EXPECT_COUNT(root3, 14, -1, 0);
 }
 
+// Regression test for https://crbug.com/549165467: verify that
+// EffectTreeLayerListIterator accessors correctly expose integer node IDs,
+// that state() is const-callable, and that objects resolved on demand match
+// direct tree lookups.
+TEST_F(EffectTreeLayerListIteratorTest, NodeIndices) {
+  auto* root = static_cast<TestLayerImpl*>(root_layer());
+  auto* child = AddLayerInActiveTree<TestLayerImpl>();
+  CopyProperties(root, child);
+  CreateEffectNode(child).render_surface_reason = RenderSurfaceReason::kTest;
+  auto* grand_child = AddLayerInActiveTree<TestLayerImpl>();
+  CopyProperties(child, grand_child);
+
+  UpdateActiveTreeDrawProperties();
+
+  int steps_visited = 0;
+  for (EffectTreeLayerListIterator it(host_impl()->active_tree());
+       it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
+    ++steps_visited;
+    const EffectTreeLayerListIterator& const_it = it;
+    EXPECT_EQ(it.state(), const_it.state());
+    EXPECT_EQ(it.target_render_surface(),
+              host_impl()
+                  ->active_tree()
+                  ->property_trees()
+                  ->effect_tree()
+                  .GetRenderSurface(it.target_effect_tree_index()));
+
+    switch (it.state()) {
+      case EffectTreeLayerListIterator::State::kLayer:
+        EXPECT_NE(it.current_layer(), nullptr);
+        break;
+      case EffectTreeLayerListIterator::State::kTargetSurface:
+        break;
+      case EffectTreeLayerListIterator::State::kContributingSurface:
+        EXPECT_EQ(it.current_effect_tree_index(),
+                  it.current_render_surface()->EffectTreeIndex());
+        break;
+      case EffectTreeLayerListIterator::State::kEnd:
+        NOTREACHED();
+    }
+  }
+  EXPECT_GT(steps_visited, 0);
+}
+
 }  // namespace
 }  // namespace cc

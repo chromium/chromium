@@ -311,10 +311,7 @@ content::responsiveness::Watcher::calculator_io_
 
 # Hammering down visible nails in stack samples. Thought to hurt renderer
 # performance unacceptably.
-# See https://crrev.com/c/5271003
-cc::EffectTreeLayerListIterator::Position::current_layer
-cc::EffectTreeLayerListIterator::Position::current_render_surface
-cc::EffectTreeLayerListIterator::Position::target_render_surface
+# See https://crrev.com/c/5271003 and https://crbug.com/549165467
 cc::EffectTreeLayerListIterator::layer_tree_impl_
 cc::EffectTreeLayerListIterator::effect_tree_
 cc::HeadsUpDisplayLayerImpl::placeholder_quad_
