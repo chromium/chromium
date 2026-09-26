@@ -232,8 +232,6 @@ export {OsSearchResultRowElement} from './os_settings_search_box/os_search_resul
 export {OsSettingsSearchBoxElement} from './os_settings_search_box/os_settings_search_box.js';
 export type {OsSettingsSearchBoxBrowserProxy} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';
 export {OsSettingsSearchBoxBrowserProxyImpl} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';
-export type {OsSettingsHatsBrowserProxy} from './os_settings_ui/os_settings_hats_browser_proxy.js';
-export {OsSettingsHatsBrowserProxyImpl} from './os_settings_ui/os_settings_hats_browser_proxy.js';
 export {OsSettingsUiElement} from './os_settings_ui/os_settings_ui.js';
 export {SettingsToolbarElement as ToolbarElement} from './os_settings_ui/toolbar.js';
 export type {ParentalControlsBrowserProxy} from './parental_controls_page/parental_controls_browser_proxy.js';

@@ -465,7 +465,6 @@ build_webui("build") {
     "os_settings.ts",
     "os_settings_routes.ts",
     "os_settings_search_box/os_settings_search_box_browser_proxy.ts",
-    "os_settings_ui/os_settings_hats_browser_proxy.ts",
     "parental_controls_page/parental_controls_browser_proxy.ts",
     "personalization_page/personalization_hub_browser_proxy.ts",
     "router.ts",

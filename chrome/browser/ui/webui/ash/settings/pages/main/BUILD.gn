@@ -8,8 +8,6 @@ static_library("main") {
   sources = [
     "main_section.cc",
     "main_section.h",
-    "os_settings_hats_handler.cc",
-    "os_settings_hats_handler.h",
     "send_search_feedback_handler.cc",
     "send_search_feedback_handler.h",
   ]
@@ -36,7 +34,6 @@ static_library("main") {
     "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui:policy_indicator_localized_strings_provider",
     "//chrome/browser/ui/webui/ash/settings/search",
-    "//chrome/browser/ui/webui/ash/settings/services/hats",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/browser_context_helper",
@@ -54,15 +51,11 @@ static_library("main") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "os_settings_hats_handler_unittest.cc",
-    "send_search_feedback_handler_unittest.cc",
-  ]
+  sources = [ "send_search_feedback_handler_unittest.cc" ]
 
   deps = [
     ":main",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/webui/ash/settings/services/hats",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gmock",

@@ -45,8 +45,6 @@ import {createPageAvailability} from '../os_page_availability.js';
 import type {Route} from '../router.js';
 import {Router} from '../router.js';
 
-import type {OsSettingsHatsBrowserProxy} from './os_settings_hats_browser_proxy.js';
-import {OsSettingsHatsBrowserProxyImpl} from './os_settings_hats_browser_proxy.js';
 import {getTemplate} from './os_settings_ui.html.js';
 import type {SettingsToolbarElement} from './toolbar.js';
 
@@ -170,8 +168,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   declare private narrowThreshold_: number;
   private activeRoute_: Route|null;
   private scrollEndDebouncer_: Debouncer|null;
-  private osSettingsHatsBrowserProxy_: OsSettingsHatsBrowserProxy;
-  private boundTriggerSettingsHats_: () => void;
 
   constructor() {
     super();
@@ -185,11 +181,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.scrollEndDebouncer_ = null;
 
     Router.getInstance().initializeRouteFromUrl();
-
-    this.osSettingsHatsBrowserProxy_ =
-        OsSettingsHatsBrowserProxyImpl.getInstance();
-
-    this.boundTriggerSettingsHats_ = this.triggerSettingsHats_.bind(this);
   }
 
   override ready(): void {
@@ -234,13 +225,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.addEventListener('user-action-setting-pref-change', this.syncPrefChange_.bind(this));
 
     this.addEventListener('user-action-setting-change', this.recordChangedSetting_.bind(this));
-
-    this.addEventListener(
-        'search-changed',
-        () => {
-          this.osSettingsHatsBrowserProxy_.settingsUsedSearch();
-        },
-        /*AddEventListenerOptions=*/ {once: true});
 
     this.listenForDrawerOpening_();
 
@@ -300,8 +284,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     window.addEventListener('focus', recordPageFocus);
     window.addEventListener('blur', recordPageBlur);
 
-    window.addEventListener('blur', this.boundTriggerSettingsHats_);
-
     // Clicks need to be captured because unlike focus/blur to the settings
     // window, a click's propagation can be stopped by child elements.
     window.addEventListener('click', recordClick, /*capture=*/ true);
@@ -312,7 +294,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
 
     window.removeEventListener('focus', recordPageFocus);
     window.removeEventListener('blur', recordPageBlur);
-    window.removeEventListener('blur', this.boundTriggerSettingsHats_);
     window.removeEventListener('click', recordClick);
     Router.getInstance().resetRouteForTesting();
   }
@@ -497,10 +478,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     const METRIC_NAME = 'ChromeOS.Settings.TimeUntilInteractive';
     const timeMs = Math.round(window.performance.now());
     chrome.metricsPrivate.recordTime(METRIC_NAME, timeMs);
-  }
-
-  private triggerSettingsHats_(): void {
-    this.osSettingsHatsBrowserProxy_.sendSettingsHats();
   }
 }
 

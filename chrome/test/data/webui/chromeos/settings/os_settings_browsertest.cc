@@ -1365,10 +1365,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsUi) {
   RunSettingsTest("os_settings_ui/os_settings_ui_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsUiHats) {
-  RunSettingsTest("os_settings_ui/os_settings_ui_hats_test.js");
-}
-
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsUiMenu) {
   RunSettingsTest("os_settings_ui/os_settings_ui_menu_test.js");
 }
