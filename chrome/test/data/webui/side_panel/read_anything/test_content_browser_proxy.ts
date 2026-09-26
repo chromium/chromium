@@ -26,7 +26,7 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   endOffset: number = -1;
   hasValidSelectionVal: boolean = true;
   readabilityEnabled: boolean = true;
-  isReadabilitySelectTextEnabledFlag: boolean = false;
+  isReadabilitySelectTextEnabledFlag: boolean = true;
   textContentMap: {[key: number]: string} = {2: 'some text content'};
   prefixText: string = '';
   rootId: number = 1;

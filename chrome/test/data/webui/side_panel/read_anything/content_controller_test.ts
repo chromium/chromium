@@ -1311,7 +1311,6 @@ suite('ContentController', () => {
     test('does nothing for screen2x', () => {
       contentBrowserProxy.activeDistillationMethod =
           contentBrowserProxy.distillationTypeScreen2x;
-      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = false;
       const container = document.createElement('div');
       container.appendChild(document.createTextNode('Hello'));
       document.body.appendChild(container);
@@ -1684,16 +1683,7 @@ suite('ContentController', () => {
       assertEquals(axId1, nodeStore.getAxId(node1));
     });
 
-    test('does nothing if feature is disabled', () => {
-      contentBrowserProxy.isReadabilitySelectTextEnabledFlag = false;
-      container.textContent = 'text';
-      contentController.onRenderedTextBlocksAvailable(container);
 
-      contentBrowserProxy.axMapping = [];
-
-      contentController.onRenderedTextMappingReady();
-      assertEquals(0, contentBrowserProxy.getCallCount('getAxMapping'));
-    });
   });
 
   test('showEmpty event triggers setEmpty', () => {
