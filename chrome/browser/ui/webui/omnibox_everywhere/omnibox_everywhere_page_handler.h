@@ -40,6 +40,7 @@ class OmniboxEverywherePageHandler
   void OnContextMenuClosed();
   void OpenComposebox(
       omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state);
+  void OnScreenshotCaptureCancelled();
 
  private:
   mojo::Receiver<omnibox_everywhere::mojom::PageHandler> receiver_;
