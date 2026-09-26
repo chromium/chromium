@@ -1185,7 +1185,11 @@ CSSStyleSheet* StyleEngine::CreateSheet(
     style_sheet =
         CSSStyleSheet::CreateInline(contents, element, start_position);
     contents->SetRenderBlocking(render_blocking_behavior);
-    contents->ParseString(text);
+    contents->ParseString(
+        text, /*allow_import_rules=*/true,
+        RuntimeEnabledFeatures::LazyParseInlineStyleSheetsEnabled()
+            ? CSSDeferPropertyParsing::kYes
+            : CSSDeferPropertyParsing::kNo);
     if (contents->IsCacheableForStyleElement()) {
       AddStyleSheetContents(text, contents);
     }

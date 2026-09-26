@@ -882,6 +882,33 @@ TEST_F(StyleEngineTest, IgnoreInvalidPropertyValue) {
       t1->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
+TEST_F(StyleEngineTest, LazyParseInlineStyleSheetPreservesComputedStyle) {
+  const char* kHtml =
+      "<style>#t1 { color: rgb(0, 128, 0); font-weight: bold }</style>"
+      "<div id='t1'></div>";
+
+  auto computed_color = [&]() {
+    GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(kHtml);
+    UpdateAllLifecyclePhases();
+    Element* t1 = GetDocument().getElementById(AtomicString("t1"));
+    EXPECT_TRUE(t1);
+    return t1->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor());
+  };
+
+  Color eager;
+  {
+    ScopedLazyParseInlineStyleSheetsForTest scoped_feature(false);
+    eager = computed_color();
+  }
+  Color lazy;
+  {
+    ScopedLazyParseInlineStyleSheetsForTest scoped_feature(true);
+    lazy = computed_color();
+  }
+  EXPECT_EQ(Color::FromRGB(0, 128, 0), eager);
+  EXPECT_EQ(eager, lazy);
+}
+
 TEST_F(StyleEngineTest, TextToSheetCache) {
   auto* element = MakeGarbageCollected<HTMLStyleElement>(GetDocument());
 

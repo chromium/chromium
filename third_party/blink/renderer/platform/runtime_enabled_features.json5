@@ -3925,6 +3925,13 @@
       status: "stable",
     },
     {
+      // Defers parsing of declaration blocks in inline <style> elements until
+      // a rule is first matched, the same treatment network-fetched
+      // stylesheets already get in StyleSheetContents::ParseAuthorStyleSheet.
+      // Rules that never match never pay for their declarations.
+      name: "LazyParseInlineStyleSheets",
+    },
+    {
       // Allow triggering the word suggestion from left click.
       // From crbug.com/433209485
       name: "LeftClickToHandleSuggestion",

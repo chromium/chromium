@@ -7,15 +7,19 @@
 #include "third_party/blink/renderer/core/css/parser/css_lazy_parsing_state.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/pending_sheet_type.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -185,6 +189,38 @@ TEST_F(CSSLazyParsingTest, NoLazyParsingForNestedAtRulesWithBlock) {
   ASSERT_TRUE(rule->ChildRules());
   EXPECT_EQ(1u, rule->ChildRules()->size());
   EXPECT_TRUE((*rule->ChildRules())[0]->IsApplyMixinRule());
+}
+
+// StyleEngine::CreateSheet is the inline <style> path. Unlike network
+// stylesheets it parses eagerly by default; LazyParseInlineStyleSheets opts it
+// into the same deferred treatment.
+TEST_F(CSSLazyParsingTest, InlineStyleElementEagerWhenFeatureDisabled) {
+  ScopedLazyParseInlineStyleSheetsForTest scoped_feature(false);
+  auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
+  Document& document = dummy_holder->GetDocument();
+  auto* element = MakeGarbageCollected<HTMLStyleElement>(document);
+
+  CSSStyleSheet* sheet = document.GetStyleEngine().CreateSheet(
+      *element, "body { color: red; }/*padding1234567890*/",
+      TextPosition::MinimumPosition(), PendingSheetType::kNonBlocking,
+      RenderBlockingBehavior::kNonBlocking);
+  EXPECT_TRUE(HasParsedProperties(RuleAt(sheet->Contents(), 0)));
+}
+
+TEST_F(CSSLazyParsingTest, InlineStyleElementLazyWhenFeatureEnabled) {
+  ScopedLazyParseInlineStyleSheetsForTest scoped_feature(true);
+  auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
+  Document& document = dummy_holder->GetDocument();
+  auto* element = MakeGarbageCollected<HTMLStyleElement>(document);
+
+  CSSStyleSheet* sheet = document.GetStyleEngine().CreateSheet(
+      *element, "body { color: blue; }/*padding1234567890*/",
+      TextPosition::MinimumPosition(), PendingSheetType::kNonBlocking,
+      RenderBlockingBehavior::kNonBlocking);
+  StyleRule* rule = RuleAt(sheet->Contents(), 0);
+  EXPECT_FALSE(HasParsedProperties(rule));
+  EXPECT_EQ("color: blue;", rule->Properties().AsText());
+  EXPECT_TRUE(HasParsedProperties(rule));
 }
 
 #endif  // SIMD
