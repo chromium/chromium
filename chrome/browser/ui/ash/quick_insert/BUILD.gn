@@ -70,7 +70,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/ash/browser_delegate/keyed_service_provider",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/drive:test_support",
@@ -111,7 +110,10 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "quick_insert_accessibility_browsertest.cc" ]
+  sources = [
+    "quick_insert_accessibility_browsertest.cc",
+    "quick_insert_client_impl_browsertest.cc",
+  ]
 
   deps = [
     ":quick_insert",
@@ -119,15 +121,28 @@ source_set("browser_tests") {
     "//ash:test_support",
     "//ash/public/cpp",
     "//ash/strings",
+    "//base/test:test_support",
+    "//chrome/browser",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/history",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
     "//chrome/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/user_manager",
     "//content/test:test_support",
     "//extensions/browser",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
     "//ui/events:test_support",
+    "//url",
   ]
 }
 

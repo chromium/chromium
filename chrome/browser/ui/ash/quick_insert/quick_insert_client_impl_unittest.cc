@@ -17,7 +17,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/app_list/search/test/test_ranker_manager.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/history_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/template_url_service_provider_impl.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -42,8 +41,6 @@
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_database_params.h"
@@ -73,9 +70,7 @@ using ::testing::AnyNumber;
 using ::testing::Contains;
 using ::testing::Field;
 using ::testing::IsEmpty;
-using ::testing::IsSupersetOf;
 using ::testing::Not;
-using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
@@ -151,16 +146,6 @@ void AddSearchToHistory(TestingProfile* profile,
                               /*last_visit=*/last_visit,
                               /*hidden=*/false, history::SOURCE_BROWSED);
   profile->BlockUntilHistoryProcessesPendingRequests();
-}
-
-void AddBookmarks(TestingProfile* profile,
-                  std::u16string_view title,
-                  GURL url) {
-  auto* bookmark_model = BookmarkModelFactory::GetForBrowserContext(profile);
-  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
-
-  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0,
-                         std::u16string(title), url);
 }
 
 ash::RecentFile CreateRecentFile(const base::FilePath& file_path,
@@ -248,50 +233,6 @@ TEST_F(QuickInsertClientImplTest, GetsSharedURLLoaderFactory) {
       user_manager());
 
   EXPECT_EQ(client.GetSharedURLLoaderFactory(), GetSharedURLLoaderFactory());
-}
-
-TEST_F(QuickInsertClientImplTest, StartCrosSearch) {
-  ash::QuickInsertController controller;
-  QuickInsertClientImpl client(
-      TestingBrowserProcess::GetGlobal()->local_state(), &controller,
-      user_manager());
-  AddSearchToHistory(profile(), GURL("http://foo.com/history"));
-  AddBookmarks(profile(), u"Foobaz", GURL("http://foo.com/bookmarks"));
-  base::test::TestFuture<void> test_done;
-
-  auto ranker_manager =
-      std::make_unique<app_list::TestRankerManager>(profile());
-  ranker_manager->SetBestMatchString(u"Foobaz");
-  client.set_ranker_manager_for_test(std::move(ranker_manager));
-
-  base::MockCallback<QuickInsertClientImpl::CrosSearchResultsCallback>
-      mock_search_callback;
-  EXPECT_CALL(mock_search_callback, Run(_, _)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_search_callback,
-      Run(ash::AppListSearchResultType::kOmnibox,
-          IsSupersetOf({
-              VariantWith<ash::QuickInsertBrowsingHistoryResult>(AllOf(
-                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
-                        GURL("http://foo.com/history")),
-                  Field("best_match",
-                        &ash::QuickInsertBrowsingHistoryResult::best_match,
-                        false))),
-              VariantWith<ash::QuickInsertBrowsingHistoryResult>(AllOf(
-                  Field("title", &ash::QuickInsertBrowsingHistoryResult::title,
-                        u"Foobaz"),
-                  Field("url", &ash::QuickInsertBrowsingHistoryResult::url,
-                        GURL("http://foo.com/bookmarks")),
-                  Field("best_match",
-                        &ash::QuickInsertBrowsingHistoryResult::best_match,
-                        true))),
-          })))
-      .WillOnce([&]() { test_done.SetValue(); });
-
-  client.StartCrosSearch(u"foo", /*category=*/std::nullopt,
-                         mock_search_callback.Get());
-
-  ASSERT_TRUE(test_done.Wait());
 }
 
 TEST_F(QuickInsertClientImplTest, IgnoresWhatYouTypedResults) {

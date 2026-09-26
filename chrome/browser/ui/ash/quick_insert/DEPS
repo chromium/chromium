@@ -32,6 +32,11 @@ specific_include_rules = {
   "quick_insert_accessibility_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
+  "quick_insert_client_impl_browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/history/history_service_factory.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
 
   # Unlike production code, tests construct the //chrome-side
   # TemplateURLServiceProviderImpl themselves so it registers as the
