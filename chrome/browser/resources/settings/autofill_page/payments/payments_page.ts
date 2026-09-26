@@ -10,35 +10,31 @@
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_shared.css.js';
 import '../../simple_confirmation_dialog.js';
-import '../autofill_shared.css.js';
 import './credit_card_edit_dialog.js';
 import './iban_edit_dialog.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {CvcDeletionUserAction, MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../../metrics_browser_proxy.js';
-import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../../settings_page/settings_view_mixin_lit.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../../simple_confirmation_dialog.js';
 import type {PersonalDataChangedListener} from '../autofill_manager_proxy.js';
 import {AutofillPolicyDataCategory, computeEffectiveAutofillPref} from '../policy_utils.js';
@@ -48,7 +44,8 @@ import type {DotsIbanMenuClickEvent, RemoteIbanMenuClickEvent} from './iban_list
 import type {SettingsPaymentsListElement} from './payments_list.js';
 import type {PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {PaymentsManagerImpl} from './payments_manager_proxy.js';
-import {getTemplate} from './payments_page.html.js';
+import {getCss} from './payments_page.css.js';
+import {getHtml} from './payments_page.html.js';
 
 type DotsCardMenuClickEvent = CustomEvent<{
   creditCard: chrome.autofillPrivate.CreditCardEntry,
@@ -72,19 +69,19 @@ export interface SettingsPaymentsPageElement {
     autofillCreditCardToggle: SettingsToggleButtonElement,
     canMakePaymentToggle: SettingsToggleButtonElement,
     creditCardSharedMenu: CrActionMenuElement,
-    ibanSharedActionMenu: CrLazyRenderElement<CrActionMenuElement>,
+    ibanSharedActionMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     manageLink: HTMLElement,
-    mandatoryAuthToggle: SettingsToggleButtonElement,
     menuEditCreditCard: HTMLElement,
     menuRemoveCreditCard: HTMLElement,
     menuAddVirtualCard: HTMLElement,
     menuRemoveVirtualCard: HTMLElement,
+    paymentMethodsActionMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     paymentsList: SettingsPaymentsListElement,
   };
 }
 
-const SettingsPaymentsPageElementBase =
-    PrefServiceObserverMixin(SettingsViewMixin(I18nMixin(PolymerElement)));
+const SettingsPaymentsPageElementBase = PrefServiceObserverMixinLit(
+    SettingsViewMixinLit(I18nMixinLit(CrLitElement)));
 
 export class SettingsPaymentsPageElement extends
     SettingsPaymentsPageElementBase {
@@ -92,227 +89,136 @@ export class SettingsPaymentsPageElement extends
     return 'settings-payments-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      creditCardEnabledSyntheticPref_: {
-        type: Object,
-        value: () => ({
-          key: 'autofill.credit_card_enabled',
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        }),
-      },
+      creditCardEnabledSyntheticPref_: {type: Object},
 
       /**
        * An array of all saved credit cards.
        */
-      creditCards: {
-        type: Array,
-        value: () => [],
-      },
+      creditCards: {type: Array},
 
       /**
        * An array of all saved IBANs.
        */
-      ibans: {
-        type: Array,
-        value: () => [],
-      },
+      ibans: {type: Array},
 
       /**
        * An array of all saved pay over time issuers.
        */
-      payOverTimeIssuers: {
-        type: Array,
-        value: () => [],
-      },
+      payOverTimeIssuers: {type: Array},
 
       /**
        * Whether IBAN is supported in Settings page.
        */
-      showIbanSettingsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showIbansSettings');
-        },
-        readOnly: true,
-      },
+      showIbanSettingsEnabled_: {type: Boolean},
 
       /**
        * Whether Google Wallet branding should be used instead of Google Pay
        * branding.
        */
-      autofillEnableWalletBrandingEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('autofillEnableWalletBranding');
-        },
-        readOnly: true,
-      },
+      autofillEnableWalletBrandingEnabled_: {type: Boolean},
 
       /**
        * The model for any credit card-related action menus or dialogs.
        */
-      activeCreditCard_: Object,
+      activeCreditCard_: {type: Object},
 
       /**
        * The model for any IBAN-related action menus or dialogs.
        */
-      activeIban_: Object,
+      activeIban_: {type: Object},
 
-      showCreditCardDialog_: Boolean,
-      showIbanDialog_: Boolean,
-      showLocalCreditCardRemoveConfirmationDialog_: Boolean,
-      showLocalIbanRemoveConfirmationDialog_: Boolean,
-      showVirtualCardUnenrollDialog_: Boolean,
-      showBulkRemoveCvcConfirmationDialog_: Boolean,
+      showCreditCardDialog_: {type: Boolean},
+      showIbanDialog_: {type: Boolean},
+      showLocalCreditCardRemoveConfirmationDialog_: {type: Boolean},
+      showLocalIbanRemoveConfirmationDialog_: {type: Boolean},
+      showVirtualCardUnenrollDialog_: {type: Boolean},
+      showBulkRemoveCvcConfirmationDialog_: {type: Boolean},
 
       /**
        * Checks if we can use device authentication to authenticate the user.
        */
       // <if expr="is_win or is_macosx or is_chromeos">
-      deviceAuthAvailable_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('deviceAuthAvailable');
-        },
-      },
+      deviceAuthAvailable_: {type: Boolean},
       // </if>
 
       /**
        * Checks if CVC storage is available based on the feature flag.
        */
-      cvcStorageAvailable_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('cvcStorageAvailable');
-        },
-      },
-
-      /**
-       * Sublabel for the card benefits toggle. The sublabel text also includes
-       * a link to learn about the card benefits.
-       */
-      cardBenefitsSublabel_: {
-        type: String,
-        value() {
-          return loadTimeData.getString('cardBenefitsToggleSublabel');
-        },
-      },
+      cvcStorageAvailable_: {type: Boolean},
 
       /**
        * Checks if a mandatory reauth feature flag is enabled.
        */
-      mandatoryReauthFeatureFlagEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('mandatoryReauthFeatureFlagEnabled');
-        },
-      },
+      mandatoryReauthFeatureFlagEnabled_: {type: Boolean},
 
       /**
        * Checks if pay over time should be shown from the settings page.
        */
-      shouldShowPayOverTimeSettings_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
-        },
-        readOnly: true,
-      },
+      shouldShowPayOverTimeSettings_: {type: Boolean},
 
-      /**
-       * Sublabel for the pay over time toggle. The sublabel text also includes
-       * a link to learn about pay over time.
-       */
-      payOverTimeSublabel_: {
-        type: String,
-        value() {
-          return loadTimeData.getString('autofillPayOverTimeSettingsSublabel');
-        },
-      },
-
-      prefsInitialized_: {
-        type: Boolean,
-        value: false,
-      },
+      prefsInitialized_: {type: Boolean},
     };
   }
 
-  declare creditCards: chrome.autofillPrivate.CreditCardEntry[];
-  declare ibans: chrome.autofillPrivate.IbanEntry[];
-  declare payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
-  declare private showIbanSettingsEnabled_: boolean;
-  declare private creditCardEnabledSyntheticPref_:
-      chrome.settingsPrivate.PrefObject<boolean>|undefined;
-  declare private autofillEnableWalletBrandingEnabled_: boolean;
-  declare private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|
-      null;
-  declare private activeIban_: chrome.autofillPrivate.IbanEntry|null;
-  declare private showCreditCardDialog_: boolean;
-  declare private showIbanDialog_: boolean;
-  declare private showLocalCreditCardRemoveConfirmationDialog_: boolean;
-  declare private showLocalIbanRemoveConfirmationDialog_: boolean;
-  declare private showVirtualCardUnenrollDialog_: boolean;
+  accessor creditCards: chrome.autofillPrivate.CreditCardEntry[] = [];
+  accessor ibans: chrome.autofillPrivate.IbanEntry[] = [];
+  accessor payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[] =
+      [];
+  private accessor showIbanSettingsEnabled_: boolean =
+      loadTimeData.getBoolean('showIbansSettings');
+  protected accessor creditCardEnabledSyntheticPref_:
+      chrome.settingsPrivate.PrefObject<boolean> = {
+    key: 'autofill.credit_card_enabled',
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    value: false,
+  };
+  private accessor autofillEnableWalletBrandingEnabled_: boolean =
+      loadTimeData.getBoolean('autofillEnableWalletBranding');
+  protected accessor activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|
+      null = null;
+  protected accessor activeIban_: chrome.autofillPrivate.IbanEntry|null = null;
+  protected accessor showCreditCardDialog_: boolean = false;
+  protected accessor showIbanDialog_: boolean = false;
+  protected accessor showLocalCreditCardRemoveConfirmationDialog_: boolean =
+      false;
+  protected accessor showLocalIbanRemoveConfirmationDialog_: boolean = false;
+  protected accessor showVirtualCardUnenrollDialog_: boolean = false;
   // <if expr="is_win or is_macosx or is_chromeos">
-  declare private deviceAuthAvailable_: boolean;
+  private accessor deviceAuthAvailable_: boolean =
+      loadTimeData.getBoolean('deviceAuthAvailable');
   // </if>
-  declare private cvcStorageAvailable_: boolean;
-  declare private showBulkRemoveCvcConfirmationDialog_: boolean;
+  protected accessor cvcStorageAvailable_: boolean =
+      loadTimeData.getBoolean('cvcStorageAvailable');
+  protected accessor showBulkRemoveCvcConfirmationDialog_: boolean = false;
+  protected accessor shouldShowPayOverTimeSettings_: boolean =
+      loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
+  protected accessor mandatoryReauthFeatureFlagEnabled_: boolean =
+      loadTimeData.getBoolean('mandatoryReauthFeatureFlagEnabled');
+  private accessor prefsInitialized_: boolean = false;
 
-  /**
-   * Computes a synthetic preference that overlays the wildcard
-   * `autofill.types_blocked` enterprise policy onto the user's
-   * `autofill.credit_card_enabled` preference.
-   */
-  private updateCreditCardEnabledSyntheticPref_() {
-    this.creditCardEnabledSyntheticPref_ = computeEffectiveAutofillPref(
-        PrefService.getInstance().getPref<boolean>(
-            'autofill.credit_card_enabled'),
-        PrefService.getInstance().getPref<TypesBlockedEntry[]>(
-            'autofill.types_blocked'),
-        AutofillPolicyDataCategory.PAYMENTS);
-  }
-
-  /**
-   * Handles user toggle changes on the payments autofill toggle. Since the
-   * toggle is one-way bound to `creditCardEnabledSyntheticPref_`, we explicitly
-   * update the underlying `autofill.credit_card_enabled` pref, guarding against
-   * changes when policy is enforced.
-   */
-  private onCreditCardToggleChange_(event: Event) {
-    // If the preference is enforced by enterprise policy, do not allow the user
-    // to toggle or mutate the underlying preference value.
-    if (this.creditCardEnabledSyntheticPref_?.enforcement ===
-        chrome.settingsPrivate.Enforcement.ENFORCED) {
-      return;
-    }
-    const toggle = event.target as SettingsToggleButtonElement;
-    PrefService.getInstance().setPrefValue(
-        'autofill.credit_card_enabled', toggle.checked);
-  }
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
-  declare private cardBenefitsSublabel_: string;
-  declare private shouldShowPayOverTimeSettings_: boolean;
-  declare private payOverTimeSublabel_: string;
-  declare private mandatoryReauthFeatureFlagEnabled_: boolean;
-  declare private prefsInitialized_: boolean;
 
   override connectedCallback() {
-    super.connectedCallback();
-
     this.addPrefObserver(
         'autofill.credit_card_enabled',
         () => this.updateCreditCardEnabledSyntheticPref_());
     this.addPrefObserver(
         'autofill.types_blocked',
         () => this.updateCreditCardEnabledSyntheticPref_());
+
+    super.connectedCallback();
 
     PrefService.getInstance().whenInitialized().then(() => {
       this.prefsInitialized_ = true;
@@ -381,13 +287,47 @@ export class SettingsPaymentsPageElement extends
     this.setPersonalDataListener_ = null;
   }
 
+  /**
+   * Computes a synthetic preference that overlays the wildcard
+   * `autofill.types_blocked` enterprise policy onto the user's
+   * `autofill.credit_card_enabled` preference.
+   */
+  private updateCreditCardEnabledSyntheticPref_() {
+    const effectivePref = computeEffectiveAutofillPref(
+        PrefService.getInstance().getPref<boolean>(
+            'autofill.credit_card_enabled'),
+        PrefService.getInstance().getPref<TypesBlockedEntry[]>(
+            'autofill.types_blocked'),
+        AutofillPolicyDataCategory.PAYMENTS);
+    assert(effectivePref);
+    this.creditCardEnabledSyntheticPref_ = effectivePref;
+  }
+
+  /**
+   * Handles user toggle changes on the payments autofill toggle. Since the
+   * toggle is one-way bound to `creditCardEnabledSyntheticPref_`, we explicitly
+   * update the underlying `autofill.credit_card_enabled` pref, guarding against
+   * changes when policy is enforced.
+   */
+  protected onCreditCardToggleSettingsBooleanControlChange_(event: Event) {
+    // If the preference is enforced by enterprise policy, do not allow the user
+    // to toggle or mutate the underlying preference value.
+    if (this.creditCardEnabledSyntheticPref_.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return;
+    }
+    const toggle = event.target as SettingsToggleButtonElement;
+    PrefService.getInstance().setPrefValue(
+        'autofill.credit_card_enabled', toggle.checked);
+  }
+
   private setCreditCards_(cardList: chrome.autofillPrivate.CreditCardEntry[]) {
     this.creditCards = cardList;
 
     // To align with Android, only record this histogram when the pref is
     // enabled.
     if (this.prefsInitialized_ &&
-        (this.creditCardEnabledSyntheticPref_?.value ??
+        (this.creditCardEnabledSyntheticPref_.value ||
          PrefService.getInstance()
              .getPref<boolean>('autofill.credit_card_enabled')
              .value)) {
@@ -402,20 +342,16 @@ export class SettingsPaymentsPageElement extends
    * TODO(crbug.com/40234941): Add additional check (starter country-list, or
    * the saved-pref-boolean on if the user has submitted an IBAN form).
    */
-  private shouldShowIbanSettings_(): boolean {
+  protected shouldShowIbanSettings_(): boolean {
     return this.showIbanSettingsEnabled_;
   }
 
   /**
    * Opens the dropdown menu to add a credit/debit card or IBAN.
    */
-  private onAddPaymentMethodClick_(e: Event) {
+  protected onAddPaymentMethodClick_(e: Event) {
     const target = e.currentTarget as HTMLElement;
-    const menu = this.shadowRoot!
-                     .querySelector<CrLazyRenderElement<CrActionMenuElement>>(
-                         '#paymentMethodsActionMenu')!.get();
-    assert(menu);
-    menu.showAt(target, {
+    this.$.paymentMethodsActionMenu.get().showAt(target, {
       anchorAlignmentX: AnchorAlignment.BEFORE_END,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,
@@ -425,7 +361,7 @@ export class SettingsPaymentsPageElement extends
   /**
    * Opens the credit card action menu.
    */
-  private onCreditCardDotsMenuClick_(e: DotsCardMenuClickEvent) {
+  protected onDotsCardMenuClick_(e: DotsCardMenuClickEvent) {
     // Copy item so dialog won't update model on cancel.
     this.activeCreditCard_ = e.detail.creditCard;
 
@@ -435,7 +371,7 @@ export class SettingsPaymentsPageElement extends
   /**
    * Opens the IBAN action menu.
    */
-  private onDotsIbanMenuClick_(e: DotsIbanMenuClickEvent) {
+  protected onDotsIbanMenuClick_(e: DotsIbanMenuClickEvent) {
     // Copy item so dialog won't update model on cancel.
     this.activeIban_ = e.detail.iban;
 
@@ -445,7 +381,7 @@ export class SettingsPaymentsPageElement extends
   /**
    * Handles clicking on the "Add credit card" button.
    */
-  private onAddCreditCardClick_(e: Event) {
+  protected onAddCreditCardClick_(e: Event) {
     e.preventDefault();
 
     MetricsBrowserProxyImpl.getInstance().recordBooleanHistogram(
@@ -460,15 +396,11 @@ export class SettingsPaymentsPageElement extends
     };
     this.showCreditCardDialog_ = true;
     if (this.showIbanSettingsEnabled_) {
-      const menu = this.shadowRoot!
-                       .querySelector<CrLazyRenderElement<CrActionMenuElement>>(
-                           '#paymentMethodsActionMenu')!.get();
-      assert(menu);
-      menu.close();
+      this.$.paymentMethodsActionMenu.get().close();
     }
   }
 
-  private onCreditCardDialogClose_() {
+  protected onCreditCardDialogClose_() {
     this.showCreditCardDialog_ = false;
     this.activeCreditCard_ = null;
   }
@@ -476,17 +408,13 @@ export class SettingsPaymentsPageElement extends
   /**
    * Handles clicking on the add "IBAN" option.
    */
-  private onAddIbanClick_(e: Event) {
+  protected onAddIbanClick_(e: Event) {
     e.preventDefault();
     this.showIbanDialog_ = true;
-    const menu = this.shadowRoot!
-                     .querySelector<CrLazyRenderElement<CrActionMenuElement>>(
-                         '#paymentMethodsActionMenu')!.get();
-    assert(menu);
-    menu.close();
+    this.$.paymentMethodsActionMenu.get().close();
   }
 
-  private onIbanDialogClose_() {
+  protected onIbanDialogClose_() {
     this.showIbanDialog_ = false;
     this.activeIban_ = null;
   }
@@ -494,7 +422,7 @@ export class SettingsPaymentsPageElement extends
   /**
    * Handles clicking on the "Edit" credit card button.
    */
-  private async onMenuEditCreditCardClick_(e: Event) {
+  protected async onMenuEditCreditCardClick_(e: Event) {
     e.preventDefault();
     assert(this.activeCreditCard_);
     if (this.activeCreditCard_.metadata!.isLocal) {
@@ -510,7 +438,7 @@ export class SettingsPaymentsPageElement extends
     this.$.creditCardSharedMenu.close();
   }
 
-  private onRemoteEditCreditCardClick_(e: RemoteCardMenuClickEvent) {
+  protected onRemoteCardMenuClick_(e: RemoteCardMenuClickEvent) {
     this.activeCreditCard_ = e.detail.creditCard;
     this.onRemoteCreditCardUrlClick_();
   }
@@ -525,7 +453,7 @@ export class SettingsPaymentsPageElement extends
     OpenWindowProxyImpl.getInstance().openUrl(url.toString());
   }
 
-  private onRemoteEditIbanMenuClick_(e: RemoteIbanMenuClickEvent) {
+  protected onRemoteIbanMenuClick_(e: RemoteIbanMenuClickEvent) {
     this.activeIban_ = e.detail.iban;
     this.paymentsManager_.logServerIbanLinkClicked();
     const url = new URL(loadTimeData.getString('managePaymentMethodsUrl'));
@@ -536,11 +464,11 @@ export class SettingsPaymentsPageElement extends
     OpenWindowProxyImpl.getInstance().openUrl(url.toString());
   }
 
-  private onLocalCreditCardRemoveConfirmationDialogClose_() {
+  protected onLocalCreditCardRemoveConfirmationDialogClose_() {
     // Only remove the credit card entry if the user closed the dialog via the
     // confirmation button (instead of cancel or close).
     const confirmationDialog =
-        this.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+        this.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
             '#localCardDeleteConfirmDialog');
     assert(confirmationDialog);
     if (confirmationDialog.wasConfirmed()) {
@@ -561,7 +489,7 @@ export class SettingsPaymentsPageElement extends
   /**
    * Handles clicking on the "Remove" credit card button.
    */
-  private onMenuRemoveCreditCardClick_() {
+  protected onMenuRemoveCreditCardClick_() {
     this.showLocalCreditCardRemoveConfirmationDialog_ = true;
     this.$.creditCardSharedMenu.close();
   }
@@ -569,17 +497,17 @@ export class SettingsPaymentsPageElement extends
   /**
    * Handles clicking on the "Edit" IBAN button.
    */
-  private onMenuEditIbanClick_(e: Event) {
+  protected onMenuEditIbanClick_(e: Event) {
     e.preventDefault();
     this.showIbanDialog_ = true;
     this.$.ibanSharedActionMenu.get().close();
   }
 
-  private onLocalIbanRemoveConfirmationDialogClose_() {
+  protected onLocalIbanRemoveConfirmationDialogClose_() {
     // Only remove the IBAN entry if the user closed the dialog via the
     // confirmation button (instead of cancel or close).
     const confirmationDialog =
-        this.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+        this.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
             '#localIbanDeleteConfirmationDialog');
     assert(confirmationDialog);
     if (confirmationDialog.wasConfirmed()) {
@@ -600,24 +528,24 @@ export class SettingsPaymentsPageElement extends
   /**
    * Handles clicking on the "Remove" IBAN button.
    */
-  private onMenuRemoveIbanClick_() {
+  protected onMenuRemoveIbanClick_() {
     assert(this.activeIban_);
     this.showLocalIbanRemoveConfirmationDialog_ = true;
     this.$.ibanSharedActionMenu.get().close();
   }
 
-  private onMenuAddVirtualCardClick_() {
+  protected onMenuAddVirtualCardClick_() {
     this.paymentsManager_.addVirtualCard(this.activeCreditCard_!.guid!);
     this.$.creditCardSharedMenu.close();
     this.activeCreditCard_ = null;
   }
 
-  private onMenuRemoveVirtualCardClick_() {
+  protected onMenuRemoveVirtualCardClick_() {
     this.showVirtualCardUnenrollDialog_ = true;
     this.$.creditCardSharedMenu.close();
   }
 
-  private onVirtualCardUnenrollDialogClose_() {
+  protected onVirtualCardUnenrollDialogClose_() {
     this.showVirtualCardUnenrollDialog_ = false;
     this.activeCreditCard_ = null;
   }
@@ -626,7 +554,7 @@ export class SettingsPaymentsPageElement extends
    * Records changes made to the "Allow sites to check if you have payment
    * methods saved" setting to a histogram.
    */
-  private onCanMakePaymentChange_() {
+  protected onCanMakePaymentSettingsBooleanControlChange_() {
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.PAYMENT_METHOD);
   }
@@ -634,17 +562,17 @@ export class SettingsPaymentsPageElement extends
   /**
    * Listens for the save-credit-card event, and calls the private API.
    */
-  private saveCreditCard_(
+  protected onSaveCreditCard_(
       event: CustomEvent<chrome.autofillPrivate.CreditCardEntry>) {
     this.paymentsManager_.saveCreditCard(event.detail);
   }
 
-  private onSaveIban_(event: CustomEvent<chrome.autofillPrivate.IbanEntry>) {
+  protected onSaveIban_(event: CustomEvent<chrome.autofillPrivate.IbanEntry>) {
     this.paymentsManager_.saveIban(event.detail);
   }
 
-  private getMenuEditCardText_(isLocalCard: boolean): string {
-    if (isLocalCard) {
+  protected getMenuEditCardText_(): string {
+    if (this.activeCreditCard_?.metadata?.isLocal) {
       return this.i18n('edit');
     }
     return this.i18n(
@@ -652,7 +580,7 @@ export class SettingsPaymentsPageElement extends
                                                     'editServerCard');
   }
 
-  private shouldShowAddVirtualCardButton_(): boolean {
+  protected shouldShowAddVirtualCardButton_(): boolean {
     if (this.activeCreditCard_ === null || !this.activeCreditCard_.metadata) {
       return false;
     }
@@ -660,7 +588,7 @@ export class SettingsPaymentsPageElement extends
         !this.activeCreditCard_.metadata.isVirtualCardEnrolled;
   }
 
-  private shouldShowRemoveVirtualCardButton_(): boolean {
+  protected shouldShowRemoveVirtualCardButton_(): boolean {
     if (this.activeCreditCard_ === null || !this.activeCreditCard_.metadata) {
       return false;
     }
@@ -671,7 +599,7 @@ export class SettingsPaymentsPageElement extends
   /**
    * Listens for the unenroll-virtual-card event, and calls the private API.
    */
-  private unenrollVirtualCard_(event: CustomEvent<string>) {
+  protected onUnenrollVirtualCard_(event: CustomEvent<string>) {
     this.paymentsManager_.removeVirtualCard(event.detail);
   }
 
@@ -684,12 +612,12 @@ export class SettingsPaymentsPageElement extends
    * Under any of these circumstances, we should display a disabled mandatory
    * re-auth toggle to the user.
    */
-  private shouldDisableAuthToggle_(): boolean {
+  protected shouldDisableAuthToggle_(): boolean {
     if (!this.prefsInitialized_) {
       return true;
     }
 
-    const creditCardEnabled = this.creditCardEnabledSyntheticPref_?.value ??
+    const creditCardEnabled = this.creditCardEnabledSyntheticPref_.value ||
         PrefService.getInstance()
             .getPref<boolean>('autofill.credit_card_enabled')
             .value;
@@ -699,7 +627,7 @@ export class SettingsPaymentsPageElement extends
 
   private focusHeaderControls_(): void {
     const element =
-        this.shadowRoot!.querySelector<HTMLElement>('.header-aligned-button');
+        this.shadowRoot.querySelector<HTMLElement>('.header-aligned-button');
     if (element) {
       focusWithoutInk(element);
     }
@@ -708,7 +636,7 @@ export class SettingsPaymentsPageElement extends
   /**
    * Checks for user auth before flipping the mandatory auth toggle.
    */
-  private onMandatoryAuthToggleChange_(e: Event) {
+  protected onMandatoryAuthToggleSettingsBooleanControlChange_(e: Event) {
     const mandatoryAuthToggle = e.target as SettingsToggleButtonElement;
     assert(mandatoryAuthToggle);
     // The toggle is reset to the value when it was clicked.
@@ -720,7 +648,7 @@ export class SettingsPaymentsPageElement extends
   /**
    * Method to handle the clicking of bulk delete all the CVCs.
    */
-  private onBulkRemoveCvcClick_() {
+  protected onCvcStorageSubLabelLinkClicked_() {
     assert(this.cvcStorageAvailable_);
     // Log the metric for user clicking on the bulk delete hyperlink which
     // triggers the dialog window.
@@ -732,10 +660,10 @@ export class SettingsPaymentsPageElement extends
   /**
    * Method to bulk delete all the CVCs present on the local DB.
    */
-  private onShowBulkRemoveCvcConfirmationDialogClose_() {
+  protected onShowBulkRemoveCvcConfirmationDialogClose_() {
     assert(this.cvcStorageAvailable_);
     const confirmationDialog =
-        this.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+        this.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
             '#bulkDeleteCvcConfirmDialog');
     assert(confirmationDialog);
 
@@ -753,7 +681,7 @@ export class SettingsPaymentsPageElement extends
     // Focus on the CVC storage toggle, post deletion of CVCs for voice reader
     // correctness.
     const cvcStorageToggle =
-        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        this.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#cvcStorageToggle');
     assert(cvcStorageToggle);
     cvcStorageToggle.focus();
@@ -765,7 +693,7 @@ export class SettingsPaymentsPageElement extends
    * hyperlink is returned else return the regular sublabel.
    * @returns Cvc storage toggle sublabel string.
    */
-  private getCvcStorageSublabel_(): string {
+  protected getCvcStorageSublabel_(): string {
     const card = this.creditCards.find(cc => !!cc.cvc);
     return loadTimeData.getStringF(
         card === undefined ? 'enableCvcStorageSublabel' :
@@ -776,7 +704,7 @@ export class SettingsPaymentsPageElement extends
    * Opens an article to learn about card benefits when the card benefits toggle
    * sublabel link is clicked.
    */
-  private onCardBenefitsSublabelLinkClick_() {
+  protected onCardBenefitsSubLabelLinkClicked_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('cardBenefitsToggleLearnMoreUrl'));
   }
@@ -785,7 +713,7 @@ export class SettingsPaymentsPageElement extends
    * Get the CVC storage toggle aria label for a11y voice readers.
    * @returns CVC storage aria label.
    */
-  private getCvcStorageAriaLabel_(): string {
+  protected getCvcStorageAriaLabel_(): string {
     const card = this.creditCards.find(cc => !!cc.cvc);
     return this.i18n(
         card === undefined ? 'enableCvcStorageAriaLabelForNoCvcSaved' :
@@ -796,7 +724,7 @@ export class SettingsPaymentsPageElement extends
    * Get the body text for the CVC deletion dialog, depending on whether Google
    * Wallet branding is enabled or not.
    */
-  private getCvcDeletionDialogBodyText_(): string {
+  protected getCvcDeletionDialogBodyText_(): string {
     return this.i18n(
         this.autofillEnableWalletBrandingEnabled_ ?
             'bulkRemoveCvcFromWalletConfirmationDescription' :
@@ -807,16 +735,18 @@ export class SettingsPaymentsPageElement extends
    * Opens an article to learn about pay over time when the pay over time
    * toggle sublabel link is clicked.
    */
-  private onPayOverTimeSublabelLinkClick_() {
+  protected onPayOverTimeSubLabelLinkClicked_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('autofillPayOverTimeSettingsLearnMoreUrl'));
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
+
+export type PaymentsPageElement = SettingsPaymentsPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {

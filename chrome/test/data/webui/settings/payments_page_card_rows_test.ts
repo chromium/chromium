@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {CardBenefitsUserAction, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -97,7 +96,6 @@ suite('PaymentsPageCardRows', function() {
             ...STUB_USER_ACCOUNT_INFO,
             isSyncEnabledForAutofillProfiles: true,
           });
-      flush();
       await microtasksFinished();
     };
 
@@ -190,7 +188,7 @@ suite('PaymentsPageCardRows', function() {
         assertTrue(!!menuButton);
 
         menuButton.click();
-        flush();
+        await microtasksFinished();
         assertTrue(isVisible(page.$.menuEditCreditCard));
 
         assertEquals(
@@ -217,7 +215,7 @@ suite('PaymentsPageCardRows', function() {
         assertTrue(!!menuButton);
 
         menuButton.click();
-        flush();
+        await microtasksFinished();
         assertTrue(isVisible(page.$.menuEditCreditCard));
 
         assertEquals(
@@ -317,7 +315,7 @@ suite('PaymentsPageCardRows', function() {
     assertTrue(!!menuButton);
 
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     // Menu should have 2 options.
     assertFalse(page.$.menuEditCreditCard.hidden);
@@ -326,7 +324,6 @@ suite('PaymentsPageCardRows', function() {
     assertTrue(page.$.menuRemoveVirtualCard.hidden);
 
     page.$.creditCardSharedMenu.close();
-    flush();
   });
 
   test('verifyServerCreditCardMenu', async function() {
@@ -368,7 +365,7 @@ suite('PaymentsPageCardRows', function() {
     assertTrue(!!menuButton);
 
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     // Menu should have 2 options.
     assertFalse(page.$.menuEditCreditCard.hidden);
@@ -377,7 +374,6 @@ suite('PaymentsPageCardRows', function() {
     assertTrue(page.$.menuRemoveVirtualCard.hidden);
 
     page.$.creditCardSharedMenu.close();
-    flush();
   });
 
   test('verifyVirtualCardEnrolledCreditCardMenu', async function() {
@@ -401,7 +397,7 @@ suite('PaymentsPageCardRows', function() {
     assertTrue(!!menuButton);
 
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     // Menu should have 2 options.
     assertFalse(page.$.menuEditCreditCard.hidden);
@@ -410,7 +406,6 @@ suite('PaymentsPageCardRows', function() {
     assertFalse(page.$.menuRemoveVirtualCard.hidden);
 
     page.$.creditCardSharedMenu.close();
-    flush();
   });
 
   test('verifyAddVirtualCardClicked', async function() {
@@ -431,11 +426,11 @@ suite('PaymentsPageCardRows', function() {
         firstEntry.shadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     assertFalse(page.$.menuAddVirtualCard.hidden);
     page.$.menuAddVirtualCard.click();
-    flush();
+    await microtasksFinished();
 
     const paymentsManager =
         PaymentsManagerImpl.getInstance() as TestPaymentsManager;
@@ -461,11 +456,11 @@ suite('PaymentsPageCardRows', function() {
         firstEntry.shadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     assertFalse(page.$.menuRemoveVirtualCard.hidden);
     page.$.menuRemoveVirtualCard.click();
-    flush();
+    await microtasksFinished();
 
     const menu = firstEntry.shadowRoot.querySelector<HTMLElement>(
         '#creditCardSharedMenu');
@@ -1313,7 +1308,7 @@ suite('PaymentsPageEditCreditCardLink', function() {
             firstEntry.shadowRoot.querySelector<HTMLElement>('#creditCardMenu');
         assertTrue(!!menuButton);
         menuButton.click();
-        flush();
+        await microtasksFinished();
 
         assertTrue(isVisible(page.$.menuEditCreditCard));
         page.$.menuEditCreditCard.click();

@@ -490,7 +490,7 @@ suite('PaymentsPageCardDialogs', function() {
     await microtasksFinished();
 
     const confirmationDialog =
-        page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+        page.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
             '#localCardDeleteConfirmDialog');
     assertTrue(!!confirmationDialog);
     await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
@@ -537,7 +537,7 @@ suite('PaymentsPageCardDialogs', function() {
     await microtasksFinished();
 
     const confirmationDialog =
-        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+        page.shadowRoot.querySelector('settings-simple-confirmation-dialog');
     assertTrue(!!confirmationDialog);
     await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
 

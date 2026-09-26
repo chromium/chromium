@@ -5,7 +5,6 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSimpleConfirmationDialogElement, CrInputElement, SettingsIbanEditDialogElement, SettingsIbanListEntryElement, SettingsPaymentsListElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement} from 'chrome://settings/settings.js';
@@ -59,7 +58,6 @@ suite('PaymentsPageIban', function() {
     const dialog = document.createElement('settings-iban-edit-dialog');
     dialog.iban = ibanItem;
     document.body.appendChild(dialog);
-    flush();
     dialog.$.saveButton.disabled = false;
     return dialog;
   }
@@ -68,7 +66,7 @@ suite('PaymentsPageIban', function() {
    * Returns an array containing all local and server IBAN items.
    */
   function getIbanListItems() {
-    return document.body.querySelector('settings-payments-page')!.shadowRoot!
+    return document.body.querySelector('settings-payments-page')!.shadowRoot
         .querySelector('settings-payments-list')!.shadowRoot.querySelectorAll(
             'settings-iban-list-entry');
   }
@@ -92,11 +90,11 @@ suite('PaymentsPageIban', function() {
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         {credit_card_enabled: {value: true}});
     const addPaymentMethodsButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addPaymentMethods');
+        page.shadowRoot.querySelector<CrButtonElement>('#addPaymentMethods');
     assertFalse(!!addPaymentMethodsButton);
 
     const addCreditCardButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+        page.shadowRoot.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCreditCardButton);
     assertFalse(addCreditCardButton.hidden);
   });
@@ -106,19 +104,19 @@ suite('PaymentsPageIban', function() {
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         {credit_card_enabled: {value: true}});
     const addPaymentMethodsButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addPaymentMethods');
+        page.shadowRoot.querySelector<CrButtonElement>('#addPaymentMethods');
     assertTrue(!!addPaymentMethodsButton);
     addPaymentMethodsButton.click();
-    flush();
+    await microtasksFinished();
 
     // "Add" menu should have 2 options.
     const addCreditCardButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+        page.shadowRoot.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCreditCardButton);
     assertFalse(addCreditCardButton.hidden);
 
     const addIbanButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addIban');
+        page.shadowRoot.querySelector<CrButtonElement>('#addIban');
     assertTrue(!!addIbanButton);
     assertFalse(addIbanButton.hidden);
   });
@@ -302,9 +300,9 @@ suite('PaymentsPageIban', function() {
     // Local IBANs will show the 3-dot overflow menu.
     page.$.ibanSharedActionMenu.get();
     const menuEditIban =
-        page.shadowRoot!.querySelector<HTMLElement>('#menuEditIban');
+        page.shadowRoot.querySelector<HTMLElement>('#menuEditIban');
     const menuRemoveIban =
-        page.shadowRoot!.querySelector<HTMLElement>('#menuRemoveIban');
+        page.shadowRoot.querySelector<HTMLElement>('#menuRemoveIban');
 
     // Menu should have 2 options.
     assertTrue(!!menuEditIban);
@@ -312,7 +310,7 @@ suite('PaymentsPageIban', function() {
     assertFalse(menuEditIban.hidden);
     assertFalse(menuRemoveIban.hidden);
 
-    flush();
+    await microtasksFinished();
   });
 
   test('verifyRemoveLocalIbanDialogConfirmed', async function() {
@@ -328,17 +326,17 @@ suite('PaymentsPageIban', function() {
         ibanEntry.shadowRoot.querySelector<HTMLElement>('#ibanMenu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     const menuRemoveIban =
-        page.shadowRoot!.querySelector<CrButtonElement>('#menuRemoveIban');
+        page.shadowRoot.querySelector<CrButtonElement>('#menuRemoveIban');
     assertTrue(!!menuRemoveIban);
     assertFalse(menuRemoveIban.hidden);
     menuRemoveIban.click();
-    flush();
+    await microtasksFinished();
 
     const confirmationDialog =
-        page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+        page.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
             '#localIbanDeleteConfirmationDialog');
     assertTrue(!!confirmationDialog);
     await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
@@ -346,7 +344,7 @@ suite('PaymentsPageIban', function() {
     const closePromise = eventToPromise('close', confirmationDialog);
 
     confirmationDialog.$.confirm.click();
-    flush();
+    await microtasksFinished();
 
     // Wait for the dialog close event to propagate to the PaymentManager.
     await closePromise;
@@ -371,24 +369,24 @@ suite('PaymentsPageIban', function() {
         ibanEntry.shadowRoot.querySelector<HTMLElement>('#ibanMenu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     const menuRemoveIban =
-        page.shadowRoot!.querySelector<HTMLElement>('#menuRemoveIban');
+        page.shadowRoot.querySelector<HTMLElement>('#menuRemoveIban');
     assertTrue(!!menuRemoveIban);
     menuRemoveIban.click();
-    flush();
+    await microtasksFinished();
 
     const confirmationDialog =
-        page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+        page.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
             '#localIbanDeleteConfirmationDialog');
     assertTrue(!!confirmationDialog);
     await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
 
-    confirmationDialog.$.cancel.click();
-    flush();
-
     const closePromise = eventToPromise('close', confirmationDialog);
+
+    confirmationDialog.$.cancel.click();
+    await microtasksFinished();
 
     // Wait for the dialog close event to propagate to the PaymentManager.
     await closePromise;

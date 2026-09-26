@@ -36,7 +36,7 @@ suite('PaymentsPageFocusTest', function() {
 
     // Ensure the subpage's back button is focused before continuing further.
     await waitAfterNextRender(page);
-    const subpageElement = page.shadowRoot!.querySelector('settings-subpage');
+    const subpageElement = page.shadowRoot.querySelector('settings-subpage');
     assertTrue(!!subpageElement);
     // Note: Using assertTrue instead of assertEquals on purpose, because Mocha
     // in case of failure tries to serialize the arguments, which in turn throws
@@ -46,7 +46,7 @@ suite('PaymentsPageFocusTest', function() {
 
     const manager = (PaymentsManagerImpl.getInstance() as TestPaymentsManager);
 
-    const addButton = page.shadowRoot!.querySelector('#addPaymentMethods');
+    const addButton = page.shadowRoot.querySelector('#addPaymentMethods');
     assertTrue(!!addButton);
 
     await deletePaymentMethod(page, manager, PaymentMethod.CREDIT_CARD, 1);

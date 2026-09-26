@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
@@ -18,12 +17,10 @@ import {createPaymentsPage, getDefaultExpectations, getFirstCreditCardEntry, get
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 // <if expr="is_chromeos">
 import {TestPaymentsManager} from './autofill_fake_data.js';
-
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 // </if>
 
 // clang-format on
@@ -35,17 +32,16 @@ suite('PaymentsPageUiTest', function() {
     const page = document.createElement('settings-payments-page');
     document.body.appendChild(page);
 
-    assertFalse(
-        !!page.shadowRoot!.querySelector('#autofillExtensionIndicator'));
+    assertFalse(!!page.shadowRoot.querySelector('#autofillExtensionIndicator'));
     prefsBrowserProxy.fakeApi.sendPrefChanges([
       {
         key: 'autofill.credit_card_enabled',
         extensionId: 'test-id-1',
       },
     ]);
-    flush();
+    await microtasksFinished();
 
-    assertTrue(!!page.shadowRoot!.querySelector('#autofillExtensionIndicator'));
+    assertTrue(!!page.shadowRoot.querySelector('#autofillExtensionIndicator'));
   });
 });
 
@@ -111,7 +107,7 @@ suite('PaymentsPage', function() {
     assertFalse(page.$.autofillCreditCardToggle.disabled);
 
     const addPaymentMethodsButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addPaymentMethods');
+        page.shadowRoot.querySelector<CrButtonElement>('#addPaymentMethods');
     assertTrue(!!addPaymentMethodsButton);
     assertFalse(addPaymentMethodsButton.disabled);
 
@@ -134,7 +130,7 @@ suite('PaymentsPage', function() {
 
     assertFalse(page.$.autofillCreditCardToggle.disabled);
     const addCreditCardButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+        page.shadowRoot.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCreditCardButton);
     assertFalse(addCreditCardButton.hidden);
     assertTrue(addCreditCardButton.disabled);
@@ -163,7 +159,7 @@ suite('PaymentsPage', function() {
     assertFalse(page.$.autofillCreditCardToggle.checked);
 
     const addCreditCardButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+        page.shadowRoot.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCreditCardButton);
     assertTrue(addCreditCardButton.disabled);
   });
@@ -185,7 +181,7 @@ suite('PaymentsPage', function() {
     assertFalse(page.$.autofillCreditCardToggle.checked);
 
     const addCreditCardButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+        page.shadowRoot.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCreditCardButton);
     assertTrue(addCreditCardButton.disabled);
   });
@@ -207,7 +203,7 @@ suite('PaymentsPage', function() {
     assertTrue(page.$.autofillCreditCardToggle.checked);
 
     const addCreditCardButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+        page.shadowRoot.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCreditCardButton);
     assertFalse(addCreditCardButton.disabled);
   });
@@ -229,7 +225,7 @@ suite('PaymentsPage', function() {
     assertTrue(page.$.autofillCreditCardToggle.checked);
 
     const addCreditCardButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+        page.shadowRoot.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCreditCardButton);
     assertFalse(addCreditCardButton.disabled);
   });
@@ -244,13 +240,13 @@ suite('PaymentsPage', function() {
         });
 
     const addCreditCardButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard')!;
+        page.shadowRoot.querySelector<CrButtonElement>('#addCreditCard')!;
     assertTrue(!!addCreditCardButton);
     assertFalse(addCreditCardButton.disabled);
 
     // User toggles off payments.
     page.$.autofillCreditCardToggle.click();
-    flush();
+    await microtasksFinished();
 
     assertFalse(page.$.autofillCreditCardToggle.checked);
     assertTrue(addCreditCardButton.disabled);
@@ -268,14 +264,14 @@ suite('PaymentsPage', function() {
             });
 
         const addPaymentMethodsButton =
-            page.shadowRoot!.querySelector<CrButtonElement>(
+            page.shadowRoot.querySelector<CrButtonElement>(
                 '#addPaymentMethods')!;
         assertTrue(!!addPaymentMethodsButton);
         assertFalse(addPaymentMethodsButton.disabled);
 
         // User toggles off payments.
         page.$.autofillCreditCardToggle.click();
-        flush();
+        await microtasksFinished();
 
         assertFalse(page.$.autofillCreditCardToggle.checked);
         assertTrue(addPaymentMethodsButton.disabled);
@@ -311,7 +307,7 @@ suite('PaymentsPage', function() {
     assertFalse(page.$.autofillCreditCardToggle.disabled);
 
     const addPaymentMethodsButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addPaymentMethods');
+        page.shadowRoot.querySelector<CrButtonElement>('#addPaymentMethods');
     assertTrue(!!addPaymentMethodsButton);
     assertFalse(addPaymentMethodsButton.disabled);
 
@@ -344,7 +340,7 @@ suite('PaymentsPage', function() {
             {credit_card_enabled: {value: false}});
 
         const addPaymentMethodsButton =
-            page.shadowRoot!.querySelector<CrButtonElement>(
+            page.shadowRoot.querySelector<CrButtonElement>(
                 '#addPaymentMethods');
         assertTrue(!!addPaymentMethodsButton);
         assertFalse(addPaymentMethodsButton.hidden);
@@ -375,7 +371,7 @@ suite('PaymentsPage', function() {
             });
 
         const mandatoryAuthToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            page.shadowRoot.querySelector<SettingsToggleButtonElement>(
                 '#mandatoryAuthToggle');
 
         // <if expr="is_win or is_macosx or is_chromeos">
@@ -399,7 +395,7 @@ suite('PaymentsPage', function() {
             });
 
         const mandatoryAuthToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            page.shadowRoot.querySelector<SettingsToggleButtonElement>(
                 '#mandatoryAuthToggle');
         // <if expr="is_win or is_macosx or is_chromeos">
         assertTrue(!!mandatoryAuthToggle);
@@ -422,7 +418,7 @@ suite('PaymentsPage', function() {
             });
 
         const mandatoryAuthToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            page.shadowRoot.querySelector<SettingsToggleButtonElement>(
                 '#mandatoryAuthToggle');
 
         // <if expr="is_win or is_macosx or is_chromeos">
@@ -447,7 +443,7 @@ suite('PaymentsPage', function() {
             });
 
         const mandatoryAuthToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            page.shadowRoot.querySelector<SettingsToggleButtonElement>(
                 '#mandatoryAuthToggle');
 
         // <if expr="is_win or is_macosx or is_chromeos">
@@ -472,7 +468,7 @@ suite('PaymentsPage', function() {
             });
 
         const mandatoryAuthToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            page.shadowRoot.querySelector<SettingsToggleButtonElement>(
                 '#mandatoryAuthToggle');
 
         // <if expr="is_win or is_macosx or is_chromeos">
@@ -497,7 +493,7 @@ suite('PaymentsPage', function() {
 
         assertFalse(page.$.autofillCreditCardToggle.disabled);
         const mandatoryAuthToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            page.shadowRoot.querySelector<SettingsToggleButtonElement>(
                 '#mandatoryAuthToggle');
 
         // <if expr="is_win or is_macosx or is_chromeos">
@@ -521,7 +517,7 @@ suite('PaymentsPage', function() {
         });
 
     const mandatoryAuthToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#mandatoryAuthToggle');
 
     // <if expr="is_win or is_macosx">
@@ -551,9 +547,9 @@ suite('PaymentsPage', function() {
     });
     const page = document.createElement('settings-payments-page');
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     const mandatoryAuthToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#mandatoryAuthToggle');
 
     const expectations = getDefaultExpectations();
@@ -574,7 +570,7 @@ suite('PaymentsPage', function() {
         });
 
     const mandatoryAuthToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#mandatoryAuthToggle');
     const paymentsManagerProxy =
         PaymentsManagerImpl.getInstance() as TestPaymentsManager;
@@ -607,11 +603,11 @@ suite('PaymentsPage', function() {
         firstEntry.shadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     assertTrue(isVisible(page.$.menuEditCreditCard));
     page.$.menuEditCreditCard.click();
-    flush();
+    await microtasksFinished();
 
     const paymentsManagerProxy =
         PaymentsManagerImpl.getInstance() as TestPaymentsManager;
@@ -634,7 +630,7 @@ suite('PaymentsPage', function() {
         });
 
     const mandatoryAuthToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#mandatoryAuthToggle');
 
     // <if expr="is_win or is_macosx or is_chromeos">
@@ -660,7 +656,7 @@ suite('PaymentsPage', function() {
         });
 
     const mandatoryAuthToggle =
-        page.shadowRoot!.querySelector('#mandatoryAuthToggle');
+        page.shadowRoot.querySelector('#mandatoryAuthToggle');
     assertTrue(!!mandatoryAuthToggle);
   });
 
@@ -677,7 +673,7 @@ suite('PaymentsPage', function() {
         });
 
     const mandatoryAuthToggle =
-        page.shadowRoot!.querySelector('#mandatoryAuthToggle');
+        page.shadowRoot.querySelector('#mandatoryAuthToggle');
     assertFalse(!!mandatoryAuthToggle);
   });
   //</if>
@@ -693,7 +689,7 @@ suite('PaymentsPage', function() {
           credit_card_enabled: {value: true},
         });
     const cvcStorageToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#cvcStorageToggle');
 
     assertTrue(!!cvcStorageToggle);
@@ -717,7 +713,7 @@ suite('PaymentsPage', function() {
           credit_card_enabled: {value: true},
         });
     const cvcStorageToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#cvcStorageToggle');
 
     assertTrue(!!cvcStorageToggle);
@@ -742,7 +738,7 @@ suite('PaymentsPage', function() {
               credit_card_enabled: {value: true},
             });
         const cvcStorageToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            page.shadowRoot.querySelector<SettingsToggleButtonElement>(
                 '#cvcStorageToggle');
 
         assertTrue(!!cvcStorageToggle);
@@ -772,7 +768,7 @@ suite('PaymentsPage', function() {
               });
 
           const cvcStorageToggle =
-              page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              page.shadowRoot.querySelector<SettingsToggleButtonElement>(
                   '#cvcStorageToggle');
           assertTrue(!!cvcStorageToggle);
           assertEquals(
@@ -785,24 +781,25 @@ suite('PaymentsPage', function() {
                       'a');
           assertTrue(isVisible(cvcStorageToggleSublabelLink));
           cvcStorageToggleSublabelLink!.click();
-          flush();
+          await microtasksFinished();
 
           const bulkDeletionDialog =
-              page.shadowRoot!
+              page.shadowRoot
                   .querySelector<SettingsSimpleConfirmationDialogElement>(
                       '#bulkDeleteCvcConfirmDialog');
           assertTrue(!!bulkDeletionDialog);
           await whenAttributeIs(bulkDeletionDialog.$.dialog, 'open', '');
 
+          const closePromise = eventToPromise('close', bulkDeletionDialog);
           if (shouldTriggerBulkDelete) {
             bulkDeletionDialog.$.confirm.click();
           } else {
             bulkDeletionDialog.$.cancel.click();
           }
-          flush();
+          await microtasksFinished();
 
           // Wait for the dialog close event to propagate to the PaymentManager.
-          await eventToPromise('close', bulkDeletionDialog);
+          await closePromise;
 
           const paymentsManagerProxy =
               PaymentsManagerImpl.getInstance() as TestPaymentsManager;
@@ -836,7 +833,7 @@ suite('PaymentsPage', function() {
           credit_card_enabled: {value: true},
         });
     const cardBenefitsToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#cardBenefitsToggle');
 
     assertTrue(!!cardBenefitsToggle);
@@ -859,7 +856,7 @@ suite('PaymentsPage', function() {
               credit_card_enabled: {value: false},
             });
         const cardBenefitsToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            page.shadowRoot.querySelector<SettingsToggleButtonElement>(
                 '#cardBenefitsToggle');
 
         assertTrue(!!cardBenefitsToggle);
@@ -876,7 +873,7 @@ suite('PaymentsPage', function() {
           credit_card_enabled: {value: true},
         });
     const cardBenefitsToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#cardBenefitsToggle');
     assertTrue(!!cardBenefitsToggle);
 
@@ -899,7 +896,7 @@ suite('PaymentsPage', function() {
           payment_card_benefits: {value: true},
         });
     const cardBenefitsToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#cardBenefitsToggle');
     assertTrue(!!cardBenefitsToggle);
     assertTrue(cardBenefitsToggle.checked);

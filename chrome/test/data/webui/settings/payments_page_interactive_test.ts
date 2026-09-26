@@ -5,14 +5,12 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrButtonElement} from 'chrome://settings/settings.js';
 import {loadTimeData, MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
 import type {CrInputElement, SettingsCreditCardEditDialogElement, SettingsIbanEditDialogElement, SettingsPaymentsPageElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished, whenAttributeIs} from 'chrome://webui-test/test_util.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createCreditCardEntry, createIbanEntry, TestPaymentsManager} from './autofill_fake_data.js';
 import {getFirstCreditCardEntry, setupPaymentsPrefs, verifyBooleanHistogramRecorded} from './payments_page_test_utils.js';
@@ -69,7 +67,7 @@ suite('PaymentsPageCreditCardEditDialogTest', function() {
 
     const page = document.createElement('settings-payments-page');
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     return page;
   }
 
@@ -84,14 +82,14 @@ suite('PaymentsPageCreditCardEditDialogTest', function() {
         existingCards !== undefined ? existingCards : [], /*ibans=*/[]);
     // Simulate clicking "Add" button in payments page.
     assertFalse(
-        !!page.shadowRoot!.querySelector('settings-credit-card-edit-dialog'));
+        !!page.shadowRoot.querySelector('settings-credit-card-edit-dialog'));
     const addCreditCardButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+        page.shadowRoot.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCreditCardButton);
     addCreditCardButton.click();
-    flush();
+    await microtasksFinished();
     const creditCardDialog =
-        page.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
+        page.shadowRoot.querySelector('settings-credit-card-edit-dialog');
     assertTrue(!!creditCardDialog);
     return creditCardDialog;
   }
@@ -106,21 +104,21 @@ suite('PaymentsPageCreditCardEditDialogTest', function() {
         /*creditCards=*/[], /*ibans=*/[]);
     // Simulate clicking "Add" button in payments page.
     assertFalse(
-        !!page.shadowRoot!.querySelector('settings-credit-card-edit-dialog'));
+        !!page.shadowRoot.querySelector('settings-credit-card-edit-dialog'));
     const dropdownAddPaymentMethodsButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addPaymentMethods');
+        page.shadowRoot.querySelector<CrButtonElement>('#addPaymentMethods');
     assertTrue(!!dropdownAddPaymentMethodsButton);
     dropdownAddPaymentMethodsButton.click();
-    flush();
+    await microtasksFinished();
 
     // Simulate clicking the 'Credit/Debit card' option in the menu.
     const addCardOption =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addCreditCard');
+        page.shadowRoot.querySelector<CrButtonElement>('#addCreditCard');
     assertTrue(!!addCardOption);
     addCardOption.click();
-    flush();
+    await microtasksFinished();
     const creditCardDialog =
-        page.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
+        page.shadowRoot.querySelector('settings-credit-card-edit-dialog');
     assertTrue(!!creditCardDialog);
     return creditCardDialog;
   }
@@ -135,21 +133,21 @@ suite('PaymentsPageCreditCardEditDialogTest', function() {
         /*creditCards=*/[], /*ibans=*/[]);
     // Simulate clicking "Add" button in payments page.
     assertFalse(
-        !!page.shadowRoot!.querySelector('settings-credit-card-edit-dialog'));
+        !!page.shadowRoot.querySelector('settings-credit-card-edit-dialog'));
     const addpaymentMethodsButton =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addPaymentMethods');
+        page.shadowRoot.querySelector<CrButtonElement>('#addPaymentMethods');
     assertTrue(!!addpaymentMethodsButton);
     addpaymentMethodsButton.click();
-    flush();
+    await microtasksFinished();
 
     // Simulate clicking the 'IBAN' option in the menu.
     const addIbanOption =
-        page.shadowRoot!.querySelector<CrButtonElement>('#addIban');
+        page.shadowRoot.querySelector<CrButtonElement>('#addIban');
     assertTrue(!!addIbanOption);
     addIbanOption.click();
-    flush();
+    await microtasksFinished();
     const ibanDialog =
-        page.shadowRoot!.querySelector('settings-iban-edit-dialog');
+        page.shadowRoot.querySelector('settings-iban-edit-dialog');
     assertTrue(!!ibanDialog);
     ibanDialog.$.saveButton.disabled = false;
     return ibanDialog;
@@ -171,13 +169,13 @@ suite('PaymentsPageCreditCardEditDialogTest', function() {
         firstEntry.shadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     // Simulate clicking the 'Edit' button in the menu.
     page.$.menuEditCreditCard.click();
-    await flushTasks();
+    await microtasksFinished();
     const creditCardDialog =
-        page.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
+        page.shadowRoot.querySelector('settings-credit-card-edit-dialog');
     assertTrue(!!creditCardDialog);
     return creditCardDialog;
   }
@@ -202,16 +200,16 @@ suite('PaymentsPageCreditCardEditDialogTest', function() {
     assertTrue(!!menuButton);
 
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     // Simulate clicking the 'Edit' button in the menu.
     const menuEditIban =
-        page.shadowRoot!.querySelector<HTMLElement>('#menuEditIban');
+        page.shadowRoot.querySelector<HTMLElement>('#menuEditIban');
     assertTrue(!!menuEditIban);
     menuEditIban.click();
-    flush();
+    await microtasksFinished();
     const ibanDialog =
-        page.shadowRoot!.querySelector('settings-iban-edit-dialog');
+        page.shadowRoot.querySelector('settings-iban-edit-dialog');
     assertTrue(!!ibanDialog);
     ibanDialog.$.saveButton.disabled = false;
     return ibanDialog;

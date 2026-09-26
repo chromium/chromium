@@ -51,7 +51,7 @@ suite('PaymentsPagePayOverTime', function() {
           credit_card_enabled: {value: true},
         });
     const payOverTimeToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#payOverTimeToggle');
 
     assertTrue(!!payOverTimeToggle);
@@ -75,7 +75,7 @@ suite('PaymentsPagePayOverTime', function() {
               credit_card_enabled: {value: true},
             });
 
-        assertFalse(!!page.shadowRoot!.querySelector('#payOverTimeToggle'));
+        assertFalse(!!page.shadowRoot.querySelector('#payOverTimeToggle'));
       });
 
   test(
@@ -86,7 +86,7 @@ suite('PaymentsPagePayOverTime', function() {
               credit_card_enabled: {value: false},
             });
         const payOverTimeToggle =
-            page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            page.shadowRoot.querySelector<SettingsToggleButtonElement>(
                 '#payOverTimeToggle');
 
         assertTrue(!!payOverTimeToggle);
@@ -99,7 +99,7 @@ suite('PaymentsPagePayOverTime', function() {
           credit_card_enabled: {value: true},
         });
     const payOverTimeToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#payOverTimeToggle');
     assertTrue(!!payOverTimeToggle);
 
@@ -119,7 +119,7 @@ suite('PaymentsPagePayOverTime', function() {
           bnpl_enabled: {value: true},
         });
     const payOverTimeToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#payOverTimeToggle');
     assertTrue(!!payOverTimeToggle);
     assertTrue(payOverTimeToggle.checked);

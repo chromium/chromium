@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsPaymentsPageElement, SettingsCreditCardListEntryElement, SettingsIbanListEntryElement, SettingsPaymentsListElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertLT} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 // <if expr="is_win or is_macosx">
 import {loadTimeData} from 'chrome://settings/settings.js';
 
@@ -107,7 +105,7 @@ export async function createPaymentsPage(
 
   const page = document.createElement('settings-payments-page');
   document.body.appendChild(page);
-  await flushTasks();
+  await microtasksFinished();
 
   return page;
 }
@@ -138,7 +136,7 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
  * Returns an array containing the local and server credit card items.
  */
 export function getLocalAndServerCreditCardListItems() {
-  return document.body.querySelector('settings-payments-page')!.shadowRoot!
+  return document.body.querySelector('settings-payments-page')!.shadowRoot
       .querySelector('settings-payments-list')!.shadowRoot.querySelectorAll(
           'settings-credit-card-list-entry');
 }
@@ -193,18 +191,18 @@ async function executeUiManipulationsToDeletePaymentMethod(
   const entry = getPaymentMethodEntry(page, id);
   assertTrue(!!entry.dotsMenu);
   entry.dotsMenu.click();
-  flush();
+  await microtasksFinished();
 
   // Click the Delete button:
   const deleteButton =
-      page.shadowRoot!.querySelector<HTMLButtonElement>(deleteButtonSelector);
+      page.shadowRoot.querySelector<HTMLButtonElement>(deleteButtonSelector);
   assertTrue(!!deleteButton);
   deleteButton.click();
-  flush();
+  await microtasksFinished();
 
   // Confirm the deletion in the dialog:
   const confirmationDialog =
-      page.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+      page.shadowRoot.querySelector('settings-simple-confirmation-dialog');
   assertTrue(!!confirmationDialog);
   await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
   const closePromise = eventToPromise('close', confirmationDialog.$.dialog);
@@ -239,7 +237,7 @@ export async function deletePaymentMethod(
       ([], manager.data.creditCards, manager.data.ibans,
        manager.data.payOverTimeIssuers);
 
-  await flushTasks();
+  await microtasksFinished();
 }
 
 /**
