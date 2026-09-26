@@ -10,6 +10,7 @@
 namespace base {
 class FilePath;
 }  // namespace base
+class HomeBackgroundCustomizationService;
 class PrefService;
 @protocol HomeCustomizationEphemeralThemePromoConsumer;
 
@@ -20,13 +21,18 @@ class PrefService;
 @property(nonatomic, weak) id<HomeCustomizationEphemeralThemePromoConsumer>
     consumer;
 
-// Initializes the mediator with the profile `prefService` and
-// `promoDataDirectory`.
+// Initializes the mediator with the profile `prefService`,
+// `backgroundCustomizationService`, and `promoDataDirectory`.
 - (instancetype)initWithPrefService:(PrefService*)prefService
+     backgroundCustomizationService:
+         (HomeBackgroundCustomizationService*)backgroundCustomizationService
                  promoDataDirectory:(const base::FilePath&)promoDataDirectory
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Applies and stores the ephemeral theme as the current NTP background.
+- (void)applyEphemeralTheme;
 
 // Disconnects the mediator.
 - (void)disconnect;

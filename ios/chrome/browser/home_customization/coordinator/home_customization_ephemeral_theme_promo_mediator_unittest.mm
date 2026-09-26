@@ -9,12 +9,22 @@
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/test/task_environment.h"
 #import "base/values.h"
+#import "components/application_locale_storage/application_locale_storage.h"
+#import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/themes/ntp_background_service.h"
+#import "components/themes/pref_names.h"
+#import "ios/chrome/browser/home_customization/model/fake_home_background_image_service.h"
+#import "ios/chrome/browser/home_customization/model/fake_user_uploaded_image_manager.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_ephemeral_theme_promo_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -61,16 +71,43 @@ class HomeCustomizationEphemeralThemePromoMediatorTest : public PlatformTest {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     HomeBackgroundCustomizationService::RegisterProfilePrefs(
         pref_service_->registry());
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kNTPCustomBackgroundEnabledByPolicy, true);
+    pref_service_->registry()->RegisterIntegerPref(themes::kPolicyThemeColor,
+                                                   SK_ColorTRANSPARENT);
+
+    test_shared_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
+    application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
+    ntp_background_service_ = std::make_unique<NtpBackgroundService>(
+        application_locale_storage_.get(), test_shared_loader_factory_);
+    user_image_manager_ = std::make_unique<FakeUserUploadedImageManager>(
+        base::SequencedTaskRunner::GetCurrentDefault());
+    background_image_service_ =
+        std::make_unique<FakeHomeBackgroundImageService>(
+            ntp_background_service_.get());
+    background_customization_service_ =
+        std::make_unique<HomeBackgroundCustomizationService>(
+            pref_service_.get(), user_image_manager_.get(),
+            background_image_service_.get(), /*url_loader_factory=*/nullptr,
+            base::FilePath());
+
     consumer_ = [[FakeHomeCustomizationEphemeralThemePromoConsumer alloc] init];
     mediator_ = [[HomeCustomizationEphemeralThemePromoMediator alloc]
-        initWithPrefService:pref_service_.get()
-         promoDataDirectory:temp_dir_.GetPath()];
+                   initWithPrefService:pref_service_.get()
+        backgroundCustomizationService:background_customization_service_.get()
+                    promoDataDirectory:temp_dir_.GetPath()];
   }
 
   void TearDown() override {
     [mediator_ disconnect];
     mediator_ = nil;
     consumer_ = nil;
+    background_customization_service_->Shutdown();
+    background_customization_service_.reset();
+    ntp_background_service_->Shutdown();
+    ntp_background_service_.reset();
     PlatformTest::TearDown();
   }
 
@@ -86,8 +123,17 @@ class HomeCustomizationEphemeralThemePromoMediatorTest : public PlatformTest {
     return json_path;
   }
 
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
+  std::unique_ptr<NtpBackgroundService> ntp_background_service_;
+  std::unique_ptr<FakeUserUploadedImageManager> user_image_manager_;
+  std::unique_ptr<FakeHomeBackgroundImageService> background_image_service_;
+  std::unique_ptr<HomeBackgroundCustomizationService>
+      background_customization_service_;
   FakeHomeCustomizationEphemeralThemePromoConsumer* consumer_;
   HomeCustomizationEphemeralThemePromoMediator* mediator_;
 };
@@ -195,4 +241,26 @@ TEST_F(HomeCustomizationEphemeralThemePromoMediatorTest,
   mediator_.consumer = consumer_;
 
   EXPECT_FALSE(consumer_.wasConfigured);
+}
+
+// Test that `applyEphemeralTheme` sets and stores the ephemeral theme on the
+// background customization service using the saved seed color.
+TEST_F(HomeCustomizationEphemeralThemePromoMediatorTest,
+       AppliesAndStoresEphemeralTheme) {
+  base::DictValue theme_dict;
+  theme_dict.Set(kEphemeralThemeSeedColorKey, "#1A73E8");
+  pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
+                         std::move(theme_dict));
+
+  EXPECT_FALSE(background_customization_service_->IsCurrentEphemeralTheme());
+
+  [mediator_ applyEphemeralTheme];
+
+  EXPECT_TRUE(background_customization_service_->IsCurrentEphemeralTheme());
+  std::optional<sync_pb::UserColorTheme> color_theme =
+      background_customization_service_->GetCurrentColorTheme();
+  ASSERT_TRUE(color_theme.has_value());
+  EXPECT_EQ(SkColorSetA(0x1A73E8, 0xFF), color_theme->color());
+  EXPECT_EQ(sync_pb::UserColorTheme::TONAL_SPOT,
+            color_theme->browser_color_variant());
 }

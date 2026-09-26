@@ -62,16 +62,20 @@ NSDictionary<NSString*, UIColor*>* ColorProviderDictionaryFromDict(
 
 @implementation HomeCustomizationEphemeralThemePromoMediator {
   raw_ptr<PrefService> _prefService;
+  raw_ptr<HomeBackgroundCustomizationService> _backgroundCustomizationService;
   base::FilePath _promoDataDirectory;
 }
 
 #pragma mark - Initializers
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
+     backgroundCustomizationService:
+         (HomeBackgroundCustomizationService*)backgroundCustomizationService
                  promoDataDirectory:(const base::FilePath&)promoDataDirectory {
   self = [super init];
   if (self) {
     _prefService = prefService;
+    _backgroundCustomizationService = backgroundCustomizationService;
     _promoDataDirectory = promoDataDirectory;
   }
   return self;
@@ -126,8 +130,34 @@ NSDictionary<NSString*, UIColor*>* ColorProviderDictionaryFromDict(
 
 #pragma mark - Public
 
+- (void)applyEphemeralTheme {
+  if (!_prefService || !_backgroundCustomizationService) {
+    return;
+  }
+
+  const base::DictValue& savedThemeData =
+      _prefService->GetDict(prefs::kIosNtpEphemeralThemeData);
+  const std::string* seedHex =
+      savedThemeData.FindString(kEphemeralThemeSeedColorKey);
+  if (!seedHex) {
+    return;
+  }
+
+  std::string_view trimmed =
+      base::TrimString(*seedHex, "#", base::TRIM_LEADING);
+  uint32_t rgbValue = 0;
+  if (trimmed.length() != 6 || !base::HexStringToUInt(trimmed, &rgbValue)) {
+    return;
+  }
+
+  _backgroundCustomizationService->SetCurrentEphemeralTheme(
+      SkColorSetA(rgbValue, 0xFF), sync_pb::UserColorTheme::TONAL_SPOT);
+  _backgroundCustomizationService->StoreCurrentTheme();
+}
+
 - (void)disconnect {
   _prefService = nullptr;
+  _backgroundCustomizationService = nullptr;
   _consumer = nil;
 }
 
