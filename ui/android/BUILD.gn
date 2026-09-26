@@ -880,6 +880,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/test/util/WindowInsetsTestUtilsUnitTest.java",
     "junit/src/org/chromium/ui/text/SpanApplierTest.java",
     "junit/src/org/chromium/ui/theme/FillInContextThemeWrapperUnitTest.java",
+    "junit/src/org/chromium/ui/theme/ThemeResourceWrapperJavaUnitTest.java",
     "junit/src/org/chromium/ui/theme/ThemeResourceWrapperProviderUnitTest.java",
     "junit/src/org/chromium/ui/theme/ThemeResourceWrapperUnitTest.java",
     "junit/src/org/chromium/ui/util/ColorBlendAnimationFactoryTest.java",
@@ -922,8 +923,10 @@ robolectric_library("ui_android_junit_tests") {
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_overrides_java",
@@ -1039,7 +1042,6 @@ android_library("ui_unit_device_javatests") {
     "javatests/src/org/chromium/ui/base/EventForwarderDeviceTest.java",
     "javatests/src/org/chromium/ui/hierarchicalmenu/HierarchicalMenuTest.java",
     "javatests/src/org/chromium/ui/insets/WindowInsetsUtilsJavaUnitTest.java",
-    "javatests/src/org/chromium/ui/theme/ThemeResourceWrapperJavaUnitTest.java",
     "javatests/src/org/chromium/ui/widget/OutlineOverlayHelperJavaUnitTest.java",
   ]
 
