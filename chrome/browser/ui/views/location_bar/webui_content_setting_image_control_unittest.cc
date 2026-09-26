@@ -399,9 +399,6 @@ TEST_F(WebUIContentSettingImageControlTest,
   ASSERT_EQ(1u, state1.size());
   EXPECT_TRUE(state1[0]->should_run_animation);
 
-  // WebUI finishes animation and calls OnContentSettingImageAnimationEnded.
-  control_->OnContentSettingImageAnimationEnded(ImageType::kPopups);
-
   // Second update: animation has already run, so AnnounceAlert should not be
   // called again.
   auto state2 = control_->ProcessContentSettingState(web_contents());

@@ -25,7 +25,6 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
       'movePinnedToolbarActionBy',
       'onAppMenuFocusChanged',
       'onAvatarButtonMousePressed',
-      'onContentSettingImageAnimationEnded',
       'onContentSettingImagePointerDown',
       'onExtensionActionPointerDown',
       'onGlicButtonClicked',
@@ -96,10 +95,6 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     this.methodCalled(
         'showContentSettingsBubble', [type, isPointerInteraction]);
     return Promise.resolve({result: {}});
-  }
-
-  onContentSettingImageAnimationEnded(type: ContentSettingImageType) {
-    this.methodCalled('onContentSettingImageAnimationEnded', type);
   }
 
   onPageActionPointerDown(actionId: PageActionId) {

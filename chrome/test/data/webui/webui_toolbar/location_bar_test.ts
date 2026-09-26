@@ -131,7 +131,6 @@ suite('LocationBar', function() {
         isBlocked: true,
         tooltip: 'Cookies blocked',
         accessibilityString: '',
-        isBubbleVisible: false,
         shouldRunAnimation: false,
         explanatoryString: '',
         identifier: {

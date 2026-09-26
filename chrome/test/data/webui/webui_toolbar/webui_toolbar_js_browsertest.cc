@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -12,6 +13,7 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/gfx/switches.h"
 
 class WebUiToolbarJsTest : public WebUIMochaBrowserTest {
  public:
@@ -29,6 +31,22 @@ class WebUiToolbarJsTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class WebUiToolbarNoReducedMotionJsTest : public WebUiToolbarJsTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUiToolbarJsTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
+  }
+};
+
+class WebUiToolbarReducedMotionJsTest : public WebUiToolbarJsTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUiToolbarJsTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, AppMenuButton) {
   RunTest("webui_toolbar/app_menu_button_test.js", "mocha.run();");
 }
@@ -41,7 +59,11 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ReadOnlyOmnibox) {
   RunTest("webui_toolbar/readonly_omnibox_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ContentSettingIcon) {
+IN_PROC_BROWSER_TEST_F(WebUiToolbarNoReducedMotionJsTest, ContentSettingIcon) {
+  RunTest("webui_toolbar/content_setting_icon_test.js", "mocha.run();");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarReducedMotionJsTest, ContentSettingIcon) {
   RunTest("webui_toolbar/content_setting_icon_test.js", "mocha.run();");
 }
 

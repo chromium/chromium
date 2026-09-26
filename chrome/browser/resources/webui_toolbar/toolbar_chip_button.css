@@ -6,6 +6,7 @@
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #import=/shared/help_bubble_anchor.css.js
+ * #import=/shared/webui_toolbar_shared_vars.css.js
  * #scheme=relative
  * #include=help-bubble-anchor
  * #css_wrapper_metadata_end */
@@ -57,7 +58,7 @@
   align-items: center;
   background-color: var(--toolbar-chip-bg-color, transparent);
   border: none;
-  border-radius: 50%; /* Default for icon-only chips */
+  border-radius: var(--toolbar-chip-border-radius);
   color: inherit;
   cursor: default;
   display: flex;
@@ -182,7 +183,6 @@
 :host([has-label]) #button {
   background-color: var(--toolbar-chip-bg-color,
                         var(--color-toolbar-background-subtle-emphasis));
-  border-radius: var(--toolbar-chip-border-radius);
   color: inherit;
   gap: var(--toolbar-chip-icon-label-gap);
 
@@ -243,27 +243,32 @@
 
 /* Target the label text (the slotted element that does not have a specific
  * "slot" attribute). When the chip expands, this transitions the text from 0
- * width and opacity up to its intrinsic max-content width and full opacity. */
+ * width up to its intrinsic max-content width. */
 :host([animates-label]) ::slotted(:not([slot])) {
   max-width: max-content;
   overflow: hidden;
   transition:
       max-width var(--toolbar-chip-expand-duration, 600ms)
-          var(--ease-out-cubic-bezier),
-      opacity var(--toolbar-chip-expand-duration, 600ms)
           var(--ease-out-cubic-bezier);
 }
 
-/* When the label is hidden, crush its width and opacity to 0. */
+/* When the label is hidden, crush its width to 0 (Native parity clips text,
+ * no cross-fade). */
 :host(:not([has-label])) ::slotted(:not([slot])) {
   max-width: 0;
-  opacity: 0;
   overflow: hidden;
 }
 
 #button:disabled {
   opacity: var(--cr-disabled-opacity, 0.38);
   pointer-events: none;
+}
+
+/* Use !important to unconditionally suppress transitions regardless of selector
+ * specificity or rule ordering (matching prefers-reduced-motion below). */
+:host([disable-transitions]) #button,
+:host([disable-transitions]) ::slotted(*) {
+  transition: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

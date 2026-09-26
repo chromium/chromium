@@ -26,7 +26,6 @@
       var(--color-omnibox-icon-hover, transparent);
   --toolbar-chip-ink-drop-ripple-color:
       var(--color-omnibox-icon-pressed, transparent);
-  --explanatory-text-width: 200px;
 }
 
 /* In native Views, ContentSettingImageView and PageActionIconView both inherit
@@ -37,6 +36,7 @@
       var(--location-bar-page-action-icon-padding-top) +
       var(--location-bar-page-action-icon-padding-bottom));
   --toolbar-chip-icon-size: var(--location-bar-trailing-icon-size);
+  --toolbar-chip-icon-label-gap: var(--location-bar-child-internal-spacing);
   --toolbar-chip-padding-start: calc(
       var(--location-bar-page-action-icon-padding-start) +
       var(--location-bar-icon-interior-padding-start));
@@ -48,53 +48,4 @@
 #icon {
   height: var(--icon-size);
   width: var(--icon-size);
-}
-
-#label {
-  max-width: 0;
-  margin-inline-start: 0;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-:host([should-run-animation]):has(#label:not(:empty)) #label {
-  /* TODO(crbug.com/501447940): The highlight isn't centered on the icon during
-     animation due to this rule. It also causes a jarring shift at the end of
-     the animation. */
-  margin-inline-start: var(--location-bar-child-internal-spacing);
-  /* TODO(crbug.com/534766201): Opening the bubble is supposed to pause
-     animation. */
-  animation: slide-in-out 3s;
-}
-
-@keyframes slide-in-out {
-  0% {
-    max-width: 0;
-    animation-timing-function: ease-out;
-  }
-  20% {
-    max-width: var(--explanatory-text-width);
-  }
-  80% {
-    max-width: var(--explanatory-text-width);
-    animation-timing-function: ease-out;
-  }
-  100% {
-    max-width: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :host([should-run-animation]):has(#label:not(:empty)) #label {
-    animation: pop-in-out 3s steps(1, end) !important;
-  }
-
-  @keyframes pop-in-out {
-    from {
-      max-width: var(--explanatory-text-width);
-    }
-    to {
-      max-width: 0;
-    }
-  }
 }

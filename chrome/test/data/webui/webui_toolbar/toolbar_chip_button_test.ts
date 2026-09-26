@@ -128,13 +128,11 @@ suite('ToolbarChipButtonTest', function() {
 
     assertEquals('0px', window.getComputedStyle(element.$.button).gap);
     assertEquals('0px', window.getComputedStyle(content).maxWidth);
-    assertEquals('0', window.getComputedStyle(content).opacity);
 
     element.toggleAttribute('has-label', true);
     await microtasksFinished();
 
     assertEquals('8px', window.getComputedStyle(element.$.button).gap);
     assertEquals('none', window.getComputedStyle(content).maxWidth);
-    assertEquals('1', window.getComputedStyle(content).opacity);
   });
 });

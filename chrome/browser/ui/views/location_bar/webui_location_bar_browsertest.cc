@@ -81,6 +81,32 @@ class TestLocationBarObserver : public LocationBar::Observer {
   base::OnceClosure on_bounds_changed_;
 };
 
+constexpr char kCheckContentSettingIconShowingLabelScript[] = R"(
+      (() => {
+        const icons = Array.from(
+          document.querySelector('toolbar-app')?.
+            shadowRoot?.querySelector('location-bar')?.
+            shadowRoot?.querySelector('content-settings-icons')?.
+            shadowRoot?.querySelectorAll('content-setting-icon') || []
+        );
+        return icons.length > 0 && icons.some(icon => {
+          return icon.hasAttribute('should-show-label');
+        });
+      })()
+)";
+
+constexpr char kCheckHasContentSettingIconScript[] = R"(
+      (() => {
+        const icons = Array.from(
+          document.querySelector('toolbar-app')?.
+            shadowRoot?.querySelector('location-bar')?.
+            shadowRoot?.querySelector('content-settings-icons')?.
+            shadowRoot?.querySelectorAll('content-setting-icon') || []
+        );
+        return icons.length > 0;
+      })()
+)";
+
 class WebUILocationBarBrowserTest : public InProcessBrowserTest {
  public:
   WebUILocationBarBrowserTest() {
@@ -430,9 +456,6 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
           web_contents->GetPrimaryMainFrame());
   content_settings->BlockAllContentForTesting();
 
-  // Update location bar so state is propagated to WebUI.
-  GetLocationBar()->Update(web_contents);
-
   constexpr char kCheckIconScript[] = R"(
       (() => {
         const icons = Array.from(
@@ -451,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
         .ExtractBool();
   }));
 
-  // Trigger a second update on the same web contents.
+  // Trigger an additional update on the same web contents to ensure stability.
   GetLocationBar()->Update(web_contents);
 
   // Verify that icons exist and animation state is stable.
@@ -581,12 +604,6 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
 
-  // Block content on active WebContents to trigger content setting icons.
-  auto* content_settings =
-      content_settings::PageSpecificContentSettings::GetForFrame(
-          web_contents->GetPrimaryMainFrame());
-  content_settings->BlockAllContentForTesting();
-
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
   auto* controller = tab->GetTabFeatures()->page_action_controller();
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
@@ -601,76 +618,26 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
     }
   }
   controller->Show(kActionBookmarkThisTab);
-
   GetLocationBar()->Update(web_contents);
 
-  constexpr char kCheckAnimatingScript[] = R"(
-      (() => {
-        const icons = Array.from(
-          document.querySelector('toolbar-app')?.
-            shadowRoot?.querySelector('location-bar')?.
-            shadowRoot?.querySelector('content-settings-icons')?.
-            shadowRoot?.querySelectorAll('content-setting-icon') || []
-        );
-        return icons.length > 0 && icons.some(icon => {
-          const label = icon.shadowRoot?.querySelector('#label');
-          if (!label) {
-            return false;
-          }
-          const style = window.getComputedStyle(label);
-          return style.animationName !== 'none' && style.animationName !== '';
-        });
-      })()
-  )";
+  // Block popups on active WebContents to trigger the content setting icon.
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
+  content_settings->OnContentBlocked(ContentSettingsType::POPUPS);
 
-  constexpr char kCheckHasIconScript[] = R"(
-      (() => {
-        const icons = Array.from(
-          document.querySelector('toolbar-app')?.
-            shadowRoot?.querySelector('location-bar')?.
-            shadowRoot?.querySelector('content-settings-icons')?.
-            shadowRoot?.querySelectorAll('content-setting-icon') || []
-        );
-        return icons.length > 0;
-      })()
-  )";
-
-  constexpr char kTriggerAnimationEndScript[] = R"(
-      (() => {
-        const icons = Array.from(
-          document.querySelector('toolbar-app')?.
-            shadowRoot?.querySelector('location-bar')?.
-            shadowRoot?.querySelector('content-settings-icons')?.
-            shadowRoot?.querySelectorAll('content-setting-icon') || []
-        );
-        icons.forEach(icon => {
-          const label = icon.shadowRoot?.querySelector('#label');
-          if (label) {
-            label.dispatchEvent(new Event('animationend'));
-          }
-        });
-        return true;
-      })()
-  )";
-
-  // Wait until icons are animating.
+  // Wait until the popup icon is animating.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(GetWebUIToolbarWebContents(), kCheckAnimatingScript)
+    return content::EvalJs(GetWebUIToolbarWebContents(),
+                           kCheckContentSettingIconShowingLabelScript)
         .ExtractBool();
   }));
 
-  // Trigger animation end in WebUI so the animation finishes and sends the mojo
-  // message to C++.
-  EXPECT_TRUE(
-      content::EvalJs(GetWebUIToolbarWebContents(), kTriggerAnimationEndScript)
-          .ExtractBool());
-
   auto* location_bar = static_cast<WebUILocationBar*>(GetLocationBar());
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    auto* model = location_bar->content_setting_image_control().GetModel(
-        toolbar_ui_api::mojom::ContentSettingImageType::kPopups);
-    return model && !model->ShouldRunAnimation(web_contents);
-  }));
+  auto* model = location_bar->content_setting_image_control().GetModel(
+      toolbar_ui_api::mojom::ContentSettingImageType::kPopups);
+  ASSERT_TRUE(model);
+  EXPECT_FALSE(model->ShouldRunAnimation(web_contents));
 
   // Click the bookmark star button in WebUI.
   const int kBookmarkMojomId = std::to_underlying(
@@ -723,14 +690,86 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
 
   // Verify that icons exist and are NOT reanimating.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(GetWebUIToolbarWebContents(), kCheckHasIconScript)
+    return content::EvalJs(GetWebUIToolbarWebContents(),
+                           kCheckHasContentSettingIconScript)
         .ExtractBool();
   }));
-  EXPECT_FALSE(
-      content::EvalJs(GetWebUIToolbarWebContents(), kCheckAnimatingScript)
-          .ExtractBool());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !content::EvalJs(GetWebUIToolbarWebContents(),
+                            kCheckContentSettingIconShowingLabelScript)
+                .ExtractBool();
+  }));
 
   BookmarkBubbleView::Hide();
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
+                       ContentSettingIconNoReanimateOnGeolocationBlocked) {
+  WaitForInitialWebUIToolbar(browser());
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Block popups on active WebContents to trigger the popup icon animation.
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
+  content_settings->OnContentBlocked(ContentSettingsType::POPUPS);
+
+  // Wait until the popup icon is animating.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(GetWebUIToolbarWebContents(),
+                           kCheckContentSettingIconShowingLabelScript)
+        .ExtractBool();
+  }));
+
+  // While the popup icon is animating, block geolocation so a second content
+  // setting icon appears (sending a state update where kPopups now has
+  // should_run_animation=false).
+  content_settings->OnContentBlocked(ContentSettingsType::GEOLOCATION);
+
+  constexpr char kCheckTwoContentSettingIconsScript[] = R"(
+      (() => {
+        const icons = Array.from(
+          document.querySelector('toolbar-app')?.
+            shadowRoot?.querySelector('location-bar')?.
+            shadowRoot?.querySelector('content-settings-icons')?.
+            shadowRoot?.querySelectorAll('content-setting-icon') || []
+        );
+        return icons.length === 2;
+      })()
+  )";
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(GetWebUIToolbarWebContents(),
+                           kCheckTwoContentSettingIconsScript)
+        .ExtractBool();
+  }));
+
+  // Verify that the geolocation state update did NOT prematurely abort the
+  // in-progress popup label animation.
+  EXPECT_TRUE(content::EvalJs(GetWebUIToolbarWebContents(),
+                              kCheckContentSettingIconShowingLabelScript)
+                  .ExtractBool());
+
+  // Wait for the popup animation to finish collapsing.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !content::EvalJs(GetWebUIToolbarWebContents(),
+                            kCheckContentSettingIconShowingLabelScript)
+                .ExtractBool();
+  }));
+
+  // Trigger another geolocation state update and verify the popup icon does not
+  // reanimate.
+  content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
+  GetLocationBar()->Update(web_contents);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(GetWebUIToolbarWebContents(),
+                           kCheckTwoContentSettingIconsScript)
+        .ExtractBool();
+  }));
+  EXPECT_FALSE(content::EvalJs(GetWebUIToolbarWebContents(),
+                               kCheckContentSettingIconShowingLabelScript)
+                   .ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
@@ -739,82 +778,25 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
   content::WebContents* web_contents1 =
       browser()->GetTabStripModel()->GetActiveWebContents();
 
-  // Block content on active WebContents (tab 0) to trigger content setting
-  // icons.
+  // Block popups on active WebContents (tab 0) to trigger the content setting
+  // icon.
   auto* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
           web_contents1->GetPrimaryMainFrame());
-  content_settings->BlockAllContentForTesting();
+  content_settings->OnContentBlocked(ContentSettingsType::POPUPS);
 
-  GetLocationBar()->Update(web_contents1);
-
-  constexpr char kCheckAnimatingScript[] = R"(
-      (() => {
-        const icons = Array.from(
-          document.querySelector('toolbar-app')?.
-            shadowRoot?.querySelector('location-bar')?.
-            shadowRoot?.querySelector('content-settings-icons')?.
-            shadowRoot?.querySelectorAll('content-setting-icon') || []
-        );
-        return icons.length > 0 && icons.some(icon => {
-          const label = icon.shadowRoot?.querySelector('#label');
-          if (!label) {
-            return false;
-          }
-          const style = window.getComputedStyle(label);
-          return style.animationName !== 'none' && style.animationName !== '';
-        });
-      })()
-  )";
-
-  constexpr char kCheckHasIconScript[] = R"(
-      (() => {
-        const icons = Array.from(
-          document.querySelector('toolbar-app')?.
-            shadowRoot?.querySelector('location-bar')?.
-            shadowRoot?.querySelector('content-settings-icons')?.
-            shadowRoot?.querySelectorAll('content-setting-icon') || []
-        );
-        return icons.length > 0;
-      })()
-  )";
-
-  constexpr char kTriggerAnimationEndScript[] = R"(
-      (() => {
-        const icons = Array.from(
-          document.querySelector('toolbar-app')?.
-            shadowRoot?.querySelector('location-bar')?.
-            shadowRoot?.querySelector('content-settings-icons')?.
-            shadowRoot?.querySelectorAll('content-setting-icon') || []
-        );
-        icons.forEach(icon => {
-          const label = icon.shadowRoot?.querySelector('#label');
-          if (label) {
-            label.dispatchEvent(new Event('animationend'));
-          }
-        });
-        return true;
-      })()
-  )";
-
-  // Wait until icons are animating.
+  // Wait until the popup icon is animating.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(GetWebUIToolbarWebContents(), kCheckAnimatingScript)
+    return content::EvalJs(GetWebUIToolbarWebContents(),
+                           kCheckContentSettingIconShowingLabelScript)
         .ExtractBool();
   }));
 
-  // Trigger animation end in WebUI so the animation finishes and sends the mojo
-  // message to C++.
-  EXPECT_TRUE(
-      content::EvalJs(GetWebUIToolbarWebContents(), kTriggerAnimationEndScript)
-          .ExtractBool());
-
   auto* location_bar = static_cast<WebUILocationBar*>(GetLocationBar());
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    auto* model = location_bar->content_setting_image_control().GetModel(
-        toolbar_ui_api::mojom::ContentSettingImageType::kPopups);
-    return model && !model->ShouldRunAnimation(web_contents1);
-  }));
+  auto* model = location_bar->content_setting_image_control().GetModel(
+      toolbar_ui_api::mojom::ContentSettingImageType::kPopups);
+  ASSERT_TRUE(model);
+  EXPECT_FALSE(model->ShouldRunAnimation(web_contents1));
 
   // Open a new tab (tab 1) and activate it.
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), /*index=*/1,
@@ -830,14 +812,17 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest,
 
   // Wait until icons are present again for tab 0.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(GetWebUIToolbarWebContents(), kCheckHasIconScript)
+    return content::EvalJs(GetWebUIToolbarWebContents(),
+                           kCheckHasContentSettingIconScript)
         .ExtractBool();
   }));
 
   // Verify that icons exist and are NOT reanimating.
-  EXPECT_FALSE(
-      content::EvalJs(GetWebUIToolbarWebContents(), kCheckAnimatingScript)
-          .ExtractBool());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !content::EvalJs(GetWebUIToolbarWebContents(),
+                            kCheckContentSettingIconShowingLabelScript)
+                .ExtractBool();
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, MiddleClickPasteAndGo) {

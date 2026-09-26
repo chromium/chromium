@@ -437,12 +437,6 @@ struct ContentSettingImageState {
   // the blocked status.
   bool is_blocked;
 
-  // If true, the bubble is visible, so the icon should be highlighted.
-  //
-  // TODO: crbug.com/489109708 - Consider removing `is_bubble_visible` if we
-  // can use element tracking for highlighting instead.
-  bool is_bubble_visible;
-
   // Explanatory text that animates in if non empty.
   mojo_base.mojom.String16 explanatory_string;
 

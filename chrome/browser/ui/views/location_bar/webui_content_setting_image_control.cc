@@ -170,6 +170,20 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
           // it's animating in addition to standard accessibility announcements.
           webui_delegate_->AnnounceAlert(l10n_util::GetStringUTF16(string_id));
         }
+        // We set the animation as "ran" immediately upon generating the initial
+        // update payload for the WebUI, matching ContentSettingImageView. WebUI
+        // handles its own collapse timer locally, so C++ does not need to wait
+        // for a completion callback. Marking it here prevents the icon from
+        // reanimating when switching tabs (where the WebUI DOM element and its
+        // local state get destroyed and recreated) and prevents subsequent C++
+        // updates from triggering duplicate screen reader alerts.
+        //
+        // Note: Because WebUI renders visible icons via `repeat()`, switching
+        // to a tab without the icon destroys the DOM element and terminates the
+        // animation (upon switching back, only the static icon is shown). If
+        // switching to a tab that also has the same icon, the DOM element is
+        // reused and the animation continues on the new tab (same as Views).
+        model->SetAnimationHasRun(web_contents);
       }
 
       state.push_back(std::move(image_state));
@@ -177,19 +191,6 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
   }
 
   return state;
-}
-
-void WebUIContentSettingImageControl::OnContentSettingImageAnimationEnded(
-    ImageType type) {
-  content::WebContents* web_contents =
-      setting_view_delegate_->GetContentSettingWebContents();
-  if (!web_contents) {
-    return;
-  }
-
-  if (ContentSettingImageModel* model = GetModel(type)) {
-    model->SetAnimationHasRun(web_contents);
-  }
 }
 
 ContentSettingImageModel* WebUIContentSettingImageControl::GetModel(

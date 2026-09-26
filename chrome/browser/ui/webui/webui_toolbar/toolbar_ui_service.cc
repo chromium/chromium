@@ -174,13 +174,6 @@ void ToolbarUIService::OnContentSettingImagePointerDown(
   }
 }
 
-void ToolbarUIService::OnContentSettingImageAnimationEnded(
-    ::toolbar_ui_api::mojom::ContentSettingImageType type) {
-  if (delegate_) {
-    delegate_->OnContentSettingImageAnimationEnded(type);
-  }
-}
-
 void ToolbarUIService::OnPageActionPointerDown(
     ::toolbar_ui_api::mojom::PageActionId action_id) {
   if (delegate_) {

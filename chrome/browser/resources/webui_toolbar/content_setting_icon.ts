@@ -19,6 +19,28 @@ import {getHtml} from './content_setting_icon.html.js';
 import {HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
+// Duration (in ms) for the fade/slide animation of the chip label, matching
+// kIconLabelFadeAnimationDurationMs in views::IconLabelBubbleView and
+// --toolbar-chip-expand-duration in CSS.
+const FADE_ANIMATION_DURATION_MS = 600;
+
+// Duration (in ms) to hold the label visible before collapsing after a bubble
+// closes or pointer interaction finishes, matching SetUpForInOutAnimation() in
+// views::IconLabelBubbleView.
+const COLLAPSE_HOLD_DURATION_MS = 1800;
+
+// Delay (in ms) before the label automatically begins collapsing when running
+// the in-out animation (appearance of label: 600ms + statically showing label:
+// 1800ms).
+const AUTO_COLLAPSE_DELAY_MS =
+    FADE_ANIMATION_DURATION_MS + COLLAPSE_HOLD_DURATION_MS;
+
+// Total duration (in ms) to statically display the label before auto-collapsing
+// when prefers-reduced-motion is active. Matches the full slide animation
+// duration in views::IconLabelBubbleView::SetUpForInOutAnimation().
+const REDUCED_MOTION_AUTO_COLLAPSE_DELAY_MS =
+    2 * FADE_ANIMATION_DURATION_MS + COLLAPSE_HOLD_DURATION_MS;
+
 export interface ContentSettingIconElement {
   $: {
     chip: ToolbarChipButtonElement,
@@ -44,12 +66,15 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
   static override get properties() {
     return {
       state: {type: Object},
-      shouldRunAnimation: {
+      trackedHighlighted: {type: Boolean},
+      shouldShowLabel_: {
         type: Boolean,
         reflect: true,
-        attribute: 'should-run-animation',
+        attribute: 'should-show-label',
       },
-      trackedHighlighted: {type: Boolean},
+      suppressTransitions_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -58,7 +83,6 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
     isBlocked: false,
     tooltip: '',
     accessibilityString: '',
-    isBubbleVisible: false,
     shouldRunAnimation: false,
     explanatoryString: '',
     identifier: {
@@ -67,15 +91,24 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
     },
   };
 
-  protected accessor shouldRunAnimation: boolean = false;
+  accessor trackedHighlighted: boolean = false;
 
-  protected accessor trackedHighlighted: boolean = false;
+  protected accessor shouldShowLabel_: boolean = false;
+
+  // Used to instantly neutralize CSS transitions when snapping the chip to its
+  // fully expanded state when the bubble opens so the chip shows its full,
+  // unclipped label rather than freezing partially expanded.
+  protected accessor suppressTransitions_: boolean = false;
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private registerHelpBubbleController_: AbortController|null = null;
+  private collapseTimerId_: number|null = null;
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.clearCollapseTimer_();
+    this.shouldShowLabel_ = false;
+    this.suppressTransitions_ = false;
     if (this.registerHelpBubbleController_) {
       this.registerHelpBubbleController_.abort();
       this.registerHelpBubbleController_ = null;
@@ -84,9 +117,14 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
-    if (changedProperties.has('state') &&
-        this.shouldRunAnimation !== this.state.shouldRunAnimation) {
-      this.shouldRunAnimation = this.state.shouldRunAnimation;
+
+    if (changedProperties.has('state')) {
+      this.handleAnimationTrigger_(changedProperties.get('state'));
+    }
+
+    if (changedProperties.has('trackedHighlighted')) {
+      this.handleBubbleVisibilityChanged_(
+          changedProperties.get('trackedHighlighted'));
     }
   }
 
@@ -111,6 +149,64 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
         if (newId) {
           this.registerHelpBubble_(newId);
         }
+      }
+    }
+  }
+
+  /**
+   * Processes new incoming state from C++ to determine if the CSS expansion
+   * animation should be triggered.
+   */
+  private handleAnimationTrigger_(oldState?: ContentSettingImageState) {
+    // Start the animation when C++ tells us to (and there is an explanatory
+    // label string to show, matching Native Views `if (string_id)`), but only
+    // if it's a new request (to ignore spurious identical backend state
+    // updates).
+    if (this.state.shouldRunAnimation && this.state.explanatoryString &&
+        (!oldState || !oldState.shouldRunAnimation)) {
+      // Enable CSS transitions so the expansion physically animates.
+      this.suppressTransitions_ = false;
+      this.clearCollapseTimer_();
+
+      // Defer setting `shouldShowLabel_` until after the element has initially
+      // rendered without it. This ensures the browser has a layout to
+      // transition FROM, allowing CSS keyframes/transitions to fire.
+      setTimeout(() => {
+        if (!this.isConnected) {
+          // Bail out if the element was detached from the DOM during the
+          // async tick (e.g. tab closed or navigated away). It won't be
+          // reattached, so we don't need to try and schedule timers for it.
+          return;
+        }
+        // Force a synchronous style/layout calculation (reflow) so the browser
+        // commits the initial collapsed (`max-width: 0`) style before
+        // `shouldShowLabel_ = true` updates it (`setTimeout(0)` can fire before
+        // the next animation frame's style pass).
+        this.$.label.getBoundingClientRect();
+        this.shouldShowLabel_ = true;
+        this.startCollapseTimer_();
+      }, 0);
+    }
+  }
+
+  /**
+   * Locks the expansion layout statically if the bubble is actively open, or
+   * resumes the collapse sequence if the bubble is dismissed.
+   */
+  private handleBubbleVisibilityChanged_(oldTrackedHighlighted?: boolean) {
+    // When the bubble is opened, pause collapse and snap the chip fully open so
+    // it shows the complete, unclipped label while highlighted. When closed,
+    // resume smooth transitions and collapse after a hold delay.
+    if (this.trackedHighlighted) {
+      this.clearCollapseTimer_();
+      this.suppressTransitions_ = true;
+      if (this.isLabelVisibleOrAnimating_()) {
+        this.shouldShowLabel_ = true;
+      }
+    } else if (oldTrackedHighlighted) {
+      this.suppressTransitions_ = false;
+      if (this.shouldShowLabel_) {
+        this.startCollapseTimer_(COLLAPSE_HOLD_DURATION_MS);
       }
     }
   }
@@ -155,11 +251,6 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
 
   override focus() {
     this.$.chip.focus();
-  }
-
-  protected onLabelAnimationend_() {
-    this.browserProxy_.toolbarUIHandler.onContentSettingImageAnimationEnded(
-        this.state.type);
   }
 
   protected getIconName_(): string {
@@ -250,6 +341,35 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
         this.state.type, isPointerInteraction);
   }
 
+  private clearCollapseTimer_() {
+    if (this.collapseTimerId_ !== null) {
+      clearTimeout(this.collapseTimerId_);
+      this.collapseTimerId_ = null;
+    }
+  }
+
+  private startCollapseTimer_(delayMs?: number) {
+    this.clearCollapseTimer_();
+    this.suppressTransitions_ = false;
+
+    if (delayMs === undefined) {
+      const isReducedMotion =
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      delayMs = isReducedMotion ? REDUCED_MOTION_AUTO_COLLAPSE_DELAY_MS :
+                                  AUTO_COLLAPSE_DELAY_MS;
+    }
+
+    this.collapseTimerId_ = setTimeout(() => {
+      this.collapseTimerId_ = null;
+      this.shouldShowLabel_ = false;
+    }, delayMs);
+  }
+
+  private isLabelVisibleOrAnimating_(): boolean {
+    return this.shouldShowLabel_ || this.collapseTimerId_ !== null ||
+        this.$.label.getAnimations().length > 0;
+  }
+
   protected onClick_(e: PointerEvent) {
     this.showContentSettingsBubble_(e);
   }
@@ -267,8 +387,27 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
   }
 
   protected onPointerdown_() {
+    if (this.isLabelVisibleOrAnimating_()) {
+      // If the user presses down on the chip while it is animating (either
+      // expanding or collapsing), cancel the collapse timer and keep
+      // `shouldShowLabel_ = true` so the chip expands to its full width and
+      // does not collapse while the pointer is held down.
+      // Note: If the user presses down on the chip, drags the pointer outside
+      // the chip, and releases without opening the bubble, `onPointerup_` will
+      // not fire on the chip and the label will remain expanded, matching
+      // Native Views (`ContentSettingImageView::OnMousePressed`).
+      this.clearCollapseTimer_();
+      this.shouldShowLabel_ = true;
+    }
+
     this.browserProxy_.toolbarUIHandler.onContentSettingImagePointerDown(
         this.state.type);
+  }
+
+  protected onPointerup_() {
+    if (!this.trackedHighlighted && this.shouldShowLabel_) {
+      this.startCollapseTimer_(COLLAPSE_HOLD_DURATION_MS);
+    }
   }
 
   protected onPointerenter_() {
@@ -280,6 +419,9 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
   }
 
   protected onPointercancel_() {
+    if (!this.trackedHighlighted && this.shouldShowLabel_) {
+      this.startCollapseTimer_(COLLAPSE_HOLD_DURATION_MS);
+    }
     this.fire('chip-pointercancel');
   }
 }
