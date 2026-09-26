@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -47,6 +48,7 @@ public class FaviconHelper {
     @VisibleForTesting
     public static void setCreationStrategy(CreationStrategy strategy) {
         sCreationStrategy = strategy;
+        ResettersForTesting.register(() -> sCreationStrategy = FaviconHelper::new);
     }
 
     /**

@@ -1205,6 +1205,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/hub/internal:junit",
       "//chrome/browser/image_descriptions:junit",
       "//chrome/browser/incognito:incognito_junit_tests",
+      "//chrome/browser/keyboard_accessory/android/internal:junit_tests",
       "//chrome/browser/language/android:junit",
       "//chrome/browser/lens:junit",
       "//chrome/browser/loading_modal/android:junit",
