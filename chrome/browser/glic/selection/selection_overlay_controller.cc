@@ -750,7 +750,8 @@ void SelectionOverlayController::SetLiveBlur(bool enabled) {
 }
 
 void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
-  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
+  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt) ||
+      !base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox)) {
     return;
   }
   GlicKeyedService* service = GlicKeyedService::Get(tab_->GetProfile());

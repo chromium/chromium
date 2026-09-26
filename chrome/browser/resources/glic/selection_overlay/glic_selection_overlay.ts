@@ -82,6 +82,7 @@ export class SelectionOverlayElementElement extends
       activeSelection: {type: Object},
       suggestedActions: {type: Array},
       enableSelectionOverlayPrompt: {type: Boolean},
+      enableSelectionOverlayPromptBox: {type: Boolean},
     };
   }
 
@@ -95,6 +96,8 @@ export class SelectionOverlayElementElement extends
   accessor suggestedActions: SuggestedAction[] = [];
   accessor enableSelectionOverlayPrompt: boolean =
       loadTimeData.getBoolean('enableSelectionOverlayPrompt');
+  accessor enableSelectionOverlayPromptBox: boolean =
+      loadTimeData.getBoolean('enableSelectionOverlayPromptBox');
 
   constructor() {
     super();
@@ -185,6 +188,12 @@ export class SelectionOverlayElementElement extends
     this.eventTracker_.add(
         document, 'post-selection-updated',
         (e: CustomEvent<PostSelectionBoundingBox>) => {
+          const prev = this.activeSelection;
+          const selectionChanged = !prev ||
+              Math.abs(prev.top - e.detail.top) > 1e-5 ||
+              Math.abs(prev.left - e.detail.left) > 1e-5 ||
+              Math.abs(prev.width - e.detail.width) > 1e-5 ||
+              Math.abs(prev.height - e.detail.height) > 1e-5;
           this.activeSelection = e.detail;
           if (this.currentGesture?.state === GestureState.NOT_STARTED ||
               this.currentGesture?.state === undefined) {
@@ -193,7 +202,9 @@ export class SelectionOverlayElementElement extends
             this.selectionElements.regionSelectionLayer
                 .handlePostSelectionDragGestureEnd();
             this.updateFloatingPromptPosition();
-            this.fetchSuggestedActions();
+            if (selectionChanged) {
+              this.fetchSuggestedActions();
+            }
           }
         });
 
@@ -238,8 +249,9 @@ export class SelectionOverlayElementElement extends
     this.suggestedActionsListenerRouter_ =
         new SuggestedActionsListenerCallbackRouter();
     this.suggestedActionsListenerRouter_.onSuggestedActionsAvailable
-        .addListener((actions: SuggestedAction[]) => {
+        .addListener(async (actions: SuggestedAction[]) => {
           this.suggestedActions = [...this.suggestedActions, ...actions];
+          await this.updateComplete;
           if (this.showFloatingPrompt) {
             this.updateFloatingPromptPosition();
           }
@@ -285,7 +297,7 @@ export class SelectionOverlayElementElement extends
     const container =
         this.shadowRoot.querySelector<HTMLElement>('#floatingPromptContainer');
     let promptWidth = 360;
-    let promptHeight = 96;
+    let promptHeight = this.enableSelectionOverlayPromptBox ? 96 : 38;
 
     if (container) {
       const rect = container.getBoundingClientRect();
@@ -331,8 +343,9 @@ export class SelectionOverlayElementElement extends
           '#floatingPromptContainer');
       if (currentContainer) {
         const newRect = currentContainer.getBoundingClientRect();
-        if (Math.abs(newRect.width - promptWidth) > 2 ||
-            Math.abs(newRect.height - promptHeight) > 2) {
+        if (newRect.width > 0 &&
+            (Math.abs(newRect.width - promptWidth) > 2 ||
+             Math.abs(newRect.height - promptHeight) > 2)) {
           const newEffectiveWidth = Math.min(newRect.width, maxAvailableWidth);
           let newCenterX: number;
           if (newEffectiveWidth >= maxAvailableWidth) {

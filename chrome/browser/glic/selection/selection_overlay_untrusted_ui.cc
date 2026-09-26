@@ -103,6 +103,9 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableSelectionOverlayPrompt",
       base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt));
+  html_source->AddBoolean(
+      "enableSelectionOverlayPromptBox",
+      base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox));
 
   // TODO(b/489801993): Refactor shared resources into a common directory to
   // avoid manual path concatenation for Lens and the Glic selection overlay.

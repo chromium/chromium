@@ -58,18 +58,20 @@ export function getHtml(this: SelectionOverlayElementElement) {
       <div id="floatingPromptContainer"
           ?hidden="${!this.showFloatingPrompt}"
           style="${this.floatingPromptStyle}">
-        <div class="searchbox-pill">
-          <div class="sparkle-icon">
-            <img src="/spark.svg" width="20" height="20">
+        ${this.enableSelectionOverlayPromptBox ? html`
+          <div class="searchbox-pill">
+            <div class="sparkle-icon">
+              <img src="/spark.svg" width="20" height="20">
+            </div>
+            <input id="promptInput"
+                type="text"
+                placeholder="$i18n{askGemini}"
+                aria-label="$i18n{askGemini}"
+                @keydown="${this.onInputKeydown}"
+                @pointerdown="${this.onPromptPointerdown}"
+                autocomplete="off">
           </div>
-          <input id="promptInput"
-              type="text"
-              placeholder="$i18n{askGemini}"
-              aria-label="$i18n{askGemini}"
-              @keydown="${this.onInputKeydown}"
-              @pointerdown="${this.onPromptPointerdown}"
-              autocomplete="off">
-        </div>
+        ` : ''}
 
         <div class="action-chips-row" @pointerdown="${this.onPromptPointerdown}">
           ${this.suggestedActions.map((action, index) => html`

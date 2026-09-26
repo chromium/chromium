@@ -190,7 +190,10 @@ class SelectionOverlayInteractiveTestWithPrompt
     : public SelectionOverlayInteractiveTest {
  public:
   SelectionOverlayInteractiveTestWithPrompt() {
-    feature_list_.InitAndEnableFeature(features::kGlicSelectionOverlayPrompt);
+    feature_list_.InitWithFeatures(
+        {features::kGlicSelectionOverlayPrompt,
+         features::kGlicSelectionOverlayPromptBox},
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -217,6 +220,19 @@ class SelectionOverlayInteractiveTestWithPrompt
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<StaticSelectionSuggestionTool> static_tool_;
+};
+
+class SelectionOverlayInteractiveTestWithPromptWithoutBox
+    : public SelectionOverlayInteractiveTestWithPrompt {
+ public:
+  SelectionOverlayInteractiveTestWithPromptWithoutBox() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlicSelectionOverlayPrompt},
+        /*disabled_features=*/{features::kGlicSelectionOverlayPromptBox});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class SelectionOverlayInteractiveTestWithSplitView
@@ -1331,6 +1347,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
                         "el => el.screenshot_ !== null"),
       WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0"),
       MoveMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(50, 50)),
       DragMouseTo(OverlayBaseController::kOverlayId,
@@ -1356,8 +1376,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
       WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
                         "el => el.screenshot_ !== null"),
       WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
-      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
-                        "el => !el.showFloatingPrompt"),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0 && !el.showFloatingPrompt"),
       MoveMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(50, 50)),
       DragMouseTo(OverlayBaseController::kOverlayId,
@@ -1375,6 +1397,60 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
           "  const input = el.shadowRoot.querySelector('#promptInput');"
           "  return input !== null && input.placeholder === 'Ask Gemini';"
           "}"),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => {"
+          "  const chips = "
+          "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
+          "  if (chips.length !== 3) return false;"
+          "  const titles = chips.map(c => "
+          "c.querySelector('.chip-label')?.textContent?.trim());"
+          "  return titles[0] === 'Explain' && titles[1] === 'Summarize' && "
+          "titles[2] === 'Create Image';"
+          "}"),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => {"
+          "  const container = "
+          "el.shadowRoot.querySelector('#floatingPromptContainer');"
+          "  const rect = container.getBoundingClientRect();"
+          "  return rect.height > 38 && rect.height <= 96;"
+          "}"));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptWithoutBox,
+                       ChipsShownWithoutInputBoxWhenPromptBoxDisabled) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kOverlayApp = {"selection-overlay-app"};
+  const DeepQuery kSelectionOverlay = {"selection-overlay-app",
+                                       "glic-selection-overlay"};
+
+  RunTestSequence(
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
+                        "el => el.screenshot_ !== null"),
+      WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0 && !el.showFloatingPrompt"),
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(50, 50)),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(150, 150)),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => {"
+          "  const container = "
+          "el.shadowRoot.querySelector('#floatingPromptContainer');"
+          "  return container !== null && !container.hidden;"
+          "}"),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => el.shadowRoot.querySelector('#promptInput') === null"),
       WaitForJsResultAt(
           kOverlayWebContentsId, kSelectionOverlay,
           "el => {"
@@ -1403,6 +1479,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
       WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
                         "el => el.screenshot_ !== null"),
       WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0"),
       MoveMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(500, 200)),
       DragMouseTo(OverlayBaseController::kOverlayId,
@@ -1434,6 +1514,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
       WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
                         "el => el.screenshot_ !== null"),
       WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0"),
       MoveMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(50, 50)),
       DragMouseTo(OverlayBaseController::kOverlayId,
@@ -1466,6 +1550,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
       WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
                         "el => el.screenshot_ !== null"),
       WaitForElementVisible(kOverlayWebContentsId, kSelectionOverlay),
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kSelectionOverlay,
+          "el => el.isScreenshotRendered && el.selectionOverlayRect.width > 0 "
+          "&& el.selectionOverlayRect.height > 0"),
       MoveMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(50, 50)),
       DragMouseTo(OverlayBaseController::kOverlayId,
