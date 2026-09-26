@@ -3917,15 +3917,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.MultiWindowMode.{WindowingMode}.Duration2" units="ms"
+<histogram name="Android.MultiWindowMode.{WindowingMode}.Duration3" units="ms"
     expires_after="2027-02-14">
   <owner>rathomas@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
     Total time spent in {WindowingMode} mode in a given 24-hour period. The
     histogram will be emitted for a previous emission cycle when an activity in
-    any windowing mode is stopped after more than 24 hours have elapsed since
-    the start of this emission cycle.
+    any windowing mode is started or stopped after more than 24 hours have
+    elapsed since the start of this emission cycle. Tracks durations up to 24
+    hours.
   </summary>
   <token key="WindowingMode">
     <variant name="DefaultMultiWindow" summary="default multi-window"/>

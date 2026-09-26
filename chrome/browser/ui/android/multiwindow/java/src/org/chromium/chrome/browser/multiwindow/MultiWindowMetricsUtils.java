@@ -15,8 +15,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
-import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,7 +26,9 @@ public class MultiWindowMetricsUtils {
     private static final long CYCLE_LENGTH_MS = DateUtils.DAY_IN_MILLIS;
     public static final int INVALID_WINDOW_ID = -1;
     public static final String WINDOWING_MODE_HISTOGRAM_PREFIX = "Android.MultiWindowMode.";
-    public static final String WINDOWING_MODE_HISTOGRAM_SUFFIX = ".Duration2";
+    public static final String WINDOWING_MODE_HISTOGRAM_SUFFIX = ".Duration3";
+
+    private static boolean sIsInitialized;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -48,6 +50,19 @@ public class MultiWindowMetricsUtils {
         int NUM_ENTRIES = 5;
     }
 
+    private static void ensureInitialized() {
+        if (sIsInitialized) return;
+        sIsInitialized = true;
+        // Clear any orphaned in-flight activity lists and start times left on disk from a
+        // previous process that terminated without receiving onStop() (e.g. crash or unexpected
+        // power-off), while preserving cycleStartTime and accumulated durationMs.
+        for (int modeIndex = 1; modeIndex < WindowingMode.NUM_ENTRIES; modeIndex++) {
+            MultiInstancePersistentStore.writeMultiWindowModeActivities(
+                    modeIndex, Collections.emptySet());
+            MultiInstancePersistentStore.removeMultiWindowModeStartTime(modeIndex);
+        }
+    }
+
     /**
      * Updates the activity count for a given windowing mode and starts or stops the clock for
      * tracking time spent in that mode.
@@ -63,16 +78,11 @@ public class MultiWindowMetricsUtils {
      */
     public static void recordWindowingMode(int mode, int windowId, boolean isStarted) {
         if (mode == WindowingMode.UNKNOWN || windowId == INVALID_WINDOW_ID) return;
+        ensureInitialized();
         String windowIdString = Integer.toString(windowId);
+        // Make a mutable copy of the set, as the returned set should not be modified.
         Set<String> modeActivities =
-                MultiInstancePersistentStore.readMultiWindowModeActivities(mode);
-
-        if (modeActivities == null) {
-            modeActivities = new HashSet<>();
-        } else {
-            // Make a mutable copy of the set, as the returned set should not be modified.
-            modeActivities = new HashSet<>(modeActivities);
-        }
+                new HashSet<>(MultiInstancePersistentStore.readMultiWindowModeActivities(mode));
         int oldSize = modeActivities.size();
 
         if (isStarted) {
@@ -93,65 +103,84 @@ public class MultiWindowMetricsUtils {
     private static void startOrStopClockForWindowingMode(int mode, boolean startClock) {
         if (mode == WindowingMode.UNKNOWN) return;
         if (startClock) {
-            long currentTime = TimeUtils.elapsedRealtimeMillis();
+            long currentTime = TimeUtils.currentTimeMillis();
             MultiInstancePersistentStore.writeMultiWindowModeStartTime(mode, currentTime);
-            if (!MultiInstancePersistentStore.contains(
-                    MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_CYCLE_START_TIME)) {
+            long cycleStartTime = MultiInstancePersistentStore.readMultiWindowModeCycleStartTime();
+            if (!MultiInstancePersistentStore.containsMultiWindowModeCycleStartTime()
+                    || cycleStartTime <= 0
+                    || currentTime < cycleStartTime) {
                 MultiInstancePersistentStore.writeMultiWindowModeCycleStartTime(currentTime);
+            } else if (currentTime >= cycleStartTime + CYCLE_LENGTH_MS) {
+                recordTimeSpentInWindowingMode(/* stoppedMode= */ WindowingMode.UNKNOWN);
             }
-        } else if (MultiInstancePersistentStore.contains(
-                MultiInstancePreferenceKeys.MULTI_WINDOW_MODE_START_TIME.createKey(mode))) {
+        } else if (MultiInstancePersistentStore.containsMultiWindowModeStartTime(mode)) {
             recordTimeSpentInWindowingMode(mode);
         }
     }
 
     /**
-     * Records the time spent in a given windowing mode.
+     * Records the time spent in a given windowing mode and rotates any elapsed cycles.
      *
      * <p>This method uses a cycling mechanism to batch histogram reports. If at least one cycle
      * (defined by {@link #CYCLE_LENGTH_MS}) has passed since the last report, it finalizes the
      * metrics for the previous cycles, records them to a histogram, and carries over any time from
-     * the current mode into the next cycle. If still within the same cycle, it simply updates the
-     * total duration for the given mode.
+     * active modes into the next cycle. If a mode is being stopped, it also updates the total
+     * duration for that mode in the current cycle.
      *
-     * @param mode The windowing mode to record duration for.
-     * @param currentTime The current timestamp.
+     * @param stoppedMode The windowing mode being stopped, or {@link WindowingMode#UNKNOWN} if only
+     *     rotating elapsed cycles when starting a mode.
      */
     private static void recordTimeSpentInWindowingMode(int stoppedMode) {
-        long currentTime = TimeUtils.elapsedRealtimeMillis();
-        if (stoppedMode == WindowingMode.UNKNOWN) return;
-
+        long currentTime = TimeUtils.currentTimeMillis();
         long cycleStartTime = MultiInstancePersistentStore.readMultiWindowModeCycleStartTime();
+        if (cycleStartTime <= 0) return;
+
         // While at least one cycle has elapsed since the current cycle start time, update the
         // running durations for each mode and record the histogram.
         while (cycleStartTime + CYCLE_LENGTH_MS <= currentTime) {
-
             long cycleEndTime = cycleStartTime + CYCLE_LENGTH_MS;
+            long earliestNextStartTime = currentTime;
             for (int modeIndex = 1; modeIndex < WindowingMode.NUM_ENTRIES; modeIndex++) {
                 Set<String> modeActivities =
                         MultiInstancePersistentStore.readMultiWindowModeActivities(modeIndex);
-                int modeActivityCount = modeActivities == null ? 0 : modeActivities.size();
+                int modeActivityCount = modeActivities.size();
                 long modeStartTime =
                         MultiInstancePersistentStore.readMultiWindowModeStartTime(
                                 modeIndex, currentTime);
 
                 // Update the duration for the mode if it has at least one activity open or if the
-                // mode is currently being stopped.
+                // mode is currently being stopped, provided the session started before the end of
+                // this cycle.
                 if (modeActivityCount > 0 || modeIndex == stoppedMode) {
-                    // In both cases, we can safely assume that the mode was active until the end of
-                    // the current cycle.
-                    long durationMs =
-                            MultiInstancePersistentStore.readMultiWindowModeDurationMs(modeIndex);
-                    durationMs += (cycleEndTime - modeStartTime);
-                    MultiInstancePersistentStore.writeMultiWindowModeDurationMs(
-                            modeIndex, durationMs);
-                    // Update the start time of the mode to the end of the current cycle because at
-                    // this point, it is still considered active.
-                    MultiInstancePersistentStore.writeMultiWindowModeStartTime(
-                            modeIndex, cycleEndTime);
+                    if (modeStartTime < cycleEndTime) {
+                        // In both cases, we can safely assume that the mode was active until the
+                        // end of the current cycle.
+                        long durationMs =
+                                MultiInstancePersistentStore.readMultiWindowModeDurationMs(
+                                        modeIndex);
+                        long clampedStartTime = Math.max(modeStartTime, cycleStartTime);
+                        durationMs =
+                                Math.min(
+                                        CYCLE_LENGTH_MS,
+                                        durationMs + Math.max(0L, cycleEndTime - clampedStartTime));
+                        MultiInstancePersistentStore.writeMultiWindowModeDurationMs(
+                                modeIndex, durationMs);
+                        // Update the start time of the mode to the end of the current cycle because
+                        // at this point, it is still considered active.
+                        MultiInstancePersistentStore.writeMultiWindowModeStartTime(
+                                modeIndex, cycleEndTime);
+                        modeStartTime = cycleEndTime;
+                    }
+                    earliestNextStartTime = Math.min(earliestNextStartTime, modeStartTime);
                 }
 
                 recordWindowingModeHistogram(modeIndex);
+            }
+
+            // Fast-forward across any subsequent elapsed cycles where no activities were active.
+            if (earliestNextStartTime > cycleEndTime) {
+                long emptyCycles = (earliestNextStartTime - cycleEndTime) / CYCLE_LENGTH_MS;
+                cycleEndTime += emptyCycles * CYCLE_LENGTH_MS;
             }
 
             // Update the cycle start time to the end of the current cycle. This will be used as the
@@ -160,29 +189,43 @@ public class MultiWindowMetricsUtils {
             cycleStartTime = cycleEndTime;
         }
 
+        if (stoppedMode == WindowingMode.UNKNOWN) return;
+
         // Update the duration for the mode that is being stopped and remove the start time key.
         long modeStartTime =
                 MultiInstancePersistentStore.readMultiWindowModeStartTime(stoppedMode, currentTime);
         long durationMs = MultiInstancePersistentStore.readMultiWindowModeDurationMs(stoppedMode);
-        durationMs += currentTime - modeStartTime;
+        long clampedStartTime = Math.max(modeStartTime, cycleStartTime);
+        durationMs =
+                Math.min(
+                        CYCLE_LENGTH_MS, durationMs + Math.max(0L, currentTime - clampedStartTime));
         MultiInstancePersistentStore.writeMultiWindowModeDurationMs(stoppedMode, durationMs);
         // Remove the start time key as we are done tracking the duration.
         MultiInstancePersistentStore.removeMultiWindowModeStartTime(stoppedMode);
     }
 
     private static void recordWindowingModeHistogram(int mode) {
-        long modeDurationMs = MultiInstancePersistentStore.readMultiWindowModeDurationMs(mode);
+        long modeDurationMs =
+                Math.min(
+                        CYCLE_LENGTH_MS,
+                        MultiInstancePersistentStore.readMultiWindowModeDurationMs(mode));
         String histogramVariant = getWindowingModeHistogramName(mode);
         if (modeDurationMs > 0) {
-            assert modeDurationMs <= CYCLE_LENGTH_MS : "Duration should not exceed cycle length.";
-            RecordHistogram.recordLongTimesHistogram(
+            RecordHistogram.recordCustomTimesHistogram(
                     WINDOWING_MODE_HISTOGRAM_PREFIX
                             + histogramVariant
                             + WINDOWING_MODE_HISTOGRAM_SUFFIX,
-                    modeDurationMs);
+                    modeDurationMs,
+                    /* min= */ 1,
+                    /* max= */ CYCLE_LENGTH_MS,
+                    /* numBuckets= */ 50);
         }
         // Remove the duration key for the mode.
         MultiInstancePersistentStore.removeMultiWindowModeDurationMs(mode);
+    }
+
+    static void resetForTesting() {
+        sIsInitialized = false;
     }
 
     @VisibleForTesting
