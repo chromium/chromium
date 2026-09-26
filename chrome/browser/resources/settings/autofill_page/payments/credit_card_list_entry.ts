@@ -293,8 +293,6 @@ export class SettingsCreditCardListEntryElement extends
   }
 }
 
-export type CreditCardListEntryElement = SettingsCreditCardListEntryElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-credit-card-list-entry': SettingsCreditCardListEntryElement;

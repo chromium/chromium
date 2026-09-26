@@ -75,9 +75,6 @@ export class SettingsVirtualCardUnenrollDialogElement extends CrLitElement {
   }
 }
 
-export type VirtualCardUnenrollDialogElement =
-    SettingsVirtualCardUnenrollDialogElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-virtual-card-unenroll-dialog':

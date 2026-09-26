@@ -99,9 +99,6 @@ export class SettingsPayOverTimeIssuerListEntryElement extends CrLitElement {
   }
 }
 
-export type PayOverTimeIssuerListEntryElement =
-    SettingsPayOverTimeIssuerListEntryElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-pay-over-time-issuer-list-entry':

@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsPayOverTimeIssuerListEntryElement} from './pay_over_time_issuer_list_entry.js';
+
+export function getHtml(this: SettingsPayOverTimeIssuerListEntryElement) {
+  return html`<!--_html_template_start_-->
 <div class="list-item" role="row">
   <div class="type-column" role="cell">
     <picture id="payOverTimeIssuerImage">
@@ -35,3 +45,5 @@
     </cr-icon-button>
   </div>
 </div>
+<!--_html_template_end_-->`;
+}

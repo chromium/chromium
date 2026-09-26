@@ -540,8 +540,6 @@ export class SettingsCreditCardEditDialogElement extends
   }
 }
 
-export type CreditCardEditDialogElement = SettingsCreditCardEditDialogElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-credit-card-edit-dialog': SettingsCreditCardEditDialogElement;

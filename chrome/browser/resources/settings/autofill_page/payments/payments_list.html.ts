@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsPaymentsListElement} from './payments_list.js';
+
+export function getHtml(this: SettingsPaymentsListElement) {
+  return html`<!--_html_template_start_-->
 <div role="table">
   <div class="vertical-list list-with-header" role="rowgroup">
     ${this.creditCards.map((item, index) => html`
@@ -25,3 +35,5 @@
     ?hidden="${this.showAnyPaymentMethods_()}">
   $i18n{noPaymentMethodsFound}
 </div>
+<!--_html_template_end_-->`;
+}

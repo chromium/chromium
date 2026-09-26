@@ -170,8 +170,6 @@ export class SettingsIbanListEntryElement extends
   }
 }
 
-export type IbanListEntryElement = SettingsIbanListEntryElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-iban-list-entry': SettingsIbanListEntryElement;

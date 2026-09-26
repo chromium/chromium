@@ -147,8 +147,6 @@ export class SettingsPaymentsListElement extends CrLitElement {
   }
 }
 
-export type PaymentsListElement = SettingsPaymentsListElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-payments-list': SettingsPaymentsListElement;

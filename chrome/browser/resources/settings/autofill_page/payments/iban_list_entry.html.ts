@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsIbanListEntryElement} from './iban_list_entry.js';
+
+export function getHtml(this: SettingsIbanListEntryElement) {
+  return html`<!--_html_template_start_-->
 <div class="list-item type-column" role="row">
   <img id="ibanImage" src="chrome://settings/images/iban.svg" alt="">
   <div class="summary-column screen-reader-only-host-node" role="cell">
@@ -29,8 +39,8 @@
     </div>
     ${this.showDotsMenu_() ? html`
       <cr-icon-button class="icon-more-vert" id="ibanMenu"
-          title="${this.getMoreActionsTitle_()}"
-          @click="${this.onDotsMenuClick_}">
+           title="${this.getMoreActionsTitle_()}"
+           @click="${this.onDotsMenuClick_}">
       </cr-icon-button>
     ` : ''}
     ${this.shouldShowOutlinkWithWalletBranding_() ? html`
@@ -47,3 +57,5 @@
     ` : ''}
   </div>
 </div>
+<!--_html_template_end_-->`;
+}

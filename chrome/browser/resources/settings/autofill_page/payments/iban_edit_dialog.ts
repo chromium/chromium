@@ -239,8 +239,6 @@ export class SettingsIbanEditDialogElement extends
   }
 }
 
-export type IbanEditDialogElement = SettingsIbanEditDialogElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-iban-edit-dialog': SettingsIbanEditDialogElement;

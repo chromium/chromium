@@ -746,8 +746,6 @@ export class SettingsPaymentsPageElement extends
   }
 }
 
-export type PaymentsPageElement = SettingsPaymentsPageElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-payments-page': SettingsPaymentsPageElement;
