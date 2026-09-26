@@ -15,11 +15,11 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {CrCollapseElement, SecureDnsInputElement, SettingsSecureDnsElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
 import {SecureDnsResolverType} from 'chrome://settings/lazy_load.js';
 import type {ResolverOption} from 'chrome://settings/settings.js';
-import {loadTimeData, SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefService, PrefsBrowserProxy, SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestPrefsBrowserProxy} from '../test_prefs_browser_proxy.js';
 import {TestSecurityPageBrowserProxy} from '../test_security_page_browser_proxy.js';
 
 // clang-format on
@@ -115,6 +115,7 @@ suite('SettingsSecureDns', function() {
   let testBrowserProxy: TestSecurityPageBrowserProxy;
   let testElement: SettingsSecureDnsElement;
   let secureDnsToggle: SettingsToggleButtonElement;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
 
   const resolverList: ResolverOption[] = [
     {name: 'Resolver 1', value: 'resolver', policy: ''},
@@ -126,6 +127,21 @@ suite('SettingsSecureDns', function() {
       'disabled for managed environment description';
   const parentalControlDescription =
       'disabled for parental control description';
+
+  function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+    return [
+      {
+        key: 'dns_over_https.mode',
+        type: chrome.settingsPrivate.PrefType.STRING,
+        value: SecureDnsMode.AUTOMATIC,
+      },
+      {
+        key: 'dns_over_https.templates',
+        type: chrome.settingsPrivate.PrefType.STRING,
+        value: '',
+      },
+    ];
+  }
 
   /**
    * Checks that the select menu is shown and the toggle is properly
@@ -150,16 +166,18 @@ suite('SettingsSecureDns', function() {
     testBrowserProxy = new TestSecurityPageBrowserProxy();
     testBrowserProxy.setResolverList(resolverList);
     SecurityPageBrowserProxyImpl.setInstance(testBrowserProxy);
+
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-secure-dns');
-    testElement.prefs = {
-      dns_over_https:
-          {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
-    };
     document.body.appendChild(testElement);
 
     await testBrowserProxy.whenCalled('getSecureDnsSetting');
-    await flushTasks();
+    await microtasksFinished();
 
     secureDnsToggle =
         testElement.shadowRoot!.querySelector('#secureDnsToggle')!;
@@ -265,10 +283,13 @@ suite('SettingsSecureDns', function() {
   });
 
   test('SecureDnsManaged', function() {
-    testElement.getPref('dns_over_https.mode').enforcement =
-        chrome.settingsPrivate.Enforcement.ENFORCED;
-    testElement.getPref('dns_over_https.mode').controlledBy =
-        chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'dns_over_https.mode',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: SecureDnsMode.AUTOMATIC,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+    }]);
 
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,

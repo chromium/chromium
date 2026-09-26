@@ -18,11 +18,10 @@ import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
-import '/shared/settings/prefs/prefs.js';
 import '../../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import type {ResolverOption, SecureDnsSetting, SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -46,7 +45,7 @@ export interface SettingsSecureDnsElement {
 }
 
 const SettingsSecureDnsElementBase =
-    WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)));
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
 /**
  * Enum for the categories of options in the secure DNS resolver select
@@ -137,8 +136,10 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     this.browserProxy_.getSecureDnsResolverList().then(resolvers => {
       this.resolverOptions_ = resolvers;
       this.browserProxy_.getSecureDnsSetting().then(
-          (setting: SecureDnsSetting) =>
-              this.onSecureDnsPrefsChanged_(setting));
+          async (setting: SecureDnsSetting) => {
+            await PrefService.getInstance().whenInitialized();
+            this.onSecureDnsPrefsChanged_(setting);
+          });
 
       // Listen to changes in the host resolver configuration and update the
       // UI representation to match. (Changes to the host resolver configuration
@@ -216,18 +217,20 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
           if (!templates) {
             return;
           }
-          this.setPrefValue('dns_over_https.templates', templates);
+          PrefService.getInstance().setPrefValue(
+              'dns_over_https.templates', templates);
         } else {
-          this.setPrefValue('dns_over_https.templates', builtInResolver.value);
+          PrefService.getInstance().setPrefValue(
+              'dns_over_https.templates', builtInResolver.value);
         }
-        this.setPrefValue('dns_over_https.mode', mode);
+        PrefService.getInstance().setPrefValue('dns_over_https.mode', mode);
         break;
       case SecureDnsMode.AUTOMATIC:
       case SecureDnsMode.OFF:
         // If going to automatic or off mode, set the mode pref first to avoid
         // clearing the dropdown selection when the templates pref is cleared.
-        this.setPrefValue('dns_over_https.mode', mode);
-        this.setPrefValue('dns_over_https.templates', '');
+        PrefService.getInstance().setPrefValue('dns_over_https.mode', mode);
+        PrefService.getInstance().setPrefValue('dns_over_https.templates', '');
         break;
       default:
         assertNotReached('Received unknown secure DNS mode');
@@ -262,9 +265,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * setting is always collapsed if there is any management.
    */
   private updateManagementView_(setting: SecureDnsSetting) {
-    if (this.prefs === undefined) {
-      return;
-    }
     // If the underlying secure DNS mode pref has an enforced value, communicate
     // that via the toggle pref.
     const pref: chrome.settingsPrivate.PrefObject<boolean> = {
@@ -279,11 +279,12 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     // template URI for display in which the identifiers are shown in plain
     // text.
     const secureDescription = loadTimeData.getString('secureDnsDescription');
+    const modePref =
+        PrefService.getInstance().getPref<SecureDnsMode>('dns_over_https.mode');
 
-    if (this.getPref('dns_over_https.mode').enforcement ===
-        chrome.settingsPrivate.Enforcement.ENFORCED) {
+    if (modePref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED) {
       pref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-      pref.controlledBy = this.getPref('dns_over_https.mode').controlledBy;
+      pref.controlledBy = modePref.controlledBy;
       this.secureDnsDescription_ = secureDescription;
     } else {
       // If the secure DNS mode was forcefully overridden by Chrome, provide an

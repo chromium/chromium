@@ -257,14 +257,13 @@
           numeric-checked-value="[[httpsFirstModeSettingEnum_.ENABLED_FULL]]">
       </settings-toggle-button>
       <template is="dom-if" if="[[showSecureDnsSetting_]]">
-        <settings-secure-dns prefs="{{prefs}}" id="secureDnsSettingOld">
+        <settings-secure-dns id="secureDnsSettingOld">
         </settings-secure-dns>
       </template>
     </template>
     <template is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
       <template is="dom-if" if="[[showSecureDnsSetting_]]">
-        <settings-secure-dns prefs="{{prefs}}" class="hr"
-            id="secureDnsSettingNew">
+        <settings-secure-dns class="hr" id="secureDnsSettingNew">
         </settings-secure-dns>
       </template>
     </template>
