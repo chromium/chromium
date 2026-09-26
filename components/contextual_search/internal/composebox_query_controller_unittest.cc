@@ -8234,4 +8234,92 @@ TEST_F(ComposeboxQueryControllerTest,
   }
 }
 
+TEST_F(ComposeboxQueryControllerTest, ClusterInfoMetricsRecordedOnSuccess) {
+  base::HistogramTester histogram_tester;
+  controller().TriggerFetchClusterInfo();
+  WaitForClusterInfo();
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ClusterInfo.Status",
+      ComposeboxQueryController::ClusterInfoStatus::kSuccess, 1);
+  histogram_tester.ExpectTotalCount("Lens.Composebox.ClusterInfo.ResponseTime",
+                                    1);
+}
+
+TEST_F(ComposeboxQueryControllerTest, ClusterInfoMetricsRecordedOnHttpError) {
+  base::HistogramTester histogram_tester;
+  controller().set_next_cluster_info_request_should_return_error(true);
+  controller().TriggerFetchClusterInfo();
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoInvalid);
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ClusterInfo.Status",
+      ComposeboxQueryController::ClusterInfoStatus::kHttpError, 1);
+  histogram_tester.ExpectTotalCount("Lens.Composebox.ClusterInfo.ResponseTime",
+                                    1);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       ClusterInfoMetricsRecordedOnBackgrounded) {
+  base::HistogramTester histogram_tester;
+  controller().SetIsBackgrounded(true);
+  controller().TriggerFetchClusterInfo();
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ClusterInfo.Status",
+      ComposeboxQueryController::ClusterInfoStatus::kBackgrounded, 1);
+  histogram_tester.ExpectTotalCount("Lens.Composebox.ClusterInfo.ResponseTime",
+                                    0);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       SearchUrlMetricsRecordedForAttachedAndIncludedFiles) {
+  base::HistogramTester histogram_tester;
+  controller().TriggerFetchClusterInfo();
+  WaitForClusterInfo();
+
+  const base::UnguessableToken file_token =
+      UploadSimpleTestAttachment(lens::MimeType::kPdf);
+
+  base::test::TestFuture<GURL> url_future;
+  auto search_url_request_info = std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->query_text = "test query";
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  EXPECT_TRUE(url_future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.SearchUrl.HasClusterInfo", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.SearchUrl.ContextFilesAttached", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.SearchUrl.ContextFilesValidatedAndIncluded", 1, 1);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       SearchUrlMetricsRecordedWhenClusterInfoMissing) {
+  base::HistogramTester histogram_tester;
+
+  const base::UnguessableToken file_token =
+      UploadSimpleTestAttachment(lens::MimeType::kPdf);
+  controller().ClearClusterInfo();
+
+  base::test::TestFuture<GURL> url_future;
+  auto search_url_request_info = std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->query_text = "test query";
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  EXPECT_TRUE(url_future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.SearchUrl.HasClusterInfo", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.SearchUrl.ContextFilesAttached", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.SearchUrl.ContextFilesValidatedAndIncluded", 0, 1);
+}
+
 }  // namespace contextual_search

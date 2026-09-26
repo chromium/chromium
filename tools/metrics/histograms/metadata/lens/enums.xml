@@ -39,6 +39,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_composebox_user_action.h:LensComposeboxUserAction) -->
 
+<!-- LINT.IfChange(LensComposeboxClusterInfoStatus) -->
+
+<enum name="LensComposeboxClusterInfoStatus">
+  <summary>Status of the Composebox ClusterInfo fetch request.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="HTTP Error"/>
+  <int value="2" label="Proto Parse Error"/>
+  <int value="3" label="Backgrounded"/>
+  <int value="4" label="Max Retries Reached"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/contextual_search/internal/composebox_query_controller.h:LensComposeboxClusterInfoStatus) -->
+
 <!-- LINT.IfChange(LensContextualTasksQueryEligibility) -->
 
 <enum name="LensContextualTasksQueryEligibility">
