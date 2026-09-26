@@ -77,7 +77,6 @@ android_library("unit_device_javatests") {
   resources_package = "org.chromium.chrome.browser.ui.appmenu"
   sources = [
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinderRenderTest.java",
-    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinderTest.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuTest.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/TestAppMenuDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/TestAppMenuPropertiesDelegate.java",
@@ -97,14 +96,12 @@ android_library("unit_device_javatests") {
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
-    "//components/browser_ui/util/android:test_support_java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:test_support_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
-    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -136,11 +133,28 @@ android_resources("test_java_resources") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuPopupPositionTest.java" ]
+  resources_package = "org.chromium.chrome.browser.ui.appmenu"
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemViewBinderTest.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuPopupPositionTest.java",
+  ]
   deps = [
     ":java",
+    ":test_java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/appmenu:java",
+    "//components/browser_ui/util/android:java",
+    "//components/browser_ui/util/android:test_support_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
