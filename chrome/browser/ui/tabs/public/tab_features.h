@@ -34,6 +34,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/common/buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
@@ -155,6 +156,9 @@ class SidePanelController;
 
 namespace extensions {
 class ExtensionSidePanelManager;
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+class NavigationExtensionEnabler;
+#endif
 }  // namespace extensions
 
 namespace glic {
@@ -785,6 +789,11 @@ class TabFeatures {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<contextual_tasks::SearchAiModePromoTabHelper>
       search_ai_mode_promo_tab_helper_;
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::unique_ptr<extensions::NavigationExtensionEnabler>
+      navigation_extension_enabler_;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

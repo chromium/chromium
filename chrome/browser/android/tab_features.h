@@ -47,6 +47,7 @@ class EnterpriseProxyTabHelper;
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 namespace extensions {
 class ExtensionSidePanelManager;
+class NavigationExtensionEnabler;
 }  // namespace extensions
 #endif
 
@@ -126,6 +127,8 @@ class TabFeatures {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   std::unique_ptr<extensions::ExtensionSidePanelManager>
       extension_side_panel_manager_;
+  std::unique_ptr<extensions::NavigationExtensionEnabler>
+      navigation_extension_enabler_;
 #endif
 
   std::unique_ptr<AskBeforeHttpDialogController>

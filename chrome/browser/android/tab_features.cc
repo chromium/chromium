@@ -61,6 +61,7 @@
 #include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/navigation_extension_enabler.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_manager.h"
 #endif
 
@@ -137,6 +138,8 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
         std::make_unique<extensions::ExtensionSidePanelManager>(
             profile, tab, tab_scoped_side_panel_registry_.get());
   }
+  navigation_extension_enabler_ =
+      std::make_unique<extensions::NavigationExtensionEnabler>(web_contents);
 #endif
 
   if (tab_scoped_side_panel_registry_ &&

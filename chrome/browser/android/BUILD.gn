@@ -76,7 +76,10 @@ source_set("tabs_impl") {
     deps += [ "//chrome/browser/ui/customize_chrome:customize_chrome_base" ]
   }
   if (enable_extensions_core) {
-    deps += [ "//chrome/browser/ui/extensions" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui/extensions",
+    ]
   }
 }
 

@@ -14,7 +14,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
@@ -27,11 +26,11 @@ namespace extensions {
 // user navigates into an extension that has been disabled due to a permission
 // increase, it prompts the user to accept the new permissions and re-enables
 // the extension.
-class NavigationExtensionEnabler
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<NavigationExtensionEnabler>,
-      public ExtensionRegistryObserver {
+class NavigationExtensionEnabler : public content::WebContentsObserver,
+                                   public ExtensionRegistryObserver {
  public:
+  explicit NavigationExtensionEnabler(content::WebContents* web_contents);
+
   NavigationExtensionEnabler(const NavigationExtensionEnabler&) = delete;
   NavigationExtensionEnabler& operator=(const NavigationExtensionEnabler&) =
       delete;
@@ -39,9 +38,6 @@ class NavigationExtensionEnabler
   ~NavigationExtensionEnabler() override;
 
  private:
-  explicit NavigationExtensionEnabler(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<NavigationExtensionEnabler>;
-
   // Checks if the WebContents has navigated to an extension's web extent. If it
   // has and the extension is disabled due to a permissions increase, this
   // prompts the user to accept the new permissions and enables the extension.
@@ -67,7 +63,6 @@ class NavigationExtensionEnabler
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
   base::WeakPtrFactory<NavigationExtensionEnabler> weak_factory_{this};
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace extensions

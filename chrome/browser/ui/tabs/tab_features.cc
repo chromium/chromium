@@ -215,6 +215,10 @@
 #include "components/signin/public/base/signin_switches.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/navigation_extension_enabler.h"
+#endif
+
 namespace tabs {
 
 TabFeatures::TabFeatures() = default;
@@ -831,6 +835,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                 tab, tab, tab.GetContents());
   }
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  navigation_extension_enabler_ =
+      std::make_unique<extensions::NavigationExtensionEnabler>(
+          tab.GetContents());
+#endif
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1096,6 +1106,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
             .CreateInstance<contextual_tasks::SearchAiModePromoTabHelper>(
                 *tab, *tab, new_contents);
   }
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  navigation_extension_enabler_ =
+      std::make_unique<extensions::NavigationExtensionEnabler>(new_contents);
 #endif
 }
 
