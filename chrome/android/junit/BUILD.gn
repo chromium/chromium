@@ -536,6 +536,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetCoordinatorTest.java",
       "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetLifecycleTest.java",
       "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetMediatorTest.java",
+      "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetViewBinderUnitTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillBuyNowPayLaterFragmentTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillDeletePaymentMethodConfirmationDialogTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillDeleteSavedCvcsConfirmationDialogTest.java",
@@ -553,6 +554,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetCoordinatorTest.java",
       "src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetLifecycleTest.java",
       "src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetMediatorTest.java",
+      "src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetViewBinderUnitTest.java",
       "src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillViewBridgeTest.java",
     ]
 

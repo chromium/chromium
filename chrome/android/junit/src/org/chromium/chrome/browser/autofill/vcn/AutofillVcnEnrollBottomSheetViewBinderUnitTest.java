@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -20,19 +21,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.test.filters.SmallTest;
-
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -41,15 +38,14 @@ import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProp
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LegalMessages;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LinkOpener;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.autofill.payments.LegalMessageLine.Link;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
@@ -57,22 +53,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.TreeMap;
-import java.util.concurrent.TimeoutException;
 
 /** Tests for {@link AutofillVcnEnrollBottomSheetViewBinder}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
-public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpener {
+public final class AutofillVcnEnrollBottomSheetViewBinderUnitTest implements LinkOpener {
     private static final int LOADING_ACCESSIBILITY_STRING_RESOURCE =
             R.string.autofill_virtual_card_enroll_loading_throbber_accessible_name;
     private static final int DESCRIPTION_STRING_RESOURCE =
             R.string.autofill_virtual_card_entry_prefix;
 
-    @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
+    private Activity mActivity;
     private PropertyModel.Builder mModelBuilder;
     private PropertyModel mModel;
     private AutofillVcnEnrollBottomSheetView mView;
@@ -102,34 +93,25 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
         }
     }
 
-    @BeforeClass
-    public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
-    }
-
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mModelBuilder = new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS);
-        BlankUiTestActivity activity = sActivityTestRule.getActivity();
-        mView = new AutofillVcnEnrollBottomSheetView(activity);
-        ThreadUtils.runOnUiThreadBlocking(() -> activity.setContentView(mView.mContentView));
+        mView = new AutofillVcnEnrollBottomSheetView(mActivity);
+        mActivity.setContentView(mView.mContentView);
         bind(mModelBuilder);
     }
 
     // Builds the model from the given builder and binds it to the view.
     private void bind(PropertyModel.Builder modelBuilder) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModel =
-                            modelBuilder
-                                    .with(
-                                            AutofillVcnEnrollBottomSheetProperties
-                                                    .ISSUER_ICON_FETCH_CALLBACK,
-                                            mFakeIconFetcher::fetchIcon)
-                                    .build();
-                    PropertyModelChangeProcessor.create(
-                            mModel, mView, AutofillVcnEnrollBottomSheetViewBinder::bind);
-                });
+        mModel =
+                modelBuilder
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON_FETCH_CALLBACK,
+                                mFakeIconFetcher::fetchIcon)
+                        .build();
+        PropertyModelChangeProcessor.create(
+                mModel, mView, AutofillVcnEnrollBottomSheetViewBinder::bind);
     }
 
     // LinkOpener:
@@ -137,7 +119,6 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     public void openLink(String url, @VirtualCardEnrollmentLinkType int linkType) {}
 
     @Test
-    @SmallTest
     public void testMessageTextInDialogTitle() {
         assertThat(String.valueOf(mView.mDialogTitle.getText()), isEmptyString());
 
@@ -151,7 +132,6 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     }
 
     @Test
-    @SmallTest
     public void testDescriptionText() {
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
@@ -222,7 +202,6 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     }
 
     @Test
-    @SmallTest
     public void testCardContainerAccessibilityDescription() {
         ReadableObjectPropertyKey<String> cardLabelProperty =
                 AutofillVcnEnrollBottomSheetProperties.CARD_LABEL;
@@ -234,7 +213,6 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
     public void testIssuerIcon() {
         assertThat(mView.mIssuerIcon.getDrawable(), nullValue());
@@ -250,7 +228,6 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     }
 
     @Test
-    @SmallTest
     public void testIssuerIconFromCardArtUrl() {
         assertThat(mView.mIssuerIcon.getDrawable(), nullValue());
         int fakeIconResourceId = 1234;
@@ -329,17 +306,15 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     }
 
     @Test
-    @SmallTest
     public void testCardLabel() {
         runTextViewTest(mView.mCardLabel, AutofillVcnEnrollBottomSheetProperties.CARD_LABEL);
     }
 
     @Test
-    @SmallTest
     public void testCardDescription() {
         assertThat(
                 String.valueOf(mView.mCardDescription.getText()),
-                equalTo(sActivityTestRule.getActivity().getString(DESCRIPTION_STRING_RESOURCE)));
+                equalTo(mActivity.getString(DESCRIPTION_STRING_RESOURCE)));
     }
 
     private void runTextViewTest(TextView view, ReadableObjectPropertyKey<String> property) {
@@ -353,7 +328,6 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     }
 
     @Test
-    @SmallTest
     public void testGoogleLegalMessages() {
         runLegalMessageTest(
                 mView.mGoogleLegalMessage,
@@ -361,7 +335,6 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     }
 
     @Test
-    @SmallTest
     public void testIssuerLegalMessages() {
         runLegalMessageTest(
                 mView.mIssuerLegalMessage,
@@ -428,14 +401,12 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     }
 
     @Test
-    @SmallTest
     public void testAcceptButtonLabel() {
         runButtonLabelTest(
                 mView.mAcceptButton, AutofillVcnEnrollBottomSheetProperties.ACCEPT_BUTTON_LABEL);
     }
 
     @Test
-    @SmallTest
     public void testCancelButtonLabel() {
         runButtonLabelTest(
                 mView.mCancelButton, AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL);
@@ -452,8 +423,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     }
 
     @Test
-    @SmallTest
-    public void testShowLoadingState() throws TimeoutException {
+    public void testShowLoadingState() {
         LoadingViewObserver observer = new LoadingViewObserver();
         mView.mLoadingView.addObserver(observer);
 
@@ -462,21 +432,17 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
         assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
         assertEquals(View.VISIBLE, mView.mCancelButton.getVisibility());
 
-        int onShowLoadingUiCompleteCount =
-                observer.getOnShowLoadingUiCompleteHelper().getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, true));
-        observer.getOnShowLoadingUiCompleteHelper().waitForCallback(onShowLoadingUiCompleteCount);
+        mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(1, observer.getOnShowLoadingUiCompleteHelper().getCallCount());
         assertEquals(View.VISIBLE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.VISIBLE, mView.mLoadingView.getVisibility());
         assertEquals(View.GONE, mView.mAcceptButton.getVisibility());
         assertEquals(View.GONE, mView.mCancelButton.getVisibility());
 
-        int onHideLoadingUiCompleteCount =
-                observer.getOnHideLoadingUiCompleteHelper().getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false));
-        observer.getOnHideLoadingUiCompleteHelper().waitForCallback(onHideLoadingUiCompleteCount);
+        mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(1, observer.getOnHideLoadingUiCompleteHelper().getCallCount());
         assertEquals(View.GONE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.GONE, mView.mLoadingView.getVisibility());
         assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
@@ -484,13 +450,9 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     }
 
     @Test
-    @SmallTest
     public void testLoadingAccessibilityDescription() {
         assertThat(
                 String.valueOf(mView.mLoadingViewContainer.getContentDescription()),
-                equalTo(
-                        sActivityTestRule
-                                .getActivity()
-                                .getString(LOADING_ACCESSIBILITY_STRING_RESOURCE)));
+                equalTo(mActivity.getString(LOADING_ACCESSIBILITY_STRING_RESOURCE)));
     }
 }
