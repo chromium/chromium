@@ -388,6 +388,9 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   source->AddBoolean("smallLoomnibox",
                      omnibox::kOmniboxEverywhereSmallLoomniboxParam.Get());
 
+  source->AddBoolean("isPersistentMode",
+                     !omnibox_everywhere::prefs::IsEphemeralModelEnabled());
+
   const bool is_fusebox_enabled = IsFuseboxEnabled(profile_);
   source->AddBoolean("searchboxShowComposeEntrypoint", is_fusebox_enabled);
   source->AddBoolean("isFuseboxEnabled", is_fusebox_enabled);
