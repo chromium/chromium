@@ -9,7 +9,9 @@
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
+#import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
 HomeBackgroundCustomizationService*
@@ -31,6 +33,7 @@ HomeBackgroundCustomizationServiceFactory::
     : ProfileKeyedServiceFactoryIOS("HomeBackgroundCustomizationService") {
   DependsOn(UserUploadedImageManagerFactory::GetInstance());
   DependsOn(HomeBackgroundImageServiceFactory::GetInstance());
+  DependsOn(PromosManagerFactory::GetInstance());
 }
 
 HomeBackgroundCustomizationServiceFactory::
@@ -42,7 +45,9 @@ HomeBackgroundCustomizationServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<HomeBackgroundCustomizationService>(
       profile->GetPrefs(),
       UserUploadedImageManagerFactory::GetForProfile(profile),
-      HomeBackgroundImageServiceFactory::GetForProfile(profile));
+      HomeBackgroundImageServiceFactory::GetForProfile(profile),
+      profile->GetSharedURLLoaderFactory(), profile->GetStatePath(),
+      PromosManagerFactory::GetForProfile(profile));
 }
 
 void HomeBackgroundCustomizationServiceFactory::RegisterProfilePrefs(

@@ -33,6 +33,7 @@ source_set("commands") {
     "drive_file_picker_commands.h",
     "enhanced_calendar_commands.h",
     "enterprise_commands.h",
+    "ephemeral_theme_promo_commands.h",
     "file_upload_panel_commands.h",
     "find_in_page_commands.h",
     "fullscreen_commands.h",

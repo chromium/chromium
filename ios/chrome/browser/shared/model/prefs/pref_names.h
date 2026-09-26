@@ -456,6 +456,12 @@ inline constexpr char kIosNtpThemeMigrationComplete[] =
 // background, updated by both local changes and remote sync updates.
 inline constexpr char kIosNtpThemeSpecifics[] = "ios.ntp.theme_specifics";
 
+// Dictionary preference storing the downloaded ephemeral theme metadata
+// (animation URLs, local file paths, color mapping dictionaries, Google logo
+// URLs, and seed color).
+inline constexpr char kIosNtpEphemeralThemeData[] =
+    "ios.ntp.ephemeral_theme_data";
+
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in the reading list.
 inline constexpr char kIosReadingListPromoAlreadySeen[] =

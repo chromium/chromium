@@ -1,6 +1,10 @@
 include_rules = [
   # keep-sorted start
   "+components/application_locale_storage",
+  "+components/feature_engagement/public",
+  "+components/image_fetcher/core",
   "+components/themes",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
+  "+ios/chrome/browser/promos_manager/model",
   # keep-sorted end
 ]

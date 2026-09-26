@@ -100,6 +100,10 @@ std::optional<Promo> PromoForName(std::string_view promo) {
     return promos_manager::Promo::LevelUp;
   }
 
+  if (promo == "promos_manager::Promo::EphemeralTheme") {
+    return promos_manager::Promo::EphemeralTheme;
+  }
+
   return std::nullopt;
 }
 
@@ -149,6 +153,8 @@ std::string_view ShortNameForPromo(Promo promo) {
       return "HomeBackgroundCustomization";
     case promos_manager::Promo::LevelUp:
       return "LevelUp";
+    case promos_manager::Promo::EphemeralTheme:
+      return "EphemeralTheme";
   }
 }
 

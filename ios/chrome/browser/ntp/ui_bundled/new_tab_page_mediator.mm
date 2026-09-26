@@ -19,6 +19,7 @@
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "base/trace_event/trace_event.h"
+#import "base/values.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_fetcher.h"
@@ -31,6 +32,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/prefs/pref_service.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/search/search.h"
 #import "components/signin/public/base/signin_switches.h"
@@ -1012,8 +1014,9 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     [self.logoMediator setLogoTintColor:tintColor];
     if (_backgroundCustomizationService->IsCurrentEphemeralTheme() &&
         IsNTPEphemeralThemeEnabled()) {
-      [self.consumer setAnimatedBackgroundPath:
-                         GetNTPEphemeralThemeAnimatedBackgroundPath()];
+      [self.consumer
+          setAnimatedBackgroundPath:[self
+                                        ephemeralThemeAnimatedBackgroundPath]];
     }
     if (initialLoad) {
       base::UmaHistogramEnumeration(
@@ -1032,6 +1035,22 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     base::UmaHistogramEnumeration("IOS.HomeCustomization.Background.Ntp.Loaded",
                                   HomeCustomizationBackgroundStyle::kDefault);
   }
+}
+
+// Returns the local file path for the ephemeral theme animated background from
+// preferences, or nil if unavailable.
+- (NSString*)ephemeralThemeAnimatedBackgroundPath {
+  if (!_prefService || !IsNTPEphemeralThemeEnabled()) {
+    return nil;
+  }
+  const base::DictValue& themeData =
+      _prefService->GetDict(prefs::kIosNtpEphemeralThemeData);
+  const std::string* path =
+      themeData.FindString(kEphemeralThemeAnimationPathKey);
+  if (!path || path->empty()) {
+    return nil;
+  }
+  return base::SysUTF8ToNSString(*path);
 }
 
 // Fetches and applies a custom background image.

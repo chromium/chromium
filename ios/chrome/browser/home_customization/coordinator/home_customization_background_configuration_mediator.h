@@ -18,6 +18,7 @@ class HomeBackgroundImageService;
 class HomeBackgroundCustomizationService;
 @protocol HomeCustomizationBackgroundConfigurationConsumer;
 @protocol HomeCustomizationBackgroundPickerPresentationDelegate;
+class PrefService;
 class UserUploadedImageManager;
 
 // A mediator that generates and configures background options for the
@@ -29,7 +30,8 @@ class UserUploadedImageManager;
 // provided services. `backgroundCustomizationService` and `imageFetcher` are
 // required. `homeBackgroundImageService` can be null if loading gallery images
 // is not required. `userUploadedImageManager` can be null if this mediator will
-// not have to deal with user uploaded images.
+// not have to deal with user uploaded images. `prefService` is used to read
+// ephemeral theme configuration data.
 - (instancetype)
     initWithBackgroundCustomizationService:
         (HomeBackgroundCustomizationService*)backgroundCustomizationService
@@ -39,6 +41,7 @@ class UserUploadedImageManager;
                     (HomeBackgroundImageService*)homeBackgroundImageService
                   userUploadedImageManager:
                       (UserUploadedImageManager*)userUploadedImageManager
+                               prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -7,7 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/feature_list.h"
+#import <string>
+
+#import "base/feature_list.h"
+#import "base/metrics/field_trial_params.h"
 
 class PrefService;
 
@@ -91,17 +94,34 @@ extern const char kFeedSwipeInProductHelpArmParam[];
 // enabled.
 extern const char kNewTabPageUICleanupArmParam[];
 
-// Parameters for `kNewTabPageEphemeralTheme` specifying the seed hex color
-// string used to generate the `NewTabPageColorPalette` and the background
-// image URL.
-inline constexpr char kNTPEphemeralThemeSeedColorParam[] =
-    "ntp-ephemeral-theme-seed-color";
-inline constexpr char kNTPEphemeralThemeBackgroundURLParam[] =
-    "ntp-ephemeral-theme-background-url";
+// URL parameter for the ephemeral theme Lottie animation.
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kNewTabPageEphemeralThemeAnimationUrlParam);
 
-// Returns the configured animated background path for the ephemeral theme, or
-// nil if none is configured.
-NSString* GetNTPEphemeralThemeAnimatedBackgroundPath();
+// JSON string parameter for the ephemeral theme light/dark color mapping.
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kNewTabPageEphemeralThemeAnimationColorMappingParam);
+
+// URL parameter for the ephemeral theme promo Lottie animation.
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kNewTabPageEphemeralThemeAnimationPromoUrlParam);
+
+// JSON string parameter for the ephemeral theme promo light/dark color mapping.
+BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kNewTabPageEphemeralThemeAnimationPromoColorMappingParam);
+
+// URL parameter for the light mode Google logo on the ephemeral theme NTP.
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kNewTabPageEphemeralThemeGoogleLogoLightUrlParam);
+
+// URL parameter for the dark mode Google logo on the ephemeral theme NTP.
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kNewTabPageEphemeralThemeGoogleLogoDarkUrlParam);
+
+// Seed color parameter for the ephemeral theme.
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kNewTabPageEphemeralThemeSeedColorParam);
 
 #pragma mark - Helpers
 

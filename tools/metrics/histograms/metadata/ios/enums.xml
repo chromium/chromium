@@ -1758,7 +1758,9 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="(Obsolete) BWG promo"/>
   <int value="20" label="Safari Import (Remind Me Later)"/>
   <int value="21" label="Default Browser off cycle promo"/>
+  <int value="22" label="Home background customization promo"/>
   <int value="23" label="LevelUp"/>
+  <int value="24" label="Ephemeral theme promo"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.h:Promo) -->

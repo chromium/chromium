@@ -123,7 +123,8 @@ class NewTabPageMediatorTest : public PlatformTest {
               return std::make_unique<HomeBackgroundCustomizationService>(
                   profile->GetPrefs(),
                   UserUploadedImageManagerFactory::GetForProfile(profile),
-                  HomeBackgroundImageServiceFactory::GetForProfile(profile));
+                  HomeBackgroundImageServiceFactory::GetForProfile(profile),
+                  /*url_loader_factory=*/nullptr, profile->GetStatePath());
             }));
     test_profile_builder.AddTestingFactory(
         ImageFetcherServiceFactory::GetInstance(),

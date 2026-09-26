@@ -106,7 +106,6 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
  public:
   void SetUp() override {
     TestProfileIOS::Builder test_profile_builder;
-    test_profile_builder.SetPrefService(CreatePrefService());
     test_profile_builder.AddTestingFactory(
         UserUploadedImageManagerFactory::GetInstance(),
         base::BindRepeating(&CreateUserUploadedImageManager));
@@ -129,25 +128,12 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
         initWithBackgroundCustomizationService:background_service
                                   imageFetcher:mock_image_fetcher_.get()
                     homeBackgroundImageService:home_background_image_service
-                      userUploadedImageManager:user_image_manager];
+                      userUploadedImageManager:user_image_manager
+                                   prefService:profile_->GetPrefs()];
 
     consumer_ =
         [[FakeHomeCustomizationBackgroundConfigurationConsumer alloc] init];
     mediator_.consumer = consumer_;
-  }
-
-  std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
-    sync_preferences::PrefServiceMockFactory factory;
-    scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
-        new user_prefs::PrefRegistrySyncable);
-    std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs =
-        factory.CreateSyncable(registry.get());
-
-    registry->RegisterBooleanPref(prefs::kNTPCustomBackgroundEnabledByPolicy,
-                                  true);
-    registry->RegisterIntegerPref(themes::kPolicyThemeColor,
-                                  SK_ColorTRANSPARENT);
-    return prefs;
   }
 
   FakeHomeBackgroundImageService* FakeImageService() {
@@ -755,13 +741,13 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
 // to the recently used backgrounds list.
 TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
        LoadAndApplyEphemeralBackground) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kNewTabPageEphemeralTheme,
-      {
-          {kNTPEphemeralThemeSeedColorParam, "FF8000"},
-          {kNTPEphemeralThemeBackgroundURLParam, "/path/to/animation.json"},
-      });
+  base::test::ScopedFeatureList feature_list(kNewTabPageEphemeralTheme);
+
+  base::DictValue theme_data;
+  theme_data.Set(kEphemeralThemeSeedColorKey, "FF8000");
+  theme_data.Set(kEphemeralThemeAnimationPathKey, "/path/to/animation.json");
+  profile_->GetPrefs()->SetDict(prefs::kIosNtpEphemeralThemeData,
+                                std::move(theme_data));
 
   size_t initial_recent_count =
       CustomizationService()->GetRecentlyUsedBackgrounds().size();

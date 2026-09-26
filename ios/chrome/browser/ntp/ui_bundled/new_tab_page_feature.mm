@@ -6,7 +6,6 @@
 
 #import "base/ios/ios_util.h"
 #import "base/metrics/field_trial_params.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
@@ -63,6 +62,48 @@ BASE_FEATURE_PARAM(int,
                    kNewTabPageUICleanupArmParam,
                    static_cast<int>(NTPUICleanupVariation::kTightPadding));
 
+BASE_FEATURE_PARAM(std::string,
+                   kNewTabPageEphemeralThemeAnimationUrlParam,
+                   &kNewTabPageEphemeralTheme,
+                   "animation-url",
+                   "");
+
+BASE_FEATURE_PARAM(std::string,
+                   kNewTabPageEphemeralThemeAnimationColorMappingParam,
+                   &kNewTabPageEphemeralTheme,
+                   "animation-colormapping",
+                   "");
+
+BASE_FEATURE_PARAM(std::string,
+                   kNewTabPageEphemeralThemeAnimationPromoUrlParam,
+                   &kNewTabPageEphemeralTheme,
+                   "animation-promo-url",
+                   "");
+
+BASE_FEATURE_PARAM(std::string,
+                   kNewTabPageEphemeralThemeAnimationPromoColorMappingParam,
+                   &kNewTabPageEphemeralTheme,
+                   "animation-promo-colormapping",
+                   "");
+
+BASE_FEATURE_PARAM(std::string,
+                   kNewTabPageEphemeralThemeGoogleLogoLightUrlParam,
+                   &kNewTabPageEphemeralTheme,
+                   "google-logo-light-url",
+                   "");
+
+BASE_FEATURE_PARAM(std::string,
+                   kNewTabPageEphemeralThemeGoogleLogoDarkUrlParam,
+                   &kNewTabPageEphemeralTheme,
+                   "google-logo-dark-url",
+                   "");
+
+BASE_FEATURE_PARAM(std::string,
+                   kNewTabPageEphemeralThemeSeedColorParam,
+                   &kNewTabPageEphemeralTheme,
+                   "seed-color",
+                   "");
+
 #pragma mark - Helpers
 
 bool IsMVTInBottomSheetEnabled() {
@@ -71,18 +112,6 @@ bool IsMVTInBottomSheetEnabled() {
 
 bool IsNTPEphemeralThemeEnabled() {
   return base::FeatureList::IsEnabled(kNewTabPageEphemeralTheme);
-}
-
-NSString* GetNTPEphemeralThemeAnimatedBackgroundPath() {
-  if (!IsNTPEphemeralThemeEnabled()) {
-    return nil;
-  }
-  std::string path = base::GetFieldTrialParamValueByFeature(
-      kNewTabPageEphemeralTheme, kNTPEphemeralThemeBackgroundURLParam);
-  if (path.empty()) {
-    return nil;
-  }
-  return base::SysUTF8ToNSString(path);
 }
 
 bool IsDiscoverFeedTopSyncPromoEnabled() {

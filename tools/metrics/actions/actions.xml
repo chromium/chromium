@@ -629,6 +629,8 @@ should be able to be added at any place in this file.
       summary="For iOSPromoDefaultBrowser feature"/>
   <variant name="_iOSPromoDefaultBrowserReminder"
       summary="For iOSPromoDefaultBrowserReminder feature"/>
+  <variant name="_iOSPromoEphemeralTheme"
+      summary="For iOSPromoEphemeralTheme feature."/>
   <variant name="_iOSPromoGenericDefaultBrowser"
       summary="For generivc default browser promo."/>
   <variant name="_iOSPromoMadeForIOS"

@@ -11,16 +11,17 @@
 #import "base/functional/bind.h"
 #import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"
-#import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/values.h"
 #import "components/crash/core/common/crash_key.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/image_fetcher/core/request_metadata.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync/protocol/theme_types.pb.h"
 #import "ios/chrome/browser/home_customization/coordinator/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -94,6 +96,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   // Used to get and observe the background state.
   raw_ptr<HomeBackgroundCustomizationService> _backgroundCustomizationService;
   raw_ptr<UserUploadedImageManager> _userUploadedImageManager;
+  raw_ptr<PrefService> _prefService;
 
   // Observer for the customization service.
   std::unique_ptr<HomeBackgroundCustomizationServiceObserverBridge>
@@ -115,7 +118,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
                 homeBackgroundImageService:
                     (HomeBackgroundImageService*)homeBackgroundImageService
                   userUploadedImageManager:
-                      (UserUploadedImageManager*)userUploadedImageManager {
+                      (UserUploadedImageManager*)userUploadedImageManager
+                               prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
     _backgroundCustomizationService = backgroundCustomizationService;
@@ -125,6 +129,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     _imageFetcher = imageFetcher;
     _homeBackgroundImageService = homeBackgroundImageService;
     _userUploadedImageManager = userUploadedImageManager;
+    _prefService = prefService;
   }
   return self;
 }
@@ -158,10 +163,12 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   BackgroundCustomizationConfigurationItem* ephemeralConfig = nil;
   if (IsNTPEphemeralThemeEnabled()) {
     ephemeralConfig = [self createEphemeralConfigurationItem];
-    collectionConfiguration.configurations[ephemeralConfig.configurationID] =
-        ephemeralConfig;
-    [collectionConfiguration.configurationOrder
-        addObject:ephemeralConfig.configurationID];
+    if (ephemeralConfig) {
+      collectionConfiguration.configurations[ephemeralConfig.configurationID] =
+          ephemeralConfig;
+      [collectionConfiguration.configurationOrder
+          addObject:ephemeralConfig.configurationID];
+    }
   }
 
   // Figure out the current background. This may not be element 1 in the
@@ -320,6 +327,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   _imageFetcher = nullptr;
   _homeBackgroundImageService = nullptr;
   _userUploadedImageManager = nullptr;
+  _prefService = nullptr;
 }
 
 #pragma mark - HomeCustomizationBackgroundConfigurationMutator
@@ -476,19 +484,51 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 #pragma mark - Private
 
-// Creates the configuration item for the ephemeral theme from Finch parameters.
+// Creates the configuration item for the ephemeral theme from preferences, or
+// returns nil if the ephemeral theme data is not available.
 - (BackgroundCustomizationConfigurationItem*)createEphemeralConfigurationItem {
-  std::string seedHex = base::GetFieldTrialParamValueByFeature(
-      kNewTabPageEphemeralTheme, kNTPEphemeralThemeSeedColorParam);
   UIColor* backgroundColor = nil;
-  uint32_t seedColor = 0;
-  if (!seedHex.empty() && base::HexStringToUInt(seedHex, &seedColor)) {
-    backgroundColor = skia::UIColorFromSkColor(SkColorSetA(seedColor, 0xFF));
+  if (!_prefService) {
+    return nil;
+  }
+
+  const base::DictValue& themeData =
+      _prefService->GetDict(prefs::kIosNtpEphemeralThemeData);
+  const std::string* seedHex =
+      themeData.FindString(kEphemeralThemeSeedColorKey);
+  if (seedHex) {
+    std::string_view trimmedHex =
+        base::TrimString(*seedHex, "#", base::TRIM_LEADING);
+    uint32_t seedColor = 0;
+    if (!trimmedHex.empty() && base::HexStringToUInt(trimmedHex, &seedColor)) {
+      backgroundColor = skia::UIColorFromSkColor(SkColorSetA(seedColor, 0xFF));
+    }
+  }
+
+  NSString* imagePath = [self ephemeralThemeAnimatedBackgroundPath];
+  if (!backgroundColor || !imagePath) {
+    return nil;
   }
   return [[BackgroundCustomizationConfigurationItem alloc]
       initWithEphemeralTheme:backgroundColor
-                   imagePath:GetNTPEphemeralThemeAnimatedBackgroundPath()
+                   imagePath:imagePath
            accessibilityName:nil];
+}
+
+// Returns the local file path for the ephemeral theme animated background from
+// preferences, or nil if unavailable.
+- (NSString*)ephemeralThemeAnimatedBackgroundPath {
+  if (!_prefService || !IsNTPEphemeralThemeEnabled()) {
+    return nil;
+  }
+  const base::DictValue& themeData =
+      _prefService->GetDict(prefs::kIosNtpEphemeralThemeData);
+  const std::string* path =
+      themeData.FindString(kEphemeralThemeAnimationPathKey);
+  if (!path || path->empty()) {
+    return nil;
+  }
+  return base::SysUTF8ToNSString(*path);
 }
 
 // Callback function that is called when the collection images are fetched. This

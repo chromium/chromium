@@ -53,7 +53,8 @@ enum class Promo {
   DefaultBrowserOffCycle = 21,  // Off-cycle fullscreen default browser promo.
   HomeBackgroundCustomization = 22,  // Home (NTP) background customization.
   LevelUp = 23,                      // Level Up fullscreen opt-in promo.
-  kMaxValue = LevelUp,
+  EphemeralTheme = 24,               // Home (NTP) ephemeral theme promo.
+  kMaxValue = EphemeralTheme,
 };
 // LINT.ThenChange(
 //   /ios/chrome/browser/promos_manager/model/constants.cc,

@@ -57,6 +57,19 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
                                             Comparator(EQUAL, 0), 3, 365));
 
     return config;
+  } else if (kIPHiOSPromoEphemeralThemeFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+    config.storage_type = StorageType::PROFILE;
+    config.used =
+        EventConfig("ephemeral_theme_promo_used", Comparator(EQUAL, 0),
+                    kMaxStoragePeriod, kMaxStoragePeriod);
+    config.trigger =
+        EventConfig("ephemeral_theme_promo_trigger", Comparator(EQUAL, 0),
+                    kMaxStoragePeriod, kMaxStoragePeriod);
+    return config;
   } else if (kIPHiOSPromoBackgroundCustomizationFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;

@@ -233,6 +233,7 @@ chromium-metrics-reviews@google.com.
   <variant name="DefaultBrowserRemindMeLater"
       summary="Remind me later for default browser."/>
   <variant name="DockingPromo" summary="Docking Promo."/>
+  <variant name="EphemeralTheme" summary="Home (NTP) ephemeral theme promo."/>
   <variant name="FullscreenSignin" summary="Fullscreen sign-in promo."/>
   <variant name="LevelUp" summary="Level Up promo"/>
   <variant name="MadeForIOSDefaultBrowser"
