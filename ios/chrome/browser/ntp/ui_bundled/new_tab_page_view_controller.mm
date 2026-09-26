@@ -184,6 +184,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   HomeCustomizationFramingCoordinates* _framingCoordinates;
   // Local path for an animated background, if any.
   NSString* _animatedBackgroundPath;
+  // Dynamic light and dark mode color providers for the animated background.
+  NSDictionary<NSString*, UIColor*>* _animatedBackgroundLightModeColorProvider;
+  NSDictionary<NSString*, UIColor*>* _animatedBackgroundDarkModeColorProvider;
   // The image view to display the current background image.
   HomeCustomizationImageView* _backgroundImageView;
   // The view controller holding the NTP quick actions buttons.
@@ -253,7 +256,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   _backgroundImageView = [[HomeCustomizationImageView alloc] init];
   _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
   if (_animatedBackgroundPath.length > 0) {
-    [_backgroundImageView setAnimatedBackgroundPath:_animatedBackgroundPath];
+    [_backgroundImageView
+        setAnimatedBackgroundPath:_animatedBackgroundPath
+           lightModeColorProvider:_animatedBackgroundLightModeColorProvider
+            darkModeColorProvider:_animatedBackgroundDarkModeColorProvider];
   } else {
     [self updateBackgroundImageView];
   }
@@ -809,17 +815,28 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
         framingCoordinates:
             (HomeCustomizationFramingCoordinates*)framingCoordinates {
   _animatedBackgroundPath = nil;
+  _animatedBackgroundLightModeColorProvider = nil;
+  _animatedBackgroundDarkModeColorProvider = nil;
   _backgroundImage = backgroundImage;
   _framingCoordinates = framingCoordinates;
 
   [self updateBackgroundImageView];
 }
 
-- (void)setAnimatedBackgroundPath:(NSString*)animatedBackgroundPath {
+- (void)setAnimatedBackgroundPath:(NSString*)animatedBackgroundPath
+           lightModeColorProvider:
+               (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider
+            darkModeColorProvider:
+                (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider {
   _animatedBackgroundPath = animatedBackgroundPath;
+  _animatedBackgroundLightModeColorProvider = [lightModeColorProvider copy];
+  _animatedBackgroundDarkModeColorProvider = [darkModeColorProvider copy];
   _backgroundImage = nil;
   _framingCoordinates = nil;
-  [_backgroundImageView setAnimatedBackgroundPath:_animatedBackgroundPath];
+  [_backgroundImageView
+      setAnimatedBackgroundPath:_animatedBackgroundPath
+         lightModeColorProvider:_animatedBackgroundLightModeColorProvider
+          darkModeColorProvider:_animatedBackgroundDarkModeColorProvider];
 }
 
 - (void)setAIMAllowed:(BOOL)allowed {

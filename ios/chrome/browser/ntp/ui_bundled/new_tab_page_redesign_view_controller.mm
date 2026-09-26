@@ -126,6 +126,8 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   UIImage* _backgroundImage;
   HomeCustomizationFramingCoordinates* _framingCoordinates;
   NSString* _animatedBackgroundPath;
+  NSDictionary<NSString*, UIColor*>* _animatedBackgroundLightModeColorProvider;
+  NSDictionary<NSString*, UIColor*>* _animatedBackgroundDarkModeColorProvider;
   NewTabPageBottomSheetViewController* _bottomSheetViewController;
   UIViewController* _feedViewController;
   UIViewController* _feedTopSectionViewController;
@@ -195,7 +197,10 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   _backgroundImageView = [[HomeCustomizationImageView alloc] init];
   _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
   if (_animatedBackgroundPath.length > 0) {
-    [_backgroundImageView setAnimatedBackgroundPath:_animatedBackgroundPath];
+    [_backgroundImageView
+        setAnimatedBackgroundPath:_animatedBackgroundPath
+           lightModeColorProvider:_animatedBackgroundLightModeColorProvider
+            darkModeColorProvider:_animatedBackgroundDarkModeColorProvider];
   } else if (_backgroundImage) {
     [_backgroundImageView setImage:_backgroundImage
                 framingCoordinates:_framingCoordinates];
@@ -901,6 +906,8 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
         framingCoordinates:
             (HomeCustomizationFramingCoordinates*)framingCoordinates {
   _animatedBackgroundPath = nil;
+  _animatedBackgroundLightModeColorProvider = nil;
+  _animatedBackgroundDarkModeColorProvider = nil;
   _backgroundImage = backgroundImage;
   _framingCoordinates = framingCoordinates;
 
@@ -918,11 +925,20 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
                   completion:nil];
 }
 
-- (void)setAnimatedBackgroundPath:(NSString*)animatedBackgroundPath {
+- (void)setAnimatedBackgroundPath:(NSString*)animatedBackgroundPath
+           lightModeColorProvider:
+               (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider
+            darkModeColorProvider:
+                (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider {
   _animatedBackgroundPath = animatedBackgroundPath;
+  _animatedBackgroundLightModeColorProvider = [lightModeColorProvider copy];
+  _animatedBackgroundDarkModeColorProvider = [darkModeColorProvider copy];
   _backgroundImage = nil;
   _framingCoordinates = nil;
-  [_backgroundImageView setAnimatedBackgroundPath:_animatedBackgroundPath];
+  [_backgroundImageView
+      setAnimatedBackgroundPath:_animatedBackgroundPath
+         lightModeColorProvider:_animatedBackgroundLightModeColorProvider
+          darkModeColorProvider:_animatedBackgroundDarkModeColorProvider];
 }
 
 #pragma mark - Setters

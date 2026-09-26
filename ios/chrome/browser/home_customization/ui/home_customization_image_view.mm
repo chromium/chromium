@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
@@ -75,6 +76,10 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
   // The underlying animated background displayed in the view, if any.
   id<LottieAnimation> _animatedBackground;
 
+  // Dynamic light and dark mode color providers for `_animatedBackground`.
+  NSDictionary<NSString*, UIColor*>* _lightModeColorProvider;
+  NSDictionary<NSString*, UIColor*>* _darkModeColorProvider;
+
   // The framing coordinates for the current image's position.
   HomeCustomizationFramingCoordinates* _framingCoordinates;
 
@@ -105,6 +110,8 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
   if (self) {
     [self setupImageView];
     self.clipsToBounds = YES;
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                       withAction:@selector(updateAnimationColors)];
   }
   return self;
 }
@@ -155,7 +162,9 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
 - (void)setImage:(UIImage*)image
     framingCoordinates:
         (HomeCustomizationFramingCoordinates*)framingCoordinates {
-  [self setAnimatedBackgroundPath:nil];
+  [self setAnimatedBackgroundPath:nil
+           lightModeColorProvider:nil
+            darkModeColorProvider:nil];
   _imageView.image = image;
   _framingCoordinates = framingCoordinates;
 
@@ -169,9 +178,15 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
   [self updateImagePosition];
 }
 
-- (void)setAnimatedBackgroundPath:(NSString*)animatedBackgroundPath {
+- (void)setAnimatedBackgroundPath:(NSString*)animatedBackgroundPath
+           lightModeColorProvider:
+               (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider
+            darkModeColorProvider:
+                (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider {
   _imageView.image = nil;
   _framingCoordinates = nil;
+  _lightModeColorProvider = [lightModeColorProvider copy];
+  _darkModeColorProvider = [darkModeColorProvider copy];
   if (_animatedBackground) {
     [_animatedBackground stop];
     [_animatedBackground.animationView removeFromSuperview];
@@ -194,12 +209,31 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
   if (!_animatedBackground) {
     return;
   }
+  [self updateAnimationColors];
   UIView* animationView = _animatedBackground.animationView;
   animationView.translatesAutoresizingMaskIntoConstraints = NO;
   animationView.contentMode = UIViewContentModeScaleAspectFill;
   [self addSubview:animationView];
   AddSameConstraints(animationView, self);
   [_animatedBackground play];
+}
+
+// Configures dynamic colors on the active Lottie animation.
+- (void)updateAnimationColors {
+  if (!_animatedBackground) {
+    return;
+  }
+
+  if (!_lightModeColorProvider || !_darkModeColorProvider) {
+    return;
+  }
+
+  for (NSString* key in _lightModeColorProvider.allKeys) {
+    UIColor* lightColor = _lightModeColorProvider[key];
+    UIColor* darkColor = _darkModeColorProvider[key];
+    ConfigureAnimationCustomColor(_animatedBackground, key, lightColor,
+                                  darkColor);
+  }
 }
 
 /// Updates the position of the image. Even though it is positioned via
