@@ -12,12 +12,14 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -1125,6 +1127,43 @@ IN_PROC_BROWSER_TEST_F(
     OmniboxEverywherePersistentBrowserTest,
     MAYBE_OpenUrlCreatesBrowserBeforeDemotingPopupWhenNoBrowsers) {
   TestOpenUrlCreatesBrowserWhenNoBrowsers(/*ephemeral=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
+                       OpenUrlDoesNotTriggerSessionRestoreWhenNoBrowsers) {
+  Profile* profile = browser()->GetProfile();
+  set_exit_when_last_browser_closes(false);
+
+  // Set startup pref to restore last session.
+  SessionStartupPref::SetStartupPref(
+      profile, SessionStartupPref(SessionStartupPref::LAST));
+
+  GlobalFeatures* features = g_browser_process->GetFeatures();
+  ASSERT_TRUE(features);
+  auto* controller = features->omnibox_everywhere_controller();
+  ASSERT_TRUE(controller);
+
+  // Show the Omnibox Everywhere widget.
+  controller->OnInvoke(InvocationSource::kGlobalHotkey, profile);
+  EXPECT_TRUE(controller->IsVisible());
+
+  // Close the existing browser window so 0 browser windows exist.
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_TRUE(controller->IsVisible());
+
+  // Trigger OpenUrl from the Omnibox Everywhere service.
+  auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+  service->OpenUrl(GURL("chrome://version/"),
+                   WindowOpenDisposition::CURRENT_TAB,
+                   ui::PAGE_TRANSITION_TYPED);
+
+  // Verify that only one browser window was created and session restore was
+  // not triggered.
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_FALSE(SessionRestore::IsRestoring(profile));
+  EXPECT_FALSE(controller->IsVisible());
 }
 
 class OmniboxEverywhereCommandLineBrowserTest

@@ -199,6 +199,7 @@ if (is_mac || is_win) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/background/omnibox_everywhere",
+      "//chrome/browser/prefs:util",
       "//chrome/browser/status_icons",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",

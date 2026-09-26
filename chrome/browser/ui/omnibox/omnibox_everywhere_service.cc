@@ -253,6 +253,7 @@ void OmniboxEverywhereService::OpenUrl(
 
   NavigateParams params = bwi ? NavigateParams(bwi, url, transition)
                               : NavigateParams(profile_, url, transition);
+  params.should_trigger_session_restore = false;
 
   if (!bwi) {
     params.disposition = WindowOpenDisposition::NEW_WINDOW;
