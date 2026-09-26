@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.glic;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,23 +16,29 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
@@ -56,6 +64,9 @@ public class GlicNavigationUtilsUnitTest {
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private AccountManagerFacade mAccountManagerFacadeMock;
     @Mock private SigninAndHistorySyncActivityLauncher mLauncherMock;
+    @Mock private Context mContextMock;
+    @Mock private SettingsNavigation mSettingsNavigationMock;
+    @Captor private ArgumentCaptor<Bundle> mFragmentArgsCaptor;
 
     @Before
     public void setUp() {
@@ -111,5 +122,37 @@ public class GlicNavigationUtilsUnitTest {
                         any(BottomSheetSigninAndHistorySyncConfig.class),
                         eq(SigninAccessPoint.GLIC_LAUNCH_BUTTON));
         verify(mActivityMock).startActivity(intentMock);
+    }
+
+    @Test
+    public void testShowGlicSettings_EmptyHighlight_PassesNoHighlightArg() {
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
+
+        GlicNavigationUtils.showGlicSettings(mContextMock, GlicSettingsPage.MAIN, "");
+
+        verify(mSettingsNavigationMock)
+                .startSettings(
+                        eq(mContextMock), eq(GlicSettings.class), mFragmentArgsCaptor.capture());
+        assertFalse(
+                mFragmentArgsCaptor
+                        .getValue()
+                        .containsKey(GlicNavigationUtils.EXTRA_HIGHLIGHT_FIELD));
+    }
+
+    @Test
+    public void testShowGlicSettings_WithHighlight_PassesHighlightArg() {
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
+
+        GlicNavigationUtils.showGlicSettings(
+                mContextMock, GlicSettingsPage.MAIN, GlicNavigationUtils.FIELD_LOCATION_PERMISSION);
+
+        verify(mSettingsNavigationMock)
+                .startSettings(
+                        eq(mContextMock), eq(GlicSettings.class), mFragmentArgsCaptor.capture());
+        assertEquals(
+                GlicNavigationUtils.FIELD_LOCATION_PERMISSION,
+                mFragmentArgsCaptor
+                        .getValue()
+                        .getString(GlicNavigationUtils.EXTRA_HIGHLIGHT_FIELD));
     }
 }

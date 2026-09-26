@@ -33,6 +33,8 @@ import org.chromium.chrome.browser.commerce.PriceNotificationSettingsFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicActorLoginPermissionsFragment;
+import org.chromium.chrome.browser.glic.GlicNavigationUtils;
+import org.chromium.chrome.browser.glic.GlicSettings;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.ExtendedPreloadingSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
@@ -378,6 +380,17 @@ public class SettingsFragmentRegistryTest {
                 SettingsAccessPoint.SAFETY_CHECK,
                 SettingsFragmentRegistry.parseUrlArguments(url)
                         .getInt(SafeBrowsingSettingsFragment.ACCESS_POINT));
+    }
+
+    @Test
+    public void testUrlPreservesArgs_glicHighlightRoundTrips() {
+        Bundle args = new Bundle();
+        args.putString(
+                GlicNavigationUtils.EXTRA_HIGHLIGHT_FIELD,
+                GlicNavigationUtils.FIELD_LOCATION_PERMISSION);
+        String url = SettingsFragmentRegistry.createUrlForFragment(GlicSettings.class, args);
+        assertEquals("chrome://settings/ai/gemini?highlight=location_permission", url);
+        assertTrue(SettingsFragmentRegistry.urlPreservesArgs(url, args));
     }
 
     @Test

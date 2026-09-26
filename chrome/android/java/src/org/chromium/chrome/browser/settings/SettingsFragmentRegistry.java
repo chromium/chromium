@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.commerce.PriceNotificationSettingsFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.glic.GlicActorLoginPermissionsFragment;
+import org.chromium.chrome.browser.glic.GlicNavigationUtils;
 import org.chromium.chrome.browser.glic.GlicSettings;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
@@ -395,6 +396,7 @@ public class SettingsFragmentRegistry {
         registerParameterMapping("category", SingleCategorySettings.EXTRA_CATEGORY);
         registerParameterMapping("title", SingleCategorySettings.EXTRA_TITLE);
         registerParameterMapping("group", GroupedWebsitesSettings.EXTRA_GROUP);
+        registerParameterMapping("highlight", GlicNavigationUtils.EXTRA_HIGHLIGHT_FIELD);
         registerIntParameterMapping(
                 "referrer",
                 AutofillAndPasswordsFragment.EXTRA_REFERRER,

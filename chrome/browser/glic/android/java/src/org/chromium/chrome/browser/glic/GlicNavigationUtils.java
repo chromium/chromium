@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.fragment.app.Fragment;
 
@@ -88,7 +89,11 @@ public class GlicNavigationUtils {
                 break;
         }
         Bundle args = new Bundle();
-        args.putString(EXTRA_HIGHLIGHT_FIELD, highlightField);
+        // An empty value names nothing and cannot be carried by a settings URL, which would force
+        // the navigation off the URL path and leave the tab's URL stale.
+        if (!TextUtils.isEmpty(highlightField)) {
+            args.putString(EXTRA_HIGHLIGHT_FIELD, highlightField);
+        }
         settingsNavigation.startSettings(context, fragmentClass, args);
     }
 
