@@ -98,6 +98,19 @@ class ComposeboxQueryController
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensComposeboxClusterInfoStatus)
 
+  // LINT.IfChange(ContextUploadTerminalStatus)
+  enum class ContextUploadTerminalStatus {
+    kSuccess = 0,
+    kHttpError = 1,
+    kNeverIssued = 2,
+    kResponseAfterFileInfoDestroyed = 3,
+    kPendingChunkerRetry = 4,
+    kInFlightAtTeardown = 5,
+    kCancelled = 6,
+    kMaxValue = kCancelled,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:ContextUploadTerminalStatus)
+
   using GetAuthHeadersCallback = base::RepeatingCallback<void(
       std::optional<size_t>,
       base::OnceCallback<void(std::vector<std::string>)>)>;
@@ -237,6 +250,11 @@ class ComposeboxQueryController
     std::unique_ptr<lens::LensOverlayServerRequest> request_body;
     // The endpoint fetcher used for the request.
     std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher_;
+    // The current terminal status for this request. Initialized to kNeverIssued
+    // and updated as the request transitions through its lifecycle. Logged
+    // exactly once to UMA upon destruction.
+    ContextUploadTerminalStatus terminal_status =
+        ContextUploadTerminalStatus::kNeverIssued;
   };
 
   // Struct containing file information for a file upload.
@@ -245,6 +263,9 @@ class ComposeboxQueryController
    public:
     FileInfo();
     ~FileInfo() override;
+
+    // Marks this file and all its upload requests as cancelled.
+    void MarkAsCancelled();
 
     // Gets the request ID for this request for testing.
     std::optional<lens::LensOverlayRequestId> GetRequestIdForTesting() const {
@@ -260,6 +281,9 @@ class ComposeboxQueryController
     friend class contextual_search::ComposeboxQueryControllerTest;
     friend class ComposeboxQueryController;
     friend class ComposeboxQueryControllerIOS;
+
+    // Whether this file upload was explicitly cancelled.
+    bool is_cancelled_ = false;
 
     // The request ID for the viewport associated with this request, if it is
     // different from the request ID. Set by StartFileUploadFlow() when
@@ -370,6 +394,13 @@ class ComposeboxQueryController
       std::optional<lens::LensOverlaySelectionType> lens_overlay_selection_type,
       base::OnceCallback<void(lens::LensOverlayInteractionResponse)>
           interaction_response_callback);
+
+  // Handles the response from an upload request. Protected to allow access from
+  // tests.
+  void HandleUploadResponse(
+      const base::UnguessableToken& file_token,
+      size_t request_index,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // The internal state of the query controller. Protected to allow tests to
   // access the state. Do not modify this state directly, use
@@ -581,12 +612,6 @@ class ComposeboxQueryController
       const base::UnguessableToken& file_token,
       size_t request_index,
       std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher);
-
-  // Handles the response from an upload request.
-  void HandleUploadResponse(
-      const base::UnguessableToken& file_token,
-      size_t request_index,
-      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Performs the fetch request.
   void PerformFetchRequest(
