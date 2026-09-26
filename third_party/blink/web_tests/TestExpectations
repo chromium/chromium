@@ -4614,8 +4614,6 @@ crbug.com/832157 external/wpt/html/semantics/embedded-content/media-elements/tra
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/text-decoration_line-through.html [ Failure Pass ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue_function/underline_object/underline_with_class.html [ Failure Pass ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue_function/underline_object/underline_with_class_object_specific_selector.html [ Failure Pass ]
-crbug.com/1012242 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-line-doesnt-fit.html [ Failure ]
-crbug.com/1012242 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-transformed-video.html [ Failure ]
 crbug.com/832169 media/media-controls-fit-properly-while-zoomed.html [ Failure Pass ]
 
 # Tests currently failing on Windows when run on Swarming
@@ -9010,13 +9008,10 @@ crbug.com/540619916 [ Linux ] external/wpt/webdriver/tests/classic/take_element_
 crbug.com/540619916 [ Linux ] external/wpt/webdriver/tests/classic/take_screenshot/screenshot.py [ Failure Pass ]
 crbug.com/540619916 [ Linux ] external/wpt/webdriver/tests/classic/take_screenshot/user_prompts.py [ Failure Pass ]
 
-
 # Gardener 2026-08-10
 # Timing out on MSAN.
 crbug.com/544415105 [ Linux ] http/tests/origin_trials/webexposed/js-self-profiling-markers-origin-trial-enabled-coi.php [ Pass Timeout ]
-crbug.com/543560198 [ Linux ] external/wpt/html/semantics/permission-element/unbounded-width-with-border-reftest.tentative.html [ Failure ]
 crbug.com/532186979 [ Linux ] external/wpt/css/css-image-animation/image-animation-video-poster-paused-normal-mixed.html [ Failure ]
-crbug.com/543622964 [ Linux ] external/wpt/html/semantics/permission-element/large-min-size-reftest.tentative.html [ Failure ]
 
 # http://crrev.com/c/8217307 improved headless initial window frame reporting
 # on macOS, but WebTestShellPlatformDelegate intentionally skips setting the frame
