@@ -18,6 +18,7 @@
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/glic/glic_marketing_page_tab_helper.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
@@ -211,6 +212,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   }
 
   contextual_cueing_helper_ = glic::ContextualCueingHelper::MaybeCreate(tab);
+
+  if (base::FeatureList::IsEnabled(features::kGlicMarketingAutoOpen)) {
+    glic_marketing_page_tab_helper_ =
+        std::make_unique<glic::GlicMarketingPageTabHelper>(web_contents);
+  }
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   if (base::FeatureList::IsEnabled(ntp_features::kNtpCustomizeWebUiAndroid)) {

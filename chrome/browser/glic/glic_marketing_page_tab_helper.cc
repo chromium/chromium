@@ -33,8 +33,7 @@ void RecordMarketingAutoOpen(Profile* profile) {
 
 GlicMarketingPageTabHelper::GlicMarketingPageTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<GlicMarketingPageTabHelper>(*web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 GlicMarketingPageTabHelper::~GlicMarketingPageTabHelper() = default;
 
@@ -123,7 +122,5 @@ void GlicMarketingPageTabHelper::DidFinishNavigation(
     }
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(GlicMarketingPageTabHelper);
 
 }  // namespace glic

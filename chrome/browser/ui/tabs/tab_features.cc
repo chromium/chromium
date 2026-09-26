@@ -148,6 +148,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #endif
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
+#include "chrome/browser/glic/glic_marketing_page_tab_helper.h"
 #include "chrome/browser/glic/glic_promotion_source_navigation_observer.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/public/features.h"
@@ -841,6 +842,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       std::make_unique<extensions::NavigationExtensionEnabler>(
           tab.GetContents());
 #endif
+
+  if (base::FeatureList::IsEnabled(features::kGlicMarketingAutoOpen)) {
+    glic_marketing_page_tab_helper_ =
+        std::make_unique<glic::GlicMarketingPageTabHelper>(tab.GetContents());
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1112,6 +1118,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   navigation_extension_enabler_ =
       std::make_unique<extensions::NavigationExtensionEnabler>(new_contents);
 #endif
+
+  if (glic_marketing_page_tab_helper_) {
+    glic_marketing_page_tab_helper_ =
+        std::make_unique<glic::GlicMarketingPageTabHelper>(new_contents);
+  }
 }
 
 customize_chrome::SidePanelController*
