@@ -468,8 +468,10 @@ class OmniboxContextMenuControllerPecBrowserTest : public InProcessBrowserTest {
          {omnibox::kComposeboxDriveContextMenuOption, {}},
          {omnibox::kContextManagementInComposebox, {}},
          {omnibox::kContextManagementInOmnibox, {}}},
-        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
-                               omnibox::kAimFuseboxEligibilityCheckEnabled});
+        /*disabled_features=*/{
+            omnibox::kAimServerEligibilityEnabled,
+            omnibox::kAimFuseboxEligibilityCheckEnabled,
+            omnibox::kComposeboxDriveContextMenuOptionSigninPromo});
   }
 
   OmniboxContextMenuControllerPecBrowserTest(
