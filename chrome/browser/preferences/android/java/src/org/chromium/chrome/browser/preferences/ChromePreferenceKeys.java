@@ -708,10 +708,6 @@ public final class ChromePreferenceKeys {
     public static final String PIH_PRIVACY_NOTICE_CLOSED =
             "Chrome.PageInsightsHub.PrivacyNoticeClosedByUser";
 
-    /** Indicates the latest timestamp when Privacy Notice was shown to the user */
-    public static final String PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP =
-            "Chrome.PageInsightsHub.PageInsightsHubLastOpenedTimestamp";
-
     /** Whether NTP magic stack cards are enabled (if false, no cards can show). */
     public static final String HOME_MODULE_CARDS_ENABLED = "Chrome.HomeModules.Enabled";
 
@@ -1299,7 +1295,6 @@ public final class ChromePreferenceKeys {
                 PASSWORD_PROTECTION_ACCOUNTS,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PIH_PRIVACY_NOTICE_CLOSED,
-                PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP,
                 POLICY_USER_FEEDBACK_ALLOWED,
                 PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                 PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS,

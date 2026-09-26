@@ -74,6 +74,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.OfflineMeasurements.TimeBetweenChecksMillisList",
                 "Chrome.OfflineMeasurements.UserStateList",
                 "Chrome.PageInsightsHub.NumberOfTimesPageInsightsHubOpenedByUser",
+                "Chrome.PageInsightsHub.PageInsightsHubLastOpenedTimestamp",
                 "Chrome.PriceTracking.PriceAlerts",
                 "Chrome.PriceTracking.PriceAlertsShowCount",
                 "Chrome.PriceTracking.PriceDropAlerts",
