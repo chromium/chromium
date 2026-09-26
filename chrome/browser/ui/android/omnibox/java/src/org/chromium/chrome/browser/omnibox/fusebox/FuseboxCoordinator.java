@@ -106,6 +106,20 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         int BOTTOM = 2;
     }
 
+    /** Where the "Add current tab" button is placed within the popup. */
+    @IntDef({
+        CurrentTabPlacement.ABOVE_ATTACHMENTS,
+        CurrentTabPlacement.WITH_ATTACHMENTS,
+        CurrentTabPlacement.BELOW_ATTACHMENTS,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
+    @interface CurrentTabPlacement {
+        int ABOVE_ATTACHMENTS = 0;
+        int WITH_ATTACHMENTS = 1;
+        int BELOW_ATTACHMENTS = 2;
+    }
+
     private @Nullable FuseboxViewHolder mViewHolder;
     private @Nullable PropertyModel mModel;
     private final Activity mActivity;
@@ -217,6 +231,17 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                 .inflate(R.layout.fusebox_context_popup, this::finishDeferredInitialization);
     }
 
+    /** Returns where the "add current tab" button should be placed within the popup. */
+    static @CurrentTabPlacement int resolveCurrentTabPlacement() {
+        if (!OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
+                || OmniboxFeatures.shouldUseScrollableCarousel()) {
+            return CurrentTabPlacement.WITH_ATTACHMENTS;
+        }
+        return OmniboxFeatures.shouldPutCurrentTabFirst()
+                ? CurrentTabPlacement.ABOVE_ATTACHMENTS
+                : CurrentTabPlacement.BELOW_ATTACHMENTS;
+    }
+
     private void finishDeferredInitialization(View popupView) {
         if (mDestroyed) return;
 
@@ -270,7 +295,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         dynamicRectProvider,
                         OmniboxFeatures.shouldShowBottomSheetPopup(),
                         OmniboxFeatures.shouldUseCarousel(),
-                        OmniboxFeatures.shouldUseScrollableCarousel());
+                        OmniboxFeatures.shouldUseScrollableCarousel(),
+                        resolveCurrentTabPlacement());
 
         mViewHolder = new FuseboxViewHolder(mParent, popup);
 

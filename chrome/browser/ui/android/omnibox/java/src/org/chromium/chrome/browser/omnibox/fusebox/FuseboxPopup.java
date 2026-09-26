@@ -14,6 +14,7 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IdRes;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.window.layout.WindowMetrics;
@@ -24,6 +25,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.CurrentTabPlacement;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.base.LocalizationUtils;
@@ -45,6 +47,10 @@ class FuseboxPopup {
     /* package */ final ViewGroup mViewGroup;
     /* package */ final FuseboxScrollView mScrollView;
     /* package */ final View mAddCurrentTab;
+
+    /** Divider below the "Add current tab" button; only present when it is placed on top. */
+    /* package */ final @Nullable View mCurrentTabTopDivider;
+
     /* package */ final View mTabButton;
     /* package */ final View mCameraButton;
     /* package */ final View mGalleryButton;
@@ -108,7 +114,8 @@ class FuseboxPopup {
             DynamicRectProvider dynamicRectProvider,
             boolean isBottomSheet,
             boolean useCarousel,
-            boolean useScrollableCarousel) {
+            boolean useScrollableCarousel,
+            @CurrentTabPlacement int currentTabPlacement) {
         mActivity = activity;
         mPopupWindow = popupWindow;
         mPopupWindow.setClippingEnabled(false);
@@ -146,7 +153,11 @@ class FuseboxPopup {
                         : R.layout.fusebox_vertical_attachments);
         mAttachmentsContainer = stub.inflate();
 
-        mAddCurrentTab = contentView.findViewById(R.id.fusebox_add_current_tab);
+        mAddCurrentTab = contentView.findViewById(getAddCurrentTabId(currentTabPlacement));
+        mCurrentTabTopDivider =
+                currentTabPlacement == CurrentTabPlacement.ABOVE_ATTACHMENTS
+                        ? contentView.findViewById(R.id.fusebox_current_tab_top_divider)
+                        : null;
         mTabButton = contentView.findViewById(R.id.fusebox_pick_tabs_button);
         mCameraButton = contentView.findViewById(R.id.fusebox_camera_button);
         mGalleryButton = contentView.findViewById(R.id.fusebox_pick_picture_button);
@@ -217,7 +228,14 @@ class FuseboxPopup {
                         mFileButton,
                         mDriveButton);
 
-        mDividers = List.of(mRecentTabsDivider, mToolsDivider, mModelsDivider);
+        mDividers =
+                mCurrentTabTopDivider != null
+                        ? List.of(
+                                mCurrentTabTopDivider,
+                                mRecentTabsDivider,
+                                mToolsDivider,
+                                mModelsDivider)
+                        : List.of(mRecentTabsDivider, mToolsDivider, mModelsDivider);
         mHeaders = List.of(mRecentTabsHeader, mToolsHeader, mModelsHeader);
     }
 
@@ -400,5 +418,17 @@ class FuseboxPopup {
     private void updateDesiredWidth() {
         int width = mDynamicRectProvider.getPopupWidth(mCurrentState, mViewGroup.getResources());
         mPopupWindow.updateDesiredContentSize(width, /* height= */ 0, /* updateLayout= */ true);
+    }
+
+    private static @IdRes int getAddCurrentTabId(@CurrentTabPlacement int placement) {
+        return switch (placement) {
+            case CurrentTabPlacement.ABOVE_ATTACHMENTS -> R.id.fusebox_add_current_tab_top;
+            case CurrentTabPlacement.WITH_ATTACHMENTS -> R.id.fusebox_add_current_tab;
+            case CurrentTabPlacement.BELOW_ATTACHMENTS -> R.id.fusebox_add_current_tab_pinned;
+            default -> {
+                assert false : "Unknown CurrentTabPlacement: " + placement;
+                yield R.id.fusebox_add_current_tab;
+            }
+        };
     }
 }

@@ -62,6 +62,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.CurrentTabPlacement;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.ViewportRectProvider;
@@ -81,6 +82,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
@@ -229,6 +231,45 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.beginInput(mSession);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertNull(mCoordinator.getMediatorForTesting());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void resolveCurrentTabPlacement_putCurrentTabFirst_isAboveAttachments() {
+        OmniboxFeatures.setPutCurrentTabFirstForTesting(true);
+        assertEquals(
+                CurrentTabPlacement.ABOVE_ATTACHMENTS,
+                FuseboxCoordinator.resolveCurrentTabPlacement());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void resolveCurrentTabPlacement_putCurrentTabNotFirst_isBelowAttachments() {
+        OmniboxFeatures.setPutCurrentTabFirstForTesting(false);
+        assertEquals(
+                CurrentTabPlacement.BELOW_ATTACHMENTS,
+                FuseboxCoordinator.resolveCurrentTabPlacement());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void resolveCurrentTabPlacement_scrollableCarousel_isWithAttachments() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        OmniboxFeatures.setUseCarouselForTesting(true);
+        OmniboxFeatures.setUseScrollableCarouselForTesting(true);
+        OmniboxFeatures.setPutCurrentTabFirstForTesting(true);
+        assertEquals(
+                CurrentTabPlacement.WITH_ATTACHMENTS,
+                FuseboxCoordinator.resolveCurrentTabPlacement());
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void resolveCurrentTabPlacement_variationsDisabled_isWithAttachments() {
+        OmniboxFeatures.setPutCurrentTabFirstForTesting(true);
+        assertEquals(
+                CurrentTabPlacement.WITH_ATTACHMENTS,
+                FuseboxCoordinator.resolveCurrentTabPlacement());
     }
 
     @Test

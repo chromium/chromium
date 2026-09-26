@@ -49,6 +49,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.CurrentTabPlacement;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
@@ -128,7 +129,8 @@ public class FuseboxViewBinderUnitTest {
                         mDynamicRectProvider,
                         /* isBottomSheet= */ false,
                         /* useCarousel= */ false,
-                        /* useScrollableCarousel= */ false);
+                        /* useScrollableCarousel= */ false,
+                        CurrentTabPlacement.WITH_ATTACHMENTS);
         mViewHolder = new FuseboxViewHolder(parent, mPopup);
 
         // Initialize workable defaults.
@@ -170,7 +172,11 @@ public class FuseboxViewBinderUnitTest {
         return group.getChildAt(headerIndex + 1 + index);
     }
 
-    private FuseboxViewHolder createBottomSheetViewHolder() {
+    private FuseboxViewHolder createViewHolder(
+            boolean isBottomSheet,
+            boolean useCarousel,
+            boolean useScrollableCarousel,
+            @CurrentTabPlacement int currentTabPlacement) {
         Activity activity = mActivityController.get();
         ViewGroup popupView =
                 (ViewGroup)
@@ -183,10 +189,19 @@ public class FuseboxViewBinderUnitTest {
                         mPopupWindow,
                         popupView,
                         mDynamicRectProvider,
-                        /* isBottomSheet= */ true,
-                        /* useCarousel= */ true,
-                        /* useScrollableCarousel= */ true);
+                        isBottomSheet,
+                        useCarousel,
+                        useScrollableCarousel,
+                        currentTabPlacement);
         return new FuseboxViewHolder(mViewHolder.parentView, popup);
+    }
+
+    private FuseboxViewHolder createBottomSheetViewHolder() {
+        return createViewHolder(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ true,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
     }
 
     private PropertyModel createBottomSheetModel() {
@@ -490,6 +505,26 @@ public class FuseboxViewBinderUnitTest {
                 ((ImageView) mPopup.mAddCurrentTab.findViewById(R.id.start_icon)).getDrawable();
         assertNotNull(fallbackDrawable);
         assertNotEquals(fallbackDrawable, faviconDrawable);
+    }
+
+    @Test
+    public void currentTabVisible_abovePlacement_togglesButtonAndTopDivider() {
+        FuseboxViewHolder viewHolder =
+                createViewHolder(
+                        /* isBottomSheet= */ false,
+                        /* useCarousel= */ false,
+                        /* useScrollableCarousel= */ false,
+                        CurrentTabPlacement.ABOVE_ATTACHMENTS);
+
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, true);
+        mBinder.bind(mModel, viewHolder, FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE);
+        assertEquals(View.VISIBLE, viewHolder.popup.mAddCurrentTab.getVisibility());
+        assertEquals(View.VISIBLE, viewHolder.popup.mCurrentTabTopDivider.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, false);
+        mBinder.bind(mModel, viewHolder, FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE);
+        assertEquals(View.GONE, viewHolder.popup.mAddCurrentTab.getVisibility());
+        assertEquals(View.GONE, viewHolder.popup.mCurrentTabTopDivider.getVisibility());
     }
 
     @Test

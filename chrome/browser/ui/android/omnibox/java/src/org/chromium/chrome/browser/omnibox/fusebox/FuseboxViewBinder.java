@@ -117,8 +117,8 @@ class FuseboxViewBinder {
             updateButtonVisibility(
                     model, FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE, view.popup.mCameraButton);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED) {
-            view.popup.mAddCurrentTab.setOnClickListener(
-                    v -> model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run());
+            Runnable onClick = model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED);
+            view.popup.mAddCurrentTab.setOnClickListener(v -> onClick.run());
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED) {
             setIsEnabledAndReapplyColorFilter(
                     model,
@@ -127,10 +127,7 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON) {
             updateForCurrentTabFavicon(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE) {
-            updateButtonVisibility(
-                    model,
-                    FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE,
-                    view.popup.mAddCurrentTab);
+            updateCurrentTabVisibility(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED) {
             view.popup.mDriveButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run());
@@ -347,6 +344,16 @@ class FuseboxViewBinder {
         assert dividerIndex >= 0;
 
         updateButtons(model, view, group, buttonDataList, headerIndex + 1, dividerIndex);
+    }
+
+    private static void updateCurrentTabVisibility(PropertyModel model, FuseboxViewHolder view) {
+        int visibility =
+                model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE)
+                        ? View.VISIBLE
+                        : View.GONE;
+        view.popup.mAddCurrentTab.setVisibility(visibility);
+        View topDivider = view.popup.mCurrentTabTopDivider;
+        if (topDivider != null) topDivider.setVisibility(visibility);
     }
 
     private static void updateRecentTabsButtons(PropertyModel model, FuseboxViewHolder view) {
@@ -757,8 +764,7 @@ class FuseboxViewBinder {
     private static void updateForCurrentTabFavicon(
             PropertyModel model, FuseboxViewHolder viewHolder) {
         Context context = viewHolder.parentView.getContext();
-        FuseboxPopup popup = viewHolder.popup;
-        View addCurrentTabButton = popup.mAddCurrentTab;
+        View addCurrentTabButton = viewHolder.popup.mAddCurrentTab;
         Bitmap favicon = model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON);
 
         Drawable drawable =

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
@@ -51,6 +53,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.CurrentTabPlacement;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -110,7 +113,8 @@ public class FuseboxPopupUnitTest {
                         mDynamicRectProvider,
                         /* isBottomSheet= */ false,
                         /* useCarousel= */ false,
-                        /* useScrollableCarousel= */ false);
+                        /* useScrollableCarousel= */ false,
+                        CurrentTabPlacement.WITH_ATTACHMENTS);
     }
 
     @After
@@ -126,7 +130,10 @@ public class FuseboxPopupUnitTest {
     }
 
     private void recreateFuseboxPopup(
-            boolean isBottomSheet, boolean useCarousel, boolean useScrollableCarousel) {
+            boolean isBottomSheet,
+            boolean useCarousel,
+            boolean useScrollableCarousel,
+            @CurrentTabPlacement int currentTabPlacement) {
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
         mActivity.setContentView(mContentView);
         mFuseboxPopup =
@@ -138,7 +145,8 @@ public class FuseboxPopupUnitTest {
                         mDynamicRectProvider,
                         isBottomSheet,
                         useCarousel,
-                        useScrollableCarousel);
+                        useScrollableCarousel,
+                        currentTabPlacement);
     }
 
     private void setupMultiWindowMetrics(
@@ -266,7 +274,8 @@ public class FuseboxPopupUnitTest {
         recreateFuseboxPopup(
                 /* isBottomSheet= */ false,
                 /* useCarousel= */ false,
-                /* useScrollableCarousel= */ false);
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
 
         // Verify that we can find the elements
         assertNotNull(mFuseboxPopup.mAddCurrentTab);
@@ -286,7 +295,8 @@ public class FuseboxPopupUnitTest {
         recreateFuseboxPopup(
                 /* isBottomSheet= */ true,
                 /* useCarousel= */ true,
-                /* useScrollableCarousel= */ true);
+                /* useScrollableCarousel= */ true,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
 
         // Verify that we can find the elements
         assertNotNull(mFuseboxPopup.mAddCurrentTab);
@@ -295,6 +305,41 @@ public class FuseboxPopupUnitTest {
         assertNotNull(mFuseboxPopup.mGalleryButton);
         assertNotNull(mFuseboxPopup.mFileButton);
         assertNotNull(mFuseboxPopup.mDriveButton);
+    }
+
+    @Test
+    public void currentTabPlacement_aboveAttachments_resolvesTopSlotAndDivider() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ false,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.ABOVE_ATTACHMENTS);
+        assertEquals(R.id.fusebox_add_current_tab_top, mFuseboxPopup.mAddCurrentTab.getId());
+        assertNotNull(mFuseboxPopup.mCurrentTabTopDivider);
+        assertTrue(mFuseboxPopup.mAttachmentButtons.contains(mFuseboxPopup.mAddCurrentTab));
+        assertTrue(mFuseboxPopup.mDividers.contains(mFuseboxPopup.mCurrentTabTopDivider));
+    }
+
+    @Test
+    public void currentTabPlacement_withAttachments_resolvesInlineSlotWithoutDivider() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ false,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(R.id.fusebox_add_current_tab, mFuseboxPopup.mAddCurrentTab.getId());
+        assertNull(mFuseboxPopup.mCurrentTabTopDivider);
+    }
+
+    @Test
+    public void currentTabPlacement_belowAttachments_resolvesPinnedSlotWithoutDivider() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ false,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.BELOW_ATTACHMENTS);
+        assertEquals(R.id.fusebox_add_current_tab_pinned, mFuseboxPopup.mAddCurrentTab.getId());
+        assertNull(mFuseboxPopup.mCurrentTabTopDivider);
     }
 
     @Test
@@ -343,7 +388,8 @@ public class FuseboxPopupUnitTest {
         recreateFuseboxPopup(
                 /* isBottomSheet= */ true,
                 /* useCarousel= */ false,
-                /* useScrollableCarousel= */ false);
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
 
         // Call onFling directly on the exposed listener to avoid flaky MotionEvents.
         int minFlingVelocity = ViewConfiguration.get(mActivity).getScaledMinimumFlingVelocity();
@@ -383,7 +429,8 @@ public class FuseboxPopupUnitTest {
         recreateFuseboxPopup(
                 /* isBottomSheet= */ false,
                 /* useCarousel= */ false,
-                /* useScrollableCarousel= */ false);
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
 
         RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(View.LAYOUT_DIRECTION_RTL, mFuseboxPopup.mScrollView.getLayoutDirection());
@@ -403,7 +450,8 @@ public class FuseboxPopupUnitTest {
         recreateFuseboxPopup(
                 /* isBottomSheet= */ false,
                 /* useCarousel= */ false,
-                /* useScrollableCarousel= */ false);
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
 
         RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(View.LAYOUT_DIRECTION_LTR, mFuseboxPopup.mScrollView.getLayoutDirection());
@@ -414,7 +462,8 @@ public class FuseboxPopupUnitTest {
         recreateFuseboxPopup(
                 /* isBottomSheet= */ true,
                 /* useCarousel= */ true,
-                /* useScrollableCarousel= */ true);
+                /* useScrollableCarousel= */ true,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
         mFuseboxPopup.setPopupState(PopupState.BOTTOM);
         doReturn(true).when(mPopupWindow).isShowing();
 
@@ -432,7 +481,8 @@ public class FuseboxPopupUnitTest {
         recreateFuseboxPopup(
                 /* isBottomSheet= */ true,
                 /* useCarousel= */ true,
-                /* useScrollableCarousel= */ true);
+                /* useScrollableCarousel= */ true,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
         mFuseboxPopup.setPopupState(PopupState.BOTTOM);
         doReturn(true).when(mPopupWindow).isShowing();
 

@@ -18,7 +18,8 @@ found in the LICENSE file.
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
         style="@style/Fusebox.CarouselItem.Weighted"
-        android:id="@+id/fusebox_add_current_tab"/>
+        android:id="@+id/fusebox_add_current_tab"
+        android:visibility="gone"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"

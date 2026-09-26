@@ -22,6 +22,18 @@ found in the LICENSE file.
         android:paddingBottom="4dp"
         android:importantForAccessibility="no">
 
+        <include
+            layout="@layout/fusebox_list_item"
+            android:id="@+id/fusebox_add_current_tab_top"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listItemHeight"
+            android:visibility="gone" />
+
+        <View
+            style="@style/Fusebox.PopupMenu.Divider"
+            android:id="@+id/fusebox_current_tab_top_divider"
+            android:visibility="gone" />
+
         <TextView
             style="@style/Fusebox.PopupMenu.Header"
             android:id="@+id/fusebox_attachments_header"
@@ -52,6 +64,13 @@ found in the LICENSE file.
             android:id="@+id/fusebox_attachments_stub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <include
+            layout="@layout/fusebox_list_item"
+            android:id="@+id/fusebox_add_current_tab_pinned"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listItemHeight"
+            android:visibility="gone" />
 
         <include
             layout="@layout/fusebox_list_item"
