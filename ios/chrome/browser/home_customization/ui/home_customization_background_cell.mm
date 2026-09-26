@@ -212,9 +212,7 @@ const CGFloat kNewFeatureBadgeCenterXOffset = 6.0;
                                                    defaultValue]];
 
   [_backgroundImageView setImage:nil framingCoordinates:nil];
-  [_backgroundImageView setAnimatedBackgroundPath:nil
-                           lightModeColorProvider:nil
-                            darkModeColorProvider:nil];
+  [_backgroundImageView setAnimatedBackgroundPath:nil];
   _newBadgeView.hidden = YES;
   _backgroundConfiguration = nil;
   [_logoView removeFromSuperview];
@@ -311,9 +309,7 @@ const CGFloat kNewFeatureBadgeCenterXOffset = 6.0;
       option.backgroundStyle != HomeCustomizationBackgroundStyle::kEphemeral;
   if (option.animatedBackgroundPath.length > 0) {
     [_backgroundImageView
-        setAnimatedBackgroundPath:option.animatedBackgroundPath
-           lightModeColorProvider:option.lightModeColorProvider
-            darkModeColorProvider:option.darkModeColorProvider];
+        setAnimatedBackgroundPath:option.animatedBackgroundPath];
   }
 
   [self applyTheme];

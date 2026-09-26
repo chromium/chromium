@@ -488,9 +488,6 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // returns nil if the ephemeral theme data is not available.
 - (BackgroundCustomizationConfigurationItem*)createEphemeralConfigurationItem {
   UIColor* backgroundColor = nil;
-  NSDictionary<NSString*, UIColor*>* lightModeColorProvider = nil;
-  NSDictionary<NSString*, UIColor*>* darkModeColorProvider = nil;
-
   if (!_prefService) {
     return nil;
   }
@@ -506,14 +503,6 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     if (!trimmedHex.empty() && base::HexStringToUInt(trimmedHex, &seedColor)) {
       backgroundColor = skia::UIColorFromSkColor(SkColorSetA(seedColor, 0xFF));
     }
-    const base::DictValue* colorMapping =
-        themeData.FindDict(kEphemeralThemeAnimationColorMappingKey);
-    if (colorMapping) {
-      lightModeColorProvider = ColorProviderDictionaryFromDict(
-          colorMapping->FindDict(kEphemeralThemeLightModeColorsKey));
-      darkModeColorProvider = ColorProviderDictionaryFromDict(
-          colorMapping->FindDict(kEphemeralThemeDarkModeColorsKey));
-    }
   }
 
   NSString* imagePath = [self ephemeralThemeAnimatedBackgroundPath];
@@ -523,8 +512,6 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   return [[BackgroundCustomizationConfigurationItem alloc]
       initWithEphemeralTheme:backgroundColor
                    imagePath:imagePath
-      lightModeColorProvider:lightModeColorProvider
-       darkModeColorProvider:darkModeColorProvider
            accessibilityName:nil];
 }
 

@@ -812,9 +812,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   HomeCustomizationFramingCoordinates* coordinates =
       [self framingCoordinatesForCustomBackground:customBackground];
   coordinates.originalImageSize = originalImageSize;
-  [self.consumer setAnimatedBackgroundPath:nil
-                    lightModeColorProvider:nil
-                     darkModeColorProvider:nil];
+  [self.consumer setAnimatedBackgroundPath:nil];
   [self.consumer setBackgroundImage:image framingCoordinates:coordinates];
 
   CustomUITraitAccessor* traitAccessor = [[CustomUITraitAccessor alloc]
@@ -997,9 +995,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     return;
   }
 
-  [self.consumer setAnimatedBackgroundPath:nil
-                    lightModeColorProvider:nil
-                     darkModeColorProvider:nil];
+  [self.consumer setAnimatedBackgroundPath:nil];
   [self.consumer setBackgroundImage:nil framingCoordinates:nil];
 
   std::optional<sync_pb::UserColorTheme> colorTheme =
@@ -1018,24 +1014,9 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     [self.logoMediator setLogoTintColor:tintColor];
     if (_backgroundCustomizationService->IsCurrentEphemeralTheme() &&
         IsNTPEphemeralThemeEnabled()) {
-      NSDictionary<NSString*, UIColor*>* lightModeColorProvider = nil;
-      NSDictionary<NSString*, UIColor*>* darkModeColorProvider = nil;
-      if (_prefService) {
-        const base::DictValue& themeData =
-            _prefService->GetDict(prefs::kIosNtpEphemeralThemeData);
-        const base::DictValue* colorMapping =
-            themeData.FindDict(kEphemeralThemeAnimationColorMappingKey);
-        if (colorMapping) {
-          lightModeColorProvider = ColorProviderDictionaryFromDict(
-              colorMapping->FindDict(kEphemeralThemeLightModeColorsKey));
-          darkModeColorProvider = ColorProviderDictionaryFromDict(
-              colorMapping->FindDict(kEphemeralThemeDarkModeColorsKey));
-        }
-      }
       [self.consumer
-          setAnimatedBackgroundPath:[self ephemeralThemeAnimatedBackgroundPath]
-             lightModeColorProvider:lightModeColorProvider
-              darkModeColorProvider:darkModeColorProvider];
+          setAnimatedBackgroundPath:[self
+                                        ephemeralThemeAnimatedBackgroundPath]];
     }
     if (initialLoad) {
       base::UmaHistogramEnumeration(

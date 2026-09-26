@@ -53,10 +53,6 @@ class NtpCustomBackground;
 // with the ephemeral theme.
 - (instancetype)initWithEphemeralTheme:(UIColor*)backgroundColor
                              imagePath:(NSString*)imagePath
-                lightModeColorProvider:
-                    (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider
-                 darkModeColorProvider:
-                     (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider
                      accessibilityName:(NSString*)accessibilityName;
 
 // Initializes a new instance of the background customization configuration

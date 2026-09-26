@@ -31,8 +31,6 @@
   HomeCustomizationFramingCoordinates* _userUploadedFramingCoordinates;
 
   NSString* _animatedBackgroundPath;
-  NSDictionary<NSString*, UIColor*>* _lightModeColorProvider;
-  NSDictionary<NSString*, UIColor*>* _darkModeColorProvider;
 }
 
 @synthesize accessibilityName = _accessibilityName;
@@ -124,10 +122,6 @@
 
 - (instancetype)initWithEphemeralTheme:(UIColor*)backgroundColor
                              imagePath:(NSString*)imagePath
-                lightModeColorProvider:
-                    (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider
-                 darkModeColorProvider:
-                     (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider
                      accessibilityName:(NSString*)accessibilityName {
   self = [super init];
   if (self) {
@@ -138,8 +132,6 @@
     _backgroundColor = backgroundColor;
     _colorVariant = ui::ColorProviderKey::SchemeVariant::kTonalSpot;
     _animatedBackgroundPath = imagePath;
-    _lightModeColorProvider = [lightModeColorProvider copy];
-    _darkModeColorProvider = [darkModeColorProvider copy];
     _accessibilityName = accessibilityName;
   }
   return self;
@@ -196,14 +188,6 @@
 
 - (NSString*)animatedBackgroundPath {
   return _animatedBackgroundPath;
-}
-
-- (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider {
-  return _lightModeColorProvider;
-}
-
-- (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider {
-  return _darkModeColorProvider;
 }
 
 @end

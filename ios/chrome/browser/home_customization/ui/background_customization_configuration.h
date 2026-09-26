@@ -60,14 +60,6 @@ class GURL;
 // The file path of the animated background to display, if any.
 @property(readonly, nonatomic) NSString* animatedBackgroundPath;
 
-// The light mode color mapping for the animated background, if any.
-@property(readonly, nonatomic)
-    NSDictionary<NSString*, UIColor*>* lightModeColorProvider;
-
-// The dark mode color mapping for the animated background, if any.
-@property(readonly, nonatomic)
-    NSDictionary<NSString*, UIColor*>* darkModeColorProvider;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_BACKGROUND_CUSTOMIZATION_CONFIGURATION_H_
