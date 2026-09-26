@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from '//resources/js/assert.js';
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SignedInState, StatusAction} from '/shared/settings/people_page/sync_browser_proxy.js';
 
@@ -20,7 +20,7 @@ export function canDeleteAccountData(syncStatus: SyncStatus|undefined) {
 
 /** Returns true if the user is signed in to a Google account on Chrome. */
 export function isSignedIn(syncStatus: SyncStatus|undefined) {
-  if (!syncStatus) {
+  if (!syncStatus || syncStatus.signedInState === undefined) {
     return false;
   }
 
@@ -33,7 +33,7 @@ export function isSignedIn(syncStatus: SyncStatus|undefined) {
     case SignedInState.SIGNED_OUT:
       return false;
     default:
-      assertNotReached('Invalid SignedInState');
+      assertNotReachedCase(syncStatus.signedInState);
   }
 }
 
