@@ -8,7 +8,9 @@ chromium::import! {
 
 use num_traits::ToBytes;
 use rust_gtest_interop::prelude::*;
-use symphonia::core::audio::{layouts, AudioBuffer, AudioMut, AudioSpec, GenericAudioBufferRef};
+use symphonia::core::audio::{
+    layouts, AudioBuffer, AudioMut, AudioSpec, Channels, GenericAudioBufferRef, Position,
+};
 use symphonia_decoder_bridge::{
     copy_channel_to_slice, copy_samples_to_slice, create_audio_buffer, detect_mpeg_audio_codec_id,
     ffi, init_symphonia_decoder, SymphoniaRawSampleBuffer,
@@ -1105,4 +1107,22 @@ fn test_rejects_zero_sample_rate_and_channels() {
     expect_true!(
         create_audio_buffer(GenericAudioBufferRef::S16(&buf_zero_rate), sample_buf).is_err()
     );
+}
+
+// Verify that create_audio_buffer safely handles channel masks exceeding
+// 32-bits without panicking.
+#[gtest(SymphoniaDecoderBridgeTest, HandlesOverflowingChannelMask)]
+fn test_handles_overflowing_channel_mask() {
+    let spec = AudioSpec::new(44100, Channels::Positioned(Position::from_bits_retain(1 << 40)));
+    let mut buf = AudioBuffer::<i16>::new(spec, 4);
+    buf.render_uninit(Some(4));
+    let sample_buf = SymphoniaRawSampleBuffer::new_buffer_for(
+        &GenericAudioBufferRef::S16(&buf),
+        ffi::SymphoniaAudioCodec::Flac,
+        2,
+    )
+    .unwrap();
+    let result = create_audio_buffer(GenericAudioBufferRef::S16(&buf), sample_buf);
+    expect_true!(result.is_ok());
+    expect_eq!(result.unwrap().channel_mask, 0);
 }

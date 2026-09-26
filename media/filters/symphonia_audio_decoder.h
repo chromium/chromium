@@ -74,6 +74,10 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   static SymphoniaPacket ToSymphoniaPacketForTesting(
       const DecoderBuffer& buffer,
       std::optional<base::TimeDelta> first_frame_timestamp = std::nullopt);
+  static bool IsValidDecodedParametersForTesting(size_t channels,
+                                                 uint32_t sample_rate,
+                                                 size_t num_frames,
+                                                 SampleFormat sample_format);
 
  private:
   // There are four states the decoder can be in:

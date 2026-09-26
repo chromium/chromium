@@ -21,6 +21,7 @@
 #include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decoder_status.h"
+#include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/sample_format.h"
@@ -313,6 +314,55 @@ TEST(SymphoniaAudioDecoderTest, RejectsInvalidDecodedParameters) {
   // First corrupted buffer is dropped gracefully.
   EXPECT_TRUE(decode_future.Get().is_ok());
   EXPECT_FALSE(output_future.IsReady());
+}
+
+TEST(SymphoniaAudioDecoderTest, IsValidDecodedParametersValidation) {
+  constexpr size_t kChannels = 2;
+  constexpr uint32_t kSampleRate = 48000;
+  constexpr size_t kNumFrames = 1024;
+  constexpr SampleFormat kSampleFormat = SampleFormat::kSampleFormatF32;
+
+  // Valid parameters.
+  EXPECT_TRUE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      kChannels, kSampleRate, kNumFrames, kSampleFormat));
+
+  // Overflowing sample rates (> INT_MAX).
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      kChannels, 4294934084u, kNumFrames, kSampleFormat));
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      kChannels, UINT32_MAX, kNumFrames, kSampleFormat));
+
+  // Sample rates outside [kMinSampleRate, kMaxSampleRate].
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      kChannels, 0, kNumFrames, kSampleFormat));
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      kChannels, static_cast<uint32_t>(limits::kMinSampleRate - 1), kNumFrames,
+      kSampleFormat));
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      kChannels, static_cast<uint32_t>(limits::kMaxSampleRate + 1), kNumFrames,
+      kSampleFormat));
+
+  // Invalid channel counts.
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      0, kSampleRate, kNumFrames, kSampleFormat));
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      static_cast<size_t>(limits::kMaxChannels + 1), kSampleRate, kNumFrames,
+      kSampleFormat));
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      SIZE_MAX, kSampleRate, kNumFrames, kSampleFormat));
+
+  // Invalid num_frames.
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      kChannels, kSampleRate, 0, kSampleFormat));
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      kChannels, kSampleRate,
+      static_cast<size_t>(limits::kMaxSamplesPerPacket + 1), kSampleFormat));
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      kChannels, kSampleRate, SIZE_MAX, kSampleFormat));
+
+  // Unknown sample format.
+  EXPECT_FALSE(SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+      kChannels, kSampleRate, kNumFrames, kUnknownSampleFormat));
 }
 
 }  // namespace media

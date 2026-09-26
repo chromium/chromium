@@ -230,13 +230,15 @@ ChannelLayout ResolveChannelLayout(ChannelLayout current_layout,
 }
 
 // Returns true if the decoded audio buffer parameters fall within valid limits.
-bool IsValidDecodedParameters(int channels,
-                              int sample_rate,
+bool IsValidDecodedParameters(size_t channels,
+                              uint32_t sample_rate,
                               size_t num_frames,
                               SampleFormat sample_format) {
-  return channels > 0 && channels <= limits::kMaxChannels &&
-         sample_rate >= limits::kMinSampleRate &&
-         sample_rate <= limits::kMaxSampleRate &&
+  return channels > 0 &&
+         channels <= static_cast<size_t>(limits::kMaxChannels) &&
+         sample_rate >= static_cast<uint32_t>(limits::kMinSampleRate) &&
+         sample_rate <= static_cast<uint32_t>(limits::kMaxSampleRate) &&
+         num_frames > 0 &&
          num_frames <= static_cast<size_t>(limits::kMaxSamplesPerPacket) &&
          sample_format != kUnknownSampleFormat;
 }
@@ -494,20 +496,24 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
   // stream.
   CHECK(!buffer.end_of_stream());
 
-  const int channels = base::checked_cast<int>(result.buffer.channel_count);
-  const int sample_rate = base::checked_cast<int>(result.buffer.sample_rate);
-  const size_t num_frames = result.buffer.num_frames;
+  const size_t raw_channels = result.buffer.channel_count;
+  const uint32_t raw_sample_rate = result.buffer.sample_rate;
+  const size_t raw_num_frames = result.buffer.num_frames;
   const SampleFormat sample_format =
       ToSampleFormat(result.buffer.sample_format);
 
-  if (!IsValidDecodedParameters(channels, sample_rate, num_frames,
+  if (!IsValidDecodedParameters(raw_channels, raw_sample_rate, raw_num_frames,
                                 sample_format)) {
     MEDIA_LOG(ERROR, media_log_)
-        << "Invalid decoded buffer parameters: channels=" << channels
-        << ", sample_rate=" << sample_rate << ", num_frames=" << num_frames
+        << "Invalid decoded buffer parameters: channels=" << raw_channels
+        << ", sample_rate=" << raw_sample_rate
+        << ", num_frames=" << raw_num_frames
         << ", sample_format=" << SampleFormatToString(sample_format);
     return DecoderStatus::Codes::kFailed;
   }
+
+  const int channels = static_cast<int>(raw_channels);
+  const int sample_rate = static_cast<int>(raw_sample_rate);
 
   const ChannelLayout channel_layout =
       ResolveChannelLayout(config_.channel_layout(), config_.channels(),
@@ -593,6 +599,16 @@ SymphoniaPacket SymphoniaAudioDecoder::ToSymphoniaPacketForTesting(
     const DecoderBuffer& buffer,
     std::optional<base::TimeDelta> first_frame_timestamp) {
   return ToSymphoniaPacket(buffer, first_frame_timestamp);
+}
+
+// static
+bool SymphoniaAudioDecoder::IsValidDecodedParametersForTesting(
+    size_t channels,
+    uint32_t sample_rate,
+    size_t num_frames,
+    SampleFormat sample_format) {
+  return IsValidDecodedParameters(channels, sample_rate, num_frames,
+                                  sample_format);
 }
 
 void SymphoniaAudioDecoder::ReleaseSymphoniaResources() {

@@ -791,7 +791,7 @@ pub fn create_audio_buffer(
     sample_buffer.sample_rate = sample_rate;
     sample_buffer.num_frames = num_frames;
     sample_buffer.channel_count = channel_count;
-    sample_buffer.channel_mask = channel_mask.try_into().unwrap();
+    sample_buffer.channel_mask = u32::try_from(channel_mask).unwrap_or(0);
 
     Ok(sample_buffer)
 }
@@ -962,7 +962,7 @@ impl SymphoniaDecoder {
             sample_rate,
             num_frames,
             channel_count,
-            channel_mask: channel_mask.try_into().unwrap(),
+            channel_mask: u32::try_from(channel_mask).unwrap_or(0),
         })
     }
 
