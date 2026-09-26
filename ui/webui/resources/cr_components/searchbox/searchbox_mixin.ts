@@ -705,10 +705,13 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
             '';
         const newFillEnd = newFill.length - newInline.length;
         const text = newFill.substr(0, newFillEnd);
+        const isMatchPreview =
+            this.isMatchPreview_(this.selectedMatch, nextSelection.line);
         this.getInputElement().setInput({
           text: text,
           inline: newInline,
           moveCursorToEnd: newInline.length === 0,
+          isMatchPreview: isMatchPreview,
         });
 
         if (key === 'ArrowDown' || key === 'ArrowUp' || key === 'PageDown' ||
@@ -723,6 +726,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           text: this.lastQueriedInput ?? '',
           inline: '',
           moveCursorToEnd: true,
+          isMatchPreview: false,
         });
       }
     }
@@ -973,12 +977,22 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         if (!this.keywordModeManager_.isInKeywordMode) {
           assert(text);
         }
+        const isMatchPreview =
+            this.isMatchPreview_(this.selectedMatch, this.selectedMatchIndex);
         this.getInputElement().setInput({
           text: text,
           inline: newInline,
           moveCursorToEnd: newInline.length === 0,
+          isMatchPreview: isMatchPreview,
         });
       }
+    }
+
+    private isMatchPreview_(
+        match: AutocompleteMatch|null, selectionLine: number): boolean {
+      return !!match &&
+          (selectionLine > 0 ||
+           (!match.allowedToBeDefaultMatch && selectionLine === 0));
     }
 
     onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>) {
@@ -1005,6 +1019,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
           text: this.computeMatchFillIntoEdit(this.selectedMatch),
           inline: '',
           moveCursorToEnd: true,
+          isMatchPreview: true,
         });
       }
     }

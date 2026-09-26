@@ -52,10 +52,8 @@
 }
 
 #ellipsisIndicator {
-  background-color: var(--color-searchbox-selection-background);
-  color: var(
-      --color-searchbox-selection-foreground,
-      var(--color-searchbox-foreground));
+  background-color: transparent;
+  color: var(--color-searchbox-foreground);
   display: none;
   flex-shrink: 0;
   height: var(--cr-searchbox-line-height, 24px);
@@ -69,6 +67,13 @@
 
 :host([show-ellipsis]:focus-within) #ellipsisIndicator {
   display: block;
+}
+
+:host([has-inline-selection]) #ellipsisIndicator {
+  background-color: var(--color-searchbox-selection-background);
+  color: var(
+      --color-searchbox-selection-foreground,
+      var(--color-searchbox-foreground));
 }
 
 /* Match native text selection background with the inline autocomplete
