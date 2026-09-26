@@ -227,15 +227,16 @@ SnapContainerData::SnapContainerData(ScrollSnapType type,
 
 SnapContainerData::SnapContainerData(const SnapContainerData& other) = default;
 
-SnapContainerData::SnapContainerData(SnapContainerData&& other) = default;
+SnapContainerData::SnapContainerData(SnapContainerData&& other) noexcept =
+    default;
 
 SnapContainerData::~SnapContainerData() = default;
 
 SnapContainerData& SnapContainerData::operator=(
     const SnapContainerData& other) = default;
 
-SnapContainerData& SnapContainerData::operator=(SnapContainerData&& other) =
-    default;
+SnapContainerData& SnapContainerData::operator=(
+    SnapContainerData&& other) noexcept = default;
 
 bool SnapContainerData::IsValidSnapArea(SearchAxis axis,
                                         const SnapSelectionStrategy& strategy,

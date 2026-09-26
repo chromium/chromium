@@ -15,7 +15,11 @@ namespace cc {
 
 ScrollNode::ScrollNode() = default;
 ScrollNode::ScrollNode(const ScrollNode& other) = default;
+ScrollNode::ScrollNode(ScrollNode&& other) noexcept = default;
 ScrollNode::~ScrollNode() = default;
+
+ScrollNode& ScrollNode::operator=(const ScrollNode& other) = default;
+ScrollNode& ScrollNode::operator=(ScrollNode&& other) noexcept = default;
 
 #if DCHECK_IS_ON()
 bool ScrollNode::operator==(const ScrollNode& other) const = default;

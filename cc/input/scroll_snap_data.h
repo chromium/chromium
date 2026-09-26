@@ -346,11 +346,11 @@ class CC_EXPORT SnapContainerData {
                     const gfx::RectF& rect,
                     const gfx::PointF& max);
   SnapContainerData(const SnapContainerData& other);
-  SnapContainerData(SnapContainerData&& other);
+  SnapContainerData(SnapContainerData&& other) noexcept;
   ~SnapContainerData();
 
   SnapContainerData& operator=(const SnapContainerData& other);
-  SnapContainerData& operator=(SnapContainerData&& other);
+  SnapContainerData& operator=(SnapContainerData&& other) noexcept;
 
   bool operator==(const SnapContainerData& other) const {
     return (other.scroll_snap_type_ == scroll_snap_type_) &&

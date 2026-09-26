@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 
+#include <utility>
+
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -213,7 +215,7 @@ bool SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   if (!old_snap_container_data ||
       *old_snap_container_data != snap_container_data) {
     snap_container.SetNeedsPaintPropertyUpdate();
-    scrollable_area->SetSnapContainerData(snap_container_data);
+    scrollable_area->SetSnapContainerData(std::move(snap_container_data));
     return true;
   }
   return false;

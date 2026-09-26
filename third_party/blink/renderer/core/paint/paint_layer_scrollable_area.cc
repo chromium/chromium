@@ -2064,7 +2064,7 @@ const cc::SnapContainerData* PaintLayerScrollableArea::GetSnapContainerData()
 
 void PaintLayerScrollableArea::SetSnapContainerData(
     std::optional<cc::SnapContainerData> data) {
-  EnsureRareData().snap_container_data_ = data;
+  EnsureRareData().snap_container_data_ = std::move(data);
 }
 
 bool PaintLayerScrollableArea::SetTargetSnapAreaElementIds(

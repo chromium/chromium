@@ -702,7 +702,7 @@ const cc::SnapContainerData* RootFrameViewport::GetSnapContainerData() const {
 
 void RootFrameViewport::SetSnapContainerData(
     std::optional<cc::SnapContainerData> data) {
-  LayoutViewport().SetSnapContainerData(data);
+  LayoutViewport().SetSnapContainerData(std::move(data));
 }
 
 bool RootFrameViewport::SetTargetSnapAreaElementIds(

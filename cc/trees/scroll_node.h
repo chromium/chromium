@@ -28,7 +28,11 @@ namespace cc {
 struct CC_EXPORT ScrollNode {
   ScrollNode();
   ScrollNode(const ScrollNode& other);
+  ScrollNode(ScrollNode&& other) noexcept;
   ~ScrollNode();
+
+  ScrollNode& operator=(const ScrollNode& other);
+  ScrollNode& operator=(ScrollNode&& other) noexcept;
 
   // The node index of this node in the scroll tree node vector.
   int id = kInvalidPropertyNodeId;
