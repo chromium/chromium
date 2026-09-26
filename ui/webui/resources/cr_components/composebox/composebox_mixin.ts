@@ -979,6 +979,13 @@ export const ComposeboxEmbedderMixin =
               isContextUploadStatusTerminal(status)) {
             this.earlyTerminalUploads.set(token, status);
           }
+          if (this.attachedContext.get(token)?.delayUpload &&
+              !isContextUploadStatusTerminal(status)) {
+            if (status === ContextUploadStatus.kProcessing) {
+              this.queryAutocomplete(/* clearMatches= */ true);
+            }
+            return;
+          }
           // If error message is updated, then the returned file is stale and
           // removed from carousel. File is removed from carousel on
           // `kUploadReplaced` as well despite no error message being returned
@@ -1531,6 +1538,7 @@ export const ComposeboxEmbedderMixin =
                 token, tabUpload.tabId, tabUpload.title, tabUpload.url, {
                   supportsUnimodal: true,
                   origin: tabUpload.origin,
+                  delayUpload: tabUpload.delayUpload,
                   status: uploadInFlight ?
                       ContextUploadStatus.kUploadStarted :
                       ContextUploadStatus.kUploadSuccessful,

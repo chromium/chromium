@@ -463,6 +463,22 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
             histogramName, ContextualSearchInputStateDeletionType.TAB));
   });
 
+  test('processing status keeps a delayed tab submittable', async () => {
+    testSupport.createComposeboxElement(testProxy);
+    const token = await testSupport.addTab(testProxy, /*delayUpload=*/ true);
+    const queries =
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete');
+
+    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        token, ContextUploadStatus.kProcessing, null);
+    await microtasksFinished();
+
+    assertTrue(testProxy.element.fileUploadsComplete);
+    assertEquals(
+        queries + 1,
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete'));
+  });
+
   test(
       'closing tab automatically clears its context from files and counter',
       async () => {

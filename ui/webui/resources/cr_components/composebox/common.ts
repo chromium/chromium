@@ -134,6 +134,7 @@ export class ComposeboxFile {
   thumbnailUrl?: string|null;
   iconUrl?: Url|null;
   origin?: TabUploadOrigin;
+  delayUpload?: boolean;
   // True if this is a placeholder ("ghost") entry created from an upload
   // status update for a token the frontend does not know about yet. Its
   // metadata, including `inputType`, is not yet known and must not be relied
@@ -158,6 +159,7 @@ export class ComposeboxFile {
     this.thumbnailUrl = options?.thumbnailUrl ?? null;
     this.iconUrl = options?.iconUrl ?? null;
     this.origin = options?.origin;
+    this.delayUpload = options?.delayUpload ?? false;
     this.isGhost = options?.isGhost ?? false;
   }
 

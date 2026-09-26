@@ -250,7 +250,9 @@ export async function verifyFileUpload(
   assertDeepEquals(fileData.bytes, fileArray);
 }
 
-export async function addTab(testProxy: ComposeboxTestElement): Promise<string> {
+export async function addTab(
+    testProxy: ComposeboxTestElement,
+    delayUpload: boolean = false): Promise<string> {
   testProxy.searchboxHandler.setPromiseResolveFor(
       ADD_TAB_CONTEXT_FN, FAKE_TOKEN_STRING);
 
@@ -261,7 +263,7 @@ export async function addTab(testProxy: ComposeboxTestElement): Promise<string> 
   assertTrue(!!contextMenuButton);
   const sampleTabTitle = 'Sample Tab';
   contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
-    detail: {id: 1, title: sampleTabTitle},
+    detail: {id: 1, title: sampleTabTitle, delayUpload},
     bubbles: true,
     composed: true,
   }));
