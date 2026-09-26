@@ -2418,7 +2418,7 @@ if (_is_default_toolchain) {
       "//components/installedapp/android:unit_device_javatests",
       "//components/messages/android:unit_device_javatests",
       "//components/messages/android/internal:unit_device_javatests",
-      "//components/payments/content/android/spc:unit_device_javatests",
+      "//components/payments/content/android/spc:browser_binding_unit_device_javatests",
       "//components/signin/public/android:unit_device_javatests",
       "//components/strictmode/android:unit_device_javatests",
       "//components/translate/content/android:unit_device_javatests",
