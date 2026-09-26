@@ -22,6 +22,7 @@
 #include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,6 +33,44 @@
 using chromeos::IpPeripheralServiceClient;
 
 namespace ash::cfm {
+
+// Calls XuCameraService's handlers directly, bypassing mojo. Mojo will not
+// send (DCHECK) or dispatch (validation error) a null value for a non-nullable
+// parameter, so the service's defensive null checks are only reachable this
+// way.
+class XuCameraServiceTestPeer {
+ public:
+  static void GetDevicePath(
+      mojom::WebcamIdPtr id,
+      base::OnceCallback<void(const std::optional<std::string>&)> callback) {
+    XuCameraService::Get()->GetDevicePath(
+        std::move(id), content::GlobalRenderFrameHostId(), std::move(callback));
+  }
+
+  static void MapCtrlWithDevicePath(mojom::ControlMappingPtr mapping_ctrl,
+                                    XuCameraService::MapCtrlCallback callback,
+                                    const std::string& dev_path) {
+    XuCameraService::Get()->MapCtrlWithDevicePath(
+        std::move(mapping_ctrl), std::move(callback), dev_path);
+  }
+
+  static void GetCtrlWithDevicePath(mojom::CtrlTypePtr ctrl,
+                                    mojom::GetFn fn,
+                                    XuCameraService::GetCtrlCallback callback,
+                                    const std::string& dev_path) {
+    XuCameraService::Get()->GetCtrlWithDevicePath(
+        std::move(ctrl), fn, std::move(callback), dev_path);
+  }
+
+  static void SetCtrlWithDevicePath(mojom::CtrlTypePtr ctrl,
+                                    const std::vector<uint8_t>& data,
+                                    XuCameraService::SetCtrlCallback callback,
+                                    const std::string& dev_path) {
+    XuCameraService::Get()->SetCtrlWithDevicePath(
+        std::move(ctrl), data, std::move(callback), dev_path);
+  }
+};
+
 namespace {
 
 const std::vector<uint8_t> kGuid() {
@@ -52,7 +91,7 @@ const std::vector<uint8_t> kData() {
 }
 const std::vector<uint8_t> kLen() {
   return std::vector<uint8_t>({0x02, 0x00});
-}                            // little-endian uint16
+}  // little-endian uint16
 const int32_t kValue = 123;  // Fake v4l2 value
 const std::vector<uint8_t> kValueAsUint8() {
   return std::vector<uint8_t>(
@@ -61,7 +100,16 @@ const std::vector<uint8_t> kValueAsUint8() {
 }
 
 mojom::WebcamIdPtr kDevPath() {
-  return mojom::WebcamId::NewDevPath("/fake/dev/path");
+  return mojom::WebcamId::NewDevPath("/dev/video0");
+}
+mojom::WebcamIdPtr kInvalidDevPath() {
+  return mojom::WebcamId::NewDevPath("/dev/null");
+}
+mojom::WebcamIdPtr kInvalidTraversalPath() {
+  return mojom::WebcamId::NewDevPath("/dev/video/../dri/card0");
+}
+mojom::WebcamIdPtr kInvalidIpAddr() {
+  return mojom::WebcamId::NewDevPath("192.168.1.300");
 }
 mojom::WebcamIdPtr kIPAddr() {
   return mojom::WebcamId::NewDevPath("192.168.19.224");
@@ -108,8 +156,8 @@ class TestDelegate : public XuCameraService::Delegate {
   }
 
   bool OpenFile(base::ScopedFD& fd, const std::string& path) override {
-    if (path.empty()) {
-      LOG(ERROR) << "Filepath is empty";
+    if (!IsValidV4L2DevicePath(path)) {
+      LOG(ERROR) << "Filepath is invalid: " << path;
       return false;
     }
     // Return fake fd for unit tests.
@@ -259,6 +307,172 @@ TEST_F(CfMXuCameraServiceTest, GetXuCameraMapCtrl) {
   run_loop.Run();
 }
 
+// This test ensures that map control is rejected for invalid device paths.
+TEST_F(CfMXuCameraServiceTest, GetXuCameraMapCtrlInvalidPath) {
+  base::RunLoop run_loop;
+  GetXuCameraRemote()->MapCtrl(
+      /* id= */ kInvalidDevPath().Clone(),
+      /* mapping_ctrl= */ kCtrlMapping()->get_mapping_ctrl().Clone(),
+      base::BindLambdaForTesting([&](const uint8_t error_code) {
+        EXPECT_EQ(error_code, ENOENT);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// This test ensures that map control is rejected for IP camera paths.
+TEST_F(CfMXuCameraServiceTest, GetXuCameraMapCtrlIPCamera) {
+  base::RunLoop run_loop;
+  GetXuCameraRemote()->MapCtrl(
+      /* id= */ kIPAddr().Clone(),
+      /* mapping_ctrl= */ kCtrlMapping()->get_mapping_ctrl().Clone(),
+      base::BindLambdaForTesting([&](const uint8_t error_code) {
+        EXPECT_EQ(error_code, ENOENT);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// This test ensures that map control handles null menu_entries safely.
+TEST_F(CfMXuCameraServiceTest, GetXuCameraMapCtrlNullMenuEntries) {
+  base::RunLoop run_loop;
+  auto ctrl_mapping = mojom::ControlMapping::New(
+      /* id= */ 1,
+      /* name= */ kName(),
+      /* guid= */ kGuid(),
+      /* selector= */ 1,
+      /* size= */ 1,
+      /* offset= */ 1,
+      /* v4l2_type= */ V4L2_CTRL_TYPE_INTEGER,
+      /* data_type= */ UVC_CTRL_DATA_TYPE_SIGNED,
+      /* menu_entries= */ nullptr);
+  GetXuCameraRemote()->MapCtrl(
+      /* id= */ kDevPath().Clone(),
+      /* mapping_ctrl= */ std::move(ctrl_mapping),
+      base::BindLambdaForTesting([&](const uint8_t error_code) {
+        EXPECT_EQ(error_code, 0);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// This test ensures that map control is rejected for null mapping control.
+TEST_F(CfMXuCameraServiceTest, GetXuCameraMapCtrlNullMapping) {
+  base::RunLoop run_loop;
+  XuCameraServiceTestPeer::MapCtrlWithDevicePath(
+      /* mapping_ctrl= */ nullptr,
+      base::BindLambdaForTesting([&](const uint8_t error_code) {
+        EXPECT_EQ(error_code, EINVAL);
+        run_loop.Quit();
+      }),
+      /* dev_path= */ "/dev/video0");
+  run_loop.Run();
+}
+
+// This test ensures that get control is rejected for null control parameter.
+TEST_F(CfMXuCameraServiceTest, GetXuCameraGetCtrlNullCtrl) {
+  base::RunLoop run_loop;
+  XuCameraServiceTestPeer::GetCtrlWithDevicePath(
+      /* ctrl= */ nullptr,
+      /* fn= */ mojom::GetFn::kCur,
+      base::BindLambdaForTesting(
+          [&](const uint8_t error_code, const std::vector<uint8_t>& data) {
+            EXPECT_EQ(error_code, EINVAL);
+            EXPECT_TRUE(data.empty());
+            run_loop.Quit();
+          }),
+      /* dev_path= */ "/dev/video0");
+  run_loop.Run();
+}
+
+// This test ensures that set control is rejected for null control parameter.
+TEST_F(CfMXuCameraServiceTest, GetXuCameraSetCtrlNullCtrl) {
+  base::RunLoop run_loop;
+  XuCameraServiceTestPeer::SetCtrlWithDevicePath(
+      /* ctrl= */ nullptr,
+      /* data= */ {'a', 'b', 'c'},
+      base::BindLambdaForTesting([&](const uint8_t error_code) {
+        EXPECT_EQ(error_code, EINVAL);
+        run_loop.Quit();
+      }),
+      /* dev_path= */ "/dev/video0");
+  run_loop.Run();
+}
+
+// This test ensures that a null webcam id resolves to no device path.
+TEST_F(CfMXuCameraServiceTest, GetXuCameraDevicePathNullId) {
+  base::RunLoop run_loop;
+  XuCameraServiceTestPeer::GetDevicePath(
+      /* id= */ nullptr,
+      base::BindLambdaForTesting([&](const std::optional<std::string>& path) {
+        EXPECT_FALSE(path.has_value());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// This test validates device path and IP peripheral address format checking.
+TEST_F(CfMXuCameraServiceTest, DevicePathValidation) {
+  // Valid local V4L2 device paths.
+  EXPECT_TRUE(IsValidV4L2DevicePath("/dev/video0"));
+  EXPECT_TRUE(IsValidV4L2DevicePath("/dev/video1"));
+  EXPECT_TRUE(IsValidV4L2DevicePath("/dev/video11"));
+  EXPECT_TRUE(IsValidV4L2DevicePath("/dev/video128"));
+  EXPECT_TRUE(IsValidV4L2DevicePath("/dev/video5566"));
+  EXPECT_TRUE(IsValidV4L2DevicePath("/dev/video99999"));
+  EXPECT_TRUE(IsValidDevPath("/dev/video0"));
+
+  // Out of range index or invalid suffix.
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/video100000"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/video"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/videox"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/video0a"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/video0/something"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/video0/../../etc/shadow"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/video/../dri/card0"));
+
+  // Leading zeros on multi-digit video device indices.
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/video00"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/video01"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/video007"));
+
+  // Non-video device paths and paths outside /dev.
+  EXPECT_FALSE(IsValidV4L2DevicePath(""));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/null"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/dri/card0"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/tmp/sample_target"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("../../../../../../tmp/sample_target"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/dev/input/event0"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/proc/self/status"));
+  EXPECT_FALSE(IsValidV4L2DevicePath("/sys/class/leds/x/brightness"));
+  EXPECT_FALSE(IsValidDevPath("/dev/null"));
+
+  // Valid IP camera addresses.
+  EXPECT_TRUE(IsIpCamera("192.168.0.1"));
+  EXPECT_TRUE(IsIpCamera("192.168.19.224"));
+  EXPECT_TRUE(IsIpCamera("192.168.0.0"));
+  EXPECT_TRUE(IsIpCamera("192.168.255.255"));
+  EXPECT_TRUE(IsValidDevPath("192.168.19.224"));
+
+  // Invalid IP camera addresses.
+  EXPECT_FALSE(IsIpCamera(""));
+  EXPECT_FALSE(IsIpCamera("192.168."));
+  EXPECT_FALSE(IsIpCamera("192.168.1"));
+  EXPECT_FALSE(IsIpCamera("192.168.1.1.1"));
+  EXPECT_FALSE(IsIpCamera("192.168.1.256"));
+  EXPECT_FALSE(IsIpCamera("192.168.1.300"));
+  EXPECT_FALSE(IsIpCamera("192.168.1.foo"));
+  EXPECT_FALSE(IsIpCamera("192.168.1.1/../../etc/passwd"));
+  EXPECT_FALSE(IsIpCamera("192.168.1.1:8080"));
+  EXPECT_FALSE(IsIpCamera("10.0.0.1"));
+  EXPECT_FALSE(IsIpCamera("192.168.01.1"));
+  EXPECT_FALSE(IsIpCamera("192.168.1.01"));
+  EXPECT_FALSE(IsIpCamera("192.168.00.00"));
+  EXPECT_FALSE(IsIpCamera("192.168.0.01"));
+  EXPECT_FALSE(IsIpCamera("192.168.0.00"));
+  EXPECT_FALSE(IsValidDevPath("192.168.1.300"));
+}
+
 // This test ensure that the XU camera can get control length given a ctrl
 // query
 TEST_F(CfMXuCameraServiceTest, XuCameraGetCtrlLenWithDevPathCtrlQuery) {
@@ -306,7 +520,15 @@ std::vector<XuTestCase> GetXuTestCases() {
       {"DevPath_CtrlMapping", kDevPath(), kCtrlMapping(), 0, kValueAsUint8()},
       {"DevId_CtrlMapping", kDevId(), kCtrlMapping(), ENOENT, kEmpty()},
       {"IPAddr_CtrlQuery", kIPAddr(), kQueryCtrl(), 0, kEmpty()},
-      {"IPAddr_CtrlMapping", kIPAddr(), kCtrlMapping(), 0, kValueAsUint8()},
+      {"IPAddr_CtrlMapping", kIPAddr(), kCtrlMapping(), ENOENT, kEmpty()},
+      {"InvalidDevPath_CtrlQuery", kInvalidDevPath(), kQueryCtrl(), ENOENT,
+       kEmpty()},
+      {"InvalidDevPath_CtrlMapping", kInvalidDevPath(), kCtrlMapping(), ENOENT,
+       kEmpty()},
+      {"InvalidTraversal_CtrlQuery", kInvalidTraversalPath(), kQueryCtrl(),
+       ENOENT, kEmpty()},
+      {"InvalidIpAddr_CtrlQuery", kInvalidIpAddr(), kQueryCtrl(), ENOENT,
+       kEmpty()},
   };
 }
 

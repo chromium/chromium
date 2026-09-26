@@ -31,6 +31,18 @@ struct GlobalRenderFrameHostId;
 
 namespace ash::cfm {
 
+// Validates whether |dev_path| follows the canonical V4L2 device node pattern
+// (/dev/videoX).
+bool IsValidV4L2DevicePath(const std::string& dev_path);
+
+// Validates whether |dev_path| is a valid IP address in the local peripheral
+// subnet (192.168.X.Y).
+bool IsIpCamera(const std::string& dev_path);
+
+// Validates whether |dev_path| is either a valid V4L2 device node or IP camera
+// address.
+bool IsValidDevPath(const std::string& dev_path);
+
 // Implementation of the XuCamera Service
 // Allows CfM to control non-standard camera functionality.
 class XuCameraService : public CfmObserver,
@@ -103,6 +115,8 @@ class XuCameraService : public CfmObserver,
   void SetDelegate(Delegate* delegate);
 
  private:
+  friend class XuCameraServiceTestPeer;
+
   void GetUnitIdWithDevicePath(const std::vector<uint8_t>& guid_le,
                                GetUnitIdCallback callback,
                                const std::optional<std::string>& dev_path);

@@ -16,7 +16,7 @@ module ash.cfm.mojom;
 union WebcamId {
   // WebRtc ID
   string device_id;
-  // Device Node path
+  // Device node path (e.g. /dev/videoX) or local IP address (e.g. 192.168.X.Y)
   string dev_path;
 };
 

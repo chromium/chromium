@@ -12,12 +12,18 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
+#include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/fixed_array.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
@@ -38,7 +44,7 @@ namespace ash::cfm {
 
 namespace {
 static constexpr int kGuidSize = 16;
-static constexpr int kSubtypeOffset = 2;
+static constexpr size_t kSubtypeOffset = 2;
 static constexpr int kVideoClass = 14;
 static constexpr int kVideoSubclass = 1;
 static constexpr int kXUSubtype = 6;
@@ -51,7 +57,9 @@ typedef struct {
   uint8_t kGuidLe[kGuidSize];  // little-endian from camera
 } kXuInterface;
 
-static const char* kLocalIpAddress = "192.168.";  // Series One peripherals
+static constexpr char kAllowedDevPathPrefix[] = "/dev/video";
+static constexpr size_t kMaxDeviceIndexDigits = 5;
+static constexpr char kLocalIpAddress[] = "192.168.";  // Series One peripherals
 static const std::initializer_list<uint8_t> kMeetXuGuidLe = {
     0x24, 0xE9, 0xD7, 0x74,  // bytes 0-3 (little-endian)
     0xC9, 0x49,              // bytes 4-5 (little-endian)
@@ -59,6 +67,80 @@ static const std::initializer_list<uint8_t> kMeetXuGuidLe = {
     0x98, 0xA3, 0x8A, 0x9F, 0x60, 0x06, 0x1E,
     0x83,  // bytes 8-15 (byte array)
 };
+
+// Copies as many leading bytes of `src` as fit into `dst`. Bytes of `dst`
+// beyond `src.size()` are left untouched.
+void CopyTruncated(base::span<uint8_t> dst, base::span<const uint8_t> src) {
+  dst.copy_prefix_from(src.first(std::min(dst.size(), src.size())));
+}
+
+}  // namespace
+
+bool IsValidV4L2DevicePath(const std::string& dev_path) {
+  if (!base::StartsWith(dev_path, kAllowedDevPathPrefix)) {
+    return false;
+  }
+  base::FilePath file_path(dev_path);
+  if (file_path.ReferencesParent() || !file_path.IsAbsolute()) {
+    return false;
+  }
+  constexpr size_t kPrefixLen = sizeof(kAllowedDevPathPrefix) - 1;
+  const size_t suffix_len = dev_path.size() - kPrefixLen;
+  if (suffix_len == 0 || suffix_len > kMaxDeviceIndexDigits) {
+    return false;
+  }
+  if (suffix_len > 1 && dev_path[kPrefixLen] == '0') {
+    return false;
+  }
+  for (size_t i = kPrefixLen; i < dev_path.size(); ++i) {
+    if (!base::IsAsciiDigit(dev_path[i])) {
+      return false;
+    }
+  }
+  unsigned int device_index = 0;
+  if (!base::StringToUint(dev_path.substr(kPrefixLen), &device_index)) {
+    return false;
+  }
+  return true;
+}
+
+bool IsIpCamera(const std::string& dev_path) {
+  if (!base::StartsWith(dev_path, kLocalIpAddress)) {
+    return false;
+  }
+  const std::vector<std::string_view> parts = base::SplitStringPiece(
+      dev_path, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (parts.size() != 4) {
+    return false;
+  }
+  if (parts[0] != "192" || parts[1] != "168") {
+    return false;
+  }
+  for (size_t i = 2; i < 4; ++i) {
+    if (parts[i].empty() || parts[i].size() > 3) {
+      return false;
+    }
+    if (parts[i].size() > 1 && parts[i][0] == '0') {
+      return false;
+    }
+    for (char c : parts[i]) {
+      if (!base::IsAsciiDigit(c)) {
+        return false;
+      }
+    }
+    unsigned int val = 0;
+    if (!base::StringToUint(parts[i], &val) || val > 255) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool IsValidDevPath(const std::string& dev_path) {
+  return IsValidV4L2DevicePath(dev_path) || IsIpCamera(dev_path);
+}
+
+namespace {
 
 class RealDelegate : public XuCameraService::Delegate {
  public:
@@ -78,6 +160,10 @@ class RealDelegate : public XuCameraService::Delegate {
   }
 
   bool OpenFile(base::ScopedFD& fd, const std::string& path) override {
+    if (!IsValidV4L2DevicePath(path)) {
+      LOG(ERROR) << "Failed to open device. Invalid path: " << path;
+      return false;
+    }
     fd.reset(open(path.c_str(), O_RDWR | O_NONBLOCK, 0));
     VLOG(4) << __func__ << "File path: " << path;
     LOG_IF(ERROR, !fd.is_valid())
@@ -85,10 +171,6 @@ class RealDelegate : public XuCameraService::Delegate {
     return fd.is_valid();
   }
 };
-
-bool IsIpCamera(const std::string& dev_path) {
-  return base::StartsWith(dev_path, kLocalIpAddress);
-}
 
 IpPeripheralServiceClient::GetControlCallback ConvertGetCtrlCallbackForDbus(
     XuCameraService::GetCtrlCallback callback) {
@@ -121,6 +203,18 @@ void TranslateDeviceId(
     base::OnceCallback<void(const std::optional<std::string>&)> callback,
     const url::Origin& security_origin,
     const std::string& salt) {
+  auto validate_and_run_callback = base::BindOnce(
+      [](base::OnceCallback<void(const std::optional<std::string>&)> cb,
+         const std::optional<std::string>& dev_path) {
+        if (dev_path && !IsValidDevPath(*dev_path)) {
+          LOG(ERROR) << "TranslateDeviceId resolved invalid device path.";
+          std::move(cb).Run(std::nullopt);
+          return;
+        }
+        std::move(cb).Run(dev_path);
+      },
+      std::move(callback));
+
   auto translate_device_id_callback = base::BindOnce(
       [](const std::string& hashed_device_id,
          base::OnceCallback<void(const std::optional<std::string>&)> callback,
@@ -130,7 +224,7 @@ void TranslateDeviceId(
             security_origin, hashed_device_id,
             content::GetUIThreadTaskRunner({}), std::move(callback));
       },
-      std::move(hashed_device_id), std::move(callback),
+      std::move(hashed_device_id), std::move(validate_and_run_callback),
       std::move(security_origin), std::move(salt));
 
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -255,7 +349,7 @@ void XuCameraService::GetUnitIdWithDevicePath(
     const std::vector<uint8_t>& guid_le,
     GetUnitIdCallback callback,
     const std::optional<std::string>& dev_path) {
-  if (dev_path.has_value()) {
+  if (dev_path.has_value() && IsValidDevPath(*dev_path)) {
     const bool is_ip_camera = IsIpCamera(*dev_path);
     if (is_ip_camera) {
       VLOG(4) << __func__ << ": No UnitId for IP cameras";
@@ -271,7 +365,7 @@ void XuCameraService::GetUnitIdWithDevicePath(
     }
   }
 
-  if(!usb_manager_) {
+  if (!usb_manager_) {
     content::GetDeviceService().BindUsbDeviceManager(
         usb_manager_.BindNewPipeAndPassReceiver());
   }
@@ -293,25 +387,26 @@ void XuCameraService::OnGetDevices(
         for (const auto& alternate : interface->alternates) {
           if (alternate->class_code == kVideoClass &&
               alternate->subclass_code == kVideoSubclass) {
-            /* extra_data.data() is additional raw data in byte form
-             * consisting of an array of interfaces. */
-            uint8_t* data_ptr = alternate->extra_data.data();
-            int end = alternate->extra_data.size();
-            int cur = 0;
-            kXuInterface curXuInterface;
-            while ((cur + kSubtypeOffset) < end) {
-              if (static_cast<int>(UNSAFE_TODO(
-                      data_ptr[cur + kSubtypeOffset])) == kXUSubtype &&
-                  (cur + (int)sizeof(curXuInterface)) < end) {
-                UNSAFE_TODO(std::memcpy(&curXuInterface, &data_ptr[cur],
-                                        sizeof(curXuInterface)));
-                std::vector<uint8_t> curXuInterface_guid_le(
-                    curXuInterface.kGuidLe,
-                    UNSAFE_TODO(curXuInterface.kGuidLe + kGuidSize));
-                guid_unitid_map_.insert(
-                    {curXuInterface_guid_le, curXuInterface.kUnitId});
+            /* extra_data is additional raw data in byte form consisting of
+             * an array of interfaces. */
+            base::span<const uint8_t> extra(alternate->extra_data);
+            while (extra.size() > kSubtypeOffset) {
+              const uint8_t desc_len = extra[0];
+              if (desc_len == 0) {
+                break;
               }
-              cur += static_cast<int>(UNSAFE_TODO(data_ptr[cur]));
+              if (extra[kSubtypeOffset] == kXUSubtype &&
+                  extra.size() >= sizeof(kXuInterface)) {
+                kXuInterface curXuInterface;
+                base::byte_span_from_ref(curXuInterface)
+                    .copy_from(extra.first<sizeof(kXuInterface)>());
+                guid_unitid_map_.insert({base::ToVector(curXuInterface.kGuidLe),
+                                         curXuInterface.kUnitId});
+              }
+              if (desc_len > extra.size()) {
+                break;
+              }
+              extra = extra.subspan(desc_len);
             }
           }
         }
@@ -351,9 +446,15 @@ void XuCameraService::MapCtrlWithDevicePath(
   uint8_t error_code = 0;
   base::ScopedFD file_descriptor;
 
-  if (!dev_path) {
+  if (!dev_path || !IsValidV4L2DevicePath(*dev_path)) {
     LOG(ERROR) << __func__ << ": Unable to determine device path";
     std::move(callback).Run(ENOENT);
+    return;
+  }
+
+  if (!mapping_ctrl) {
+    LOG(ERROR) << __func__ << ": mapping_ctrl is null";
+    std::move(callback).Run(EINVAL);
     return;
   }
 
@@ -365,35 +466,45 @@ void XuCameraService::MapCtrlWithDevicePath(
     return;
   }
 
-  base::FixedArray<struct uvc_menu_info> uvc_menus(mapping_ctrl->menu_entries->menu_info.size());
+  base::FixedArray<struct uvc_menu_info> uvc_menus(
+      mapping_ctrl->menu_entries ? mapping_ctrl->menu_entries->menu_info.size()
+                                 : 0);
 
   int index = 0;
-  for (auto menu_info = mapping_ctrl->menu_entries->menu_info.begin();
-       menu_info < mapping_ctrl->menu_entries->menu_info.end(); menu_info++) {
-    const struct uvc_menu_info info = {
-        .value = (*menu_info)->value,
-        .name = {*((*menu_info)->name.data())},
-    };
-    uvc_menus[index] = info;
-    index++;
+  if (mapping_ctrl->menu_entries) {
+    for (const auto& menu_info : mapping_ctrl->menu_entries->menu_info) {
+      if (!menu_info) {
+        continue;
+      }
+      struct uvc_menu_info info = {
+          .value = menu_info->value,
+      };
+      CopyTruncated(info.name, menu_info->name);
+      uvc_menus[index++] = info;
+    }
   }
 
   struct uvc_xu_control_mapping control_mapping = {
       .id = mapping_ctrl->id,
-      .name = {*(mapping_ctrl->name.data())},
-      .entity = {*(mapping_ctrl->guid.data())},
       .selector = mapping_ctrl->selector,
       .size = mapping_ctrl->size,
       .offset = mapping_ctrl->offset,
       .v4l2_type = mapping_ctrl->v4l2_type,
       .data_type = mapping_ctrl->data_type,
-      .menu_info = uvc_menus.data(),
+      .menu_info = index > 0 ? uvc_menus.data() : nullptr,
       .menu_count = static_cast<uint32_t>(index),
   };
+  CopyTruncated(control_mapping.name, mapping_ctrl->name);
+  CopyTruncated(control_mapping.entity, mapping_ctrl->guid);
 
   // Map the controls to v4l2
-  error_code =
+  int ioctl_ret =
       delegate_->Ioctl(file_descriptor, UVCIOC_CTRL_MAP, &control_mapping);
+  if (ioctl_ret < 0) {
+    error_code = logging::GetLastSystemErrorCode();
+  } else {
+    error_code = static_cast<uint8_t>(ioctl_ret);
+  }
 
   std::move(callback).Run(error_code);
 }
@@ -418,9 +529,15 @@ void XuCameraService::GetCtrlWithDevicePath(
     GetCtrlCallback callback,
     const std::optional<std::string>& dev_path) const {
   std::vector<uint8_t> data;
-  if (!dev_path) {
+  if (!dev_path || !IsValidDevPath(*dev_path)) {
     LOG(ERROR) << __func__ << ": Unable to determine device path";
     std::move(callback).Run(ENOENT, data);
+    return;
+  }
+
+  if (!ctrl) {
+    LOG(ERROR) << __func__ << ": CtrlType is null";
+    std::move(callback).Run(EINVAL, data);
     return;
   }
 
@@ -437,20 +554,38 @@ void XuCameraService::GetCtrlWithDevicePath(
   uint8_t error_code = 0;
   // GetCtrl depending on whether id provided is WebRTC or filepath
   switch (ctrl->which()) {
-    case mojom::CtrlType::Tag::kQueryCtrl:
+    case mojom::CtrlType::Tag::kQueryCtrl: {
+      auto query = std::move(ctrl->get_query_ctrl());
+      if (!query) {
+        LOG(ERROR) << __func__ << ": query_ctrl is null";
+        std::move(callback).Run(EINVAL, data);
+        return;
+      }
       if (is_ip_camera) {
-        GetCtrlDbus(*dev_path, std::move(ctrl->get_query_ctrl()),
-                    GetRequest(fn), std::move(callback));
+        GetCtrlDbus(*dev_path, std::move(query), GetRequest(fn),
+                    std::move(callback));
+        return;
+      }
+      error_code = CtrlThroughQuery(file_descriptor, std::move(query), data,
+                                    GetRequest(fn));
+      break;
+    }
+    case mojom::CtrlType::Tag::kMappingCtrl: {
+      if (is_ip_camera) {
+        LOG(ERROR) << __func__ << ": MappingCtrl not supported for IP cameras";
+        std::move(callback).Run(ENOENT, data);
+        return;
+      }
+      auto mapping = std::move(ctrl->get_mapping_ctrl());
+      if (!mapping) {
+        LOG(ERROR) << __func__ << ": mapping_ctrl is null";
+        std::move(callback).Run(EINVAL, data);
         return;
       }
       error_code =
-          CtrlThroughQuery(file_descriptor, std::move(ctrl->get_query_ctrl()),
-                           data, GetRequest(fn));
+          CtrlThroughMapping(file_descriptor, std::move(mapping), data, fn);
       break;
-    case mojom::CtrlType::Tag::kMappingCtrl:
-      error_code = CtrlThroughMapping(
-          file_descriptor, std::move(ctrl->get_mapping_ctrl()), data, fn);
-      break;
+    }
     default:
       LOG(ERROR) << __func__ << ": Invalid CtrlType::Tag";
       error_code = EINVAL;
@@ -477,9 +612,15 @@ void XuCameraService::SetCtrlWithDevicePath(
     const std::vector<uint8_t>& data,
     SetCtrlCallback callback,
     const std::optional<std::string>& dev_path) const {
-  if (!dev_path) {
+  if (!dev_path || !IsValidDevPath(*dev_path)) {
     LOG(ERROR) << __func__ << ": Unable to determine device path";
     std::move(callback).Run(ENOENT);
+    return;
+  }
+
+  if (!ctrl) {
+    LOG(ERROR) << __func__ << ": CtrlType is null";
+    std::move(callback).Run(EINVAL);
     return;
   }
 
@@ -497,22 +638,43 @@ void XuCameraService::SetCtrlWithDevicePath(
   std::vector<uint8_t> data_(data);
   // SetCtrl depending on whether id provided is WebRTC or filepath
   switch (ctrl->which()) {
-    case mojom::CtrlType::Tag::kQueryCtrl:
-      if (is_ip_camera) {
-        SetCtrlDbus(*dev_path, std::move(ctrl->get_query_ctrl()), data_,
-                    std::move(callback));
+    case mojom::CtrlType::Tag::kQueryCtrl: {
+      auto query = std::move(ctrl->get_query_ctrl());
+      if (!query) {
+        LOG(ERROR) << __func__ << ": query_ctrl is null";
+        std::move(callback).Run(EINVAL);
         return;
       }
-      error_code =
-          CtrlThroughQuery(file_descriptor, std::move(ctrl->get_query_ctrl()),
-                           data_, UVC_SET_CUR);
+      if (is_ip_camera) {
+        SetCtrlDbus(*dev_path, std::move(query), data_, std::move(callback));
+        return;
+      }
+      error_code = CtrlThroughQuery(file_descriptor, std::move(query), data_,
+                                    UVC_SET_CUR);
       break;
+    }
     case mojom::CtrlType::Tag::kMappingCtrl: {
+      if (is_ip_camera) {
+        LOG(ERROR) << __func__ << ": MappingCtrl not supported for IP cameras";
+        std::move(callback).Run(ENOENT);
+        return;
+      }
       mojom::ControlMappingPtr mapping = std::move(ctrl->get_mapping_ctrl());
-      int32_t newValue;
+      if (!mapping) {
+        LOG(ERROR) << __func__ << ": mapping_ctrl is null";
+        std::move(callback).Run(EINVAL);
+        return;
+      }
+      int32_t newValue = 0;
       CopyFromData(&newValue, data_);
       struct v4l2_control control = {.id = mapping->id, .value = newValue};
-      error_code = delegate_->Ioctl(file_descriptor, VIDIOC_S_CTRL, &control);
+      int ioctl_ret =
+          delegate_->Ioctl(file_descriptor, VIDIOC_S_CTRL, &control);
+      if (ioctl_ret < 0) {
+        error_code = logging::GetLastSystemErrorCode();
+      } else {
+        error_code = static_cast<uint8_t>(ioctl_ret);
+      }
       break;
     }
     default:
@@ -557,8 +719,20 @@ void XuCameraService::GetDevicePath(
     const {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 
+  if (!id) {
+    LOG(ERROR) << __func__ << ": WebcamId is null";
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   if (id->is_dev_path()) {
-    std::move(callback).Run(id->get_dev_path());
+    const std::string& dev_path = id->get_dev_path();
+    if (!IsValidDevPath(dev_path)) {
+      LOG(ERROR) << __func__ << ": Invalid device path format: " << dev_path;
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(dev_path);
     return;
   }
 
@@ -652,7 +826,7 @@ uint8_t XuCameraService::CtrlThroughQuery(const base::ScopedFD& file_descriptor,
                                           const uint8_t& request) const {
   VLOG(4) << __func__ << " request - " << static_cast<unsigned int>(request)
           << " selector - " << static_cast<unsigned int>(query->selector);
-  uint8_t data_len;
+  uint16_t data_len = 0;
   uint8_t error_code = 0;
   if (UVC_SET_CUR == request) {
     error_code =
@@ -702,7 +876,17 @@ uint8_t XuCameraService::CtrlThroughMapping(
     return error_code;
   } else if (mojom::GetFn::kCur == fn) {
     struct v4l2_control control = {.id = mapping->id};
-    error_code = delegate_->Ioctl(file_descriptor, VIDIOC_G_CTRL, &control);
+    int ioctl_ret = delegate_->Ioctl(file_descriptor, VIDIOC_G_CTRL, &control);
+    if (ioctl_ret < 0) {
+      error_code = logging::GetLastSystemErrorCode();
+    } else {
+      error_code = static_cast<uint8_t>(ioctl_ret);
+    }
+    if (error_code != 0) {
+      LOG(ERROR) << __func__ << " VIDIOC_G_CTRL error_code - "
+                 << static_cast<unsigned int>(error_code);
+      return error_code;
+    }
     CopyToData<int32_t>(&control.value, data, sizeof(control.value));
     return error_code;
   }
@@ -711,10 +895,16 @@ uint8_t XuCameraService::CtrlThroughMapping(
       .id = mapping->id,
   };
 
-  error_code = delegate_->Ioctl(file_descriptor, VIDIOC_QUERYCTRL, &query);
+  int ioctl_ret = delegate_->Ioctl(file_descriptor, VIDIOC_QUERYCTRL, &query);
+  if (ioctl_ret < 0) {
+    error_code = logging::GetLastSystemErrorCode();
+  } else {
+    error_code = static_cast<uint8_t>(ioctl_ret);
+  }
 
   if (error_code != 0) {
-    LOG(ERROR) << __func__ << " VIDIOC_QUERYCTRL error_code - " << error_code;
+    LOG(ERROR) << __func__ << " VIDIOC_QUERYCTRL error_code - "
+               << static_cast<unsigned int>(error_code);
     return error_code;
   }
 
@@ -765,11 +955,13 @@ void XuCameraService::CopyToData(T* value,
 template <typename T>
 void XuCameraService::CopyFromData(T* value,
                                    const std::vector<uint8_t>& data) const {
-  int shiftBit = 0;
-  for (size_t i = 0; i < data.size(); ++i) {
-    *value += data[i] << shiftBit;
-    shiftBit += 8;
+  using UnsignedT = std::make_unsigned_t<T>;
+  UnsignedT unsigned_val = 0;
+  size_t bytes_to_copy = std::min(data.size(), sizeof(T));
+  for (size_t i = 0; i < bytes_to_copy; ++i) {
+    unsigned_val |= static_cast<UnsignedT>(data[i]) << (i * 8);
   }
+  *value = static_cast<T>(unsigned_val);
 }
 
 uint8_t XuCameraService::GetLength(uint8_t* data,
