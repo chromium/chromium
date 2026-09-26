@@ -18,12 +18,34 @@ import org.chromium.build.annotations.Nullable;
 /** Represents underlying Chromium web contents state that can survive moving across WebViews. */
 @NullMarked
 public class WebContent {
+    /**
+     * Listener notified when the {@link AwContents} associated with this {@link WebContent}
+     * changes, or {@code null} when detached or not yet initialized.
+     */
+    public interface SurfaceBindingListener {
+        void onAwContentsChanged(@Nullable AwContents awContents);
+    }
+
     @Nullable private AwContents mAwContents;
     @Nullable private WebViewChromium mCurrentWebViewChromium;
+    @Nullable private SurfaceBindingListener mSurfaceBindingListener;
     private boolean mIsDestroyed;
 
     public boolean isInitialized() {
         return mAwContents != null;
+    }
+
+    public void bindSurface(@Nullable SurfaceBindingListener listener) {
+        if (mSurfaceBindingListener == listener) {
+            return;
+        }
+        if (mSurfaceBindingListener != null) {
+            mSurfaceBindingListener.onAwContentsChanged(null);
+        }
+        mSurfaceBindingListener = listener;
+        if (mSurfaceBindingListener != null) {
+            mSurfaceBindingListener.onAwContentsChanged(mAwContents);
+        }
     }
 
     public AwContents adopt(
@@ -63,12 +85,22 @@ public class WebContent {
             webViewChromium.initSettings(mAwContents.getSettings());
             mAwContents.adopt(webView, internalAccessAdapter);
         }
+
+        if (mSurfaceBindingListener != null) {
+            mSurfaceBindingListener.onAwContentsChanged(mAwContents);
+        }
+
         return mAwContents;
     }
 
     public void destroy() {
         if (mIsDestroyed) return;
         mIsDestroyed = true;
+        if (mSurfaceBindingListener != null) {
+            mSurfaceBindingListener.onAwContentsChanged(null);
+            mSurfaceBindingListener = null;
+        }
+        mCurrentWebViewChromium = null;
         if (mAwContents != null) {
             mAwContents.destroy();
             mAwContents = null;

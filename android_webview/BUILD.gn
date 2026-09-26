@@ -518,6 +518,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/AwWebResourceError.java",
       "java/src/org/chromium/android_webview/AwWebResourceInterceptResponse.java",
       "java/src/org/chromium/android_webview/AwWebResourceRequest.java",
+      "java/src/org/chromium/android_webview/AwWebSurface.java",
       "java/src/org/chromium/android_webview/AwWindowCoverageTracker.java",
       "java/src/org/chromium/android_webview/AwZoomControls.java",
       "java/src/org/chromium/android_webview/CleanupReference.java",

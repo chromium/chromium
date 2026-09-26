@@ -459,6 +459,7 @@ public class AwContents implements SmartClipProvider {
     private boolean mIsContentVisible;
     private boolean mIsUpdateVisibilityTaskPending;
     private final Runnable mUpdateVisibilityRunnable;
+    @Nullable private Runnable mInvalidateListener;
 
     private final SparseArray<WindowAndroid.IntentCallback> mOutstandingIntents =
             new SparseArray<>();
@@ -844,7 +845,7 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void invalidate() {
-            mContainerView.postInvalidateOnAnimation();
+            postInvalidate(false);
         }
 
         @Override
@@ -4344,8 +4345,33 @@ public class AwContents implements SmartClipProvider {
         mPossiblyStaleHitTestData.imgSrc = imgSrc;
     }
 
+    public boolean isAttachedToWindow() {
+        return mIsAttachedToWindow;
+    }
+
+    /**
+     * Sets a listener to be notified when an external surface (e.g. {@link AwWebSurface}) needs to
+     * redraw. This covers both native invalidations and View framework callbacks (like scroll or
+     * window attachment) that normally invalidate {@code mContainerView} directly.
+     */
+    public void setInvalidateListener(@Nullable Runnable listener) {
+        mInvalidateListener = listener;
+    }
+
+    public int getScrollX() {
+        return mContainerView.getScrollX();
+    }
+
+    public int getScrollY() {
+        return mContainerView.getScrollY();
+    }
+
     @CalledByNative
     private void postInvalidate(boolean insideVSync) {
+        if (mInvalidateListener != null) {
+            mInvalidateListener.run();
+            return;
+        }
         if (insideVSync) {
             mContainerView.invalidate();
         } else {
@@ -4958,6 +4984,10 @@ public class AwContents implements SmartClipProvider {
 
             recordIfAttachedToPopupWindow(mContainerView);
             recordComposeHierarchyDepth(mContainerView);
+
+            // AwWebSurface#draw is gated on isAttachedToWindow(), and won't see the View
+            // framework's draw pass for mContainerView.
+            postInvalidate(false);
         }
 
         @Override
@@ -5063,6 +5093,9 @@ public class AwContents implements SmartClipProvider {
             // classes and cannot be prevented, which is why we need the code below.
             mScrollAccessibilityHelper.removePostedViewScrolledAccessibilityEventCallback();
             mScrollOffsetManager.onContainerViewScrollChanged(l, t);
+            // View#scrollTo invalidates mContainerView directly in the framework without calling
+            // postInvalidate, so ensure the surface is invalidated as well.
+            postInvalidate(false);
         }
 
         @Override
