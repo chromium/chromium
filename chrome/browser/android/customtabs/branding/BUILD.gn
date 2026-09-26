@@ -96,11 +96,13 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationDataUnitTest.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/SharedPreferencesBrandingTimeStorageUnitTest.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingOverlayCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingOverlayViewBinderUnitTest.java",
   ]
 
   deps = [
     ":branding_common_java",
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
@@ -110,6 +112,7 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/messages/android:java",
@@ -136,26 +139,5 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
-  ]
-}
-
-android_library("unit_device_javatests") {
-  resources_package = "org.chromium.chrome.browser.customtabs.features.branding"
-  testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingOverlayViewBinderUnitTest.java" ]
-
-  deps = [
-    ":java",
-    ":java_resources",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//base/test:test_support_java",
-    "//chrome/browser/ui/android/omnibox:java",
-    "//chrome/browser/ui/android/theme:java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit",
-    "//ui/android:ui_java",
-    "//ui/android:ui_java_test_support",
   ]
 }
