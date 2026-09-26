@@ -22,6 +22,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/display/screen.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/event_target_iterator.h"
 #include "ui/events/gestures/gesture_recognizer_impl.h"
@@ -132,6 +133,12 @@ void Env::RemoveObserver(EnvObserver* observer) {
 bool Env::IsMouseButtonDown() const {
   return input_state_lookup_.get() ? input_state_lookup_->IsMouseButtonDown() :
       mouse_button_flags_ != 0;
+}
+
+bool Env::IsLeftMouseButtonDown() const {
+  return input_state_lookup_.get()
+             ? input_state_lookup_->IsLeftMouseButtonDown()
+             : (mouse_button_flags_ & ui::EF_LEFT_MOUSE_BUTTON) != 0;
 }
 
 void Env::SetLastMouseLocation(const gfx::Point& last_mouse_location) {

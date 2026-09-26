@@ -196,6 +196,10 @@ class CONTENT_EXPORT WebContentsViewAura
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            ClampTouchLocationToBrowserObservedPoint);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           StartDraggingMouseRequiresLeftButton);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           RefusedDragDoesNotBlockSubsequentDrags);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            UrlInDropDataReturnsUrlInOSExchangeDataGetString);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            IgnoreInputs_OngoingDropGetsCleared);

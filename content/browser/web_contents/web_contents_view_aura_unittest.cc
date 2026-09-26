@@ -1361,6 +1361,109 @@ TEST_F(WebContentsViewAuraTest, ClampTouchLocationToBrowserObservedPoint) {
   env->SetTouchDown(false);
 }
 
+// Blink only ever starts a mouse drag from a left-button gesture, so a
+// renderer-initiated mouse drag while a different button is held must be
+// refused. This matters most on Windows, where the OLE drag loop would turn
+// such a gesture into an unprompted drop (see
+// DragSourceWin::QueryContinueDrag).
+TEST_F(WebContentsViewAuraTest, StartDraggingMouseRequiresLeftButton) {
+  NavigateAndCommit(GURL("https://google.com/"));
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  WebContentsViewAura* view = GetView();
+  aura::Env* const env = aura::Env::GetInstance();
+  const gfx::Point location =
+      view->GetContentNativeView()->GetBoundsInScreen().CenterPoint();
+  env->SetLastMouseLocation(location);
+
+  DropData drop_data;
+  drop_data.text.emplace(u"Hello World!");
+  const blink::mojom::DragEventSourceInfo event_info(
+      location, ui::mojom::DragEventSource::kMouse);
+
+  // Needed to avoid calling WebContentsViewAura::EndDrag, which results in
+  // NOTREACHED being called in
+  // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView`.
+  view->drag_in_progress_ = true;
+
+  env->set_mouse_button_flags(ui::EF_MIDDLE_MOUSE_BUTTON |
+                              ui::EF_RIGHT_MOUSE_BUTTON |
+                              ui::EF_BACK_MOUSE_BUTTON);
+  view->StartDragging(
+      *main_rfh(), drop_data, blink::DragOperationsMask::kDragOperationNone,
+      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(), event_info);
+
+  EXPECT_FALSE(drag_drop_client.GetDragDropData())
+      << "A mouse drag started without the left button held must not reach "
+         "the platform drag and drop client.";
+
+  // The same drag is allowed once the left button is held.
+  env->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
+  view->StartDragging(
+      *main_rfh(), drop_data, blink::DragOperationsMask::kDragOperationNone,
+      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(), event_info);
+
+  EXPECT_TRUE(drag_drop_client.GetDragDropData());
+}
+
+// A drag that is refused before it starts must not leave `drag_security_info_`
+// initiated, or every later drag from this WebContents would be dropped by the
+// reentrancy check. Covers both refusal paths in StartDragging: a mismatched
+// input state, and a hidden source view.
+TEST_F(WebContentsViewAuraTest, RefusedDragDoesNotBlockSubsequentDrags) {
+  NavigateAndCommit(GURL("https://google.com/"));
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  WebContentsViewAura* view = GetView();
+  aura::Env* const env = aura::Env::GetInstance();
+  const gfx::Point location =
+      view->GetContentNativeView()->GetBoundsInScreen().CenterPoint();
+  env->SetLastMouseLocation(location);
+
+  DropData drop_data;
+  drop_data.text.emplace(u"Hello World!");
+  const blink::mojom::DragEventSourceInfo event_info(
+      location, ui::mojom::DragEventSource::kMouse);
+
+  // Needed to avoid calling WebContentsViewAura::EndDrag, which results in
+  // NOTREACHED being called in
+  // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView`.
+  view->drag_in_progress_ = true;
+
+  // No button is held, e.g. because the user released it before the renderer's
+  // StartDragging message arrived, so the drag is refused.
+  env->set_mouse_button_flags(ui::EF_NONE);
+  view->StartDragging(
+      *main_rfh(), drop_data, blink::DragOperationsMask::kDragOperationNone,
+      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(), event_info);
+
+  ASSERT_FALSE(drag_drop_client.GetDragDropData());
+  EXPECT_FALSE(view->drag_security_info_.did_initiate());
+
+  // A hidden source view is refused by the second check, which must not latch
+  // the state either.
+  env->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
+  view->GetContentNativeView()->Hide();
+  view->StartDragging(
+      *main_rfh(), drop_data, blink::DragOperationsMask::kDragOperationNone,
+      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(), event_info);
+
+  ASSERT_FALSE(drag_drop_client.GetDragDropData());
+  EXPECT_FALSE(view->drag_security_info_.did_initiate());
+
+  // A subsequent genuine drag gesture must still be able to start.
+  view->GetContentNativeView()->Show();
+  view->StartDragging(
+      *main_rfh(), drop_data, blink::DragOperationsMask::kDragOperationNone,
+      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(), event_info);
+
+  EXPECT_TRUE(drag_drop_client.GetDragDropData());
+}
+
 // Test that a drag from an event located outside the source view doesn't start.
 TEST_F(WebContentsViewAuraTest, EmptyTextInDropDataIsNonNullInOSExchangeData) {
   const char kGoogleUrl[] = "https://google.com/";

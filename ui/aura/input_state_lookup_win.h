@@ -21,6 +21,7 @@ class AURA_EXPORT InputStateLookupWin : public InputStateLookup {
 
   // InputStateLookup overrides:
   bool IsMouseButtonDown() const override;
+  bool IsLeftMouseButtonDown() const override;
 };
 
 }  // namespace aura

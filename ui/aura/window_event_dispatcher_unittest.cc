@@ -3280,6 +3280,7 @@ class AlwaysMouseDownInputStateLookup : public InputStateLookup {
  private:
   // InputStateLookup:
   bool IsMouseButtonDown() const override { return true; }
+  bool IsLeftMouseButtonDown() const override { return true; }
 };
 
 TEST_F(WindowEventDispatcherTest,

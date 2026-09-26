@@ -76,6 +76,12 @@ class AURA_EXPORT Env : public ui::EventTarget {
   // otherwise it uses |mouse_button_flags_|.
   bool IsMouseButtonDown() const;
 
+  // Returns true if the left mouse button specifically is down. This may query
+  // the native OS, otherwise it uses |mouse_button_flags_|. Prefer this over
+  // IsMouseButtonDown() when validating that a drag gesture is in progress:
+  // drags are only ever initiated with the left button.
+  bool IsLeftMouseButtonDown() const;
+
   // Gets/sets the last mouse location seen in a mouse event in the screen
   // coordinates.
   const gfx::Point& last_mouse_location() const { return last_mouse_location_; }

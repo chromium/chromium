@@ -31,4 +31,8 @@ bool InputStateLookupWin::IsMouseButtonDown() const {
          (::GetKeyState(VK_XBUTTON2) & 0x80);
 }
 
+bool InputStateLookupWin::IsLeftMouseButtonDown() const {
+  return (::GetKeyState(VK_LBUTTON) & 0x80) != 0;
+}
+
 }  // namespace aura
