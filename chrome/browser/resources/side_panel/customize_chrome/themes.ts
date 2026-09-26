@@ -228,6 +228,9 @@ export class ThemesElement extends ThemesElementBase {
   }
 
   protected onThemeFocus_(e: Event) {
+    if (!(e.target as HTMLElement).matches(':focus-visible')) {
+      return;
+    }
     const tile = e.currentTarget as HTMLElement;
     const index = Number(tile.dataset['index']);
     const theme = this.themes_[index];
