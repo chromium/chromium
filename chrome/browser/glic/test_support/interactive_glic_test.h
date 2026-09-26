@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
+#include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -287,20 +288,7 @@ class InteractiveGlicTestMixin : public T {
     switch (instrument_mode) {
       case GlicInstrumentMode::kHostAndContents:
         if (features::IsGlicNoWebviewEnabled()) {
-          steps = Api::Steps(
-              WaitForGlicOpen(),
-              WaitUntil(
-                  [this]() -> std::string {
-                    GlicInstanceImpl* instance = GetGlicInstanceImpl();
-                    if (!instance) {
-                      return "No glic instance";
-                    }
-                    if (!instance->host().IsWebClientConnected()) {
-                      return "Glic host not ready";
-                    }
-                    return "ready";
-                  },
-                  "ready", "WaitForWebClientConnected"));
+          steps = Api::Steps(WaitForGlicOpen(), WaitForWebClientConnected());
         } else {
           steps = Api::Steps(WaitForGlicOpen(),
                              WaitForWebUIState(mojom::WebUiState::kReady));
@@ -916,6 +904,57 @@ class InteractiveGlicTestMixin : public T {
                            id.GetName().c_str(), url.spec().c_str(),
                            at_index.value_or(-1)));
     return steps;
+  }
+
+  auto WaitForWebClientConnected() {
+    return WaitUntil(
+        [this]() -> std::string {
+          GlicInstanceImpl* instance = GetGlicInstanceImpl();
+          if (!instance) {
+            return "No glic instance";
+          }
+          if (features::IsGlicNoWebviewEnabled()) {
+            auto* manager = static_cast<GlicNoWebviewContentsManager*>(
+                instance->host().contents_manager());
+            if (!manager || !manager->guest_ready().get()) {
+              return "Glic guest not ready";
+            }
+          }
+          if (!instance->host().IsWebClientConnected()) {
+            return "Glic host not ready";
+          }
+          return "ready";
+        },
+        "ready", "WaitForWebClientConnected");
+  }
+
+  auto WaitForErrorPanelType(
+      std::optional<mojom::ErrorPanelType> expected_type) {
+    CHECK(features::IsGlicNoWebviewEnabled())
+        << "WaitForErrorPanelType only works with GlicNoWebview";
+    auto type_to_string =
+        [](std::optional<mojom::ErrorPanelType> type) -> std::string {
+      if (!type) {
+        return "none";
+      }
+      std::stringstream ss;
+      ss << *type;
+      return ss.str();
+    };
+    return WaitUntil(
+        [this, type_to_string]() -> std::string {
+          auto* instance = GetGlicInstanceImpl();
+          if (!instance) {
+            return "no instance";
+          }
+          auto* manager = static_cast<GlicNoWebviewContentsManager*>(
+              instance->host().contents_manager());
+          if (!manager) {
+            return "no contents manager";
+          }
+          return type_to_string(manager->error_type());
+        },
+        type_to_string(expected_type), "WaitForErrorPanelType");
   }
 
   auto WaitForWebUIState(mojom::WebUiState state) {

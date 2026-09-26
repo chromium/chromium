@@ -420,15 +420,19 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
 #endif
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
                        MAYBE_AccountInvalidatedWhileGlicOpen) {
-  if (features::IsGlicNoWebviewEnabled()) {
-    // TODO(b/563462692): Fix this
-    GTEST_SKIP() << "Fails on some bots";
-  }
   TrackGlicInstanceWithTabIndex(0);
-  RunTestSequence(
-      SimulateGlicHotkey(), WaitForWebUIState(mojom::WebUiState::kReady),
-      ForceInvalidateAccount(), WaitForWebUIState(mojom::WebUiState::kSignIn),
-      ForceReauthAccount(), WaitForWebUIState(mojom::WebUiState::kReady));
+  if (features::IsGlicNoWebviewEnabled()) {
+    RunTestSequence(SimulateGlicHotkey(), WaitForWebClientConnected(),
+                    ForceInvalidateAccount(),
+                    WaitForErrorPanelType(mojom::ErrorPanelType::kSignIn),
+                    ForceReauthAccount(), WaitForErrorPanelType(std::nullopt),
+                    WaitForWebClientConnected());
+  } else {
+    RunTestSequence(
+        SimulateGlicHotkey(), WaitForWebUIState(mojom::WebUiState::kReady),
+        ForceInvalidateAccount(), WaitForWebUIState(mojom::WebUiState::kSignIn),
+        ForceReauthAccount(), WaitForWebUIState(mojom::WebUiState::kReady));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
