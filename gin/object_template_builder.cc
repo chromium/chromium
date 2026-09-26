@@ -144,11 +144,6 @@ ObjectTemplateBuilder::ObjectTemplateBuilder(v8::Isolate* isolate,
                     "constructor"))),
       template_(constructor_template_->InstanceTemplate()) {}
 
-ObjectTemplateBuilder::ObjectTemplateBuilder(
-    const ObjectTemplateBuilder& other) = default;
-
-ObjectTemplateBuilder::~ObjectTemplateBuilder() = default;
-
 ObjectTemplateBuilder& ObjectTemplateBuilder::SetImpl(
     const std::string_view& name,
     v8::Local<v8::Data> val) {

@@ -16,10 +16,6 @@ Dictionary::Dictionary(v8::Isolate* isolate,
       object_(object) {
 }
 
-Dictionary::Dictionary(const Dictionary& other) = default;
-
-Dictionary::~Dictionary() = default;
-
 Dictionary Dictionary::CreateEmpty(v8::Isolate* isolate) {
   Dictionary dictionary(isolate);
   dictionary.object_ = v8::Object::New(isolate);

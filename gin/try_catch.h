@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8-exception.h"
 
@@ -15,18 +15,19 @@ namespace gin {
 
 // TryCatch is a convenient wrapper around v8::TryCatch.
 class GIN_EXPORT TryCatch {
+  STACK_ALLOCATED();
+
  public:
   explicit TryCatch(v8::Isolate* isolate);
   TryCatch(const TryCatch&) = delete;
   TryCatch& operator=(const TryCatch&) = delete;
-  ~TryCatch();
 
   bool HasCaught();
   std::string GetStackTrace();
   void SetVerbose(bool verbose) { try_catch_.SetVerbose(verbose); }
 
  private:
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
   v8::TryCatch try_catch_;
 };
 

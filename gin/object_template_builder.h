@@ -11,7 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "gin/converter.h"
 #include "gin/function_template.h"
 #include "gin/gin_export.h"
@@ -45,11 +45,11 @@ v8::Local<v8::FunctionTemplate> CreateFunctionTemplate(v8::Isolate* isolate,
 // ObjectTemplateBuilder provides a handy interface to creating
 // v8::ObjectTemplate instances with various sorts of properties.
 class GIN_EXPORT ObjectTemplateBuilder {
+  STACK_ALLOCATED();
+
  public:
   explicit ObjectTemplateBuilder(v8::Isolate* isolate);
   ObjectTemplateBuilder(v8::Isolate* isolate, const char* type_name);
-  ObjectTemplateBuilder(const ObjectTemplateBuilder& other);
-  ~ObjectTemplateBuilder();
 
   // It's against Google C++ style to return a non-const ref, but we take some
   // poetic license here in order that all calls to Set() can be via the '.'
@@ -181,13 +181,12 @@ class GIN_EXPORT ObjectTemplateBuilder {
     NamedPropertyEnumeratorImpl(tag, info);
   }
 
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
 
   // If provided, |type_name_| will be used to give a user-friendly error
   // message if a member function is invoked on the wrong type of object.
   const char* type_name_ = nullptr;
 
-  // ObjectTemplateBuilder should only be used on the stack.
   v8::Local<v8::FunctionTemplate> constructor_template_;
   v8::Local<v8::ObjectTemplate> template_;
 };

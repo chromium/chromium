@@ -11,6 +11,4 @@ DataObjectBuilder::DataObjectBuilder(v8::Isolate* isolate)
       context_(isolate->GetCurrentContext()),
       object_(v8::Object::New(isolate)) {}
 
-DataObjectBuilder::~DataObjectBuilder() = default;
-
 }  // namespace gin

@@ -26,8 +26,6 @@ TryCatch::TryCatch(v8::Isolate* isolate)
     : isolate_(isolate), try_catch_(isolate) {
 }
 
-TryCatch::~TryCatch() = default;
-
 bool TryCatch::HasCaught() {
   return try_catch_.HasCaught();
 }

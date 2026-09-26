@@ -5,7 +5,7 @@
 #ifndef GIN_DICTIONARY_H_
 #define GIN_DICTIONARY_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 
@@ -20,15 +20,14 @@ namespace gin {
 //
 // WARNING: You cannot retain a Dictionary object in the heap. The underlying
 //          storage for Dictionary is tied to the closest enclosing
-//          v8::HandleScope. Generally speaking, you should store a Dictionary
-//          on the stack.
+//          v8::HandleScope, so a Dictionary must live on the stack.
 //
 class GIN_EXPORT Dictionary {
+  STACK_ALLOCATED();
+
  public:
   explicit Dictionary(v8::Isolate* isolate);
   Dictionary(v8::Isolate* isolate, v8::Local<v8::Object> object);
-  Dictionary(const Dictionary& other);
-  ~Dictionary();
 
   static Dictionary CreateEmpty(v8::Isolate* isolate);
 
@@ -59,7 +58,7 @@ class GIN_EXPORT Dictionary {
   friend struct Converter<Dictionary>;
 
   // TODO(aa): Remove this. Instead, get via FromV8(), Set(), and Get().
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
   v8::Local<v8::Object> object_;
 };
 
