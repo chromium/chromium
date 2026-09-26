@@ -1821,7 +1821,7 @@ TEST_F(ActionAppMenuTest, MaxWidthForMenu) {
   EXPECT_EQ(menu.GetMaxWidthForMenu(root),
             ChromeLayoutProvider::Get()->GetDistanceMetric(
                 DISTANCE_ACTION_APP_MENU_MAX_WIDTH));
-  EXPECT_EQ(menu.GetMaxWidthForMenu(root), 380);
+  EXPECT_EQ(menu.GetMaxWidthForMenu(root), 800);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

@@ -306,7 +306,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING:
       return 4;
     case DISTANCE_ACTION_APP_MENU_MAX_WIDTH:
-      return 380;
+      return 800;
   }
   NOTREACHED();
 }
