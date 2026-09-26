@@ -69,6 +69,12 @@ class FakeContextualTasksEligibilityManager
 
   void SetIsEligible(bool eligible);
 
+  // Overrides `IsEligibleWithoutIdentity()` independently of `SetIsEligible()`.
+  // This is needed to represent a signed-out user who would otherwise be
+  // eligible: `IsEligible()` is false while `IsEligibleWithoutIdentity()` is
+  // true. When unset, `IsEligibleWithoutIdentity()` follows `SetIsEligible()`.
+  void SetIsEligibleWithoutIdentity(bool eligible);
+
   bool IsEligibleWithoutIdentity() const override;
 
  protected:
@@ -76,6 +82,7 @@ class FakeContextualTasksEligibilityManager
 
  private:
   bool is_eligible_ = true;
+  std::optional<bool> is_eligible_without_identity_;
 };
 
 class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
@@ -145,6 +152,10 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
       const std::optional<content::GlobalRenderFrameHostToken>&
           initiator_frame_token,
       const blink::mojom::WindowFeatures& window_features) override;
+
+  // Exposes the protected eligibility redirect check so tests can assert on it
+  // directly.
+  using ContextualTasksUiService::ShouldRedirectIneligibleRequest;
 };
 
 inline content::OpenURLParams CreateOpenUrlParams(

@@ -1259,6 +1259,15 @@ bool ContextualTasksUiService::ShouldRedirectIneligibleRequest(
     task_id = base::Uuid::ParseLowercase(task_id_str);
   }
 
+  // Desktop Android has no Lens entry point, so signed-out users there cannot
+  // reach the Lens session override below the way they do on Desktop. Let them
+  // through when the *only* reason they are ineligible is the missing identity;
+  // users who are ineligible for policy or DSE reasons still get redirected.
+  if (IsAllowSignedOutUserInDesktopAndroidEnabled() && eligibility_manager_ &&
+      eligibility_manager_->IsEligibleWithoutIdentity()) {
+    return false;
+  }
+
   // Bypasses the redirect check if the session was started from Lens and the
   // Lens side panel unification feature is enabled (either as an active
   // session or a pending session for the given task ID), or if the active tab
@@ -1931,9 +1940,15 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     }
   }
 
+  // Whether signed-out users are allowed to proceed without browser sign-in or
+  // account matching checks.
+  const bool allow_signed_out =
+      is_nav_within_existing_session ||
+      (IsAllowSignedOutUserInDesktopAndroidEnabled() &&
+       IsActiveTabInContext(source_contents));
+
   // If the user is not signed in to Chrome, do not intercept.
-  if (!is_nav_within_existing_session &&
-      !IsSignedInToBrowserWithValidCredentials()) {
+  if (!allow_signed_out && !IsSignedInToBrowserWithValidCredentials()) {
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: HandleNavigationImpl "
            "returning false, not signed into browser";
@@ -1942,7 +1957,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   // If the user is not signed in to the account that is using the URL, do not
   // intercept.
-  if (!is_nav_within_existing_session && is_nav_to_ai &&
+  if (!allow_signed_out && is_nav_to_ai &&
       !IsUrlForPrimaryAccount(url_params.url)) {
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: HandleNavigationImpl "
