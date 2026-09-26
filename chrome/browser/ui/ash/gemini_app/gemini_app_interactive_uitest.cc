@@ -28,12 +28,14 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "base/base64.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -52,7 +54,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/sync/base/command_line_switches.h"
@@ -220,18 +221,16 @@ class OnBrowserSetLastActiveWaiter : public BrowserCollectionObserver {
 class GeminiAppInteractiveUiTestBase
     : public InteractiveBrowserTestMixin<MixinBasedInProcessBrowserTest> {
  public:
-  GeminiAppInteractiveUiTestBase(
-      std::optional<ash::LoggedInUserMixin::LogInType> login_type)
+  // If `preinstall_gemini_app` is false, the Gemini app is excluded from the
+  // preinstall allowlist so that it is not installed. This is used to simulate
+  // an OS milestone which predates Gemini app preinstallation.
+  explicit GeminiAppInteractiveUiTestBase(
+      std::optional<ash::LoggedInUserMixin::LogInType> login_type,
+      bool preinstall_gemini_app = true)
       : user_session_mixin_(CreateUserSessionMixin(login_type)),
         scoped_preinstall_url_allow_list_(
             web_app::SetPreinstallUrlAllowListForTesting(
-                {{web_app::GetConfigForGemini(/*device_info=*/std::nullopt)
-                      .install_url,
-                  web_app::GetConfigForGmail().install_url}})) {
-    // Enable Gemini app preinstallation.
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kGeminiAppPreinstall);
-  }
+                CreatePreinstallUrlAllowList(preinstall_gemini_app))) {}
 
   // Returns a builder for a step which assigns the view associated with the
   // given `element_specifier` to the given `ptr`.
@@ -328,6 +327,18 @@ class GeminiAppInteractiveUiTestBase
   }
 
  private:
+  // Creates the allowlist of apps to be preinstalled. The Gemini app is only
+  // included if `preinstall_gemini_app` is true.
+  static web_app::PreinstallUrlAllowList CreatePreinstallUrlAllowList(
+      bool preinstall_gemini_app) {
+    base::flat_set<GURL> urls = {web_app::GetConfigForGmail().install_url};
+    if (preinstall_gemini_app) {
+      urls.insert(web_app::GetConfigForGemini(/*device_info=*/std::nullopt)
+                      .install_url);
+    }
+    return urls;
+  }
+
   // Creates the appropriate guest or logged-in user session mixin based on
   // the presence of `login_type`.
   std::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>
@@ -351,9 +362,6 @@ class GeminiAppInteractiveUiTestBase
   std::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>
       user_session_mixin_;
 
-  // Used to enable the Gemini app preinstallation.
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // Used to retrieve expected title/URL for the Gemini app.
   std::unique_ptr<web_app::WebAppInstallInfo> gemini_app_install_info_;
 
@@ -373,14 +381,11 @@ class GeminiAppInteractiveUiTest
  public:
   GeminiAppInteractiveUiTest()
       : GeminiAppInteractiveUiTestBase(
-            ash::LoggedInUserMixin::LogInType::kConsumer) {
-    // Disable the Gemini app during the PRE_ session so that the subsequent
-    // session containing test logic is when the app preinstallation occurs.
-    if (IsPreSession()) {
-      scoped_feature_list_.InitAndDisableFeature(
-          chromeos::features::kGeminiAppPreinstall);
-    }
-  }
+            ash::LoggedInUserMixin::LogInType::kConsumer,
+            // Don't preinstall the Gemini app during the PRE_ session so that
+            // existing users simulate upgrading from an OS milestone which
+            // predates Gemini app preinstallation.
+            /*preinstall_gemini_app=*/!IsPreSession()) {}
 
  protected:
   // GeminiAppInteractiveUiTestBase:
@@ -398,6 +403,17 @@ class GeminiAppInteractiveUiTest
     EXPECT_THAT(
         session_controller->IsUserFirstLogin(),
         Conditional(IsPreSession(), IsExistingUser(), Not(IsExistingUser())));
+
+    // The default shelf pin layout preallocates a pin position for the Gemini
+    // app even though it isn't installed during the PRE_ session. Remove it so
+    // that shelf state matches that of an OS milestone which predates Gemini
+    // app preinstallation, where the Gemini app was absent from the default
+    // shelf pin layout.
+    if (IsPreSession() && ShouldLogInUser()) {
+      app_list::AppListSyncableServiceFactory::GetForProfile(
+          browser()->GetProfile())
+          ->RemovePinPosition(ash::kGeminiAppId);
+    }
   }
 
   bool ShouldLogInUser() const override {
@@ -412,14 +428,10 @@ class GeminiAppInteractiveUiTest
 
   // Returns whether the current session is the PRE_ session. The PRE_ session
   // is the session before the subsequent session containing test logic.
-  bool IsPreSession() const {
+  static bool IsPreSession() {
     return base::StartsWith(
         testing::UnitTest::GetInstance()->current_test_info()->name(), "PRE_");
   }
-
- private:
-  // Used to disable Gemini app preinstallation for the PRE_ session.
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -807,8 +819,7 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, UninstallFromShelf) {
 // Reasons why the user may be ineligible for Gemini app preinstallation.
 enum class IneligibilityReason {
   kMinValue = 0,
-  kFeatureFlagDisabled = kMinValue,
-  kUserManaged,
+  kUserManaged = kMinValue,
   kUserTypeChild,
   kUserTypeGuest,
   kMaxValue = kUserTypeGuest,
@@ -820,7 +831,6 @@ enum class IneligibilityReason {
 
 inline std::ostream& operator<<(std::ostream& os, IneligibilityReason reason) {
   switch (reason) {
-    INELIGIBILITY_REASON_CASE(kFeatureFlagDisabled);
     INELIGIBILITY_REASON_CASE(kUserManaged);
     INELIGIBILITY_REASON_CASE(kUserTypeChild);
     INELIGIBILITY_REASON_CASE(kUserTypeGuest);
@@ -833,10 +843,7 @@ class GeminiAppInteractiveUiIneligibilityTest
       public WithParamInterface<IneligibilityReason> {
  public:
   GeminiAppInteractiveUiIneligibilityTest()
-      : GeminiAppInteractiveUiTestBase(GetLoginType()) {
-    scoped_feature_list_.InitWithFeatureState(
-        chromeos::features::kGeminiAppPreinstall, IsFeatureFlagEnabled());
-  }
+      : GeminiAppInteractiveUiTestBase(GetLoginType()) {}
 
  private:
   // GeminiAppInteractiveUiTestBase:
@@ -864,19 +871,8 @@ class GeminiAppInteractiveUiIneligibilityTest
         return std::nullopt;
       case IneligibilityReason::kUserManaged:
         return ash::LoggedInUserMixin::LogInType::kManaged;
-      default:
-        return ash::LoggedInUserMixin::LogInType::kConsumer;
     }
   }
-
-  // Returns whether the feature flag is enabled given test parameterization.
-  bool IsFeatureFlagEnabled() const {
-    return GetParam() != IneligibilityReason::kFeatureFlagDisabled;
-  }
-
-  // Used to enable/disable the Gemini app preinstallation based on test
-  // parameterization.
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -38,9 +38,6 @@ BASE_FEATURE(kCrosIsolatedWebAppSetShapeAllowlist,
 BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature flag used to gate preinstallation of the Gemini app.
-BASE_FEATURE(kGeminiAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the mahi feature from the feature management
 // module.
 BASE_FEATURE(kFeatureManagementMahi, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -147,10 +144,6 @@ bool IsFileSystemProviderContentCacheEnabled() {
 
 bool IsGeminiAppPreinstallFeatureManagementEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementGeminiAppPreinstall);
-}
-
-bool IsGeminiAppPreinstallEnabled() {
-  return base::FeatureList::IsEnabled(kGeminiAppPreinstall);
 }
 
 bool IsMahiEnabled() {
