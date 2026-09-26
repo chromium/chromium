@@ -75,6 +75,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       isEnterpriseProfile: false,
       searchboxLayoutMode: 'TallBottomContext',
       searchboxMultiline: true,
+      singleLineOnInlineAutocomplete: true,
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -793,6 +794,36 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         const args = await testEverywhereProxy.handler.whenCalled(
             'showContextActionMenu');
         assertTrue(args !== undefined);
+      });
+
+  test(
+      'singleLineOnInlineAutocomplete keeps input single line ' +
+          'with inline autocompletion',
+      async () => {
+        omnibox.multiLineEnabled = true;
+        await omnibox.updateComplete;
+        await omnibox.$.input.updateComplete;
+
+        assertTrue(omnibox.singleLineOnInlineAutocomplete);
+        assertTrue(omnibox.$.input.singleLineOnInlineAutocomplete);
+
+        omnibox.$.input.setInput({text: 'm', inline: 'essages.google.com'});
+        await omnibox.$.input.updateComplete;
+
+        assertTrue(omnibox.$.input.hasAttribute('force-single-line'));
+        assertFalse(omnibox.$.input.isMultiline());
+
+        omnibox.result = createAutocompleteResultForTesting({
+          input: 'm',
+          matches: [createSearchMatchForTesting({
+            allowedToBeDefaultMatch: true,
+            inlineAutocompletion: 'essages.google.com',
+          })],
+        });
+        omnibox.dropdownIsVisible = true;
+
+        omnibox.updateDropdownVisibility();
+        assertTrue(omnibox.dropdownIsVisible);
       });
 });
 

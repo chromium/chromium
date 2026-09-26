@@ -100,6 +100,11 @@ BASE_FEATURE(kOmniboxEverywhere, DISABLED);
 // Controls multiline searchbox support in OmniboxEverywhere.
 const base::FeatureParam<bool> kOmniboxEverywhereMultilineParam{
     &kOmniboxEverywhere, "Multiline", true};
+// Controls keeping the searchbox single line during inline autocomplete in
+// OmniboxEverywhere.
+const base::FeatureParam<bool>
+    kOmniboxEverywhereSingleLineOnInlineAutocompleteParam{
+        &kOmniboxEverywhere, "SingleLineOnInlineAutocomplete", true};
 // Controls showing the profile picker menu on profile avatar click in
 // OmniboxEverywhere.
 const base::FeatureParam<bool> kOmniboxEverywhereProfilePickerParam{

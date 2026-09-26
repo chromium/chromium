@@ -51,6 +51,8 @@ class TestSearchboxMixinElement extends TestElementBase {
         <cr-searchbox-input id="input"
             searchbox-icon="search.svg"
             ?multi-line-enabled="${this.multiLineEnabled}"
+            .singleLineOnInlineAutocomplete="${
+        this.singleLineOnInlineAutocomplete}"
             .result="${this.result}"
             .selectedMatch="${this.selectedMatch}"
             .inputKeywordModel="${this.inputKeywordModel}"
@@ -3018,6 +3020,70 @@ suite('SearchboxMixinVirtualFocusTest', () => {
 
         Object.defineProperty(inputElement.$.input, 'scrollHeight', {
           value: 64,
+          configurable: true,
+        });
+
+        element.updateDropdownVisibility();
+        assertFalse(element.dropdownIsVisible);
+      });
+
+  test(
+      'updateDropdownVisibility keeps dropdown when ' +
+          'singleLineOnInlineAutocomplete is true and ' +
+          'multiline is caused by inline autocompletion',
+      async () => {
+        element.multiLineEnabled = true;
+        element.singleLineOnInlineAutocomplete = true;
+        const inputElement = element.getInputElement();
+        inputElement.multiLineEnabled = true;
+        inputElement.singleLineOnInlineAutocomplete = true;
+        await microtasksFinished();
+
+        inputElement.setInput({text: 'm', inline: 'essages.google.com'});
+
+        element.result = createAutocompleteResultForTesting({
+          input: 'm',
+          matches: [createSearchMatchForTesting({
+            allowedToBeDefaultMatch: true,
+            inlineAutocompletion: 'essages.google.com',
+          })],
+        });
+        element.dropdownIsVisible = true;
+
+        // When single-line on inline autocomplete is active, isMultiline() is
+        // suppressed and the dropdown remains visible even if the input
+        // content would otherwise exceed the multiline height threshold.
+        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
+          get: () => 64,
+          configurable: true,
+        });
+
+        element.updateDropdownVisibility();
+        assertTrue(element.dropdownIsVisible);
+      });
+
+  test(
+      'updateDropdownVisibility suppresses dropdown when ' +
+          'singleLineOnInlineAutocomplete is true and ' +
+          'raw input is multiline',
+      async () => {
+        element.multiLineEnabled = true;
+        element.singleLineOnInlineAutocomplete = true;
+        const inputElement = element.getInputElement();
+        inputElement.multiLineEnabled = true;
+        inputElement.singleLineOnInlineAutocomplete = true;
+        await microtasksFinished();
+
+        inputElement.setInput({text: 'first line\nsecond line', inline: ''});
+
+        element.result = createAutocompleteResultForTesting({
+          input: 'first line\nsecond line',
+          matches: [createSearchMatchForTesting()],
+        });
+        element.dropdownIsVisible = true;
+
+        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
+          get: () => 64,
           configurable: true,
         });
 

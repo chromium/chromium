@@ -396,4 +396,91 @@ suite('SearchboxInputTest', () => {
     assertFalse(input.hasAttribute('in-keyword-mode'));
     assertEquals('Default Search', input.inputElement.placeholder);
   });
+
+  test(
+      'singleLineOnInlineAutocomplete and force-single-line with show-ellipsis',
+      async () => {
+        input = await createInput({
+          multiLineEnabled: true,
+          singleLineOnInlineAutocomplete: true,
+        });
+        input.focus();
+        assertTrue(input.singleLineOnInlineAutocomplete);
+        assertFalse(input.isMultiline());
+        assertFalse(input.hasAttribute('force-single-line'));
+        assertFalse(input.hasAttribute('show-ellipsis'));
+
+        Object.defineProperty(input.inputElement, 'clientWidth', {
+          get: () => 200,
+          configurable: true,
+        });
+        let mockScrollWidth = 300;
+        Object.defineProperty(input.inputElement, 'scrollWidth', {
+          get: () => mockScrollWidth,
+          configurable: true,
+        });
+
+        input.setInput({text: 'm', inline: 'essages.google.com'});
+        await input.updateComplete;
+
+        assertTrue(input.hasAttribute('force-single-line'));
+        assertTrue(input.hasAttribute('show-ellipsis'));
+        assertEquals('messages.google.com', input.inputElement.value);
+        assertEquals(
+            'clip', window.getComputedStyle(input.inputElement).textOverflow);
+        const ellipsisIndicator =
+            input.shadowRoot.querySelector<HTMLElement>('#ellipsisIndicator');
+        assertTrue(!!ellipsisIndicator);
+        assertEquals(
+            'block', window.getComputedStyle(ellipsisIndicator).display);
+
+        // Moving caret into the middle of text clears inline autocomplete and
+        // force-single-line mode.
+        input.setSelectionRange(5, 5);
+        document.dispatchEvent(new Event('selectionchange'));
+        await input.updateComplete;
+        assertFalse(input.hasAttribute('force-single-line'));
+        assertFalse(input.hasAttribute('show-ellipsis'));
+        assertEquals(
+            'clip', window.getComputedStyle(input.inputElement).textOverflow);
+        assertEquals(
+            'none', window.getComputedStyle(ellipsisIndicator).display);
+
+        // Setting inline autocomplete again.
+        input.setInput({text: 'm', inline: 'essages.google.com'});
+        await input.updateComplete;
+        assertTrue(input.hasAttribute('force-single-line'));
+        assertTrue(input.hasAttribute('show-ellipsis'));
+
+        // Moving caret to the end clears inline autocomplete and
+        // force-single-line mode.
+        input.setSelectionRange(
+            input.inputElement.value.length, input.inputElement.value.length);
+        document.dispatchEvent(new Event('selectionchange'));
+        await input.updateComplete;
+        assertFalse(input.hasAttribute('force-single-line'));
+        assertFalse(input.hasAttribute('show-ellipsis'));
+        assertEquals(
+            'clip', window.getComputedStyle(input.inputElement).textOverflow);
+
+        // Short inline autocomplete that fits within width (non-overflowing).
+        mockScrollWidth = 100;
+        input.setInput({text: 'm', inline: 'ail'});
+        await input.updateComplete;
+        assertTrue(input.hasAttribute('force-single-line'));
+        assertFalse(input.hasAttribute('show-ellipsis'));
+        assertEquals(
+            'ellipsis',
+            window.getComputedStyle(input.inputElement).textOverflow);
+        assertEquals(
+            'none', window.getComputedStyle(ellipsisIndicator).display);
+
+        input.setInput({text: 'm', inline: ''});
+        await input.updateComplete;
+
+        assertFalse(input.hasAttribute('force-single-line'));
+        assertFalse(input.hasAttribute('show-ellipsis'));
+        assertEquals(
+            'clip', window.getComputedStyle(input.inputElement).textOverflow);
+      });
 });
