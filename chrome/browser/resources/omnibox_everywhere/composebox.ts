@@ -87,11 +87,13 @@ export class OmniboxEverywhereComposeboxElement extends
         reflect: true,
         attribute: 'is-active',
       },
+      isLensHelpBubbleShowing: {type: Boolean},
     };
   }
 
   accessor isActive: boolean = true;
   accessor isPendingScreenshot: boolean = false;
+  accessor isLensHelpBubbleShowing: boolean = false;
 
   /**
    * Entrypoint name used by SearchAnimatedGlowElement and
@@ -238,7 +240,14 @@ export class OmniboxEverywhereComposeboxElement extends
         this.shadowRoot?.querySelector<HTMLElement>('#lensSearchButton');
     if (lensButton) {
       this.registerHelpBubble(
-          'kOmniboxEverywhereLensButtonElementId', lensButton);
+          'kOmniboxEverywhereLensButtonElementId', lensButton, {
+            onHelpBubbleShown: () => {
+              this.isLensHelpBubbleShowing = true;
+            },
+            onHelpBubbleHidden: () => {
+              this.isLensHelpBubbleShowing = false;
+            },
+          });
     }
   }
 

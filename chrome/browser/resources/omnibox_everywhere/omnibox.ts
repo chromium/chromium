@@ -156,10 +156,12 @@ export class OmniboxEverywhereOmniboxElement extends
         reflect: true,
         attribute: 'is-active',
       },
+      isLensHelpBubbleShowing: {type: Boolean},
     };
   }
 
   accessor isActive: boolean = true;
+  accessor isLensHelpBubbleShowing: boolean = false;
   override accessor multiLineEnabled: boolean =
       loadTimeData.getBoolean('searchboxMultiline');
   // Keeps the input on a single line during inline autocomplete when enabled,
@@ -297,7 +299,14 @@ export class OmniboxEverywhereOmniboxElement extends
         this.shadowRoot?.querySelector<HTMLElement>('#lensSearchButton');
     if (lensButton) {
       this.registerHelpBubble(
-          'kOmniboxEverywhereLensButtonElementId', lensButton);
+          'kOmniboxEverywhereLensButtonElementId', lensButton, {
+            onHelpBubbleShown: () => {
+              this.isLensHelpBubbleShowing = true;
+            },
+            onHelpBubbleHidden: () => {
+              this.isLensHelpBubbleShowing = false;
+            },
+          });
     }
   }
 

@@ -42,7 +42,8 @@
 }
 
 .searchbox-icon-button-container:hover,
-.searchbox-icon-button-container.menu-open {
+.searchbox-icon-button-container.menu-open,
+.searchbox-icon-button-container.help-bubble-open {
   background-color: var(--color-new-tab-page-realbox-next-icon-hover);
 }
 
@@ -50,14 +51,14 @@
   .searchbox-icon-button-container {
     background-color: ButtonText;
   }
-  .searchbox-icon-button-container:focus-within {
+  .searchbox-icon-button-container:not(.help-bubble-open):focus-within {
     outline: 2px solid Highlight;
     outline-offset: 2px;
   }
 }
 
-.searchbox-icon-button-container:has(:focus-visible),
-.searchbox-icon-button-container[has-virtual-focus] {
+.searchbox-icon-button-container:not(.help-bubble-open):has(:focus-visible),
+.searchbox-icon-button-container:not(.help-bubble-open)[has-virtual-focus] {
   box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
 }
 

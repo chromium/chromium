@@ -260,7 +260,10 @@ cr-composebox-contextual-entrypoint-and-menu,
 }
 
 :host([is-fusebox-enabled]) .searchbox-icon-button-container.lens:hover,
-:host([is-fusebox-enabled]) .searchbox-icon-button-container.voice:hover {
+:host([is-fusebox-enabled]) .searchbox-icon-button-container.voice:hover,
+:host([is-fusebox-enabled]) .searchbox-icon-button-container.lens.menu-open,
+:host([is-fusebox-enabled])
+    .searchbox-icon-button-container.lens.help-bubble-open {
   background-color: var(--color-new-tab-page-realbox-next-icon-hover);
   border-radius: 50%;
 }
