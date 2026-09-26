@@ -17834,6 +17834,21 @@
             ]
         }
     ],
+    "SystemCaptionStyleCaching": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SystemCaptionStyleCaching"
+                    ]
+                }
+            ]
+        }
+    ],
     "SystemPdhMetrics": [
         {
             "platforms": [
