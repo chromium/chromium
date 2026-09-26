@@ -360,7 +360,8 @@ final class SidePanelContainerCoordinatorImpl
         // events outside the side panel container, such as a Configuration change. The side panel
         // container will never _request_ to be auto-closed.
         mSideUiCoordinator.updateUi(
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getConfigurationChangeRequestForTesting( // IN-TEST
+                        /* suppressAnimations= */ true));
     }
 
     /**
@@ -375,7 +376,8 @@ final class SidePanelContainerCoordinatorImpl
         // events outside the side panel container, such as a Configuration change. The side panel
         // container will never _request_ to be auto-restored.
         mSideUiCoordinator.updateUi(
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getConfigurationChangeRequestForTesting( // IN-TEST
+                        /* suppressAnimations= */ true));
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

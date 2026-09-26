@@ -246,6 +246,44 @@ public interface SideUiCoordinator extends SideUiStateProvider {
             mUpdateReason = updateReason;
         }
 
+        /**
+         * Returns a {@link UiUpdateRequest} for tests, attributed to {@link
+         * SideUiId#SIDE_UI_FOR_TESTING_HIGH_PRIORITY}.
+         *
+         * @param suppressAnimations Whether animations should be suppressed during the UI update.
+         */
+        public static UiUpdateRequest getRequestForTesting(boolean suppressAnimations) {
+            return new UiUpdateRequest(
+                    SideUiId.SIDE_UI_FOR_TESTING_HIGH_PRIORITY, suppressAnimations);
+        }
+
+        /**
+         * Returns a {@link UiUpdateRequest} for tests with an explicit {@link UpdateReason},
+         * attributed to {@link SideUiId#SIDE_UI_FOR_TESTING_HIGH_PRIORITY}.
+         *
+         * @param suppressAnimations Whether animations should be suppressed during the UI update.
+         * @param updateReason What triggered this request.
+         */
+        public static UiUpdateRequest getRequestForTesting(
+                boolean suppressAnimations, @UpdateReason int updateReason) {
+            return new UiUpdateRequest(
+                    SideUiId.SIDE_UI_FOR_TESTING_HIGH_PRIORITY, suppressAnimations, updateReason);
+        }
+
+        /**
+         * Returns a {@link UiUpdateRequest} for tests that simulates an Android {@link
+         * android.content.res.Configuration} change, with no originating {@link SideUiContainer}.
+         *
+         * @param suppressAnimations Whether animations should be suppressed during the UI update.
+         */
+        public static UiUpdateRequest getConfigurationChangeRequestForTesting(
+                boolean suppressAnimations) {
+            return new UiUpdateRequest(
+                    /* sideUiId= */ null,
+                    suppressAnimations,
+                    UpdateReason.ANDROID_CONFIGURATION_CHANGED);
+        }
+
         @Override
         public boolean equals(@Nullable Object obj) {
             if (this == obj) return true;

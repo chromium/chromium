@@ -686,7 +686,7 @@ public class BookmarkBarCoordinatorTest {
 
         SideUiSpecs specs = new SideUiSpecs(100, 200);
         observer.onSideUiSpecsChanged(
-                specs, new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         params = (MarginLayoutParams) mView.getLayoutParams();
         assertNotEquals(initialStartMargin, params.getMarginStart());

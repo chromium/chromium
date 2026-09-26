@@ -110,7 +110,7 @@ public class SwipeRefreshHandlerUnitTest {
                 .getValue()
                 .onSideUiSpecsChanged(
                         newSpecs,
-                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         verify(mSwipeRefreshLayout).setHorizontalOffsets(150, 250);
     }

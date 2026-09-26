@@ -1013,8 +1013,8 @@ public class ActorOverlayCoordinatorTest {
 
         SideUiCoordinator.SideUiSpecs specs = new SideUiCoordinator.SideUiSpecs(120, 80);
         SideUiCoordinator.UiUpdateRequest request =
-                new SideUiCoordinator.UiUpdateRequest(
-                        /* sideUiId= */ null, /* suppressAnimations= */ true);
+                SideUiCoordinator.UiUpdateRequest.getRequestForTesting(
+                        /* suppressAnimations= */ true);
 
         // Test onSideUiSpecsChanged updates margins in model
         observer.onSideUiSpecsChanged(specs, request);

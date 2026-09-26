@@ -110,7 +110,7 @@ public class FindToolbarTabletUnitTest {
         SideUiSpecs specs = createSideUiSpecs(SIDE_UI_WIDTH_PX, HeightType.WEB_CONTENTS);
 
         mFindToolbarTablet.onSideUiSpecsChanged(
-                specs, new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         MarginLayoutParams lp = (MarginLayoutParams) mFindToolbarTablet.getLayoutParams();
         assertEquals(mBaseMarginEndPx + SIDE_UI_WIDTH_PX, lp.getMarginEnd());
@@ -124,7 +124,7 @@ public class FindToolbarTabletUnitTest {
         SideUiSpecs specs = new SideUiSpecs(map);
 
         mFindToolbarTablet.onSideUiSpecsChanged(
-                specs, new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         MarginLayoutParams lp = (MarginLayoutParams) mFindToolbarTablet.getLayoutParams();
         assertEquals(mBaseMarginEndPx + SIDE_UI_WIDTH_PX, lp.getMarginEnd());
@@ -138,7 +138,7 @@ public class FindToolbarTabletUnitTest {
         SideUiSpecs specs = new SideUiSpecs(map);
 
         mFindToolbarTablet.onSideUiSpecsChanged(
-                specs, new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         MarginLayoutParams lp = (MarginLayoutParams) mFindToolbarTablet.getLayoutParams();
         // In LTR, only the right-anchored side UI contributes to marginEnd.
@@ -151,7 +151,7 @@ public class FindToolbarTabletUnitTest {
         SideUiSpecs specs = createSideUiSpecs(SIDE_UI_WIDTH_PX, HeightType.WEB_CONTENTS);
 
         mFindToolbarTablet.onSideUiSpecsChanged(
-                specs, new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         MarginLayoutParams lp = (MarginLayoutParams) mFindToolbarTablet.getLayoutParams();
         // In RTL, the end edge is on the left, so a right-anchored panel does not add marginEnd.
@@ -163,7 +163,7 @@ public class FindToolbarTabletUnitTest {
         SideUiSpecs specs = createSideUiSpecs(SIDE_UI_WIDTH_PX, HeightType.TOOLBAR);
 
         mFindToolbarTablet.onSideUiSpecsChanged(
-                specs, new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         // Toolbar height type should NOT add margin to FindToolbarTablet because
         // ToolbarControlContainer already offsets itself.
@@ -176,7 +176,7 @@ public class FindToolbarTabletUnitTest {
         SideUiSpecs specs = createSideUiSpecs(0, HeightType.NOT_APPLICABLE);
 
         mFindToolbarTablet.onSideUiSpecsChanged(
-                specs, new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                specs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         MarginLayoutParams lp = (MarginLayoutParams) mFindToolbarTablet.getLayoutParams();
         assertEquals(mBaseMarginEndPx, lp.getMarginEnd());
@@ -217,7 +217,7 @@ public class FindToolbarTabletUnitTest {
         SideUiSpecs vtSpecs = new SideUiSpecs(map);
 
         mFindToolbarTablet.onSideUiSpecsChanged(
-                vtSpecs, new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                vtSpecs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         mFindToolbarTablet.setVisibility(View.GONE);
         mFindToolbarTablet.handleActivate();
 
@@ -247,7 +247,7 @@ public class FindToolbarTabletUnitTest {
         Transition transition =
                 mFindToolbarTablet.onPreSideUiSpecsChange(
                         specs,
-                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         assertNotNull(transition);
         assertEquals(ChangeBounds.class, transition.getClass());
@@ -261,7 +261,7 @@ public class FindToolbarTabletUnitTest {
         Transition transition =
                 mFindToolbarTablet.onPreSideUiSpecsChange(
                         specs,
-                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         assertNull(transition);
     }

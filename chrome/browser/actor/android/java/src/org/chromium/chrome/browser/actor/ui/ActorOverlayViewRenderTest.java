@@ -167,8 +167,8 @@ public class ActorOverlayViewRenderTest {
                             .getValue()
                             .onSideUiSpecsChanged(
                                     sideUiSpecs,
-                                    new UiUpdateRequest(
-                                            /* sideUiId= */ null, /* suppressAnimations= */ true));
+                                    UiUpdateRequest.getRequestForTesting(
+                                            /* suppressAnimations= */ true));
                     mCoordinator.getMediator().setOverlayVisible(true);
                 });
 

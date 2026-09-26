@@ -367,7 +367,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         verify(mMockTabListCoordinator, never()).setRailCollapseState(RailCollapseState.EXPANDED);
         mCoordinator.onSideUiSpecsChanged(
                 specs(mExpandedRailWidth, mExpandedRailWidth),
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ false));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ false));
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
     }
 
@@ -405,7 +405,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         Transition transition =
                 mCoordinator.onPreSideUiSpecsChange(
                         newSpecs,
-                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         assertNotNull(transition);
         TransitionSet transitionSet = (TransitionSet) transition;
@@ -430,7 +430,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         Transition transition =
                 mCoordinator.onPreSideUiSpecsChange(
                         new SideUiSpecs(mCollapsedRailWidth, 0),
-                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         assertNotNull(transition);
 
         // Rail views are captured.
@@ -459,7 +459,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         Transition transition =
                 mCoordinator.onPreSideUiSpecsChange(
                         specs(mCollapsedRailWidth, mExpandedRailWidth),
-                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         assertNotNull(transition);
         verify(mMockTabListCoordinator).setInTransition(true);
@@ -478,7 +478,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertNull(
                 mCoordinator.onPreSideUiSpecsChange(
                         specs(mExpandedRailWidth, mExpandedRailWidth),
-                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true)));
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true)));
         verify(mMockTabListCoordinator, never()).setInTransition(true);
     }
 
@@ -486,8 +486,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     public void testOnTransitionEnded_ResetsInTransition() {
         SideUiSpecs newSpecs = new SideUiSpecs(mCollapsedRailWidth, 0);
         mCoordinator.onTransitionEnded(
-                newSpecs,
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                newSpecs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         verify(mMockTabListCoordinator).setInTransition(false);
     }
 
@@ -500,7 +499,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertNull(
                 mCoordinator.onPreSideUiSpecsChange(
                         newSpecs,
-                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true)));
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true)));
         verify(mMockTabListCoordinator, never()).setInTransition(true);
     }
 
@@ -513,7 +512,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertNull(
                 mCoordinator.onPreSideUiSpecsChange(
                         newSpecs,
-                        new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true)));
+                        UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true)));
         verify(mMockTabListCoordinator, never()).setInTransition(true);
     }
 
@@ -528,7 +527,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         // Trigger specs changed (static resize case)
         mCoordinator.onSideUiSpecsChanged(
                 new SideUiSpecs(0, 0),
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         // Verify setRailCollapseState is now called with COLLAPSED
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
@@ -547,7 +546,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         // onSideUiSpecsChanged() should maintain auto-collapse and disabled collapse button.
         mCoordinator.onSideUiSpecsChanged(
                 new SideUiSpecs(mCollapsedRailWidth, 0),
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(false);
         clearInvocations(mMockTabListCoordinator);
@@ -560,7 +559,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         // onSideUiSpecsChanged() should restore expanded state and re-enable collapse button.
         mCoordinator.onSideUiSpecsChanged(
                 new SideUiSpecs(mExpandedRailWidth, 0),
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(true);
     }
@@ -606,7 +605,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         clearInvocations(mMockTabListCoordinator);
         mCoordinator.onSideUiSpecsChanged(
                 new SideUiSpecs(expectedMediumWidth, 0),
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(true);
     }
@@ -620,7 +619,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         clearInvocations(mMockTabListCoordinator);
         mCoordinator.onSideUiSpecsChanged(
                 new SideUiSpecs(0, 0),
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(false);
     }
@@ -636,7 +635,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         clearInvocations(mMockTabListCoordinator);
         mCoordinator.onSideUiSpecsChanged(
                 new SideUiSpecs(mCollapsedRailWidth, 0),
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.COLLAPSED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(false);
 
@@ -649,7 +648,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         clearInvocations(mMockTabListCoordinator);
         mCoordinator.onSideUiSpecsChanged(
                 new SideUiSpecs(expectedExpandedWidthPx, 0),
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         verify(mMockTabListCoordinator).setRailCollapseState(RailCollapseState.EXPANDED);
         verify(mMockTabListCoordinator).setCollapseButtonEnabled(true);
     }

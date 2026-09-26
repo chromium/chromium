@@ -1580,10 +1580,8 @@ public class CompositorViewHolderUnitTest {
         when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(mTab)).thenReturn(specs);
         mCompositorViewHolder.onSideUiSpecsChanged(
                 specs,
-                new UiUpdateRequest(
-                        /* sideUiId= */ null,
-                        /* suppressAnimations= */ true,
-                        UpdateReason.RESIZE_LIVE));
+                UiUpdateRequest.getRequestForTesting(
+                        /* suppressAnimations= */ true, UpdateReason.RESIZE_LIVE));
         runCurrentTasks();
 
         verify(mLayoutManager).setContentOffsetX(SIDE_UI_START_WIDTH);
@@ -1592,10 +1590,8 @@ public class CompositorViewHolderUnitTest {
 
         mCompositorViewHolder.onSideUiSpecsChanged(
                 specs,
-                new UiUpdateRequest(
-                        /* sideUiId= */ null,
-                        /* suppressAnimations= */ true,
-                        UpdateReason.RESIZE_COMMITTED));
+                UiUpdateRequest.getRequestForTesting(
+                        /* suppressAnimations= */ true, UpdateReason.RESIZE_COMMITTED));
         runCurrentTasks();
 
         verify(mWebContents).setSize(VIEWPORT_WIDTH - SIDE_UI_START_WIDTH, VIEWPORT_HEIGHT);
@@ -1639,7 +1635,7 @@ public class CompositorViewHolderUnitTest {
         runCurrentTasks();
         mCompositorViewHolder.onSideUiSpecsChanged(
                 currentSideUiSpecs,
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         // Verify layout params.
         MarginLayoutParams layoutParams = (MarginLayoutParams) mTab.getView().getLayoutParams();

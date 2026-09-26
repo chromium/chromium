@@ -196,7 +196,7 @@ public class SideUiWebContentHairlineManagerTest {
                 new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR)));
         observer.onSideUiSpecsChanged(
                 showLeftSpecs,
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         assertEquals(View.VISIBLE, mLeftHairline.getVisibility());
         assertEquals(View.VISIBLE, mTopLeftRoundedCorner.getVisibility());
         assertEquals(View.INVISIBLE, mRightHairline.getVisibility());
@@ -208,7 +208,7 @@ public class SideUiWebContentHairlineManagerTest {
                 new SideUiSpecs(Map.of(AnchorSide.RIGHT, new SideUiSize(50, HeightType.TOOLBAR)));
         observer.onSideUiSpecsChanged(
                 showRightSpecs,
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
         assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());
         assertEquals(View.VISIBLE, mRightHairline.getVisibility());
@@ -218,8 +218,7 @@ public class SideUiWebContentHairlineManagerTest {
         // 4. Hide right SideUI.
         SideUiSpecs hideAllSpecs = new SideUiSpecs(Collections.emptyMap());
         observer.onSideUiSpecsChanged(
-                hideAllSpecs,
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                hideAllSpecs, UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
         assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
         assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());
         assertEquals(View.INVISIBLE, mRightHairline.getVisibility());
@@ -241,7 +240,7 @@ public class SideUiWebContentHairlineManagerTest {
                 new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR)));
         observer.onSideUiSpecsChanged(
                 showLeftSpecs,
-                new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
         assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());
