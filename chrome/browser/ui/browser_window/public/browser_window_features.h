@@ -301,17 +301,6 @@ class BrowserWindowFeatures {
   // Called exactly once to tear down state that depends on the window object.
   void TearDownPreBrowserWindowDestruction();
 
-  LocationBarModel* location_bar_model() { return location_bar_model_.get(); }
-  const LocationBarModel* location_bar_model() const {
-    return location_bar_model_.get();
-  }
-#if defined(UNIT_TEST)
-  void swap_location_bar_models(
-      std::unique_ptr<LocationBarModel>* location_bar_model) {
-    location_bar_model->swap(location_bar_model_);
-  }
-#endif
-
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -427,7 +416,7 @@ class BrowserWindowFeatures {
   // Helper which implements the LocationBarModelDelegate interface.
   std::unique_ptr<BrowserLocationBarModelDelegate> location_bar_model_delegate_;
 
-  // The model for the toolbar view.
+  // The model for the toolbar view, exposed via LocationBarModel::From().
   std::unique_ptr<LocationBarModel> location_bar_model_;
 
   std::unique_ptr<memory_saver::MemorySaverBubbleController>
