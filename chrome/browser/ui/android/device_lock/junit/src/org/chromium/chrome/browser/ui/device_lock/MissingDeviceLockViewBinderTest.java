@@ -15,34 +15,22 @@ import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link MissingDeviceLockViewBinder}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class MissingDeviceLockViewBinderTest {
-    @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
     private final AtomicBoolean mCreateDeviceLockButtonClicked = new AtomicBoolean();
     private final AtomicBoolean mContinueClicked = new AtomicBoolean();
     private final AtomicBoolean mCheckboxToggled = new AtomicBoolean();
@@ -51,50 +39,39 @@ public class MissingDeviceLockViewBinderTest {
     private PropertyModel mViewModel;
     private PropertyModelChangeProcessor mModelChangeProcessor;
 
-    @BeforeClass
-    public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
-    }
-
     @Before
     public void setUp() {
-        Activity activity = sActivityTestRule.getActivity();
+        Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
         ViewGroup view = new LinearLayout(activity);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    activity.setContentView(view);
+        activity.setContentView(view);
 
-                    mView = MissingDeviceLockView.create(activity.getLayoutInflater());
-                    view.addView(mView);
+        mView = MissingDeviceLockView.create(activity.getLayoutInflater());
+        view.addView(mView);
 
-                    mViewModel =
-                            new PropertyModel.Builder(MissingDeviceLockProperties.ALL_KEYS)
-                                    .with(REMOVE_ALL_LOCAL_DATA_CHECKED, true)
-                                    .with(
-                                            MissingDeviceLockProperties
-                                                    .ON_CREATE_DEVICE_LOCK_CLICKED,
-                                            v -> mCreateDeviceLockButtonClicked.set(true))
-                                    .with(ON_CONTINUE_CLICKED, v -> mContinueClicked.set(true))
-                                    .with(
-                                            ON_CHECKBOX_TOGGLED,
-                                            (v, isChecked) -> mCheckboxToggled.set(isChecked))
-                                    .build();
+        mViewModel =
+                new PropertyModel.Builder(MissingDeviceLockProperties.ALL_KEYS)
+                        .with(REMOVE_ALL_LOCAL_DATA_CHECKED, true)
+                        .with(
+                                MissingDeviceLockProperties.ON_CREATE_DEVICE_LOCK_CLICKED,
+                                v -> mCreateDeviceLockButtonClicked.set(true))
+                        .with(ON_CONTINUE_CLICKED, v -> mContinueClicked.set(true))
+                        .with(
+                                ON_CHECKBOX_TOGGLED,
+                                (v, isChecked) -> mCheckboxToggled.set(isChecked))
+                        .build();
 
-                    mModelChangeProcessor =
-                            PropertyModelChangeProcessor.create(
-                                    mViewModel, mView, MissingDeviceLockViewBinder::bind);
-                });
+        mModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mViewModel, mView, MissingDeviceLockViewBinder::bind);
     }
 
     @After
-    public void tearDown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(mModelChangeProcessor::destroy);
+    public void tearDown() {
+        mModelChangeProcessor.destroy();
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testMissingDeviceLockView_createDeviceLockClicked_triggersOnClick() {
         mCreateDeviceLockButtonClicked.set(false);
 
@@ -105,8 +82,6 @@ public class MissingDeviceLockViewBinderTest {
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testMissingDeviceLockView_continueButtonClicked_triggersOnClick() {
         mContinueClicked.set(false);
 
@@ -117,8 +92,6 @@ public class MissingDeviceLockViewBinderTest {
     }
 
     @Test
-    @UiThreadTest
-    @SmallTest
     public void testMissingDeviceLockView_checkboxToggled() {
         mView.getCheckbox().setChecked(true);
         mView.getCheckbox().performClick();

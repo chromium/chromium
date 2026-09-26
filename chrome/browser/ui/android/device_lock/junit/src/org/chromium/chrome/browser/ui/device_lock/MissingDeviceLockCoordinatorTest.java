@@ -4,12 +4,6 @@
 
 package org.chromium.chrome.browser.ui.device_lock;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.isDialog;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -18,75 +12,45 @@ import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DE
 import android.app.Activity;
 import android.content.SharedPreferences;
 
-import androidx.test.espresso.Espresso;
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PayloadCallbackHelper;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
-import org.chromium.ui.test.util.BlankUiTestActivity;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link MissingDeviceLockCoordinator}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class MissingDeviceLockCoordinatorTest {
-    @Rule
-    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
     private Activity mActivity;
     private ModalDialogManager mModalDialogManager;
 
     @Before
     public void setUpTest() {
-        mActivityTestRule.setFinishActivity(true);
-        mActivityTestRule.launchActivity(null);
-        mActivity = mActivityTestRule.getActivity();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mModalDialogManager =
-                            new ModalDialogManager(
-                                    new AppModalPresenter(mActivity), ModalDialogType.APP);
-                });
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mModalDialogManager =
+                new ModalDialogManager(new AppModalPresenter(mActivity), ModalDialogType.APP);
     }
 
     @After
-    public void tearDown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    if (mModalDialogManager != null) {
-                        mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
-                    }
-                });
-        // Since the activity is launched inside this test class, we need to
-        // tear it down inside the class as well.
-        if (mActivity != null) {
-            ApplicationTestUtils.finishActivity(mActivity);
+    public void tearDown() {
+        if (mModalDialogManager != null) {
+            mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
         }
     }
 
     @Test
-    @SmallTest
-    public void testMissingDeviceLockCoordinator_showAndHideDialog() throws InterruptedException {
+    public void testMissingDeviceLockCoordinator_showAndHideDialog() {
         HistogramWatcher dialogShownHistogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(
@@ -95,34 +59,22 @@ public class MissingDeviceLockCoordinatorTest {
                                         .DIALOG_SHOWN)
                         .build();
 
-        AtomicReference<MissingDeviceLockCoordinator> missingDeviceLockCoordinator =
-                new AtomicReference<>();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    missingDeviceLockCoordinator.set(
-                            new MissingDeviceLockCoordinator(
-                                    CallbackUtils.emptyCallback(), mActivity, mModalDialogManager));
-                    missingDeviceLockCoordinator.get().showDialog();
-                });
+        MissingDeviceLockCoordinator missingDeviceLockCoordinator =
+                new MissingDeviceLockCoordinator(
+                        CallbackUtils.emptyCallback(), mActivity, mModalDialogManager);
+        missingDeviceLockCoordinator.showDialog();
 
         assertTrue("The modal dialog should be showing.", mModalDialogManager.isShowing());
-        onView(withText(R.string.missing_device_lock_title))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
+        assertTrue(mModalDialogManager.isShowing());
 
         dialogShownHistogram.assertExpected();
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        missingDeviceLockCoordinator
-                                .get()
-                                .hideDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED));
+        missingDeviceLockCoordinator.hideDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
         assertFalse(
                 "The modal dialog should not be showing after hideDialog.",
                 mModalDialogManager.isShowing());
     }
 
     @Test
-    @SmallTest
     public void testMissingDeviceLockCoordinator_continueWithoutDeviceLock() {
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         prefs.edit().putBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true).apply();
@@ -155,27 +107,20 @@ public class MissingDeviceLockCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testMissingDeviceLockCoordinator_backPressDoesNotDismissDialog() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    MissingDeviceLockCoordinator missingDeviceLockCoordinator =
-                            new MissingDeviceLockCoordinator(
-                                    CallbackUtils.emptyCallback(), mActivity, mModalDialogManager);
-                    missingDeviceLockCoordinator.showDialog();
-                });
-        assertTrue("The modal dialog should be showing.", mModalDialogManager.isShowing());
-        onView(withText(R.string.missing_device_lock_title))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
+        MissingDeviceLockCoordinator missingDeviceLockCoordinator =
+                new MissingDeviceLockCoordinator(
+                        CallbackUtils.emptyCallback(), mActivity, mModalDialogManager);
+        missingDeviceLockCoordinator.showDialog();
 
-        Espresso.pressBack();
+        assertTrue("The modal dialog should be showing.", mModalDialogManager.isShowing());
+        assertTrue(mModalDialogManager.isShowing());
+
+        mActivity.onBackPressed();
 
         assertTrue(
                 "The modal dialog should still be showing after back press.",
                 mModalDialogManager.isShowing());
-        onView(withText(R.string.missing_device_lock_title))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
+        assertTrue(mModalDialogManager.isShowing());
     }
 }

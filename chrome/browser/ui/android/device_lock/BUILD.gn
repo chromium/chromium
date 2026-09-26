@@ -44,40 +44,21 @@ android_library("java") {
 android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ui.device_lock"
-  sources = [
-    "javatests/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockCoordinatorTest.java",
-    "javatests/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockViewBinderTest.java",
-    "javatests/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockCoordinatorTest.java",
-    "javatests/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockLauncherTest.java",
-    "javatests/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockViewBinderTest.java",
-  ]
+  sources = [ "javatests/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockLauncherTest.java" ]
   deps = [
     ":java",
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
     "//chrome/browser/autofill/android:java",
-    "//chrome/browser/device_reauth/android:java",
-    "//chrome/browser/flags:java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/test/android:chrome_java_unit_test_support",
-    "//components/browser_ui/device_lock/android:java",
-    "//components/browser_ui/modaldialog/android:java",
-    "//components/browser_ui/widget/android:java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
-    "//content/public/test/android:content_java_test_support",
-    "//google_apis/gaia/android:java",
-    "//third_party/android_deps:espresso_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
@@ -88,8 +69,12 @@ android_library("javatests") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.device_lock"
   sources = [
+    "junit/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/device_lock/DeviceLockViewBinderTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/device_lock/MissingDeviceLockViewBinderTest.java",
   ]
 
   deps = [
@@ -104,15 +89,19 @@ robolectric_library("junit") {
     "//chrome/browser/preferences:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/device_lock/android:java",
+    "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/signin/public/android:java",
     "//content/public/android:content_full_java",
-    "//content/public/test/android:content_java_test_support",
     "//google_apis/gaia/android:java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_rules_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
