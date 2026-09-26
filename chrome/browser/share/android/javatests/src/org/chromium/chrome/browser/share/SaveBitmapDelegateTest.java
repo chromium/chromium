@@ -4,49 +4,41 @@
 
 package org.chromium.chrome.browser.share;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
 
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.MediumTest;
-
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.MaxAndroidSdkLevel;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.PermissionCallback;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Tests for the {@link SaveBitmapDelegate}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.S_V2)
 public class SaveBitmapDelegateTest {
-    @Rule
-    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
     private SaveBitmapDelegate mSaveBitmapDelegate;
     private TestWindowAndroid mPermissionDelegate;
     private boolean mBitmapSaved;
 
     @Before
-    public void setUp() throws Exception {
-        mActivityTestRule.launchActivity(null);
-        Activity activity = mActivityTestRule.getActivity();
-        mPermissionDelegate =
-                ThreadUtils.runOnUiThreadBlocking(() -> new TestWindowAndroid(activity));
+    public void setUp() {
+        Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mPermissionDelegate = new TestWindowAndroid(activity);
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ALPHA_8);
         mSaveBitmapDelegate =
                 new SaveBitmapDelegate(
@@ -64,39 +56,29 @@ public class SaveBitmapDelegateTest {
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mPermissionDelegate.destroy());
+        mPermissionDelegate.destroy();
     }
 
     @Test
-    @MediumTest
-    @UiThreadTest
-    @MaxAndroidSdkLevel(
-            value = Build.VERSION_CODES.S_V2,
-            reason = "Permission request is not made on T+")
     public void testSaveWithPermission() {
         mPermissionDelegate.setHasPermission(true);
         mSaveBitmapDelegate.save();
 
-        Assert.assertTrue(mPermissionDelegate.calledHasPermission());
-        Assert.assertFalse(mPermissionDelegate.calledCanRequestPermission());
-        Assert.assertTrue(mBitmapSaved);
+        assertTrue(mPermissionDelegate.calledHasPermission());
+        assertFalse(mPermissionDelegate.calledCanRequestPermission());
+        assertTrue(mBitmapSaved);
     }
 
     @Test
-    @MediumTest
-    @UiThreadTest
-    @MaxAndroidSdkLevel(
-            value = Build.VERSION_CODES.S_V2,
-            reason = "Permission request is not made on T+")
     public void testSaveWithoutPermissionCanNotAsk() {
         mPermissionDelegate.setHasPermission(false);
         mPermissionDelegate.setCanRequestPermission(false);
         mSaveBitmapDelegate.save();
 
-        Assert.assertTrue(mPermissionDelegate.calledHasPermission());
-        Assert.assertTrue(mPermissionDelegate.calledCanRequestPermission());
-        Assert.assertTrue(mSaveBitmapDelegate.getDialog().isShowing());
-        Assert.assertFalse(mBitmapSaved);
+        assertTrue(mPermissionDelegate.calledHasPermission());
+        assertTrue(mPermissionDelegate.calledCanRequestPermission());
+        assertTrue(mSaveBitmapDelegate.getDialog().isShowing());
+        assertFalse(mBitmapSaved);
     }
 
     /** Test implementation of {@link WindowAndroid}. */
