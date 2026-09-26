@@ -8,11 +8,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <compare>
 #include <map>
 #include <memory>
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -520,9 +522,33 @@ class NET_EXPORT HttpServerProperties
   // friendness is no longer required.
   friend class HttpServerPropertiesPeer;
 
+  struct WildcardAlternativeServiceKeyRef {
+    std::string_view host_suffix;
+    uint16_t port = 0;
+
+    auto operator<=>(const WildcardAlternativeServiceKeyRef&) const = default;
+  };
+
+  struct WildcardAlternativeServiceKey {
+    std::string host_suffix;
+    uint16_t port = 0;
+
+    WildcardAlternativeServiceKeyRef AsRef() const {
+      return {host_suffix, port};
+    }
+
+    auto operator<=>(const WildcardAlternativeServiceKey&) const = default;
+    friend std::strong_ordering operator<=>(
+        const WildcardAlternativeServiceKey& a,
+        const WildcardAlternativeServiceKeyRef& b) {
+      return a.AsRef() <=> b;
+    }
+  };
+
   using KnownAlternativeServiceMap =
       base::flat_map<url::SchemeHostPort, AlternativeService>;
-  using KnownAlternativeServiceSuffixSet = base::flat_set<std::string>;
+  using WildcardAlternativeServiceMap =
+      base::flat_map<WildcardAlternativeServiceKey, AlternativeService>;
 
   using CanonicalMap = base::flat_map<ServerInfoMapKey, url::SchemeHostPort>;
   using QuicCanonicalMap =
@@ -679,15 +705,9 @@ class NET_EXPORT HttpServerProperties
   KnownAlternativeServiceMap known_alternative_service_map_;
 
   // Contains a map of suffixes for servers which use a known alternative
-  // service. Map from a scheme/host/port to the AlternativeService
-  // with the known alternative service info. Hosts are reversed to allow for
-  // efficient comparison.
-  KnownAlternativeServiceMap wildcard_known_alternative_service_map_;
-
-  // Contains list of suffixes of hostnames with known alternative
-  // services. Suffixes are reversed to allow for efficient comparison.
-  KnownAlternativeServiceSuffixSet
-      reversed_known_alternative_service_suffixes_set_;
+  // service. Map from a suffix/port key to the AlternativeService with the
+  // known alternative service info.
+  WildcardAlternativeServiceMap wildcard_known_alternative_service_map_;
 
   // When true, requests to HTTPS servers that do not have a specific or
   // known alternative service configured will attempt to use QUIC by default

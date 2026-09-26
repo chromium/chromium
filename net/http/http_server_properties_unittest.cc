@@ -3645,6 +3645,74 @@ TEST_F(HttpServerPropertiesTest, DynamicWildcardQuicHints) {
           .size());
 }
 
+TEST_F(HttpServerPropertiesTest, NestedWildcardQuicHints) {
+  // Register general and more specific nested wildcard hints with different
+  // alternate ports.
+  impl_.SetKnownQuicAlternativeService(".google.com", 443, 443,
+                                       /*is_suffix=*/true);
+  impl_.SetKnownQuicAlternativeService(".subdomaina.google.com", 443, 8443,
+                                       /*is_suffix=*/true);
+  impl_.SetKnownQuicAlternativeService(".subdomainb.google.com", 443, 9443,
+                                       /*is_suffix=*/true);
+
+  // 1. More specific wildcard wins over general wildcard.
+  const url::SchemeHostPort kSpecificServerA("https",
+                                             "test.subdomaina.google.com", 443);
+  auto specific_infos_a = impl_.GetAlternativeServiceInfos(
+      kSpecificServerA, network_anonymization_key1_);
+  ASSERT_EQ(1u, specific_infos_a.size());
+  EXPECT_EQ(8443, specific_infos_a[0].alternative_service().port);
+
+  const url::SchemeHostPort kSpecificServerB("https",
+                                             "test.subdomainb.google.com", 443);
+  auto specific_infos_b = impl_.GetAlternativeServiceInfos(
+      kSpecificServerB, network_anonymization_key1_);
+  ASSERT_EQ(1u, specific_infos_b.size());
+  EXPECT_EQ(9443, specific_infos_b[0].alternative_service().port);
+
+  // 2. Sibling subdomains under parent wildcard that sort alphabetically
+  // before, between, or after the specific subdomains (e.g. "api", "mail",
+  // "video", "zoo") all match the parent "*.google.com".
+  const url::SchemeHostPort kGeneralServer1("https", "api.google.com", 443);
+  auto general_infos1 = impl_.GetAlternativeServiceInfos(
+      kGeneralServer1, network_anonymization_key1_);
+  ASSERT_EQ(1u, general_infos1.size());
+  EXPECT_EQ(443, general_infos1[0].alternative_service().port);
+
+  const url::SchemeHostPort kGeneralServer2("https", "mail.google.com", 443);
+  auto general_infos2 = impl_.GetAlternativeServiceInfos(
+      kGeneralServer2, network_anonymization_key1_);
+  ASSERT_EQ(1u, general_infos2.size());
+  EXPECT_EQ(443, general_infos2[0].alternative_service().port);
+
+  const url::SchemeHostPort kGeneralServer3("https", "video.google.com", 443);
+  auto general_infos3 = impl_.GetAlternativeServiceInfos(
+      kGeneralServer3, network_anonymization_key1_);
+  ASSERT_EQ(1u, general_infos3.size());
+  EXPECT_EQ(443, general_infos3[0].alternative_service().port);
+
+  const url::SchemeHostPort kGeneralServer4("https", "zoo.google.com", 443);
+  auto general_infos4 = impl_.GetAlternativeServiceInfos(
+      kGeneralServer4, network_anonymization_key1_);
+  ASSERT_EQ(1u, general_infos4.size());
+  EXPECT_EQ(443, general_infos4[0].alternative_service().port);
+
+  // 3. The intermediate subdomain apex ("subdomaina.google.com") matches the
+  // parent wildcard "*.google.com" (since it is a subdomain of google.com).
+  const url::SchemeHostPort kSubdomainApex("https", "subdomaina.google.com",
+                                           443);
+  auto apex_infos = impl_.GetAlternativeServiceInfos(
+      kSubdomainApex, network_anonymization_key1_);
+  ASSERT_EQ(1u, apex_infos.size());
+  EXPECT_EQ(443, apex_infos[0].alternative_service().port);
+
+  // 4. Apex of google.com does NOT match the wildcard hint.
+  const url::SchemeHostPort kApexServer("https", "google.com", 443);
+  EXPECT_TRUE(
+      impl_.GetAlternativeServiceInfos(kApexServer, network_anonymization_key1_)
+          .empty());
+}
+
 TEST_F(HttpServerPropertiesTest, TryQuicByDefaultPrecedence) {
   const url::SchemeHostPort kExactServer("https", "exact.test", 443);
   const url::SchemeHostPort kWildcardSubdomain("https", "sub.wildcard.test",

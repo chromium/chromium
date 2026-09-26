@@ -4,6 +4,8 @@
 
 #include "net/http/http_server_properties.h"
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
@@ -457,18 +459,12 @@ void HttpServerProperties::SetKnownQuicAlternativeService(
     return;
   }
 
-  // Wildcard suffixes are reversed and added to
-  // `reversed_known_alternative_service_suffixes_set_` to allow matching
-  // hostnames to use the corresponding known alternative service.
-  std::string reversed_host(canon_host);
-  std::ranges::reverse(reversed_host);
-  url::SchemeHostPort quic_server(url::kHttpsScheme, reversed_host, port);
-  AlternativeService alternative_service(net::NextProto::kProtoQUIC,
-                                         reversed_host,
+  WildcardAlternativeServiceKey key{std::string(canon_host),
+                                    static_cast<uint16_t>(port)};
+  AlternativeService alternative_service(net::NextProto::kProtoQUIC, canon_host,
                                          static_cast<uint16_t>(alternate_port));
-  wildcard_known_alternative_service_map_[quic_server] =
+  wildcard_known_alternative_service_map_[std::move(key)] =
       std::move(alternative_service);
-  reversed_known_alternative_service_suffixes_set_.insert(reversed_host);
 }
 
 void HttpServerProperties::SetTryQuicByDefault(bool enable) {
@@ -1179,30 +1175,20 @@ std::optional<AlternativeService> HttpServerProperties::GetKnownAltSvcHost(
   if (it != known_alternative_service_map_.end()) {
     return it->second;
   }
-  std::string reversed_host = server.host();
-  std::ranges::reverse(reversed_host);
-  const auto lower_bound_it =
-      reversed_known_alternative_service_suffixes_set_.lower_bound(
-          reversed_host);
-  // Exact matches cannot happen because wildcard suffixes are required to start
-  // with "."
-  if (lower_bound_it ==
-      reversed_known_alternative_service_suffixes_set_.begin()) {
-    return std::nullopt;
-  }
-  // lower_bound_it points to the first element greater or equal to
-  // `reversed_host`. The last element that is less than
-  // `reversed_host` contains the most likely wildcard suffix match.
-  const auto possible_prefix_it = std::prev(lower_bound_it);
-  if (!reversed_host.starts_with(*possible_prefix_it)) {
+  if (wildcard_known_alternative_service_map_.empty()) {
     return std::nullopt;
   }
 
-  url::SchemeHostPort suffix_server(kKnownAltSvcScheme, *possible_prefix_it,
-                                    server.port());
-  auto suffix_it = wildcard_known_alternative_service_map_.find(suffix_server);
-  if (suffix_it != wildcard_known_alternative_service_map_.end()) {
-    return suffix_it->second;
+  std::string_view host = server.host();
+  size_t dot_pos = host.find('.');
+  while (dot_pos != std::string_view::npos) {
+    std::string_view suffix = host.substr(dot_pos);
+    auto suffix_it = wildcard_known_alternative_service_map_.find(
+        WildcardAlternativeServiceKeyRef{suffix, server.port()});
+    if (suffix_it != wildcard_known_alternative_service_map_.end()) {
+      return suffix_it->second;
+    }
+    dot_pos = host.find('.', dot_pos + 1);
   }
 
   return std::nullopt;
