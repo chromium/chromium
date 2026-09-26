@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
@@ -60,6 +61,7 @@
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
@@ -111,7 +113,13 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {};
 
 class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBrowserTest {
  public:
-  PrintPreviewDialogControllerBrowserTest() = default;
+  PrintPreviewDialogControllerBrowserTest() {
+    // TODO(crbug.com/467180032): Remove once
+    // `kPdfAccessibilityHeuristicEnhancements` is enabled by default and
+    // `PrintPreviewPdfAccessibility` is updated.
+    feature_list_.InitAndDisableFeature(
+        features::kPdfAccessibilityHeuristicEnhancements);
+  }
   ~PrintPreviewDialogControllerBrowserTest() override = default;
 
   WebContents* initiator() { return initiator_; }
@@ -236,6 +244,7 @@ class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBro
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<printing::TestPrintPreviewDialogClonedObserver> cloned_tab_observer_;
   raw_ptr<printing::TestPrintViewManagerForRequestPreview, AcrossTasksDanglingUntriaged>

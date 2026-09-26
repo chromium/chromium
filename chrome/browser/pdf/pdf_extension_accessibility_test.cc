@@ -217,6 +217,29 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
   ~PDFExtensionAccessibilityTest() override = default;
 
  protected:
+  // TODO(crbug.com/467180032): Remove once
+  // `kPdfAccessibilityHeuristicEnhancements` is enabled by default.
+  virtual bool UseHeuristicEnhancements() const { return false; }
+
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    std::vector<base::test::FeatureRefAndParams> enabled =
+        PDFExtensionTestBase::GetEnabledFeatures();
+    if (UseHeuristicEnhancements()) {
+      enabled.push_back({features::kPdfAccessibilityHeuristicEnhancements, {}});
+    }
+    return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    std::vector<base::test::FeatureRef> disabled =
+        PDFExtensionTestBase::GetDisabledFeatures();
+    if (!UseHeuristicEnhancements()) {
+      disabled.push_back(features::kPdfAccessibilityHeuristicEnhancements);
+    }
+    return disabled;
+  }
+
   ui::AXTreeUpdate GetAccessibilityTreeSnapshotForPdf(
       content::WebContents* web_contents) {
     content::FindAccessibilityNodeCriteria find_criteria;
@@ -1107,13 +1130,7 @@ class PDFExtensionAccessibilityHeuristicsTreeDumpTest
   ~PDFExtensionAccessibilityHeuristicsTreeDumpTest() override = default;
 
  protected:
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
-      const override {
-    std::vector<base::test::FeatureRefAndParams> enabled =
-        PDFExtensionAccessibilityTreeDumpTest::GetEnabledFeatures();
-    enabled.push_back({features::kPdfAccessibilityHeuristicEnhancements, {}});
-    return enabled;
-  }
+  bool UseHeuristicEnhancements() const override { return true; }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1174,7 +1191,8 @@ class PdfOcrUmaTest : public PDFExtensionAccessibilityTest,
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    std::vector<base::test::FeatureRef> disabled;
+    std::vector<base::test::FeatureRef> disabled =
+        PDFExtensionAccessibilityTest::GetDisabledFeatures();
     if (!UseOopif()) {
       disabled.push_back(chrome_pdf::features::kPdfOopif);
     }
@@ -1374,7 +1392,8 @@ class PdfSearchifyIntegrationTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    std::vector<base::test::FeatureRef> disabled;
+    std::vector<base::test::FeatureRef> disabled =
+        PDFExtensionAccessibilityTest::GetDisabledFeatures();
     if (!IsOcrServiceEnabled()) {
       disabled.push_back(ax::mojom::features::kScreenAIOCREnabled);
     }
