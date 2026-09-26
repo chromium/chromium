@@ -85,6 +85,8 @@
 
 :host([multi-line-enabled]) #input::-webkit-scrollbar-track {
   background: transparent;
+  margin-block: var(--cr-searchbox-input-scrollbar-margin-top, 0)
+      var(--cr-searchbox-input-scrollbar-margin-bottom, 0);
 }
 
 :host([multi-line-enabled]) #input::-webkit-scrollbar-thumb {

@@ -147,6 +147,14 @@ cr-searchbox-input::part(searchbox-input) {
   padding-top: 16px;
 }
 
+:host([multi-line-enabled][ntp-realbox-next-enabled]) cr-searchbox-input {
+  /* Keep the scrollbar off the rounded edges of the realbox: align its top
+   * with the top of the AI Mode button and its bottom with the bottom padding
+   * of the last row of text. */
+  --cr-searchbox-input-scrollbar-margin-bottom: 10px;
+  --cr-searchbox-input-scrollbar-margin-top: 10px;
+}
+
 :host([searchbox-chrome-refresh-theming]) cr-searchbox-input::part(searchbox-input)::selection {
   background-color: var(--color-searchbox-selection-background);
   color: var(--color-searchbox-selection-foreground);
