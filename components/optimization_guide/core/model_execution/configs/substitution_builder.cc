@@ -43,6 +43,18 @@ proto::ConditionList Any(std::initializer_list<proto::Condition> conditions) {
   return result;
 }
 
+proto::SubstitutedString Concatenated(
+    std::initializer_list<proto::StringSubstitution> substitutions) {
+  proto::SubstitutedString result;
+  std::string tmpl;
+  for (const auto& sub : substitutions) {
+    tmpl += "%s";
+    *result.add_substitutions() = sub;
+  }
+  result.set_string_template(tmpl);
+  return result;
+}
+
 proto::SubstitutedString FieldSubstitution(const std::string& tmpl,
                                            proto::ProtoField field) {
   proto::SubstitutedString result;

@@ -6,8 +6,12 @@ static_library("configs") {
   sources = [
     "manifest_builder.cc",
     "manifest_builder.h",
+    "string_substitution_builder.cc",
+    "string_substitution_builder.h",
     "substitution_builder.cc",
     "substitution_builder.h",
+    "summarize_solution_config.cc",
+    "summarize_solution_config.h",
   ]
   public_deps = [
     "//base",
