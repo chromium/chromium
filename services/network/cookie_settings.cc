@@ -162,8 +162,16 @@ DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
     }
   }
 
+  // The returned predicate may be evaluated asynchronously on a background
+  // sequence after `this` has been modified or destroyed, so bind an owned
+  // snapshot rather than `this`.
+  auto settings_snapshot = std::make_unique<CookieSettings>();
+  settings_snapshot->set_content_settings(ContentSettingsType::COOKIES,
+                                          settings);
+
   return base::BindRepeating(&CookieSettings::ShouldDeleteCookieOnExit,
-                             base::Unretained(this), std::move(settings));
+                             base::Owned(std::move(settings_snapshot)),
+                             std::move(settings));
 }
 
 bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
