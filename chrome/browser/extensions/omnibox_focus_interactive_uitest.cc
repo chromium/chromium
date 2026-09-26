@@ -5,11 +5,9 @@
 #include <algorithm>
 #include <string_view>
 
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -364,8 +362,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, OmniboxFocusStealing) {
 IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // CSP of the NTP page enforces that only untrusted subframes (such as
-  // chrome-untrusted://new-tab-page/) may be embedded.
+  // CSP of the NTP page enforces that only HTTPS subframes may be used.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
@@ -382,8 +379,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
-  // Inject a cross-site untrusted subframe into the NTP (simulating opening a
-  // menu of Google applications or an untrusted component from the NTP).
+  // Inject a cross-site subframe into the NTP (simulating opening a
+  // menu of Google applications from the NTP).
   const char kFrameInjectionScriptTemplate[] = R"(
       f = document.createElement('iframe');
       new Promise(resolve => {
@@ -394,9 +391,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
         document.body.appendChild(f);
       });
   )";
-  GURL subframe_url(base::StrCat(
-      {chrome::kChromeUIUntrustedNewTabPageUrl, "image?",
-       https_server.GetURL("/title1.html").spec()}));
+  GURL subframe_url = https_server.GetURL("/title1.html");
   // The NTP might be in the process of navigating or adding its other
   // subframes - this is why the test doesn't use TestNavigationObserver, but
   // instead waits for the frame's onload event.
@@ -423,11 +418,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
 
   // Trigger a subframe-initiated navigation of the main frame.
   const char kLinkClickingScriptTemplate[] = R"(
-      const a = document.createElement('a');
+      a = document.createElement('a');
       a.href = $1;
       a.innerText = 'test link';
       a.target = '_top';
-      document.body.appendChild(a);
+      document.body.appendChild(a)
       a.click();
   )";
   GURL target_url = embedded_test_server()->GetURL("/title2.html");
