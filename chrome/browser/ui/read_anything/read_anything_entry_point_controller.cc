@@ -202,11 +202,17 @@ void RunOptimizationGuide(
   CHECK(optimization_guide_decider);
   CHECK(bwi);
 
+  tabs::TabInterface* tab = bwi->GetActiveTabInterface();
+  if (!tab || !tab->GetContents()) {
+    std::move(result_callback).Run(false);
+    return;
+  }
+
   optimization_guide_decider->CanApplyOptimization(
-      bwi->GetActiveTabInterface()->GetContents()->GetLastCommittedURL(),
+      tab->GetContents()->GetLastCommittedURL(),
       optimization_guide::proto::READER_MODE_ELIGIBLE,
       base::BindOnce(&OnOptimizationGuideDecision,
-                     bwi->GetActiveTabInterface()->GetContents()->GetWeakPtr(),
+                     tab->GetContents()->GetWeakPtr(),
                      std::move(result_callback)));
 }
 
@@ -302,7 +308,9 @@ bool ReadAnythingEntryPointController::IsUIShowing(
   }
 
   auto* controller = ReadAnythingController::From(bwi->GetActiveTabInterface());
-  CHECK(controller);
+  if (!controller) {
+    return false;
+  }
   auto state = controller->GetPresentationState();
   return state ==
              ReadAnythingController::PresentationState::kInImmersiveOverlay ||
@@ -330,7 +338,11 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
   }
 
   page_actions::PageActionController* page_action_controller =
-      tab->GetTabFeatures()->page_action_controller();
+      tab->GetTabFeatures() ? tab->GetTabFeatures()->page_action_controller()
+                            : nullptr;
+  if (!page_action_controller) {
+    return;
+  }
   auto* const user_ed = BrowserUserEducationInterface::From(bwi);
 
   // No need to show the button if reading mode is already open.
@@ -384,7 +396,11 @@ bool ReadAnythingEntryPointController::CheckIfShouldSuggestReadingModeNaive(
   // Don't show the omnibox entrypoint for non-HTTP(S) URLs. These URLs are
   // not supported by Readability, which is used to check whether the current
   // page is a good candidate for distillation.
-  content::WebContents* contents = bwi->GetActiveTabInterface()->GetContents();
+  tabs::TabInterface* tab = bwi->GetActiveTabInterface();
+  if (!tab || !tab->GetContents()) {
+    return false;
+  }
+  content::WebContents* contents = tab->GetContents();
   const GURL& url = contents->GetLastCommittedURL();
   if (!url.SchemeIsHTTPOrHTTPS()) {
     LogDecision(ReadAnythingOmniboxChipDecision::kHideNonHttp);
@@ -427,7 +443,12 @@ void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
   // If this page is a PDF, then other heuristics will always return false.
   // But since PDFs are distilled via Screen2x, use a custom heuristic to
   // determine if the PDF will distill well with RM.
-  content::WebContents* contents = bwi->GetActiveTabInterface()->GetContents();
+  tabs::TabInterface* tab = bwi->GetActiveTabInterface();
+  if (!tab || !tab->GetContents()) {
+    std::move(result_callback).Run(false);
+    return;
+  }
+  content::WebContents* contents = tab->GetContents();
   if (auto* pdf_helper = GetPdf(*contents)) {
     RunPdfDistillableHeuristic(pdf_helper, std::move(result_callback));
     return;
@@ -463,11 +484,16 @@ void ReadAnythingEntryPointController::OnPageActionIgnored(
                     GetOmniboxChipIgnoredCount(prefs) + 1);
   if (!ShouldShowOmniboxChip(bwi)) {
     page_actions::PageActionController* page_action_controller =
-        bwi->GetActiveTabInterface()
-            ->GetTabFeatures()
-            ->page_action_controller();
-    page_action_controller->HideSuggestionChip(
-        kActionSidePanelShowReadAnything);
+        bwi->GetActiveTabInterface() &&
+                bwi->GetActiveTabInterface()->GetTabFeatures()
+            ? bwi->GetActiveTabInterface()
+                  ->GetTabFeatures()
+                  ->page_action_controller()
+            : nullptr;
+    if (page_action_controller) {
+      page_action_controller->HideSuggestionChip(
+          kActionSidePanelShowReadAnything);
+    }
   }
 }
 

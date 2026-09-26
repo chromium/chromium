@@ -24,8 +24,11 @@ ReadAnythingOmniboxController::ReadAnythingOmniboxController(
       PageActionObserver(kActionSidePanelShowReadAnything),
       tab_(tab) {
   // This class should only be instantiated if the omnibox entrypoint is
-  // enabled.
+  // enabled and the tab has the required window and page action features.
   CHECK(features::IsReadAnythingOmniboxChipEnabled());
+  CHECK(tab_->GetBrowserWindowInterface());
+  CHECK(tab_->GetTabFeatures());
+  CHECK(tab_->GetTabFeatures()->page_action_controller());
 
   read_anything::ReadAnythingEntryPointController::
       RegisterForSuggestReadingMode(

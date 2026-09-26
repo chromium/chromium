@@ -106,7 +106,7 @@ void ReadAnythingController::
 }
 
 ReadAnythingController* ReadAnythingController::From(tabs::TabInterface* tab) {
-  return Get(tab->GetUnownedUserDataHost());
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
 }
 
 ReadAnythingController::ReadAnythingController(
@@ -129,7 +129,9 @@ ReadAnythingController::ReadAnythingController(
           &ReadAnythingController::MaybeUpdateFindBarController,
           base::Unretained(this))));
 
-  if (features::IsReadAnythingOmniboxChipEnabled()) {
+  if (features::IsReadAnythingOmniboxChipEnabled() &&
+      tab_->GetBrowserWindowInterface() && tab_->GetTabFeatures() &&
+      tab_->GetTabFeatures()->page_action_controller()) {
     omnibox_controller_ = std::make_unique<ReadAnythingOmniboxController>(tab_);
   }
 
@@ -772,5 +774,7 @@ void ReadAnythingController::OnDistillationStateChanged(
 }
 
 void ReadAnythingController::SetDwellTimeForTesting(base::TimeTicks test_time) {
-  omnibox_controller_->SetDwellTimeForTesting(test_time);
+  if (omnibox_controller_) {
+    omnibox_controller_->SetDwellTimeForTesting(test_time);
+  }
 }
