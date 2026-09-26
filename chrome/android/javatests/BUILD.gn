@@ -2063,7 +2063,6 @@ android_library(
     "src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulatorTest.java",
     "src/org/chromium/chrome/browser/contextmenu/ContextMenuChipControllerTest.java",
     "src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderViewTest.java",
-    "src/org/chromium/chrome/browser/contextmenu/ContextMenuItemViewTest.java",
     "src/org/chromium/chrome/browser/contextmenu/ContextMenuRenderTest.java",
   ]
 
