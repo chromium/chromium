@@ -17,6 +17,7 @@ namespace autofill {
 
 namespace {
 
+// LINT.IfChange(ShouldLogMessageMetrics)
 bool ShouldLogMessageMetrics(AutofillMessageModel::Type type) {
   switch (type) {
     case AutofillMessageModel::Type::kEntitySaveUpdateFlow:
@@ -33,6 +34,7 @@ bool ShouldLogMessageMetrics(AutofillMessageModel::Type type) {
   }
   NOTREACHED();
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.Message.Type)
 
 }  // namespace
 

@@ -267,6 +267,19 @@ chromium-metrics-reviews@google.com.
       summary="Feature is trying to be updated from an unknown source"/>
 </variants>
 
+<!-- LINT.IfChange(Autofill.Message.Type) -->
+
+<variants name="Autofill.Message.Type">
+  <variant name="EntitySaveUpdateFlow"
+      summary="Autofill Android Message shown to prompt a user to save an
+               entity to Chrome (like password, driver's license, etc.)"/>
+  <variant name="ResurrectChurnedUsers"
+      summary="Autofill Android Message shown to prompt a churned user to
+               re-enable payment autofill"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/autofill/autofill_message_controller_impl.cc:ShouldLogMessageMetrics) -->
+
 <variants name="Autofill.NonInteractivePaymentMethodType">
   <variant name="LocalCard" summary="local card"/>
   <variant name="LocalIban" summary="local IBAN"/>
@@ -6339,32 +6352,31 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Message.{MessageType}.Dismissed"
+    enum="MessageDismissReason" expires_after="2027-05-01">
+  <owner>tchudakov@google.com</owner>
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the dismissal reason when {MessageType} is dismissed.
+  </summary>
+  <token key="MessageType" variants="Autofill.Message.Type"/>
+</histogram>
+
 <histogram name="Autofill.Message.{MessageType}.{Event}" enum="BooleanShown"
     expires_after="2027-05-01">
   <owner>tchudakov@google.com</owner>
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
-    Emits true when an autofill Android Message event occurs (shown, dismissed,
-    etc.) and does not emit any value otherwise. See event variants for
-    additional details on when each individual logging event happens.
+    Emits true for {MessageType} when {Event}, and does not emit any value
+    otherwise.
   </summary>
-  <token key="MessageType">
-    <variant name="EntitySaveUpdateFlow"
-        summary="Autofill Android Message shown to prompt a user to save an
-                 entity to Chrome (like password, driver's license, etc.)"/>
-    <variant name="ResurrectChurnedUsers"
-        summary="Autofill Android Message shown to prompt a churned user to
-                 re-enable payment autofill"/>
-  </token>
+  <token key="MessageType" variants="Autofill.Message.Type"/>
   <token key="Event">
     <variant name="ActionClicked"
-        summary="Event for when the action button on the message is clicked
-                 by the user."/>
-    <variant name="Dismissed"
-        summary="Event for when the message is dismissed."/>
-    <variant name="Shown"
-        summary="Event for when the message is initially shown."/>
+        summary="the action button on the message is clicked by the user"/>
+    <variant name="Shown" summary="the message is initially shown"/>
   </token>
 </histogram>
 
