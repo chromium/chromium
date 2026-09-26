@@ -3180,7 +3180,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/turbine',
-              'version': '7TuqQtPMhbmeE-fNnNcZuznQgQmqqLkiHZgjfo0r4qIC',
+              'version': 'CXuXM7_sksl-F38YOWgD8XxY0vhVk58Qv6YSSZsVy7cC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
