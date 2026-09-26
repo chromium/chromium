@@ -322,6 +322,7 @@ source_set("unit_tests") {
     sources += [
       "android_bnpl_ui_delegate_unittest.cc",
       "android_payments_window_manager_unittest.cc",
+      "payments_churned_users_ui_delegate_android_unittest.cc",
       "virtual_card_enroll_bubble_controller_impl_unittest.cc",
     ]
     public_deps += [ ":payments" ]

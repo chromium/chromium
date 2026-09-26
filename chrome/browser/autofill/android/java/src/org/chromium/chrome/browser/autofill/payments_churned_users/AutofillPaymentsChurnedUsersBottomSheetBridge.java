@@ -11,6 +11,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.AutofillEnableResurrectingPaymentsUsersTreatmentArm;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -28,7 +29,8 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridge {
     }
 
     @CalledByNative
-    public void requestShowContent() {
+    public void requestShowContent(
+            @AutofillEnableResurrectingPaymentsUsersTreatmentArm int treatmentArm) {
         Context context = mWindowAndroid.getContext().get();
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(mWindowAndroid);
@@ -42,7 +44,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridge {
 
         mCoordinator =
                 new AutofillPaymentsChurnedUsersBottomSheetCoordinator(
-                        context, bottomSheetController);
+                        context, bottomSheetController, treatmentArm);
         mCoordinator.requestShowContent();
     }
 

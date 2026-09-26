@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.autofill.AutofillEnableResurrectingPaymentsUsersTreatmentArm;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
@@ -67,7 +68,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridgeTest {
 
     @Test
     public void testRequestShowContent() {
-        mBridge.requestShowContent();
+        mBridge.requestShowContent(AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE);
 
         verify(mBottomSheetController)
                 .requestShowContent(
@@ -78,12 +79,12 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridgeTest {
 
     @Test
     public void testRequestShowContent_calledMultipleTimes_destroysPreviousCoordinator() {
-        mBridge.requestShowContent();
+        mBridge.requestShowContent(AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY);
         AutofillPaymentsChurnedUsersBottomSheetCoordinator firstCoordinator =
                 mBridge.getCoordinatorForTesting();
         assertThat(firstCoordinator, notNullValue());
 
-        mBridge.requestShowContent();
+        mBridge.requestShowContent(AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE);
         AutofillPaymentsChurnedUsersBottomSheetCoordinator secondCoordinator =
                 mBridge.getCoordinatorForTesting();
         assertThat(secondCoordinator, notNullValue());
@@ -103,7 +104,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridgeTest {
         AutofillPaymentsChurnedUsersBottomSheetBridge bridge =
                 new AutofillPaymentsChurnedUsersBottomSheetBridge(windowWithoutController);
 
-        bridge.requestShowContent();
+        bridge.requestShowContent(AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE);
 
         assertThat(bridge.getCoordinatorForTesting(), nullValue());
         windowWithoutController.destroy();
@@ -117,14 +118,14 @@ public class AutofillPaymentsChurnedUsersBottomSheetBridgeTest {
                 new AutofillPaymentsChurnedUsersBottomSheetBridge(window);
         window.destroy();
 
-        bridge.requestShowContent();
+        bridge.requestShowContent(AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE);
 
         assertThat(bridge.getCoordinatorForTesting(), nullValue());
     }
 
     @Test
     public void testDestroy() {
-        mBridge.requestShowContent();
+        mBridge.requestShowContent(AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE);
         assertThat(mBridge.getCoordinatorForTesting(), notNullValue());
 
         mBridge.destroy();

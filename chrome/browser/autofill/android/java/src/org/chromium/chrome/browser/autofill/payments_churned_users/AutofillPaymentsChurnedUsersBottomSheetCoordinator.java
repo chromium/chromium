@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.autofill.payments_churned_users;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.components.autofill.AutofillEnableResurrectingPaymentsUsersTreatmentArm;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -27,21 +30,20 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
             mModelChangeProcessor;
 
     public AutofillPaymentsChurnedUsersBottomSheetCoordinator(
-            Context context, BottomSheetController bottomSheetController) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            @AutofillEnableResurrectingPaymentsUsersTreatmentArm int treatmentArm) {
         mView = new AutofillPaymentsChurnedUsersBottomSheetView(context);
 
         AutofillPaymentsChurnedUsersBottomSheetContent content =
                 new AutofillPaymentsChurnedUsersBottomSheetContent(mView.getContentView());
 
-        // TODO(crbug.com/558881009): The title string is currently hardcoded to the convenience
-        // title for this skeleton. Modify this to dynamically select the appropriate title.
         mModel =
                 new PropertyModel.Builder(
                                 AutofillPaymentsChurnedUsersBottomSheetProperties.ALL_KEYS)
                         .with(
                                 AutofillPaymentsChurnedUsersBottomSheetProperties.TITLE,
-                                context.getString(
-                                        R.string.autofill_churned_users_bubble_convenience_title))
+                                context.getString(getTitleResId(treatmentArm)))
                         .build();
 
         mMediator =
@@ -50,6 +52,23 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, mView, AutofillPaymentsChurnedUsersBottomSheetViewBinder::bind);
+    }
+
+    private static @StringRes int getTitleResId(
+            @AutofillEnableResurrectingPaymentsUsersTreatmentArm int treatmentArm) {
+        switch (treatmentArm) {
+            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY:
+                return R.string.autofill_churned_users_bubble_security_title;
+            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE:
+                return R.string.autofill_churned_users_bubble_convenience_title;
+            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.MESSAGE:
+            // The MESSAGE arm displays an Android Message banner via AutofillMessageController
+            // rather than this bottom sheet, so the bottom sheet should never be created for
+            // this arm.
+            default:
+                assert false : "Unhandled treatment arm: " + treatmentArm;
+                return R.string.autofill_churned_users_bubble_security_title;
+        }
     }
 
     public void requestShowContent() {

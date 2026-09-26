@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 
 namespace ui {
 class WindowAndroid;
@@ -28,8 +29,9 @@ class AutofillPaymentsChurnedUsersBottomSheetBridge {
 
   virtual ~AutofillPaymentsChurnedUsersBottomSheetBridge();
 
-  // Requests to show the bottom sheet.
-  virtual void RequestShowContent();
+  // Requests to show the bottom sheet for the given `treatment_arm`.
+  virtual void RequestShowContent(
+      AutofillEnableResurrectingPaymentsUsersTreatmentArm treatment_arm);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

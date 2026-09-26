@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
+#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -19,18 +20,6 @@ class TabInterface;
 namespace autofill {
 
 inline constexpr int kMillisecondsUntilConfirmationBubbleIsShown = 1000;
-
-// The experiment arm assigned to the user for the resurrecting churned users
-// experiment. This experiment arm affects the bubble UI.
-enum class AutofillEnableResurrectingPaymentsUsersTreatmentArm {
-  // Security-focused experiment arm, resulting in a bubble that emphasizes the
-  // security benefits of turning on payments autofill to the user.
-  kSecurity = 0,
-  // Convenience-focused experiment arm, resulting in a bubble that emphasizes
-  // the convenience and speed benefits of turning on payments autofill to the
-  // user.
-  kConvenience = 1,
-};
 
 // Controller responsible for managing the payments churned user bubble, which
 // is a bubble that prompts the user to turn payments autofill on if they have

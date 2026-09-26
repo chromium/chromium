@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -105,6 +106,8 @@ void PaymentsChurnedUsersBubbleView::AddedToWidget() {
       resource_id = IDR_AUTOFILL_TURN_ON_PAYMENTS_AUTOFILL_CONVENIENTLY_LOTTIE;
       break;
     }
+    case AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage:
+      NOTREACHED();
   }
   auto image = std::make_unique<views::ImageView>(
       bundle.GetThemedLottieImageNamed(resource_id));
@@ -127,6 +130,8 @@ std::u16string PaymentsChurnedUsersBubbleView::GetWindowTitle() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CHURNED_USERS_BUBBLE_CONVENIENCE_TITLE);
     }
+    case AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage:
+      NOTREACHED();
   }
 }
 
@@ -179,6 +184,8 @@ void PaymentsChurnedUsersBubbleView::Init() {
           IDS_AUTOFILL_CHURNED_USERS_BUBBLE_CONVENIENCE_DESCRIPTION));
       break;
     }
+    case AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage:
+      NOTREACHED();
   }
   description->SetMultiLine(true);
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);

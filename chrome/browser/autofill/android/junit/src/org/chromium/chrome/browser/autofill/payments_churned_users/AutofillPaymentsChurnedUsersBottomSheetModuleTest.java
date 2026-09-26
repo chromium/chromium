@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.components.autofill.AutofillEnableResurrectingPaymentsUsersTreatmentArm;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
 
@@ -49,7 +50,9 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mCoordinator =
                 new AutofillPaymentsChurnedUsersBottomSheetCoordinator(
-                        mActivity, mBottomSheetController);
+                        mActivity,
+                        mBottomSheetController,
+                        AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE);
     }
 
     @Test
@@ -78,7 +81,7 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
     }
 
     @Test
-    public void testInitialModelValues() {
+    public void testInitialModelValues_convenienceArm() {
         TextView titleView =
                 mCoordinator
                         .getContentViewForTesting()
@@ -88,6 +91,25 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
                 equalTo(
                         mActivity.getString(
                                 R.string.autofill_churned_users_bubble_convenience_title)));
+    }
+
+    @Test
+    public void testInitialModelValues_securityArm() {
+        AutofillPaymentsChurnedUsersBottomSheetCoordinator securityCoordinator =
+                new AutofillPaymentsChurnedUsersBottomSheetCoordinator(
+                        mActivity,
+                        mBottomSheetController,
+                        AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY);
+        TextView titleView =
+                securityCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.payments_churned_users_title);
+        assertThat(
+                titleView.getText().toString(),
+                equalTo(
+                        mActivity.getString(
+                                R.string.autofill_churned_users_bubble_security_title)));
+        securityCoordinator.destroy();
     }
 
     @Test

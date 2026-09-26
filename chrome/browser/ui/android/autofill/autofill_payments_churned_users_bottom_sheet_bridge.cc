@@ -32,11 +32,12 @@ AutofillPaymentsChurnedUsersBottomSheetBridge::
   }
 }
 
-void AutofillPaymentsChurnedUsersBottomSheetBridge::RequestShowContent() {
+void AutofillPaymentsChurnedUsersBottomSheetBridge::RequestShowContent(
+    AutofillEnableResurrectingPaymentsUsersTreatmentArm treatment_arm) {
   if (java_object_) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_AutofillPaymentsChurnedUsersBottomSheetBridge_requestShowContent(
-        env, java_object_);
+        env, java_object_, static_cast<int>(treatment_arm));
   }
 }
 
