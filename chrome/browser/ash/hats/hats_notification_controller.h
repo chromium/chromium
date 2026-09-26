@@ -65,13 +65,6 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   static_assert(kPrioritizedHatsThreshold > kMinimumHatsThreshold);
   static_assert(kHatsGooglerThreshold > kMinimumHatsThreshold);
 
-  HatsNotificationController(
-      Profile* profile,
-      const HatsConfig& config,
-      const base::flat_map<std::string, std::string>& product_specific_data,
-      std::u16string title,
-      std::u16string body);
-
   // |product_specific_data| is meant to allow attaching extra runtime data that
   // is specific to the survey, e.g. a survey about the log-in experience might
   // include the last used authentication method.
@@ -162,8 +155,6 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   const raw_ref<const HatsConfig> hats_config_;
   base::flat_map<std::string, std::string> product_specific_data_;
   std::string notification_id_;
-  const std::u16string title_;
-  const std::u16string body_;
 
   HatsState state_ = HatsState::kDeviceSelected;
 

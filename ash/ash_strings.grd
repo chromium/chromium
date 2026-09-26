@@ -8811,12 +8811,6 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling a game.">
           Data associated with this app may be removed from this device
       </message>
-      <message name="IDS_BOREALIS_HATS_TITLE" desc="Title for HaTS notification requesting feedback. It will appear occasionally when a user closes a Steam game. Clicking it will show a satisfaction survey to the user.">
-        Help us improve Steam for Chromebook
-      </message>
-      <message name="IDS_BOREALIS_HATS_BODY" desc="Message on HaTS notification requesting feedback. It will appear occasionally when a user closes a Steam game. Clicking it will show a satisfaction survey to the user.">
-        Tell us about your recent gameplay
-      </message>
 
       <!-- Bruschetta -->
       <message name="IDS_BRUSCHETTA_NAME" desc="The display name for Bruschetta (codename) when a specific VM name cannot be used.">

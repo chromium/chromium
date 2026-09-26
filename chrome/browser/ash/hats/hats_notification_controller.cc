@@ -180,14 +180,10 @@ const char HatsNotificationController::kNotificationId[] = "hats_notification";
 HatsNotificationController::HatsNotificationController(
     Profile* profile,
     const HatsConfig& hats_config,
-    const base::flat_map<std::string, std::string>& product_specific_data,
-    std::u16string title,
-    std::u16string body)
+    const base::flat_map<std::string, std::string>& product_specific_data)
     : profile_(profile),
       hats_config_(hats_config),
-      product_specific_data_(product_specific_data),
-      title_(std::move(title)),
-      body_(std::move(body)) {
+      product_specific_data_(product_specific_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string histogram_name = HatsFinchHelper::GetHistogramName(*hats_config_);
@@ -203,17 +199,6 @@ HatsNotificationController::HatsNotificationController(
       base::BindOnce(&HatsNotificationController::Initialize,
                      weak_pointer_factory_.GetWeakPtr()));
 }
-
-HatsNotificationController::HatsNotificationController(
-    Profile* profile,
-    const HatsConfig& hats_config,
-    const base::flat_map<std::string, std::string>& product_specific_data)
-    : HatsNotificationController(
-          profile,
-          hats_config,
-          product_specific_data,
-          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_TITLE),
-          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_BODY)) {}
 
 HatsNotificationController::HatsNotificationController(
     Profile* profile,
@@ -421,8 +406,9 @@ void HatsNotificationController::PortalStateChanged(
       notifier_id.profile_id = profile_->GetProfileUserName();
 
       auto notification = ash::CreateSystemNotificationPtr(
-          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_, title_,
-          body_,
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
+          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_TITLE),
+          l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_BODY),
           l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_NOTIFIER_HATS_NAME),
           notifier_id, message_center::RichNotificationData(), this,
           kNotificationGoogleIcon,
