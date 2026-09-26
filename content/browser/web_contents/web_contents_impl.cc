@@ -6032,10 +6032,6 @@ WebContents* WebContentsImpl::ShowCreatedWindow(
 
   WebContentsImpl* created = owned_created->contents.get();
 
-  // This uses the delegate for the WebContents where the window was created
-  // from, to control how to show the newly created window.
-  WebContentsDelegate* delegate = GetDelegate();
-
   // Individual members of |window_features.bounds| may be 0 to indicate that
   // the window.open() feature string did not specify a value. This code does
   // not distinguish between an unspecified value and 0.
@@ -6052,7 +6048,11 @@ WebContents* WebContentsImpl::ShowCreatedWindow(
     return nullptr;
   }
 
-  // The delegate can be null in tests.
+  // This uses the delegate for the WebContents where the window was created
+  // from, to control how to show the newly created window.
+  // The delegate can be null in tests, or reset if dropping fullscreen executed
+  // event handlers.
+  WebContentsDelegate* delegate = GetDelegate();
   if (!delegate) {
     return nullptr;
   }
@@ -8692,6 +8692,20 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
     return;
   }
 
+  // Any new WebContents opened while this WebContents is in fullscreen can be
+  // used to confuse the user, so drop fullscreen. Dropping fullscreen can run
+  // event handlers synchronously, which may reset `delegate_` or detach
+  // `frame`. Dropping fullscreen before reading NavigationEntries also avoids
+  // holding pointers across the nested message loop.
+  base::WeakPtr<RenderFrameHostImpl> weak_frame = frame->GetWeakPtr();
+  if (!ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId) ||
+      !delegate_) {
+    return;
+  }
+  if (!weak_frame) {
+    return;
+  }
+
   // Use the last committed entry, since the pending entry hasn't loaded yet and
   // won't be copied into the cloned tab.
   NavigationEntryImpl* last_committed_entry =
@@ -8703,16 +8717,6 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   FrameNavigationEntry* frame_entry =
       last_committed_entry->GetFrameEntry(frame->frame_tree_node());
   if (!frame_entry) {
-    return;
-  }
-
-  // Any new WebContents opened while this WebContents is in fullscreen can be
-  // used to confuse the user, so drop fullscreen.
-  base::WeakPtr<RenderFrameHostImpl> weak_frame = frame->GetWeakPtr();
-  if (!ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId)) {
-    return;
-  }
-  if (!weak_frame) {
     return;
   }
 
@@ -8944,12 +8948,15 @@ void WebContentsImpl::OnPageScaleFactorChanged(PageImpl& source) {
 
 void WebContentsImpl::EnumerateDirectory(
     base::WeakPtr<FileChooserImpl> file_chooser,
-    RenderFrameHost* render_frame_host,
+    RenderFrameHostImpl* render_frame_host,
     scoped_refptr<FileChooserImpl::FileSelectListenerImpl> listener,
     const base::FilePath& directory_path) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::EnumerateDirectory",
                         "render_frame_host", render_frame_host,
                         "directory_path", directory_path);
+  // The sole caller, FileChooserImpl::EnumerateChosenDirectory(), returns
+  // early if its frame is gone, and dereferences it on the way here.
+  CHECK(render_frame_host);
   absl::Cleanup cancel_chooser = [&listener] {
     listener->FileSelectionCanceled();
   };
@@ -8967,10 +8974,13 @@ void WebContentsImpl::EnumerateDirectory(
   }
 
   // Any explicit focusing of another window while this WebContents is in
-  // fullscreen can be used to confuse the user, so drop fullscreen.
+  // fullscreen can be used to confuse the user, so drop fullscreen. Dropping
+  // fullscreen can run event handlers synchronously, which may detach the
+  // frame that asked for the directory listing.
+  base::WeakPtr<RenderFrameHostImpl> weak_rfh = render_frame_host->GetWeakPtr();
   auto blocker =
       ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
-  if (!blocker) {
+  if (!blocker || !weak_rfh || !weak_rfh->IsActive()) {
     return;
   }
   listener->SetFullscreenBlock(std::move(*blocker));
@@ -10276,7 +10286,7 @@ void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {
   // Only drop fullscreen on the specific destination display, which is known.
   // This supports sites using cross-screen window management capabilities to
   // retain fullscreen and place a window on another screen.
-  if (!ForSecurityDropFullscreen(display_id)) {
+  if (!ForSecurityDropFullscreen(display_id) || !delegate_) {
     return;
   }
 
@@ -10294,7 +10304,7 @@ void WebContentsImpl::MoveWindowTo(const gfx::Point& origin) {
   }
   gfx::Rect bounds(origin, view->GetBoundsInScreen().size());
   int64_t display_id = AdjustWindowRect(&bounds, GetPrimaryMainFrame());
-  if (!ForSecurityDropFullscreen(display_id)) {
+  if (!ForSecurityDropFullscreen(display_id) || !delegate_) {
     return;
   }
   delegate_->SetContentsBounds(this, bounds);
@@ -10311,7 +10321,7 @@ void WebContentsImpl::ResizeWindowTo(const gfx::Size& size) {
   }
   gfx::Rect bounds(view->GetBoundsInScreen().origin(), size);
   int64_t display_id = AdjustWindowRect(&bounds, GetPrimaryMainFrame());
-  if (!ForSecurityDropFullscreen(display_id)) {
+  if (!ForSecurityDropFullscreen(display_id) || !delegate_) {
     return;
   }
   delegate_->SetContentsBounds(this, bounds);
