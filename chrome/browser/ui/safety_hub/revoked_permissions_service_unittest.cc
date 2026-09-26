@@ -588,12 +588,13 @@ TEST_P(RevokedPermissionsServiceTest, RevokedPermissionsServiceTest) {
 
   // The old settings should now be tracked as unused.
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service());
+  std::unique_ptr<RevokedPermissionsTabHelper> tab_helper;
   if (ShouldSetupUnusedSites()) {
     EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 3u);
     EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
     // Visit `url2` and check that the corresponding content setting got
     // updated.
-    RevokedPermissionsService::TabHelper::CreateForWebContents(web_contents(),
+    tab_helper = std::make_unique<RevokedPermissionsTabHelper>(web_contents(),
                                                                service());
   }
   NavigateAndCommit(GURL(url2));

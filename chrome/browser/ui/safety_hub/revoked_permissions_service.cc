@@ -48,6 +48,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/web_contents.h"
 #include "revoked_permissions_service.h"
 #include "url/origin.h"
 
@@ -102,15 +103,14 @@ base::TimeDelta RevokedPermissionsService::GetRepeatedUpdateInterval() {
   return kUnusedSitePermissionsRepeatedUpdateInterval;
 }
 
-RevokedPermissionsService::TabHelper::TabHelper(
+RevokedPermissionsTabHelper::RevokedPermissionsTabHelper(
     content::WebContents* web_contents,
     RevokedPermissionsService* unused_site_permission_service)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<TabHelper>(*web_contents),
       unused_site_permission_service_(
           unused_site_permission_service->AsWeakPtr()) {}
 
-RevokedPermissionsService::TabHelper::~TabHelper() = default;
+RevokedPermissionsTabHelper::~RevokedPermissionsTabHelper() = default;
 
 PermissionsData::PermissionsData() = default;
 
@@ -125,8 +125,7 @@ PermissionsData::PermissionsData(const PermissionsData& other)
   }
 }
 
-void RevokedPermissionsService::TabHelper::PrimaryPageChanged(
-    content::Page& page) {
+void RevokedPermissionsTabHelper::PrimaryPageChanged(content::Page& page) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
@@ -139,8 +138,6 @@ void RevokedPermissionsService::TabHelper::PrimaryPageChanged(
         page.GetMainDocument().GetLastCommittedOrigin());
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(RevokedPermissionsService::TabHelper);
 
 RevokedPermissionsService::RevokedPermissionsService(
     content::BrowserContext* browser_context,

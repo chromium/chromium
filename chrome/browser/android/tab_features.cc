@@ -41,6 +41,8 @@
 #include "chrome/browser/sync_tab_context/tab_context_decryption_token_tab_helper.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
 #include "chrome/browser/ui/side_panel/internal/android/dev/side_panel_tab_scoped_dev_feature.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
@@ -251,6 +253,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   storage_access_api_tab_helper_ = std::make_unique<StorageAccessAPITabHelper>(
       web_contents,
       StorageAccessAPIServiceFactory::GetForBrowserContext(profile));
+
+  if (auto* service =
+          RevokedPermissionsServiceFactory::GetForProfile(profile)) {
+    revoked_permissions_tab_helper_ =
+        std::make_unique<RevokedPermissionsTabHelper>(web_contents, service);
+  }
 }
 
 TabFeatures::~TabFeatures() = default;

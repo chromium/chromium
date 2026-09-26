@@ -86,6 +86,8 @@
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
@@ -862,6 +864,13 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   storage_access_api_tab_helper_ = std::make_unique<StorageAccessAPITabHelper>(
       tab.GetContents(),
       StorageAccessAPIServiceFactory::GetForBrowserContext(profile));
+
+  if (auto* service =
+          RevokedPermissionsServiceFactory::GetForProfile(profile)) {
+    revoked_permissions_tab_helper_ =
+        std::make_unique<RevokedPermissionsTabHelper>(tab.GetContents(),
+                                                      service);
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1148,6 +1157,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   storage_access_api_tab_helper_ = std::make_unique<StorageAccessAPITabHelper>(
       new_contents,
       StorageAccessAPIServiceFactory::GetForBrowserContext(profile));
+
+  if (auto* service =
+          RevokedPermissionsServiceFactory::GetForProfile(profile)) {
+    revoked_permissions_tab_helper_ =
+        std::make_unique<RevokedPermissionsTabHelper>(new_contents, service);
+  }
 }
 
 customize_chrome::SidePanelController*

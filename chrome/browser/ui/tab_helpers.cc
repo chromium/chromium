@@ -83,8 +83,6 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
-#include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
-#include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
@@ -577,11 +575,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 #endif
   tasks::TaskTabHelper::CreateForWebContents(web_contents);
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
-  auto* service = RevokedPermissionsServiceFactory::GetForProfile(profile);
-  if (service) {
-    RevokedPermissionsService::TabHelper::CreateForWebContents(web_contents,
-                                                               service);
-  }
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
   vr::VrTabHelper::CreateForWebContents(web_contents);
   OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents);

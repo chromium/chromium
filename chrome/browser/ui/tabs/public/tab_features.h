@@ -71,6 +71,7 @@ class QwacWebContentsObserver;
 class ReadAnythingController;
 class ReadAnythingSidePanelController;
 class RecordReplayPageActionController;
+class RevokedPermissionsTabHelper;
 class SadTabHelper;
 class SearchEngineChoiceTabHelper;
 class SearchPromotionNavigationObserver;
@@ -846,6 +847,8 @@ class TabFeatures {
       v8_compile_hints_tab_helper_;
 
   std::unique_ptr<StorageAccessAPITabHelper> storage_access_api_tab_helper_;
+
+  std::unique_ptr<RevokedPermissionsTabHelper> revoked_permissions_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};
