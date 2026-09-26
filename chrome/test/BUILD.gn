@@ -3701,7 +3701,6 @@ if (!is_android) {
     if (is_chromeos) {
       sources += [
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
-        "//ash/webui/boca_ui/provider/tab_info_collector_browsertest.cc",
         "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",
         "base/ash/web_ui_browser_test_browsertest.cc",
         "data/webui/chromeos/async_gen.cc",
@@ -3765,6 +3764,7 @@ if (!is_android) {
         "//ash/webui/annotator",
         "//ash/webui/annotator:test_support",
         "//ash/webui/boca_ui",
+        "//ash/webui/boca_ui:browser_tests",
         "//ash/webui/boca_ui/mojom",
         "//ash/webui/common:trusted_types_util",
         "//ash/webui/demo_mode_app_ui",

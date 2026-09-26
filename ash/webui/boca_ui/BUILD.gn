@@ -128,3 +128,28 @@ source_set("unit_tests") {
     "//ui/aura",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "provider/tab_info_collector_browsertest.cc" ]
+  deps = [
+    ":boca_ui",
+    "//ash",
+    "//ash/constants",
+    "//ash/webui/boca_ui/mojom",
+    "//ash/webui/boca_ui/mojom:mojom_shared_cpp_sources",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window:create_browser_window",
+    "//chrome/test/base:in_process_browser_test",
+    "//chrome/test/base:ui_test_utils",
+    "//chromeos/ash/components/boca/proto",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views",
+  ]
+}
