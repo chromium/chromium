@@ -31,11 +31,8 @@
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_access_initializer.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_connection_event.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_input.h"
@@ -77,18 +74,6 @@ MapType* CreatePortMap(const HeapVector<Member<PortType>>& port_list) {
   return MakeGarbageCollected<MapType>(ports);
 }
 
-Page* GetPageHelper(ExecutionContext* context) {
-  if (!context) {
-    return nullptr;
-  }
-  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    if (auto* frame = window->GetFrame()) {
-      return frame->GetPage();
-    }
-  }
-  return nullptr;
-}
-
 }  // namespace
 
 MIDIAccess::MIDIAccess(
@@ -98,7 +83,6 @@ MIDIAccess::MIDIAccess(
     ExecutionContext* execution_context)
     : ActiveScriptWrappable<MIDIAccess>({}),
       ExecutionContextLifecycleObserver(execution_context),
-      PageVisibilityObserver(GetPageHelper(execution_context)),
       dispatcher_(dispatcher),
       sysex_enabled_(sysex_enabled) {
   dispatcher_->SetClient(this);
@@ -127,12 +111,8 @@ void MIDIAccess::setOnstatechange(EventListener* listener) {
 }
 
 bool MIDIAccess::HasPendingActivity() const {
-  return (has_pending_activity_ || !pending_events_.empty()) &&
-         GetExecutionContext() && !GetExecutionContext()->IsContextDestroyed();
-}
-
-void MIDIAccess::ContextDestroyed() {
-  pending_events_.clear();
+  return has_pending_activity_ && GetExecutionContext() &&
+         !GetExecutionContext()->IsContextDestroyed();
 }
 
 MIDIInputMap* MIDIAccess::inputs() const {
@@ -152,11 +132,7 @@ void MIDIAccess::DidAddInputPort(const String& id,
   auto* port = MakeGarbageCollected<MIDIInput>(this, id, manufacturer, name,
                                                version, ToDeviceState(state));
   inputs_.push_back(port);
-  if (IsPageVisible()) {
-    DispatchEvent(*MIDIConnectionEvent::Create(port));
-  } else {
-    BufferEvent(this, port);
-  }
+  DispatchEvent(*MIDIConnectionEvent::Create(port));
 }
 
 void MIDIAccess::DidAddOutputPort(const String& id,
@@ -169,11 +145,7 @@ void MIDIAccess::DidAddOutputPort(const String& id,
   auto* port = MakeGarbageCollected<MIDIOutput>(
       this, port_index, id, manufacturer, name, version, ToDeviceState(state));
   outputs_.push_back(port);
-  if (IsPageVisible()) {
-    DispatchEvent(*MIDIConnectionEvent::Create(port));
-  } else {
-    BufferEvent(this, port);
-  }
+  DispatchEvent(*MIDIConnectionEvent::Create(port));
 }
 
 void MIDIAccess::DidSetInputPortState(unsigned port_index, PortState state) {
@@ -184,8 +156,6 @@ void MIDIAccess::DidSetInputPortState(unsigned port_index, PortState state) {
 
   PortState device_state = ToDeviceState(state);
   if (inputs_[port_index]->GetState() != device_state) {
-    // Note: Event buffering during page invisibility is handled downstream by
-    // MIDIPort::SetStates().
     inputs_[port_index]->SetState(device_state);
   }
 }
@@ -198,8 +168,6 @@ void MIDIAccess::DidSetOutputPortState(unsigned port_index, PortState state) {
 
   PortState device_state = ToDeviceState(state);
   if (outputs_[port_index]->GetState() != device_state) {
-    // Note: Event buffering during page invisibility is handled downstream by
-    // MIDIPort::SetStates().
     outputs_[port_index]->SetState(device_state);
   }
 }
@@ -226,45 +194,12 @@ void MIDIAccess::SendMIDIData(unsigned port_index,
   dispatcher_->SendMIDIData(port_index, data, time_stamp);
 }
 
-void MIDIAccess::PageVisibilityChanged() {
-  if (IsPageVisible()) {
-    FlushPendingEvents();
-  }
-}
-
-bool MIDIAccess::IsPageVisible() const {
-  return GetPage() && GetPage()->IsPageVisible();
-}
-
-void MIDIAccess::BufferEvent(EventTarget* target, MIDIPort* port) {
-  for (const auto& pending : pending_events_) {
-    if (pending.target == target && pending.port == port) {
-      return;
-    }
-  }
-  pending_events_.push_back(PendingEvent{target, port});
-}
-
-void MIDIAccess::FlushPendingEvents() {
-  HeapVector<PendingEvent> events;
-  events.swap(pending_events_);
-  for (const auto& pending : events) {
-    if (!GetExecutionContext() ||
-        GetExecutionContext()->IsContextDestroyed()) {
-      break;
-    }
-    pending.target->DispatchEvent(*MIDIConnectionEvent::Create(pending.port));
-  }
-}
-
 void MIDIAccess::Trace(Visitor* visitor) const {
   visitor->Trace(dispatcher_);
   visitor->Trace(inputs_);
   visitor->Trace(outputs_);
-  visitor->Trace(pending_events_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  PageVisibilityObserver::Trace(visitor);
 }
 
 }  // namespace blink
