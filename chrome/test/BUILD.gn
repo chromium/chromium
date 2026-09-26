@@ -2122,6 +2122,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/toolbar:browser_tests",
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/views/user_education:browser_tests",
+      "//chrome/browser/ui/views/web_apps:browser_tests",
       "//chrome/browser/ui/views/web_apps:launch_dialogs",
       "//chrome/browser/ui/views/web_apps:web_app_install_dialog_delegate",
       "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view",
@@ -3701,9 +3702,6 @@ if (!is_android) {
       sources += [
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
         "../browser/ui/views/mahi/mahi_menu_pixeltest.cc",
-        "../browser/ui/views/web_apps/protocol_handler_picker_interactve_uitest.cc",
-        "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
-        "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
         "//ash/webui/boca_ui/provider/tab_info_collector_browsertest.cc",
         "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",
         "base/ash/web_ui_browser_test_browsertest.cc",

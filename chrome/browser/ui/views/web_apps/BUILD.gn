@@ -132,6 +132,25 @@ source_set("browser_tests") {
     "//ui/events:test_support",
     "//ui/views:test_support",
   ]
+
+  if (is_chromeos) {
+    sources += [
+      # Chrome OS can run interactive UI tests in the browser tests suite
+      # because each test runs in an isolated emulator with its own focus,
+      # events, etc.
+      "protocol_handler_picker_interactve_uitest.cc",
+      "web_app_ash_interactive_ui_test.cc",
+      "web_app_integration_browsertest_cros.cc",
+    ]
+    deps += [
+      ":protocol_handler_picker_dialog",
+      "//chrome/browser/ui/views/frame:immersive_mode_controller_chromeos",
+      "//chrome/browser/ui/views/frame:top_container_view",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
+      "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_toolbar_button_container",
+      "//chromeos/ui/frame:test_support",
+    ]
+  }
 }
 
 source_set("launch_dialogs") {
