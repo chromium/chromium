@@ -18,12 +18,15 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/i18n/language_tag.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "ui/base/l10n/l10n_util_mac.h"
 #endif  // BUILDFLAG(IS_APPLE)
+
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
 
 namespace l10n_util {
 

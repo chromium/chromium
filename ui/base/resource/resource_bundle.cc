@@ -23,6 +23,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/i18n/bcp47_extensions.h"
+#include "base/i18n/language_tag.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"

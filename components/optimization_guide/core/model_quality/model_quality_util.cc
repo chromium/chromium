@@ -9,6 +9,7 @@
 #include "base/hash/hash.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/time_formatting.h"
 #include "base/i18n/timezone.h"
 #include "base/notreached.h"
