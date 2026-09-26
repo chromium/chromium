@@ -88,7 +88,7 @@
     To interact with this site, pause the current task or wait for Gemini to finish working
   </message>
   <message name="IDS_ACTOR_SNACKBAR_BACK_TO_GEMINI" desc="Text on the snackbar action button that takes the user back to the Gemini app. The snackbar is shown in Chrome when a task triggered from the Gemini app could not be completed." formatter_data="android_java">
-    Back to Gemini
+    Go back to Gemini
   </message>
   <message name="IDS_GLIC_BUTTON_STATUS_REVIEW" desc="Label on the Gemini entry point button when Gemini requires user attention." formatter_data="android_java">
     Review
