@@ -29,9 +29,14 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
 - (void)setImage:(UIImage*)image
     framingCoordinates:(HomeCustomizationFramingCoordinates*)framingCoordinates;
 
-// Sets a looping animated background at the given path to be displayed by this
-// view. Removes the current animated background if nil is passed.
-- (void)setAnimatedBackgroundPath:(NSString*)animatedBackgroundPath;
+// Sets a looping animated background at the given path with dynamic light and
+// dark mode color providers to be displayed by this view. Removes the current
+// animated background if nil is passed for `animatedBackgroundPath`.
+- (void)setAnimatedBackgroundPath:(NSString*)animatedBackgroundPath
+           lightModeColorProvider:
+               (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider
+            darkModeColorProvider:
+                (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider;
 
 @end
 

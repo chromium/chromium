@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -743,9 +744,19 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
        LoadAndApplyEphemeralBackground) {
   base::test::ScopedFeatureList feature_list(kNewTabPageEphemeralTheme);
 
+  base::DictValue light_dict;
+  light_dict.Set("**.Background.Fill 1.Color", "#1A73E8");
+  base::DictValue dark_dict;
+  dark_dict.Set("**.Background.Fill 1.Color", "#8AB4F8");
+  base::DictValue color_mapping;
+  color_mapping.Set(kEphemeralThemeLightModeColorsKey, std::move(light_dict));
+  color_mapping.Set(kEphemeralThemeDarkModeColorsKey, std::move(dark_dict));
+
   base::DictValue theme_data;
   theme_data.Set(kEphemeralThemeSeedColorKey, "FF8000");
   theme_data.Set(kEphemeralThemeAnimationPathKey, "/path/to/animation.json");
+  theme_data.Set(kEphemeralThemeAnimationColorMappingKey,
+                 std::move(color_mapping));
   profile_->GetPrefs()->SetDict(prefs::kIosNtpEphemeralThemeData,
                                 std::move(theme_data));
 
@@ -768,6 +779,14 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   EXPECT_NE(nil, ephemeral_item.colorPalette);
   EXPECT_NSEQ(@"/path/to/animation.json",
               ephemeral_item.animatedBackgroundPath);
+  ASSERT_NE(nil, ephemeral_item.lightModeColorProvider);
+  EXPECT_NSEQ(
+      UIColorFromRGB(0x1A73E8),
+      ephemeral_item.lightModeColorProvider[@"**.Background.Fill 1.Color"]);
+  ASSERT_NE(nil, ephemeral_item.darkModeColorProvider);
+  EXPECT_NSEQ(
+      UIColorFromRGB(0x8AB4F8),
+      ephemeral_item.darkModeColorProvider[@"**.Background.Fill 1.Color"]);
   EXPECT_NSEQ(default_id, consumer_.selectedBackgroundId);
 
   // Apply and save the ephemeral theme.

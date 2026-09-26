@@ -11,55 +11,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_ephemeral_theme_promo_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "third_party/skia/include/core/SkColor.h"
-
-namespace {
-
-// JSON dictionary keys for `animation-promo-colormapping`.
-constexpr std::string_view kLightModeColorsKey = "light";
-constexpr std::string_view kDarkModeColorsKey = "dark";
-
-// Parses a hex color string (e.g. "#1A73E8" or "1A73E8") into a `UIColor*`.
-// Returns nil if the string is not a valid 6-digit hex color.
-UIColor* ColorFromHexString(std::string_view hex_string) {
-  std::string_view trimmed =
-      base::TrimString(hex_string, "#", base::TRIM_LEADING);
-  if (trimmed.length() != 6) {
-    return nil;
-  }
-  uint32_t rgb_value = 0;
-  if (!base::HexStringToUInt(trimmed, &rgb_value)) {
-    return nil;
-  }
-  return UIColorFromRGB(rgb_value);
-}
-
-// Converts a `base::DictValue` mapping keypath strings to hex color strings
-// into an `NSDictionary<NSString*, UIColor*>*`.
-NSDictionary<NSString*, UIColor*>* ColorProviderDictionaryFromDict(
-    const base::DictValue* dict) {
-  if (!dict) {
-    return nil;
-  }
-  NSMutableDictionary<NSString*, UIColor*>* result =
-      [[NSMutableDictionary alloc] initWithCapacity:dict->size()];
-  for (const auto [key, value] : *dict) {
-    if (!value.is_string()) {
-      continue;
-    }
-    UIColor* color = ColorFromHexString(value.GetString());
-    if (color) {
-      result[base::SysUTF8ToNSString(key)] = color;
-    }
-  }
-  return result.count > 0 ? [result copy] : nil;
-}
-
-}  // namespace
 
 @implementation HomeCustomizationEphemeralThemePromoMediator {
   raw_ptr<PrefService> _prefService;
@@ -119,9 +74,9 @@ NSDictionary<NSString*, UIColor*>* ColorProviderDictionaryFromDict(
       savedThemeData.FindDict(kEphemeralThemeAnimationPromoColorMappingKey);
   if (savedColorMappingDict) {
     lightColors = ColorProviderDictionaryFromDict(
-        savedColorMappingDict->FindDict(kLightModeColorsKey));
+        savedColorMappingDict->FindDict(kEphemeralThemeLightModeColorsKey));
     darkColors = ColorProviderDictionaryFromDict(
-        savedColorMappingDict->FindDict(kDarkModeColorsKey));
+        savedColorMappingDict->FindDict(kEphemeralThemeDarkModeColorsKey));
   }
 
   [_consumer setAnimationAssetName:animationAssetName bundle:animationBundle];
