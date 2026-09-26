@@ -414,5 +414,64 @@ TEST_P(MultipleRequestGetVirtualCardEnrollmentDetailsTest,
   EXPECT_EQ(result, result_);
 }
 
+class MultipleRequestGetDetailsForUpdateCardTest
+    : public MultipleRequestPaymentsNetworkInterfaceTest {
+ public:
+  MultipleRequestGetDetailsForUpdateCardTest() = default;
+  ~MultipleRequestGetDetailsForUpdateCardTest() override = default;
+
+ protected:
+  void SendGetDetailsForUpdateCardRequest() {
+    GetDetailsForUpdateCardRequestDetails request_details;
+    request_details.app_locale = "en-US";
+    request_details.billing_customer_number = 111222333444L;
+    request_details.instrument_id = 123456789L;
+
+    id_ = payments_network_interface_->GetDetailsForUpdateCard(
+        request_details,
+        base::BindOnce(&MultipleRequestGetDetailsForUpdateCardTest::
+                           OnDidGetDetailsForUpdateCard,
+                       GetWeakPtr()));
+  }
+
+  PaymentsRpcResult result_ = PaymentsRpcResult::kNone;
+  std::string context_token_;
+
+ private:
+  base::WeakPtr<MultipleRequestGetDetailsForUpdateCardTest> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void OnDidGetDetailsForUpdateCard(PaymentsRpcResult result,
+                                    const std::string& context_token) {
+    result_ = result;
+    context_token_ = context_token;
+  }
+
+  base::WeakPtrFactory<MultipleRequestGetDetailsForUpdateCardTest>
+      weak_ptr_factory_{this};
+};
+
+TEST_F(MultipleRequestGetDetailsForUpdateCardTest,
+       GetDetailsForUpdateCard_Success) {
+  SendGetDetailsForUpdateCardRequest();
+  IssueOAuthToken();
+  ReturnResponse(
+      net::HTTP_OK,
+      "{\"context_token\":\"test_context_token\",\"card_details\":{}}");
+
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ("test_context_token", context_token_);
+}
+
+TEST_F(MultipleRequestGetDetailsForUpdateCardTest,
+       GetDetailsForUpdateCard_Failure) {
+  SendGetDetailsForUpdateCardRequest();
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{\"error\":{\"code\":\"INTERNAL\"}}");
+
+  EXPECT_EQ(PaymentsRpcResult::kTryAgainFailure, result_);
+}
+
 }  // namespace
 }  // namespace autofill::payments

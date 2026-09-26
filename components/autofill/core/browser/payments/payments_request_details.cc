@@ -307,6 +307,21 @@ GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::operator=(
 GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
     ~GetDetailsForUpdateBnplPaymentInstrumentRequestDetails() = default;
 
+GetDetailsForUpdateCardRequestDetails::GetDetailsForUpdateCardRequestDetails() =
+    default;
+GetDetailsForUpdateCardRequestDetails::GetDetailsForUpdateCardRequestDetails(
+    const GetDetailsForUpdateCardRequestDetails& other) = default;
+GetDetailsForUpdateCardRequestDetails&
+GetDetailsForUpdateCardRequestDetails::operator=(
+    const GetDetailsForUpdateCardRequestDetails& other) = default;
+GetDetailsForUpdateCardRequestDetails::GetDetailsForUpdateCardRequestDetails(
+    GetDetailsForUpdateCardRequestDetails&&) = default;
+GetDetailsForUpdateCardRequestDetails&
+GetDetailsForUpdateCardRequestDetails::operator=(
+    GetDetailsForUpdateCardRequestDetails&&) = default;
+GetDetailsForUpdateCardRequestDetails::
+    ~GetDetailsForUpdateCardRequestDetails() = default;
+
 UpdateBnplPaymentInstrumentRequestDetails::
     UpdateBnplPaymentInstrumentRequestDetails() = default;
 UpdateBnplPaymentInstrumentRequestDetails::

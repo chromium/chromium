@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/create_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/get_details_for_update_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -78,6 +79,14 @@ RequestId MultipleRequestPaymentsNetworkInterface::UpdateVirtualCardEnrollment(
     const UpdateVirtualCardEnrollmentRequestDetails& request_details,
     base::OnceCallback<void(PaymentsRpcResult)> callback) {
   return IssueRequest(std::make_unique<UpdateVirtualCardEnrollmentRequest>(
+      request_details, std::move(callback)));
+}
+
+RequestId MultipleRequestPaymentsNetworkInterface::GetDetailsForUpdateCard(
+    const GetDetailsForUpdateCardRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                            const std::string&)> callback) {
+  return IssueRequest(std::make_unique<GetDetailsForUpdateCardRequest>(
       request_details, std::move(callback)));
 }
 

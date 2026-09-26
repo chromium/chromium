@@ -75,6 +75,14 @@ class MultipleRequestPaymentsNetworkInterface
       const UpdateVirtualCardEnrollmentRequestDetails& request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
           callback);
+
+  // Sends a preflight request to prepare for a card update (e.g. cardholder
+  // name fix flow). Returns a context token to be passed into the subsequent
+  // update call.
+  virtual RequestId GetDetailsForUpdateCard(
+      const GetDetailsForUpdateCardRequestDetails& request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                              const std::string&)> callback);
 };
 
 }  // namespace autofill::payments

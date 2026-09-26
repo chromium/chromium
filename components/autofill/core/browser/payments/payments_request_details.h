@@ -586,6 +586,27 @@ struct GetDetailsForUpdateBnplPaymentInstrumentRequestDetails {
   std::string issuer_id;
 };
 
+// Information required to make a GetDetailsForUpdateCard request.
+struct GetDetailsForUpdateCardRequestDetails {
+  GetDetailsForUpdateCardRequestDetails();
+  GetDetailsForUpdateCardRequestDetails(
+      const GetDetailsForUpdateCardRequestDetails& other);
+  GetDetailsForUpdateCardRequestDetails& operator=(
+      const GetDetailsForUpdateCardRequestDetails& other);
+  GetDetailsForUpdateCardRequestDetails(
+      GetDetailsForUpdateCardRequestDetails&&);
+  GetDetailsForUpdateCardRequestDetails& operator=(
+      GetDetailsForUpdateCardRequestDetails&&);
+  ~GetDetailsForUpdateCardRequestDetails();
+
+  // The Chrome locale.
+  std::string app_locale;
+  // The billing customer number for the account this request is sent to.
+  int64_t billing_customer_number = 0;
+  // The platform identifier for the instrument being updated.
+  int64_t instrument_id = 0;
+};
+
 // A collection of information required to create an update BNPL payment
 // instrument request.
 struct UpdateBnplPaymentInstrumentRequestDetails {
