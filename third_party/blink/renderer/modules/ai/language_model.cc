@@ -581,9 +581,14 @@ ScriptPromise<LanguageModel> LanguageModel::create(
     return promise;
   }
 
+  auto sampling_params = std::move(sampling_params_or_exception.value());
+  if (!sampling_mode.has_value() && !sampling_params &&
+      RuntimeEnabledFeatures::AIPromptAPIParamsEnabled(execution_context)) {
+    sampling_mode = mojom::blink::AILanguageModelSamplingMode::kBalanced;
+  }
+
   MakeGarbageCollected<LanguageModelCreateClient>(
-      resolver, options, std::move(sampling_params_or_exception.value()),
-      sampling_mode);
+      resolver, options, std::move(sampling_params), sampling_mode);
   return promise;
 }
 
