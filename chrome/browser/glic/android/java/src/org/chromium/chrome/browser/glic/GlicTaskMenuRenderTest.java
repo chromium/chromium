@@ -65,7 +65,7 @@ public class GlicTaskMenuRenderTest {
     private static final int TAB_ID_2 = 2;
     private static final int TAB_ID_3 = 3;
     private static final int CLOSED_TAB_ID = 4;
-    private static final int RENDER_REVISION = 1;
+    private static final int RENDER_REVISION = 2;
 
     private static final String STANDARD_TASK_TITLE = "Book flight to NYC";
     private static final String REVIEW_TASK_TITLE = "Confirm hotel booking";
@@ -88,6 +88,7 @@ public class GlicTaskMenuRenderTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_GLIC)
                     .setRevision(RENDER_REVISION)
+                    .setDescription("Ligatures and contextual alternates disabled in UI text")
                     .build();
 
     @Mock private TabModelSelector mTabModelSelector;

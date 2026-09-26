@@ -57,7 +57,8 @@ public class AutofillPersonalContextSettingsRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
+                    .setDescription("Ligatures and contextual alternates disabled in UI text")
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_AUTOFILL)
                     .build();
 

@@ -113,7 +113,8 @@ public class SecurePaymentConfirmationRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
+                    .setDescription("Ligatures and contextual alternates disabled in UI text")
                     .setBugComponent(Component.BLINK_PAYMENTS)
                     .build();
 

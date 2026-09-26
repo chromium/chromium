@@ -82,6 +82,8 @@ public class ViewTransitionPixelTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.BLINK_VIEW_TRANSITIONS)
+                    .setRevision(1)
+                    .setDescription("Ligatures and contextual alternates disabled in UI text")
                     .build();
 
     private static final String TEXTFIELD_DOM_ID = "inputElement";

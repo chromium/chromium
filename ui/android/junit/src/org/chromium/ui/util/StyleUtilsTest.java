@@ -46,6 +46,25 @@ public class StyleUtilsTest {
     }
 
     @Test
+    public void applyTextAppearanceToTextPaint_DisablesLigatures() {
+        // A bare TextPaint never goes through TextView#readTextAppearance, so it does not pick up
+        // the font feature settings that the TextAppearance hierarchy carries. Text drawn straight
+        // onto a Canvas has to get the same treatment as text in a TextView, otherwise it is a gap
+        // in the UI-wide ligature suppression.
+        TextPaint textPaint = new TextPaint();
+        StyleUtils.applyTextAppearanceToTextPaint(
+                mContext,
+                textPaint,
+                R.style.TextAppearance_Test,
+                /* applyFontFamily= */ false,
+                /* applyTextSize= */ false,
+                /* applyTextColor= */ false);
+        assertEquals(
+                mContext.getString(R.string.default_font_feature_settings),
+                textPaint.getFontFeatureSettings());
+    }
+
+    @Test
     @DisabledTest // This needs to be re-worked for Q.
     public void applyTextAppearanceToTextPaint_CustomFontSizeText() {
         TextPaint textPaint = new TextPaint();

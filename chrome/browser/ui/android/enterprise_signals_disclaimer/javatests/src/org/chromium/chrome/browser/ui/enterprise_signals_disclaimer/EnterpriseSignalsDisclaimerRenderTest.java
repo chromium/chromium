@@ -76,7 +76,8 @@ public class EnterpriseSignalsDisclaimerRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             new ChromeRenderTestRule.Builder()
                     .setCorpus(ChromeRenderTestRule.Corpus.ANDROID_RENDER_TESTS_PUBLIC)
-                    .setRevision(3)
+                    .setRevision(4)
+                    .setDescription("Ligatures and contextual alternates disabled in UI text")
                     .setBugComponent(RenderTestRule.Component.ENTERPRISE)
                     .build();
 

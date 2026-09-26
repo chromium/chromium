@@ -58,7 +58,8 @@ public class GlicActorLoginPermissionsFragmentRenderTest {
     public final @Rule ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
-                    .setRevision(1)
+                    .setRevision(2)
+                    .setDescription("Ligatures and contextual alternates disabled in UI text")
                     .build();
 
     public final @Rule MockitoRule mMocks = MockitoJUnit.rule();

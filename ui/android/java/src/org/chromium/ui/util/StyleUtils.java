@@ -82,6 +82,13 @@ public class StyleUtils {
             textPaint.setColor(textColorStateList.getDefaultColor());
         }
 
+        // Unlike a TextView, a bare TextPaint never goes through
+        // TextView#readTextAppearance, so the font feature settings carried by the
+        // TextAppearance hierarchy would be dropped here. Apply them directly, so
+        // that text drawn straight onto a Canvas gets the same treatment as text
+        // in a TextView.
+        textPaint.setFontFeatureSettings(context.getString(R.string.default_font_feature_settings));
+
         appearance.recycle();
     }
 

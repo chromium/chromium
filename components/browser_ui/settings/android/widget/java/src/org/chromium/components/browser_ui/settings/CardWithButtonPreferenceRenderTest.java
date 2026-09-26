@@ -71,9 +71,9 @@ public class CardWithButtonPreferenceRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_SETTINGS)
-                    .setDescription("Initial screenshots for CardWithButtonPreference")
+                    .setDescription("Ligatures and contextual alternates disabled in UI text")
                     .build();
 
     private Activity mActivity;

@@ -86,7 +86,8 @@ public class ContactsPickerDialogTest
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.BLINK_CONTACTS)
-                    .setRevision(1)
+                    .setRevision(2)
+                    .setDescription("Ligatures and contextual alternates disabled in UI text")
                     .build();
 
     // The dialog we are testing.
