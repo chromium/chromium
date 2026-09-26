@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "components/permissions/chooser_controller.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -223,41 +224,88 @@ namespace chrome {
 
 namespace {
 
+// The browser hosting a chooser dialog and the tab contents the dialog
+// belongs to, along with the blocker that keeps fullscreen from being
+// re-entered while the dialog is up. All three are known to be live at the
+// point the struct is returned.
+struct ChooserDialogHost {
+  raw_ptr<BrowserWindowInterface> browser;
+  raw_ptr<content::WebContents> contents;
+  base::ScopedClosureRunner fullscreen_blocker;
+};
+
+// Verifies that `contents` is the active tab of a live browser, drops
+// fullscreen for security, and then verifies it again.
+//
+// Dropping fullscreen can spin a nested message loop or run event handlers
+// synchronously, which may close the browser window, switch the active tab, or
+// destroy the frame in `weak_document`. Everything looked up beforehand is
+// therefore re-queried afterwards. Returns `std::nullopt` if the dialog should
+// no longer be shown.
+std::optional<ChooserDialogHost> DropFullscreenForChooserDialog(
+    content::WebContents* contents,
+    const content::WeakDocumentPtr& weak_document) {
+  auto* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
+  if (!browser ||
+      browser->GetTabStripModel()->GetActiveWebContents() != contents) {
+    return std::nullopt;
+  }
+
+  std::optional<base::ScopedClosureRunner> fullscreen_blocker =
+      contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+  content::RenderFrameHost* rfh = weak_document.AsRenderFrameHostIfValid();
+  if (!fullscreen_blocker.has_value() || !rfh || !rfh->IsActive()) {
+    return std::nullopt;
+  }
+
+  // `contents` was captured before the drop and may have been freed by it, so
+  // stop using it and re-derive a known-live WebContents from the frame that
+  // was just revalidated.
+  contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!contents) {
+    return std::nullopt;
+  }
+
+  browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
+  if (!browser ||
+      browser->GetTabStripModel()->GetActiveWebContents() != contents) {
+    return std::nullopt;
+  }
+
+  return ChooserDialogHost{browser, contents, std::move(*fullscreen_blocker)};
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 base::OnceClosure ShowDeviceChooserDialogForExtension(
     content::RenderFrameHost* owner,
     const extensions::Extension* extension,
     std::unique_ptr<permissions::ChooserController> controller) {
+  content::WeakDocumentPtr weak_document = owner->GetWeakDocumentPtr();
   auto* contents = content::WebContents::FromRenderFrameHost(owner);
-  auto* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
-  if (!browser) {
+  std::optional<ChooserDialogHost> host =
+      DropFullscreenForChooserDialog(contents, weak_document);
+  if (!host) {
     return base::DoNothing();
   }
 
-  if (browser->GetTabStripModel()->GetActiveWebContents() != contents) {
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(host->browser);
+  if (!browser_view) {
     return base::DoNothing();
   }
 
   // `GetExtensionsContainerViews` may return `nullptr`, for instance in
   // extension popup windows.
-  auto* extensions_toolbar = BrowserView::GetBrowserViewForBrowser(browser)
-                                 ->toolbar_button_provider()
-                                 ->GetExtensionsContainerViews();
+  auto* extensions_toolbar =
+      browser_view->toolbar_button_provider()->GetExtensionsContainerViews();
   if (!extensions_toolbar) {
     return base::DoNothing();
   }
 
-  std::optional<base::ScopedClosureRunner> fullscreen_blocker =
-      contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
-  if (!fullscreen_blocker.has_value()) {
-    // The WebContents ha been destroyed, bail out.
-    return base::DoNothing();
-  }
-
   auto bubble = std::make_unique<ChooserBubbleUiViewDelegate>(
-      browser->GetBrowserForMigrationOnly(), contents, std::move(controller),
-      std::move(fullscreen_blocker).value());
+      host->browser->GetBrowserForMigrationOnly(), host->contents,
+      std::move(controller), std::move(host->fullscreen_blocker));
   base::OnceClosure close_closure = bubble->MakeCloseClosure();
   extensions_toolbar->ShowWidgetForExtension(
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble)),
@@ -271,6 +319,7 @@ base::OnceClosure ShowDeviceChooserDialogForExtension(
 base::OnceClosure ShowDeviceChooserDialog(
     content::RenderFrameHost* owner,
     std::unique_ptr<permissions::ChooserController> controller) {
+  content::WeakDocumentPtr weak_document = owner->GetWeakDocumentPtr();
   auto* contents = content::WebContents::FromRenderFrameHost(owner);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -296,26 +345,16 @@ base::OnceClosure ShowDeviceChooserDialog(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  auto* browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents);
-  if (!browser) {
+  std::optional<ChooserDialogHost> host =
+      DropFullscreenForChooserDialog(contents, weak_document);
+  if (!host) {
     return base::DoNothing();
   }
-
-  if (browser->GetTabStripModel()->GetActiveWebContents() != contents) {
-    return base::DoNothing();
-  }
-
-  std::optional<base::ScopedClosureRunner> fullscreen_blocker =
-      contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
-  if (!fullscreen_blocker.has_value()) {
-    // The WebContents ha been destroyed, bail out.
-    return base::DoNothing();
-  }
+  BrowserWindowInterface* browser = host->browser;
 
   auto bubble = std::make_unique<ChooserBubbleUiViewDelegate>(
-      browser->GetBrowserForMigrationOnly(), contents, std::move(controller),
-      std::move(fullscreen_blocker).value());
+      browser->GetBrowserForMigrationOnly(), host->contents,
+      std::move(controller), std::move(host->fullscreen_blocker));
 
   bubble->UpdateAnchor(browser->GetBrowserForMigrationOnly());
 
