@@ -12433,10 +12433,14 @@
     "NewVoiceSearchUiInNtpRealbox": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
                 "windows"
+            ],
+            "form_factors": [
+                "desktop"
             ],
             "experiments": [
                 {
