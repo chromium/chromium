@@ -637,18 +637,6 @@ void ExtensionService::CheckManagementPolicy() {
       to_remove.insert(disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
     }
 
-    if (system_->management_policy()->MustRemainEnabled(extension.get(),
-                                                        nullptr)) {
-      // Extensions installed from the Windows Registry should re-enable when
-      // they become force-installed. Normally this is handled in
-      // OnExternalExtensionUpdateUrlFound(), but already-broken browsers (from
-      // previous Chromium versions) also need to be fixed here.
-      //
-      // TODO(crbug.com/40144051): This won't be needed after a few milestones.
-      // It should be safe to remove in M107.
-      to_remove.insert(disable_reason::DISABLE_EXTERNAL_EXTENSION);
-    }
-
     DisableReasonSet shared_disable_reasons =
         base::STLSetIntersection<DisableReasonSet>(to_remove, to_add);
     CHECK(shared_disable_reasons.empty())

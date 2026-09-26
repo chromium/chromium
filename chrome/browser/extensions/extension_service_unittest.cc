@@ -4985,6 +4985,8 @@ TEST_F(ExtensionServiceTest, ExternalExtensionRemainsDisabledIfIgnored) {
 TEST_F(ExtensionServiceTest, ExternalExtensionBecomesEnabledIfForceInstalled) {
   FeatureSwitch::ScopedOverride prompt_override(
       FeatureSwitch::prompt_for_external_extensions(), true);
+  // Mark as enterprise managed, so the off-store policy install isn't blocked.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   InitializeEmptyExtensionServiceWithTestingPrefs();
 
   // Initially, the extension is installed externally and is disabled.
@@ -5000,8 +5002,7 @@ TEST_F(ExtensionServiceTest, ExternalExtensionBecomesEnabledIfForceInstalled) {
               testing::UnorderedElementsAre(
                   disable_reason::DISABLE_EXTERNAL_EXTENSION));
 
-  // Make the extension force-installed now. It should flip from disabled to
-  // enabled.
+  // Make the extension force-installed now.
   TestManagementPolicyProvider policy_provider(
       TestManagementPolicyProvider::MUST_REMAIN_ENABLED);
   GetManagementPolicy()->RegisterProvider(&policy_provider);
@@ -5011,6 +5012,19 @@ TEST_F(ExtensionServiceTest, ExternalExtensionBecomesEnabledIfForceInstalled) {
     pref.SetIndividualExtensionAutoInstalled(
         kGoodCrx, "http://example.com/update_url", true);
   }
+
+  // The policy external provider then reports the extension from its higher
+  // priority location. Checking for external updates runs that through
+  // ExternalProviderManager, which reloads the extension under the policy
+  // location and flips it from disabled to enabled.
+  MockExternalProvider* policy_external_provider =
+      AddMockExternalProvider(ManifestLocation::kExternalPolicyDownload);
+  policy_external_provider->UpdateOrAddExtension(
+      std::make_unique<ExternalInstallInfoUpdateUrl>(
+          kGoodCrx, std::string(), GURL("http://example.com/update_url"),
+          ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS,
+          /*mark_acknowledged=*/false));
+  WaitForExternalExtensionInstalled(kGoodCrx);
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kGoodCrx));
   EXPECT_TRUE(prefs()->IsExternalExtensionAcknowledged(kGoodCrx));
