@@ -3701,7 +3701,6 @@ if (!is_android) {
     if (is_chromeos) {
       sources += [
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
-        "../browser/ui/views/mahi/mahi_menu_pixeltest.cc",
         "//ash/webui/boca_ui/provider/tab_info_collector_browsertest.cc",
         "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",
         "base/ash/web_ui_browser_test_browsertest.cc",
@@ -4015,7 +4014,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/frame:immersive_mode_controller_chromeos",
         "//chrome/browser/ui/views/frame:scrim_view",
         "//chrome/browser/ui/views/frame:top_controls_slide_controller",
-        "//chrome/browser/ui/views/mahi",
+        "//chrome/browser/ui/views/mahi:browser_tests",
         "//chrome/browser/ui/views/profiles:profile_indicator_icon",
         "//chrome/browser/ui/views/select_file_dialog_extension:browser_tests",
         "//chrome/browser/ui/views/web_apps:protocol_handler_picker_dialog",

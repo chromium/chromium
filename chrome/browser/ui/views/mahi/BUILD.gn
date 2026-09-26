@@ -41,3 +41,22 @@ source_set("mahi") {
     deps += [ "//chrome/app/theme/google_chrome/chromeos/strings" ]
   }
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "mahi_menu_pixeltest.cc" ]
+  deps = [
+    ":mahi",
+    "//ash/public/cpp",
+    "//base",
+    "//base:i18n",
+    "//chrome/browser/ui/ash/read_write_cards",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/test/base:in_process_browser_test",
+    "//content/test:test_support",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/views:view_pixel_diff_test_support",
+  ]
+}
