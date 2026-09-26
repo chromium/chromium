@@ -38,4 +38,8 @@ extern NSString* const kRainbowSliderAccessibilityIdentifier;
 // A11y identifier for the custom color picker cell.
 extern NSString* const kCustomColorCellAccessibilityIdentifier;
 
+// A11y identifier for the ephemeral theme promo view.
+extern NSString* const
+    kHomeCustomizationEphemeralThemePromoAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_ACCESSIBILITY_IDENTIFIERS_H_

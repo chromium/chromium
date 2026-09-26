@@ -20,8 +20,12 @@ source_set("coordinator") {
     "home_customization_data_conversion.h",
     "home_customization_data_conversion.mm",
     "home_customization_delegate.h",
+    "home_customization_ephemeral_theme_promo_coordinator.h",
+    "home_customization_ephemeral_theme_promo_coordinator.mm",
     "home_customization_ephemeral_theme_promo_display_handler.h",
     "home_customization_ephemeral_theme_promo_display_handler.mm",
+    "home_customization_ephemeral_theme_promo_mediator.h",
+    "home_customization_ephemeral_theme_promo_mediator.mm",
     "home_customization_mediator.h",
     "home_customization_mediator.mm",
     "home_customization_navigation_delegate.h",
@@ -99,9 +103,13 @@ source_set("unit_tests") {
   sources = [
     "home_customization_background_configuration_mediator_unittest.mm",
     "home_customization_coordinator_unittest.mm",
+    "home_customization_ephemeral_theme_promo_mediator_unittest.mm",
     "home_customization_mediator_unittest.mm",
   ]
-  frameworks = [ "Foundation.framework" ]
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
   deps = [
     ":coordinator",
     "//base",

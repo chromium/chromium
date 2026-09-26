@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_ephemeral_theme_promo_coordinator.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_overlay_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
@@ -127,6 +128,7 @@
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
+#import "ios/chrome/browser/shared/public/commands/ephemeral_theme_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
@@ -222,6 +224,7 @@ const char kContextPanelDismissedHistogram[] =
                                 EnhancedCalendarCommands,
                                 EnterpriseCommands,
                                 EnterprisePromptCoordinatorDelegate,
+                                EphemeralThemePromoCommands,
                                 FileUploadPanelCommands,
                                 GoogleOneCommands,
                                 IOSPasskeyClientCommands,
@@ -303,6 +306,8 @@ const char kContextPanelDismissedHistogram[] =
   EnhancedCalendarCoordinator* _enhancedCalendarCoordinator;
   EnterpriseDialogCoordinator* _enterpriseDialogCoordinator;
   EnterprisePromptCoordinator* _enterprisePromptCoordinator;
+  HomeCustomizationEphemeralThemePromoCoordinator*
+      _ephemeralThemePromoCoordinator;
   API_AVAILABLE(ios(18.4))
   FileUploadPanelCoordinator* _fileUploadPanelCoordinator;
   GoogleOneCoordinator* _googleOneCoordinator;
@@ -406,6 +411,7 @@ const char kContextPanelDismissedHistogram[] =
   [self hideEnhancedCalendarBottomSheet];
   [self dismissEnterpriseWarningDialog];
   [self stopEnterprisePromptCoordinator];
+  [self hideEphemeralThemePromo];
   if (@available(iOS 18.4, *)) {
     [self hideFileUploadPanel];
   }
@@ -661,6 +667,7 @@ const char kContextPanelDismissedHistogram[] =
     @protocol(DriveFilePickerCommands),
     @protocol(EnhancedCalendarCommands),
     @protocol(EnterpriseCommands),
+    @protocol(EphemeralThemePromoCommands),
     @protocol(FileUploadPanelCommands),
     @protocol(GoogleOneCommands),
     @protocol(IOSPasskeyClientCommands),
@@ -1524,6 +1531,25 @@ const char kContextPanelDismissedHistogram[] =
 - (void)dismissEnterpriseWarningDialog {
   [_enterpriseDialogCoordinator stop];
   _enterpriseDialogCoordinator = nil;
+}
+
+#pragma mark - EphemeralThemePromoCommands
+
+- (void)showEphemeralThemePromo {
+  if (_ephemeralThemePromoCoordinator) {
+    return;
+  }
+  _ephemeralThemePromoCoordinator =
+      [[HomeCustomizationEphemeralThemePromoCoordinator alloc]
+          initWithBaseViewController:_baseViewController
+                             browser:_browser];
+  _ephemeralThemePromoCoordinator.promosUIHandler = _promosManagerCoordinator;
+  [_ephemeralThemePromoCoordinator start];
+}
+
+- (void)hideEphemeralThemePromo {
+  [_ephemeralThemePromoCoordinator stop];
+  _ephemeralThemePromoCoordinator = nil;
 }
 
 #pragma mark - FileUploadPanelCommands

@@ -4006,6 +4006,18 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_TITLE" desc="The title of the Shortcuts toggle in the Home Customization menu's main page.">
         Discover feed
       </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_EPHEMERAL_THEME_PROMO_PRIMARY_BUTTON_TEXT" desc="Primary button text for the ephemeral theme promo on the New Tab Page [iOS only].">
+        Try it now
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_EPHEMERAL_THEME_PROMO_SECONDARY_BUTTON_TEXT" desc="Secondary button text for the ephemeral theme promo on the New Tab Page [iOS only].">
+        No thanks
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_EPHEMERAL_THEME_PROMO_SUBTITLE" desc="Subtitle for the ephemeral theme promo on the New Tab Page [iOS only].">
+        Try a limited-time festive theme, complete with custom illustrations and animations
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_EPHEMERAL_THEME_PROMO_TITLE" desc="Title for the ephemeral theme promo on the New Tab Page [iOS only].">
+        Set a seasonal look for your New Tab Page
+      </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_IPH" desc="In-product help that points at the entrypoint for the Home Customization menu in the new tab page.">
         Customize your cards, feed, and more here
       </message>

@@ -1,0 +1,198 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_ephemeral_theme_promo_mediator.h"
+
+#import <UIKit/UIKit.h>
+
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/values.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_ephemeral_theme_promo_consumer.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+
+// Fake consumer for `HomeCustomizationEphemeralThemePromoMediator` tests.
+@interface FakeHomeCustomizationEphemeralThemePromoConsumer
+    : NSObject <HomeCustomizationEphemeralThemePromoConsumer>
+
+@property(nonatomic, copy) NSString* animationAssetName;
+@property(nonatomic, strong) NSBundle* bundle;
+@property(nonatomic, copy)
+    NSDictionary<NSString*, UIColor*>* lightModeColorProvider;
+@property(nonatomic, copy)
+    NSDictionary<NSString*, UIColor*>* darkModeColorProvider;
+@property(nonatomic, assign) BOOL wasConfigured;
+
+@end
+
+@implementation FakeHomeCustomizationEphemeralThemePromoConsumer
+
+- (void)setAnimationAssetName:(NSString*)animationAssetName
+                       bundle:(NSBundle*)bundle {
+  self.animationAssetName = animationAssetName;
+  self.bundle = bundle;
+  self.wasConfigured = YES;
+}
+
+- (void)setLightModeColorProvider:
+            (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider
+            darkModeColorProvider:
+                (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider {
+  self.lightModeColorProvider = lightModeColorProvider;
+  self.darkModeColorProvider = darkModeColorProvider;
+}
+
+@end
+
+// Unit tests for `HomeCustomizationEphemeralThemePromoMediator`.
+class HomeCustomizationEphemeralThemePromoMediatorTest : public PlatformTest {
+ protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    HomeBackgroundCustomizationService::RegisterProfilePrefs(
+        pref_service_->registry());
+    consumer_ = [[FakeHomeCustomizationEphemeralThemePromoConsumer alloc] init];
+    mediator_ = [[HomeCustomizationEphemeralThemePromoMediator alloc]
+        initWithPrefService:pref_service_.get()
+         promoDataDirectory:temp_dir_.GetPath()];
+  }
+
+  void TearDown() override {
+    [mediator_ disconnect];
+    mediator_ = nil;
+    consumer_ = nil;
+    PlatformTest::TearDown();
+  }
+
+  // Creates the dummy Lottie animation JSON file in the expected promo bundle
+  // directory inside `temp_dir_` and returns its file path.
+  base::FilePath WriteAnimationFileToDisk() {
+    base::FilePath bundle_dir =
+        temp_dir_.GetPath().AppendASCII(kEphemeralThemeDirectoryName);
+    EXPECT_TRUE(base::CreateDirectory(bundle_dir));
+    base::FilePath json_path =
+        bundle_dir.AppendASCII(kEphemeralThemePromoAnimationFileName);
+    EXPECT_TRUE(base::WriteFile(json_path, R"({"v":"5.7.4"})"));
+    return json_path;
+  }
+
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  FakeHomeCustomizationEphemeralThemePromoConsumer* consumer_;
+  HomeCustomizationEphemeralThemePromoMediator* mediator_;
+};
+
+// Test that the mediator parses both "#RRGGBB" and "RRGGBB" hex strings in
+// light and dark mode color mappings and configures the consumer.
+TEST_F(HomeCustomizationEphemeralThemePromoMediatorTest,
+       ConfiguresConsumerWithValidHexColors) {
+  base::FilePath promo_file_path = WriteAnimationFileToDisk();
+
+  base::DictValue light_dict;
+  light_dict.Set("**.Background.Fill 1.Color", "#1A73E8");
+  light_dict.Set("**.Text.Fill 1.Color", "34A853");
+  base::DictValue dark_dict;
+  dark_dict.Set("**.Background.Fill 1.Color", "#8AB4F8");
+  base::DictValue color_mapping_dict;
+  color_mapping_dict.Set("light", std::move(light_dict));
+  color_mapping_dict.Set("dark", std::move(dark_dict));
+
+  base::DictValue theme_dict;
+  theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, promo_file_path.value());
+  theme_dict.Set(kEphemeralThemeAnimationPromoColorMappingKey,
+                 std::move(color_mapping_dict));
+  pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
+                         std::move(theme_dict));
+
+  mediator_.consumer = consumer_;
+
+  EXPECT_TRUE(consumer_.wasConfigured);
+  EXPECT_NSEQ(@"ephemeral_promo", consumer_.animationAssetName);
+  EXPECT_NE(nil, consumer_.bundle);
+
+  ASSERT_NE(nil, consumer_.lightModeColorProvider);
+  EXPECT_EQ(2u, consumer_.lightModeColorProvider.count);
+  EXPECT_NSEQ(UIColorFromRGB(0x1A73E8),
+              consumer_.lightModeColorProvider[@"**.Background.Fill 1.Color"]);
+  EXPECT_NSEQ(UIColorFromRGB(0x34A853),
+              consumer_.lightModeColorProvider[@"**.Text.Fill 1.Color"]);
+
+  ASSERT_NE(nil, consumer_.darkModeColorProvider);
+  EXPECT_EQ(1u, consumer_.darkModeColorProvider.count);
+  EXPECT_NSEQ(UIColorFromRGB(0x8AB4F8),
+              consumer_.darkModeColorProvider[@"**.Background.Fill 1.Color"]);
+}
+
+// Test that malformed or invalid hex color entries are skipped while valid
+// entries are still applied.
+TEST_F(HomeCustomizationEphemeralThemePromoMediatorTest,
+       SkipsInvalidHexColorsInColorMapping) {
+  base::FilePath promo_file_path = WriteAnimationFileToDisk();
+
+  base::DictValue light_dict;
+  light_dict.Set("valid", "#FF5733");
+  light_dict.Set("too_short", "#123");
+  light_dict.Set("non_hex", "#GGGGGG");
+  light_dict.Set("empty", "");
+  base::DictValue dark_dict;
+  dark_dict.Set("also_invalid", "#12345");
+  base::DictValue color_mapping_dict;
+  color_mapping_dict.Set("light", std::move(light_dict));
+  color_mapping_dict.Set("dark", std::move(dark_dict));
+
+  base::DictValue theme_dict;
+  theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, promo_file_path.value());
+  theme_dict.Set(kEphemeralThemeAnimationPromoColorMappingKey,
+                 std::move(color_mapping_dict));
+  pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
+                         std::move(theme_dict));
+
+  mediator_.consumer = consumer_;
+
+  EXPECT_TRUE(consumer_.wasConfigured);
+  ASSERT_NE(nil, consumer_.lightModeColorProvider);
+  EXPECT_EQ(1u, consumer_.lightModeColorProvider.count);
+  EXPECT_NSEQ(UIColorFromRGB(0xFF5733),
+              consumer_.lightModeColorProvider[@"valid"]);
+  EXPECT_EQ(nil, consumer_.darkModeColorProvider);
+}
+
+// Test that the consumer is not configured when the ephemeral theme pref is not
+// set.
+TEST_F(HomeCustomizationEphemeralThemePromoMediatorTest,
+       DoesNotConfigureConsumerWhenPrefIsMissing) {
+  WriteAnimationFileToDisk();
+
+  mediator_.consumer = consumer_;
+
+  EXPECT_FALSE(consumer_.wasConfigured);
+  EXPECT_EQ(nil, consumer_.animationAssetName);
+}
+
+// Test that the consumer is not configured when the pref is set but the
+// animation JSON file does not exist on disk.
+TEST_F(HomeCustomizationEphemeralThemePromoMediatorTest,
+       DoesNotConfigureConsumerWhenAnimationFileIsMissing) {
+  base::FilePath missing_path =
+      temp_dir_.GetPath()
+          .AppendASCII(kEphemeralThemeDirectoryName)
+          .AppendASCII(kEphemeralThemePromoAnimationFileName);
+  base::DictValue theme_dict;
+  theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, missing_path.value());
+  pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
+                         std::move(theme_dict));
+
+  mediator_.consumer = consumer_;
+
+  EXPECT_FALSE(consumer_.wasConfigured);
+}
