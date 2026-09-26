@@ -4,39 +4,18 @@
 
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/platform_handle.h"
 
-#include "base/check_op.h"
+#include <stdint.h>
+
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/platform_handle_internal.h"
 
 namespace mojo_legacy {
-
-namespace {
-
-uint64_t ReleasePlatformHandleValueFromPlatformFile(
-    base::ScopedPlatformFile file) {
-#if BUILDFLAG(IS_WIN)
-  return reinterpret_cast<uint64_t>(file.Take());
-#else
-  return static_cast<uint64_t>(file.release());
-#endif
-}
-
-base::ScopedPlatformFile PlatformFileFromPlatformHandleValue(uint64_t value) {
-#if BUILDFLAG(IS_WIN)
-  return base::ScopedPlatformFile(reinterpret_cast<base::PlatformFile>(value));
-#else
-  return base::ScopedPlatformFile(static_cast<base::PlatformFile>(value));
-#endif
-}
-
-}  // namespace
 
 ScopedSharedBufferHandle WrapPlatformSharedMemoryRegion(
     base::subtle::PlatformSharedMemoryRegion region) {
@@ -246,41 +225,6 @@ PlatformHandle UnwrapPlatformHandle(ScopedHandle handle) {
     return PlatformHandle();
   }
   return PlatformHandle::FromMojoPlatformHandle(&platform_handle);
-}
-
-ScopedHandle WrapPlatformFile(base::ScopedPlatformFile platform_file) {
-  MojoPlatformHandle platform_handle;
-  platform_handle.struct_size = sizeof(MojoPlatformHandle);
-  platform_handle.type = kPlatformFileHandleType;
-  platform_handle.value =
-      ReleasePlatformHandleValueFromPlatformFile(std::move(platform_file));
-
-  MojoHandle mojo_handle;
-  MojoResult result =
-      MojoWrapPlatformHandle(&platform_handle, nullptr, &mojo_handle);
-  CHECK_EQ(result, MOJO_LEGACY_RESULT_OK);
-
-  return ScopedHandle(Handle(mojo_handle));
-}
-
-MojoResult UnwrapPlatformFile(ScopedHandle handle,
-                              base::ScopedPlatformFile* file) {
-  MojoPlatformHandle platform_handle;
-  platform_handle.struct_size = sizeof(MojoPlatformHandle);
-  MojoResult result = MojoUnwrapPlatformHandle(handle.release().value(),
-                                               nullptr, &platform_handle);
-  if (result != MOJO_LEGACY_RESULT_OK) {
-    return result;
-  }
-
-  if (platform_handle.type == MOJO_LEGACY_PLATFORM_HANDLE_TYPE_INVALID) {
-    *file = base::ScopedPlatformFile();
-  } else {
-    CHECK_EQ(platform_handle.type, kPlatformFileHandleType);
-    *file = PlatformFileFromPlatformHandleValue(platform_handle.value);
-  }
-
-  return MOJO_LEGACY_RESULT_OK;
 }
 
 ScopedSharedBufferHandle WrapReadOnlySharedMemoryRegion(

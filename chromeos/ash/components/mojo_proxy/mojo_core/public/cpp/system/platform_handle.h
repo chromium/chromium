@@ -11,11 +11,6 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_MOJO_PROXY_MOJO_CORE_PUBLIC_CPP_SYSTEM_PLATFORM_HANDLE_H_
 #define CHROMEOS_ASH_COMPONENTS_MOJO_PROXY_MOJO_CORE_PUBLIC_CPP_SYSTEM_PLATFORM_HANDLE_H_
 
-#include <stdint.h>
-
-#include "base/files/platform_file.h"
-#include "build/build_config.h"
-#include "chromeos/ash/components/mojo_proxy/mojo_core/public/c/system/platform_handle.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/platform/platform_handle.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/buffer.h"
 #include "chromeos/ash/components/mojo_proxy/mojo_core/public/cpp/system/handle.h"
@@ -34,14 +29,6 @@ class PlatformSharedMemoryRegion;
 
 namespace mojo_legacy {
 
-#if BUILDFLAG(IS_WIN)
-const MojoPlatformHandleType kPlatformFileHandleType =
-    MOJO_LEGACY_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE;
-#else
-const MojoPlatformHandleType kPlatformFileHandleType =
-    MOJO_LEGACY_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR;
-#endif  // BUILDFLAG(IS_WIN)
-
 // Wraps and unwraps base::subtle::PlatformSharedMemoryRegions. This should be
 // used only while transitioning from the legacy shared memory API. In new code
 // only base::*SharedMemoryRegion should be used instead.
@@ -59,22 +46,6 @@ WrapPlatformHandle(PlatformHandle handle);
 // support library.
 MOJO_LEGACY_CPP_SYSTEM_EXPORT PlatformHandle
 UnwrapPlatformHandle(ScopedHandle handle);
-
-// Wraps a ScopedPlatformFile as a Mojo handle. Takes ownership of the file
-// object. If |platform_file| is valid, this will return a valid handle.
-MOJO_LEGACY_CPP_SYSTEM_EXPORT
-ScopedHandle WrapPlatformFile(base::ScopedPlatformFile platform_file);
-
-// Unwraps a PlatformFile from a Mojo handle. If |handle| does wrap a platform
-// file handle, this function unwraps it and stores it in |file|. This function
-// returns MOJO_LEGACY_RESULT_OK if this unwrapping step succeeds, *even if* the
-// unwrapped handle is actually invalid, since validity can't always be
-// determined until the unwrapped handle is used. Regardless of whether the
-// unwrapping succeeds or fails, |handle| is always closed after this function
-// returns.
-MOJO_LEGACY_CPP_SYSTEM_EXPORT
-MojoResult UnwrapPlatformFile(ScopedHandle handle,
-                              base::ScopedPlatformFile* file);
 
 // Helpers for wrapping and unwrapping new base shared memory API primitives.
 // If the input |region| is valid for the Wrap* functions, they will always
