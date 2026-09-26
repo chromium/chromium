@@ -48,6 +48,9 @@
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
 #include "chrome/browser/ssl/security_state_event_observer.h"
+#include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
+#include "chrome/browser/storage_access_api/storage_access_api_service_impl.h"
+#include "chrome/browser/storage_access_api/storage_access_api_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -855,6 +858,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   v8_compile_hints_tab_helper_ =
       v8_compile_hints::V8CompileHintsTabHelper::MaybeCreate(tab.GetContents());
+
+  storage_access_api_tab_helper_ = std::make_unique<StorageAccessAPITabHelper>(
+      tab.GetContents(),
+      StorageAccessAPIServiceFactory::GetForBrowserContext(profile));
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1137,6 +1144,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   v8_compile_hints_tab_helper_ =
       v8_compile_hints::V8CompileHintsTabHelper::MaybeCreate(new_contents);
+
+  storage_access_api_tab_helper_ = std::make_unique<StorageAccessAPITabHelper>(
+      new_contents,
+      StorageAccessAPIServiceFactory::GetForBrowserContext(profile));
 }
 
 customize_chrome::SidePanelController*

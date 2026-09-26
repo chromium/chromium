@@ -10,14 +10,14 @@
 #include "base/thread_annotations.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 class StorageAccessAPIService;
 
-class StorageAccessAPITabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<StorageAccessAPITabHelper> {
+class StorageAccessAPITabHelper : public content::WebContentsObserver {
  public:
+  // `service` must be non-null and must outlive `this`.
+  StorageAccessAPITabHelper(content::WebContents* web_contents,
+                            StorageAccessAPIService* service);
   StorageAccessAPITabHelper(const StorageAccessAPITabHelper&) = delete;
   StorageAccessAPITabHelper& operator=(const StorageAccessAPITabHelper&) =
       delete;
@@ -27,13 +27,6 @@ class StorageAccessAPITabHelper
   void FrameReceivedUserActivation(content::RenderFrameHost* rfh) override;
 
  private:
-  // `service` must be non-null and must outlive `this`.
-  StorageAccessAPITabHelper(content::WebContents* web_contents,
-                            StorageAccessAPIService* service);
-  friend class content::WebContentsUserData<StorageAccessAPITabHelper>;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-
   raw_ref<StorageAccessAPIService> service_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

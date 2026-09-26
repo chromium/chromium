@@ -77,6 +77,7 @@ class SearchPromotionNavigationObserver;
 class SecurityStateEventObserver;
 class SharedHighlightingPromo;
 class SidePanelRegistry;
+class StorageAccessAPITabHelper;
 class TabCaptureContentsBorderHelper;
 class TabContextDecryptionTokenTabHelper;
 class TabResourceUsageTabHelper;
@@ -843,6 +844,8 @@ class TabFeatures {
 
   std::unique_ptr<v8_compile_hints::V8CompileHintsTabHelper>
       v8_compile_hints_tab_helper_;
+
+  std::unique_ptr<StorageAccessAPITabHelper> storage_access_api_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

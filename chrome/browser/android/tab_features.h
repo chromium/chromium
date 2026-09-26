@@ -81,6 +81,7 @@ class V8CompileHintsTabHelper;
 class ConnectionHelpTabHelper;
 class HttpAuthCacheStatus;
 class SecurityStateEventObserver;
+class StorageAccessAPITabHelper;
 class TabContextDecryptionTokenTabHelper;
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
@@ -182,6 +183,7 @@ class TabFeatures {
       tab_context_decryption_token_tab_helper_;
   std::unique_ptr<v8_compile_hints::V8CompileHintsTabHelper>
       v8_compile_hints_tab_helper_;
+  std::unique_ptr<StorageAccessAPITabHelper> storage_access_api_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

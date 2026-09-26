@@ -567,6 +567,7 @@ if (!is_android) {
       "//chrome/browser/skills:public",
       "//chrome/browser/skills:ui",
       "//chrome/browser/ssl",
+      "//chrome/browser/storage_access_api",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
       "//chrome/browser/sync_tab_context",

@@ -28,7 +28,13 @@ class StorageAccessAPITabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    StorageAccessAPITabHelper::CreateForWebContents(web_contents(), &service_);
+    tab_helper_ =
+        std::make_unique<StorageAccessAPITabHelper>(web_contents(), &service_);
+  }
+
+  void TearDown() override {
+    tab_helper_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   content::RenderFrameHost* SimulateNavigateAndCommit(
@@ -43,14 +49,13 @@ class StorageAccessAPITabHelperTest : public ChromeRenderViewHostTestHarness {
                : nullptr;
   }
 
-  StorageAccessAPITabHelper* tab_helper() {
-    return StorageAccessAPITabHelper::FromWebContents(web_contents());
-  }
+  StorageAccessAPITabHelper* tab_helper() { return tab_helper_.get(); }
 
   MockStorageAccessAPIService& service() { return service_; }
 
  private:
   testing::StrictMock<MockStorageAccessAPIService> service_;
+  std::unique_ptr<StorageAccessAPITabHelper> tab_helper_;
 };
 
 TEST_F(StorageAccessAPITabHelperTest, OnFrameReceivedUserActivation_MainFrame) {
