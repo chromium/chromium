@@ -355,8 +355,8 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
   // If the canvas configuration is invalid, WebGPU requires that we give a
   // fallback black ImageBitmap if possible.
   if (!swap_buffers_) {
-    auto staticBitmapImage =
-        MakeFallbackStaticBitmapImage(V8GPUCanvasAlphaMode::Enum::kOpaque);
+    auto staticBitmapImage = MakeFallbackStaticBitmapImage(
+        V8GPUCanvasAlphaMode::Enum::kPremultiplied);
     return staticBitmapImage
                ? MakeGarbageCollected<ImageBitmap>(staticBitmapImage)
                : nullptr;
