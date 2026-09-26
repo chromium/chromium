@@ -31,39 +31,24 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
-  sources = [ "junit/src/org/chromium/chrome/browser/loading_modal/LoadingModalDialogMediatorTest.java" ]
-  resources_package = "org.chromium.chrome.browser.loading_modal"
-
-  deps = [
-    ":java",
-    "//base:base_java",
-    "//base:base_junit_test_support",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_full_java",
+  sources = [
+    "junit/src/org/chromium/chrome/browser/loading_modal/LoadingModalDialogIntegrationTest.java",
+    "junit/src/org/chromium/chrome/browser/loading_modal/LoadingModalDialogMediatorTest.java",
   ]
-}
-
-android_library("unit_device_javatests") {
-  testonly = true
   resources_package = "org.chromium.chrome.browser.loading_modal"
-
-  sources = [ "javatests/src/org/chromium/chrome/browser/loading_modal/LoadingModalDialogIntegrationTest.java" ]
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/browser/loading_modal/android:java_resources",
-    "//chrome/test/android:chrome_java_integration_test_support",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:espresso_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_java",
+    "//base:base_junit_test_support",
+    "//components/browser_ui/styles/android:java_resources",
+    "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
-    "//ui/android:ui_no_recycler_view_java",
   ]
 }

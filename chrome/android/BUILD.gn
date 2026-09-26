@@ -2392,7 +2392,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/hub:unit_device_javatests",
       "//chrome/browser/hub/internal:unit_device_javatests",
       "//chrome/browser/image_descriptions:unit_device_javatests",
-      "//chrome/browser/loading_modal/android:unit_device_javatests",
       "//chrome/browser/partnercustomizations:unit_device_javatests",
       "//chrome/browser/password_edit_dialog/android:unit_device_javatests",
       "//chrome/browser/recent_tabs/internal:unit_device_javatests",

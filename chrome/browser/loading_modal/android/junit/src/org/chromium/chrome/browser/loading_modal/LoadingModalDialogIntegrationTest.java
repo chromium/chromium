@@ -4,48 +4,45 @@
 
 package org.chromium.chrome.browser.loading_modal;
 
-import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.modaldialog.DialogDismissalCause.ACTIVITY_DESTROYED;
 
+import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
-import androidx.test.filters.MediumTest;
-
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator.State;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Integration tests for LoadingModalDialog. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class LoadingModalDialogIntegrationTest {
-    @ClassRule
-    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private static BlankUiTestActivity sActivity;
+    @Mock private ModalDialogManager.Presenter mPresenter;
+
+    private Activity mActivity;
+    private ModalDialogManager mModalDialogManager;
 
     private static class TestDialogManagerObserver implements ModalDialogManagerObserver {
         private final CallbackHelper mDialogAddedCallbackHelper = new CallbackHelper();
@@ -72,89 +69,71 @@ public class LoadingModalDialogIntegrationTest {
 
     private TestDialogManagerObserver mObserver = new TestDialogManagerObserver();
 
-    @BeforeClass
-    public static void setupSuite() {
-        sActivity = sActivityTestRule.launchActivity(null);
-    }
-
     @Before
-    public void setupTest() throws Exception {
+    public void setupTest() {
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mModalDialogManager =
+                new ModalDialogManager(mPresenter, ModalDialogManager.ModalDialogType.TAB);
         mObserver = new TestDialogManagerObserver();
-        runOnUiThreadBlocking(() -> sActivity.getModalDialogManager().addObserver(mObserver));
+        getDialogManager().addObserver(mObserver);
     }
 
     @After
-    public void teardownTest() throws Exception {
-        runOnUiThreadBlocking(() -> sActivity.getModalDialogManager().removeObserver(mObserver));
+    public void teardownTest() {
+        getDialogManager().removeObserver(mObserver);
     }
 
     @Test
-    @MediumTest
     public void testShownAndDismissed() throws TimeoutException {
         LoadingModalDialogCoordinator coordinator =
-                runOnUiThreadBlocking(
-                        () ->
-                                LoadingModalDialogCoordinator.create(
-                                        getDialogManager(),
-                                        sActivity,
-                                        new Handler(Looper.getMainLooper())));
+                LoadingModalDialogCoordinator.create(
+                        getDialogManager(), mActivity, new Handler(Looper.getMainLooper()));
         coordinator.skipDelayForTesting();
         coordinator.disableTimeoutForTesting();
 
-        runOnUiThreadBlocking(coordinator::show);
+        coordinator.show();
         mObserver.getDialogAddedCallbackHelper().waitForOnly();
 
-        runOnUiThreadBlocking(coordinator::dismiss);
+        coordinator.dismiss();
         mObserver.getDialogDismissedCallbackHelper().waitForOnly();
 
         assertThat(coordinator.getState(), equalTo(State.FINISHED));
     }
 
     @Test
-    @MediumTest
-    public void testShownAndCancelled() throws TimeoutException, ExecutionException {
+    public void testShownAndCancelled() throws TimeoutException {
         LoadingModalDialogCoordinator coordinator =
-                runOnUiThreadBlocking(
-                        () ->
-                                LoadingModalDialogCoordinator.create(
-                                        getDialogManager(),
-                                        sActivity,
-                                        new Handler(Looper.getMainLooper())));
+                LoadingModalDialogCoordinator.create(
+                        getDialogManager(), mActivity, new Handler(Looper.getMainLooper()));
         coordinator.skipDelayForTesting();
         coordinator.disableTimeoutForTesting();
 
-        runOnUiThreadBlocking(coordinator::show);
+        coordinator.show();
         mObserver.getDialogAddedCallbackHelper().waitForOnly();
 
         View cancelButton = coordinator.getButtonsView().findViewById(R.id.cancel_loading_modal);
-        runOnUiThreadBlocking(cancelButton::performClick);
+        cancelButton.performClick();
         mObserver.getDialogDismissedCallbackHelper().waitForOnly();
         assertThat(coordinator.getState(), equalTo(State.CANCELLED));
     }
 
     @Test
-    @MediumTest
     public void testShownAndDestroyed() throws TimeoutException {
         LoadingModalDialogCoordinator coordinator =
-                runOnUiThreadBlocking(
-                        () ->
-                                LoadingModalDialogCoordinator.create(
-                                        getDialogManager(),
-                                        sActivity,
-                                        new Handler(Looper.getMainLooper())));
+                LoadingModalDialogCoordinator.create(
+                        getDialogManager(), mActivity, new Handler(Looper.getMainLooper()));
         coordinator.skipDelayForTesting();
         coordinator.disableTimeoutForTesting();
 
-        runOnUiThreadBlocking(coordinator::show);
+        coordinator.show();
         mObserver.getDialogAddedCallbackHelper().waitForOnly();
 
-        runOnUiThreadBlocking(
-                () -> sActivity.getModalDialogManager().dismissAllDialogs(ACTIVITY_DESTROYED));
+        getDialogManager().dismissAllDialogs(ACTIVITY_DESTROYED);
         mObserver.getDialogDismissedCallbackHelper().waitForOnly();
         assertThat(coordinator.getState(), equalTo(State.CANCELLED));
     }
 
-    private static ModalDialogManager getDialogManager() {
-        return sActivity.getModalDialogManager();
+    private ModalDialogManager getDialogManager() {
+        return mModalDialogManager;
     }
 }
