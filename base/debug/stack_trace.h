@@ -118,9 +118,7 @@ class BASE_EXPORT StackTrace {
   // number of elements in the returned array. Addresses()[0] will contain an
   // address from the leaf function, and Addresses()[count-1] will contain an
   // address from the root function (i.e.; the thread's entry point).
-  span<const void* const> addresses() const {
-    return span(trace_).first(count_);
-  }
+  span<const void* const> addresses() const;
 
   // Prints the stack trace to stderr.
   void Print() const;

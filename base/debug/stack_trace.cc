@@ -335,6 +335,10 @@ void StackTrace::InitializeFeatures() {
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 }
 
+span<const void* const> StackTrace::addresses() const {
+  return span(trace_).first(count_);
+}
+
 void StackTrace::Print() const {
   PrintWithPrefix({});
 }
