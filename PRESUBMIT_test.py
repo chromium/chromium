@@ -10,7 +10,9 @@ from __future__ import annotations
 
 import dataclasses
 import enum
+import os
 import os.path
+import subprocess
 import sys
 import tempfile
 import textwrap
@@ -7112,9 +7114,16 @@ class CheckUnwantedDependenciesTest(unittest.TestCase):
             MockFile('base/android/java/src/org/chromium/base/Foo.java',
                      ['import java.util.List;']),
         ]
-        results = PRESUBMIT.CheckUnwantedDependencies(
-            mock_input_api, MockOutputApi())
-        self.assertEqual(0, len(results))
+        with mock.patch.object(checkdeps.DepsChecker,
+                               'CheckAddedJavaImports',
+                               return_value=[]) as mock_check:
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
+            mock_check.assert_called_once_with(
+                [[mock_input_api.files[0].AbsoluteLocalPath(),
+                  mock_input_api.files[0].NewContents()]],
+                PRESUBMIT._JAVA_MULTIPLE_DEFINITION_EXCLUDED_PATHS)
+            self.assertEqual(0, len(results))
 
     def testProtoImportQuotes(self):
         """Proto import statements with single quotes should be recognized
@@ -7229,10 +7238,23 @@ class CheckUnwantedDependenciesTest(unittest.TestCase):
                 'WebViewChromiumFactoryProvider.java',
                 ['import org.chromium.content.app.ContentMain;']),
         ]
-        results = PRESUBMIT.CheckUnwantedDependencies(
-            mock_input_api, MockOutputApi())
-        self.assertEqual(1, len(results))
-        self.assertEqual('error', results[0].type)
+        disallow_rule = [
+            ('android_webview/glue/java/src/com/android/webview/chromium/'
+             'WebViewChromiumFactoryProvider.java',
+             Rule.DISALLOW,
+             'Illegal import: org.chromium.content.app.ContentMain')
+        ]
+        with mock.patch.object(checkdeps.DepsChecker,
+                               'CheckAddedJavaImports',
+                               return_value=disallow_rule) as mock_check:
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
+            mock_check.assert_called_once_with(
+                [[mock_input_api.files[0].AbsoluteLocalPath(),
+                  mock_input_api.files[0].NewContents()]],
+                PRESUBMIT._JAVA_MULTIPLE_DEFINITION_EXCLUDED_PATHS)
+            self.assertEqual(1, len(results))
+            self.assertEqual('error', results[0].type)
 
     def testJavaImportWithDollar(self):
         """Java imports referencing identifiers with $ should be recognized
@@ -7254,7 +7276,66 @@ class CheckUnwantedDependenciesTest(unittest.TestCase):
                                return_value=disallow_rule) as mock_check:
             results = PRESUBMIT.CheckUnwantedDependencies(
                 mock_input_api, MockOutputApi())
-            mock_check.assert_called_once()
+            mock_check.assert_called_once_with(
+                [[mock_input_api.files[0].AbsoluteLocalPath(),
+                  mock_input_api.files[0].NewContents()]],
+                PRESUBMIT._JAVA_MULTIPLE_DEFINITION_EXCLUDED_PATHS)
+            self.assertEqual(1, len(results))
+            self.assertEqual('error', results[0].type)
+
+    def testJavaImportEndToEnd(self):
+        """End-to-end test verifying CheckUnwantedDependencies with real
+        DepsChecker on Java files using an isolated directory.
+        """
+        git_cmd = 'git.bat' if os.name == 'nt' else 'git'
+        with tempfile.TemporaryDirectory() as temp_dir:
+            subprocess.run([git_cmd, 'init', '-q', temp_dir], check=True)
+
+            with open(os.path.join(temp_dir, 'DEPS'), 'w') as f:
+                f.write('include_rules = ["-bad", "+good"]\n')
+
+            bad_dir = os.path.join(temp_dir, 'bad')
+            os.mkdir(bad_dir)
+            with open(os.path.join(bad_dir, 'Bad.java'), 'w') as f:
+                f.write('package bad;\npublic class Bad {}\n')
+
+            good_dir = os.path.join(temp_dir, 'good')
+            os.mkdir(good_dir)
+            with open(os.path.join(good_dir, 'Good.java'), 'w') as f:
+                f.write('package good;\npublic class Good {}\n')
+
+            subprocess.run([git_cmd, '-C', temp_dir, 'add', '.'], check=True)
+
+            # Place consumers in a separate package ('client') so that
+            # checkdeps' implicit same-directory allow rule (+good) does not
+            # match good.Good, ensuring DEPS rules ("+good", "-bad") are truly
+            # evaluated.
+            client_dir = os.path.join(temp_dir, 'client')
+            os.mkdir(client_dir)
+
+            # Allowed import passes cleanly end-to-end via "+good" in DEPS.
+            mock_input_api = MockInputApi()
+            mock_input_api.PresubmitLocalPath = lambda: temp_dir
+            mock_input_api.files = [
+                MockAffectedFile(os.path.join('client', 'ConsumerAllowed.java'),
+                                 ['package client;', 'import good.Good;'],
+                                 local_root=temp_dir),
+            ]
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
+            self.assertEqual(0, len(results))
+
+            # Disallowed import triggers error end-to-end via "-bad" in DEPS.
+            mock_input_api = MockInputApi()
+            mock_input_api.PresubmitLocalPath = lambda: temp_dir
+            mock_input_api.files = [
+                MockAffectedFile(
+                    os.path.join('client', 'ConsumerDisallowed.java'),
+                    ['package client;', 'import bad.Bad;'],
+                    local_root=temp_dir),
+            ]
+            results = PRESUBMIT.CheckUnwantedDependencies(
+                mock_input_api, MockOutputApi())
             self.assertEqual(1, len(results))
             self.assertEqual('error', results[0].type)
 
