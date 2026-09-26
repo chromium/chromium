@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
-import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -116,10 +115,7 @@ public class MiniPlayerCoordinator {
                     provider -> {
                         mMarginAdjuster = new ViewMarginAdjusterForSideUi(mLayout);
                         provider.addObserver(mMarginAdjuster);
-                        mMarginAdjuster.onSideUiSpecsChanged(
-                                provider.getCurrentSideUiSpecs(),
-                                new UiUpdateRequest(
-                                        /* sideUiId= */ null, /* suppressAnimations= */ true));
+                        mMarginAdjuster.updateMarginsForSideUi(provider.getCurrentSideUiSpecs());
                     });
         }
 

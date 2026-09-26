@@ -1584,7 +1584,22 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
-        if (request.mUpdateReason == UpdateReason.RESIZE_LIVE) {
+        updateForSideUiSpecs(
+                sideUiSpecs, /* isLiveResize= */ request.mUpdateReason == UpdateReason.RESIZE_LIVE);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //                 End of SideUiObserver Implementation                                      //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Resizes and repositions the content to account for the given {@link SideUiSpecs}.
+     *
+     * @param sideUiSpecs The {@link SideUiSpecs} to apply.
+     * @param isLiveResize Whether the update is part of a live resize drag.
+     */
+    private void updateForSideUiSpecs(SideUiSpecs sideUiSpecs, boolean isLiveResize) {
+        if (isLiveResize) {
             // Translate the composited layer without resizing WebContents during a live drag,
             // avoiding per-frame layout passes that cause jank.
             applySideUiContentOffsetX(sideUiSpecs);
@@ -1607,10 +1622,6 @@ public class CompositorViewHolder extends FrameLayout
         //  want to resize the WebContents, and not the tab strip. As such, we need to decouple
         //  the viewport bounds from these items.
     }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-    //                 End of SideUiObserver Implementation                                      //
-    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void repositionTabViewForSideUi() {
         Tab currentTab = getCurrentTab();
@@ -1925,10 +1936,9 @@ public class CompositorViewHolder extends FrameLayout
                 (sideUiStateProvider) -> {
                     mSideUiStateProvider = sideUiStateProvider;
                     mSideUiStateProvider.addObserver(this);
-                    onSideUiSpecsChanged(
+                    updateForSideUiSpecs(
                             mSideUiStateProvider.getCurrentSideUiSpecs(),
-                            new UiUpdateRequest(
-                                    /* sideUiId= */ null, /* suppressAnimations= */ true));
+                            /* isLiveResize= */ false);
                 });
     }
 

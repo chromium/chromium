@@ -215,13 +215,18 @@ public class FindToolbarTablet extends FindToolbar implements SideUiObserver {
         return changeBounds;
     }
 
+    @Override
+    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+        updateEndMarginForSideUi(sideUiSpecs);
+    }
+
     /**
      * Adjusts the end margin of the toolbar when a Side UI container is active on the anchor side
      * with {@link HeightType#WEB_CONTENTS} (e.g. in Vertical Tabs mode where the parent toolbar
      * does not shrink).
      */
     @Override
-    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+    protected void updateEndMarginForSideUi(SideUiSpecs sideUiSpecs) {
         int anchorSide = LocalizationUtils.isLayoutRtl() ? AnchorSide.LEFT : AnchorSide.RIGHT;
         mCurrentSideUiMarginEnd =
                 sideUiSpecs.getHeightType(anchorSide) == HeightType.WEB_CONTENTS

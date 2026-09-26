@@ -53,7 +53,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
-import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -396,11 +396,17 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
         mSideUiStateProvider = provider;
         if (mSideUiStateProvider != null && this instanceof SideUiObserver observer) {
             mSideUiStateProvider.addObserver(observer);
-            observer.onSideUiSpecsChanged(
-                    mSideUiStateProvider.getCurrentSideUiSpecs(),
-                    new UiUpdateRequest(/* sideUiId= */ null, /* suppressAnimations= */ true));
+            updateEndMarginForSideUi(mSideUiStateProvider.getCurrentSideUiSpecs());
         }
     }
+
+    /**
+     * Adjusts the toolbar's end margin to account for the given {@link SideUiSpecs}. No-op unless
+     * overridden by a subclass that observes side UI changes.
+     *
+     * @param sideUiSpecs The {@link SideUiSpecs} to apply.
+     */
+    protected void updateEndMarginForSideUi(SideUiSpecs sideUiSpecs) {}
 
     /** Cleans up observers and listeners. */
     public void destroy() {

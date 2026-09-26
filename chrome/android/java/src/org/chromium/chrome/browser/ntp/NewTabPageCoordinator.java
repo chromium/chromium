@@ -90,7 +90,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
-import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoCoordinator;
@@ -345,21 +344,13 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         sCount++;
 
         // TODO(crbug.com/517393491): Refactor to a reusable component to apply to other UiConfigs.
-        mSideUiObserver =
-                (sideUiSpecs, request) -> {
-                    if (mUiConfig != null) {
-                        mUiConfig.setHorizontalInset(getSideUiWidthDp(sideUiSpecs));
-                    }
-                };
+        mSideUiObserver = (sideUiSpecs, request) -> updateUiConfigInsetForSideUi(sideUiSpecs);
         sideUiStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(
                         provider -> {
                             mSideUiStateProvider = provider;
                             provider.addObserver(mSideUiObserver);
-                            mSideUiObserver.onSideUiSpecsChanged(
-                                    provider.getCurrentSideUiSpecs(),
-                                    new UiUpdateRequest(
-                                            /* sideUiId= */ null, /* suppressAnimations= */ true));
+                            updateUiConfigInsetForSideUi(provider.getCurrentSideUiSpecs());
                         }));
 
         NtpCustomizationPromoManager.maybeShowHomepageCustomizationSnackbarOnRecreate(
@@ -1655,6 +1646,17 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         + sideUiSpecs.getReservedWidth(AnchorSide.RIGHT);
         float density = mActivity.getResources().getDisplayMetrics().density;
         return Math.round(sideUiWidthPx / density);
+    }
+
+    /**
+     * Updates the {@link UiConfig}'s horizontal inset to account for the given {@link SideUiSpecs}.
+     *
+     * @param sideUiSpecs The {@link SideUiSpecs} to apply.
+     */
+    private void updateUiConfigInsetForSideUi(SideUiSpecs sideUiSpecs) {
+        if (mUiConfig != null) {
+            mUiConfig.setHorizontalInset(getSideUiWidthDp(sideUiSpecs));
+        }
     }
 
     /**

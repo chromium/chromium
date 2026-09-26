@@ -517,10 +517,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 SideUiCoordinator.SideUiSpecs sideUiSpecs,
                 SideUiCoordinator.UiUpdateRequest request) {
             if (mIsInHub) {
-                super.onSideUiSpecsChanged(
-                        new SideUiCoordinator.SideUiSpecs(Collections.emptyMap()), request);
+                updateMarginsForSideUi(new SideUiCoordinator.SideUiSpecs(Collections.emptyMap()));
             } else {
-                super.onSideUiSpecsChanged(sideUiSpecs, request);
+                updateMarginsForSideUi(sideUiSpecs);
             }
         }
 
@@ -528,10 +527,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         public void onStartedShowing(@LayoutType int layoutType) {
             if (layoutType == LayoutType.HUB) {
                 mIsInHub = true;
-                super.onSideUiSpecsChanged(
-                        new SideUiCoordinator.SideUiSpecs(Collections.emptyMap()),
-                        new SideUiCoordinator.UiUpdateRequest(
-                                /* sideUiId= */ null, /* suppressAnimations= */ true));
+                updateMarginsForSideUi(new SideUiCoordinator.SideUiSpecs(Collections.emptyMap()));
             }
         }
 
@@ -541,10 +537,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mIsInHub = false;
                 var sideUiCoordinator = mSideUiCoordinatorSupplier.get();
                 if (sideUiCoordinator != null) {
-                    super.onSideUiSpecsChanged(
-                            sideUiCoordinator.getCurrentSideUiSpecs(),
-                            new SideUiCoordinator.UiUpdateRequest(
-                                    /* sideUiId= */ null, /* suppressAnimations= */ true));
+                    updateMarginsForSideUi(sideUiCoordinator.getCurrentSideUiSpecs());
                 }
             }
         }

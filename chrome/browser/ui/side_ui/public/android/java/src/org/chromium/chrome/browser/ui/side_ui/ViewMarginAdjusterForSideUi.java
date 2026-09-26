@@ -94,6 +94,19 @@ public class ViewMarginAdjusterForSideUi implements SideUiObserver {
     @Override
     public void onSideUiSpecsChanged(
             SideUiCoordinator.SideUiSpecs sideUiSpecs, UiUpdateRequest request) {
+        updateMarginsForSideUi(sideUiSpecs);
+    }
+
+    /**
+     * Updates the View's margins to account for the given {@link SideUiCoordinator.SideUiSpecs}.
+     *
+     * <p>Owners that are created after side UI is already showing can call this to sync the View
+     * with the current specs, rather than directly invoking {@link #onSideUiSpecsChanged}, which is
+     * reserved for {@link SideUiCoordinator}.
+     *
+     * @param sideUiSpecs The {@link SideUiCoordinator.SideUiSpecs} to apply.
+     */
+    public final void updateMarginsForSideUi(SideUiCoordinator.SideUiSpecs sideUiSpecs) {
         MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
         int leftMargin = 0;
         int rightMargin = 0;
